@@ -520,6 +520,10 @@ int pipe_check(char *client_address) {
                 short passcode;
                 char *space;
 
+                // We have a string with user/pass in it, but they
+                // can be anywhere along the line.  We'll have to
+                // search for each piece.
+
 //fprintf(stderr,"x_spider:Found an authentication string\n");
 
                 // Copy the line
@@ -530,12 +534,29 @@ int pipe_check(char *client_address) {
                     "                                    ",
                     sizeof(line2) - strlen(line2));
 
-                // Snag the callsign string
+                // Find the "user" string position
+                callsign = strstr(line2,"user");
 
-                callsign = &line2[5];
+                if (callsign == NULL)
+                    continue;
+
+                // Fast-forward past the "user" word.
+                callsign += 4;
+
+                // Skip past any additional spaces that might be
+                // present between "user" and callsign.
+                while (callsign[0] == ' ' && callsign[0] != '\0') {
+                    callsign += 1;
+                }
+
+                if (callsign[0] == '\0')
+                    continue;
+
+                // We should now be pointing at the beginning of the
+                // callsign.
 
                 // Find the space after the callsign
-                space = strstr(&line2[5]," ");
+                space = strstr(callsign," ");
 
                 if (space == NULL)
                     continue;
@@ -545,7 +566,7 @@ int pipe_check(char *client_address) {
 
                 // Snag the passcode string 
 
-                // Find the "pass" string first
+                // Find the "pass" string
                 passcode_str = strstr(&space[1],"pass");
 
                 if (passcode_str == NULL)
@@ -585,6 +606,9 @@ int pipe_check(char *client_address) {
                         "X_spider: Bad authentication, user %s, pass %d\n",
                         callsign,
                         passcode);
+                    fprintf(stderr,
+                        "Line: %s\n",
+                        line);
                 }
             }
 
