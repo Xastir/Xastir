@@ -957,6 +957,7 @@ void draw_ogr_map(Widget w,
         int geometry_type = -1;
 
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
 
             if (wgs84_spatialH != NULL) {
@@ -1144,8 +1145,9 @@ void draw_ogr_map(Widget w,
             int ii;
             double X1, Y1, Z1, X2, Y2, Z2;
 //            char *buffer;
- 
 
+ 
+            HandlePendingEvents(app_context);
             if (interrupt_drawing_now) {
                 if (featureH != NULL)
                     OGR_F_Destroy( featureH );

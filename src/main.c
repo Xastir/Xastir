@@ -3257,6 +3257,8 @@ void refresh_image(Widget w) {
 // done it copies the image to the drawing area, making it visible.
 void redraw_symbols(Widget w) {
 
+
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return;
 
