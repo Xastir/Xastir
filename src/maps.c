@@ -761,6 +761,12 @@ void draw_grid(Widget w) {
             draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
 
+        // Draw the short vertical vectors in the polar regions
+        draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
+ 
         if (MGRS_grid) {
             // For MGRS, we need to draw irregular zones in certain
             // areas.
@@ -787,12 +793,6 @@ void draw_grid(Widget w) {
             draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
             draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
             draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
-
-            // Now draw the short vertical vectors in the polar regions
-            draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
-            draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
         }
         else {
             // Draw normal zone boundaries used for civilian UTM
