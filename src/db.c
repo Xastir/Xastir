@@ -3187,6 +3187,11 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
     time_t sec;
     struct tm *time;
     int i;
+    int track_count = 0;
+
+// Maximum tracks listed in Station Info dialog.  This prevents
+// lockups on extremely long tracks.
+#define MAX_TRACK_LIST 100
 
 
     db_station_info_callsign = (char *) clientData; // Used for auto-updating this dialog
@@ -3617,7 +3622,10 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         if (ptr->prev != NULL)
            ptr = ptr->prev;
  
-        while (ptr != NULL) {
+        while ( (ptr != NULL) && (track_count <= MAX_TRACK_LIST) ) {
+
+            track_count++;
+
             sec  = ptr->sec;
             time = localtime(&sec);
             if ((ptr->flag & TR_NEWTRK) != '\0')
