@@ -22,6 +22,17 @@
  * Look at the README for more information on the program.
  */
 
+
+/*
+ * The code currently supports these types of weather stations:
+ *
+ *   Peet Brothers Ultimeter 2000 (logging mode)
+ *   Peet Brothers Ultimeter 2000 (Packet mode)
+ *   Peet Brothers U-II
+ *   Radio Shack WX-200/Huger WM-918/Oregon Scientific WM-918
+ */
+
+
 #include "config.h"
 #include "snprintf.h"
 
