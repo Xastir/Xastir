@@ -74,6 +74,8 @@ selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
 be selected as well, that's ok and necessary:
 
+    archive/unzip
+    archive/zip
     devel/autoconf
     devel/automake
     devel/binutils
