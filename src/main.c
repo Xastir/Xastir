@@ -156,16 +156,6 @@
 //
 //#define FIXED_DIALOG_STARTUP
 
-// Another thing that may go along with a touchscreen is using:
-//  xmodmap -e "pointer = 3 2 1"
-// to swap mouse buttons 1 and 3.  That will let the single
-// touchscreen button operate the main mouse menu in Xastir.  It'll
-// affect all of Xwindows though.  xmodmap -e "pointer = default"
-// will return things to normal.  If swapping mouse buttons in X11,
-// you may also have to swap them in your window manager
-// configuration to correspond.  This will more than likely mess up
-// other X11 applications as well.
-
 // Yet another useful item:  Puts the mouse menu on button 1 instead
 // of button3.  Useful for one-button devices like touchscreens.
 //
