@@ -4286,6 +4286,32 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             // Leave the button release alone in this case.
             mouse_zoom = 0;
         }
+        else if (event->xbutton.button == Button4) {
+// Scroll up
+            menu_x=input_x;
+            menu_y=input_y;
+            Pan_up(w, client_data, call_data);
+        }
+        else if (event->xbutton.button == Button5) {
+// Scroll down
+            menu_x=input_x;
+            menu_y=input_y;
+            Pan_down(w, client_data, call_data);
+        }
+        else if (event->xbutton.button == 6) {
+// Mouse button 6 release
+            menu_x=input_x;
+            menu_y=input_y;
+            Zoom_out_no_pan(w, client_data, call_data);
+            mouse_zoom = 0;
+        }
+        else if (event->xbutton.button == 7) {
+// Mouse button 7 release
+            menu_x=input_x;
+            menu_y=input_y;
+            Zoom_in_no_pan(w, client_data, call_data);
+            mouse_zoom = 0;
+        }
     }
     else if (event->type == ButtonPress) {
         //printf("ButtonPress %d %d\n",event->xbutton.button,Button3);
