@@ -609,6 +609,7 @@ void draw_shapefile_map (Widget w,
     SHPObject       *object;
     static XPoint   points[MAX_MAP_POINTS];
     char            file[MAX_FILENAME];  /* Complete path/name of image file */
+    char            short_filenm[MAX_FILENAME];
     char            warning_text[MAX_FILENAME*2];
     int             i, fieldcount, recordcount, structure, ring;
 #ifndef WITH_DBFAWK
@@ -743,6 +744,25 @@ void draw_shapefile_map (Widget w,
     search_param2[0] = '\0';
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
+
+    // Create a shorter filename for display (one that fits the
+    // status line more closely).  Subtract the length of the
+    // "Indexing " and/or "Loading " strings as well.
+    if (strlen(filenm) > (41 - 9)) {
+        int avail = 41 - 11;
+        int new_len = strlen(filenm) - avail;
+
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "..%s",
+            &filenm[new_len]);
+    }
+    else {
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "%s",
+            filenm);
+    }
 
     //fprintf(stderr,"draw_shapefile_map:start:%s\n",file);
 
@@ -1304,7 +1324,10 @@ void draw_shapefile_map (Widget w,
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+        xastir_snprintf(status_text,
+            sizeof(status_text),
+            langcode ("BBARSTA039"),
+            short_filenm);
         statusline(status_text,0);       // Indexing ...
 
         // We're indexing only.  Save the extents in the index.
@@ -1327,7 +1350,10 @@ void draw_shapefile_map (Widget w,
         return; // Done indexing this file
     }
     else {
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+        xastir_snprintf(status_text,
+            sizeof(status_text),
+            langcode ("BBARSTA028"),
+            short_filenm);
         statusline(status_text,0);       // Loading ...
     }
  
