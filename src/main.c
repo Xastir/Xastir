@@ -3291,7 +3291,7 @@ void check_statusline_timeout(void) {
 #endif  // HAVE_FESTIVAL
         }
 
-        last_statusline = 0;	// now inactive
+        last_statusline = 0;    // now inactive
 
         // Guarantee that the ID text will be viewable for a few
         // seconds if we haven't identified recently.  Note that the
@@ -9653,13 +9653,13 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 void Set_Log_Indicator(void) {
-	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
-	    XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
-            XtVaSetValues(log_indicator, XmNbackground, (int)GetPixelByName(Global.top,"RosyBrown"), NULL);
-	} else {
-	    XmTextFieldSetString(log_indicator, NULL);
-            XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
-	}
+    if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
+        XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
+        XtVaSetValues(log_indicator, XmNbackground, (int)GetPixelByName(Global.top,"RosyBrown"), NULL);
+    } else {
+        XmTextFieldSetString(log_indicator, NULL);
+        XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
+    }
 }
 
 
@@ -11433,8 +11433,8 @@ void map_properties_fill_in (void) {
     i=0;
     if (map_properties_dialog) {
 
-	// Empty the map_properties_list widget first
-	XmListDeleteAllItems(map_properties_list);
+        // Empty the map_properties_list widget first
+        XmListDeleteAllItems(map_properties_list);
 
         // Put all the map files/dirs in the map_index into the Map
         // Properties dialog list (map_properties_list).  Include
@@ -12035,8 +12035,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNtopWidget, label2,
                 XmNtopOffset, 2,
                 XmNbottomAttachment, XmATTACH_WIDGET,
-        		XmNbottomWidget, rowcol,
-        		XmNbottomOffset, 2,
+                XmNbottomWidget, rowcol,
+                XmNbottomOffset, 2,
                 XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 5,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -12571,7 +12571,7 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
 /*
     // Run through the in-memory map list, deselecting every line
     while (current != NULL) {
-        current->selected = 0;	// Not Selected
+        current->selected = 0;    // Not Selected
         current = current->next;
     }
 */
@@ -12686,8 +12686,8 @@ void map_chooser_fill_in (void) {
     i=0;
     if (map_chooser_dialog) {
 
-	// Empty the map_list widget first
-	XmListDeleteAllItems(map_list);
+        // Empty the map_list widget first
+        XmListDeleteAllItems(map_list);
 
         // Put all the map files/dirs in the map_index into the Map
         // Chooser dialog list (map_list).
@@ -12739,10 +12739,11 @@ void map_chooser_fill_in (void) {
 
 
 void Configure_tiger_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-	Widget shell = (Widget) clientData;
-	XtPopdown(shell);
-	XtDestroyWidget(shell);
-	configure_tiger_dialog = (Widget)NULL;
+    Widget shell = (Widget) clientData;
+
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    configure_tiger_dialog = (Widget)NULL;
 }
 
 
@@ -12751,87 +12752,87 @@ void Configure_tiger_destroy_shell( /*@unused@*/ Widget widget, XtPointer client
 
 void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
-	if(XmToggleButtonGetState(tiger_enable_widget))
-		tiger_flag=TRUE;
-     	else
-	  	tiger_flag=FALSE;
+    if(XmToggleButtonGetState(tiger_enable_widget))
+        tiger_flag=TRUE;
+    else
+        tiger_flag=FALSE;
 
-	if(XmToggleButtonGetState(tiger_grid))
-		tiger_show_grid=TRUE;
-     	else
-	  	tiger_show_grid=FALSE;
+    if(XmToggleButtonGetState(tiger_grid))
+        tiger_show_grid=TRUE;
+    else
+        tiger_show_grid=FALSE;
 
-	if(XmToggleButtonGetState(tiger_counties))
-		tiger_show_counties=TRUE;
-     	else
-	  	tiger_show_counties=FALSE;
+    if(XmToggleButtonGetState(tiger_counties))
+        tiger_show_counties=TRUE;
+    else
+        tiger_show_counties=FALSE;
 
-	if(XmToggleButtonGetState(tiger_cities))
-		tiger_show_cities=TRUE;
-     	else
-	  	tiger_show_cities=FALSE;
+    if(XmToggleButtonGetState(tiger_cities))
+        tiger_show_cities=TRUE;
+    else
+        tiger_show_cities=FALSE;
 
-	if(XmToggleButtonGetState(tiger_places))
-		tiger_show_places=TRUE;
-     	else
-	  	tiger_show_places=FALSE;
+    if(XmToggleButtonGetState(tiger_places))
+        tiger_show_places=TRUE;
+    else
+        tiger_show_places=FALSE;
 
-	if(XmToggleButtonGetState(tiger_majroads))
-		tiger_show_majroads=TRUE;
-     	else
-	  	tiger_show_majroads=FALSE;
+    if(XmToggleButtonGetState(tiger_majroads))
+        tiger_show_majroads=TRUE;
+    else
+        tiger_show_majroads=FALSE;
 
-	if(XmToggleButtonGetState(tiger_streets))
-		tiger_show_streets=TRUE;
-     	else
-	  	tiger_show_streets=FALSE;
+    if(XmToggleButtonGetState(tiger_streets))
+        tiger_show_streets=TRUE;
+    else
+        tiger_show_streets=FALSE;
 
-	if(XmToggleButtonGetState(tiger_railroad))
-		tiger_show_railroad=TRUE;
-     	else
-	  	tiger_show_railroad=FALSE;
+    if(XmToggleButtonGetState(tiger_railroad))
+        tiger_show_railroad=TRUE;
+    else
+        tiger_show_railroad=FALSE;
 
-	if(XmToggleButtonGetState(tiger_water))
-		tiger_show_water=TRUE;
-     	else
-	  	tiger_show_water=FALSE;
+    if(XmToggleButtonGetState(tiger_water))
+        tiger_show_water=TRUE;
+    else
+        tiger_show_water=FALSE;
 
-	if(XmToggleButtonGetState(tiger_lakes))
-		tiger_show_lakes=TRUE;
-     	else
-	  	tiger_show_lakes=FALSE;
+    if(XmToggleButtonGetState(tiger_lakes))
+        tiger_show_lakes=TRUE;
+    else
+        tiger_show_lakes=FALSE;
 
-	if(XmToggleButtonGetState(tiger_misc))
-		tiger_show_misc=TRUE;
-     	else
-	  	tiger_show_misc=FALSE;
+    if(XmToggleButtonGetState(tiger_misc))
+        tiger_show_misc=TRUE;
+    else
+        tiger_show_misc=FALSE;
 
-	if(XmToggleButtonGetState(tiger_states))
-		tiger_show_states=TRUE;
-     	else
-	  	tiger_show_states=FALSE;
+    if(XmToggleButtonGetState(tiger_states))
+        tiger_show_states=TRUE;
+    else
+        tiger_show_states=FALSE;
 
-	if(XmToggleButtonGetState(tiger_interstate))
-		tiger_show_interstate=TRUE;
-     	else
-	  	tiger_show_interstate=FALSE;
+    if(XmToggleButtonGetState(tiger_interstate))
+        tiger_show_interstate=TRUE;
+    else
+        tiger_show_interstate=FALSE;
 
-	if(XmToggleButtonGetState(tiger_ushwy))
-		tiger_show_ushwy=TRUE;
-     	else
-	  	tiger_show_ushwy=FALSE;
+    if(XmToggleButtonGetState(tiger_ushwy))
+        tiger_show_ushwy=TRUE;
+    else
+        tiger_show_ushwy=FALSE;
 
-	if(XmToggleButtonGetState(tiger_statehwy))
-		tiger_show_statehwy=TRUE;
-     	else
-	  	tiger_show_statehwy=FALSE;
+    if(XmToggleButtonGetState(tiger_statehwy))
+        tiger_show_statehwy=TRUE;
+    else
+        tiger_show_statehwy=FALSE;
 
-	XmScaleGetValue(tiger_intensity, &tigermap_intensity);
-	XmScaleGetValue(tiger_timeout, &tigermap_timeout);
+    XmScaleGetValue(tiger_intensity, &tigermap_intensity);
+    XmScaleGetValue(tiger_timeout, &tigermap_timeout);
 
-	Configure_tiger_destroy_shell(widget,clientData,callData);
-        create_image(da);
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    Configure_tiger_destroy_shell(widget,clientData,callData);
+    create_image(da);
+    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -13499,11 +13500,11 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
         XtVaSetValues(XtParent(map_list),
                 XmNtopAttachment, XmATTACH_WIDGET,
-		XmNtopWidget, expand_dirs_button,
+                XmNtopWidget, expand_dirs_button,
                 XmNtopOffset, 2,
                 XmNbottomAttachment, XmATTACH_WIDGET,
-		XmNbottomWidget, rowcol,
-		XmNbottomOffset, 2,
+                XmNbottomWidget, rowcol,
+                XmNbottomOffset, 2,
                 XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 5,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -22424,7 +22425,7 @@ int main(int argc, char *argv[]) {
             reload_object_item();
 
             // Update the logging indicator 
-	        Set_Log_Indicator();
+            Set_Log_Indicator();
 
             XtAppMainLoop(app_context);
 
