@@ -5515,12 +5515,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
  **********************************************************/
 #ifdef HAVE_IMAGEMAGICK
 void draw_tiger_map (Widget w) {
-
-#ifdef NO_GRAPHICS
-    printf("No XPM or ImageMagick support compiled into Xastir!\n");
-    return;
-#else   // NO_GRAPHICS
-
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -6206,8 +6200,6 @@ void draw_tiger_map (Widget w) {
        DestroyImage(image);
     if (image_info)
        DestroyImageInfo(image_info);
-
-#endif // NO_GRAPHICS
 }
 #endif //HAVE_IMAGEMAGICK
 
