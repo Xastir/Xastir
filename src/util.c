@@ -1317,6 +1317,9 @@ double distance_from_my_station(char *call_sign, char *course_deg) {
     else {  // Station not found
         distance = 0.0;
     }
+
+    //printf("Distance for %s: %f\n", call_sign, distance);
+
     return(distance);
 }
 

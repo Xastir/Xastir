@@ -880,7 +880,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (type == MESSAGE_BULLETIN) { // Found a bulletin
             char temp[10];
 
-            distance = (int)distance_from_my_station(call_sign,temp);
+            distance = (int)distance_from_my_station(from_call,temp);
 
             // Note:  The old method caused bulletins of distance
             // zero to bring up the View->Bulletins dialog.  It gets
@@ -981,7 +981,9 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         printf("msg_data_add end\n");
 
     // Bring up the bulletins dialog if it's a new bulletin and
-    // within our range.
+    // within our range.  We now just set some flags via the
+    // "prep_for_..." call below, then recheck the distance before
+    // we decide to actually bring up the bulletin window.
     if (bring_up_bulletins && pop_up_new_bulletins) {
 
         // Record that we _think_ we have a new bulletin.  We'll
