@@ -2244,9 +2244,9 @@ char *process_OpenTrac_packet( unsigned char *data,
     int           elen;
     int           etype;
     unsigned int  decoded         = 0;
-    unsigned char origin_call[7];       // Where the packet originated
+    unsigned char origin_call[10];       // Where the packet originated
     unsigned char origin_ssid     = 0;
-    unsigned char entity_call[7];       // What the packet is talking about
+    unsigned char entity_call[10];       // What the packet is talking about
     unsigned char entity_ssid     = 0x00;
     unsigned int  entity_serial   = 0;
     unsigned int  entity_sequence = 0;
@@ -2288,8 +2288,25 @@ char *process_OpenTrac_packet( unsigned char *data,
         // took, and in fact we don't know who the transmitting station
         // was for this packet anymore, just the originating station for
         // the packet.
- 
-        strcat(buffer,(char *)origin_call);
+
+        // fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
+
+        // The passed in value includes the SSID, but the
+        // size of the char[] is 7, which is bad - overflow
+        // Either need to fix how we deal with the origin_call
+        // or fix what it means. (with ssid or without)!!
+        // For now, I changed origin_call and source_call
+        // to be 10 bytes since that is what the rest of Xastir uses
+        // FIXME: Check if all of the OpenTrac_decode functions
+        //        expect callsign to have ssid already or not
+        // KJ5O
+
+        strncat(buffer,(char *)origin_call,10);
+
+        // Removed this code below which appends the origin_ssid
+        // to end of origin_call, since it already comes in this way
+        // KJ5O
+/*
         if (origin_ssid != 0x00) {
             char temp[10];
 
@@ -2297,6 +2314,7 @@ char *process_OpenTrac_packet( unsigned char *data,
             xastir_snprintf(temp,sizeof(temp),"%d",origin_ssid);
             strcat(buffer,temp);
         }
+*/
         strcat(buffer,">");
         strcat(buffer,(char *)dest);
 
@@ -2785,12 +2803,23 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
         if ((ssid / 10) != 0) {
             source[j++] = '1';
         }
-        ssid = (ssid % 10);
-        source[j++] = (unsigned char)ssid + (unsigned char)'0';
+        // Commented out by Lance KJ5O. Why is this here?
+        // It destroys the ssid value. I moved the calculation
+        // to the source-construction line. But we need to be consistent
+        // in what the variables are. Is "source" including the SSID or not?
+        // This function allocatees 10 bytes, and so assumes that SSID belongs
+        // However, in process_OpenTrac_packet, origin_ssid is 7 bytes.
+        // ssid = (ssid % 10);
+
+        source[j++] = (unsigned char)(ssid % 10) + (unsigned char)'0';
+        // source[j++] = (unsigned char)ssid + (unsigned char)'0';
     }
     source[j] = '\0';
     bp += 7;
     len -= 7;
+
+    // by KJ5O - test for proper extraction of source call and ssid
+    // fprintf(stderr, "|KJ5O-test| %s-%d\n", source, ssid);
 
     /* Digipeaters */
     digis = 0;
