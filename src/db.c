@@ -6500,6 +6500,8 @@ void delete_station_memory(DataRow *p_del) {
         // Do nothing.  No update needed.  Callsign is empty.
         return(NULL);
     }
+
+//fprintf(stderr,"Adding new station: %s\n",call);
   
     p_new = insert_new_station(p_name,p_time);  // allocate memory
 
@@ -6678,11 +6680,11 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
 // Returns a station with a call equal or after the searched one
 //
 // We use a doubly-linked list for the stations, so we can traverse
-// in either direction.  We use a 14-bit hash table created from the
-// first two letters of the call to dump us into the beginning of
-// the correct area that may hold the callsign, which reduces search
-// time quite a bit.  We end up doing a linear search only through a
-// small area of the linked list.
+// in either direction.  We also use a 14-bit hash table created
+// from the first two letters of the call to dump us into the
+// beginning of the correct area that may hold the callsign, which
+// reduces search time quite a bit.  We end up doing a linear search
+// only through a small area of the linked list.
 //
 // DK7IN:  I don't look at case, objects and internet names could
 // have lower case.
@@ -6715,6 +6717,9 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
     if ((*p_name) == NULL) {    // No hash-table entry found.
         int mm;
 
+//fprintf(stderr,"No hash-table entry found: call:%s\n",call);
+
+
         // No index found for that letter.  Walk the array until
         // we find an entry that is filled.  That'll be our
         // potential insertion point (insertion into the list will
@@ -6726,6 +6731,12 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
             }
         }
     }
+//    else {
+//fprintf(stderr,"Hash key %d=%s, searching for call: %s\n",
+//    hash_key,
+//    (*p_name)->call_sign,
+//    call);
+//    }
 
     // If we got to this point, we either have a NULL pointer or a
     // real hash-table pointer entry.  A non-NULL pointer means that
@@ -6736,18 +6747,28 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
 
     kk = (int)strlen(call);
 
-    // Search through list.  Stop at end of list or break.
+    // Search linearly through list.  Stop at end of list or break.
     while ( (*p_name) != NULL) {
 
-        // Check first part of string for match
-        result = strncmp( call, (*p_name)->call_sign, kk );
+        if (exact) {
+            // Check entire string for exact match
+            result = strcmp( call, (*p_name)->call_sign );
+        }
+        else {
+            // Check first part of string for match
+            result = strncmp( call, (*p_name)->call_sign, kk );
+        }
 
         if (result > 0) {   // We went past the right location.
                             // We're done.
             ok = 0;
+//fprintf(stderr,"Went past possible entry point, searching for call: %s\n",call);
             break;
         }
         else if (result == 0) { // Found a possible match
+//fprintf(stderr,"Found possible match: list:%s call:%s\n",
+//    (*p_name)->call_sign,
+//    call);
             break;
         }
         else {  // Result < 0.  We haven't found it yet.
@@ -6758,7 +6779,8 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
     // Did we find anything?
     if ( (*p_name) == NULL) {
         ok = 0;
-        return(ok);
+//fprintf(stderr,"End of list reached, call: %s\n",call);
+        return(ok); // Nope.  No match found.
     }
 
     // If "exact" is set, check that the string lengths match as
@@ -7064,7 +7086,14 @@ void station_del_ptr(DataRow *p_name) {
 void delete_all_stations(void) {
     DataRow *p_name;
     DataRow *p_curr;
-    
+    int ii;
+ 
+
+    // Clear all of the pointers before we begin
+    for (ii = 0; ii < 16384; ii++) {
+        station_shortcuts[ii] = NULL;
+    }
+   
     p_name = n_first;
     while (p_name != NULL) {
         p_curr = p_name;
@@ -8690,6 +8719,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             new_station = (char)FALSE;                  // we have seen this one before
         }
     } else {
+//fprintf(stderr,"data_add()\n");
         p_station = add_new_station(p_station,p_time,call);     // create storage
         new_station = (char)TRUE;                       // for new station
     }
@@ -9834,6 +9864,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station = NULL;
     if (!search_station_name(&p_station,my_callsign,1)) {  // find my data in the database
         p_time = NULL;          // add to end of time sorted list
+//fprintf(stderr,"my_station_gps_change()\n");
         p_station = add_new_station(p_station,p_time,my_callsign);
     }
     p_station->flag |= ST_ACTIVE;
@@ -9977,6 +10008,7 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     p_station = NULL;
     if (!search_station_name(&p_station,my_callsign,1)) {  // find call 
         p_time = NULL;          // add to end of time sorted list
+//fprintf(stderr,"my_station_add()\n");
         p_station = add_new_station(p_station,p_time,my_callsign);
     }
     p_station->flag |= ST_ACTIVE;
