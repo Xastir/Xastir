@@ -1068,6 +1068,23 @@ Getting Data Files for Xastir:
       location with Xastir. The .tfw files included with most geoTIFF images
       are not used by Xastir.
 
+      If you must make FGD files by hand (xastir/scripts/mapfgd.pl can create
+      them for you for USGS geoTIFF files),here's the format Xastir is looking
+      for:
+
+        1.5.1.1  WEST BOUNDING COORDINATE:  -122.000000
+        1.5.1.2  EAST BOUNDING COORDINATE:  -120.000000  
+        1.5.1.3  NORTH BOUNDING COORDINATE:  48.000000 
+        1.5.1.4  SOUTH BOUNDING COORDINATE:  47.000000 
+
+     -or-
+
+        1.5.1.1  West_Bounding_Coordinate:  -122.000000
+        1.5.1.2  East_Bounding_Coordinate:  -120.000000  
+        1.5.1.3  North_Bounding_Coordinate:  48.000000 
+        1.5.1.4  South_Bounding_Coordinate:  47.000000 
+
+
      Shapefile format maps:
 
       Some shapefile format maps are available at: 
