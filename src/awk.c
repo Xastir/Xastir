@@ -238,7 +238,8 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
  *
  *  Action grammar is:
  *  <attr_set> := <attr> "=" value 
- *  <op>   := "next"   # like awk, to end pattern search
+ *  <op>   := "next" | "skip"   (next skips to next field;  skip skips to next
+ *                               record.)
  *  <stmt> := <attr_set> | <op>
  *  <stmt_list> := <stmt_list> ";" <stmt> | <stmt>
  *  <action> := <stmt_list> 
@@ -283,6 +284,8 @@ int awk_compile_stmt(awk_symtab *this,
         for (r=&s[len-1]; isspace(*r); r--,len--) ; /* trim trailing white space */
         if (len == 4 && strncmp(s,"next",4) == 0) {
             p->opcode = NEXT;
+        } else if (len == 4 && strncmp(s,"skip",4) == 0) {
+            p->opcode = SKIP;
         } else {                /* failed to parse */
             return -1;
         }
@@ -480,6 +483,9 @@ int awk_exec_action(awk_symtab *this, const awk_action *code)
         switch (p->opcode) {
         case NEXT:
             done = 1;
+            break;
+        case SKIP:
+            done = 2;
             break;
         case ASSIGN:
             awk_eval_expr(this,p->dest,p->expr,p->exprlen);

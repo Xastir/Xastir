@@ -265,7 +265,8 @@ void dbfawk_parse_record(awk_program *rs,
 	    sprintf(qbuf,"%s=??",finfo->name);
 	    break;
         }
-        awk_exec_program(rs,qbuf,strlen(qbuf));
+        if (awk_exec_program(rs,qbuf,strlen(qbuf)) == 2)
+            break;
     }
     awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }

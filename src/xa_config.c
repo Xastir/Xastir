@@ -363,7 +363,7 @@ void save_data(void)  {
         store_int (fout, "MAPS_AUTO_MAPS", map_auto_maps);
         store_int (fout, "MAPS_AUTO_MAPS_SKIP_RASTER", auto_maps_skip_raster);
         store_int (fout, "MAPS_INDEX_ON_STARTUP", index_maps_on_startup);
-
+        store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname);
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
         store_int (fout, "USE_TIGERMAPS", tiger_flag);
@@ -842,6 +842,8 @@ void load_data_or_default(void) {
     if (!get_int ("MAPS_INDEX_ON_STARTUP", &index_maps_on_startup, 0, 1, 1))
       index_maps_on_startup = 1;
 
+    if (!get_string ("MAPS_LABEL_FONT", rotated_label_fontname))
+        strcpy(rotated_label_fontname,"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1");
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
     if (!get_int ("USE_TIGERMAPS", &tiger_flag, 0, 1, 0))

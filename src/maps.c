@@ -923,19 +923,10 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
 // Must make sure that fonts are not loaded again and again, as this
 // takes a big chunk of memory each time.  Can you say "memory
 // leak"?
-//
-static XFontStruct *rotated_label_font=NULL;
-char *rotated_label_fontname=
-    //"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
-    //"-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
-    //"-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
-    //"-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
-    //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
-    "-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
 
-
-
-
+XFontStruct *rotated_label_font=NULL;
+char rotated_label_fontname[MAX_LABEL_FONTNAME];
+static char current_rotated_label_fontname[sizeof(rotated_label_fontname)] = {'\0'};
 
 /**********************************************************
  * draw_rotated_label_text()
@@ -952,6 +943,13 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
     float my_rotation = (float)((-rotation)-90);
 
 
+    /* see if fontname has changed */
+    if (rotated_label_font && 
+        strcmp(rotated_label_fontname,current_rotated_label_fontname) != 0) {
+        XFreeFont(XtDisplay(w),rotated_label_font);
+        rotated_label_font = NULL;
+        strcpy(current_rotated_label_fontname,rotated_label_fontname);
+    }
     /* load font */
     if(!rotated_label_font) {
         rotated_label_font=(XFontStruct *)XLoadQueryFont(XtDisplay (w),

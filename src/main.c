@@ -319,6 +319,10 @@ Widget gamma_adjust_text;
 #endif  // HAVE_IMAGEMAGICK
 #endif  // NO_GRAPHICS
 
+Widget map_font_dialog = (Widget)NULL;
+Widget map_font_text;
+
+
 Widget map_station_label0,map_station_label1,map_station_label2;
 static void Map_station_label(Widget w, XtPointer clientData, XtPointer calldata);
 int letter_style;               /* Station Letter style */
@@ -3800,9 +3804,169 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
 }
 #endif  // NO_GRAPHICS && HAVE_IMAGEMAGICK
 
+// chose map label font
+void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    map_font_dialog = (Widget)NULL;
+}
+
+void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *temp;
+    Widget shell = (Widget) clientData;
+
+    temp = XmTextGetString(map_font_text);
+
+    strncpy(rotated_label_fontname,temp,sizeof(rotated_label_fontname));
+    XtFree(temp);
+
+    XmTextSetString(map_font_text, rotated_label_fontname);
+    // Set interrupt_drawing_now because conditions have changed
+    // (new map center).
+    interrupt_drawing_now++;
+
+    // Request that a new image be created.  Calls create_image,
+    // XCopyArea, and display_zoom_status.
+    request_new_image++;
+
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    map_font_dialog = (Widget)NULL;
+}
 
 
 
+
+
+void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
+    static Widget  pane, my_form, fontname, button_ok, button_cancel;
+    Atom delw;
+
+    if (!map_font_dialog) {
+        map_font_dialog = XtVaCreatePopupShell(langcode("MAPFONT002"),
+                xmDialogShellWidgetClass, Global.top,
+                XmNdeleteResponse,        XmDESTROY,
+                XmNdefaultPosition,       FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Choose map labels font",
+                xmPanedWindowWidgetClass, map_font_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        my_form =  XtVaCreateWidget("Map font my_form",
+                xmFormWidgetClass,  pane,
+                XmNfractionBase,    5,
+                XmNautoUnmanage,    FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        //        ac=0;
+        //        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        //        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
+
+        fontname = XtVaCreateManagedWidget(langcode("MAPFONT003"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        map_font_text = XtVaCreateManagedWidget("Map font text",
+                xmTextFieldWidgetClass,        my_form,
+                XmNeditable,              TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive,             TRUE,
+                XmNshadowThickness,       1,
+                XmNcolumns,               60,
+                XmNwidth,                 (60*7)+2,
+                XmNmaxLength,             128,
+                XmNbackground,            colors[0x0f],
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, fontname,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                NULL);
+
+        XmTextSetString(map_font_text, rotated_label_fontname);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, my_form,
+                XmNtopAttachment,        XmATTACH_WIDGET,
+                XmNtopWidget,            map_font_text,
+                XmNtopOffset,            10,
+                XmNbottomAttachment,     XmATTACH_FORM,
+                XmNbottomOffset,         5,
+                XmNleftAttachment,       XmATTACH_POSITION,
+                XmNleftPosition,         1,
+                XmNrightAttachment,      XmATTACH_POSITION,
+                XmNrightPosition,        2,
+                XmNnavigationType,       XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, my_form,
+                XmNtopAttachment,        XmATTACH_WIDGET,
+                XmNtopWidget,            map_font_text,
+                XmNtopOffset,            10,
+                XmNbottomAttachment,     XmATTACH_FORM,
+                XmNbottomOffset,         5,
+                XmNleftAttachment,       XmATTACH_POSITION,
+                XmNleftPosition,         3,
+                XmNrightAttachment,      XmATTACH_POSITION,
+                XmNrightPosition,        4,
+                XmNnavigationType,       XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_ok,
+                      XmNactivateCallback, Map_font_change_data,   map_font_dialog);
+        XtAddCallback(button_cancel,
+                      XmNactivateCallback, Map_font_destroy_shell, map_font_dialog);
+
+        pos_dialog(map_font_dialog);
+
+        delw = XmInternAtom(XtDisplay(map_font_dialog), "WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(map_font_dialog,
+                                delw, Map_font_destroy_shell, (XtPointer)map_font_dialog);
+
+        XtManageChild(my_form);
+        XtManageChild(pane);
+
+        XtPopup(map_font_dialog, XtGrabNone);
+        fix_dialog_size(map_font_dialog);
+
+        // Move focus to the Close button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(map_font_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    } else
+        (void)XRaiseWindow(XtDisplay(map_font_dialog), XtWindow(map_font_dialog));
+}
 
 void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[200];
@@ -4005,6 +4169,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         gamma_adjust_button, tiger_config_button,
 #endif  // HAVE_IMAGEMAGICK
 #endif  // NO_GRAPHICS
+        map_font_button,
         Map_station_label_Pane, map_station_label_button,
         map_wx_alerts_button, index_maps_on_startup_button,
         units_choice_button, dbstatus_choice_button,
@@ -4942,13 +5107,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
             xmPushButtonWidgetClass, mappane,
-            XmNmnemonic,             "G",
+            XmNmnemonic,langcode_hotkey("GAMMA001"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
+    XtAddCallback(gamma_adjust_button, XmNactivateCallback, Map_font, NULL);
 #endif  // HAVE_IMAGEMAGICK
 #endif  // NO_GRAPHICS
+
+    // map label font select
+    map_font_button = XtVaCreateManagedWidget(langcode("PULDNMP025"),
+            xmPushButtonWidgetClass, mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP025"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(map_font_button, XmNactivateCallback, Map_font, NULL);
 
     Map_station_label_Pane = XmCreatePulldownMenu(mappane,
             "create_appshell map_station_label",

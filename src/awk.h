@@ -53,7 +53,7 @@ typedef struct awk_symtab_ {	/* symbol table anchor */
 
 typedef struct awk_action_ {	/* a program statement */
     struct awk_action_ *next_act;
-    enum {NOOP=0, NEXT, ASSIGN} opcode;
+    enum {NOOP=0, NEXT, SKIP, ASSIGN} opcode;
     awk_symbol *dest;		/* destination of assignment */
     const char *expr;           /* value setting expression */
     int exprlen;                /* length of expression */

@@ -79,6 +79,7 @@ PULDNMP021|Auto Map - Disable Raster Maps||
 PULDNMP022|Index New Maps on Startup||
 PULDNMP023|Index: Add New Maps|N|
 PULDNMP024|Index: Reindex ALL Maps|R|
+PULDNMP025|Map labels font||
 #
 #
 # PopUp "Configure Tigermap"
@@ -991,6 +992,13 @@ SMARTB011|Enable SmartBeaconing(tm)||
 # Gamma Adjust Dialog
 GAMMA001|Adjust Gamma Correction||
 GAMMA002|Gamma Correction||
+#
+#
+# 
+# Map labels font Dialog
+MAPFONT001|Change Map Labels Font||
+MAPFONT002|Map Labels Font||
+MAPFONT003|Font name:||
 #
 #
 #

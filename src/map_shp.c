@@ -643,10 +643,12 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     /* these have to be static since I recycle Symtbl between calls */
     static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
-    static int      color,lanes,layer,filled,pattern,display_level,label_level;
+    static int      color,lanes,filled,pattern,display_level,label_level;
+    //static int layer;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
 #endif
+    static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
 
     typedef struct _label_string {
         char   label[50];
@@ -737,7 +739,7 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
                 awk_declare_sym(Symtbl,"color",INT,&color,sizeof(color));
                 awk_declare_sym(Symtbl,"lanes",INT,&lanes,sizeof(lanes));
-                awk_declare_sym(Symtbl,"layer",INT,&layer,sizeof(layer));
+                //awk_declare_sym(Symtbl,"layer",INT,&layer,sizeof(layer));
                 awk_declare_sym(Symtbl,"name",STRING,name,sizeof(name));
                 awk_declare_sym(Symtbl,"key",STRING,key,sizeof(key));
                 awk_declare_sym(Symtbl,"symbol",STRING,sym,sizeof(sym));
@@ -745,6 +747,7 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"pattern",INT,&pattern,sizeof(pattern));
                 awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
                 awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
+                awk_declare_sym(Symtbl,"label_color",INT,&label_color,sizeof(label_color));
             }
             if (awk_compile_program(Symtbl,sig_info->prog) < 0) {
                 fprintf(stderr,"Unable to compile .dbfawk program\n");
@@ -1489,11 +1492,13 @@ void draw_shapefile_map (Widget w,
                     fprintf(stderr,"filled=%d ",filled);
                     fprintf(stderr,"pattern=%d ",pattern);
                     fprintf(stderr,"display_level=%d ",display_level);
-                    fprintf(stderr,"label_level=%d\n",label_level);
+                    fprintf(stderr,"label_level=%d ",label_level);
+                    fprintf(stderr,"label_color=%d\n",label_color);
+                    // fprintf(stderr,"layer=%d\n",layer);
                 }
                 /* set attributes */
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                draw_filled = filled; /* XXX this overrides map properties! */
+                draw_filled = filled; /* this overrides map properties! */
                 skip_it = (map_color_levels && scale_y > display_level);
                 skip_label = (map_color_levels && scale_y > label_level);
             }
@@ -1584,8 +1589,8 @@ void draw_shapefile_map (Widget w,
                             // nicely.
                             if (map_labels) {
                                 draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
-                                //(void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
-                                //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[0x08], (char *)temp);
+                                //(void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
+                                //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[label_color], (char *)temp);
                             }
                         }
                     }
@@ -2421,7 +2426,7 @@ void draw_shapefile_map (Widget w,
 
                                 //fprintf(stderr,"%f\t%s\n",angle,temp);
 
-//                              (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+//                              (void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
                                 if (gps_flag) {
                                     (void)draw_rotated_label_text (w,
                                         //(int)angle,
@@ -2438,7 +2443,7 @@ void draw_shapefile_map (Widget w,
                                         x,
                                         y,
                                         strlen(temp),
-                                        colors[0x08],
+                                        colors[label_color],
                                         (char *)temp);
                                 }
                             }
@@ -3230,7 +3235,6 @@ if (on_screen) {
 // Done with drawing shapes, now draw labels
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // XXX - todo: center large polygon labels in the center (e.g. county boundary)
-// XXX find out why some labels are displaying that shouldn't w/label_level.
 
 #ifdef WITH_DBFAWK
                     temp = name;
@@ -3367,7 +3371,7 @@ if (on_screen) {
                                         x,
                                         y,
                                         strlen(temp),
-                                        colors[0x08], /* XXX - label color should be set by dbfawk */
+                                        colors[label_color],
                                         (char *)temp);
                                 }
                             }
