@@ -2929,7 +2929,7 @@ int create_image(Widget w) {
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return(0);
- 
+
     /* First get the various dimensions */
     XtVaGetValues(w,
               XmNwidth,         &width,
@@ -10027,39 +10027,6 @@ void sel4_switch(int switchpos, Widget first, Widget second, Widget third, Widge
 }
 
 
-/*
- *  Keep map in real world space, readjust center and scaling if neccessary
- */
-void check_range(void) {
-    Dimension width, height;
-
-    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-
-    if ((height*new_scale_y) > 64800000l)
-        new_mid_y  =  64800000l/2;                               // center between 90°N and 90°S
-    else
-        if ((new_mid_y - (height*new_scale_y)/2) < 0)
-            new_mid_y  = (height*new_scale_y)/2;                 // upper border max 90°N
-        else
-            if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
-                new_mid_y = 64800000l-((height*new_scale_y)/2);  // lower border max 90°S
-
-    // Adjust scaling based on latitude of new center
-    new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
-    //fprintf(stderr,"x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
-
-    // scale_x will always be bigger than scale_y, so no problem here...
-    if ((width*new_scale_x) > 129600000l)
-        new_mid_x = 129600000l/2;                                // center between 180°W and 180°E
-    else
-        if ((new_mid_x - (width*new_scale_x)/2) < 0)
-            new_mid_x = (width*new_scale_x)/2;                   // left border max 180°W
-        else
-            if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
-                new_mid_x = 129600000l-((width*new_scale_x)/2);  // right border max 180°E
-}
-
-
 
 
 
@@ -10101,20 +10068,58 @@ void new_image(Widget da) {
 
 
 /*
+ *  Keep map in real world space, readjust center and scaling if neccessary
+ */
+void check_range(void) {
+    Dimension width, height;
+
+    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+
+    if ((height*new_scale_y) > 64800000l)
+        new_mid_y  =  64800000l/2;                               // center between 90°N and 90°S
+    else
+        if ((new_mid_y - (height*new_scale_y)/2) < 0)
+            new_mid_y  = (height*new_scale_y)/2;                 // upper border max 90°N
+        else
+            if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
+                new_mid_y = 64800000l-((height*new_scale_y)/2);  // lower border max 90°S
+
+    // Adjust scaling based on latitude of new center
+    new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
+    //fprintf(stderr,"x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
+
+    // scale_x will always be bigger than scale_y, so no problem here...
+    if ((width*new_scale_x) > 129600000l)
+        new_mid_x = 129600000l/2;                                // center between 180°W and 180°E
+    else
+        if ((new_mid_x - (width*new_scale_x)/2) < 0)
+            new_mid_x = (width*new_scale_x)/2;                   // left border max 180°W
+        else
+            if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
+                new_mid_x = 129600000l-((width*new_scale_x)/2);  // right border max 180°E
+}
+
+
+
+
+
+/*
  *  Display a new map view after checking the view and scaling
  */
 void display_zoom_image(int recenter) {
     Dimension width, height;
 
     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-    //fprintf(stderr,"Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
+//fprintf(stderr,"Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
     check_range();              // keep map inside world and calc x scaling
-    //fprintf(stderr,"After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
+//fprintf(stderr,"After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
     if (new_mid_x != mid_x_long_offset
             || new_mid_y != mid_y_lat_offset
             || new_scale_x != scale_x
             || new_scale_y != scale_y) {    // If there's been a change in zoom or center
+
         set_last_position();
+
         if (recenter) {
             mid_x_long_offset = new_mid_x;      // new map center
             mid_y_lat_offset  = new_mid_y;
