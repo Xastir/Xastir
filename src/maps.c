@@ -2811,6 +2811,9 @@ static void free_map_index(map_index_record *index_list_head) {
     while (current != NULL) {
         temp = current;
         current = current->next;
+        if (current->XmStringPtr != NULL) {
+            XmStringFree(current->XmStringPtr);
+        }
         free(temp);
     }
 
@@ -2974,6 +2977,7 @@ static void index_update_directory(char *directory) {
             // Fill in some default values for the new record.
             temp_record->selected = 0;
             temp_record->auto_maps = 0;
+            temp_record->XmStringPtr = NULL;
 
             //current = current->next;
             done++;
@@ -3006,6 +3010,7 @@ static void index_update_directory(char *directory) {
         // Fill in some default values for the new record.
         temp_record->selected = 0;
         temp_record->auto_maps = 0;
+        temp_record->XmStringPtr = NULL;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -3132,6 +3137,7 @@ void index_update_xastir(char *filename,
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
+            temp_record->XmStringPtr = NULL;
  
             if (       strstr(filename,".geo")
                     || strstr(filename,".GEO")
@@ -3175,6 +3181,7 @@ void index_update_xastir(char *filename,
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
+        temp_record->XmStringPtr = NULL;
 
         if (       strstr(filename,".geo")
                 || strstr(filename,".GEO")
@@ -3314,6 +3321,7 @@ void index_update_ll(char *filename,
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
+            temp_record->XmStringPtr = NULL;
 
             if (       strstr(filename,".geo")
                     || strstr(filename,".GEO")
@@ -3359,6 +3367,7 @@ void index_update_ll(char *filename,
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
+        temp_record->XmStringPtr = NULL;
 
         if (       strstr(filename,".geo")
                 || strstr(filename,".GEO")
@@ -3624,6 +3633,10 @@ void index_save_to_file() {
                 // filesystem anymore.
             if (last == current) {   // We're at the head of the list
                 map_index_head = current->next;
+
+// Remember to free the XmStringPtr if we use this bit of code
+// again.
+
                 free(current);
 
                 // Set up pointers for next loop iteration
@@ -3635,6 +3648,10 @@ void index_save_to_file() {
 
                 gone = current; // Save ptr to record we wish to delete 
                 last->next = current->next; // Unlink from list
+
+// Remember to free the XmStringPtr if we use this bit of code
+// again.
+
                 free(gone);
 
                 // Set up pointers for next loop iteration
@@ -3731,6 +3748,9 @@ static void index_insert_sorted(map_index_record *new_record) {
             current->draw_filled = new_record->draw_filled;
             current->selected = selected;   // Restore it
             current->auto_maps = new_record->auto_maps;
+
+// Remember to free the XmStringPtr if we use this bit of code
+// again.
 
             free(new_record);   // Don't need it anymore
 
@@ -3942,6 +3962,8 @@ void index_restore_from_file(void) {
                     &temp_record->auto_maps,
                     temp_record->filename);
 
+                temp_record->XmStringPtr = NULL;
+
                 // Do some reasonableness checking on the parameters
                 // we just parsed.
 //WE7U: Comparison is always false
@@ -4069,6 +4091,9 @@ void index_restore_from_file(void) {
                 }
                 else {  // sscanf didn't parse the proper number of
                         // items.  Delete the record.
+
+// Remember to free the XmString pointer if necessary.
+
                     free(temp_record);
                 }
             }
@@ -4412,6 +4437,9 @@ static void empty_map_sorted_list(void) {
     while (map_sorted_list_head != NULL) {
         current = map_sorted_list_head;
         map_sorted_list_head = current->next;
+        if (current->XmStringPtr != NULL) {
+            XmStringFree(current->XmStringPtr);
+        }
         free(current);
     }
 }
@@ -4466,6 +4494,7 @@ static void insert_map_sorted(char *filename){
         temp_record->selected = 1;  // Always, we already know this!
         temp_record->accessed = 0;
         temp_record->next = NULL;
+        temp_record->XmStringPtr = NULL;
 
         // Now find the proper place for it and insert it in
         // layer-order into the list.

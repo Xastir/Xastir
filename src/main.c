@@ -13135,9 +13135,14 @@ void map_chooser_init (void) {
 // Fills in the map chooser file/directory entries based on the
 // current view and whether the "selected" field in the in-memory
 // map_index is set for each file/directory.
+//
+// We also check the XmStringPtr field in the map index records.  If
+// NULL, then we call XmStringCreateLtoR() to allocate and fill in
+// the XmString value corresponding to the filename.  We use that to
+// speed up Map Chooser later.
+//
 void map_chooser_fill_in (void) {
     int n,i;
-    XmString str_ptr;
     map_index_record *current = map_index_head;
 
 
@@ -13154,26 +13159,36 @@ void map_chooser_fill_in (void) {
         n=1;
 
         while (current != NULL) {
-            int ok = 0;
 
             //fprintf(stderr,"%s\n",current->filename);
 
             // Check whether we're supposed to show dirs and files or
-            // just dirs.  First we check for dirs, which are always
-            // shown.
-            if (current->filename[strlen(current->filename)-1] == '/') {
-                ok++;
-            }
-            // Else check if we're supposed to show files
-            else if (map_chooser_expand_dirs) {
-                ok++;
-            }
+            // just dirs.  Directories are always shown.
+            if (map_chooser_expand_dirs // Show all
+                    || current->filename[strlen(current->filename)-1] == '/') {
 
-            if (ok) {
+
+// Try XmListAddItems() here?  Could also create XmString's for each
+// filename and keep them in the map index.  Then we wouldn't have to
+// free that malloc/free that storage space all the time.
+// XmListAddItems()
+// XmListAddItemsUnselected()
+// XmListReplaceItems()
+// XmListReplaceItemsUnselected()
+
+
+                // If pointer is NULL, malloc and create the
+                // XmString corresponding to the filename, attach it
+                // to the record.  The 2nd and succeeding times we
+                // bring up Map Chooser, things will be faster.
+                if (current->XmStringPtr == NULL) {
+                    current->XmStringPtr = XmStringCreateLtoR(current->filename,
+                        XmFONTLIST_DEFAULT_TAG);
+                }
+
                 XmListAddItem(map_list,
-                    str_ptr = XmStringCreateLtoR(current->filename,
-                                 XmFONTLIST_DEFAULT_TAG),
-                                 n);
+                    current->XmStringPtr,
+                    n);
 
                 // If a selected map, hilight it in the list
                 if (current->selected) {
@@ -13181,7 +13196,6 @@ void map_chooser_fill_in (void) {
                 }
  
                 n++;
-                XmStringFree(str_ptr);
             }
             current = current->next;
         }

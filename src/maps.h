@@ -26,6 +26,7 @@
 #define __XASTIR_MAPS_H
 
 #include <X11/Intrinsic.h>
+#include <Xm/Xm.h>
 
 #define MAX_OUTBOUND 900
 #define MAX_MAP_POINTS 100000
@@ -67,6 +68,7 @@ typedef struct {
 
 typedef struct _map_index_record{
     char filename[MAX_FILENAME];
+    XmString XmStringPtr;
     unsigned long bottom;
     unsigned long top;
     unsigned long left;
