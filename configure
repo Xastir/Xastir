@@ -6206,7 +6206,7 @@ trap 'rm -fr `echo "Makefile \
     config/Makefile \
     help/Makefile \
     symbols/Makefile \
-    src/callpass/Makefile \
+    callpass/Makefile \
     xastir.spec config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
@@ -6346,7 +6346,7 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile \
     config/Makefile \
     help/Makefile \
     symbols/Makefile \
-    src/callpass/Makefile \
+    callpass/Makefile \
     xastir.spec"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF

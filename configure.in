@@ -178,7 +178,7 @@ AC_OUTPUT([Makefile \
     config/Makefile \
     help/Makefile \
     symbols/Makefile \
-    src/callpass/Makefile \
+    callpass/Makefile \
     xastir.spec])
 
 echo
