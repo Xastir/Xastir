@@ -8034,8 +8034,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             }
 
             // Time to spit out a posit?
-            if ( my_position_valid
-                    && (transmit_now || (sec_now() > posit_next_time) ) ) {
+            if ( (transmit_now || (sec_now() > posit_next_time) )
+                && ( my_position_valid ) ) {
 
                 //fprintf(stderr,"Transmitting posit\n");
 
@@ -8112,19 +8112,19 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 if (station_data_auto_update)
                     update_station_info(w);  // Go refresh the Station Info display
-            }
 
-            /* Time to put out raw WX data ? */
-            if (sec_now() > sec_next_raw_wx) {
-                sec_next_raw_wx = sec_now()+600;
+                /* Time to put out raw WX data ? */
+                if (sec_now() > sec_next_raw_wx) {
+                    sec_next_raw_wx = sec_now()+600;
 
 #ifdef TRANSMIT_RAW_WX
-                if (transmit_raw_wx)
-                    tx_raw_wx_data();
+                    if (transmit_raw_wx)
+                        tx_raw_wx_data();
 #endif  // TRANSMIT_RAW_WX
 
-                /* check wx data last received */
-                wx_last_data_check();
+                    /* check wx data last received */
+                    wx_last_data_check();
+                }
             }
 
             /* is it time to spit out messages? */
