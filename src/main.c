@@ -6903,7 +6903,6 @@ void dir_sort(char *dir) {
 
                         break;
 
-                    case(S_IFLNK):  // We found a symbolic link
                     case(S_IFREG):  // We found a regular file
                         /*printf("FILE %d<%s>\n",*item,fullpath+my_size);*/
 
