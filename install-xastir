@@ -17,14 +17,14 @@ echo
 echo "    cd .."
 echo "    ./xastir/install-xastir"
 echo
-echo
 echo Press ENTER to continue downloading the latest Xastir sources:
 read
 
 
 # Set up an anonymous login for the CVS server
 #
-echo Press the ENTER key when asked for a password.
+echo
+echo Press the ENTER key when asked for the CVS password below:
 cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login
 
 
@@ -36,5 +36,26 @@ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
 # Run the update script to configure/compile/install it
 #
 cd xastir; ./update-xastir
+
+
+echo
+echo
+echo
+echo If you have set up the /etc/sudoers file as described in README.CVS, you should
+echo now have Xastir compiled and installed, else go set up the /etc/sudoers file,
+echo then type the update-xastir command as listed below.  Run:
+echo
+echo "    callpass"
+echo
+echo To get your passcode.  You will need the number it computes in order to
+echo authenticate with the internet servers.  Run Xastir by typing:
+echo
+echo "    xastir &"
+echo
+echo To update Xastir to the latest CVS version at any time, change
+echo to the "xastir" directory and type:
+echo
+echo "    ./update-xastir"
+echo
 
 
