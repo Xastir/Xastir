@@ -2000,8 +2000,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // don't display 'fixed' stations speed and course.
     // Check whether we have speed in the current data and it's
-    // non-zero
-    if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) > 0) ) {
+    // >= 0.
+    if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) >= 0) ) {
         speed_ok++;
         strncpy(tmp, un_spd, sizeof(tmp));
         tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
@@ -7683,7 +7683,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
                                                 strcpy(p_station->course,"000.0");
                                             }
                                         } else { // Short packet, no speed available
-                                            strcpy(p_station->speed,"0");
+                                            strcpy(p_station->speed,"");
                                         }
                                     } else { // Not 'E' or 'W' for longitude direction
                                     }
@@ -7947,7 +7947,7 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
                                 p_station->coord_lon = convert_lon_s2l(long_s);
                                 ok = 1; // We have enough for a position now
                                 strcpy(p_station->course,"000.0");  // Fill in with dummy values
-                                strcpy(p_station->speed,"0");       // Fill in with dummy values
+                                strcpy(p_station->speed,"");        // Fill in with dummy values
                                 (void)strtok(NULL,",");             // get time, throw it away
                                 temp_ptr=strtok(NULL,",");          // get data_valid flag
                                 if (temp_ptr!=NULL) {
@@ -8752,7 +8752,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         // it looks ugly on the trail, so I want to discard them
                         // This also discards immediate echoes
                         if (!is_trailpoint_echo(p_station)) {
-                            (void)store_trail_point(p_station,p_station->coord_lon,p_station->coord_lat,p_station->sec_heard,p_station->altitude,p_station->speed,p_station->course,p_station->flag);
+                            (void)store_trail_point(p_station,
+                                p_station->coord_lon,
+                                p_station->coord_lat,
+                                p_station->sec_heard,
+                                p_station->altitude,
+                                p_station->speed,
+                                p_station->course,
+                                p_station->flag);
                             changed_pos = 1;
 
                             // Check whether it's a locally-owned object/item
