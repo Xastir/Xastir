@@ -25,8 +25,7 @@
 
 
 // We may want to call or schedule somehow that refresh_image gets
-// called, so that new alerts will show up in a timely manner.  Same for
-// expiring alerts:  Need to refresh the map.
+// called, so that new alerts will show up in a timely manner.
 // alert_redraw_on_update will cause refresh_image to get called.
 // alert_add_entry sets it.  Expiring an alert should set it as well.
 
@@ -488,8 +487,10 @@ int alert_expire(void) {
     }
 
     // Cause a screen redraw if we expired some alerts
-    if (expire_count && !redraw_on_new_data) {
-        redraw_on_new_data = 1;
+    if (expire_count) {
+        // Schedule a screen update 'cuz we have a new alert
+        alert_redraw_on_update = redraw_on_new_data = 2;
+ 
     }
 
     return(expire_count);
@@ -563,8 +564,10 @@ int alert_expire(void) {
     // Check for non-zero alert title, non-expired alert time in new
     // alert.
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
+
         // Schedule a screen update 'cuz we have a new alert
         alert_redraw_on_update = redraw_on_new_data = 2;
+
         // Scan for an empty entry, fill it in if found
         for (i = 0; i < alert_max_count; i++) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty

@@ -7296,8 +7296,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             //update_messages(0);                 // Check Messages, no forced update
 
             // Check whether it's time to expire some weather
-            // alerts.  This function will set redraw_on_new_data if
-            // any alerts are expired from the list.
+            // alerts.  This function will set redraw_on_new_data
+            // and alert_redraw_on_update if any alerts are expired
+            // from the list.
             (void)alert_expire();
 
             /* check on Redraw requests */
