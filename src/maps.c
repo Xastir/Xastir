@@ -1063,9 +1063,9 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  * type = SHPT_POINT, SHPT_ARC, SHPT_POLYGON,
  * SHPT_MULTIPOINT, etc.
  *
- * quantity equals the number of vertices.
+ * quantity equals the number of vertices we have.
  *
- * padfx/padfy/padfz are the vertices themselves.
+ * padfx/padfy/padfz are the vertices themselves, in double format.
  *******************************************************************/
 void create_shapefile_map(char *shapefile_name, int type,
         int quantity, double *padfx, double *padfy, double *padfz) {
