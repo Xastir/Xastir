@@ -238,7 +238,8 @@ First Time Install:
        load Xastir into memory.  Check that you aren't already defining
        LD_LIBRARY_PATH somewhere else.  If so, just add the paths above to
        it.  Make sure this environment variable is defined in the current
-       shell you're using to compile Xastir.
+       shell you're using to compile Xastir.  Note that if you're running
+       Xastir SUID root, the LD_LIBRARY_PATH variable is ignored.
 
 
        3b. Install libproj:
@@ -779,7 +780,8 @@ END OF MANDRAKE LINUX NOTES.
      xxx library" this means you forgot to either update /etc/ld.so.conf
      or add the LD_LIBRARY_PATH variable for your shell, and the "ld"
      loader can't link the libraries with the Xastir executable to get it
-     running in memory.
+     running in memory.  Note that if you're running Xastir as SUID
+     root, the LD_LIBRARY_PATH variable is ignored.
 
      To set a new language or change the language current choice, use
      this command line:
