@@ -124,7 +124,6 @@ time_t last_object_check = 0;   // Used to determine when to re-transmit objects
 time_t last_emergency_time = 0;
 char last_emergency_callsign[MAX_CALLSIGN+1];
 int st_direct_timeout = 60 * 60;        // 60 minutes.
-int dead_reckoning_timeout = 60 * 10;   // 10 minutes;
 
 
 

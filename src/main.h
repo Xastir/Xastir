@@ -235,6 +235,7 @@ extern char prox_min[];
 extern char prox_max[];
 extern time_t sec_old;
 extern time_t sec_clear;
+extern int dead_reckoning_timeout;
 extern char bando_min[];
 extern char bando_max[];
 extern int Display_packet_data_type;

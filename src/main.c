@@ -735,7 +735,7 @@ Widget ghosting_time = (Widget)NULL;
 Widget clearing_time = (Widget)NULL;
 Widget posit_interval = (Widget)NULL;
 Widget gps_interval = (Widget)NULL;
-//Widget ghosting_time = (Widget)NULL;
+Widget dead_reckoning_time = (Widget)NULL;
 //Widget ghosting_time = (Widget)NULL;
 //Widget ghosting_time = (Widget)NULL;
 
@@ -746,6 +746,7 @@ time_t sec_old;                 /* station old after */
 time_t sec_clear;               /* station cleared after */
 time_t sec_remove;              /* Station removed after */
 time_t sec_next_raw_wx;         /* raw wx transmit data */
+int dead_reckoning_timeout = 60 * 10;   // 10 minutes;
 
 #ifdef TRANSMIT_RAW_WX
 int transmit_raw_wx;            /* transmit raw wx data? */
@@ -12507,6 +12508,9 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     XmScaleGetValue(gps_interval, &value);  // Seconds
     gps_time = (long)value;
 
+    XmScaleGetValue(dead_reckoning_time, &value);  // Minutes
+    dead_reckoning_timeout = value * 60;
+
     // Set the new posit rate into effect immediately
     posit_next_time = posit_last_time + POSIT_rate;
 
@@ -12703,8 +12707,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, ghosting_time,
                 XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_POSITION,
@@ -12729,8 +12732,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, ghosting_time,
                 XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
                 XmNleftPosition, 1,
                 XmNleftOffset, 5,
@@ -12744,6 +12746,32 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNshowValue, TRUE,
                 XmNvalue, (int)gps_time,
                 XtVaTypedArg, XmNtitleString, XmRString, "GPS Interval (sec)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Dead Reckoning Timeout
+        dead_reckoning_time = XtVaCreateManagedWidget("DR Time (min)",
+                xmScaleWidgetClass,
+                my_form2,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, posit_interval,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One minute
+                XmNmaximum, 60,     // Sixty minutes
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(dead_reckoning_timeout / 60),
+                XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);

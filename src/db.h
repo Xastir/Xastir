@@ -423,7 +423,6 @@ extern int  new_message_data;
 
 // stations
 extern int st_direct_timeout;   // Interval that ST_DIRECT flag stays set
-extern int dead_reckoning_timeout;  // Interval where dead-reckoning is active
 extern long stations;
 extern DataRow *n_first;  // pointer to first element in name ordered station list
 extern DataRow *n_last;   // pointer to last element in name ordered station list
