@@ -78,6 +78,7 @@ extern FILE *read_file_ptr;
 
 extern Widget trackme_button;
 extern int debug_level;
+extern int my_position_valid;
 extern int transmit_now;
 extern char DATABASE_FILE[];
 extern char DATABASE_POINTER_FILE[];

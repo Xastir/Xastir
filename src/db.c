@@ -9255,6 +9255,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     if (track_station_on == 1)          // maybe we are tracking ourselves?
         track_station(da,tracking_station_call,p_station);
 
+    // We parsed a good GPS string, so allow beaconing to proceed
+    // normally
+    my_position_valid = 1;
+ 
     //redraw_on_new_data = 1;   // redraw next chance
     redraw_on_new_data = 2;     // Immediate update of symbols/tracks
 }

@@ -3153,7 +3153,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     case DEVICE_SERIAL_GPS:
                         if (debug_level & 2)
                             printf("Opening a Serial GPS device\n");
-
+                        my_position_valid = 0;  // Must wait for valid GPS parsing
+ 
                         break;
 
                     case DEVICE_SERIAL_WX:
@@ -3165,13 +3166,15 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                         if (debug_level & 2)
                             printf("Opening a Serial TNC w/HSP GPS device\n");
-
+                        my_position_valid = 0;  // Must wait for valid GPS parsing
+ 
                         break;
 
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                         if (debug_level & 2)
                             printf("Opening a Serial TNC w/AUX GPS device\n");
-
+                        my_position_valid = 0;  // Must wait for valid GPS parsing
+ 
                         break;
 
                     default:
@@ -3268,6 +3271,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 if (ok == 1) {
                     xastir_snprintf(logon_txt, sizeof(logon_txt), "R\r\n");
                     port_write_string(port_avail,logon_txt);
+                    my_position_valid = 0;  // Must wait for valid GPS parsing
                 }
                 break;
 

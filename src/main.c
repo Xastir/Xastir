@@ -706,6 +706,7 @@ time_t last_redraw;             /* Time of last redraw */
 char aprs_station_message_type; /* aprs station message type message capable or not */
 
 int transmit_now;               /* set to transmit now (push on moment) */
+int my_position_valid = 1;      /* Don't send posits if this is zero */
 int operate_as_an_igate;        /* toggle igate operations for net connections */
 unsigned igate_msgs_tx;         /* current total of igate messages transmitted */
 
@@ -828,7 +829,7 @@ void Smart_Beacon_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
 //
 // Another thing that'd be good to do is to recalculate the next
 // beacon time if one of the posit rates is shortened.  Otherwise we
-// might be waiting a while to get into the "right rythm".
+// might be waiting a while to get into the "right rhythm".
 //
 void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
@@ -6798,8 +6799,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 }
             }
 
+//WE7U
             // Time to spit out a posit?
-            if ( (transmit_now) || (sec_now() > posit_next_time) ) {
+            if ( my_position_valid
+                    && (transmit_now || (sec_now() > posit_next_time) ) ) {
 
                 //printf("Transmitting posit\n");
 
