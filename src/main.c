@@ -1350,7 +1350,7 @@ void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
 
 
 
-void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
+void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
     Atom WM_DELETE_WINDOW;
     Widget children[8];         /* Children to manage */
     Arg al[64];                 /* Arg List */
@@ -1421,7 +1421,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
 
     appshell= XtCreatePopupShell (app_name,topLevelShellWidgetClass,Global.top, al, ac);
 
-    form = XtVaCreateManagedWidget("create_appshell form",xmFormWidgetClass,appshell,
+    form = XtVaCreateWidget("create_appshell form",xmFormWidgetClass,appshell,
                                       XmNbackground, colors[0xff],
                                       NULL);
 
@@ -1440,6 +1440,8 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
     ac = 0;
     XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+
+    /* menu bar */
     filepane    = XmCreatePulldownMenu(menubar,"filepane",    al, ac);
     viewpane    = XmCreatePulldownMenu(menubar,"viewpane",    al, ac);
     mappane     = XmCreatePulldownMenu(menubar,"mappane",     al, ac);
@@ -1448,7 +1450,6 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
     ifacepane   = XmCreatePulldownMenu(menubar,"ifacepane",   al, ac);
     helppane    = XmCreatePulldownMenu(menubar,"helppane",    al, ac);
 
-    /* menu bar */
     file_button = XtVaCreateManagedWidget(langcode("MENUTB0001"),xmCascadeButtonGadgetClass,menubar,
                     XmNsubMenuId, filepane,
                     XmNmnemonic,langcode_hotkey("MENUTB0001"),
@@ -2368,7 +2369,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
 #define FONT_WIDTH 9
 
     /* Create bottom text area */
-    text = XtVaCreateManagedWidget("create_appshell text_output", xmTextFieldWidgetClass, form,
+    text = XtVaCreateWidget("create_appshell text_output", xmTextFieldWidgetClass, form,
                                 XmNeditable,            FALSE,
                                 XmNcursorPositionVisible, FALSE,
                                 XmNsensitive,           STIPPLE,
@@ -2386,7 +2387,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
                                 XmNbackground,          colors[0xff],
                                 NULL);
 
-    text2 = XtVaCreateManagedWidget("create_appshell text_output2", xmTextFieldWidgetClass, form,
+    text2 = XtVaCreateWidget("create_appshell text_output2", xmTextFieldWidgetClass, form,
                                 XmNeditable,            FALSE,
                                 XmNcursorPositionVisible, FALSE,
                                 XmNsensitive,           STIPPLE,
@@ -2404,7 +2405,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
                                 XmNbackground,          colors[0xff],
                                 NULL);
 
-    text3 = XtVaCreateManagedWidget("create_appshell text_output3", xmTextFieldWidgetClass, form,
+    text3 = XtVaCreateWidget("create_appshell text_output3", xmTextFieldWidgetClass, form,
                                 XmNeditable,            FALSE,
                                 XmNcursorPositionVisible, FALSE,
                                 XmNsensitive,           STIPPLE,
@@ -2422,7 +2423,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
                                 XmNbackground,          colors[0xff],
                                 NULL);
 
-    text4 = XtVaCreateManagedWidget("create_appshell text_output4", xmTextFieldWidgetClass, form,
+    text4 = XtVaCreateWidget("create_appshell text_output4", xmTextFieldWidgetClass, form,
                                 XmNeditable,            FALSE,
                                 XmNcursorPositionVisible, FALSE,
                                 XmNsensitive,           STIPPLE,
@@ -2440,7 +2441,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
                                 XmNbackground,          colors[0xff],
                                 NULL);
 
-    iface_da = XtVaCreateManagedWidget("create_appshell iface", xmDrawingAreaWidgetClass,form,
+    iface_da = XtVaCreateWidget("create_appshell iface", xmDrawingAreaWidgetClass,form,
                                 XmNwidth,               20*(MAX_IFACE_DEVICES/2),
                                 XmNheight,              20,
                                 XmNunitType,            XmPIXELS,
@@ -2466,7 +2467,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
                                 NULL);
 
     /* Do drawing map area */
-    da = XtVaCreateManagedWidget("create_appshell da", xmDrawingAreaWidgetClass,form,
+    da = XtVaCreateWidget("create_appshell da", xmDrawingAreaWidgetClass,form,
                                 XmNwidth,               screen_width,
                                 XmNheight,              screen_height,
                                 XmNunitType,            XmPIXELS,
@@ -2599,19 +2600,23 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
     XtAddEventHandler(da, ButtonPressMask, FALSE, (XtEventHandler)Mouse_button_handler, NULL);
     //XtAddEventHandler(da,ButtonReleaseMask,FALSE,(XtEventHandler)Mouse_button_handler,NULL);
 
+
     ac = 0;
     children[ac++] = text;
     children[ac++] = text2;
+    children[ac++] = text3;
+    children[ac++] = text4;
+    children[ac++] = iface_da;
     children[ac++] = menubar;
+    children[ac++] = toolbar;
     children[ac++] = da;
-
+ 
     XtManageChildren(children, ac);
     ac = 0;
 
+    // This one needs to be done after all of
+    // the above 'cuz it contains all of them.
     XtManageChild(form);
-    XtManageChild(toolbar);
-    XtManageChild(measure_frame);
-    XtManageChild(move_frame);
 
     WM_DELETE_WINDOW = XmInternAtom(XtDisplay(appshell),"WM_DELETE_WINDOW", FALSE);
     XmAddWMProtocolCallback(appshell, WM_DELETE_WINDOW, Window_Quit, (XtPointer) NULL);
@@ -2649,7 +2654,7 @@ void create_appshell ( /*@unused@*/ Display *display, char *app_name, /*@unused@
 
     if(debug_level & 8)
         printf("Create appshell stop\n");
-}
+}   // end of create_appshell()
 
 
 
