@@ -4197,7 +4197,8 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
         button_nws, button_fcc, button_rac, button_clear_track,
         button_trace, button_messages, button_object_modify,
         button_direct, button_version, station_icon, station_call,
-        station_type, station_data_auto_update_w;
+        station_type, station_data_auto_update_w,
+        button_tactical;
     Arg args[20];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
@@ -4633,6 +4634,24 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 NULL);
         XtAddCallback(station_data_auto_update_w,XmNvalueChangedCallback,station_data_auto_update_toggle,"1");
 
+        //Add tactical button at the top/right
+//        button_tactical = XtVaCreateManagedWidget(langcode("WPUPSTI004"),xmPushButtonGadgetClass, form,
+        button_tactical = XtVaCreateManagedWidget("Assign Tactical Call",xmPushButtonGadgetClass, form,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNtopOffset, 5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftOffset, 20,
+            XmNleftWidget, station_data_auto_update_w,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNbackground, colors[0xff],
+            XmNnavigationType, XmTAB_GROUP,
+            NULL);
+        XtAddCallback(button_tactical,
+            XmNactivateCallback,
+            Assign_Tactical_Call,
+            (XtPointer)p_station);
+ 
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
         XtSetArg(args[n], XmNcolumns, 100); n++;
