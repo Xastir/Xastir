@@ -21,6 +21,28 @@
  * Look at the README for more information on the program.
  *
  */
+
+
+//
+// These functions allocate new memory:
+// ------------------------------------
+// awk_new_symtab
+// awk_declare_sym
+// awk_compile_action
+// awk_eval_expr
+// awk_new_rule
+// awk_new_program
+//
+// These functions free memory:
+// ----------------------------
+// awk_free_symtab
+// awk_free_action
+// awk_free_rule
+// awk_free_program
+// awk_uncompile_program (indirectly)
+//
+
+
 /*
  * This is a library of Awk-like functions to facilitate, for example,
  * canonicalizing DBF attributes for shapefiles into internal Xastir
@@ -62,11 +84,14 @@
 
 #define MAXSUBS 10              /* $0 thru $9 should be plenty */
 
+
+
+
+
 /*
  * awk_new_symtab: alloc a symbol table with $0-$9 pre-declared.
  */
-awk_symtab *awk_new_symtab()
-{
+awk_symtab *awk_new_symtab() {
     awk_symtab *n = calloc(1,sizeof(awk_symtab));
     static char sym[MAXSUBS][2];
     int i;
@@ -79,8 +104,11 @@ awk_symtab *awk_new_symtab()
     return n;
 }
 
-void awk_free_symtab(awk_symtab *s)
-{
+
+
+
+
+void awk_free_symtab(awk_symtab *s) {
     int i;
 
     for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
@@ -93,6 +121,10 @@ void awk_free_symtab(awk_symtab *s)
     }
 }
 
+
+
+
+
 /*
  * awk_declare_sym: declare a symbol and bind to storage for its value.
  */
@@ -100,8 +132,7 @@ int awk_declare_sym(awk_symtab *this,
                 const char *name, 
                 enum awk_symtype type,
                 const void *val,
-                const int size)
-{
+                const int size) {
     awk_symbol *s = calloc(1,sizeof(awk_symbol));
     awk_symbol *p;
     u_int i;
@@ -123,13 +154,16 @@ int awk_declare_sym(awk_symtab *this,
     return 0;
 }
 
+
+
+
+
 /*
  * awk_find_sym: search symtab for symbol
  */
 awk_symbol *awk_find_sym(awk_symtab *this,
                  const char *name,
-                 const int len)
-{
+                 const int len) {
     awk_symbol *s;
 
     for (s = this->hash[AWK_SYM_HASH(name,len)]; s; s = s->next_sym)
@@ -138,14 +172,17 @@ awk_symbol *awk_find_sym(awk_symtab *this,
     return NULL;
 }
 
+
+
+
+
 /*
  * awk_set_sym: set a symbol's value (writes into bound storage).
  * Returns -1 if it was unable to (symbol not found).
  */
 int awk_set_sym(awk_symbol *s,
             const char *val, 
-            const int len)
-{
+            const int len) {
     int l = len + 1;
     int minlen = min(s->size-1,l);
 
@@ -173,14 +210,17 @@ int awk_set_sym(awk_symbol *s,
     return 0;
 }
 
+
+
+
+
 /* 
  * awk_get_sym: copy (and cast) symbol's value into supplied string buffer 
  */
 int awk_get_sym(awk_symbol *s,          /* symbol */
             char *store,        /* store result here */
             int size,           /* sizeof(*store) */
-            int *len)           /* store length here */
-{
+            int *len) {         /* store length here */
     int minlen;
     char cbuf[128];             /* conversion buffer for int/float */
     int cbl;
@@ -232,6 +272,9 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
 }
 
 
+
+
+
 /*
  *  Action compilation and interpretation.
  *
@@ -252,8 +295,7 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
 int awk_compile_stmt(awk_symtab *this,
              awk_action *p,
              const char *stmt,
-             int len)
-{
+             int len) {
     const char *s = stmt, *op, *ep;
   
     while (isspace(*s)) {               /* clean up leading white space */
@@ -292,12 +334,15 @@ int awk_compile_stmt(awk_symtab *this,
     return 0;
 }
 
+
+
+
+
 /*
  * awk_compile_action: Break the action up into stmts and compile them
  *  and link them together.
  */
-awk_action *awk_compile_action(awk_symtab *this, const char *act)
-{
+awk_action *awk_compile_action(awk_symtab *this, const char *act) {
     awk_action *p, *first = calloc(1,sizeof(awk_action));
     const char *cs,*ns;         /* current, next stmt */
 
@@ -317,17 +362,24 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act)
     return first;
 }
 
+
+
+
+
 /*
  * awk_free_action: Free the compiled action
  */
-void awk_free_action(awk_action *a)
-{
+void awk_free_action(awk_action *a) {
     while (a) {
         awk_action *p = a;
         a = p->next_act;
         free(p);
     }
 }
+
+
+
+
 
 /* 
  * awk_eval_expr: expand $vars into dest and do type conversions as
@@ -337,8 +389,7 @@ void awk_free_action(awk_action *a)
 void awk_eval_expr(awk_symtab *this,
                awk_symbol *dest, 
                const char *expr,
-               int exprlen)
-{
+               int exprlen) {
     int i,dmax,dl,newlen;
     char c,delim;
     char *dp;
@@ -470,11 +521,14 @@ void awk_eval_expr(awk_symtab *this,
     }
 }
 
+
+
+
+
 /*
  * awk_exec_action: interpret the compiled action.
  */
-int awk_exec_action(awk_symtab *this, const awk_action *code)
-{
+int awk_exec_action(awk_symtab *this, const awk_action *code) {
     const awk_action *p;
     int done = 0;
 
@@ -498,21 +552,28 @@ int awk_exec_action(awk_symtab *this, const awk_action *code)
     return done;
 }
 
+
+
 /*
  * Rules consists of pcre patterns and actions.  A program is
  *  the collection of rules to apply as a group.
  */
 
+
+
 /*
  * awk_new_rule: alloc a rule
  */
-awk_rule *awk_new_rule()
-{
+awk_rule *awk_new_rule() {
     awk_rule *n = calloc(1,sizeof(awk_rule));
     return n;
 }
-void awk_free_rule(awk_rule *r)
-{
+
+
+
+
+
+void awk_free_rule(awk_rule *r) {
     if (r) {
         if (r->flags&AR_MALLOC) {
             if (r->act)
@@ -530,16 +591,23 @@ void awk_free_rule(awk_rule *r)
     }
 }
 
+
+
+
+
 /*
  * awk_new_program: alloc a program
  */
-awk_program *awk_new_program()
-{
+awk_program *awk_new_program() {
     awk_program *n = calloc(1,sizeof(awk_program));
     return n;
 }
-void awk_free_program(awk_program *rs)
-{
+
+
+
+
+
+void awk_free_program(awk_program *rs) {
     awk_rule *r;
 
     if (rs) {
@@ -552,11 +620,14 @@ void awk_free_program(awk_program *rs)
     }
 }
 
+
+
+
+
 /*
  * awk_add_rule: add a rule to a program
  */
-void awk_add_rule(awk_program *this, awk_rule *r)
-{
+void awk_add_rule(awk_program *this, awk_rule *r) {
     if (!this)
         return;
     if (!this->last) {
@@ -568,14 +639,17 @@ void awk_add_rule(awk_program *this, awk_rule *r)
     }
 }
 
+
+
+
+
 /*
  * awk_load_program_array:  load program from an array of rules.  Use this
  *  to load a program from a statically declared array (see test main
  *  program for an example).
  */
 awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
-                                    int nrules) /* size of array */
-{
+                                    int nrules) { /* size of array */
     awk_program *n = awk_new_program();
     awk_rule *r; 
 
@@ -587,6 +661,10 @@ awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
     }
     return n;
 }
+
+
+
+
 
 /*
  * awk_load_program_file:  load program from a file.
@@ -607,8 +685,7 @@ awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
 static void garbage(const char *file, 
                     int line, 
                     const char *buf, 
-                    const char *cp)
-{
+                    const char *cp) {
     fprintf(stderr,"%s:%d: parse error:\n",file,line);
     fputs(buf,stderr);
     fputc('\n',stderr);
@@ -617,8 +694,11 @@ static void garbage(const char *file,
     fputs("^\n\n",stderr);
 }
 
-awk_program *awk_load_program_file(const char *file) /* rules filename */
-{
+
+
+
+
+awk_program *awk_load_program_file(const char *file) { /* rules filename */
     awk_program *n = awk_new_program();
     awk_rule *r; 
     FILE *f = fopen(file,"r");
@@ -730,11 +810,14 @@ awk_program *awk_load_program_file(const char *file) /* rules filename */
     return n;
 }
 
+
+
+
+
 /*
  * awk_compile_program: Once loaded (from array or file), the program is compiled.  Check for already compiled program.
  */
-int awk_compile_program(awk_symtab *symtab, awk_program *rs)
-{
+int awk_compile_program(awk_symtab *symtab, awk_program *rs) {
     const char *error;
     awk_rule *r;
     int erroffset;
@@ -779,13 +862,16 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
     return 0;
 }
 
+
+
+
+
 /* 
  * awk_uncompile_program: Frees the compiled program (patterns and stmts)
  * but keeps the program text loaded so it can be recompiled (e.g. with a
  * new symtbl).
  */
-void awk_uncompile_program(awk_program *p)
-{
+void awk_uncompile_program(awk_program *p) {
     awk_rule *r;
 
     if (!p)
@@ -809,11 +895,14 @@ void awk_uncompile_program(awk_program *p)
     }
 }
 
+
+
+
+
 /*
  * awk_exec_program: apply the program to the given buffer
  */
-int awk_exec_program(awk_program *this, char *buf, int len)
-{
+int awk_exec_program(awk_program *this, char *buf, int len) {
     int i,rc,done = 0;
     awk_rule *r;
     int ovector[3*MAXSUBS];
@@ -856,49 +945,62 @@ int awk_exec_program(awk_program *this, char *buf, int len)
 }
 
 
+
+
+
 /*
  * awk_exec_begin_record: run the special BEGIN_RECORD rule, if any
  */
-int awk_exec_begin_record(awk_program *this)
-{
+int awk_exec_begin_record(awk_program *this) {
     if (this && this->begin_rec)
         return awk_exec_action(this->symtbl,this->begin_rec->code);
     else
         return 0;
 }
 
+
+
+
+
 /*
  * awk_exec_begin: run the special BEGIN rule, if any
  */
-int awk_exec_begin(awk_program *this)
-{
+int awk_exec_begin(awk_program *this) {
     if (this && this->begin)
         return awk_exec_action(this->symtbl,this->begin->code);
     else
         return 0;
 }
 
+
+
+
+
 /*
  * awk_exec_end_record: run the special END_RECORD rule, if any
  */
-int awk_exec_end_record(awk_program *this)
-{
+int awk_exec_end_record(awk_program *this) {
     if (this && this->end_rec)
         return awk_exec_action(this->symtbl,this->end_rec->code);
     else
         return 0;
 }
 
+
+
+
+
 /*
  * awk_exec_end: run the special END rule, if any
  */
-int awk_exec_end(awk_program *this)
-{
+int awk_exec_end(awk_program *this) {
     if (this && this->end)
         return awk_exec_action(this->symtbl,this->end->code);
     else
         return 0;
 }
 
+
 #endif /* HAVE_LIBPCRE */
+
 

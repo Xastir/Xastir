@@ -46,21 +46,27 @@
 #include "awk.h"
 #include "dbfawk.h"
 
+
+
+
+
 /*
  * Sample test program
  */
 
-void die(const char *s)
-{
+void die(const char *s) {
     fprintf(stderr,"%s\n",s);
     exit(1);
 }
 
+
+
+
+
 /*
  * print_symtbl: debugging
  */
-void print_symtbl(awk_symtab *this)
-{
+void print_symtbl(awk_symtab *this) {
     awk_symbol *s;
     char buf[1024];
     int len;
@@ -76,6 +82,10 @@ void print_symtbl(awk_symtab *this)
     }
 }
 
+
+
+
+
 awk_rule rules[] = {
     { 0, BEGIN, NULL, NULL, 0, 0, "key=\"\"; lanes=1; color=8; name=\"\"; filled=0; pattern=1; display_level=8192; label_level=32",0 },
     { 0, REGEXP, "^TLID=(.*)$", NULL, 0, 0, "key=\"$1\"",0 },
@@ -86,20 +96,30 @@ awk_rule rules[] = {
     { 0, REGEXP, "^CFCC=A3[1-6]", NULL, 0, 0, "display_level=256; next",0 },
 };
 
+
+
+
+
 int nrules = sizeof(rules)/sizeof(rules[0]);
 
-void usage() 
-{
+void usage() {
   fprintf(stderr,"Usage: testawk [-f file.awk| -D dir] [-d file.dbf] arg...\n");
   fprintf(stderr," -D for dir containing *.dbfawk files.\n");
   fprintf(stderr," or -f for file containing awk rules.\n");
   fprintf(stderr," -d for dbf file to parse [default dbf args on cmdline]\n");
 }
 
+
+
+
+
 int debug = 0;
 
-int main(int argc, char *argv[])
-{
+
+
+
+
+int main(int argc, char *argv[]) {
     awk_program *rs = NULL;
     int args;
     awk_symtab *symtbl;
@@ -118,6 +138,7 @@ int main(int argc, char *argv[])
     char *dir = NULL,*file = NULL,*dfile = NULL;
     dbfawk_sig_info *si = NULL, *sigs = NULL;
 
+// Allocates new memory!
     symtbl = awk_new_symtab();
     if (argc >= 2 && (strcmp(argv[1],"--help") == 0 || strcmp(argv[1],"-?") == 0)) {
       usage();
@@ -144,6 +165,7 @@ int main(int argc, char *argv[])
     }
 
     /* declare/bind these symbols */
+// Allocates new memory!
     awk_declare_sym(symtbl,"dbfinfo",STRING,dbfinfo,sizeof(dbfinfo));
     awk_declare_sym(symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
     awk_declare_sym(symtbl,"color",INT,&color,sizeof(color));
@@ -226,10 +248,14 @@ int main(int argc, char *argv[])
 }
 #else /* !WITH_DBFAWK */
 
-int main(int argc, char *argv[])
-{
+
+
+
+
+int main(int argc, char *argv[]) {
   fprintf(stderr,"DBFAWK support not compiled.\n");
   exit(1);
 }
 #endif /* !WITH_DBFAWK */
+
 
