@@ -7776,6 +7776,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
 
             case 7:
                 strcat(new_info,"Emergency");
+popup_message("Emergency!",call_sign);
                 break;
 
             default:
