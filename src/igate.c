@@ -501,7 +501,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "REJECT: Packet has been gated before\n");
+                    "REJECT: Packet was gated before or shouldn't be gated\n");
                 log_data(LOGFILE_IGATE,temp);
 
                 printf(temp);
@@ -610,37 +610,50 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
     // write data out to net interfaces
     for (x = 0; x < MAX_IFACE_DEVICES; x++) {
 
+        // Find all internet interfaces that are "up"
         if (port_data[x].device_type == DEVICE_NET_STREAM
                 && x!=port && port_data[x].status == DEVICE_UP) {
+            int pcode;
 
-            // log traffic for the first "up" interface only
-            if (log_igate && first) {
+            // Check whether we have a valid callsign/password
+            // combination for this interface.  If not, don't gate
+            // packets to it.
+            pcode = atoi(port_data[x].device_host_pswd);
+            if (checkHash(my_callsign, pcode)) {
+                // The pcode checks out.  Allow sending the
+                // packet out to the internet.
+
+                // log traffic for the first "up" interface only
+                if (log_igate && first) {
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "IGATE RF->NET(%c):%s\n",
+                        third_party ? 'T':'N',
+                        line);
+                    log_data(LOGFILE_IGATE,temp);
+
+                    first = 0;
+                }
+
+                // Now log the interface that each bit of traffic
+                // goes out on.
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "IGATE RF->NET(%c):%s\n",
-                    third_party ? 'T':'N',
-                    line);
-                log_data(LOGFILE_IGATE,temp);
+                    "TRANSMIT: IGate RF->NET packet on device:%d\n",
+                    x);
 
-                first = 0;
+                // log output
+                if (log_igate)
+                    log_data(LOGFILE_IGATE,temp);
+
+                if (debug_level & 1024)
+                    printf("%s\n",temp);
+
+                // Write this data out to the Inet port The "1"
+                // means raw format, the last digit says to _not_
+                // use the unproto_igate path
+                output_my_data(data_txt,x,1,0,0,NULL);
             }
-
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "TRANSMIT: IGate RF->NET packet on device:%d\n",
-                x);
-
-            // log output
-            if (log_igate)
-                log_data(LOGFILE_IGATE,temp);
-
-            if (debug_level & 1024)
-                printf("%s\n",temp);
-
-            // Write this data out to the Inet port
-            // The "1" means raw format, the last digit
-            // says to _not_ use the unproto_igate path
-            output_my_data(data_txt,x,1,0,0,NULL);
         }
     }
 }
