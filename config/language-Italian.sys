@@ -46,7 +46,7 @@ PULDNVI005|Stazioni Meteo|W|
 PULDNVI008|Stazioni Meteo|t|
 PULDNVI007|Allarmi Meteo|A|
 PULDNVI011|Traffico Messaggi|T|
-PULDNVI013|Uptime|U|
+PULDNVI013|Tempo trascorso dall'avvio|d|
 PULDNVI014|Uptime del programma||
 #
 # Menu' di Configurazione
@@ -98,8 +98,8 @@ MPUPTGR013|Fiumi||
 MPUPTGR014|Laghi||
 MPUPTGR015|Aereoporti, Parchi, ecc||
 MPUPTGR016|Intensità Mappa||
-MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Abilita Tiger Maps||
+MPUPTGR017||Fuori tempo (sec)||
+MPUPTGR018|Abilita Mappe Tiger||
 #
 #
 # Finestra di dialogo mappe
@@ -346,7 +346,7 @@ WPUPCFTM04|Intervallo TX Oggetto/Entità (min)||
 WPUPCFTM05|Clear Time della stazione (ore)||
 WPUPCFTM06|Intervallo controllo GPS (sec)||
 WPUPCFTM07|Tempo eliminazione stazione (giorni)||
-WPUPCFTM08|Timeout del Dead-Reckoning (min)||
+WPUPCFTM08|Fuori tempo Ricalcolo Assoluto (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||
@@ -415,7 +415,7 @@ WPUPCFT030|Configura TNC KISS||
 WPUPCFT031|File di configurazione del TNC||
 WPUPCFT032|Nome File configurazione TNC|| 
 WPUPCFT033|Nome File dello Shutdown TNC||
-WPUPCFT034|Parametetri KISS||
+WPUPCFT034|Parametri KISS||
 WPUPCFT035|Ritardo TX (unità di 10 ms)||
 WPUPCFT036|Persistenza (0 to 255)||
 WPUPCFT037|SlotTime (unità di 10 ms)||
@@ -550,7 +550,7 @@ WPUPCFIA05|Host1||
 WPUPCFIA06|Porta1||
 WPUPCFIA07|Host2||
 WPUPCFIA08|Porta2||
-WPUPCFIA09|Pass-code||
+WPUPCFIA09|Codice segreto||
 WPUPCFIA10|((Lascia in Bianco se Nessuno)||
 WPUPCFIA11|Riconnetti su errore NET?||
 WPUPCFIA12|Opera come I-Gate?||
