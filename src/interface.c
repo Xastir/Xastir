@@ -2310,6 +2310,8 @@ fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
         //        expect callsign to have ssid already or not
         // KJ5O
 
+        comment[0] = '\0';
+
         strncat(buffer,(char *)origin_call,10);
 
         strncat(buffer,">",1);
@@ -2426,7 +2428,7 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
 
                     if (strlen(displayname)) {
                         // Add displayname to the comment field
-                        strncpy(comment," ",1);
+                        strncat(comment," ",1);
                         strncat(comment,displayname,40);
                     }
                 }
