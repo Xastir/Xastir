@@ -822,8 +822,9 @@ void msg_record_ack(char *to_call_sign,
             msg_data[msg_index[record]].acked = (char)1;
 
         // Set the interval to zero so that we don't display it
-        // anymore in the dialog.
+        // anymore in the dialog.  Same for tries.
         msg_data[msg_index[record]].interval = 0;
+        msg_data[msg_index[record]].tries = 0;
 
         if (debug_level & 1) {
             fprintf(stderr,"Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
@@ -851,10 +852,11 @@ void msg_record_ack(char *to_call_sign,
 // transmitted.  We'll use this in the Send Message dialog to
 // display the current message interval.
 //
-void msg_record_interval(char *to_call_sign,
+void msg_record_interval_tries(char *to_call_sign,
                     char *my_call,
                     char *seq,
-                    time_t interval) {
+                    time_t interval,
+                    int tries) {
     Message m_fill;
     long record;
 
@@ -889,6 +891,7 @@ void msg_record_interval(char *to_call_sign,
         }
 
         msg_data[msg_index[record]].interval = interval;
+        msg_data[msg_index[record]].tries = tries;
     }
     else {
         if (debug_level & 1)
@@ -1038,6 +1041,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if(record == -1L) {     // No old record found
         m_fill.acked = 0;   // We can't have been acked yet
         m_fill.interval = 0;
+        m_fill.tries = 0;
 
         // We'll be sending an ack right away if this is a new
         // message, so might as well set the time now so that we
@@ -1362,8 +1366,10 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 if (msg_data[msg_index[j]].interval) {
                                     xastir_snprintf(interval_str,
                                         sizeof(interval_str),
-                                        ">%ldsecs",
+                                        ">%d @ %ldsecs",
+                                        msg_data[msg_index[j]].tries + 1,
                                         msg_data[msg_index[j]].interval);
+
                                     // Don't highlight the interval
                                     // value
                                     offset = offset + strlen(interval_str);

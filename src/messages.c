@@ -409,7 +409,7 @@ void kick_outgoing_timer(char *callsign) {
         // If it matches the callsign we're talking to
         if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
             message_pool[ii].next_time = (time_t)7l;
-            message_pool[ii].tries = 1;
+            message_pool[ii].tries = 0;
             message_pool[ii].active_time = (time_t)0l;
         }
     }
@@ -804,10 +804,11 @@ fprintf(stderr,
                     // cancelled, timed out, or hasn't made it to
                     // the transmit position yet, it won't be shown.
                     //
-                    msg_record_interval(message_pool[i].to_call_sign,
+                    msg_record_interval_tries(message_pool[i].to_call_sign,
                         message_pool[i].from_call_sign,
                         message_pool[i].seq,
-                        message_pool[i].next_time); // Interval
+                        message_pool[i].next_time,  // Interval
+                        message_pool[i].tries);     // Tries
 
                     // Start at 7 seconds for the interval.  We set
                     // it to 7 seconds in output_message() above.

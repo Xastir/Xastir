@@ -161,6 +161,7 @@ typedef struct {
     char acked;
     char position_known;
     time_t interval;
+    int tries;
 } Message;
 
 
@@ -505,8 +506,8 @@ extern int is_my_call(char *call, int exact);
 void mscan_file(char msg_type, void (*function)(Message *fill));
 extern void msg_record_ack(char *to_call_sign, char *my_call, char *seq,
                            int timeout, int cancel);
-extern void msg_record_interval(char *to_call_sign, char *my_call,
-                            char *seq, time_t interval);
+extern void msg_record_interval_tries(char *to_call_sign, char *my_call,
+                            char *seq, time_t interval, int tries);
 extern void display_file(Widget w);
 extern void clean_data_file(void);
 extern void read_file_line(FILE *f);
