@@ -15,7 +15,7 @@ there won't be a good place to put your Xastir startup files.  Of
 course, log in as the same user each time in order for Cygwin to use
 the proper home directory for you.
 
-Explanation of this login box, for those that don't see it:  If you
+Explanation of this login box for those that don't see it:  If you
 have the option of running networking, you'll have a login box show
 up when you first start up Windows.  It'll ask for you user name and
 password, then let you in.  If you escape out of that dialog, Windows
@@ -37,16 +37,27 @@ the screen and visible at the same time!  The instructions here set
 it up in that manner, so you can have Xastir as just another app on
 your Windows desktop.
 
+Please subscribe to the "xastir" mailing list at
+"http://www.xastir.org".  There are lots of helpful people there
+that can aid you in installing/running Xastir.
+
 
 [ ] Step 1)  Install Cygwin, a free download.
 
 
-Step 1a) Go to http://www.cygwin.com with your web browser.  Look
-for the black and green Cygwin icon, then click on "Install now!".
+[ ] Step 1a) Go to http://www.cygwin.com with your web browser.
+Look for the black and green Cygwin icon, then click on "Install
+now!".
+
 This will load the Cygwin network installer program onto your
-computer.  Remember where you install this program.  I put mine in
-"c:\<login>\cygwin\setup.exe", for instance
-"c:\hacker\cygwin\setup.exe".
+computer.  Remember where you decide to put this program.  I put
+mine in "c:\<login>\cygwin\setup.exe", (for instance
+"c:\hacker\cygwin\setup.exe").  This program will allow you to do a
+network install of Cygwin.  After you install Cygwin (see the steps
+below for details) you'll have a package directory (in my case
+"c:\hacker\cygwin\") and a Cygwin directory (in my case
+"c:\cygwin").  The uninstalled packages go into the package
+directory as they are downloaded from the 'net.
 
 
 [ ] Step 1b)  Find the "setup.exe" program and execute it either by:
@@ -64,7 +75,7 @@ provide to the program:
     Default Text File Type Unix (*)
     Local Package Directory "C:\hacker\cygwin"
     Select Your Internet Connection (choose one)
-    Choose A Download Site (choose one near you if possible)
+    Choose A Download Site (choose one nearby if you can determine that)
 
 Note:  Responses above listed with a "(*)" are required.  Others are
 up to the individual user to answer as they wish.  You'll get to a
@@ -79,6 +90,19 @@ were selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
 be selected as well, that's ok and necessary:
 
+If you only see "+ALL", then you'll need to click on the "+" symbol
+in order to expand it into more options.  This works very similarly
+to expanding directories in File Explorer.  Continue this expansion
+into the subheadings below so that you can enable/disable individual
+packages.
+
+Selecting a package involves clicking on the little circle symbol
+until the option you want is displayed.  You can choose older
+versions of a package, choose to keep the package you have installed
+already, or choose to remove or install a package in this manner.
+It's suggested that you keep whatever was selected by default, and
+just add the below packages to the selection:
+
     Archive
 [ ]     unzip
 [ ]     zip
@@ -91,6 +115,7 @@ be selected as well, that's ok and necessary:
 [ ]     make
 [ ]     rcs
     Editors
+[ ]     nano
 [ ]     vim
     Graphics
 [ ]     tiff (install sources for this one too? TBD)
@@ -104,18 +129,21 @@ be selected as well, that's ok and necessary:
     Text
 [ ]     less
     Utils
+[ ]     bzip2
 [ ]     diff
 [ ]     patch
     Web
 [ ]     wget (or can use libcurl instead)
     XFree86
 [ ]     XFree86-prog:Headers
+[ ]     fvwm
 [ ]     lesstif
  
-In order to see the more detailed list of packages, you'll have to
-click on the '+' symbols to the left of the various categories.
-Clicking on the small circle with the two arrows will run you
-through the various select/de-select options for each package.
+Again, in order to see the more detailed list of packages, you'll
+have to click on the '+' symbols to the left of the various
+categories.  Clicking on the small circle with the two arrows will
+run you through the various select/de-select options for each
+package.
 
 
 [ ] Step 1d)  Click Next and the packages will get downloaded and
@@ -128,22 +156,42 @@ happens, back up and select another server.
 
 
 [ ] Step 1e)  At the end of the install it'll ask you if you wish to
-create desktop icons and menu entries.  Definitely select these!
-They will create a Black/Green Cygwin icon on the desktop and a menu
-entry so that you can start Cygwin that way as well.  Click
-"Finish".  Cygwin is now installed.  The Black/Green Cygwin icon
-will start up a BASH window, without starting up Xwindows.  Think of
-it as being similar to a DOS window, but with a lot more power.
+create desktop icons and menu entries.  Definitely select these!  It
+doesn't mean that Cygwin will start automatically each time you
+reboot your computer or login (it doesn't start automatically).  It
+_does_ mean that you'll have an icon to click on manually to get
+things going.
+
+This will create a Black/Green Cygwin icon on the desktop and a menu
+entry so that you can start Cygwin through the menu system as well.
+
+[ ] Step 1f) Click "Finish".  Cygwin is now installed.  The
+Black/Green Cygwin icon will start up a BASH window, without
+starting up Xwindows.  Think of it as being similar to a DOS window,
+but with a lot more power.  It understands Unix commands though, not
+DOS commands.
+
+[ ] Note:  I've had the Cygwin network install fail before during
+the downloading stage without informing me in any recognizable
+manner.  You might which to re-do step 1 to make sure nothing
+further gets downloaded/installed.  Once you get to that point, Step
+1 is complete.
 
 
 [ ] Step 2)  Create shortcut for starting X:
 
 Create a shortcut to C:\cygwin\usr\X11r6\bin\startxwin.bat from your
 desktop.  This shortcut is the method you'll use to start up
-Xwindows.
+Xwindows.  The usual method is to use File Explorer to find the
+file, the right click and drag it to your desktop, at which point
+you let go of the right mouse button and you'll be presented with a
+small menu.  Select "Create Shortcut(s) Here".  You can then rename
+the shortcut if you wish.  I named mine "Xwindows".
 
 Change the properties on the shortcut so that it runs it from your
-home directory on Cygwin, something like "c:\cygwin\home\<user>\"
+home directory on Cygwin, something like "c:\cygwin\home\<user>\".
+Right-click on the new shortcut, then go to the Properties menu to
+change this.
 
 
 [ ] Step 3)  Test Cygwin and create startup shortcuts:
@@ -160,7 +208,11 @@ Type "exit" and then press <Enter> to make the BASH window
 disappear.
 
 You should still see an 'X' in your system tray.  That's the
-X-server running.  You can right-click on that and make it exit.
+X-server running.  You can right-click on that and then select the
+menu entry to cause it to exit.
+
+Once you've gotten to this stage, you now have Cygwin and Xwindows
+installed and operational.  Next we go after Xastir itself.
 
 
 [ ] Step 4)  Create a file at C:\cygwin\home\<user>\ called
@@ -176,11 +228,23 @@ file should contain the following lines:
 Please note:  this file must be created in Unix format, not DOS
 format.  Do not use Notepad or other Windows tools to create the
 file, as CVS will not recognize the contents.  Thanks to Kirk
-Mefford <kc2elo@softhome.net> for noticing this.
+Mefford <kc2elo@softhome.net> for noticing this.  The editor "nano"
+can be invoked from a Cygwin window to create this file, or for
+those of you who know "vi" or have Windows editors available that
+can save in Unix format, use those.
+
+The "." in ".cvsrc" makes it a Unix hidden file, and it won't appear
+in most Unix listings.  Unix files don't need a file extension, so
+don't create a file that has one (or else rename it to ".cvsrc" when
+done).
+
+Another option is to create the file using a Windows editor, then
+run a dos2unix program on it to convert it to the proper format.
+
 
 [ ] Step 5)  Download Xastir sources.  Start up Xwindows using your
 shortcut.  Type the five lines below into the shell exactly as
-shown.  Hit <ENTER> when asked for a password during the last
+shown.  Hit <ENTER> when asked for a password after typing the last
 command:
 
   cd ~
@@ -189,13 +253,16 @@ command:
   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
   cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
-If you keep seeing "EOF" at the end of a short error message, it
-means that the anonymous CVS server at SourceForge is overloaded.
-Keep trying!
+If you keep seeing "EOF" at the end of an error message, it means
+that the anonymous CVS server at SourceForge is overloaded (too many
+users).  Keep trying that the failed commands until they succeed!
+Notice that up-arrow (on the keyboard) and then <ENTER> will repeat
+the last command, saving you some typing.
 
 The end result when it succeeds  will be a new directory
-"C:\cygwin\home\<user>\src\xastir\" which contains the full Xastir
-source code.
+"C:\cygwin\home\<user>\src\xastir\" which contains all of the Xastir
+source code.  You can type "ls xastir" (that's lower-case LS) to see
+the file listing.
 
 Side Note:  Here's the coolest thing about CVS:  Once you've done
 this initial source-code download, you'll never have to do the whole
@@ -203,7 +270,7 @@ Xastir download again.  You'll just go into the "src/xastir"
 directory and type "cvs update", which will snag just the _changes_
 to the files since you last updated, and is very fast.  Compile and
 install at that point and you'll be running the latest developer's
-version in just a few minutes!  It's easy to keep up with the
+version in just a few minutes!  It's very easy to keep up with the
 developers this way.
 
 
@@ -283,12 +350,13 @@ Spanish
 
 This option will be stored in the users config file for the next
 time Xastir is run. On new installs Xastir will default to English
-unless you use this command line option.
+until you use this command line option once.
 
 Another difference with Cygwin as opposed to Unix-like operating
 systems:  You can't do the make install portion if Xastir is up and
 running.  You have to kill Xastir first before you do "make install"
-or "make install-strip".
+or "make install-strip".  Otherwise the newly compiled Xastir won't
+replace the old one.
 
 Note that one user running Cygwin on XP had it crash every time his
 screensaver kicked in.  Disabling the screenserver fixed that
