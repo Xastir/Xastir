@@ -2690,6 +2690,10 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     //output_string[0] = '\0';
                                     //parse_agwpe_header(input_string, output_length, output_string);
 
+// Be careful here!  device_read_buffer is a circular buffer.  We
+// need to copy the data to an array of chars before calling
+// channel_data().
+
                                     //channel_data(port,
                                     //    (unsigned char *)port_data[port].device_read_buffer,
                                     //    length);   // Length of string
@@ -2756,6 +2760,10 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     length = 0;
                                 }
 
+// Be careful here!  device_read_buffer is a circular buffer.  We
+// need to copy the data to an array of chars before calling
+// channel_data().
+
                                 channel_data(port,
                                     (unsigned char *)port_data[port].device_read_buffer,
                                     length);   // Length of string
@@ -2763,6 +2771,10 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
 
                             for (i = 0; i <= port_data[port].read_in_pos; i++)
                                 port_data[port].device_read_buffer[i] = (char)0;
+
+// We reset our write pointer back to the start location.
+// What?  Why aren't we using this in a circular buffer fashion?  Is
+// it because channel_data() expects a linear string?
 
                             port_data[port].read_in_pos = 0;
                         }
@@ -2829,12 +2841,21 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {   /* ok try to decode it */
 
+// Be careful here!  device_read_buffer is a circular buffer.  We
+// need to copy the data to an array of chars before calling
+// channel_data().
+
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
                                             0);
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
+
+// We reset our write pointer back to the start location.
+// What?  Why aren't we using this in a circular buffer fashion?  Is
+// it because channel_data() expects a linear string?
+
                                     port_data[port].read_in_pos = 0;
                                 }
                             }
@@ -2884,6 +2905,10 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     if (process_ax25_packet(buffer, port_data[port].scan, port_data[port].device_read_buffer) != NULL) {
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
 
+// Be careful here!  device_read_buffer is a circular buffer.  We
+// need to copy the data to an array of chars before calling
+// channel_data().
+
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
                                              0);
@@ -2895,7 +2920,12 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
                                         port_data[port].read_in_pos += port_data[port].scan;
                                     } else {
-                                        /* no buffer over runs writing a line at a time */
+
+// We reset our write pointer back to the start location.
+// What?  Why aren't we using this in a circular buffer fashion?  Is
+// it because channel_data() expects a linear string?
+
+                                       /* no buffer over runs writing a line at a time */
                                         port_data[port].read_in_pos = 0;
                                     }
                                 }
