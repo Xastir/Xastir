@@ -86,6 +86,7 @@ void redraw_symbols(Widget w);
 int  delete_weather(DataRow *fill);
 void Station_data_destroy_track(Widget widget, XtPointer clientData, XtPointer callData);
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char speedu, char *alt, char *sats);
+void station_shortcuts_update_function(void);
 
 int  extract_speed_course(char *info, char *speed, char *course);
 int  extract_bearing_NRQ(char *info, char *bearing, char *nrq);
@@ -127,6 +128,10 @@ time_t last_object_check = 0;   // Used to determine when to re-transmit objects
 time_t last_emergency_time = 0;
 char last_emergency_callsign[MAX_CALLSIGN+1];
 int st_direct_timeout = 60 * 60;        // 60 minutes.
+
+// Used in search_station_name() function.  Shortcuts into the
+// station list based on first letter of the callsign/object name.
+DataRow *station_shortcuts[128];
 
 
 
@@ -6320,6 +6325,17 @@ void init_station(DataRow *p_station) {
  *  Remove element from name ordered list
  */
 void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
+    int update_shortcuts = 0;
+
+
+    // Do a quick check to see if we're removing a station record
+    // that is pointed to by our pointer shortcuts array.
+    // If so, update our pointer shortcuts after we're done.
+    if (station_shortcuts[(int)(p_rem->call_sign[0])] == p_rem) {
+        update_shortcuts++;
+    }
+
+    // Proceed to the removal
     if (p_rem->n_prev == NULL)          // first element
         n_first = p_rem->n_next;
     else
@@ -6329,6 +6345,12 @@ void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
         n_last = p_rem->n_prev;
     else
         p_rem->n_next->n_prev = p_rem->n_prev;
+
+    // Update our pointer shortcuts
+    if (update_shortcuts) {
+//fprintf(stderr,"\t\t\t\t\t\tRemoval of letter: %c\n", p_rem->call_sign[0]);
+        station_shortcuts_update_function();
+    }
 }
 
 
@@ -6451,12 +6473,35 @@ void delete_station_memory(DataRow *p_del) {
 /*@null@*/ DataRow *add_new_station(DataRow *p_name, DataRow *p_time, char *call) {
     DataRow *p_new;
     char station_num[30];
+    char first_letter;
+
 
     p_new = insert_new_station(p_name,p_time);  // allocate memory
     if (p_new != NULL) {
         init_station(p_new);                    // initialize new station record
         strcpy(p_new->call_sign,call);
         stations++;
+
+
+        // Do some quick checks here to see if we just inserted a new
+        // letter, or inserted at the beginning of a letter group.  If
+        // so, update our pointer shortcuts to match.
+        first_letter = p_new->call_sign[0];
+
+        if (first_letter == '\0') {
+            // Do nothing.  No update needed.
+        }
+        else if (station_shortcuts[(int)(first_letter)] == NULL) {
+            // New starting letter found
+//fprintf(stderr,"\t\t\t\t\t\tNew letter: %c\n", first_letter);
+            station_shortcuts_update_function();
+        }
+        else if ( (p_new->n_prev != NULL) &&
+                (first_letter != p_new->n_prev->call_sign[0]) ) {
+//fprintf(stderr,"\t\t\t\t\t\tBeginning letter: %c\n", first_letter);
+            station_shortcuts_update_function();
+        }
+
 
         // this should not be here...  ??
         if (!wait_to_redraw) {          // show number of stations in status line
@@ -6501,10 +6546,76 @@ void move_station_name(DataRow *p_curr, DataRow *p_name) {
 
 
 
-/*
- *  Search station record by callsign
- *  Returns a station with a call equal or after the searched one
- */
+// Update all of the pointers so that they accurately reflect the
+// current state of the station database.
+//
+// NOTE:  This part of the code could be made smarter so that the
+// pointers are updated whenever they are found to be out of whack,
+// instead of zeroing all of them and starting from scratch each
+// time.  Alternate:  Follow the current pointer if non-NULL then go
+// up/down the list to find the current switchover point between
+// letters.
+//
+// Better:  Tie into the station insert function.  If a new letter
+// is inserted, or a new station at the beginning of a letter group,
+// run this function to keep things up to date.  That way we won't
+// have to traverse in both directions to find a callsign in the
+// search_station_name() function.
+//
+void station_shortcuts_update_function(void) {
+    int ii;
+    DataRow *ptr;
+    int current = 0x00;
+
+
+    // Clear all of the pointers before we begin
+    for (ii = 0; ii < 128; ii++) {
+        station_shortcuts[ii] = NULL;
+    }
+
+    ptr = n_first;  // Start of list
+
+
+    // Loop through entire list, writing the pointer into the
+    // station_shortcuts array whenever a new character is
+    // encountered.  Do this until the end of the array or the end
+    // of the list.
+    //
+    while ( (ptr != NULL) && (current < 0x80) ) {
+
+        if (ptr->call_sign[0] > (char)current) {
+
+            // We found the next letter.  Store the pointer at
+            // the correct location.
+            current = ptr->call_sign[0];
+
+            if (current < 0x80) {
+                station_shortcuts[(int)(current)] = ptr;
+//fprintf(stderr,"%c ", current);
+            }
+        }
+        ptr = ptr->n_next;
+    }
+//fprintf(stderr,"\n");
+}
+
+
+
+
+
+//
+// Search station record by callsign
+// Returns a station with a call equal or after the searched one
+//
+// We use a doubly-linked list for the stations, so we can traverse
+// in either direction.  We use this to create/update an array of
+// pointers to dump us into the correct initial letter for the
+// callsign, which reduces search time quite a bit.  We end up doing
+// a linear search only through one letter group.
+//
+// Even better would be to switch to a hash function for station
+// storage.  Zero or very little searching would be required then.
+//
 int search_station_name(DataRow **p_name, char *call, int exact) {
     // DK7IN: we do a linear search here.
     // Maybe I set up a tree storage too, to see what is better,
@@ -6514,21 +6625,33 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
     int ok = 1;
     char ch0,ch1;
 
+
     (*p_name) = n_first;                                // start of alphabet
     ch0 = call[0];
-    if (ch0 == '\0')
+    if (ch0 == '\0') {
+        // If call is empty, return n_first as the pointer
         ok = 0;
+    }
     else {
-        while(1) {                                      // check first char
-            if ((*p_name) == NULL)
-                break;                                  // reached end of list
-            if ((*p_name)->call_sign[0] >= ch0)         // we also catch the '\0'
-                break;                                  // finished search
-            (*p_name) = (*p_name)->n_next;              // next element
+        // Look for matching first letter
+
+        (*p_name) = station_shortcuts[(int)(ch0)];
+        if ((*p_name) == NULL) {
+            int jj;
+
+            // No index found for that letter.  Walk the array until
+            // we do find one.  That'll be our insertion point (just
+            // ahead of the next letter group).
+            for (jj = (int)(ch0); jj < 0x80; jj++) {
+                if (station_shortcuts[jj] != NULL) {
+                    (*p_name) = station_shortcuts[jj];
+                    break;
+                }
+            }
         }
-        // we now probably have found the first char
-        if ((*p_name) == NULL || (*p_name)->call_sign[0] != ch0)
+        if ((*p_name) == NULL || (*p_name)->call_sign[0] != ch0) {
             ok = 0;                                     // nothing found!
+        }
     }
 
     for (i=1;ok && i<(int)strlen(call);i++) {           // check rest of string
@@ -6541,8 +6664,9 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
             if ((*p_name) == NULL)
                 break;                                  // reached end of list
             for (j=0;ok && j<i;j++) {                   // unchanged first part?
-                if ((*p_name)->call_sign[j] != call[j])
+                if ((*p_name)->call_sign[j] != call[j]) {
                     ok = 0;
+                }
             }
         }
         // we now probably have found the next char
@@ -6552,6 +6676,7 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
 
     if (exact && ok && strlen((*p_name)->call_sign) != strlen(call))
         ok = 0;
+
     return(ok);         // if not ok: p_name points to correct insert position in name list
 }
 
