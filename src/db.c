@@ -10971,7 +10971,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
 
         if (direct == 1) {
-            // This packet was heard direct.  Set the ST_DIRECT bit.
+            // This packet was heard direct.  Set the ST_DIRECT bit
+            // and save the timestamp away.
             if (debug_level & 1) {
                 fprintf(stderr,"Setting ST_DIRECT for station %s\n", 
                     p_station->call_sign);
@@ -10995,28 +10996,48 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             }
         }
 
-        // If heard on TNC then overwrite node_path_ptr.  If heard
-        // on INET then overwrite node_path_ptr only if
-        // heard_via_tnc_last_time is older than one hour (zero
-        // counts as well!), plus clear the ST_DIRECT and ST_VIATNC
-        // bits in this case.  This makes us keep the RF path around
-        // for at least one hour after the station is heard.
+        // If heard on TNC, overwrite node_path_ptr if any of these
+        // conditions are met:
+        //     *) direct == 1 (packet was heard direct)
+        //     *) ST_DIRECT flag == 0 (packet hasn't been heard
+        //     direct recently)
+        //     *) ST_DIRECT is set, st_direct_timeout has expired
+        //     (packet hasn't been heard direct recently)
+        //
+        // These rules will allow us to keep directly heard paths
+        // saved for at least an hour (st_direct_timeout), and not
+        // get overwritten with digipeated paths during that time.
         //
         if ((from == DATA_VIA_TNC)  // Heard via TNC
                 && !third_party     // Not a 3RD-Party packet
                 && path != NULL) {  // Path is not NULL
 
-            // Heard on TNC interface
- 
-            // Free any old path we might have
-            if (p_station->node_path_ptr != NULL)
-                free(p_station->node_path_ptr);
-            // Malloc and store the new path
-            p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
-            CHECKMALLOC(p_station->node_path_ptr);
+            // Heard on TNC interface and not third party.  Check
+            // the other conditions listed in the comments above to
+            // decide whether we should overwrite the node_path_ptr
+            // variable.
+            //
+            if ( direct   // This packet was heard direct
+                 || (p_station->flag & ST_DIRECT) == 0  // Not heard direct lately
+                 || ( (p_station->flag & ST_DIRECT) != 0 // Not heard direct lately
+                      && (sec_now() > (p_station->direct_heard+st_direct_timeout) ) ) ) {
 
-            substr(p_station->node_path_ptr,path,strlen(path));
+                // Free any old path we might have
+                if (p_station->node_path_ptr != NULL)
+                    free(p_station->node_path_ptr);
+                // Malloc and store the new path
+                p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
+                CHECKMALLOC(p_station->node_path_ptr);
+
+                substr(p_station->node_path_ptr,path,strlen(path));
+            }
         }
+        // If heard on INET then overwrite node_path_ptr only if
+        // heard_via_tnc_last_time is older than one hour (zero
+        // counts as well!), plus clear the ST_DIRECT and ST_VIATNC
+        // bits in this case.  This makes us keep the RF path around
+        // for at least one hour after the station is heard.
+        //
         else if (from != DATA_VIA_TNC  // From an INET interface
                 && !third_party        // Not a 3RD-Party packet
                 && path != NULL) {     // Path is not NULL
