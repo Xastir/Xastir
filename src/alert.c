@@ -999,6 +999,9 @@ int alert_on_screen(void) {
 //
 // LZKNPW>APRS::NWS-ADVIS:221000z,WINTER_STORM,ARZ3>7-12>16-21>25-30>34-37>47-52>57-62>69{LLSAA
 //
+// This one's real:
+// DVNFFS>APRS,qAO,WXSVR::NWS_ADVIS:022300z,FLOOD,IAC57-95-103-111-115-163-171-ILC1-67-71-131-MOC45 {2FsAA
+//
 // The trick is to step thru the data base contained in the
 // shapefiles to determine what areas to light up.  In the above
 // example read ">" as "thru" and "-" as "and".
@@ -1009,26 +1012,31 @@ int alert_on_screen(void) {
 // RIWWSW>APRS::SKYRIW   :THROUGH SATURDAY {JBNBC
 //
 //
+// We'll create and fill in "entry", then copy various "titles" into
+// is such as "ID_C001", then insert that alert into the system.
 //
 void alert_build_list(Message *fill) {
-    alert_entry entry[5], *list_ptr;    // We might need up to five structs to split
-                                        // up a message into individual map areas.
-
-// Actually for compressed weather alert packets we might need a
-// _very_ large number of them.
-
-    int i, j;
+    alert_entry entry, *list_ptr;
+    char title[5][20];  // Storage place for zone/county titles
+    int ii, jj;
     char *ptr;
     DataRow *p_station;
     int compressed_wx_packet = 0;
+    char uncompressed_wx[1024];
+
 
     //fprintf(stderr,"Message_line:%s\n",fill->message_line);
 
     if (debug_level & 2)
         fprintf(stderr,"alert_build_list\n");
 
+    // Empty this string first
+    uncompressed_wx[0] = '\0';
+
     // Check for "SKY" text in the "call_sign" field.
     if (strncmp(fill->call_sign,"SKY",3) == 0) {
+        // Special handling for SKY messages only.
+
         //fprintf(stderr,"Sky Message: %s\n",fill->message_line);
 
         // Find a matching alert_record, check whether or not it is
@@ -1057,32 +1065,32 @@ void alert_build_list(Message *fill) {
 
         // Run through the alert_list looking for a match to the
         // FROM and first four chars of SEQ
-        for (i = 0; i < alert_max_count; i++) {
-            if ( (strcasecmp(alert_list[i].from, fill->from_call_sign) == 0)
-                    && ( strncmp(alert_list[i].seq,fill->seq,4) == 0 ) ) {
+        for (ii = 0; ii < alert_max_count; ii++) {
+            if ( (strcasecmp(alert_list[ii].from, fill->from_call_sign) == 0)
+                    && ( strncmp(alert_list[ii].seq,fill->seq,4) == 0 ) ) {
 
                 if (debug_level & 2)
-                    fprintf(stderr,"%d:Found a matching alert to a SKY message:\t",i);
+                    fprintf(stderr,"%d:Found a matching alert to a SKY message:\t",ii);
 
                 switch (fill->seq[4]) {
                     case 'B':
-                        strcpy(alert_list[i].desc0,fill->message_line);
+                        strcpy(alert_list[ii].desc0,fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
-                        strcpy(alert_list[i].desc1,fill->message_line);
+                        strcpy(alert_list[ii].desc1,fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
-                        strcpy(alert_list[i].desc2,fill->message_line);
+                        strcpy(alert_list[ii].desc2,fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
                         break;
                     case 'E':
                     default:
-                        strcpy(alert_list[i].desc3,fill->message_line);
+                        strcpy(alert_list[ii].desc3,fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                         break;
@@ -1090,35 +1098,51 @@ void alert_build_list(Message *fill) {
 //                return; // All done with this sky message
             }
         }
+        if (debug_level & 2)
+            fprintf(stderr,"alert_build_list exit 1\n");
         return;
     }
 
+
+
+
+
     if (fill->active == RECORD_ACTIVE) {
         int ignore_title = 0;
+#define MAX_SUB_ALERTS 5000
+        char *title_ptr[MAX_SUB_ALERTS];
 
-        memset(entry, 0, sizeof(entry));
+
+        memset(&entry, 0, sizeof(entry));
+
+        // This fills in the zone numbers (title) for uncompressed
+        // alerts with up to five alerts per message.  This doesn't
+        // handle filling in the title for compressed alerts though.
         (void)sscanf(fill->message_line,
             "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
-            entry[0].activity,      // 191700z
-            entry[0].alert_tag,     // WIND
-            entry[0].title,         // CA_Z007
-            entry[1].title,         // ...
-            entry[2].title,         // ...
-            entry[3].title,         // ...
-            entry[4].title);        // ...
+            entry.activity,      // 191700z
+            entry.alert_tag,     // WIND
+            &title[0][0],        // CA_Z007
+            &title[1][0],        // ...
+            &title[2][0],        // ...
+            &title[3][0],        // ...
+            &title[4][0]);       // ...
+
+
+        // Check for "NWS_" in the call_sign field.  Underline
+        // signifies compressed alert format.  Dash signifies
+        // non-compressed format.
+        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
+            char compressed_wx[512];
+            char *ptr;
 
 /////////////////////////////////////////////////////////////////////
 // Compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
 
-        // Check here for the first title being very long.  This
-        // signifies that we may be dealing with the new compressed
-        // format instead.
-        entry[0].title[32] = '\0';  // Terminate it first just in case
-        if ( strlen(entry[0].title) > 7 ) {
-            char compressed_wx[256];
-            char *ptr;
-//            alert_entry temp_entry;
+            compressed_wx_packet++; // Set the flag
+
+//fprintf(stderr, "Found compressed alert packet via NWS_!\n");
 
 //fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
 //fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
@@ -1132,30 +1156,34 @@ void alert_build_list(Message *fill) {
             // in which case we'd exit from this routine as soon as
             // it was submitted.
             (void)sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
-                entry[0].activity,
-                entry[0].alert_tag,
+                entry.activity,
+                entry.alert_tag,
                 compressed_wx);     // Stick the long string in here
             compressed_wx[255] = '\0';
-            compressed_wx_packet++; // Set the flag
+
 //fprintf(stderr,"Line:%s\n",compressed_wx);
 
             // Snag alpha characters (should be three) at the start
             // of the string.  Use those until we hit more alpha
-            // characters.
-
+            // characters.  First two characters of each 3-letter
+            // alpha group are the state, last character is the
+            // zone/county/marine-zone indicator.
 
 // Need to be very careful here to validate the letters/numbers, and
 // to not run off the end of the string.  Need more code here to do
 // this validation.
+
 
             // Scan through entire string
             ptr = compressed_wx;
             while (ptr < (compressed_wx + strlen(compressed_wx))) {
                 char prefix[5];
                 char suffix[4];
+                char temp_suffix[4];
                 char ending[4];
 
-               // Snag the ALPHA portion
+
+                // Snag the ALPHA portion
                 strncpy(prefix,ptr,2);
                 ptr += 2;
                 prefix[2] = '_';
@@ -1164,19 +1192,55 @@ void alert_build_list(Message *fill) {
                 ptr += 1;
                 // prefix should now contain something like "MN_Z"
 
-                // Snag the NUMERIC portion
-                strncpy(suffix,ptr,3);
-                suffix[3] = '\0';   // Terminate the string
-                ptr += 3;
-                // suffix should now contain something like "039"
+                // Snag the NUMERIC portion.  Note that the field
+                // width can vary between 1 and 3.  The leading
+                // zeroes have been removed.
+                strncpy(temp_suffix,ptr,3);
+                temp_suffix[3] = '\0';   // Terminate the string
+                if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
+                    temp_suffix[1] = '\0';
+                    ptr += 1;
+                }
+                else if (temp_suffix[2] == '-' || temp_suffix[2] == '>') {
+                    temp_suffix[2] = '\0';
+                    ptr += 2;
+                }
+                else {
+                    ptr += 3;
+                }
+                // temp_suffix should now contain something like
+                // "039" or "45" or "2".  Add leading zeroes to give
+                // "suffix" a length of 3.
+                strncpy(suffix,"000",3);
+                switch (strlen(temp_suffix)) {
+                    case 1: // Copy one char across
+                        suffix[2] = temp_suffix[0];
+                        break;
+                    case 2: // Copy two chars across
+                        suffix[1] = temp_suffix[0];
+                        suffix[2] = temp_suffix[1];
+                        break;
+                    case 3: // Copy all three chars across
+                        strncpy(suffix,temp_suffix,3);
+                        break;
+                }
+                // Make sure suffix is terminated properly
+                suffix[3] = '\0';
 
-// We have our first zone extracted
-//fprintf(stderr,"Zone:%s%s\n",prefix,suffix);
+// We have our first zone (of this loop) extracted!
+//fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+
+                // Add it to our zone string.
+                strcat(uncompressed_wx,",");
+                strcat(uncompressed_wx,prefix); 
+                strcat(uncompressed_wx,suffix);
 
                 // Here we keep looping until we hit another alpha
-                // portion.
+                // portion.  We need to look at the field separator
+                // to determine whether we have another separate
+                // field coming up or a range to enumerate.
                 while ( (ptr < (compressed_wx + strlen(compressed_wx)))
-                    && ( is_num_chr(ptr[1]) ) ) {
+                        && ( is_num_chr(ptr[1]) ) ) {
 
                     // Look for '>' or '-' character.  If former, we
                     // have a numeric sequence to ennumerate.  If the
@@ -1185,36 +1249,102 @@ void alert_build_list(Message *fill) {
                     if (ptr[0] == '>') { // Numeric zone sequence
                         int start_number;
                         int end_number;
-                        int k;
-                        char temp[4];
+                        int kk;
 
                         ptr++;  // Skip past the '>' character
 
                         // Snag the NUMERIC portion
                         strncpy(ending,ptr,3);  
                         ending[3] = '\0';   // Terminate the string
-                        ptr += 3;
-                        // ending should now contain something like "046"
+                        if (is_num_chr(ending[0])) {
+                            ptr += 1;
+                            if (is_num_chr(ending[1])) {
+                                ptr += 1;
+                                if (is_num_chr(ending[2])) {
+                                    ptr += 1;
+                                }
+                                else {
+                                    ending[2] = '\0';
+                                }
+                            }
+                            else {
+                                ending[1] = '\0';
+                            }
+                        }
+                        else {
+                            // We have a problem, 'cuz we didn't
+                            // find at least one number.  Packet is
+                            // badly formatted.
+                            return;
+                        }
+                        
+                        // ending should now contain something like
+                        // "046" or "35" or "2".
                         start_number = (int)atoi(suffix);
                         end_number = (int)atoi(ending);
-                        for ( k=start_number+1; k<=end_number; k++) {
-                            xastir_snprintf(temp,4,"%03d",k);
-// And another zone...
-//fprintf(stderr,"Zone:%s%s\n",prefix,temp);
+                        for ( kk=start_number+1; kk<=end_number; kk++) {
+                            xastir_snprintf(suffix,4,"%03d",kk);
+
+//fprintf(stderr,"2Zone:%s%s\n",prefix,temp);
+
+                            // And another zone... Ennumerate
+                            // through the sequence, adding each
+                            // new zone to our zone string.
+                            strcat(uncompressed_wx,",");
+                            strcat(uncompressed_wx,prefix); 
+                            strcat(uncompressed_wx,suffix);
                         }
                     }
-                    else if (ptr[0] == '-') {   // New zone number
+                    else if (ptr[0] == '-') {
+                        // New zone number, not a numeric sequence.
+
                         ptr++;  // Skip past the '-' character
-                        if ( is_num_chr(ptr[0]) ) { // Found another number
+                        if ( is_num_chr(ptr[0]) ) {
+                            // Found another number.  Use the prefix
+                            // stored from last time.
 
-                            // Snag the NUMERIC portion
-                            strncpy(suffix,ptr,3);
-                            suffix[3] = '\0';   // Terminate the string
-                            ptr += 3;
-                            // suffix should now contain something like "046"
-// And another zone...
-//fprintf(stderr,"Zone:%s%s\n",prefix,suffix);
+                            // Snag the NUMERIC portion.  Note that the field
+                            // width can vary between 1 and 3.  The leading
+                            // zeroes have been removed.
+                            strncpy(temp_suffix,ptr,3);
+                            temp_suffix[3] = '\0';   // Terminate the string
+                            if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
+                                temp_suffix[1] = '\0';
+                                ptr += 1;
+                            }
+                            else if (temp_suffix[2] == '-' || temp_suffix[2] == '>') {
+                                temp_suffix[2] = '\0';
+                                ptr += 2;
+                            }
+                            else {
+                                ptr += 3;
+                            }
+                            // temp_suffix should now contain something like
+                            // "039" or "45" or "2".  Add leading zeroes to give
+                            // "suffix" a length of 3.
+                            strncpy(suffix,"000",3);
+                            switch (strlen(temp_suffix)) {
+                                case 1: // Copy one char across
+                                    suffix[2] = temp_suffix[0];
+                                    break;
+                                case 2: // Copy two chars across
+                                    suffix[1] = temp_suffix[0];
+                                    suffix[2] = temp_suffix[1];
+                                                break;
+                                case 3: // Copy all three chars across
+                                    strncpy(suffix,temp_suffix,3);
+                                    break;
+                            }
+                            // Make sure that suffix is terminated properly
+                            suffix[3] = '\0';
 
+//fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+
+                            // And another zone...
+                            // Add it to our zone string.
+                            strcat(uncompressed_wx,",");
+                            strcat(uncompressed_wx,prefix); 
+                            strcat(uncompressed_wx,suffix);
                         }
                         else {  // New prefix (not a number)
                             // Start at the top of the outer loop again
@@ -1227,44 +1357,44 @@ void alert_build_list(Message *fill) {
                     ptr++;
                 }
             }
-        }
 
+//fprintf(stderr,"Uncompressed: %s\n",uncompressed_wx);
+
+        }
 /////////////////////////////////////////////////////////////////////
 // End of compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
 
         // Terminate the strings
-        entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
+        entry.activity[20] = entry.alert_tag[20] = '\0';
 
         // If the expire time is missing, shift fields to the right
         // by one field.  Evidently we can have an alert come across
         // that doesn't have an expire time.  The code shuffles the
         // titles to the next record before fixing up the title and
-        // alert_tag for entry[0].
-        if (!isdigit((int)entry[0].activity[0]) && entry[0].activity[0] != '-') {
-            for (j = 4; j > 0; j--) {
-                strcpy(entry[j].title, entry[j-1].title);
-            }
-            strcpy(entry[0].title, entry[0].alert_tag);
-            strcpy(entry[0].alert_tag, entry[0].activity);
+        // alert_tag for entry.
+        if (!isdigit((int)entry.activity[0]) && entry.activity[0] != '-') {
 
-            // Shouldn't we clear out entry[0].activity in this
+            for (jj = 4; jj > 0; jj--) {
+                strcpy(&title[jj][0], &title[jj-1][0]);
+            }
+
+            strcpy(&title[0][0], entry.alert_tag);
+            strcpy(entry.alert_tag, entry.activity);
+
+            // Shouldn't we clear out entry.activity in this
             // case???  We've determined it's not a date/time value.
-            xastir_snprintf(entry[0].activity,sizeof(entry[0].activity),"------z");
-            entry[0].expiration = sec_now() + (24 * 60 * 60);   // Add a day
+            xastir_snprintf(entry.activity,sizeof(entry.activity),"------z");
+            entry.expiration = sec_now() + (24 * 60 * 60);   // Add a day
         }
         else {
             // Compute expiration time_t from zulu time
-            entry[0].expiration = time_from_aprsstring(entry[0].activity);
+            entry.expiration = time_from_aprsstring(entry.activity);
         }
-
-        // It looks like we use entry[0] as the master data from
-        // this point on and the other four entries hold other
-        // zones.
 
         // Copy the sequence (which contains issue_date_time and
         // message sequence) into the record.
-        xastir_snprintf(entry[0].seq,sizeof(entry[0].seq),"%s",fill->seq);
+        xastir_snprintf(entry.seq,sizeof(entry.seq),"%s",fill->seq);
 
         // Now compute issue_date_time from the first three characters of
         // the sequence number:
@@ -1277,13 +1407,13 @@ void alert_build_list(Message *fill) {
             // Could add another check to make sure that the first two
             // chars are a digit or a capital letter.
             char c;
-            int i;
             char date_time[10];
             char temp[3];
 
+
             date_time[0] = '\0';
-            for ( i = 0; i < 3; i++ ) {
-                c = fill->seq[i];   // Snag one character
+            for ( ii = 0; ii < 3; ii++ ) {
+                c = fill->seq[ii];   // Snag one character
 
                 if (is_num_chr(c)) {    // Found numeric char
                     temp[0] = '0';
@@ -1308,34 +1438,77 @@ void alert_build_list(Message *fill) {
             if (debug_level & 2)
                 fprintf(stderr,"Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
 
-            xastir_snprintf(entry[0].issue_date_time,
-                sizeof(entry[0].issue_date_time),
+            xastir_snprintf(entry.issue_date_time,
+                sizeof(entry.issue_date_time),
                 "%s",
                 date_time);
-            //entry[0].issue_date_time = time_from_aprsstring(date_time);
+            //entry.issue_date_time = time_from_aprsstring(date_time);
         }
         
  
         // flags[0] specifies whether it's onscreen or not
-        memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
+        memset(entry.flags, (int)'?', sizeof(entry.flags));
         p_station = NULL;
 
         // flags[1] specifies source of the alert DATA_VIA_TNC or
         // DATA_VIA_LOCAL
         if (search_station_name(&p_station,fill->from_call_sign,1))
-            entry[0].flags[1] = p_station->data_via;
+            entry.flags[1] = p_station->data_via;
 
 
-        // Set up each of up to five structs with data and try to
-        // create alerts out of each of them.
-        for (i = 0; i < 5 && entry[i].title[0]; i++) {
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
-            // Terminate title string for each of five structs
-            entry[i].title[32] = '\0';
-            //fprintf(stderr,"Title: %s\n",entry[i].title);
+
+        // Iterate through up to five uncompressed alerts, or
+        // through the string of now-uncompressed "compressed"
+        // alerts, creating an alert out of each.
+        //
+        if (compressed_wx_packet) { // Handle compressed packet.
+            // Skip the first character of our uncompressed_wx
+            // string, as it's a leading comma.  Snag out each
+            // string in turn and use that as the title for a
+            // weather alert.
+
+            // Feed &uncompressed_wx[1] to split_string to fill in
+            // an array with the various zone names.
+            split_string(&uncompressed_wx[1],
+                title_ptr,
+                MAX_SUB_ALERTS);
+        }
+        else {  // Handle non-compressed packet
+            // We have up to five alerts to process.
+
+            // Set up an array of char pointers so that we can use
+            // the same code for either compressed or uncompressed
+            // weather alerts.
+            title_ptr[0] = &title[0][0];
+            title_ptr[1] = &title[1][0];
+            title_ptr[2] = &title[2][0];
+            title_ptr[3] = &title[3][0];
+            title_ptr[4] = &title[4][0];
+            title_ptr[5] = NULL;    // Make sure we terminate
+        }
+
+// We now have all of our titles pointed to by the title_ptr[]
+// array.  Either type of alert can be processed identically now.
+
+
+        // Try to create alerts out of each one.
+
+        for (ii = 0; ii < MAX_SUB_ALERTS && title_ptr[ii]; ii++) {
+
+            // Copy into our entry.title variable
+            strncpy(entry.title, title_ptr[ii], 32);
+
+            // Terminate title string
+            entry.title[32] = '\0';
+//fprintf(stderr,"Title: %s\n",entry.title);
 
             // This one removes spaces from the title.
-            //while ((ptr = strpbrk(entry[i].title, " ")))
+            //while ((ptr = strpbrk(entry.title, " ")))
             //    memmove(ptr, ptr+1, strlen(ptr)+1);
 
             // Instead we should blank out the title and any
@@ -1343,16 +1516,16 @@ void alert_build_list(Message *fill) {
             // we're to disregard anything after a space in the
             // information field.
             if (ignore_title)   // Blank out title if flag is set
-                entry[i].title[0] = '\0';
+                entry.title[0] = '\0';
 
             // If we found a space in a title, this signifies that
             // we hit the end of the current list of zones.
-            if ( (ptr = strpbrk(entry[i].title, " ")) ) {
+            if ( (ptr = strpbrk(entry.title, " ")) ) {
                 ignore_title++;     // Set flag for following titles
-                entry[i].title[0] = '\0';  // Blank out title
+                entry.title[0] = '\0';  // Blank out title
             }
 
-            if ((ptr = strpbrk(entry[i].title, "}>=!:/*+;"))) {
+            if ((ptr = strpbrk(entry.title, "}>=!:/*+;"))) {
                 if (debug_level & 2) {
                     fprintf(stderr,
                         "Warning: Weird Weather Message: %ld:%s>%s:%s!\n",
@@ -1364,45 +1537,39 @@ void alert_build_list(Message *fill) {
                 *ptr = '\0';
             }
 
-            if (entry[i].title[0] == '\0')
+            // Skip loop iterations if we don't have a title for an
+            // entry
+            if (entry.title[0] == '\0')
                 continue;
 
-            // Fill in other struct data from first struct, except
-            // for title.
-            strcpy(entry[i].activity, entry[0].activity);
-// entry[0].alert_tag has a bogus value in it at this point???
-            strcpy(entry[i].alert_tag, entry[0].alert_tag);
-            strcpy(entry[i].from, fill->from_call_sign);
-            strcpy(entry[i].to, fill->call_sign);
-            strcpy(entry[i].seq, fill->seq);
-            entry[i].expiration = entry[0].expiration;
-            strcpy(entry[i].issue_date_time, entry[0].issue_date_time);
-            memcpy(entry[i].flags, entry[0].flags, sizeof(entry[0].flags));
+            strcpy(entry.from, fill->from_call_sign);
+            strcpy(entry.to, fill->call_sign);
+            strcpy(entry.seq, fill->seq);
 
             // NWS_ADVIS or NWS_CANCL normally appear in the "to"
             // field.  ADVIS can appear in the alert_tag field on a
             // CANCL message though, and we want CANCL to have
             // priority.
-            if (strstr(entry[i].alert_tag, "CANCL") || strstr(entry[i].to, "CANCL"))
-                entry[i].alert_level = 'C';
+            if (strstr(entry.alert_tag, "CANCL") || strstr(entry.to, "CANCL"))
+                entry.alert_level = 'C';
 
-            else if (!strncmp(entry[i].alert_tag, "TEST", 4) || strstr(entry[i].to, "TEST"))
-                entry[i].alert_level = 'T';
+            else if (!strncmp(entry.alert_tag, "TEST", 4) || strstr(entry.to, "TEST"))
+                entry.alert_level = 'T';
 
-            else if (strstr(entry[i].alert_tag, "WARN") || strstr(entry[i].to, "WARN"))
-                entry[i].alert_level = 'R';
+            else if (strstr(entry.alert_tag, "WARN") || strstr(entry.to, "WARN"))
+                entry.alert_level = 'R';
 
-            else if (strstr(entry[i].alert_tag, "CIVIL") || strstr(entry[i].to, "CIVIL"))
-                entry[i].alert_level = 'R';
+            else if (strstr(entry.alert_tag, "CIVIL") || strstr(entry.to, "CIVIL"))
+                entry.alert_level = 'R';
 
-            else if (strstr(entry[i].alert_tag, "WATCH") || strstr(entry[i].to, "WATCH"))
-                entry[i].alert_level = 'Y';
+            else if (strstr(entry.alert_tag, "WATCH") || strstr(entry.to, "WATCH"))
+                entry.alert_level = 'Y';
 
-            else if (strstr(entry[i].alert_tag, "ADVIS") || strstr(entry[i].to, "ADVIS"))
-                entry[i].alert_level = 'B';
+            else if (strstr(entry.alert_tag, "ADVIS") || strstr(entry.to, "ADVIS"))
+                entry.alert_level = 'B';
 
             else
-                entry[i].alert_level = 'G';
+                entry.alert_level = 'G';
 
             // Look for a similar alert
 
@@ -1418,7 +1585,7 @@ void alert_build_list(Message *fill) {
 // we're comparing all four fields, the cancels don't match any
 // existing alerts.
 
-            if ((list_ptr = alert_match(&entry[i], ALERT_ALL))) {
+            if ((list_ptr = alert_match(&entry, ALERT_ALL))) {
 
 // We found a match!  We probably need to copy some more data across
 // between the records:  seq, alert_tag, alert_level, from, to,
@@ -1431,31 +1598,38 @@ void alert_build_list(Message *fill) {
                 // a new non-cancelled alert, go ahead and copy the
                 // fields across.
                 if ( (list_ptr->alert_level != 'C') // Stored alert is _not_ a CANCEL
-                        || (entry[i].alert_level == 'C') ) { // Or new one _is_ a CANCEL
-                    list_ptr->expiration = entry[i].expiration;
-                    strcpy(list_ptr->activity, entry[i].activity);
-                    strcpy(list_ptr->alert_tag, entry[i].alert_tag);
-                    list_ptr->alert_level = entry[i].alert_level;
-                    strcpy(list_ptr->seq, entry[i].seq);
-                    strcpy(list_ptr->from, entry[i].from);
-                    strcpy(list_ptr->to, entry[i].to);
-                    strcpy(list_ptr->issue_date_time, entry[i].issue_date_time);
+                        || (entry.alert_level == 'C') ) { // Or new one _is_ a CANCEL
+                    list_ptr->expiration = entry.expiration;
+                    strcpy(list_ptr->activity, entry.activity);
+                    strcpy(list_ptr->alert_tag, entry.alert_tag);
+                    list_ptr->alert_level = entry.alert_level;
+                    strcpy(list_ptr->seq, entry.seq);
+                    strcpy(list_ptr->from, entry.from);
+                    strcpy(list_ptr->to, entry.to);
+                    strcpy(list_ptr->issue_date_time, entry.issue_date_time);
                 }
                 else {
                     // Don't copy the info across, as we'd be making a
                     // cancelled alert active again if we did.
                 }
             } else {    // No similar alert, add a new one to the list
-                entry[i].index = -1;    // Haven't found it in a file yet
-                (void)alert_add_entry(&entry[i]);
+                entry.index = -1;    // Haven't found it in a file yet
+                (void)alert_add_entry(&entry);
             }
 
-            if (alert_active(&entry[i], ALERT_ALL)) {
+            if (alert_active(&entry, ALERT_ALL)) {
                 // Empty "if" body here?????  LCLINT caught this.
             }
-        }
+
+        }   // End of for loop
+
+
+        // Signify that we're done processing the NWS message
         fill->active = RECORD_CLOSED;
     }
+
+    if (debug_level & 2)
+        fprintf(stderr,"alert_build_list exit 1\n");
 }
 
 
