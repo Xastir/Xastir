@@ -1063,8 +1063,14 @@ SUMMARY OF DISTANCE/AREA/ANGLE CALCULATIONS:
     spherical trigonometry calculations.  Both methods are equivalent
     for longer distances.  Both are Great-Circle calculations (as
     opposed to Rhumb-line or planar geometry).  See the GIS FAQ for info
-    on these methods.  Dr. Math website mentions both of these and
-    refers people to the same GIS FAQ.
+    on these methods.  Dr. Math website mentions both of these and refers
+    people to the same GIS FAQ.
+
+    Also note that the Haversine formula is ill-conditioned if the
+    two points are antipodal (on opposite sides of the Earth).  From the
+    GIS FAQ: "but the error, perhaps as large as 2km (1 mi), is in the
+    context of a distance near 20,000km (12,000 mi)."  For our purposes
+    that's just fine.
 
 
     AREA:
