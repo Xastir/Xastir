@@ -5640,8 +5640,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     // don't kill Xastir in the ReadImage routine.
     f = fopen (image_info->filename, "r");
     if (f == NULL) {
-        if (debug_level & 16)
-            printf("File could not be read\n");
+        printf("File %s could not be read\n",image_info->filename);
         return;
     }
     (void)fclose (f);
