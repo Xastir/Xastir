@@ -3675,7 +3675,7 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
 
 // Maximum tracks listed in Station Info dialog.  This prevents
 // lockups on extremely long tracks.
-#define MAX_TRACK_LIST 100
+#define MAX_TRACK_LIST 50
 
 
     db_station_info_callsign = (char *) clientData; // Used for auto-updating this dialog
