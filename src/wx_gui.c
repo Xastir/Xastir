@@ -302,6 +302,9 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
         // Get the previous alert count from the alert list window
         XtVaGetValues(wx_alert_list, XmNitemCount, &max_item_count, NULL);
 
+        // Expire old alerts (zero the title string)
+        alert_expire();
+
         ii = 0; // Current dialog count
 
         // Step through the alert list.  Create a string for each
@@ -316,20 +319,6 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
             //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
-
-            // Expire old alerts (zero the title string)
-            if (sec_now() >= alert_list[nn].expiration) {
-                //xastir_snprintf(status, sizeof(status), "Exp");
-                if (debug_level & 2) {
-                    fprintf(stderr,"wx_alert_update_list: Expiring alert: %s:%lu, sec_now:%lu\n",
-                        alert_list[nn].title,
-                        alert_list[nn].expiration,
-                        sec_now());
-                }
-                alert_list[nn].title[0] = '\0'; // Clear this alert
-                alert_list_count--;
-                continue;   // Skip this alert (it's empty!)
-            }
 
             xastir_snprintf(status, sizeof(status), "   ");
             xastir_snprintf(temp, sizeof(temp),

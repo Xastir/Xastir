@@ -74,6 +74,6 @@ extern int alert_display_request(void);
 extern int alert_on_screen(void);
 extern int alert_message_scan(void);
 extern int alert_redraw_on_update;
-extern int alert_list_count;
+extern void alert_expire(void);
 
 #endif /* __XASTIR_ALERT_H */

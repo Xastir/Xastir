@@ -326,7 +326,7 @@
 
 
 alert_entry *alert_list = NULL;
-int alert_list_count = 0;           // Count of active alerts
+static int alert_list_count = 0;           // Count of active alerts
 int alert_max_count = 0;     // Alerts we've allocated space for
 char *alert_status = NULL;
 static int alert_status_size = 0;
@@ -430,6 +430,38 @@ void alert_print_list(void) {
 
 
 //
+// alert_expire()
+//
+// Delete stored alerts that have expired, by zeroing the title
+// string.  This free's up the slot to be used by another alert, and
+// makes sure that the expired alert doesn't get drawn or shown in
+// the View->WX Alerts dialog.
+//
+void alert_expire(void) {
+    int ii;
+
+    // Delete stored alerts that have expired (zero the title string)
+    for (ii = 0; ii < alert_max_count; ii++) {
+        if ( (alert_list[ii].title[0] != '\0')
+                && (alert_list[ii].expiration < time(NULL)) ) {
+            if (debug_level & 2) {
+                fprintf(stderr,
+                    "alert_expire: Clearing slot %d, current: %lu, alert: %lu\n",
+                    ii,
+                    time(NULL),
+                    alert_list[ii].expiration );
+            }
+            alert_list[ii].title[0] = '\0'; // Clear this alert
+            alert_list_count--;
+        }
+    }
+}
+
+
+
+
+
+//
 // alert_add_entry()
 //
 // This function adds a new alert to our alert list.  It also
@@ -471,21 +503,8 @@ void alert_print_list(void) {
         return(NULL);
     }
 
-    // Delete stored alerts that have expired (zero the title string)
-    for (i = 0; i < alert_max_count; i++) {
-        if ( (alert_list[i].title[0] != '\0')
-                && (alert_list[i].expiration < time(NULL)) ) {
-            if (debug_level & 2) {
-                fprintf(stderr,
-                    "alert_add_entry: Expired Alert->Clearing slot %d, current: %lu, alert: %lu\n",
-                    i,
-                    time(NULL),
-                    alert_list[i].expiration );
-            }
-            alert_list[i].title[0] = '\0'; // Clear this alert
-            alert_list_count--;
-        }
-    }
+    // Zero out expired alerts
+    alert_expire();
 
     // Allocate more space if we're at our maximum already.
     // Allocate space for 100 more alerts.

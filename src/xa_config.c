@@ -1117,7 +1117,7 @@ void load_data_or_default(void) {
 
     /* WX ALERTS */
     if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME, 1l, 86400l, 30l))
-        WX_ALERTS_REFRESH_TIME = (time_t)30l;
+        WX_ALERTS_REFRESH_TIME = (time_t)60l;
 
     /* gps */
     if (!get_long ("GPS_TIME", (long *)&gps_time, 1l, 86400l, 60l))
