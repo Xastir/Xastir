@@ -1152,6 +1152,15 @@ void draw_shapefile_map (Widget w,
     int             high_water_mark_i = 0;
     int             high_water_mark_index = 0;
 
+    typedef struct _label_string {
+        char label[50];
+        struct _label_string *next;
+    } label_string;
+
+    label_string *label_ptr = NULL;
+    label_string *ptr2 = NULL;
+
+
     //printf("*** Alert color: %d ***\n",alert_color);
 
     // We don't draw the shapes if alert_color == -1
@@ -1724,6 +1733,8 @@ void draw_shapefile_map (Widget w,
     // each structure as we find it.
     for (structure = start_record; structure < end_record; structure++) {
         int skip_it = 0;
+        int skip_label = 0;
+
 
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
 
@@ -1770,93 +1781,20 @@ void draw_shapefile_map (Widget w,
                 }
                 printf("\n");
             }
+
+
             switch ( nShapeType ) {
+
+
                 case SHPT_POINT:
                         // Not implemented.
                     break;
 
+
+
                 case SHPT_ARC:
-                    temp = "";
 
-                    if (road_flag) {
-                        if ( (mapshots_labels_flag) && (fieldcount >= 8) ) {
-                            char temp3[3];
-                            char temp4[31];
-                            char temp5[5];
-                            char temp6[3];
-
-                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
-                            xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
-                            temp = DBFReadStringAttribute( hDBF, structure, 5 );
-                            xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
-                            temp = DBFReadStringAttribute( hDBF, structure, 6 );
-                            xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
-                            temp = DBFReadStringAttribute( hDBF, structure, 7 );
-                            xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
-                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
-                                temp3,temp4,temp5,temp6);
-                            temp = temp2;
-                        }
-                        else if (fieldcount >=10) {  // Need at least 10 fields if we're snagging #9, else segfault
-                            // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
-                            temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
-                        }
-                        if ( (temp == NULL) || (strlen(temp) == 0) ) {
-                            if (fieldcount >=13)    // Need at least 13 fields if we're snagging #12, else segfault
-                                temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
-                            else
-                                temp = NULL;
-                        }
-                    } else if (lake_flag || river_flag) {
-                        if ( mapshots_labels_flag && river_flag && (fieldcount >= 8) ) {
-                            char temp3[3];
-                            char temp4[31];
-                            char temp5[5];
-                            char temp6[3];
-
-                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
-                            xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
-                            temp = DBFReadStringAttribute( hDBF, structure, 5 );
-                            xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
-                            temp = DBFReadStringAttribute( hDBF, structure, 6 );
-                            xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
-                            temp = DBFReadStringAttribute( hDBF, structure, 7 );
-                            xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
-                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
-                                temp3,temp4,temp5,temp6);
-                            temp = temp2;
-                        }
-                        else if (mapshots_labels_flag && lake_flag && (fieldcount >= 4) ) {
-                            temp = DBFReadStringAttribute( hDBF, structure, 3 );
-                        }
-                        else if (fieldcount >=14) {  // Need at least 14 fields if we're snagging #13, else segfault
-                            temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
-                        }
-                        else
-                            temp = NULL;
-                    }
-
-                    if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
-                        ok = 1;
-
-                        // Convert to Xastir coordinates
-                        my_long = (unsigned long)(64800000l + (360000.0 * object->padfX[0] ) );
-                        my_lat  = (unsigned long)(32400000l + (360000.0 * (-object->padfY[0]) ) );
-                        //printf("%ld %ld\n", my_long, my_lat);
-
-                        // Convert to screen coordinates
-                        x = (long)( (my_long - x_long_offset) / scale_x);
-                        y = (long)( (my_lat - y_lat_offset) / scale_y);
-
-                        if (x >  16000) ok = 0;     // Skip this point
-                        if (x < -16000) ok = 0;     // Skip this point
-                        if (y >  16000) ok = 0;     // Skip this point
-                        if (y < -16000) ok = 0;     // Skip this point
-
-                        if (ok == 1 && ok_to_draw) {
-                            (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
-                        }
-                    }
+// Draw the PolyLines themselves:
 
                     index = 0;  // Index into our own points array.
                                 // Tells how many points we've
@@ -1920,14 +1858,14 @@ void draw_shapefile_map (Widget w,
                                     break;
                                 case '4':   // A4? = Local, neighborhood & rural roads, city streets
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y >= 100)
+                                    if (scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
                                     break;
                                 case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y >= 100)
+                                    if (scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
@@ -1935,7 +1873,7 @@ void draw_shapefile_map (Widget w,
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
                                             // service drive, ferry crossing
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y >= 100)
+                                    if (scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x07]); // darkgray
@@ -1943,7 +1881,7 @@ void draw_shapefile_map (Widget w,
                                 case '7':   // A7? = Walkway or pedestrian trail, stairway,
                                             // alley, driveway or service road
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y >= 100)
+                                    if (scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
@@ -1974,49 +1912,77 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
                                 case '0':   // H0? = Water feature/shoreline
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 0;
                                     break;
                                 case '1':
                                     switch (temp[2]) {
                                         case '0':
+                                            if (scale_y > 16)
+                                                skip_label++;
                                             lanes = 1;
                                             break;
                                         case '1':
+                                            if (scale_y > 16)
+                                                skip_label++;
                                             lanes = 1;
                                             break;
                                         case '2':
+                                            if (scale_y > 16)
+                                                skip_label++;
                                             lanes = 1;
                                             break;
                                         case '3':
+                                            if (scale_y > 16)
+                                                skip_label++;
                                             lanes = 1;
                                             break;
                                         default:
+                                            if (scale_y > 16)
+                                                skip_label++;
                                             lanes = 1;
                                             break;
                                     }
                                     break;
                                 case '2':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 case '3':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 case '4':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 case '5':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 case '6':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 case '7':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 case '8':
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                                 default:
+                                    if (scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     break;
                             }
@@ -2034,7 +2000,130 @@ void draw_shapefile_map (Widget w,
                     if (ok_to_draw && !skip_it) {
                         (void)XDrawLines(XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
                     }
+
+
+// Figure out and draw the labels for PolyLines:
+
+                    temp = "";
+                    if (road_flag) {
+                        if ( (mapshots_labels_flag) && (fieldcount >= 8) ) {
+                            char temp3[3];
+                            char temp4[31];
+                            char temp5[5];
+                            char temp6[3];
+
+                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
+                            xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 5 );
+                            xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 6 );
+                            xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 7 );
+                            xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
+                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
+                                temp3,temp4,temp5,temp6);
+                            temp = temp2;
+                        }
+                        else if (fieldcount >=10) {  // Need at least 10 fields if we're snagging #9, else segfault
+                            // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
+                            temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
+                        }
+                        if ( (temp == NULL) || (strlen(temp) == 0) ) {
+                            if (fieldcount >=13)    // Need at least 13 fields if we're snagging #12, else segfault
+                                temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
+                            else
+                                temp = NULL;
+                        }
+                    } else if (lake_flag || river_flag) {
+                        if ( mapshots_labels_flag && river_flag && (fieldcount >= 8) ) {
+                            char temp3[3];
+                            char temp4[31];
+                            char temp5[5];
+                            char temp6[3];
+
+                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
+                            xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 5 );
+                            xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 6 );
+                            xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 7 );
+                            xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
+                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
+                                temp3,temp4,temp5,temp6);
+                            temp = temp2;
+                        }
+                        else if (mapshots_labels_flag && lake_flag && (fieldcount >= 4) ) {
+                            temp = DBFReadStringAttribute( hDBF, structure, 3 );
+                        }
+                        else if (fieldcount >=14) {  // Need at least 14 fields if we're snagging #13, else segfault
+                            temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
+                        }
+                        else
+                            temp = NULL;
+                    }
+
+                    if ( (temp != NULL)
+                            && (strlen(temp) != 0)
+                            && map_labels
+                            && !skip_it
+                            && !skip_label ) {
+
+                        ok = 1;
+
+                        // Convert to Xastir coordinates
+                        my_long = (unsigned long)(64800000l + (360000.0 * object->padfX[0] ) );
+                        my_lat  = (unsigned long)(32400000l + (360000.0 * (-object->padfY[0]) ) );
+                        //printf("%ld %ld\n", my_long, my_lat);
+
+                        // Convert to screen coordinates
+                        x = (long)( (my_long - x_long_offset) / scale_x);
+                        y = (long)( (my_lat - y_lat_offset) / scale_y);
+
+                        if (x >  16000) ok = 0;     // Skip this point
+                        if (x < -16000) ok = 0;     // Skip this point
+                        if (y >  16000) ok = 0;     // Skip this point
+                        if (y < -16000) ok = 0;     // Skip this point
+
+//WE7U
+                        if (ok == 1 && ok_to_draw) {
+// Change "United States Highway 2" into "US 2" and "State Highway 204"
+// into "State 204"?
+
+                            // Check whether we've written out this string
+                            // already:  Look for a match in our linked list
+                            ptr2 = label_ptr;
+                            while (ptr2 != NULL) {   // Step through the list
+                                if (strcasecmp(ptr2->label,temp) == 0) {    // Found a match
+                                    //printf("Found a match!\n");
+                                    skip_label++;
+                                    ptr2 = NULL; // End the loop
+                                }
+                                else {
+                                    ptr2 = ptr2->next;
+                                }
+                            }
+                            if (!skip_label) {
+
+                                // Draw the string
+                                (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+
+                                // Create a new record for this string
+                                // and add it to the head of the list.
+// Remember to add a "free"
+                                //printf("Creating a new record: %s\n",temp);
+                                ptr2 = (label_string *)malloc(sizeof(label_string));
+                                xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
+                                ptr2->next = label_ptr;
+                                label_ptr = ptr2;
+                                //if (label_ptr->next == NULL)
+                                    //printf("only one record\n");
+                            }
+                        }
+                    }
                     break;
+
+
 
                 case SHPT_POLYGON:
 
@@ -2194,6 +2283,16 @@ void draw_shapefile_map (Widget w,
         }
         SHPDestroyObject( object ); // Done with this structure
     }
+
+    // Free our linked list of strings, if any
+    ptr2 = label_ptr;
+    while (ptr2 != NULL) {
+        label_ptr = ptr2->next;
+        //printf("free: %s\n",ptr2->label);
+        free(ptr2);
+        ptr2 = label_ptr;
+    }
+
     DBFClose( hDBF );
     SHPClose( hSHP );
 
