@@ -965,7 +965,6 @@ AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
     config/Makefile \
     help/Makefile \
-    intl/Makefile \
     m4/Makefile \
     scripts/Makefile \
     src/Makefile \
