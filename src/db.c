@@ -9742,7 +9742,7 @@ void add_status(DataRow *p_station, char *status_string) {
 
             // Fill in the string
             xastir_snprintf(p_station->status_data->text_ptr,
-                sizeof(p_station->status_data->text_ptr),
+                len+1,
                 "%s",
                 status_string);
 
@@ -9896,7 +9896,7 @@ void add_comment(DataRow *p_station, char *comment_string) {
 
             // Fill in the string
             xastir_snprintf(p_station->comment_data->text_ptr,
-                sizeof(p_station->comment_data->text_ptr),
+                len+1,
                 "%s",
                 comment_string);
 
