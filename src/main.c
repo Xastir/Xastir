@@ -41,9 +41,9 @@
 #include <pthread.h>
 #include <locale.h>
 #include <strings.h>
+#include <time.h>
 
 #ifdef HAVE_IMAGEMAGICK
-#include <time.h>
 #include <sys/types.h>
 #undef RETSIGTYPE
 /* JMT - stupid ImageMagick */
