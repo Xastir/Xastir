@@ -695,22 +695,14 @@ void check_and_transmit_messages(time_t time) {
 
                     //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
 
-                    // Start at 7 seconds for the interval.  Add 5 seconds to the
-                    // interval each retry until we hit 90 seconds.  90 second
-                    // intervals until retry 30, then start adding 30 seconds to
-                    // the interval each time until we get to a 10 minute interval
-                    // rate.  Keep transmitting at 10 minute intervals until we
-                    // hit MAX_TRIES.
+                    // Start at 7 seconds for the interval.  We set
+                    // it to 7 seconds in output_message() above.
+                    // Double the interval each retry until we hit
+                    // 10 minutes.  Keep transmitting at 10 minute
+                    // intervals until we hit MAX_TRIES.
 
-                    // Increase interval by 5 seconds each time
-                    // until we hit 90 seconds
-                    if ( message_pool[i].next_time < (time_t)90l )
-                         message_pool[i].next_time += 5;
-
-                    // Increase the interval by 30 seconds each time
-                    // after we hit 30 retries
-                    if ( message_pool[i].tries >= 30 )
-                        message_pool[i].next_time += 30;
+                    // Double the interval between messages
+                    message_pool[i].next_time = message_pool[i].next_time * 2;
 
                     // Limit the max interval to 10 minutes
                     if (message_pool[i].next_time > (time_t)600l)
