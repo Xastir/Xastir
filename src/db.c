@@ -15485,6 +15485,63 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 
 
 
+// Make sure not to corrupt our position of the object when we
+// receive the packet back via loopback/RF/internet.  In particular
+// the position and the last_modified_time should stay constant in
+// this case so that dead-reckoning can continue to move the object
+// consistently, plus we won't compound errors as we go.
+//
+// Calculate new position based on speed/course/modified-time.
+// We'll call it from Create_object_item_tx_string() and from the
+// modify object/item routines to calculate a new position and stuff
+// it into the record along with the modification time before we
+// start off in a new direction.  We'd also need to transmit the
+// corner point (the point at which we changed direction), but that
+// probably comes for free due to the way we kick up the transmit
+// rate for new/changed objects.
+//
+// Another Xastir sees empty strings on it's server port when these
+// objects are transmitted to it.  Investigate.  Sometimes does it
+// when speed is 0, but not totally consistent.
+//
+// Input:   *p_station
+//
+// Outputs: *x_long, *y_lat in Xastir coordinate system (100ths of
+//           seconds)
+//
+void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) {
+    int my_course = atoi(p_station->course); // In ° true
+    double range;
+    float bearing_radians;
+    double off_x, off_y;
+
+
+    *x_long = p_station->coord_lon;
+    *y_lat = p_station->coord_lat;
+    range = (double)((sec_now()-p_station->sec_heard)*(1.1508/3600)*(atof(p_station->speed)));
+    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
+    off_y = (double)( range * cos(bearing_radians) );
+    off_x = (double)( range * sin(bearing_radians) );
+    fprintf(stderr,"range: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
+
+    // Convert off_y/off_x to hundredths of seconds (Xastir coordinate
+    // system), then add to x_long/y_lat to get current position of
+    // object/item.
+    off_x = off_x * 60.0 * 100.0;
+    off_y = off_y * 60.0 * 100.0;
+    off_y = -off_y;  // Correct the direction for the Y offset
+    fprintf(stderr,"\trange: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
+
+    // Add the offsets to our object's lat/long.  Coordinates are in
+    // Xastir coordinate format (100'ths of seconds).
+    *x_long = *x_long + (long)off_x;
+    *y_lat = *y_lat + (long)off_y;
+}
+
+
+
+
+
 // We have a lot of code duplication between Setup_object_data,
 // Setup_item_data, and Create_object_item_tx_string.
 //
@@ -15674,11 +15731,58 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         // Need to check for 1 to three digits, no alpha characters
         temp = atoi(p_station->speed);
         if ( (temp >= 0) && (temp <= 999) ) {
+            long x_long, y_lat;
+
             xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
             strncat(speed_course,
                 tempstr,
                 sizeof(speed_course) - strlen(speed_course));
             speed = temp;
+
+
+
+
+
+//WE7U
+            // Speed is non-zero.  Compute the new dead-reckoned
+            // position.  Make sure not to corrupt our position of
+            // the object when we receive the packet back via
+            // loopback/RF/internet.  In particular the position and
+            // the last_modified_time should stay constant in this
+            // case so that dead-reckoning can continue to move the
+            // object consistently, plus we won't compound errors as
+            // we go.
+            //
+            // Compute new lat/long from speed/course (course can be
+            // 0), last_modified_time, and coord_lat/coord_lon.
+//
+// Another Xastir sees empty strings on it's server port when these
+// objects are transmitted to it.  Investigate.  Sometimes does it
+// when speed is 0, but not totally consistent.
+//
+            compute_current_DR_position(p_station,
+                &x_long,
+                &y_lat);
+
+            // Lat/lon are in Xastir coordinates, so we need to
+            // convert them to APRS string format here.
+            //
+            convert_lat_l2s(y_lat,
+                lat_str,
+                sizeof(lat_str),
+                CONVERT_LP_NOSP);
+
+            convert_lon_l2s(x_long,
+                lon_str,
+                sizeof(lon_str),
+                CONVERT_LP_NOSP);
+
+fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
+
+
+
+
+
         }
         else {
             strncat(speed_course,
