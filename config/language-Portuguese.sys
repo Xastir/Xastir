@@ -80,7 +80,7 @@ PULDNMP021|Auto Map - Disable Raster Maps||
 MPUPTGR001|Grid||
 MPUPTGR002|Freguesias||
 MPUPTGR003|Etiquetas citadinas||
-MPUPTGR004|Àreas urbanas||
+MPUPTGR004|Áreas urbanas||
 MPUPTGR005|Vias principais||
 MPUPTGR006|Ruas||
 MPUPTGR007|Estradas||
@@ -148,12 +148,12 @@ PULDNDP020|Activar móvel pot/ganho||
 PULDNDP013|Ambiguidade de posição||
 PULDNDP019|Mostrar infos expiradas||
 PULDNDP023|Mostrar circulos DF||
-PULDNDP024|Mostrar o ùltimo reporte horário||
+PULDNDP024|Mostrar o último reporte horário||
 PULDNDP007|Rastos de estações|R|
 PULDNDP015|Anular todas as estações|A|
 PULDNDP016|Limpar rastos|L|
-PULDNDP025|Clear Object/Item History||
-PULDNDP026|Display Weather Objects/Items||
+PULDNDP025|Limpar história de Objecto/Item||
+PULDNDP026|Mostrar Objects/Items metereológicos||
 #
 # Inglesa/métrica
 PULDNUT001|Activar unidades Inglesas||
@@ -205,9 +205,9 @@ POPUPMA013|Ir para a esquerda|l|
 POPUPMA014|Ir para a direita|r|
 POPUPMA020|Medida||
 POPUPMA021|Movimento||
-POPUPMA022|TrackMe||
-POPUPMA023|Modifiers Found!||
-POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
+POPUPMA022|Siga-me||
+POPUPMA023|Modificadores encontrados!||
+POPUPMA024|Por favor desligue os modificadores CapsLock/NumLock/ScrollLock/outros||
 #
 # Menú dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||
@@ -252,7 +252,7 @@ BBARSTA035|Esperando por dados do GPS via AUX..||
 BBARSTA036|Limpando AUX para obter dados do TNC..||
 BBARSTA037|Dados do GPS completos||
 BBARSTA038|Posição alterada na minha estação||
-BBARSTA039|Indexing %s||
+BBARSTA039|Indexando %s||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
@@ -295,7 +295,7 @@ WPUPCFD023|Transmitir infos WX em Raw?||
 WPUPCFD024|Comprimir objecto/item durante a transmissão?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
-WPUPCFD027|Pop up new bulletins||
+WPUPCFD027|Pop up de novos boletins||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
@@ -365,7 +365,7 @@ WPUPCFT030|Configure KISS TNC||
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||
 WPUPCFWX02|Dispositivo da estação meteorológica||
-WPUPCFWX03|Correção da medida de chuva (Definições globais)||
+WPUPCFWX03|Correcção da medida de chuva (Definições globais)||
 WPUPCFWX04|.1 inch/2.5mm||
 WPUPCFWX05|.01 inch/.25mm||
 WPUPCFWX06|.1mm||
@@ -409,10 +409,10 @@ POPUPOB003|Criar novo objecto||
 POPUPOB004|Apagar objeto||
 POPUPOB005|Modificar objecto||
 POPUPOB006|Criar novo artigo||
-POPUPOB007|Àrea do objeto||
+POPUPOB007|Área do objeto||
 POPUPOB008|Activar àrea do objecto||
 POPUPOB009|Cor luminosa||
-POPUPOB010|Àrea colorida||
+POPUPOB010|Área colorida||
 POPUPOB011|Círculo||
 POPUPOB012|Linha-direita '/'||
 POPUPOB013|Linha-esquerda '\'||
@@ -506,7 +506,7 @@ WPUPMSB006|Novo grupo||
 WPUPMSB007|Anular mensagens||
 WPUPMSB008|Mensagem:||
 WPUPMSB009|Enviar agora!||
-WPUPMSB010|Path:||
+WPUPMSB010|Encaminhamento:||
 #
 # Auto resposta
 WPUPARM001|Mudar resposta automática||
@@ -575,11 +575,11 @@ WPUPSTI055|Repetido desde:||
 WPUPSTI056|Activar actualização automática||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF dirigido:||
-WPUPSTI059|Status: %s||
-WPUPSTI060|Fuel Temp: %02.1f°C  ||
-WPUPSTI061|Fuel Temp: %s°F   ||
-WPUPSTI062|Fuel Moisture: %s%%   ||
-WPUPSTI063|Baro: %0.2f in Hg||
+WPUPSTI059|Estados: %s||
+WPUPSTI060|Temp do combustível: %02.1f°C  ||
+WPUPSTI061|Temp do combustível: %s°F   ||
+WPUPSTI062|Mistura do combustível: %s%%   ||
+WPUPSTI063|Baro: %0.2f em Hg||
 #
 # FCC-RAC procurar indicativo
 STIFCC0001|Procurar FCC banco de datos||
@@ -658,7 +658,7 @@ IFDNL00009|TNC com GPS na porta AUX||
 IFDNL00010|Serial KISS TNC||
 #
 # Info dispositivo interface
-IFDIN00000|%s %d %s sobre serie %s||
+IFDIN00000|%s %d %s sobre série %s||
 IFDIN00001|%s %d %s ligado a %s:%d||
 IFDIN00002|%s %d %s usando dispositivo nomeado %s||
 IFDIN00003|%s %d %s sobre serie %s e está %s||
@@ -717,8 +717,8 @@ LHPUPNI001|Estações móveis||
 LHPUPNI002|Estaçãos meteorológicas||
 LHPUPNI003|Estações locais (via TNC)||
 LHPUPNI004|Ultimas estações||
-LHPUPNI005|Objects & Items||
-LHPUPNI006|Own Objects & Items||
+LHPUPNI005|Objectos & Items||
+LHPUPNI006|Objectos & Items próprios||
 LHPUPNI010| #||
 LHPUPNI011|Indicativo||
 LHPUPNI012|#Pack||
