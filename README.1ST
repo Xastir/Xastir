@@ -1156,137 +1156,158 @@ Getting Data Files for Xastir:
          ftp://ftp.rac.ca/pub/cdncaldb.zip
 
 
-    Current List of APRS Internet Servers:
-    --------------------------------------
-    From: WA8LMF2@aol.com
-    Date: Mon, 17 Dec 2001 07:14:50 EST
-    Subject: [aprssig] Latest version of APRS server list for review / addition
-    To: "TAPR APRS Special Interest Group" <aprssig@lists.tapr.org>
+ Current List of APRS Internet Servers:
+ --------------------------------------
+ Date: Tue, 12 Mar 2002 19:24:01 EST
+ From: WA8LMF2@aol.com
+ To: TAPR APRS Special Interest Group <aprssig@lists.tapr.org>
+ Subject: [aprssig] Re: aprserve.txt file
 
-    Here is the latest list as posted on my website at:
-       http://members.aol.com/wa8lmf/aprs  
 
-    Any comments, revisions, additions requested
 
-    ; APRServe sites Updated 13 Dec 2001 by  WA8LMF@aol.com
-    ; Comment Lines begin with a ;
-    ;"Dump" refers to cached recent past history.
-    ; This list formatted for direct use with APRSplus.
-    ; Copy/paste this list into the file APRServe.txt located in
-    ;   the APRSplus\data directory
-    ; For use with WinAPRS, delete this comment area, 
-    ; then in the remainder, find and replace colons 
-    ; and semi-colons with the "TAB" character.
-    ; Standard APRSd port definitions at 
-    http://www.ntstrans.com/~ntstate/ports.html
-    ; Direct IP addresses subject to change -- 
-    ;   recommended to use only when DNS (named) access fails.
-    ; APRSD servers can produce status report
-    ;  Enter http://servername:14501  into your WEB browser
-    ;
-    ; Findu mapping is now      http://map.aprs.net/callsign  
-    ;  or                       http://second.aprs.net:8000/callsign
-    ;  or                       http://map.findu.com/callsign  
-    ;www.aprs.net:23 ;RIP
+I guess it's time to post my (hopefully) comprehensive list of APRSservers 
+once more for additions, corrections,  etc.  The latest version of this txt 
+file is always on my website at:
+    http://members.aol.com/wa8lmf/aprs     
+
+; APRServe sites Updated 20 Dec 2001 by  WA8LMF@aol.com
+;
+; Comment Lines begin with a ;
+; "Dump" refers to cached recent past history.
+; This list formatted for direct use with APRSplus.
+; Copy/paste this list into the file APRServe.txt located in
+; the APRSplus\data directory
+;
+; For use with WinAPRS, delete this comment area, 
+; then in the remainder, find and replace colons 
+; and semi-colons with the "TAB" character.
+;
+; Standard APRSd port definitions at 
+; http://www.ntstrans.com/~ntstate/ports.html
+;
+; Direct IP addresses subject to change -- 
+; recommended to use only when DNS (named) access fails.
+;
+; APRSD servers can produce status report
+; Enter http://servername:14501  into your WEB browser
+;
+; Findu mapping is now      http://map.findu.com/callsign
+;  or                       http://map.aprs.net/callsign  
+;  or                       http://second.aprs.net:8000/callsign  
+;www.aprs.net:23 ;RIP
   
-    first.aprs.net:23 ;First APRS Net
-    128.143.202.191:23 ;First APRS Net - direct IP
-    first.aprs.net:10151 ;Florida server w/cache dump
-    first.aprs.net:14579 ;Florida server LOCAL ONLY
+first.aprs.net:23 ;First APRS Net
+128.143.202.191:23 ;First APRS Net - direct IP
+first.aprs.net:10151 ;Florida server w/cache dump
+first.aprs.net:14579 ;Florida server LOCAL ONLY
 
-    second.aprs.net:23 ; SoCal Second APRS Net
-    134.173.254.38:23 ; Second APRS Net - direct IP
-    second.aprs.net:10151 ; SoCal server w/ cache dump 
-    second.aprs.net:14579 ; Socal server LOCAL ONLY
+second.aprs.net:23 ; SoCal Second APRS Net
+134.173.254.38:23 ; Second APRS Net - direct IP
+second.aprs.net:10151 ; SoCal server w/ cache dump 
+second.aprs.net:14579 ; Socal server LOCAL ONLY
 
-    third.aprs.net:10151 ;Third APRS server w/8H dump
-    third.aprs.net:10152 ;Third APRS server w/o dump
-    third.aprs.net:14579 :Third Local Data Only
+third.aprs.net:10151 ;Third APRS server w/8H dump
+third.aprs.net:10152 ;Third APRS server w/o dump
+third.aprs.net:14579 :Third Local Data Only
 
-    ahubeast.net:14579 ;Eastern States APRS coverage (AHub)
-    ahubeast.net:14439 AHubEast TNC Feed
-    ahubeast.net:2023 ;AHub World-wide APRS Feed
+ahubeast.net:2023 ;AHub World-wide APRS Feed
+ahubeast.net:14579 ;US East of the Mississippi River (AHub)
+ahubeast.net:14439 AHubEast TNC Feed
 
-    ahubwest.net:2023 ;Full APRS Feed
-    204.118.115.12: 2023 ;Full APRS Feed - Direct IP
-    ahubwest.net:14579 ;Western States Regional
-    204.118.115.12:14579 ;Western States Regional-Direct IP
-    ahubwest.net:23 ;AHUBWX + Full Feed)
-    204.118.115.12:23 ;AHUBWX + Full Feed - Direct IP
-    ahubwest.com:14439 ;Local TNC only
-    204.118.115.158:14439 ;Local TNC Only - Direct IP
+ahubwest.net:2023 ;Full APRS Feed
+204.118.115.12: 2023 ;Direct IP Full APRS Feed 
+ahubwest.net:14579 ;US West of the Mississippi River
+204.118.115.12:14579 ;Direct IP US West of the Mississippi River
+ahubwest.net:23 ;AHUBWX Weather only feed
+204.118.115.12:23 ;Direct IP AHUBWX Weather only feed
+ahubwest.com:14439 ;Local TNC only
+204.118.115.158:14439 ;Direct IP Local TNC Only
 
-    ;Ahub California
-    ahubca.net:2023 ;Worldwide
-    ahubca.net:14579 ;California
+;Ahub California
+ahubca.net:2023 ;Worldwide
+ahubca.net:14579 ;California Only
 
-    ahubcentral.net:14579 ;AHubCentral Regional Feed
-    ahubcentral.net:14439 ;AHubCentral TNC Feed
-    ahubcentral.net:2023 ;AHubCentral USA Feed
+ahubcentral.net:14579 ;AHubCentral Regional Feed
+ahubcentral.net:14439 ;AHubCentral TNC Feed
+ahubcentral.net:2023 ;AHubCentral USA Feed
 
-    ;Fenton MI   
-    fenton.miaprs.net:10151 ;Full Internet Feed   
-    fenton.miaprs.net:10152 ;Full Internet Feed w/o cache dump  
-    fenton.miaprs.net:10151 ;Local RF Only 
-    65.170.9.12:10151; Full Internet Feed - Direct IP
+;Fenton MI   
+fenton.miaprs.net:10151 ;Full Internet Feed   
+fenton.miaprs.net:10152 ;Full Internet Feed w/o cache dump  
+fenton.miaprs.net:10151 ;Local RF Only 
+65.170.9.12:10151; Full Internet Feed - Direct IP
 
 
-    ahubin.d2g.com:2023  ;Full Internet Feed
-    ahubin.d2g.com:14439 ;Local (Indiana) RF Only
-    ahubin.d2g.com:14579 ;Indiana and neighboring states only
-    ahubin.d2g.com:14580 ;Satellite Data
+ahubin.d2g.com:2023  ;Full Internet Feed
+ahubin.d2g.com:14439 ;Local (Indiana) RF Only
+ahubin.d2g.com:14579 ;Indiana and neighboring states only
+ahubin.d2g.com:14580 ;Satellite Data
 
-    aprsdcsp.antelope.net:10151 ;FULL - Rocky Mtn regional server in Casper WY 
-    aprsdcsp.antelope.net:10152 ;FULL w/o cache dump (current only)
-    aprsdcsp.antelope.net:14579 ;Local
+aprsdcsp.antelope.net:10151 ;FULL - Rocky Mtn regional server in Casper WY 
+aprsdcsp.antelope.net:10152 ;FULL w/o cache dump (current only)
+aprsdcsp.antelope.net:14579 ;Local
 
-    ;Tucson, AZ server
-    packet.kvoa.com:10151 ;Full feed
-    packet.kvoa.com:14580 ;Local (Tucson) feed
+;Tucson, AZ server
+packet.kvoa.com:10151 ;Full feed
+packet.kvoa.com:14580 ;Local (Tucson) feed
 
-    ;Northwestern US - Southwestern Canada -- Presumably normal aprsD ports
-    linus.chemeketa.edu:10151 ;Salem, OR  aprsd-CCC 
-    208.194.173.138:10151 ;Redmond, WA  aprsdRDM 
-    the.hams.net:10151 ;Portland4,OR aprsdPDX 
-    calgary.canaprs.net:10151 ;Calgary, Alberta aprsdYYC 
-    206.186.216.155:10151 ;Winnipeg, Manitoba aprsdYWG 
+;Northwestern US - Southwestern Canada -- Presumably normal aprsD ports 
+linus.chemeketa.edu:10151 ;Salem, OR    aprsd-CCC 
+the.hams.net:10151 ;Portland4, OR   aprsdPDX 
+calgary.canaprs.net:10151 ;Calgary, Alberta    aprsdYYC 
+206.186.216.155:10151 ;Winnipeg, Manitoba    aprsdYWG 
 
-    jnos.org:10152 ;Redmond, WA aprsdRDM  WW messages and PNW local
-    jnos.org:14579 ;Redmond, WA aprsdRMD  Local RF
+; Greater Vancouver, BC, Canada - Northwest Washington State area
+;  (Server is on Vancouver Island)
+24.80.131.182:10152 ;aprsdYCD Full feed without dump
+24.80.131.182:10151 ;aprsdYCD Full feed with dump
+24.80.131.182:14579 ;aprsdYCD Local area feed
 
-    ;Northern Europe
-    ahubswe.net:2023 ;AHubSwe World-wide APRS Feed
-    ahubswe.net:14579 ;AHubSwe Nordic APRS Feed
 
-    ;Australia APRS servers
-    aprs.net.au:23 ;Main Australian APRS Network Server
-    aprs.net.au:10151
-    aprs.net.au:10152
-    aprs.cloud.net.au:10151 ;VK3SB Victorian (VK3) APRS Server 
-    aprs.cloud.net.au:10152 ;VK3SB
 
-    rotate.aprs.net:10151 ;Rotating APRServe w/ dump
-    rotate.aprs.net:23 ;Rotating APRServe w/o dump (current only)
+jnos.org:10151 ;Redmond, WA    aprsdRDM everything local plus WW messages 
+with history
+jnos.org:10152 ;Redmond, WA    aprsdRDM WW messages, no history,  slightly 
+filtered to reduce tfc
+jnos.org:8080 ;Redmond, WA     aprsdRDM  Family Channel of local RF and local 
+TCP connections
+jnos.org:14579 ;Redmond, WA    aprsdRMD Local RF
 
-    aprserve.dididahdahdidit.com:10151 ;Random aprsd server w/ cache dump
-    aprserve.dididahdahdidit.com:10152 ;Random aprsd server w/o cache dump
-    aprsdmsp.dididahdahdidit.com:10151 ;Andover, MN
-    aprsdcho.dididahdahdidit.com:10151 ;Charlottesville, VA
-    aprsdorl.dididahdahdidit.com:10151 ;Orlando, FL
-    aprsdcle.dididahdahdidit.com:10151 ;Cleveland, OH
-    aprsdlan.dididahdahdidit.com:10151 ;E Lansing, MI
-    aprsdmtl.dididahdahdidit.com:10151 ;Montreal, QU
-    aprsddfw.dididahdahdidit.com:10151 ;Denton, TX
-    aprsdmia.dididahdahdidit.com:10151 ;Miami, FL (aprserver)
-    aprsdmsn.dididahdahdidit.com:10151 ;Madison, WI
-    aprsdsao.dididahdahdidit.com:10151 ;Sao Paulo, Brazil
-    aprsdtus.dididahdahdidit.com:10151 ;Tucson, AZ
-    aprsdden.dididahdahdidit.com:10151 ;Denver, CO
-    aprsdatl.dididahdahdidit.com:14579 ;Atlanta, GA (local only)
-    aprsdaly.dididahdahdidit.com:14579 ;Albany, NY (local only)
+;Northern Europe
+ahubswe.net:2023 ;AHubSwe World-wide APRS Feed
+ahubswe.net:14579 ;AHubSwe Nordic APRS Feed
 
-    ;END List
+;Spanish speaking world
+lu9do.d2g.com:23 ;South American and Spain
 
+;Australia APRS servers
+aprs.net.au:23 ;Main Australian APRS Network Server
+aprs.net.au:10151
+aprs.net.au:10152
+aprs.cloud.net.au:10151 ;VK3SB Victorian (VK3) APRS Server 
+aprs.cloud.net.au:10152 ;VK3SB
+
+rotate.aprs.net:10151 ;Rotating APRServe w/ dump
+rotate.aprs.net:23 ;Rotating APRServe w/o dump (current only)
+
+aprserve.dididahdahdidit.com:10151 ;Random aprsd server w/ cache dump
+aprserve.dididahdahdidit.com:10152 ;Random aprsd server w/o cache dump
+aprsdmsp.dididahdahdidit.com:10151 ;Andover, MN
+aprsdcho.dididahdahdidit.com:10151 ;Charlottesville, VA
+aprsdorl.dididahdahdidit.com:10151 ;Orlando, FL
+aprsdcle.dididahdahdidit.com:10151 ;Cleveland, OH
+aprsdlan.dididahdahdidit.com:10151 ;E Lansing, MI
+aprsdmtl.dididahdahdidit.com:10151 ;Montreal, QU
+aprsddfw.dididahdahdidit.com:10151 ;Denton, TX
+aprsdmia.dididahdahdidit.com:10151 ;Miami, FL (aprserver)
+aprsdmsn.dididahdahdidit.com:10151 ;Madison, WI
+aprsdsao.dididahdahdidit.com:10151 ;Sao Paulo, Brazil
+aprsdtus.dididahdahdidit.com:10151 ;Tucson, AZ
+aprsdden.dididahdahdidit.com:10151 ;Denver, CO
+aprsdatl.dididahdahdidit.com:14579 ;Atlanta, GA (local only)
+aprsdaly.dididahdahdidit.com:14579 ;Albany, NY (local only)
+
+;END List
 
 
 
