@@ -8223,7 +8223,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
 
     if (message[0] == '\0')
         return;
- 
+
     data_txt_save[0] = '\0';
 
     if (incoming_port == -1) {   // Send out all of the interfaces
@@ -8235,9 +8235,11 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
         finish = incoming_port + 1;
     }
 
+
 begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
     for (port = start; port < finish; port++) {
+
         ok = 1;
         if (type == 0) {                        // my data
             switch (port_data[port].device_type) {
@@ -8564,6 +8566,17 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
 
     if (log_net_data)
         log_data(LOGFILE_NET,(char *)data_txt);
+
+
+    // Put our transmitted packet into the Incoming Data window as
+    // well.  This way we can see both sides of a conversation.
+    // data_port == -1 for x_spider port, normal interface number
+    // otherwise.  -99 to get a "**" display meaning all ports.
+    //
+    // For packets that we're igating we end up with a CR or LF on
+    // the end of them.  Remove that so the display looks nice.
+    makePrintable(data_txt);
+    packet_data_add("TX ", data_txt, -99);
 
 
     // Note that this will only log one TNC line per transmission now matter
