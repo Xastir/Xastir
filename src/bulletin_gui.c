@@ -129,6 +129,8 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
     char time_str[20];
     timehd=sec_heard;
     tmp = localtime(&timehd);
+    char *temp_ptr;
+
 
     if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 1)
@@ -177,7 +179,9 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_
                 }
                 XmTextInsert(Display_bulletins_text,pos,temp);
             }
-            bulletin_range = atoi(XmTextFieldGetString(dist_data));
+            temp_ptr = XmTextFieldGetString(dist_data);
+            bulletin_range = atoi(temp_ptr);
+            XtFree(temp_ptr);
         }
 
 end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
@@ -486,9 +490,13 @@ void check_for_new_bulletins() {
 
 void Display_bulletins_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
+    char *temp_ptr;
+
 
     // Keep this.  It stores the range in a global variable when we destroy the dialog.
-    bulletin_range = atoi(XmTextFieldGetString(dist_data));
+    temp_ptr = XmTextFieldGetString(dist_data);
+    bulletin_range = atoi(temp_ptr);
+    XtFree(temp_ptr);
 
     XtPopdown(shell);
 
@@ -506,9 +514,13 @@ end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Display_bul
 
 
 void Display_bulletins_change_range(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    char *temp_ptr;
+
 
     // Keep this.  It stores the range in a global variable when we destroy the dialog.
-    bulletin_range = atoi(XmTextFieldGetString(dist_data));
+    temp_ptr = XmTextFieldGetString(dist_data);
+    bulletin_range = atoi(temp_ptr);
+    XtFree(temp_ptr);
 
     view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_data);
     //fprintf(stderr,"%d\n",view_zero_distance_bulletins);

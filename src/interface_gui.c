@@ -267,6 +267,8 @@ void Config_TNC_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,
 void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int type;
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
 
@@ -289,17 +291,36 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 
-    strcpy(devices[TNC_port].device_name,XmTextFieldGetString(TNC_device_name_data));
+    temp_ptr = XmTextFieldGetString(TNC_device_name_data);
+    xastir_snprintf(devices[TNC_port].device_name,
+        sizeof(devices[TNC_port].device_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[TNC_port].device_name);
 
-    strcpy(devices[TNC_port].comment,XmTextFieldGetString(TNC_comment));
+    temp_ptr = XmTextFieldGetString(TNC_comment);
+    xastir_snprintf(devices[TNC_port].comment,
+        sizeof(devices[TNC_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    
     (void)remove_trailing_spaces(devices[TNC_port].comment);
 
     if (devices[TNC_port].device_type == DEVICE_SERIAL_MKISS_TNC) {
 
         // If MKISS, fetch "radio_port".  If empty, store a zero.
-        strcpy(devices[TNC_port].radio_port,XmTextFieldGetString(TNC_radio_port_data));
+        temp_ptr = XmTextFieldGetString(TNC_radio_port_data);
+        xastir_snprintf(devices[TNC_port].radio_port,
+            sizeof(devices[TNC_port].radio_port),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(devices[TNC_port].radio_port);
+
         if (strcmp(devices[TNC_port].radio_port,"") == 0) {
             strcpy(devices[TNC_port].radio_port,"0");
         }
@@ -364,14 +385,40 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     devices[TNC_port].style=device_style;
     devices[TNC_port].igate_options=device_igate_options;
 
-    strcpy(devices[TNC_port].unproto1,XmTextFieldGetString(TNC_unproto1_data));
+    temp_ptr = XmTextFieldGetString(TNC_unproto1_data);
+    xastir_snprintf(devices[TNC_port].unproto1,
+        sizeof(devices[TNC_port].unproto1),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[TNC_port].unproto1);
-    strcpy(devices[TNC_port].unproto2,XmTextFieldGetString(TNC_unproto2_data));
+
+    temp_ptr = XmTextFieldGetString(TNC_unproto2_data);
+    xastir_snprintf(devices[TNC_port].unproto2,
+        sizeof(devices[TNC_port].unproto2),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[TNC_port].unproto2);
-    strcpy(devices[TNC_port].unproto3,XmTextFieldGetString(TNC_unproto3_data));
+
+    temp_ptr = XmTextFieldGetString(TNC_unproto3_data);
+    xastir_snprintf(devices[TNC_port].unproto3,
+        sizeof(devices[TNC_port].unproto3),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[TNC_port].unproto3);
 
-    strcpy(devices[TNC_port].unproto_igate,XmTextFieldGetString(TNC_igate_data));
+    temp_ptr = XmTextFieldGetString(TNC_igate_data);
+    xastir_snprintf(devices[TNC_port].unproto_igate,
+        sizeof(devices[TNC_port].unproto_igate),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[TNC_port].unproto_igate);
 
     if ( (type == DEVICE_SERIAL_KISS_TNC)
@@ -386,16 +433,40 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 // We really should do some validation of these strings
 
 //WE7U:  Modify for MKISS:  Must send to the proper Radio Port.
-        strcpy(devices[TNC_port].txdelay,XmTextFieldGetString(TNC_txdelay));
+        temp_ptr = XmTextFieldGetString(TNC_txdelay);
+        xastir_snprintf(devices[TNC_port].txdelay,
+            sizeof(devices[TNC_port].txdelay),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         send_kiss_config(TNC_port,0,0x01,atoi(devices[TNC_port].txdelay));
 
-        strcpy(devices[TNC_port].persistence,XmTextFieldGetString(TNC_persistence));
+        temp_ptr = XmTextFieldGetString(TNC_persistence);
+        xastir_snprintf(devices[TNC_port].persistence,
+            sizeof(devices[TNC_port].persistence),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         send_kiss_config(TNC_port,0,0x02,atoi(devices[TNC_port].persistence));
 
-        strcpy(devices[TNC_port].slottime,XmTextFieldGetString(TNC_slottime));
+        temp_ptr = XmTextFieldGetString(TNC_slottime);
+        xastir_snprintf(devices[TNC_port].slottime,
+            sizeof(devices[TNC_port].slottime),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         send_kiss_config(TNC_port,0,0x03,atoi(devices[TNC_port].slottime));
 
-        strcpy(devices[TNC_port].txtail,XmTextFieldGetString(TNC_txtail));
+        temp_ptr = XmTextFieldGetString(TNC_txtail);
+        xastir_snprintf(devices[TNC_port].txtail,
+            sizeof(devices[TNC_port].txtail),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         send_kiss_config(TNC_port,0,0x04,atoi(devices[TNC_port].txtail));
  
         if (XmToggleButtonGetState(TNC_fullduplex))
@@ -405,9 +476,22 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         send_kiss_config(TNC_port,0,0x05,devices[TNC_port].fullduplex);
     }
     else {
-        strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
+        temp_ptr = XmTextFieldGetString(TNC_up_file_data);
+        xastir_snprintf(devices[TNC_port].tnc_up_file,
+            sizeof(devices[TNC_port].tnc_up_file),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(devices[TNC_port].tnc_up_file);
-        strcpy(devices[TNC_port].tnc_down_file,XmTextFieldGetString(TNC_down_file_data));
+
+        temp_ptr = XmTextFieldGetString(TNC_down_file_data);
+        xastir_snprintf(devices[TNC_port].tnc_down_file,
+            sizeof(devices[TNC_port].tnc_down_file),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(devices[TNC_port].tnc_down_file);
     }
 
@@ -1642,6 +1726,8 @@ void Config_GPS_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,
 
 void Config_GPS_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
     was_up=0;
@@ -1655,10 +1741,22 @@ void Config_GPS_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
 
-    strcpy(devices[GPS_port].device_name,XmTextFieldGetString(GPS_device_name_data));
+    temp_ptr = XmTextFieldGetString(GPS_device_name_data);
+    xastir_snprintf(devices[GPS_port].device_name,
+        sizeof(devices[GPS_port].device_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[GPS_port].device_name);
 
-    strcpy(devices[GPS_port].comment,XmTextFieldGetString(GPS_comment));
+    temp_ptr = XmTextFieldGetString(GPS_comment);
+    xastir_snprintf(devices[GPS_port].comment,
+        sizeof(devices[GPS_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[GPS_port].comment);
 
     if(XmToggleButtonGetState(GPS_active_on_startup))
@@ -2167,6 +2265,8 @@ void Config_WX_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, 
 
 void Config_WX_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
     was_up=0;
@@ -2180,10 +2280,22 @@ void Config_WX_change_data(Widget widget, XtPointer clientData, XtPointer callDa
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 
-    strcpy(devices[WX_port].device_name,XmTextFieldGetString(WX_device_name_data));
+    temp_ptr = XmTextFieldGetString(WX_device_name_data);
+    xastir_snprintf(devices[WX_port].device_name,
+        sizeof(devices[WX_port].device_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[WX_port].device_name);
 
-    strcpy(devices[WX_port].comment,XmTextFieldGetString(WX_comment));
+    temp_ptr = XmTextFieldGetString(WX_comment);
+    xastir_snprintf(devices[WX_port].comment,
+        sizeof(devices[WX_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[WX_port].comment);
 
     if(XmToggleButtonGetState(WX_active_on_startup))
@@ -2798,6 +2910,8 @@ void Config_NWX_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,
 
 void Config_NWX_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
 
@@ -2812,11 +2926,26 @@ void Config_NWX_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
 
-    strcpy(devices[NWX_port].device_host_name,XmTextFieldGetString(NWX_host_name_data));
-    (void)remove_trailing_spaces(devices[NWX_port].device_host_name);
-    devices[NWX_port].sp=atoi(XmTextFieldGetString(NWX_host_port_data));
+    temp_ptr = XmTextFieldGetString(NWX_host_name_data);
+    xastir_snprintf(devices[NWX_port].device_host_name,
+        sizeof(devices[NWX_port].device_host_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
 
-    strcpy(devices[NWX_port].comment,XmTextFieldGetString(NWX_comment));
+    (void)remove_trailing_spaces(devices[NWX_port].device_host_name);
+
+    temp_ptr = XmTextFieldGetString(NWX_host_port_data);
+    devices[NWX_port].sp=atoi(temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(NWX_comment);
+    xastir_snprintf(devices[NWX_port].comment,
+        sizeof(devices[NWX_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[NWX_port].comment);
 
     if (XmToggleButtonGetState(NWX_active_on_startup))
@@ -3286,6 +3415,8 @@ void Config_NGPS_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 void Config_NGPS_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
     was_up=0;
@@ -3299,11 +3430,26 @@ void Config_NGPS_change_data(Widget widget, XtPointer clientData, XtPointer call
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" );
 
-    strcpy(devices[NGPS_port].device_host_name,XmTextFieldGetString(NGPS_host_name_data));
-    (void)remove_trailing_spaces(devices[NGPS_port].device_host_name);
-    devices[NGPS_port].sp=atoi(XmTextFieldGetString(NGPS_host_port_data));
+    temp_ptr = XmTextFieldGetString(NGPS_host_name_data);
+    xastir_snprintf(devices[NGPS_port].device_host_name,
+        sizeof(devices[NGPS_port].device_host_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
 
-    strcpy(devices[NGPS_port].comment,XmTextFieldGetString(NGPS_comment));
+    (void)remove_trailing_spaces(devices[NGPS_port].device_host_name);
+
+    temp_ptr = XmTextFieldGetString(NGPS_host_port_data);
+    devices[NGPS_port].sp=atoi(temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(NGPS_comment);
+    xastir_snprintf(devices[NGPS_port].comment,
+        sizeof(devices[NGPS_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[NGPS_port].comment);
 
     if(XmToggleButtonGetState(NGPS_active_on_startup))
@@ -3655,6 +3801,7 @@ void Config_AX25_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 void Config_AX25_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
 
     busy_cursor(appshell);
 
@@ -3669,10 +3816,22 @@ void Config_AX25_change_data(Widget widget, XtPointer clientData, XtPointer call
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" );
 
-    strcpy(devices[AX25_port].device_name,XmTextFieldGetString(AX25_device_name_data));
+    temp_ptr = XmTextFieldGetString(AX25_device_name_data);
+    xastir_snprintf(devices[AX25_port].device_name,
+        sizeof(devices[AX25_port].device_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AX25_port].device_name);
 
-    strcpy(devices[AX25_port].comment,XmTextFieldGetString(AX25_comment));
+    temp_ptr = XmTextFieldGetString(AX25_comment);
+    xastir_snprintf(devices[AX25_port].comment,
+        sizeof(devices[AX25_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AX25_port].comment);
 
     if(XmToggleButtonGetState(AX25_active_on_startup))
@@ -3696,14 +3855,40 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
     devices[AX25_port].igate_options=device_igate_options;
 
-    strcpy(devices[AX25_port].unproto1,XmTextFieldGetString(AX25_unproto1_data));
+    temp_ptr = XmTextFieldGetString(AX25_unproto1_data);
+    xastir_snprintf(devices[AX25_port].unproto1,
+        sizeof(devices[AX25_port].unproto1),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AX25_port].unproto1);
-    strcpy(devices[AX25_port].unproto2,XmTextFieldGetString(AX25_unproto2_data));
+
+    temp_ptr = XmTextFieldGetString(AX25_unproto2_data);
+    xastir_snprintf(devices[AX25_port].unproto2,
+        sizeof(devices[AX25_port].unproto2),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    
     (void)remove_trailing_spaces(devices[AX25_port].unproto2);
-    strcpy(devices[AX25_port].unproto3,XmTextFieldGetString(AX25_unproto3_data));
+
+    temp_ptr = XmTextFieldGetString(AX25_unproto3_data);
+    xastir_snprintf(devices[AX25_port].unproto3,
+        sizeof(devices[AX25_port].unproto3),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+ 
     (void)remove_trailing_spaces(devices[AX25_port].unproto3);
 
-    strcpy(devices[AX25_port].unproto_igate,XmTextFieldGetString(AX25_igate_data));
+    temp_ptr = XmTextFieldGetString(AX25_igate_data);
+    xastir_snprintf(devices[AX25_port].unproto_igate,
+        sizeof(devices[AX25_port].unproto_igate),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AX25_port].unproto_igate);
 
     devices[AX25_port].reconnect=1;
@@ -4244,6 +4429,8 @@ void Inet_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@u
 
 void Inet_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
     was_up=0;
@@ -4257,16 +4444,45 @@ void Inet_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
 begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
 
-    strcpy(devices[Inet_port].device_host_name,XmTextFieldGetString(Inet_host_data));
+    temp_ptr = XmTextFieldGetString(Inet_host_data);
+    xastir_snprintf(devices[Inet_port].device_host_name,
+        sizeof(devices[Inet_port].device_host_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Inet_port].device_host_name);
-    strcpy(devices[Inet_port].device_host_pswd,XmTextFieldGetString(Inet_password_data));
+
+    temp_ptr = XmTextFieldGetString(Inet_password_data);
+    xastir_snprintf(devices[Inet_port].device_host_pswd,
+        sizeof(devices[Inet_port].device_host_pswd),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Inet_port].device_host_pswd);
-    strcpy(devices[Inet_port].device_host_filter_string,XmTextFieldGetString(Inet_filter_data));
+
+    temp_ptr = XmTextFieldGetString(Inet_filter_data);
+    xastir_snprintf(devices[Inet_port].device_host_filter_string,
+        sizeof(devices[Inet_port].device_host_filter_string),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Inet_port].device_host_filter_string);
-    strcpy(devices[Inet_port].comment,XmTextFieldGetString(Inet_comment));
+
+    temp_ptr = XmTextFieldGetString(Inet_comment);
+    xastir_snprintf(devices[Inet_port].comment,
+        sizeof(devices[Inet_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    
     (void)remove_trailing_spaces(devices[Inet_port].comment);
 
-    devices[Inet_port].sp=atoi(XmTextFieldGetString(Inet_port_data));
+    temp_ptr = XmTextFieldGetString(Inet_port_data);
+    devices[Inet_port].sp=atoi(temp_ptr);
+    XtFree(temp_ptr);
 
     if(XmToggleButtonGetState(Inet_active_on_startup))
         devices[Inet_port].connect_on_startup=1;
@@ -4683,6 +4899,8 @@ void Database_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  
 
 void Database_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
     was_up=0;
@@ -4696,16 +4914,45 @@ void Database_change_data(Widget widget, XtPointer clientData, XtPointer callDat
 
 begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
 
-    strcpy(devices[Database_port].device_host_name,XmTextFieldGetString(Database_host_data));
+    temp_ptr = XmTextFieldGetString(Database_host_data);
+    xastir_snprintf(devices[Database_port].device_host_name,
+        sizeof(devices[Database_port].device_host_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Database_port].device_host_name);
-    strcpy(devices[Database_port].device_host_pswd,XmTextFieldGetString(Database_password_data));
+
+    temp_ptr = XmTextFieldGetString(Database_password_data);
+    xastir_snprintf(devices[Database_port].device_host_pswd,
+        sizeof(devices[Database_port].device_host_pswd),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Database_port].device_host_pswd);
-    strcpy(devices[Database_port].device_host_filter_string,XmTextFieldGetString(Database_filter_data));
+
+    temp_ptr = XmTextFieldGetString(Database_filter_data);
+    xastir_snprintf(devices[Database_port].device_host_filter_string,
+        sizeof(devices[Database_port].device_host_filter_string),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Database_port].device_host_filter_string);
-    strcpy(devices[Database_port].comment,XmTextFieldGetString(Database_comment));
+
+    temp_ptr = XmTextFieldGetString(Database_comment);
+    xastir_snprintf(devices[Database_port].comment,
+        sizeof(devices[Database_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[Database_port].comment);
 
-    devices[Database_port].sp=atoi(XmTextFieldGetString(Database_port_data));
+    temp_ptr = XmTextFieldGetString(Database_port_data);
+    devices[Database_port].sp=atoi(temp_ptr);
+    XtFree(temp_ptr);
 
     if(XmToggleButtonGetState(Database_active_on_startup))
         devices[Database_port].connect_on_startup=1;
@@ -5127,6 +5374,8 @@ void AGWPE_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@
 
 void AGWPE_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     int was_up;
+    char *temp_ptr;
+
 
     busy_cursor(appshell);
     was_up=0;
@@ -5142,26 +5391,80 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
     devices[AGWPE_port].igate_options=device_igate_options;
 
-    strcpy(devices[AGWPE_port].device_host_name,XmTextFieldGetString(AGWPE_host_data));
+    temp_ptr = XmTextFieldGetString(AGWPE_host_data);
+    xastir_snprintf(devices[AGWPE_port].device_host_name,
+        sizeof(devices[AGWPE_port].device_host_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_name);
-    strcpy(devices[AGWPE_port].device_host_pswd,XmTextFieldGetString(AGWPE_password_data));
+
+    temp_ptr = XmTextFieldGetString(AGWPE_password_data);
+    xastir_snprintf(devices[AGWPE_port].device_host_pswd,
+        sizeof(devices[AGWPE_port].device_host_pswd),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_pswd);
-    strcpy(devices[AGWPE_port].comment,XmTextFieldGetString(AGWPE_comment));
+
+    temp_ptr = XmTextFieldGetString(AGWPE_comment);
+    xastir_snprintf(devices[AGWPE_port].comment,
+        sizeof(devices[AGWPE_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AGWPE_port].comment);
 
-    devices[AGWPE_port].sp=atoi(XmTextFieldGetString(AGWPE_port_data));
+    temp_ptr = XmTextFieldGetString(AGWPE_port_data);
+    devices[AGWPE_port].sp=atoi(temp_ptr);
+    XtFree(temp_ptr);
 
-    strcpy(devices[AGWPE_port].unproto1,XmTextFieldGetString(AGWPE_unproto1_data));
+    temp_ptr = XmTextFieldGetString(AGWPE_unproto1_data);
+    xastir_snprintf(devices[AGWPE_port].unproto1,
+        sizeof(devices[AGWPE_port].unproto1),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    
     (void)remove_trailing_spaces(devices[AGWPE_port].unproto1);
-    strcpy(devices[AGWPE_port].unproto2,XmTextFieldGetString(AGWPE_unproto2_data));
+
+    temp_ptr = XmTextFieldGetString(AGWPE_unproto2_data);
+    xastir_snprintf(devices[AGWPE_port].unproto2,
+        sizeof(devices[AGWPE_port].unproto2),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AGWPE_port].unproto2);
-    strcpy(devices[AGWPE_port].unproto3,XmTextFieldGetString(AGWPE_unproto3_data));
+
+    temp_ptr = XmTextFieldGetString(AGWPE_unproto3_data);
+    xastir_snprintf(devices[AGWPE_port].unproto3,
+        sizeof(devices[AGWPE_port].unproto3),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+        
     (void)remove_trailing_spaces(devices[AGWPE_port].unproto3);
 
-    strcpy(devices[AGWPE_port].unproto_igate,XmTextFieldGetString(AGWPE_igate_data));
+    temp_ptr = XmTextFieldGetString(AGWPE_igate_data);
+    xastir_snprintf(devices[AGWPE_port].unproto_igate,
+        sizeof(devices[AGWPE_port].unproto_igate),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AGWPE_port].unproto_igate);
 
-    strcpy(devices[AGWPE_port].device_host_filter_string,XmTextFieldGetString(AGWPE_radioport_data));
+    temp_ptr = XmTextFieldGetString(AGWPE_radioport_data);
+    xastir_snprintf(devices[AGWPE_port].device_host_filter_string,
+        sizeof(devices[AGWPE_port].device_host_filter_string),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_filter_string);
  
     if(XmToggleButtonGetState(AGWPE_active_on_startup))

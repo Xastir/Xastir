@@ -101,13 +101,44 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     struct io_file *index;
     struct geo_location loc;
     char input[1024];
+    char *temp_ptr;
+
 
     /* find place and go there */
-    strcpy(geocoder_zip_name, XmTextFieldGetString(geocoder_zip_data));
-    strcpy(geocoder_state_name, XmTextFieldGetString(geocoder_state_data));
-    strcpy(geocoder_locality_name, XmTextFieldGetString(geocoder_locality_data));
-    strcpy(geocoder_address_name, XmTextFieldGetString(geocoder_address_data));
-    strcpy(geocoder_map_filename, XmTextFieldGetString(geocoder_map_file_data));
+    temp_ptr = XmTextFieldGetString(geocoder_zip_data);
+    xastir_snprintf(geocoder_zip_name,
+        sizeof(geocoder_zip_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(geocoder_state_data);
+    xastir_snprintf(geocoder_state_name,
+        sizeof(geocoder_state_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(geocoder_locality_data);
+    xastir_snprintf(geocoder_locality_name,
+        sizeof(geocoder_locality_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(geocoder_address_data);
+    xastir_snprintf(geocoder_address_name,
+        sizeof(geocoder_address_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(geocoder_map_file_data);
+    xastir_snprintf(geocoder_map_filename,
+        sizeof(geocoder_map_filename),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(geocoder_zip_name);
     (void)remove_trailing_spaces(geocoder_state_name);
