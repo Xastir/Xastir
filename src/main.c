@@ -12065,7 +12065,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
             if (distance < range) {
 //fprintf(stderr,"Zooming out\n");
                 scale_factor = (range * 1.0)/distance;
-                fprintf(stderr,"Scale Factor: %f\n", scale_factor);
+//                fprintf(stderr,"Scale Factor: %f\n", scale_factor);
                 my_scale_y = (long)(scale_y * scale_factor);
             }
             else {  // distance > range
