@@ -152,8 +152,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             statusline(langcode("BBARSTA011"),0);       // Auto Reply Messages OFF
             output_message(mw[i].to_call_sign,temp1,temp2);
             XmTextFieldSetString(mw[i].send_message_message_data,"");
-            if (mw[i].message_group!=1)
-                XtSetSensitive(mw[i].button_ok,FALSE);
+//            if (mw[i].message_group!=1)
+//                XtSetSensitive(mw[i].button_ok,FALSE);
         }
         else {
             // Could add a popup here someday that says something about
