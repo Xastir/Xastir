@@ -175,7 +175,7 @@ be needed later, install these as well:
     ImageMagick development headers
 
 
-Note that some packages may have dependenies on yet more packages.
+Note that some packages may have dependencies on yet more packages.
 Hopefully your package installation tool will take care of those for
 you.  It's also common for at least one of these packages to forget
 to list some of it's dependencies (ImageMagick is known for that).
