@@ -914,8 +914,8 @@ fi
 # 
 use_geotiff=no
 AC_CHECK_LIB(tiff, TIFFClose,
-  AC_CHECK_LIB(geotiff, GTIFNew,
-    AC_CHECK_LIB(proj, pj_init, use_geotiff="yes")))
+  AC_CHECK_LIB(proj, pj_init,
+    AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff="yes")))
 if test "$use_geotiff" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_GEOTIFF, 1, [Define if you have GeoTiff Package])
   LIBS="-lgeotiff -lproj ${LIBS} -ltiff "
