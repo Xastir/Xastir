@@ -2267,6 +2267,18 @@ void busy_cursor(Widget w) {
 
 
 
+
+
+// This function:
+// Draws the map data into "pixmap", copies "pixmap" to
+// "pixmap_alerts", draws alerts into "pixmap_alerts", copies
+// "pixmap_alerts" to "pixmap_final", draws symbols/tracks into
+// "pixmap_final" via a call to display_file().
+//
+// Other functions which call this function are responsible for
+// copying the image from pixmap_final() to the screen's drawing
+// area.
+//
 void create_image(Widget w) {
     Dimension width, height, margin_width, margin_height;
     long lat_offset_temp;
@@ -2435,9 +2447,13 @@ void create_image(Widget w) {
         pos2_lon,
         temp_course,
         sizeof(temp_course) );
+
     draw_grid(w);                       // Draw grid if enabled
+
     display_file(w);                    // display stations (symbols, info, trails)
+
     last_alert_redraw=sec_now();        // set last time of screen redraw
+
     if (debug_level & 4)
         printf("Create image stop\n");
 }
@@ -2447,9 +2463,15 @@ void create_image(Widget w) {
 
 
 // Routine used to refresh image WITHOUT reading regular map files
-// from disk.  It uses the map data already in "pixmap", then adds
-// the weather alert map data to it, leaving the combined data in
-// "pixmap_alerts".
+// from disk.  It starts with the map data already in "pixmap",
+// copies "pixmap" to "pixmap_alerts", draws alerts into
+// "pixmap_alerts", copies "pixmap_alerts" to "pixmap_final", draws
+// symbols/tracks into "pixmap_final" via a call to display_file().
+//
+// Other functions which call this function are responsible for
+// copying the image from pixmap_final() to the screen's drawing
+// area.
+//
 void refresh_image(Widget w) {
     Dimension width, height, margin_width, margin_height;
     long lat_offset_temp;
@@ -2558,6 +2580,10 @@ void refresh_image(Widget w) {
 
 
 
+// And this function is even faster yet.  It snags "pixmap_alerts",
+// which already has map and alert data drawn into it, copies it to
+// pixmap_final, then draws symbols and tracks on top of it.  When
+// done it copies the image to the drawing area, making it visible.
 void redraw_symbols(Widget w) {
 
     /* copy over map and alert data to final pixmap */
