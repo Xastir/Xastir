@@ -3652,18 +3652,23 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         filter_data_pane, filter_display_pane;
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
-        track_button, download_trail_button,
-        station_clear_button, tracks_clear_button,
-        object_history_refresh_button,
-        object_history_clear_button, uptime_button,
-        save_button,file_button, open_file_button, exit_button, really_exit_button,
-        view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
-        localstations_button, laststations_button, objectstations_button, objectmystations_button,
-        weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
-        config_button, defaults_button, timing_button, coordinates_button, station_button,
-        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
-        map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
-        Map_background_color_Pane, map_background_button, map_pointer_menu_button,
+        track_button, download_trail_button, station_clear_button,
+        tracks_clear_button, object_history_refresh_button,
+        object_history_clear_button, uptime_button, save_button,
+        file_button, open_file_button, exit_button,
+        really_exit_button, view_button, view_messages_button,
+        bullet_button, packet_data_button, mobile_button,
+        stations_button, localstations_button, laststations_button,
+        objectstations_button, objectmystations_button,
+        weather_button, wx_station_button, locate_button,
+        locate_place_button, jump_button, jump_button2, alert_button,
+        config_button, defaults_button, timing_button,
+        coordinates_button, station_button, map_disable_button,
+        map_button, map_auto_button, map_chooser_button,
+        map_grid_button, map_levels_button, map_labels_button,
+        map_fill_button, coordinate_calculator_button,
+        Map_background_color_Pane, map_background_button,
+        map_pointer_menu_button,
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_GEOTIFF)
         Geotiff_intensity_Pane, geotiff_intensity_button,
@@ -3675,14 +3680,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         Map_station_label_Pane, map_station_label_button,
         map_wx_alerts_button, index_maps_on_startup_button,
         units_choice_button, dbstatus_choice_button,
-        device_config_button,
-        iface_button, iface_connect_button, tnc_logging,
-        transmit_disable_toggle,
-        net_logging, igate_logging, wx_logging, enable_snapshots, print_button,
+        device_config_button, iface_button, iface_connect_button,
+        tnc_logging, transmit_disable_toggle, net_logging,
+        igate_logging, wx_logging, enable_snapshots, print_button,
         test_button, debug_level_button, aa_button, speech_button,
         smart_beacon_button, map_indexer_button, auto_msg_set_button,
-        message_button, send_message_to_button, open_messages_group_button,
-        clear_messages_button,
+        message_button, send_message_to_button,
+        open_messages_group_button, clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
         filter_data_button, filter_display_button,
 
@@ -4231,6 +4235,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif  // HAVE_IMAGEMAGICK
 
 
+    // Map Display Bookmarks
     jump_button = XtVaCreateManagedWidget(langcode("PULDNMP012"),
             xmPushButtonGadgetClass,
             mappane,
@@ -6125,6 +6130,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
     XtAddCallback(station_info,XmNactivateCallback,Station_info,NULL);
+
+    // Map Bookmarks
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("PULDNMP012")); ac++;
+    jump_button2=XtCreateManagedWidget(langcode("PULDNMP012"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(jump_button2,XmNactivateCallback,Jump_location, NULL);
+ 
+
 
     // Zoom in"
     ac = 0;
