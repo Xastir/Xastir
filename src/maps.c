@@ -1841,6 +1841,10 @@ int map_visible (unsigned long bottom_map_boundary,
     }
 
 
+    if (debug_level & 16)
+        fprintf(stderr,"map_visible(): checking for intersects 1\n");
+    
+
     /* In order to determine whether the two rectangles intersect,
     * we need to figure out if any TWO edges of one rectangle are
     * contained inside the edges of the other.
@@ -1858,6 +1862,9 @@ int map_visible (unsigned long bottom_map_boundary,
         }
     }
 
+    if (debug_level & 16)
+        fprintf(stderr,"map_visible(): checking for intersects 2\n");
+ 
 
     /* Look for right or left view boundaries inside map */
     if (   ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary)) ||
@@ -1872,7 +1879,9 @@ int map_visible (unsigned long bottom_map_boundary,
         }
     }
 
-
+    if (debug_level & 16)
+        fprintf(stderr,"map_visible(): checking for intersects 3\n");
+ 
     /*
     * Look for left/right map boundaries both inside view, but top/bottom
     * of map surround the viewport.  We have a column of the map going
@@ -1886,6 +1895,8 @@ int map_visible (unsigned long bottom_map_boundary,
         return(1);  /* Draw this pixmap onto the screen */
     }
 
+    if (debug_level & 16)
+        fprintf(stderr,"map_visible(): checking for intersects 4\n");
 
     /*
     * Look for top/bottom map boundaries both inside view, but left/right
@@ -1899,6 +1910,9 @@ int map_visible (unsigned long bottom_map_boundary,
     {
         return(1);  /* Draw this pixmap onto the screen */
     }
+
+    if (debug_level & 16)
+        fprintf(stderr,"map_visible(): returning\n");
 
     return (0); /* Skip this pixmap */
 }
