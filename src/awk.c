@@ -93,13 +93,10 @@
  * awk_new_symtab: alloc a symbol table with $0-$9 pre-declared.
  */
 awk_symtab *awk_new_symtab() {
-//WE7U
-// Allocates memory!
     awk_symtab *n = calloc(1,sizeof(awk_symtab));
     static char sym[MAXSUBS][2];
     int i;
 
-//fprintf(stderr,"awk_new_symtab: calloc\n");
     for (i = 0; i < MAXSUBS; i++) {
         sym[i][0] = i+'0';
         sym[i][1] = '\0';
@@ -115,7 +112,6 @@ awk_symtab *awk_new_symtab() {
 void awk_free_symtab(awk_symtab *s) {
     int i;
 
-//fprintf(stderr,"awk_free_symtab: free\n");
     for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
         awk_symbol *p,*x;
         
@@ -139,14 +135,10 @@ int awk_declare_sym(awk_symtab *this,
                 enum awk_symtype type,
                 const void *val,
                 const int size) {
-//WE7U
-// Allocates memory!
 awk_symbol *s = calloc(1,sizeof(awk_symbol));
     awk_symbol *p;
     u_int i;
 
-//fprintf(stderr,"awk_declare_sym: calloc\n");
- 
     if (!s)
         return -1;
     s->name = name;
@@ -353,12 +345,9 @@ int awk_compile_stmt(awk_symtab *this,
  *  and link them together.
  */
 awk_action *awk_compile_action(awk_symtab *this, const char *act) {
-//WE7U
-// Allocates memory!
     awk_action *p, *first = calloc(1,sizeof(awk_action));
     const char *cs,*ns;         /* current, next stmt */
 
-//fprintf(stderr,"awk_compile_action: calloc\n");
     p = first;
     if (!p)
         return NULL;
@@ -368,8 +357,6 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act) {
         if (!ns)                        /* end of string */
             ns = &cs[strlen(cs)];
         if (awk_compile_stmt(this,p,cs,(ns-cs)) >= 0) {
-//WE7U
-// Allocates memory!
             p->next_act = calloc(1,sizeof(awk_action));
             p = p->next_act;
         }
@@ -386,8 +373,6 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act) {
  */
 void awk_free_action(awk_action *a) {
 
-//fprintf(stderr,"awk_free_action: free\n");
- 
     while (a) {
         awk_action *p = a;
         a = p->next_act;
@@ -483,8 +468,6 @@ void awk_eval_expr(awk_symtab *this,
                         sp = tbuf;
                     } else {    /* tbuf too small */
                         free_it++;
-//WE7U
-// Allocates memory!
                         sp = malloc(src->size);
                         if (!sp) /* oh well! */
                             break; 
@@ -494,8 +477,6 @@ void awk_eval_expr(awk_symtab *this,
 
                     // We only want to free it if we malloc'ed it.
                     if (free_it)
-//WE7U
-// Frees the memory
                         free(sp);
 
                 } else {
@@ -594,11 +575,8 @@ int awk_exec_action(awk_symtab *this, const awk_action *code) {
  * awk_new_rule: alloc a rule
  */
 awk_rule *awk_new_rule() {
-//WE7U
-// Allocates memory!
     awk_rule *n = calloc(1,sizeof(awk_rule));
 
-//fprintf(stderr,"awk_new_rule: calloc\n");
     return n;
 }
 
@@ -608,8 +586,6 @@ awk_rule *awk_new_rule() {
 
 void awk_free_rule(awk_rule *r) {
 
-//fprintf(stderr,"awk_free_rule: free\n");
- 
     if (r) {
         if (r->flags&AR_MALLOC) {
             if (r->act)
@@ -623,6 +599,8 @@ void awk_free_rule(awk_rule *r) {
             if (r->pe)
                 pcre_free(r->pe);
         }
+        if (r->code)
+            awk_free_action(r->code);
         free(r);
     }
 }
@@ -635,11 +613,8 @@ void awk_free_rule(awk_rule *r) {
  * awk_new_program: alloc a program
  */
 awk_program *awk_new_program() {
-//WE7U
-// Allocates memory!
     awk_program *n = calloc(1,sizeof(awk_program));
 
-//fprintf(stderr,"awk_new_program: calloc\n");
     return n;
 }
 
@@ -650,8 +625,6 @@ awk_program *awk_new_program() {
 void awk_free_program(awk_program *rs) {
     awk_rule *r;
 
-//fprintf(stderr,"awk_free_program: free\n");
- 
     if (rs) {
         for (r = rs->head; r; ) {
             awk_rule *x = r;
@@ -692,12 +665,8 @@ void awk_add_rule(awk_program *this, awk_rule *r) {
  */
 awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
                                     int nrules) { /* size of array */
-//WE7U
-// Allocates memory!
     awk_program *n = awk_new_program();
     awk_rule *r; 
-
-//fprintf(stderr,"awk_load_program_array\n");
 
     if (!n)
         return NULL;
@@ -745,17 +714,15 @@ static void garbage(const char *file,
  * Note that action can continue onto subsequent lines.
  */
 awk_program *awk_load_program_file(const char *file) { /* rules filename */
-//WE7U
-// Allocates memory!
     awk_program *n = awk_new_program();
     awk_rule *r; 
     FILE *f = fopen(file,"r");
     char in[1024];
     int line = 0;
 
-//fprintf(stderr,"awk_load_program_file: strdup\n");
- 
     if (!f) {
+        if (n)
+            awk_free_program(n);
         return NULL;
     }
 
@@ -787,8 +754,6 @@ awk_program *awk_load_program_file(const char *file) { /* rules filename */
             }
             if (*cp != '\0')    /* zap end of pattern */
                 *cp++ = '\0';
-//WE7U
-// strdup allocates memory
             r->pattern = strdup(p);
 
             break;
@@ -845,8 +810,6 @@ awk_program *awk_load_program_file(const char *file) { /* rules filename */
             if (*cp != '\0')    /* zap end of act */
                 *cp++ = '\0';
 
-//WE7U
-// strdup allocates memory
             r->act = strdup(p);
 
             r->flags |= AR_MALLOC;
@@ -885,6 +848,8 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs) {
     rs->symtbl = symtab;
     for (r = rs->head; r; r = r->next_rule) {
         if (r->ruletype == REGEXP) {
+            if (r->tables)
+                pcre_free((void *)r->tables);
             r->tables = pcre_maketables(); /* NLS locale parse tables */
             if (!r->re)
                 r->re = pcre_compile(r->pattern, /* the pattern */
@@ -892,6 +857,7 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs) {
                                      &error, /* for error message */
                                      &erroffset, /* for error offset */
                                      r->tables); /* NLS locale character tables */
+
             if (!r->re) {
                 int i;
                 
@@ -931,8 +897,6 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs) {
 void awk_uncompile_program(awk_program *p) {
     awk_rule *r;
 
-//fprintf(stderr,"awk_uncompile_program: free\n");
- 
     if (!p)
         return;
 

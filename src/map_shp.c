@@ -702,8 +702,6 @@ void draw_shapefile_map (Widget w,
 
 #ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
-//WE7U
-// Allocates new memory!
         Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
 
     if (debug_level & 16)
@@ -716,11 +714,7 @@ void draw_shapefile_map (Widget w,
         // once during each runtime and then gets left alone.  We
         // don't need to free it.
         dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
-//WE7U
-//fprintf(stderr,"a13\n");
 
-//WE7U
-// Allocates new memory!
         // Calls awk_new_program which allocates memory.  Again, we
         // don't need to free this one, as it gets allocated only
         // once per runtime.
@@ -793,8 +787,6 @@ void draw_shapefile_map (Widget w,
     }
 #ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
-//WE7U
-// Allocates new memory!
         sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
         if (!sig_info) {
             fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
@@ -803,11 +795,7 @@ void draw_shapefile_map (Widget w,
         if (sig_info) {         /* we've got a .dbfawk, so set up symtbl */
 
             if (!Symtbl) {
-//WE7U
-// Allocates new memory!
                 Symtbl = awk_new_symtab();
-//WE7U
-// Allocates new memory!
                 awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
                 awk_declare_sym(Symtbl,"color",INT,&color,sizeof(color));
                 awk_declare_sym(Symtbl,"lanes",INT,&lanes,sizeof(lanes));
@@ -824,16 +812,10 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"label_color",INT,&label_color,sizeof(label_color));
                 awk_declare_sym(Symtbl,"font_size",INT,&font_size,sizeof(font_size));
             }
-//WE7U
-// Calls awk_compile_action() which allocates memory!
             if (awk_compile_program(Symtbl,sig_info->prog) < 0) {
                 fprintf(stderr,"Unable to compile .dbfawk program\n");
 
-//WE7U
-// Frees memory
                 if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
                     dbfawk_free_sigs(sig_info);
                 }
                 return;
@@ -841,23 +823,7 @@ void draw_shapefile_map (Widget w,
             awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
 
             /* find out which dbf fields we care to read */
-//WE7U
-// Here's where a bunch of calloc() calls occur.  Some of which
-// don't get freed!  dbfawk_field_list allocates new memory.
             fld_info = dbfawk_field_list(hDBF, dbffields);
-
-            //  Check for NULL here
-            if (!fld_info) {
-                fprintf(stderr,"draw_shapefile_map: fld_info is NULL\n");
-//WE7U
-// Frees memory
-                if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
-                    dbfawk_free_sigs(sig_info);
-                }
-                return;
-            }
 
         } else {                /* should never be reached anymore! */
             fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
@@ -1190,8 +1156,6 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             int keylen;
             if (sig_info) {
-//WE7U
-// Allocates new memory!
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
                 keylen = strlen(key);
                 if (debug_level & 16) {
@@ -1303,12 +1267,8 @@ void draw_shapefile_map (Widget w,
         DBFClose( hDBF );   // Clean up open file descriptors
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
             dbfawk_free_sigs(sig_info);
         }
 #endif
@@ -1338,12 +1298,8 @@ void draw_shapefile_map (Widget w,
         SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
             dbfawk_free_sigs(sig_info);
         }
 #endif
@@ -1376,12 +1332,8 @@ void draw_shapefile_map (Widget w,
             SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
             dbfawk_free_info(fld_info);
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
                 dbfawk_free_sigs(sig_info);
             }
 #endif
@@ -1394,12 +1346,8 @@ void draw_shapefile_map (Widget w,
             SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
             dbfawk_free_info(fld_info);
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
                 dbfawk_free_sigs(sig_info);
             }
 #endif
@@ -1433,12 +1381,8 @@ void draw_shapefile_map (Widget w,
         SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
             dbfawk_free_sigs(sig_info);
         }
 #endif
@@ -1571,12 +1515,8 @@ void draw_shapefile_map (Widget w,
         (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
             dbfawk_free_sigs(sig_info);
         }
 #endif
@@ -1671,8 +1611,6 @@ void draw_shapefile_map (Widget w,
             }
 #ifdef WITH_DBFAWK
             if (sig_info) {
-//WE7U
-// Allocates new memory!
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
@@ -2664,9 +2602,6 @@ void draw_shapefile_map (Widget w,
                                 // list.
                                 //fprintf(stderr,"Creating a new record: %s\n",temp);
                                 ptr2 = (label_string *)malloc(sizeof(label_string));
-//WE7U
-// Allocates new memory!
-//fprintf(stderr,"a14\n");
                                 xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
                                 ptr2->found = 1;
                                 ptr2->next = label_ptr;
@@ -2777,9 +2712,6 @@ void draw_shapefile_map (Widget w,
                     // this Shape.
                     // !!Remember to free this storage later!!
                     polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
-//WE7U
-// Allocates new memory!
-//fprintf(stderr,"a15\n");
 
 // Run through the entire shape (all rings of it) once.  Create an
 // array of flags that specify whether each ring is a fill or a
@@ -3468,9 +3400,6 @@ if (on_screen) {
                     // Free the storage that we allocated to hold
                     // the "hole" flags for the shape.
                     free(polygon_hole_storage);
-//WE7U
-// Frees memory.
-//fprintf(stderr,"f13\n");
 
                     if (polygon_hole_flag) {
                         //Free the temporary GC that we may have used to
@@ -3670,25 +3599,13 @@ if (on_screen) {
         label_ptr = ptr2->next;
         //fprintf(stderr,"free: %s\n",ptr2->label);
         free(ptr2);
-//WE7U
-// Frees memory.
-//fprintf(stderr,"f14\n");
-
         ptr2 = label_ptr;
     }
 
 #ifdef WITH_DBFAWK
-//WE7U
-// Frees memory
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-//WE7U
-// Frees memory
         dbfawk_free_sigs(sig_info);
-//WE7U
-// Frees memory.
-//fprintf(stderr,"f15\n");
-
     }
 #endif
 
