@@ -21,7 +21,8 @@ pkglib_SCRIPTS = \
     update_langfile.pl \
     waypoint-get.pl \
     xastir-fixcfg.sh \
-    xastir-migrate.sh
+    xastir-migrate.sh \
+    kiss-off.pl
 
 
 EXTRA_DIST = $(pkglib_SCRIPTS)
