@@ -1182,7 +1182,16 @@ Samples Per Pixel: 1
         || (  bitsPerSample != 8)
         || (   planarConfig != 1) )
     {
-        fprintf(stderr,"*** geoTIFF file %s is not in the proper format.\n", file);
+        fprintf(stderr,"*** geoTIFF file %s is not in the proper format:\n", file);
+        if (samplesPerPixel != 1)
+            fprintf(stderr,"***** Has %d samples per pixel instead of 1\n",
+                    samplesPerPixel);
+        if (bitsPerSample != 8)
+            fprintf(stderr,"***** Has %d bits per sample instead of 8\n",
+                    bitsPerSample);
+        if (planarConfig != 1)
+            fprintf(stderr,"***** Has planarConfig of %d instead of 1\n",
+                    planarConfig);
         fprintf(stderr,"*** Please reformat it and try again.\n");
         XTIFFClose(tif);
         return;
