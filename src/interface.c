@@ -3677,6 +3677,9 @@ int tnc_get_data_type(char *buf, int port) {
             }
         }
     }
+    else {  // Must be APRS data
+        type = 0;
+    }
     return(type);
 }
 
