@@ -407,6 +407,7 @@ scr_s_x_min = 0;
 
 
 // Prototypes
+void Draw_Points(OGRGeometryH geometryH, int level, OGRCoordinateTransformationH transformH);
 void Draw_Lines(OGRGeometryH geometryH, int level, OGRCoordinateTransformationH transformH);
 void Draw_Polygons(OGRGeometryH geometryH, int level, OGRCoordinateTransformationH transformH);
  
@@ -1141,9 +1142,6 @@ void draw_ogr_map(Widget w,
         while ( (featureH = OGR_L_GetNextFeature( layer )) != NULL ) {
             OGRGeometryH geometryH;
             int num = 0;
-            int ii;
-            double X1, Y1, Z1;
-//            double X2, Y2, Z2;
 //            char *buffer;
 
  
@@ -1252,47 +1250,7 @@ void draw_ogr_map(Widget w,
                 case 0x80000001:    // Point25D
                 case 0x80000004:    // MultiPoint25D
 
-                    // Get number of elements (points)
-                    num = OGR_G_GetPointCount(geometryH);
-//                    fprintf(stderr,"  Number of elements: %d\n",num);
-
-                    // Print out the point
-//                    for ( ii=0; ii < num; ii++ ) {
-//                        X1 = OGR_G_GetX(geometryH, ii);
-//                        Y1 = OGR_G_GetY(geometryH, ii);
-//                        Z1 = OGR_G_GetZ(geometryH, ii);
-//                        fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
-//                    }
-
-                    // Draw one point
-                    if (num > 0) {
-                        for ( ii = 0;  ii < num; ii++ ) {
-                            int ok = 1;
-
-                            OGR_G_GetPoint(geometryH,
-                                ii,
-                                &X1,
-                                &Y1,
-                                &Z1);
-
-                            if (transformH) {
-                                // Convert to WGS84 coordinates.
-                                if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
-                                    fprintf(stderr,
-                                        "Couldn't convert point to WGS84\n");
-                                    ok = 0;
-                                }
-                            }
-
-                            if (ok) {
-                                draw_point_ll(da,
-                                    (float)Y1,
-                                    (float)X1,
-                                    gc,
-                                    pixmap);
-                            }
-                        }
-                    } 
+                    Draw_Points(geometryH, 1, transformH);
                     break;
 
                 case 2:             // LineString (polyline)
@@ -1339,6 +1297,128 @@ void draw_ogr_map(Widget w,
     }
 }
 
+
+
+
+
+// Draw_Points().
+//
+// A function which can be recursively called.  Tracks the recursion
+// depth so that we can recover if we exceed the maximum.  If we
+// keep finding geometries below us, keep calling the same function.
+// Simple and efficient.
+// 
+void Draw_Points(OGRGeometryH geometryH,
+        int level,
+        OGRCoordinateTransformationH transformH) {
+ 
+    int kk;
+    int object_num = 0;
+
+
+//fprintf(stderr, "Draw_Points\n");
+
+    if (geometryH == NULL)
+        return;
+
+    // Check for more objects below this one, recursing into any
+    // objects found.  "level" keeps us from recursing too far (we
+    // don't want infinite recursion here).  These objects may be
+    // rings or they may be other polygons in a collection.
+    // 
+    object_num = OGR_G_GetGeometryCount(geometryH);
+    // Iterate through the objects found.  If another geometry is
+    // detected, call this function again recursively.  That will
+    // cause all of the lower objects to get drawn.
+    //
+    if (object_num) {
+
+//fprintf(stderr, "DrawPoints: Found %d geometries\n", object_num);
+ 
+        for ( kk = 0; kk < object_num; kk++ ) {
+            OGRGeometryH child_geometryH;
+            int sub_object_num;
+
+            // This may be a ring, or another object with rings.
+            child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
+
+            sub_object_num = OGR_G_GetGeometryCount(child_geometryH);
+
+            if (sub_object_num) {
+                // We found geometries below this.  Recurse.
+                if (level < 5) {
+fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
+                    Draw_Points(child_geometryH, level+1, transformH);
+                }
+            }
+        }
+    }
+    else {  // Draw
+        double X1, Y1, Z1;
+        int points;
+
+
+        // Get number of elements (points)
+        points = OGR_G_GetPointCount(geometryH);
+//        fprintf(stderr,"  Number of elements: %d\n",points);
+
+        // Print out the point
+//        for ( ii=0; ii < num; ii++ ) {
+//            X1 = OGR_G_GetX(geometryH, ii);
+//            Y1 = OGR_G_GetY(geometryH, ii);
+//            Z1 = OGR_G_GetZ(geometryH, ii);
+//            fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
+//        }
+
+
+        // Draw one point
+        if (points > 0) {
+            int ii;
+
+            for ( ii = 0; ii < points; ii++ ) {
+                int ok = 1;
+
+                // Get the point!
+                OGR_G_GetPoint(geometryH,
+                    ii,
+                    &X1,
+                    &Y1,
+                    &Z1);
+
+                if (transformH) {
+                    // Convert to WGS84 coordinates.
+                    if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
+                        fprintf(stderr,
+                            "Couldn't convert point to WGS84\n");
+                        ok = 0;
+                    }
+                }
+
+                // Check whether point is within our view
+                if (ok && map_visible_lat_lon( Y1,  // bottom
+                        Y1, // top
+                        X1, // left
+                        X1, // right
+                        NULL)) {
+//                  fprintf(stderr, "Point is visible\n");
+                }
+                else {
+//                  fprintf(stderr, "Point is NOT visible\n");
+                    ok = 0;
+                }
+
+                if (ok) {
+                    draw_point_ll(da,
+                        (float)Y1,
+                        (float)X1,
+                        gc,
+                        pixmap);
+                }
+            }
+        }
+    }
+}
+ 
 
 
 
