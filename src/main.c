@@ -3382,7 +3382,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
-    Widget filepane, configpane, exitpane, mappane, viewpane, stationspane, messagepane, ifacepane, helppane;
+    Widget filepane, configpane, exitpane, mappane, viewpane,
+        stationspane, messagepane, ifacepane, helppane,
+        symbol_filter_pane, info_filter_pane;
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button,
@@ -3416,6 +3418,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         message_button, send_message_to_button, open_messages_group_button,
         clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
+        symbol_filter_button, info_filter_button,
 
 #ifdef ARROWS
         pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
@@ -4409,10 +4412,24 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
+    symbol_filter_pane = XmCreatePulldownMenu(stationspane,
+            "symbol_filter_pane",
+            al,
+            ac);
 
+    symbol_filter_button = XtVaCreateManagedWidget(langcode("PULDNDP032"),
+            xmCascadeButtonGadgetClass,
+            stationspane,
+            XmNsubMenuId,symbol_filter_pane,
+            XmNmnemonic,langcode_hotkey("PULDNDP032"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Symbol Filtering
     symbols_button = XtVaCreateManagedWidget(langcode("PULDNDP012"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4423,10 +4440,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(symbols_button,TRUE,FALSE);
 
 
-//WE7U
     symbols_stations_button = XtVaCreateManagedWidget(langcode("PULDNDP027"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4441,7 +4457,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     symbols_stationary_button = XtVaCreateManagedWidget(langcode("PULDNDP028"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4456,7 +4472,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     symbols_moving_button = XtVaCreateManagedWidget(langcode("PULDNDP029"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4471,7 +4487,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     symbols_WX_button = XtVaCreateManagedWidget(langcode("PULDNDP030"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4486,7 +4502,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     symbols_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP031"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4501,7 +4517,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     wx_obj_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP026"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            symbol_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4512,22 +4528,27 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(wx_obj_enable_button,TRUE,FALSE);
     if (!symbol_display_enable || !symbol_display_objects)
         XtSetSensitive(wx_obj_enable_button,FALSE);
-//WE7U
+    // End of Symbol Filtering
 
 
+    // Displayed Info Filtering
+    info_filter_pane = XmCreatePulldownMenu(stationspane,
+            "symbol_filter_pane",
+            al,
+            ac);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3a",
-            xmSeparatorGadgetClass,
+    info_filter_button = XtVaCreateManagedWidget(langcode("PULDNDP033"),
+            xmCascadeButtonGadgetClass,
             stationspane,
+            XmNsubMenuId,info_filter_pane,
+            XmNmnemonic,langcode_hotkey("PULDNDP033"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
 
-
-
     symbols_rotate_button = XtVaCreateManagedWidget(langcode("PULDNDP011"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4542,7 +4563,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     call_button = XtVaCreateManagedWidget(langcode("PULDNDP010"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4557,7 +4578,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     speed_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP004"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4572,7 +4593,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     speed_short_button = XtVaCreateManagedWidget(langcode("PULDNDP017"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4587,7 +4608,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     alt_button = XtVaCreateManagedWidget(langcode("PULDNDP002"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4602,7 +4623,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     course_button = XtVaCreateManagedWidget(langcode("PULDNDP003"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4617,7 +4638,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     dist_course_button = XtVaCreateManagedWidget(langcode("PULDNDP005"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4632,7 +4653,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     wx_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP009"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4647,7 +4668,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     wx_short_button = XtVaCreateManagedWidget(langcode("PULDNDP018"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4662,7 +4683,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_phg_button = XtVaCreateManagedWidget(langcode("PULDNDP008"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4677,7 +4698,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_phg_default_button = XtVaCreateManagedWidget(langcode("PULDNDP021"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4692,7 +4713,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_phg_mobiles_button = XtVaCreateManagedWidget(langcode("PULDNDP020"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4707,7 +4728,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_amb_button = XtVaCreateManagedWidget(langcode("PULDNDP013"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4722,7 +4743,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_old_data_button = XtVaCreateManagedWidget(langcode("PULDNDP019"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4736,7 +4757,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_DF_button = XtVaCreateManagedWidget(langcode("PULDNDP023"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4750,7 +4771,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     station_last_heard_button = XtVaCreateManagedWidget(langcode("PULDNDP024"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4764,18 +4785,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3b",
-            xmSeparatorGadgetClass,
-            stationspane,
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-
-
     station_trails_button = XtVaCreateManagedWidget(langcode("PULDNDP007"),
             xmToggleButtonGadgetClass,
-            stationspane,
+            info_filter_pane,
             XmNvisibleWhenOff, TRUE,                        
             XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
@@ -4784,10 +4796,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(station_trails_button,XmNvalueChangedCallback,Station_trails_toggle,"1");
     if (station_trails)
         XmToggleButtonSetState(station_trails_button,TRUE,FALSE);
+    // End of Displayed Info Filtering
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3c",
+    (void)XtVaCreateManagedWidget("create_appshell sep3",
             xmSeparatorGadgetClass,
             stationspane,
             MY_FOREGROUND_COLOR,
@@ -7890,7 +7903,6 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
 
 
 
-//WE7U
 void Symbols_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;

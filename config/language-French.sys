@@ -160,6 +160,8 @@ PULDNDP028|Display Non-Moving Stations||
 PULDNDP029|Display Moving Stations|| 
 PULDNDP030|Display WX Stations||
 PULDNDP031|Display Objects/Items||
+PULDNDP032|Filter Symbols||
+PULDNDP033|Filter Info||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||
