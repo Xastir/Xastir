@@ -889,6 +889,8 @@ void load_NWS_stations(char *file) {
                     add_NWS_stations();
                     if (NWS_station_data != NULL) {
                         // add data
+                        // Note:  Size of string variable is 12
+                        // bytes, defined in igate.h
                         (void)sscanf(line,"%11s",NWS_station_data[NWS_stations-1].call);
                         if (debug_level & 1024)
                             fprintf(stderr,"LINE:%s\n",line);
@@ -909,16 +911,19 @@ void load_NWS_stations(char *file) {
 
 
 
-/****************************************************************/
-/* check NWS stations file                                      */
-/* call: call to check                                          */
-/* returns 1 for found                                          */
-/****************************************************************/
+// check NWS stations file
+//
+// call: call to check
+// returns 1 for found
+//
+// Both the incoming call and the stored call we're matching against
+// have to be >= 3 characters long.  This routine will match only up
+// to the length of the stored string, so we now allow partial
+// matches.
+//
 int check_NWS_stations(char *call) {
-    int ok,i;
+    int ok, i, length, length_incoming;
 
-    if (debug_level & 1024)
-	    fprintf(stderr,"igate.c::check_NWS_stations %s\n", call);
 
     if (call == NULL)
         return(0);
@@ -926,13 +931,37 @@ int check_NWS_stations(char *call) {
     if (call[0] == '\0')
         return(0);
 
+    if (debug_level & 1024)
+	    fprintf(stderr,"igate.c::check_NWS_stations %s\n", call);
+
+    // Make sure that the incoming call is longer than three
+    // characters.  If not, skip it.
+    length_incoming = strlen(call);
+    if (length_incoming < 3)
+        return(0);
+
     ok=0;
     for (i=0; i<NWS_stations && !ok; i++) {
-        if (strcasecmp(call,NWS_station_data[i].call)==0) {
-            ok=1; // match found 
-	        if (debug_level && 1024) {
-                fprintf(stderr,"NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
-	        }
+
+        // Compute length of stored string.  If it's shorter than
+        // three characters, skip it and go on to the next one.
+        length = strlen(NWS_station_data[i].call);
+
+        if (length >= 3) {
+            // Compare the incoming call only up to the length of the
+            // stored call.  This allows partial matches.  The
+            // stored call could be significantly shorter than the
+            // incoming call, but at least three characters.
+            if (strncasecmp(call, NWS_station_data[i].call, length)==0) {
+
+                ok=1; // match found 
+    	        if (debug_level && 1024) {
+                    fprintf(stderr,"NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
+    	        }
+            }
+        }
+        else {
+            // Do nothing.  Stored call is too short.
         }
     }
     return(ok);
