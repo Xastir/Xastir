@@ -682,13 +682,36 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 // Simple and efficient.
 // 
 // This can get complicated for Shapefiles:  Polygons are composed
-// of rings.  If a ring goes in one direction, it's a fill, if the
-// other direction, it's a hole in the polygon.  Can test the
-// operation using Shapefiles for Island County, WA, Camano Island,
-// where there's an Island in Puget Sound that has a lake with an
-// island in it (48.15569N/122.48953W).  Also at 48.43867N/
-// 122.61687W there's another lake with an island in it.
+// of multiple rings.  If a ring goes in one direction, it's a fill
+// polygon, if the other direction, it's a hole polygon.
 //
+// Can test the operation using Shapefiles for Island County, WA,
+// Camano Island, where there's an Island in Puget Sound that has a
+// lake with an island in it (48.15569N/122.48953W)!
+//
+// At 48.43867N/122.61687W there's another lake with an island in
+// it, but this lake isn't on an island like the first example.
+//
+// A note from Frank Warmerdam (GDAL guy):
+//
+// "An OGRPolygon objects consists of one outer ring and zero or
+// more inner rings.  The inner rings are holes.  The C API kind of
+// hides this fact, but you should be able to assume that the first
+// ring is an outer ring, and any other rings are inner rings
+// (holes).  Note that in the simple features geometry model you
+// can't make any assumptions about the winding direction of holes
+// or outer rings.
+//
+// Some polygons when read from Shapefiles will be returned as
+// OGRMultiPolygon.  These are basically areas that have multiple
+// outer rings.  For instance, if you had one feature that was a
+// chain of islands.  In the past (and likely even now with some
+// format drivers) these were just returned as polygons with the
+// outer and inner rings all mixed up.  But the development code
+// includes fixes (for shapefiles at least) to fix this up and
+// convert into a multi polygon so you can properly establish what
+// are outer rings, and what are inner rings (holes)."
+
 void Draw_OGR_Polygons(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
@@ -885,6 +908,24 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 // *) Speed things up in any way possible.
 //
 // 
+// Regarding coordinate systems, a note from Frank Warmerdam:  "In
+// theory different layers in a datasource can have different
+// coordinate systems, though this is uncommon.  It does happen
+// though."
+//
+// Question regarding how to specify drawing preferences, answered
+// by Frank:  "There are many standards.  Within the OGR API the
+// preferred approach to this is the OGR Feature Style
+// Specification:
+//
+// http://gdal.velocet.ca/~warmerda/projects/opengis/ogr_feature_style_008.html
+//
+// Basically this is intended to provide a mechanism for different
+// underlying formats to indicate their rendering information.  It
+// is at least partially implemented for the DGN and Mapinfo
+// drivers.  The only applications that I am aware of taking
+// advantage of it are OpenEV and MapServer."
+
 void draw_ogr_map(Widget w,
                    char *dir,
                    char *filenm,
