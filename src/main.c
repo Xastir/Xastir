@@ -7725,8 +7725,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
         int i;
     static int last_alert_on_screen;
 
+
     do_time = 0;
-    nexttime = 50;  // Start UpdateTime again 50 milliseconds after we've completed
+    nexttime = 1;  // Start UpdateTime again 1 milliseconds after we've completed
 
     (void)sound_done();
 
@@ -8277,8 +8278,12 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
             /* END- READ FILE IF OPENED */
         }
     }
-    (void)XtAppAddTimeOut(XtWidgetToApplicationContext(w),nexttime,(XtTimerCallbackProc)
-    UpdateTime,(XtPointer)w);
+    sched_yield();  // Yield the processor to another thread
+
+    (void)XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+        nexttime,
+        (XtTimerCallbackProc)UpdateTime,
+        (XtPointer)w);
 }
 
 
