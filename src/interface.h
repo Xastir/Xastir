@@ -189,7 +189,7 @@ extern xastir_mutex connect_lock;       // Protects port_data[].thread_status an
 extern ioparam devices[];
 
 #if !HAVE_SOCKLEN_T
-typedef socklen_t unsigned int;
+typedef unsigned int socklen_t;
 #endif
 
 /* from interface_gui.c */
