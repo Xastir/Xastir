@@ -2,7 +2,7 @@
 
 # $Id$
 
-# Copyright (C) 2004 Adi Linden, VA3ADI.
+# Copyright (C) 2004 The Xastir Group.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
