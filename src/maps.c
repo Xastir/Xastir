@@ -10734,6 +10734,9 @@ void index_update_xastir(char *filename,
             //printf("Adding:%d:%s\n",strlen(filename),filename);
 
             // Fill in some default values for the new record
+//WE7U
+// Here's where we might look at the file extension and assign
+// default map_layer/draw_filled fields based on that.
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
@@ -10765,6 +10768,9 @@ void index_update_xastir(char *filename,
         //printf("Adding:%d:%s\n",strlen(filename),filename);
 
         // Fill in some default values for the new record
+//WE7U
+// Here's where we might look at the file extension and assign
+// default map_layer/draw_filled fields based on that.
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
@@ -10868,6 +10874,9 @@ void index_update_ll(char *filename,
             //printf("Adding:%d:%s\n",strlen(filename),filename);
 
             // Fill in some default values for the new record
+//WE7U
+// Here's where we might look at the file extension and assign
+// default map_layer/draw_filled fields based on that.
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
@@ -10901,6 +10910,9 @@ void index_update_ll(char *filename,
         //printf("Adding:%d:%s\n",strlen(filename),filename);
 
         // Fill in some default values for the new record
+//WE7U
+// Here's where we might look at the file extension and assign
+// default map_layer/draw_filled fields based on that.
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
