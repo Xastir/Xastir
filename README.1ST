@@ -964,7 +964,10 @@ Getting Data Files for Xastir:
 
 ***** A nice world map is available at http://aprsworld.net/gisdata/world/
       thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
-      of the World (for Antartica).
+      of the World (for Antartica).  Note that this file is currently
+      available only in uncompressed or in tar/bzip2 format.  To decompress
+      the latter file, you'd type "bunzip2 filename" and then
+      "tar xvf filename".
 
     .geo files/online maps & graphics:
 
