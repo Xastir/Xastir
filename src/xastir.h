@@ -91,6 +91,9 @@
 #include "rac_data.h"
 
 
+#define MAX_CALLSIGN 9       // Objects are up to 9 chars
+
+
 // black
 #define MY_FG_COLOR             colors[0x08]
 #define MY_FOREGROUND_COLOR     XmNforeground,colors[0x08]

@@ -73,7 +73,7 @@ extern Widget auto_msg_on, auto_msg_off;
 
 extern int auto_reply;
 extern char auto_reply_message[100];
-extern char group_data_file[];
+extern char group_data_file[400];
 
 extern void clear_acked_message(char *from, char *to, char *seq);
 extern void transmit_message_data(char *to, char *message, char *path);

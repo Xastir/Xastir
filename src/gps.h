@@ -26,6 +26,8 @@
 #ifndef __XASTIR_GPS_H
 #define __XASTIR_GPS_H
 
+#include "xastir.h"
+
 #define MAX_GPS_STRING 300
 
 extern char gps_sats[];
