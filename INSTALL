@@ -50,6 +50,7 @@ AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
 libcurl or wget                 Optional  Internet images as maps
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
+GDAL/OGR                        Optional  Many formats (coming soon)
 
 Installing only the required libs gives you these capabilities:
 
@@ -147,6 +148,9 @@ For ESRI Shapefile format maps/weather alert maps:
         http://wetnet.net/~we7u/xastir/
     pcre:
         http://www.pcre.org
+
+For GDAL/OGR:
+    http://remotesensing.org/gdal/
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
@@ -538,7 +542,27 @@ First Time Install:
       the "defvar default-voice-priority-list". This will change the default
       voice to "ked_diphone".
 
-   9. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   9. OPTIONAL:  Install GDAL/OGR for support of many more map formats.
+      NOTE:  This is not supported in Xastir yet, but the developers
+      are working on it.  Should you wish to see what map formats
+      your system will support once GDAL/OGR are fully integrated
+      into Xastir, proceed with the following:
+
+        cd src
+        export CVSROOT=:pserver:anonymous@cvs.remotesensing.org:/cvsroot
+        cvs login
+        Password: anonymous
+        cvs checkout gdal
+        cd gdal
+        ./configure --without-jasper --without-ld-shared
+
+        Note:  I had to comment out a troublemaker line at
+          ogr/ogrsf_frmts/dgn/ogrdgnlayer.cpp to get it to compile.
+
+        make
+        su -c 'make install'
+
+   10. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using CVS)
@@ -597,7 +621,7 @@ First Time Install:
      see the notes above about ldconfig.
 
 
-   10. Kernel AX.25 Interfaces
+   11. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -661,7 +685,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   11. Serially-Connected TNC's
+   12. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -780,7 +804,7 @@ First Time Install:
      >    being yet another root exploit-in-waiting.
 
 
-   12. Start up XASTIR and read the help files to configure it. If you have 
+   13. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in
