@@ -7123,6 +7123,15 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL,
             0);
 
+    // Set to the proper size before we make the window visible on the screen
+    XtVaSetValues(appshell,
+                XmNx,           1,
+                XmNy,           1,
+                XmNwidth,       screen_width,
+//              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
+                XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
+                NULL);
+
     XtRealizeWidget (appshell);
 
     create_gc(da);
@@ -7132,14 +7141,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
     (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
 
-    // Set to the proper size before we make the window visible on the screen
-    XtVaSetValues(appshell,
-                XmNx,           1,
-                XmNy,           1,
-                XmNwidth,       screen_width,
-//              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
-                XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
-                NULL);
 
     // Actually manage the main application widget
     XtManageChild(appshell);
