@@ -2784,7 +2784,7 @@ if (alert) {
     }
 
 
-    if (debug_level & 16)
+//    if (debug_level & 16)
         fprintf(stderr,"Opening datasource %s\n", full_filename);
 
     //
@@ -3320,21 +3320,22 @@ clear_dangerous();
     // polygons.
     //
     // Tiger Polygons:
-    // *) Read "Polygon".  Snag "POLYID" field.
+    // *) Read "Polygon".  Snag "POLYID" and "CENID" fields.
 //DONE!
-    // *) Read "PIP".  Match "POLYID" field.  Snag "POLYLONG", 
-    //    "POLYLAT", and "WATER" fields.  We'll use the lat/long as the 
-    //    point to draw labels.  "WATER"=1: Perennial.  "WATER"=2: 
-    //    Intermittent.
+    // *) Read "PIP".  Match "POLYID" (and "CENID"?) field.  Snag
+    //    "POLYLONG", "POLYLAT", and "WATER" fields.  We'll use the
+    //    lat/long as the point to draw labels.  "WATER"=1:
+    //    Perennial.  "WATER"=2: Intermittent.
 //DONE!
-    // *) Read "AreaLandmarks".  Match on "POLYID" if possible.  Snag 
-    //    "LAND" field.
+    // *) Read "AreaLandmarks".  Match on "POLYID" (and "CENID"?) if
+    //    possible.  Snag "LAND" field.
 //DONE!
     // *) Read "Landmarks".  Match on "LAND" field.  Snag "CFCC" and 
     //    "LANAME" fields.
 //DONE!
     // *) Read "PolyChainLink".  Match "POLYID" to either "POLYIDL" or 
-    //    "POLYIDR".  Snag "TLID" fields.
+    //    "POLYIDR" (and "CENID" to either "CENIDL" or "CENIDR"?).
+    //    Snag "TLID" fields.
 //DONE!
     // *) Read the "CompleteChain" layer, caching the geometry of any 
     //    lines that match "TLID" fields found above.  We might just
@@ -3355,12 +3356,16 @@ clear_dangerous();
 //DONE!
     //      Draw the polygons.  Decide whether to draw based on the
     //        WATER field and/or the CFCC field if present.
+//DONE!
     // *) Draw non-polygon vectors.
+//DONE!
     //
     if (strcasecmp(driver_type,"TIGER") == 0) {
 #define POLYID_HASH_SIZE 30000
 #define TLID_HASH_SIZE   30000
+#define LAND_HASH_SIZE   30000
         struct hashtable *polyid_hash;
+        struct hashtable *landmark_hash;
         struct hashtable *tlid_hash;
 
         OGRLayerH layerH;
@@ -3368,34 +3373,67 @@ clear_dangerous();
         struct hashtable_itr *iterator = NULL;
 
         typedef struct _tlid_struct {
-            long TLID;
+            int TLID;  // Max value is 2^31 or 2,147,483,647
             struct _tlid_struct *next;
         }tlid_struct;
 
         typedef struct _polyinfo {
-            int POLYID;       // From Polygon
-            double POLYLONG;  // From PIP
-            double POLYLAT;   // From PIP
-            int WATER;        // From PIP
-            int LAND;         // From AreaLandmarks
-            char CFCC[100];   // From Landmarks
-            char LANAME[100]; // From Landmarks
+            int POLYID;      // From Polygon, polygon ID
+            char CENID[6];   // From Polygon, many others
+            double POLYLONG; // From PIP
+            double POLYLAT;  // From PIP
+            int WATER;       // From PIP, 1 or 2 = water
+            int LAND;        // From AreaLandmarks, Landmark ID
+            char CFCC[4];    // From Landmarks
+            char LANAME[31]; // From Landmarks, Landmark name
             struct _tlid_struct *tlid_list; // From PolyChainLink
         }polyinfo;
 
         typedef struct _tlidinfo {
-            long TLID;      // Tiger/Line ID
+            int TLID;      // Tiger/Line ID
             char FEDIRP[3]; // Size from Tiger 2003 definitions
             char FENAME[31];// Size from Tiger 2003 definitions
             char FETYPE[5]; // Size from Tiger 2003 definitions
             char FEDIRS[3]; // Size from Tiger 2003 definitions
-            char CFCC[4];   // Size from Tiger 2003 definitions
             OGRGeometryH geometryH;
         }tlidinfo;
 
+        // For AreaLandmarks and Landmarks data.  Allows us to look
+        // up the POLYID integer given the LAND integer.
+        typedef struct _landmarkinfo {
+            int LAND;        // From AreaLandmarks
+            int POLYID;      // From AreaLandmarks
+            char CENID[6];   // From AreaLandmarks
+        }landmarkinfo;
+
+// FUNCTION:
+        // Create hash from key.  LAND is unique within each county.
+        // We perform the modulus function on it with the size of
+        // our hash to derive the hash key.
+        //
+        static unsigned int landmark_hash_from_key(void *key) {
+            landmarkinfo *temp = key;
+
+            return(temp->LAND % LAND_HASH_SIZE);
+        }
+
+// FUNCTION:
+        // Test equality of hash keys.  In this case LAND is the key
+        // we care about.
+        //
+        static int landmark_keys_equal(void *key1, void *key2) {
+            landmarkinfo *temp1 = key1;
+            landmarkinfo *temp2 = key2;
+
+            if (temp1->LAND == temp2->LAND)
+                return(1);  // LAND fields match
+            else
+                return(0);  // No match
+        }
+
 // FUNCTION:
         // Create hash from key.  POLYID is unique within each
-        // county.  We perform the modulus function on it with the
+        // CENID.  We perform the modulus function on it with the
         // size of our hash to derive the hash key.
         //
         static unsigned int polyid_hash_from_key(void *key) {
@@ -3405,15 +3443,15 @@ clear_dangerous();
         }
 
 // FUNCTION:
-        // Test equality of hash keys.  In this case TLID is the
-        // absolute key that we care about.
+        // Test equality of hash keys.  In this case POLYID (and
+        // CENID?) are the keys we care about.
         //
-        static int tlid_keys_equal(void *key1, void *key2) {
-            tlidinfo *temp1 = key1;
-            tlidinfo *temp2 = key2;
+        static int polyid_keys_equal(void *key1, void *key2) {
+            polyinfo *temp1 = key1;
+            polyinfo *temp2 = key2;
 
-            if (temp1->TLID == temp2->TLID)
-                return(1);  // TLID fields match
+            if (temp1->POLYID == temp2->POLYID)
+                return(1);  // POLYID fields match
             else
                 return(0);  // No match
         }
@@ -3430,15 +3468,15 @@ clear_dangerous();
         }
 
 // FUNCTION:
-        // Test equality of hash keys.  In this case POLYID is the
+        // Test equality of hash keys.  In this case TLID is the
         // absolute key that we care about.
         //
-        static int polyid_keys_equal(void *key1, void *key2) {
-            polyinfo *temp1 = key1;
-            polyinfo *temp2 = key2;
+        static int tlid_keys_equal(void *key1, void *key2) {
+            tlidinfo *temp1 = key1;
+            tlidinfo *temp2 = key2;
 
-            if (temp1->POLYID == temp2->POLYID)
-                return(1);  // POLYID fields match
+            if (temp1->TLID == temp2->TLID)
+                return(1);  // TLID fields match
             else
                 return(0);  // No match
         }
@@ -3449,6 +3487,11 @@ clear_dangerous();
         polyid_hash = create_hashtable(POLYID_HASH_SIZE,
             polyid_hash_from_key,
             polyid_keys_equal);
+
+        // Create the empty hash table for "landmark"
+        landmark_hash = create_hashtable(LAND_HASH_SIZE,
+            landmark_hash_from_key,
+            landmark_keys_equal);
 
         // Create the empty hash table for tlid
         tlid_hash = create_hashtable(TLID_HASH_SIZE,
@@ -3464,7 +3507,7 @@ start_timer();
         layerH = OGR_DS_GetLayerByName(datasourceH, "Polygon");
         if (layerH) {
             // Loop through all of the "Polygon" layer records,
-            // saving the POLYID fields.  MODULE too?
+            // saving the POLYID/CENID fields.
             polyinfo *temp;
 
             while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
@@ -3473,6 +3516,7 @@ start_timer();
                 kk = OGR_F_GetFieldIndex( featureH, "POLYID");
                 if (kk != -1) {
                     int polyid;
+                    int mm;
 
                     polyid = OGR_F_GetFieldAsInteger( featureH, kk);
 
@@ -3483,11 +3527,26 @@ start_timer();
 //fprintf(stderr,"POLYID:%i\n", polyid);
 
                     // Fill in some defaults
-                    temp->WATER = -1;
+                    temp->WATER = 0;
                     temp->LAND = -1;
                     temp->CFCC[0] = '\0';
                     temp->LANAME[0] = '\0';
                     temp->tlid_list = NULL;
+
+                    mm = OGR_F_GetFieldIndex( featureH, "CENID");
+                    if (mm != -1) {
+                        const char *cenid;
+
+                        cenid = OGR_F_GetFieldAsString( featureH, mm);
+                        xastir_snprintf(temp->CENID,
+                            sizeof(temp->CENID),
+                            "%s",
+                            cenid);
+//fprintf(stderr,"CENID:%s\n", cenid);
+                    }
+                    else {
+                        temp->CENID[0] = '\0';
+                    }
 
                     // Insert a new value into the hash
 // Remember to free() the hash storage later
@@ -3575,32 +3634,47 @@ fprintf(stderr,"AreaLandmarks Layer ");
         layerH = OGR_DS_GetLayerByName(datasourceH, "AreaLandmarks");
         if (layerH) {
             // Loop through all of the "AreaLandmarks" layer records,
-            // saving the LAND fields.
+            // saving the LAND fields in landmark_hash.
 
             while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
                 int kk;
 
-                kk = OGR_F_GetFieldIndex( featureH, "POLYID");
+                kk = OGR_F_GetFieldIndex( featureH, "LAND");
                 if (kk != -1) {
-                    int polyid;
-                    polyinfo *found;
+                    int land;
 
-                    polyid = OGR_F_GetFieldAsInteger( featureH, kk);
+                    land = OGR_F_GetFieldAsInteger( featureH, kk);
 
-                    // Find an entry in the hash
-                    found = hashtable_search(polyid_hash, &polyid);
-                    if (found) {    // Found a match!
-                        int mm;
+                    kk = OGR_F_GetFieldIndex( featureH, "POLYID");
+                    if (kk != -1) {
+                        int polyid;
+                        landmarkinfo *temp;
 
-//fprintf(stderr,"Found a match for POLYID in AreaLandmarks layer!\n");
+                        polyid = OGR_F_GetFieldAsInteger( featureH, kk);
+ 
+                        // Allocate struct
+                        temp = (landmarkinfo *)malloc(sizeof(landmarkinfo));
+                        temp->LAND = land;
+                        temp->POLYID = polyid;
+ 
+                        kk = OGR_F_GetFieldIndex( featureH, "CENID");
+                        if (kk != -1) {
+                            const char *cenid;
 
-                        mm = OGR_F_GetFieldIndex( featureH, "LAND");
-                        if (mm != -1) {
-                            int land;
+                            cenid = OGR_F_GetFieldAsString( featureH, kk);
+                            xastir_snprintf(temp->CENID,
+                                sizeof(temp->CENID),
+                                "%s",
+                                cenid);
+                        }
+                        else {
+                            temp->CENID[0] = '\0';
+                        }
 
-//fprintf(stderr,"LAND\n");
-                            land = OGR_F_GetFieldAsInteger( featureH, mm);
-                            found->LAND = land;
+                        // Insert a new value into the hash
+// Remember to free() the hash storage later
+                        if (!hashtable_insert(landmark_hash,&temp->LAND, temp)) {
+                            fprintf(stderr,"Couldn't insert into landmark_hash\n");
                         }
                     }
                 }
@@ -3619,48 +3693,59 @@ fprintf(stderr,"    Landmarks Layer ");
         layerH = OGR_DS_GetLayerByName(datasourceH, "Landmarks");
         if (layerH) {
             // Loop through all of the "Landmarks" layer records,
-            // saving the LANAME/CFCC fields.
-
+            // use the LAND value to search for the POLYID value in
+            // the landmark hash, then use the POLYID value to find
+            // the actual record in the polyid_hash and fill in the
+            // LANAME/CFCC fields there.
+            //
             while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
                 int kk;
 
                 kk = OGR_F_GetFieldIndex( featureH, "LAND");
                 if (kk != -1) {
                     int land;
-                    polyinfo *found;
+                    landmarkinfo *found;
 
                     land = OGR_F_GetFieldAsInteger( featureH, kk);
 
-                    // Find an entry in the hash
-                    found = hashtable_search(polyid_hash, &land);
+                    // Find an entry in landmark_hash
+                    found = hashtable_search(landmark_hash, &land);
                     if (found) {    // Found a match!
-                        int mm;
+                        polyinfo *found2;
 
 //fprintf(stderr,"Found a match for LAND (%i) in Landmarks layer!\n", land);
 
-                        mm = OGR_F_GetFieldIndex( featureH, "CFCC");
-                        if (mm != -1) {
+                        // Find the corresponding entry in the polyid_hash
+                        found2 = hashtable_search(polyid_hash, &found->POLYID);
+                        if (found2) {   // We have our destination record
+                            int mm;
+
+//fprintf(stderr,"Found a match for POLYID (%i) in Landmarks layer!\n", found2->POLYID);
+
+                            mm = OGR_F_GetFieldIndex( featureH, "CFCC");
+                            if (mm != -1) {
                                 const char *cfcc;
 
-//fprintf(stderr,"CFCC\t");
                                 cfcc = OGR_F_GetFieldAsString( featureH, mm);
-                                xastir_snprintf(found->CFCC,
-                                    sizeof(found->CFCC),
+//fprintf(stderr,"CFCC:%s\n", cfcc);
+                                xastir_snprintf(found2->CFCC,
+                                    sizeof(found2->CFCC),
                                     "%s",
                                     cfcc);
-                        }
+                            }
 
-                        mm = OGR_F_GetFieldIndex( featureH, "LANAME");
-                        if (mm != -1) {
+                            mm = OGR_F_GetFieldIndex( featureH, "LANAME");
+                            if (mm != -1) {
                                 const char *laname;
 
                                 laname = OGR_F_GetFieldAsString( featureH, mm);
 //fprintf(stderr,"LANAME:%s\n",laname);
  
-                                xastir_snprintf(found->LANAME,
-                                    sizeof(found->LANAME),
+                                xastir_snprintf(found2->LANAME,
+                                    sizeof(found2->LANAME),
                                     "%s",
                                     laname);
+                            }
                         }
                     }
                 }
@@ -3700,7 +3785,7 @@ fprintf(stderr,"PolyChainLink Layer ");
                 int kk, mm, nn;
                 int polyidl = -1;
                 int polyidr = -1;
-                long tlid = -1;
+                int tlid = -1;
                 polyinfo *found1;
                 polyinfo *found2;
 
@@ -3714,7 +3799,7 @@ fprintf(stderr,"PolyChainLink Layer ");
                 if (mm != -1)
                     polyidr = OGR_F_GetFieldAsInteger( featureH, mm);
                 if (nn != -1)
-                    tlid = atol(OGR_F_GetFieldAsString( featureH, nn));
+                    tlid = OGR_F_GetFieldAsInteger( featureH, nn);
 
 
                 // Find an entry in the hash.  Check both polyidl
@@ -3797,8 +3882,8 @@ fprintf(stderr,"CompleteChain Layer ");
 
 
         // Run through the CompleteChain layer.  Snag TLID, FEDIRP,
-        // FENAME, FETYPE, FEDIRS, CFCC, and geometry, store it in
-        // a new hash by TLID.
+        // FENAME, FETYPE, FEDIRS, and geometry, store it in a new
+        // hash by TLID.
         //
         layerH = OGR_DS_GetLayerByName(datasourceH, "CompleteChain");
         if (layerH) {
@@ -3810,17 +3895,16 @@ fprintf(stderr,"CompleteChain Layer ");
 
                 kk = OGR_F_GetFieldIndex( featureH, "TLID");
                 if (kk != -1) {
-                    int ll,mm,nn,oo,pp;
-                    long tlid;
+                    int ll,mm,nn,oo;
+                    int tlid;
                     const char *fedirp;
                     const char *fename;
                     const char *fetype;
                     const char *fedirs;
-                    const char *cfcc;
                     OGRGeometryH geometryH;
  
 
-                    tlid = atol(OGR_F_GetFieldAsString(featureH, kk));
+                    tlid = OGR_F_GetFieldAsInteger(featureH, kk);
  
                     // Allocate struct
                     temp = (tlidinfo *)malloc(sizeof(tlidinfo));
@@ -3829,16 +3913,14 @@ fprintf(stderr,"CompleteChain Layer ");
                     temp->FENAME[0] = '\0';
                     temp->FETYPE[0] = '\0';
                     temp->FEDIRS[0] = '\0';
-                    temp->CFCC[0] = '\0';
                     temp->geometryH = NULL;
 
-//fprintf(stderr,"TLID:%li\n", tlid);
+//fprintf(stderr,"TLID:%i\n", tlid);
 
                     ll = OGR_F_GetFieldIndex( featureH, "FEDIRP");
                     mm = OGR_F_GetFieldIndex( featureH, "FENAME");
                     nn = OGR_F_GetFieldIndex( featureH, "FETYPE");
                     oo = OGR_F_GetFieldIndex( featureH, "FEDIRS");
-                    pp = OGR_F_GetFieldIndex( featureH, "CFCC");
  
                     if (ll != -1) {
                         fedirp = OGR_F_GetFieldAsString( featureH, ll);
@@ -3876,15 +3958,6 @@ fprintf(stderr,"CompleteChain Layer ");
                                 fedirs);
                         }
                     }
-                    if (pp != -1) {
-                        cfcc = OGR_F_GetFieldAsString( featureH, pp);
-                        if (cfcc != NULL) {
-                            xastir_snprintf(temp->CFCC,
-                                sizeof(temp->CFCC),
-                                "%s",
-                                cfcc);
-                        }
-                    }
 
 
                     // Get a handle to the geometry itself, make a
@@ -3913,8 +3986,8 @@ fprintf(stderr,"CompleteChain Layer ");
         }   // End of CompleteChain layer section
 
 
-stop_timer(); print_timer_results();
-fprintf(stderr,"Done with Polygon data reassembly\n");
+stop_timer(); print_timer_results(); start_timer();
+fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
 
 
         // We have two hashes with part of the info in each of them.
@@ -4006,8 +4079,23 @@ fprintf(stderr,"Done with Polygon data reassembly\n");
 */
 
 // For testing purposes only draw the water polygons.
-                if (record->WATER > 0) {
-                    label_color_guess = 0x1a;   // Steel Blue
+
+//if (record->WATER > 0 && record->CFCC[0] != 'H')
+//    fprintf(stderr,"WATER polygon but no \'H\' CFCC!  CFCC=%s\n", record->CFCC);
+
+                if (record->WATER > 0 || record->CFCC[0] == 'H') {
+                    int my_draw_filled;
+
+                    if (strncasecmp(record->CFCC,"H81",3) == 0) { // glacier
+                        label_color_guess = 0x4d;   // white
+                        my_draw_filled = 1;
+//fprintf(stderr,"CFCC:%s\t", record->CFCC);
+//fprintf(stderr,"%s\n", record->LANAME);
+                    }
+                    else {
+                        label_color_guess = 0x1a;   // Steel Blue
+                        my_draw_filled = 1;
+                    }
  
                     if (label_color_guess != -1) {
                         Draw_OGR_Polygons(w,
@@ -4017,7 +4105,7 @@ fprintf(stderr,"Done with Polygon data reassembly\n");
                             1,
                             transformH,
                             //draw_filled,
-                            1,
+                            my_draw_filled,
                             //fast_extents);
                             1);
                     }
@@ -4036,7 +4124,8 @@ fprintf(stderr,"Done with Polygon data reassembly\n");
         free(iterator);
 
 
-
+stop_timer(); print_timer_results();
+fprintf(stderr,"Done with Polygon data reassembly/drawing\n");
 
 
 fprintf(stderr,"Free'ing hash memory\n");
@@ -4117,6 +4206,7 @@ fprintf(stderr,"Free'ing hash memory\n");
 //fprintf(stderr,"Destroying polyid_hash\n");
         hashtable_destroy(polyid_hash, 1);
         hashtable_destroy(tlid_hash, 1);
+//        hashtable_destroy(landmark_hash, 1);
 
 
 // For destroying, we'll need to iterate through the polyid_hash and
