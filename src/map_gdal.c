@@ -231,8 +231,7 @@ void draw_gdal_map(Widget w,
 
     hDataset = GDALOpenShared( file, GA_ReadOnly );
 
-    if( hDataset == NULL )
-    {
+    if( hDataset == NULL ) {
         fprintf(stderr,"GDAL couldn't open file: %s\n", file);
     }
 
@@ -251,8 +250,7 @@ void draw_gdal_map(Widget w,
         if( GDALGetProjectionRef( hDataset ) != NULL )
             fprintf( stderr,"Projection is `%s'\n", GDALGetProjectionRef( hDataset ) );
     
-        if( GDALGetGeoTransform( hDataset, adfGeoTransform ) == CE_None )
-            {
+        if( GDALGetGeoTransform( hDataset, adfGeoTransform ) == CE_None ) {
                 fprintf( stderr,"Origin = (%.6f,%.6f)\n",
                          adfGeoTransform[0], adfGeoTransform[3] );
             
@@ -359,8 +357,7 @@ scr_s_x_min = 0;
                          GDALGetPaletteInterpretationName( hPalInterp),
                          GDALGetColorEntryCount( hColorTable ) );
 
-            for( i = 0; i < GDALGetColorEntryCount( hColorTable ); i++ )
-                {
+            for( i = 0; i < GDALGetColorEntryCount( hColorTable ); i++ ) {
                     GDALGetColorEntryAsRGB( hColorTable, i, &colEntry );
                     fprintf( stderr, "  %3d: %d,%d,%d,%d\n", 
                              i, 
@@ -461,15 +458,14 @@ void draw_ogr_map(Widget w,
 
     // Open data source
 //
-// Home system segfaults here if a .proj file is present with a
+// Home system segfaults here if a .prj file is present with a
 // shapefile.
 //
     datasource = OGROpen(full_filename,
         0 /* bUpdate */,
         &driver);
 
-    if (datasource == NULL)
-    {
+    if (datasource == NULL) {
         fprintf(stderr,
             "Unable to open %s\n",
             full_filename);
@@ -510,7 +506,6 @@ void draw_ogr_map(Widget w,
         OGRSpatialReferenceH spatial = NULL;
 
 
-
         xastir_snprintf(status_text,
             sizeof(status_text),
             langcode ("BBARSTA039"),
@@ -536,8 +531,7 @@ void draw_ogr_map(Widget w,
 
 
             layer = OGR_DS_GetLayer( datasource, i );
-            if (layer == NULL)
-            {
+            if (layer == NULL) {
                 fprintf(stderr,
                     "Unable to open layer %d of %s\n",
                     i,
@@ -866,8 +860,7 @@ void draw_ogr_map(Widget w,
         }
 
         layer = OGR_DS_GetLayer( datasource, i );
-        if (layer == NULL)
-        {
+        if (layer == NULL) {
             fprintf(stderr,
                 "Unable to open layer %d of %s\n",
                 i,
@@ -1219,12 +1212,14 @@ void draw_ogr_map(Widget w,
                 case 6:             // MultiPolygon
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
+
                     Draw_Polygons(geometry, 1);
                     break;
 
                 case 7:             // GeometryCollection
                 case 0x80000007:    // GeometryCollection25D
                 default:            // Unknown/Unimplemented
+
                     num = 0;
                     fprintf(stderr,"  Unknown or unimplemented geometry\n");
                     break;
@@ -1253,9 +1248,9 @@ void draw_ogr_map(Widget w,
 // other direction, it's a hole in the polygon.
 //
 // Optimization:
-// It should be faster here to draw the entire Polyline with one X11
-// call, instead of drawing each line segment in turn.  Change to
-// that method at some point.
+// It should be faster to draw the entire Polyline with one X11 call
+// instead of drawing each line segment in turn.  Change to that
+// other method at some point.
 //
 // We should be able to store them in an array, call the Translate()
 // function on all of them at once, and then call an X11 function to
