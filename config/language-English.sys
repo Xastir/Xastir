@@ -780,16 +780,16 @@ IFDNL00011|Networked Database (Not Implemented Yet)||
 IFDNL00012|Networked AGWPE||
 #
 # Interface device info 
-IFDIN00000|%s %d %s on serial %s||
-IFDIN00001|%s %d %s connecting to %s:%d||
-IFDIN00002|%s %d %s using device named %s||
-IFDIN00003|%s %d %s on serial %s and is %s||
-IFDIN00004|%s %d %s connecting to %s:%d and is %s||
-IFDIN00005|%s %d %s using AX25 device %s and is %s||
-IFDIN00006|DOWN||
-IFDIN00007|UP||
-IFDIN00008|in an ERROR state||
-IFDIN00009|in an UNKNOWN state||
+IFDIN00000|%s %2d %s %s||
+IFDIN00001|%s %2d %s %s:%d||
+IFDIN00002|%s %2d %s device %s||
+IFDIN00003|%s %2d  %s  %s %s||
+IFDIN00004|%s %2d  %s  %s %s:%d||
+IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00006| DOWN ||
+IFDIN00007|  UP  ||
+IFDIN00008|ERROR ||
+IFDIN00009|UNKNWN||
 #
 # PopUp "Interface control"
 IFPUPCT000|Interface Control||

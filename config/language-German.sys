@@ -785,16 +785,16 @@ IFDNL00011|Datenbank über Netz (Noch nicht implementiert)||
 IFDNL00012|AGWPE über Netz||
 #
 # Interface device info 
-IFDIN00000|%s %d %s an ser. Schnittstelle %s||
-IFDIN00001|%s %d %s verbunden mit %s:%d||
-IFDIN00002|%s %d %s über Device namens %s||
-IFDIN00003|%s %d %s an ser. Schnittstelle %s und ist %s||
-IFDIN00004|%s %d %s verbunden mit %s:%d und ist %s||
-IFDIN00005|%s %d %s über AX25 Device %s und ist %s||
-IFDIN00006|INAKTIV||
-IFDIN00007|AKTIV||
-IFDIN00008|in einem FEHLER-Zustand||
-IFDIN00009|in einem UNBEKANNTEN Zustand||
+IFDIN00000|%s %2d %s an ser. Schnittstelle %s||
+IFDIN00001|%s %2d %s verbunden mit %s:%d||
+IFDIN00002|%s %2d %s über Device namens %s||
+IFDIN00003|%s %2d  %s  %s %s||
+IFDIN00004|%s %2d  %s  %s %s:%d||
+IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00006|  INAKTIV  ||
+IFDIN00007|   AKTIV   ||
+IFDIN00008|  FEHLER   ||
+IFDIN00009|UNBEKANNTEN||
 #
 # PopUp "Schnittstellen-Steuerung"
 IFPUPCT000|Schnittstellen-Steuerung||

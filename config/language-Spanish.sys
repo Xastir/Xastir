@@ -782,16 +782,16 @@ IFDNL00011|Red Base de Datos (Aun No Implementada)||
 IFDNL00012|Red AGWPE||
 #
 # Info dispositivo Interfáz
-IFDIN00000|%s %d %s sobre serial %s||
-IFDIN00001|%s %d %s conectado a %s:%d||
-IFDIN00002|%s %d %s usando dispositivo nombrado %s||
-IFDIN00003|%s %d %s sobre serial %s y está %s||
-IFDIN00004|%s %d %s conectado a %s:%d y está %s||
-IFDIN00005|%s %d %s usando dispositivo AX.25 %s y está %s||
-IFDIN00006|ABAJO||
-IFDIN00007|ARRIBA||
-IFDIN00008|en estado de ERROR||
-IFDIN00009|en estado DESCONOCIDO||
+IFDIN00000|%s %2d %s sobre serial %s||
+IFDIN00001|%s %2d %s conectado a %s:%d||
+IFDIN00002|%s %2d %s usando dispositivo nombrado %s||
+IFDIN00003|%s %2d  %s  %s %s||
+IFDIN00004|%s %2d  %s  %s %s:%d||
+IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00006|  ABAJO    ||
+IFDIN00007|  ARRIBA   ||
+IFDIN00008|  ERROR    ||
+IFDIN00009|DESCONOCIDO||
 #
 # Control de la interfáz
 IFPUPCT000|Control de Interfáz||

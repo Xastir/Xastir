@@ -5524,27 +5524,22 @@ void modify_device_list(int option, int port) {
                         switch (port_data[i].status) {
                             case DEVICE_DOWN:
                                 strcpy(temp2,langcode("IFDIN00006"));
-                                strcat(temp2,"    ");
                                 break;
 
                             case DEVICE_UP:
                                 strcpy(temp2,langcode("IFDIN00007"));
-                                strcat(temp2,"    ");
                                 break;
 
                             case DEVICE_ERROR:
                                 strcpy(temp2,langcode("IFDIN00008"));
-                                strcat(temp2,"    ");
                                 break;
 
                             default:
                                 strcpy(temp2,langcode("IFDIN00009"));
-                                strcat(temp2,"    ");
                                 break;
                         }
                     } else {
                         strcpy(temp2,langcode("IFDIN00006"));
-                        strcat(temp2,"    ");
                     }
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
@@ -5555,8 +5550,8 @@ void modify_device_list(int option, int port) {
                         case DEVICE_SERIAL_WX:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00003"), langcode("UNIOP00006"),
-                                i, dtype[devices[i].device_type].device_name,
-                                devices[i].device_name, temp2);
+                                i, temp2, dtype[devices[i].device_type].device_name,
+                                devices[i].device_name);
                             strcat(temp,"    ");
                             break;
 
@@ -5567,16 +5562,16 @@ void modify_device_list(int option, int port) {
                         case DEVICE_NET_AGWPE:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00004"), langcode("UNIOP00006"),
-                                i, dtype[devices[i].device_type].device_name,
-                                devices[i].device_host_name, devices[i].sp, temp2);
+                                i, temp2, dtype[devices[i].device_type].device_name,
+                                devices[i].device_host_name, devices[i].sp);
                             strcat(temp,"    ");
                             break;
 
                         case DEVICE_AX25_TNC:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00005"), langcode("UNIOP00006"),
-                                i, dtype[devices[i].device_type].device_name,
-                                devices[i].device_name, temp2);
+                                i, temp2, dtype[devices[i].device_type].device_name,
+                                devices[i].device_name);
                             strcat(temp,"    ");
                             break;
 

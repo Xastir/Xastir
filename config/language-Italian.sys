@@ -779,16 +779,16 @@ IFDNL00011|Database su Rete (Non ancora Implementato)||
 IFDNL00012|AGWPE Via Rete||
 #
 #Interface device info 
-IFDIN00000|%s %d %s sulla seriale %s|| 
-IFDIN00001|%s %d %s connettendo %s:%d|| 
-IFDIN00002|%s %d %s usa la porta %s|| 
-IFDIN00003|%s %d %s sulla porta seriale %s è %s|| 
-IFDIN00004|%s %d %s connessione a %s:%d è %s|| 
-IFDIN00005|%s %d %s usa la porta AX25 %s è %s||
-IFDIN00006|Disattiva||
-IFDIN00007|Attiva||
-IFDIN00008|in uno stato di ERRORE||
-IFDIN00009|in uno stato SCONOSCIUTO||
+IFDIN00000|%s %2d %s sulla seriale %s|| 
+IFDIN00001|%s %2d %s connettendo %s:%d|| 
+IFDIN00002|%s %2d %s usa la porta %s|| 
+IFDIN00003|%s %2d  %s  %s %s|| 
+IFDIN00004|%s %2d  %s  %s %s:%d|| 
+IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00006| Disattiva ||
+IFDIN00007|  Attiva   ||
+IFDIN00008|  ERRORE   ||
+IFDIN00009|SCONOSCIUTO||
 #
 #Interface control
 IFPUPCT000|Controllo interfaccia||

@@ -782,16 +782,16 @@ IFDNL00011|Base de dados de rede (Não implementada ainda)||
 IFDNL00012|AGWPE em rede||
 #
 # Info dispositivo interface
-IFDIN00000|%s %d %s sobre série %s||
-IFDIN00001|%s %d %s ligado a %s:%d||
-IFDIN00002|%s %d %s usando dispositivo nomeado %s||
-IFDIN00003|%s %d %s sobre serie %s e está %s||
-IFDIN00004|%s %d %s ligado a %s:%d e está %s||
-IFDIN00005|%s %d %s usando dispositivo AX.25 %s e está %s||
-IFDIN00006|desligado||
-IFDIN00007|ligado||
-IFDIN00008|em estado de ERRO||
-IFDIN00009|em estado DESCONHECIDO||
+IFDIN00000|%s %2d %s sobre série %s||
+IFDIN00001|%s %2d %s ligado a %s:%d||
+IFDIN00002|%s %2d %s usando dispositivo nomeado %s||
+IFDIN00003|%s %2d  %s  %s %s||
+IFDIN00004|%s %2d  %s  %s %s:%d||
+IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00006| desligado  ||
+IFDIN00007|  ligado    ||
+IFDIN00008|   ERRO     ||
+IFDIN00009|DESCONHECIDO||
 #
 # Control da interface
 IFPUPCT000|Controle do interface||

@@ -778,16 +778,16 @@ IFDNL00011|Base de données par réseau (pas encore implémenté)||
 IFDNL00012|AGWPE par réseau||
 #
 # Interface device info
-IFDIN00000|%s %d %s sur port série %s||
-IFDIN00001|%s %d %s connecté à %s:%d||
-IFDIN00002|%s %d %s avec interface nommée %s||
-IFDIN00003|%s %d %s sur port série %s est %s||
-IFDIN00004|%s %d %s connecté à %s:%d est %s||
-IFDIN00005|%s %d %s utilisant interface AX25 %s est %s||
+IFDIN00000|%s %2d %s sur port série %s||
+IFDIN00001|%s %2d %s connecté à %s:%d||
+IFDIN00002|%s %2d %s avec interface nommée %s||
+IFDIN00003|%s %2d  %s  %s %s||
+IFDIN00004|%s %2d  %s  %s %s:%d||
+IFDIN00005|%s %2d  %s  %s %s||
 IFDIN00006|INACTIF||
-IFDIN00007|ACTIF||
-IFDIN00008|en ERREUR||
-IFDIN00009|en état INCONNU||
+IFDIN00007| ACTIF ||
+IFDIN00008|ERREUR ||
+IFDIN00009|INCONNU||
 #
 # PopUp "Interface control"
 IFPUPCT000|Contrôle d'interface||#'
