@@ -238,13 +238,6 @@ void popup_ID_message(char *banner, char *message) {
     int x = (int)(screen_width/10);
     int y = (int)(screen_height/2);
 
-
-#ifdef HAVE_FESTIVAL
-    if (festival_speak_ID) {
-        SayText(message);
-    }
-#endif
-
     if (ATV_screen_ID) {
 
         // Fill the pixmap with grey so that the black ID text will

@@ -274,6 +274,9 @@ int festivalClose()
 
 int SayText(char *text)
 {
+    if (debug_level & 2)
+        printf("SayText: %s\n",text);
+
     festivalStringToSpeech(text);
     return 0;
 }

@@ -2558,3 +2558,22 @@ void time_mark(int start)
 }
 #endif
 
+
+// Function which adds commas to callsigns (and other abbreviations)
+// in order to make the text sound better when run through a Text-to-
+// Speech system.
+void spell_it_out(char *text) {
+    char buffer[2000];
+    int i=0;
+    int j=0;
+
+    while (text[i] != '\0') {
+        buffer[j++] = text[i];
+        buffer[j++] = ',';
+        i++;
+    }
+    buffer[j] = '\0';
+    strcpy(text,buffer);
+}
+
+

@@ -8866,13 +8866,19 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (new_station && !wait_to_redraw) {   // && !is_my_call(p_station->call_sign,1) // ???
             if (sound_play_new_station)
                 play_sound(sound_command,sound_new_station);
+
 #ifdef HAVE_FESTIVAL
             if (festival_speak_new_station) {
+                char speech_callsign[50];
+
+                strcpy(speech_callsign,p_station->call_sign);
+                spell_it_out(speech_callsign);
+
                 xastir_snprintf(station_id,
                     sizeof(station_id),
                     "%s, %s",
                     langcode("SPCHSTR010"),
-                    p_station->call_sign);
+                    speech_callsign);
                 SayText(station_id);
             }
 #endif
@@ -8907,25 +8913,30 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             }
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && festival_speak_proximity_alert) {
+                char speech_callsign[50];
+
+                strcpy(speech_callsign,p_station->call_sign);
+                spell_it_out(speech_callsign);
+
                 if (units_english_metric) {
                     if (distance < 1.0)
-                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign,
+                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign,
                             (int)(distance * 1760), langcode("SPCHSTR004")); // say it in yards
                     else if ((int)((distance * 10) + 0.5) % 10)
-                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR006"), p_station->call_sign, distance,
+                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR006"), speech_callsign, distance,
                         langcode("SPCHSTR003")); // say it in miles with one decimal
                     else
-                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
+                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign, (int)(distance + 0.5),
                         langcode("SPCHSTR003")); // say it in miles with no decimal
                 } else {
                     if (distance < 1.0)
-                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign,
+                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign,
                         (int)(distance * 1000), langcode("SPCHSTR002")); // say it in meters
                     else if ((int)((distance * 10) + 0.5) % 10)
-                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR006"), p_station->call_sign, distance,
+                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR006"), speech_callsign, distance,
                         langcode("SPCHSTR001")); // say it in kilometers with one decimal
                     else
-                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
+                xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign, (int)(distance + 0.5),
                     langcode("SPCHSTR001")); // say it in kilometers with no decimal
                 }
                 SayText(station_id);
@@ -8943,10 +8954,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
                    festival_speak_band_opening && from == DATA_VIA_TNC) {
+                char speech_callsign[50];
+
+                strcpy(speech_callsign,p_station->call_sign);
+                spell_it_out(speech_callsign);
+
                 xastir_snprintf(station_id,
                     sizeof(station_id),
                     langcode("SPCHSTR011"),
-                    p_station->call_sign,
+                    speech_callsign,
                     distance,
                     units_english_metric?langcode("SPCHSTR003"):langcode("SPCHSTR001"));
                 SayText(station_id);

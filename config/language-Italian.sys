@@ -825,7 +825,7 @@ SPCHSTR006|%s, distance is %.1f %s.||
 SPCHSTR007|%s, distance is %d %s %s %s.||
 SPCHSTR008|%s, distance is %.1f %s %s %s.||
 SPCHSTR009|New Weather Alert||
-SPCHSTR010|New||
+SPCHSTR010|New Call||
 SPCHSTR011|Heard, D X, %s, at distance of %.1f %s||
 #
 SPCHDIRN00|north of||

@@ -2952,6 +2952,19 @@ void check_statusline_timeout(void) {
 
         if (last_id_time < sec_now() - id_interval) {
             popup_ID_message(langcode("BBARSTA040"),status_text);
+#ifdef HAVE_FESTIVAL
+            if (festival_speak_ID) {
+                char my_speech_callsign[100];
+
+                strcpy(my_speech_callsign,my_callsign);
+                spell_it_out(my_speech_callsign);
+                xastir_snprintf(status_text,
+                    sizeof(status_text),
+                    langcode ("BBARSTA040"),
+                    my_speech_callsign);
+                SayText(status_text);
+            }
+#endif
         }
 
         last_statusline = 0;	// now inactive
