@@ -64,19 +64,21 @@ void normal_title(char *incoming_title, char *outgoing_title) {
     char *c_ptr;
 
     strncpy(outgoing_title, incoming_title, 32);
+    outgoing_title[32] = '\0';
     if ((c_ptr = strstr(outgoing_title, "County Warning Area ")) && c_ptr == outgoing_title) {
         c_ptr = &outgoing_title[strlen("County Warning Area ")];
         strcpy(outgoing_title, "CWA");
-        strcat(outgoing_title, c_ptr);
+        strncat(outgoing_title, c_ptr, 32-3); // total max length - strlen("CWA")
+	outgoing_title[32] = '\0';
     }
     while ((c_ptr = strstr(outgoing_title, ". ")))
-        memmove(c_ptr, c_ptr+2, strlen(c_ptr));
+        memmove(c_ptr, c_ptr+2, strlen(c_ptr)+1);
 
     if ((c_ptr = strpbrk(outgoing_title, " >")))
         *c_ptr = '\0';
 
     while ((c_ptr = strpbrk(outgoing_title, "_.-}!")))
-        memmove(c_ptr, c_ptr+1, strlen(c_ptr));
+        memmove(c_ptr, c_ptr+1, strlen(c_ptr)+1);
 
     outgoing_title[8] = '\0';
 }
@@ -88,9 +90,9 @@ void alert_print_list(void) {
     char title[100], *c_ptr;
 
     printf("Alert counts: %d/%d\n", alert_list_count, alert_max_count);
-    title[99] = '\0';
     for (i = 0; i < alert_list_count; i++) {
         strncpy(title, alert_list[i].title, 99);
+	title[99] = '\0';
         for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
             *c_ptr = '\0';
 
@@ -153,11 +155,12 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         memmove(filename, ptr, strlen(ptr)+1);
     }
     while ((ptr = strpbrk(filename, "_ -")))
-        memmove(ptr, ptr+1, strlen(ptr));
+        memmove(ptr, ptr+1, strlen(ptr)+1);
 
     for (i = 0; i < alert_list_count; i++) {
         normal_title(alert_list[i].title, title_m);
         strncpy(alert_f, alert_list[i].filename, 32);
+	alert_f[32] = '\0';
         if ((ptr = strpbrk(alert_f, ".")))
             *ptr = '\0';
 
@@ -166,7 +169,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
             memmove(alert_f, ptr, strlen(ptr)+1);
         }
         while ((ptr = strpbrk(alert_f, "_ -")))
-            memmove(ptr, ptr+1, strlen(ptr));
+            memmove(ptr, ptr+1, strlen(ptr)+1);
 
         if ((match_level < ALERT_FROM || strcmp(alert_list[i].from, alert->from) == 0) &&
         (match_level < ALERT_TO   || strcasecmp(alert_list[i].to, alert->to) == 0) &&
@@ -211,7 +214,8 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
                         alert_list[i].left_boundary = alert->left_boundary;
                         alert_list[i].bottom_boundary = alert->bottom_boundary;
                         alert_list[i].right_boundary = alert->right_boundary;
-                        strcpy(alert_list[i].title, alert->title);
+                        strncpy(alert_list[i].title, alert->title, 32);
+			alert_list[i].title[32] = '\0';
                     }
                     alert_list[i].flags[0] = alert->flags[0];
                 }
@@ -364,7 +368,7 @@ static void alert_build_list(Message *fill) {
     entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
     if (!isdigit((int)entry[0].activity[0]) && entry[0].activity[0] != '-') {
         for (j = 5; j >= 0; j--)
-          strcpy(entry[j].title, entry[j-1].title);    
+          strcpy(entry[j].title, entry[j-1].title);
         strcpy(entry[0].title, entry[0].alert_tag);
         strcpy(entry[0].alert_tag, entry[0].activity);
     }
@@ -377,7 +381,7 @@ static void alert_build_list(Message *fill) {
     for (i = 0; i < 6 && entry[i].title[0]; i++) {
         entry[i].title[32] = '\0';
         while ((ptr = strpbrk(entry[i].title, " ")))
-          memmove(ptr, ptr+1, strlen(ptr));
+          memmove(ptr, ptr+1, strlen(ptr)+1);
 
         if ((ptr = strpbrk(entry[i].title, "}>=!:/*+;"))) {
             if (debug_level & 2) {
