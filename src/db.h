@@ -356,7 +356,8 @@ extern void copy_data(DataRow *to, DataRow *from);
 
 extern void db_init(void);
 
-// 
+//
+extern int is_my_call(char *call, int exact);
 void mscan_file(char msg_type, void (*function)(Message *fill));
 extern void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout);
 extern void display_file(Widget w);
