@@ -12,7 +12,8 @@ EXTRA_DIST = \
     xastir.rgb \
     tnc-startup.kpc3 \
     tnc-startup.thd7 \
-    tnc-startup.kam
+    tnc-startup.kam \
+    tnc-startup.pico
 
 config_DATA = \
     language-Dutch.sys \
@@ -26,4 +27,6 @@ config_DATA = \
     xastir.rgb \
     tnc-startup.kpc3 \
     tnc-startup.thd7 \
-    tnc-startup.kam
+    tnc-startup.kam \
+    tnc-startup.pico
+
