@@ -22653,10 +22653,10 @@ void Object_confirm_data_set(Widget widget, XtPointer clientData, XtPointer call
     // We have the name now.  Check it against our database of
     // stations/objects/items.  Do an exact match.
     //
-    if (search_station_name(&p_station,line,1)) {
-
-        // Found it.  Don't allow Object creation.  Bring up a
-        // warning message instead.
+    if (search_station_name(&p_station,line,1)
+            && (p_station->flag & ST_ACTIVE)) {
+        // Found a live object with that name.  Don't allow Object
+        // creation.  Bring up a warning message instead.
         popup_message_always(langcode("POPEM00035"), langcode("POPEM00038"));
     }
     else {
@@ -22694,10 +22694,10 @@ void Item_confirm_data_set(Widget widget, XtPointer clientData, XtPointer callDa
     // We have the name now.  Check it against our database of
     // stations/objects/items.  Do an exact match.
     //
-    if (search_station_name(&p_station,line,1)) {
-
-        // Found it.  Don't allow Item creation.  Bring up a warning
-        // message instead.
+    if (search_station_name(&p_station,line,1)
+            && (p_station->flag & ST_ACTIVE)) {
+        // Found a live object with that name.  Don't allow Object
+        // creation.  Bring up a warning message instead.
         popup_message_always(langcode("POPEM00035"), langcode("POPEM00038"));
     }
     else {
