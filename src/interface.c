@@ -1242,10 +1242,10 @@ int OpenTrac_decode_origination(unsigned char *element,
     unsigned char c;
 
 
-    if (element_len < 8)
+    if (element_len < 6)
         return -1;
 
-    if (element_len > 9)
+    if (element_len > 8)
         return -1;
 
     // Binary routine.  strncpy is ok here as long as nulls not in
@@ -1400,7 +1400,8 @@ int OpenTrac_decode_position(unsigned char *element,
     *lon = fetch32bits(element+4) / semicircles;
 
     if (element_len == 11) {
-        *alt = ((((*(element+8))<<16)+fetch16bits(element+9))/100)-10000;
+        alt = ((*(element+8))<<16)+get16(element+9);
+        alt = (alt/100)-10000;
     }
 
     fprintf(stderr, "Position: Lat %f Lon %f Alt %f\n",*lat,*lon,*alt);
@@ -1475,8 +1476,8 @@ int OpenTrac_decode_courseandspeed(unsigned char *element,
     if (element_len != 3)
         return -1;
 
-    *course = (*element<<1) + ((*(element+1)&0x8000) >> 15);
-    rawspeed = (fetch16bits(element+1) & 0x7ffff);
+    *course = (*element<<1) + ((*(element+1)&0x80) >> 7);
+    rawspeed = (fetch16bits(element+1) & 0x7fff);
     *speed = (float)rawspeed*0.072; // kph
 
     fprintf(stderr, "Course: %d Speed: %f kph\n", *course, *speed);
