@@ -1189,6 +1189,12 @@ WINDOWS/CYGWIN NOTES:
             XFree86/lesstif
             XFree86/XFree86-prog
 
+     So far "wget" from the Cygwin distribution doesn't appear to work.
+     CVS has not been tested yet.  Extra map libraries such as ImageMagick,
+     Shapelib, libgeotiff, libproj have not been tested yet under Cygwin.
+     Anyone doing so is encouraged to share their findings with the Xastir
+     mailing lists.
+
 END OF WINDOWS/CYGWIN NOTES.
      -----------------------------------------------------------------------
 
