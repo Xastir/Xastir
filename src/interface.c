@@ -1839,6 +1839,7 @@ void port_read(int port) {
             while (port_data[port].scan
                     && (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) )
                     && (port_data[port].status == DEVICE_UP) ){
+                int skip = 0;
 
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
                     pthread_testcancel();   // Check for thread termination request
@@ -1881,14 +1882,77 @@ void port_read(int port) {
 //    printf("read_lock, Port = %d\n", port);
 
 
-                    if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                    if (port_data[port].device_type != DEVICE_AX25_TNC){
 
-//WE7U: Implement KISS decode logic here
-printf("KISS DECODE logic needed\n");
 
-                    }
-                    else if (port_data[port].device_type != DEVICE_AX25_TNC){
-                        if ((cin == (unsigned char)'\r'
+//WE7U
+                        // Do special KISS packet processing here.  We save
+                        // the last character in port_data[port].channel2,
+                        // as it is otherwise only used for AX.25 ports.
+                        if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                            if (port_data[port].channel2 == KISS_FESC) { // Frame Escape char
+                                if (cin == KISS_TFEND) { // Transposed Frame End char
+
+                                    // Save this char for next time
+                                    // around
+                                    port_data[port].channel2 = cin;
+
+                                    cin = KISS_FEND;
+                                }
+                                else if (cin == KISS_TFESC) { // Transposed Frame Escape char
+
+                                    // Save this char for next time
+                                    // around
+                                    port_data[port].channel2 = cin;
+
+                                    cin = KISS_FESC;
+                                }
+                                else {
+                                    port_data[port].channel2 = cin;
+                                }
+                            }
+                            else if (port_data[port].channel2 == KISS_FEND) { // Frame End char
+                                // Frame start or frame end.  Drop this
+                                // next character which should either be
+                                // another frame end or a type byte.
+
+                                // Save this char for next time around
+                                port_data[port].channel2 = cin;
+                                skip++;
+                            }
+                            else if (cin == KISS_FESC) { // Frame Escape char
+                                port_data[port].channel2 = cin;
+                                skip++;
+                            }
+                            else {
+                                port_data[port].channel2 = cin;
+                            }
+                        }   // End of first special KISS processing
+
+
+//WE7U
+                        // Check for AX.25 flag character inside KISS
+                        // packet
+                        if ( (!skip)
+                                && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
+                                && (cin == (unsigned char)0x7e
+                                    || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1))
+                                && port_data[port].data_type == 0) {     // If end-of-line
+
+                            // End serial/net type data send it to the decoder
+                            // Put a terminating zero at the end of the read-in data
+                            port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
+
+                            if (port_data[port].status == DEVICE_UP && port_data[port].read_in_pos > 0)
+                                channel_data(port, (unsigned char *)port_data[port].device_read_buffer);
+
+                            for (i = 0; i <= port_data[port].read_in_pos; i++)
+                                port_data[port].device_read_buffer[i] = (char)0;
+
+                            port_data[port].read_in_pos = 0;
+                        }
+                        else if ( (!skip)
+                                && (cin == (unsigned char)'\r'
                                     || cin == (unsigned char)'\n'
                                     || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1))
                                 && port_data[port].data_type == 0) {     // If end-of-line
@@ -1904,7 +1968,8 @@ printf("KISS DECODE logic needed\n");
                                 port_data[port].device_read_buffer[i] = (char)0;
 
                             port_data[port].read_in_pos = 0;
-                        } else {
+                        }
+                        else if (!skip) {
                             if (port_data[port].data_type == 1 && (port_data[port].device_type == DEVICE_NET_WX ||
                                     port_data[port].device_type == DEVICE_SERIAL_WX)) {
 
@@ -2615,6 +2680,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
         switch(dev_type){
             case DEVICE_SERIAL_TNC:
 
+            case DEVICE_SERIAL_KISS_TNC:
+
             case DEVICE_SERIAL_GPS:
 
             case DEVICE_SERIAL_WX:
@@ -2626,6 +2693,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     case DEVICE_SERIAL_TNC:
                         if (debug_level & 2)
                             printf("Opening a Serial TNC device\n");
+
+                        break;
+
+                    case DEVICE_SERIAL_KISS_TNC:
+                        if (debug_level & 2)
+                            printf("Opening a Serial KISS TNC device\n");
 
                         break;
 
@@ -2795,7 +2868,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
 
-                                case DEVICE_SERIAL_TNC_AUX_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (ok == 1) {
                         xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
                         (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
@@ -2927,9 +3000,11 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 
                 case DEVICE_SERIAL_TNC:
 
+                case DEVICE_SERIAL_KISS_TNC:
+
                 case DEVICE_SERIAL_TNC_HSP_GPS:
 
-                                case DEVICE_SERIAL_TNC_AUX_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (devices[i].connect_on_startup == 1 || override) {
                         (void)add_device(i,devices[i].device_type,devices[i].device_name,"",-1,
                             devices[i].sp,devices[i].style,0);

@@ -5625,6 +5625,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                 if (data_avail) {
                     int data_type;              /* 0=AX25, 1=GPS */
 
+                    //printf("device_type: %d\n",port_data[data_port].device_type);
+
                     switch (port_data[data_port].device_type) {
                         /* NET Data stream */
                         case DEVICE_NET_STREAM:
@@ -5637,6 +5639,12 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         /* TNC Devices */
                         case DEVICE_SERIAL_KISS_TNC:
+
+                            // Try to decode header and checksum.  If
+                            // bad, break, else continue through to
+                            // ASCII logging & decode routines.
+                            if ( !decode_ax25_header( (char *)incoming_data) )
+                                break;
 
                         case DEVICE_SERIAL_TNC:
 

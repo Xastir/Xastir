@@ -396,6 +396,7 @@ extern void clear_sort_file(char *filename);
 extern int  packet_data_display;
 extern void display_packet_data(void);
 extern int  redraw_on_new_packet_data;
+extern int decode_ax25_header(char *incoming_data);
 extern int decode_ax25_line(char *line, char from, int port, int dbadd);
 
 // utilities

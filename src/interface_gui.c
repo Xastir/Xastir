@@ -318,10 +318,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     strcpy(devices[TNC_port].unproto_igate,XmTextFieldGetString(TNC_igate_data));
     (void)remove_trailing_spaces(devices[TNC_port].unproto_igate);
 
-    strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
-    (void)remove_trailing_spaces(devices[TNC_port].tnc_up_file);
-    strcpy(devices[TNC_port].tnc_down_file,XmTextFieldGetString(TNC_down_file_data));
-    (void)remove_trailing_spaces(devices[TNC_port].tnc_down_file);
+    if (type != DEVICE_SERIAL_KISS_TNC) {
+        // KISS TNC, no up/down files for this one!
+        strcpy(devices[TNC_port].tnc_up_file,"");
+        strcpy(devices[TNC_port].tnc_down_file,"");
+    }
+    else {
+        strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
+        (void)remove_trailing_spaces(devices[TNC_port].tnc_up_file);
+        strcpy(devices[TNC_port].tnc_down_file,XmTextFieldGetString(TNC_down_file_data));
+        (void)remove_trailing_spaces(devices[TNC_port].tnc_down_file);
+    }
 
     /* reopen or open port*/
     if (devices[TNC_port].connect_on_startup==1 || was_up)
@@ -390,6 +397,11 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 devices[port].gps_retrieve=DEFAULT_GPS_RETR;
                 break;
 
+//WE7U:  Fix this
+            case DEVICE_SERIAL_KISS_TNC:
+                tmp=langcode("WPUPCFT028");
+                break;
+
             default:
                 sprintf(tmp, langcode("WPUPCFT029"), (int)device_type);
                 break;
@@ -455,6 +467,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
                 break;
             case DEVICE_SERIAL_TNC:
+            case DEVICE_SERIAL_KISS_TNC:
             default:
                 break;
         }
@@ -798,6 +811,9 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
+//WE7U
+// If KISS TNC, don't draw frame3 or its contents
+
         frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopOffset,10,
@@ -908,6 +924,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         delw = XmInternAtom(XtDisplay(config_TNC_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(config_TNC_dialog, delw, Config_TNC_destroy_shell, (XtPointer)config_TNC_dialog);
 
+//WE7U
+        if (device_type == DEVICE_SERIAL_KISS_TNC)
+            XtSetSensitive(frame3,FALSE);
+
         if (config_type==0) {
             /* first time port */
                         devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
@@ -925,6 +945,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                     XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
                 case DEVICE_SERIAL_TNC:
+                case DEVICE_SERIAL_KISS_TNC:
                 default:
                     break;
             }
@@ -939,8 +960,17 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             XmTextFieldSetString(TNC_unproto2_data,"");
             XmTextFieldSetString(TNC_unproto3_data,"");
             XmTextFieldSetString(TNC_igate_data,"");
-            XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
-            XmTextFieldSetString(TNC_down_file_data,"tnc-stop.sys");
+
+//WE7U
+            if (device_type == DEVICE_SERIAL_KISS_TNC) {
+                XmTextFieldSetString(TNC_up_file_data,"");
+                XmTextFieldSetString(TNC_down_file_data,"");
+            }
+            else {
+                XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
+                XmTextFieldSetString(TNC_down_file_data,"tnc-stop.sys");
+            }
+
         } else {
             /* reconfig */
 
@@ -969,6 +999,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                         XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
                 case DEVICE_SERIAL_TNC:
+                case DEVICE_SERIAL_KISS_TNC:
                 default:
                     break;
             }
@@ -3800,6 +3831,8 @@ void modify_device_list(int option, int port) {
 
                         case DEVICE_SERIAL_TNC_AUX_GPS:
 
+                        case DEVICE_SERIAL_KISS_TNC:
+
                         case DEVICE_SERIAL_GPS:
 
                         case DEVICE_SERIAL_WX:
@@ -3869,6 +3902,8 @@ void modify_device_list(int option, int port) {
                     }
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
+
+                        case DEVICE_SERIAL_KISS_TNC:
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
 
@@ -3973,6 +4008,15 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                 /*devices[port].device_type=found;*/
                 /*printf("adding device %s on port %d\n",dtype[found].device_name,port);*/
                 switch (found) {
+
+//WE7U:  Set up for new KISS device type
+                    case DEVICE_SERIAL_KISS_TNC:
+                        // configure this port
+                        if (debug_level & 1)
+                            printf("ADD SERIAL KISS TNC\n");
+                        Config_TNC(w, DEVICE_SERIAL_KISS_TNC, 0, port);
+                        break;
+
                     case DEVICE_SERIAL_TNC:
                         /* configure this port */
                         if (debug_level & 1)
@@ -4264,6 +4308,16 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                             if (debug_level & 1)
                                 printf("Modify SERIAL TNC\n");
                             Config_TNC(w, DEVICE_SERIAL_TNC, 1, port);
+                            break;
+
+                        case DEVICE_SERIAL_KISS_TNC:
+
+end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
+
+                            /* configure this port */
+                            if (debug_level & 1)
+                                printf("Modify SERIAL KISS TNC\n");
+                            Config_TNC(w, DEVICE_SERIAL_KISS_TNC, 1, port);
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -4835,6 +4889,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                     break;
 
                 case DEVICE_AX25_TNC:
+                    s='5';
+                    break;
+
+                case DEVICE_SERIAL_KISS_TNC:
                     s='5';
                     break;
 

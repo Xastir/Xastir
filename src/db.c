@@ -10043,6 +10043,135 @@ void extract_TNC_text(char *info) {
 
 
 
+//WE7U
+// We feed a raw 7-byte string into this routine.  It decodes the
+// callsign-SSID from it and tells us whether there are more callsigns
+// after this.  If the asterisk is nonzero it'll add an asterisk to the
+// callsign if it has been digipeated.
+int decode_ax25_address(char *string, char *callsign, int asterisk) {
+    int i,j;
+    char ssid;
+    char t;
+    int more = 0;
+    int digipeated = 0;
+
+    j = 0;
+    for (i = 0; i < 6; i++) {
+        t = ((unsigned char)string[i] >> 1) & 0x7f;
+        if (t != ' ')
+            callsign[j++] = t;
+    }
+
+    ssid = (unsigned char)string[6];
+
+    if ( (ssid & 0x80) && asterisk)
+        digipeated++;   // Has been digipeated
+
+    if ( !(ssid & 0x01) )
+        more++; // More callsigns after this one
+
+    ssid = (ssid >> 1) & 0x0f;
+
+    if (ssid) {
+        callsign[j++] = '-';
+        if (ssid > 9)
+            callsign[j++] = '1';
+        ssid = ssid % 10;
+        callsign[j++] = '0' + ssid;
+    }
+
+    if (digipeated)
+        callsign[j++] = '*';
+
+    callsign[j] = '\0';
+
+    return(more);
+}
+
+
+
+
+
+//WE7U
+// Function which receives raw AX.25 packets from a KISS interface and
+// converts them to a printable TAPR-2 style line.  We receive the
+// packet with perhaps more than one flag character at the beginning,
+// and a "\0" character at the end.
+//
+// We return:  0 if it is a bad packet
+//             1 if it is good
+//
+int decode_ax25_header(char *incoming_data) {
+    char temp[20];
+    char result[4096+100];
+    char dest[15];
+    int i, ptr;
+    char callsign[15];
+    char more;
+    char num_digis = 0;
+
+
+    if (incoming_data == NULL)
+        return(0);
+
+    // Drop the packet if it is too long:
+    if (strlen(incoming_data) > 1024) {
+        incoming_data[0] = '\0';
+        return(0);
+    }
+
+    result[0] = '\0';
+
+    // Skip the first character in the string, which will be a Frame End
+    // character from the KISS packet
+    ptr = 1;
+
+    // Parse the destination address
+    for (i = 0; i < 7; i++)
+        temp[i] = incoming_data[ptr++];
+    temp[7] = '\0';
+    more = decode_ax25_address(temp, callsign, 0); // No asterisk
+    xastir_snprintf(dest,sizeof(dest),"%s",callsign);
+
+    // Parse the source address
+    for (i = 0; i < 7; i++)
+        temp[i] = incoming_data[ptr++];
+    temp[7] = '\0';
+    more = decode_ax25_address(temp, callsign, 0); // No asterisk
+
+    // Store the two callsigns we have into "result"
+    xastir_snprintf(result,sizeof(result),"%s>%s",callsign,dest);
+
+    // Parse the digipeater addresses
+    num_digis = 0;
+    while (more && num_digis < 8) {
+        for (i = 0; i < 7; i++)
+            temp[i] = incoming_data[ptr++];
+        temp[7] = '\0';
+
+        more = decode_ax25_address(temp, callsign, 1); // Add asterisk
+        strcat(result,",");
+        strcat(result,callsign);
+        num_digis++;
+    }
+
+    strcat(result,":");
+
+    ptr += 2;   // Skip control and PID bytes
+    strcat(result,&incoming_data[ptr]);
+
+    printf("%s\n",result);
+
+    // Copy the result onto the top of the input data
+    strcpy(incoming_data,result);
+
+    return(1);
+}
+
+
+
+
+
 /*
  *  Decode AX.25 line
  *  \r and \n should already be stripped from end of line
