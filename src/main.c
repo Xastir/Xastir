@@ -421,7 +421,9 @@ Widget station_config_call_data, station_config_slat_data_deg, station_config_sl
 Pixmap CS_icon0, CS_icon;
 
 /* defaults*/
+#ifdef TRANSMIT_RAW_WX
 Widget raw_wx_tx;
+#endif
 Widget compressed_posit_tx;
 Widget altnet_active;
 Widget altnet_text;
@@ -547,7 +549,9 @@ time_t sec_clear;               /* station cleared after */
 time_t sec_remove;              /* Station removed after */
 time_t sec_next_raw_wx;         /* raw wx transmit data */
 
+#ifdef TRANSMIT_RAW_WX
 int transmit_raw_wx;            /* transmit raw wx data? */
+#endif
 
 int transmit_compressed_posit;  /* transmit location in compressed format? */
 
@@ -4655,8 +4659,12 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             /* Time to put out raw WX data ? */
             if (sec_now() > sec_next_raw_wx) {
                 sec_next_raw_wx = sec_now()+600;
+
+#ifdef TRANSMIT_RAW_WX
                 if (transmit_raw_wx)
                     tx_raw_wx_data();
+#endif
+
                 /* check wx data last received */
                 wx_last_data_check();
             }
@@ -7470,7 +7478,9 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     // Check for NWS symbol and print warning if so
     (void)check_nws_weather_symbol();
 
+#ifdef TRANSMIT_RAW_WX
     transmit_raw_wx = (int)XmToggleButtonGetState(raw_wx_tx);
+#endif
 
     transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
 
@@ -8043,6 +8053,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
 
+#ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),xmToggleButtonWidgetClass,my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
                                         XmNtopWidget, compressed_posit_tx,
@@ -8053,6 +8064,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
+#endif
 
         altnet_active  = XtVaCreateManagedWidget(langcode("WPUPCFD025"),xmToggleButtonWidgetClass,my_form,
                             XmNtopAttachment, XmATTACH_WIDGET,
@@ -8088,7 +8100,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
+#ifdef TRANSMIT_RAW_WX
                                         XmNtopWidget, raw_wx_tx,
+#else
+                                        XmNtopWidget, altnet_text,
+#endif
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -8103,7 +8119,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
+#ifdef TRANSMIT_RAW_WX
                                         XmNtopWidget, raw_wx_tx,
+#else
+                                        XmNtopWidget, altnet_text,
+#endif
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -8306,10 +8326,12 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 break;
         }
 
+#ifdef TRANSMIT_RAW_WX
         if (transmit_raw_wx)
             XmToggleButtonSetState(raw_wx_tx,TRUE,FALSE);
         else
             XmToggleButtonSetState(raw_wx_tx,FALSE,FALSE);
+#endif
 
         if(transmit_compressed_posit)
             XmToggleButtonSetState(compressed_posit_tx,TRUE,FALSE);

@@ -402,7 +402,10 @@ void save_data(void)  {
         /* station broadcast type */
         store_int (fout, "BST_TYPE", output_station_type);
 
+#ifdef TRANSMIT_RAW_WX
         store_int (fout, "BST_WX_RAW", transmit_raw_wx);
+#endif
+
         store_int (fout, "BST_COMPRESSED_POSIT", transmit_compressed_posit);
 
         /* -dk7in- variable beacon interval */
@@ -864,9 +867,11 @@ void load_data_or_default(void) {
     if (!get_int ("BST_TYPE", &output_station_type))
         output_station_type = 0;
 
+#ifdef TRANSMIT_RAW_WX
     /* raw wx transmit */
     if (!get_int ("BST_WX_RAW", &transmit_raw_wx))
         transmit_raw_wx = 0;
+#endif
 
     /* compressed posit transmit */
     if (!get_int ("BST_COMPRESSED_POSIT", &transmit_compressed_posit))

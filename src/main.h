@@ -34,6 +34,15 @@
 #endif
 
 
+// To enable the "Transmit Raw WX data" button in
+// Configure->Defaults dialog.  Warning:  If you enable this, enable
+// the button in Configure->Defaults, and are running a weather
+// station that puts out raw data that is NOT allowed by the APRS
+// spec, you'll be putting out garbage and trashing the channel.
+//
+//#define TRANSMIT_RAW_WX
+
+
 extern char altnet_call[];
 extern int altnet;
 extern Widget iface_da;
@@ -110,7 +119,11 @@ extern int units_english_metric;
 extern int redraw_on_new_data;
 extern int redo_list;
 extern int operate_as_an_igate;
+
+#ifdef TRANSMIT_RAW_WX
 extern int transmit_raw_wx;
+#endif
+
 extern int transmit_compressed_posit;
 extern int log_igate;
 extern int log_tnc_data;
