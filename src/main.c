@@ -12962,11 +12962,11 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 //    int x;
 //    char *temp;
 //    XmString *list;
-    static Widget pane, my_form, button_clear, button_close, rowcol,
-           label1, label2, label3, label4, button_filled_yes,
-           button_filled_no, button_layer_change,
-           button_auto_maps_yes, button_auto_maps_no,
-           button_max_zoom_change, button_min_zoom_change;
+    static Widget pane, my_form, button_clear, button_close,
+        rowcol1, rowcol2, label1, label2, label3, label4,
+        button_filled_yes, button_filled_no, button_layer_change,
+        button_auto_maps_yes, button_auto_maps_no,
+        button_max_zoom_change, button_min_zoom_change;
     Atom delw;
     Arg al[10];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -13020,13 +13020,31 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         // into map_properties_list
         map_properties_fill_in();
 
-        // Attach a rowcolumn manager widget to my_form to handle all of the buttons
-        rowcol = XtVaCreateManagedWidget("Map properties rowcol", 
+        // Attach a rowcolumn manager widget to my_form to handle
+        // the second button row.  Attach it to the bottom of the
+        // form.
+        rowcol2 = XtVaCreateManagedWidget("Map properties rowcol2", 
                 xmRowColumnWidgetClass, 
                 my_form,
                 XmNorientation, XmHORIZONTAL,
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_FORM,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNkeyboardFocusPolicy, XmEXPLICIT,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Attach a rowcolumn manager widget to my_form to handle
+        // the first button row.
+        rowcol1 = XtVaCreateManagedWidget("Map properties rowcol1", 
+                xmRowColumnWidgetClass, 
+                my_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, rowcol2,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment, XmATTACH_FORM,
                 XmNkeyboardFocusPolicy, XmEXPLICIT,
@@ -13069,7 +13087,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNtopWidget, label2,
                 XmNtopOffset, 2,
                 XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, rowcol,
+                XmNbottomWidget, rowcol1,
                 XmNbottomOffset, 2,
                 XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 5,
@@ -13081,7 +13099,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Max Zoom" stolen from "Change Layer"
         button_max_zoom_change = XtVaCreateManagedWidget(langcode("MAPP009"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol1,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13089,7 +13107,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         new_max_zoom_text = XtVaCreateManagedWidget("Map Properties max zoom number",
                 xmTextWidgetClass,
-                rowcol,
+                rowcol1,
                 XmNeditable,   TRUE,
                 XmNcursorPositionVisible, TRUE,
                 XmNsensitive, TRUE,
@@ -13105,7 +13123,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Min Zoom" stolen from "Change Layer"
         button_min_zoom_change = XtVaCreateManagedWidget(langcode("MAPP010"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol1,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13113,7 +13131,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         new_min_zoom_text = XtVaCreateManagedWidget("Map Properties min zoom number",
                 xmTextWidgetClass,
-                rowcol,
+                rowcol1,
                 XmNeditable,   TRUE,
                 XmNcursorPositionVisible, TRUE,
                 XmNsensitive, TRUE,
@@ -13130,7 +13148,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Change Layer"
         button_layer_change = XtVaCreateManagedWidget(langcode("MAPP004"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol1,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13138,7 +13156,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         new_map_layer_text = XtVaCreateManagedWidget("Map Properties new layer number",
                 xmTextWidgetClass,
-                rowcol,
+                rowcol1,
                 XmNeditable,   TRUE,
                 XmNcursorPositionVisible, TRUE,
                 XmNsensitive, TRUE,
@@ -13153,7 +13171,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         label3  = XtVaCreateManagedWidget(langcode("MAPP005"),
                 xmLabelWidgetClass,
-                rowcol,
+                rowcol2,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13161,7 +13179,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Filled-Yes"
         button_filled_yes = XtVaCreateManagedWidget(langcode("MAPP006"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol2,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13170,7 +13188,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Filled-No"
         button_filled_no = XtVaCreateManagedWidget(langcode("MAPP007"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol2,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13179,7 +13197,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // Automaps
         label4  = XtVaCreateManagedWidget(langcode("MAPP008"),
                 xmLabelWidgetClass,
-                rowcol,
+                rowcol2,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13187,7 +13205,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Automaps-Yes"
         button_auto_maps_yes = XtVaCreateManagedWidget(langcode("MAPP006"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol2,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13196,7 +13214,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Automaps-No"
         button_auto_maps_no = XtVaCreateManagedWidget(langcode("MAPP007"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol2,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13205,7 +13223,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Clear"
         button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol2,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13214,7 +13232,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Close"
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                 xmPushButtonGadgetClass, 
-                rowcol,
+                rowcol2,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13227,17 +13245,16 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtAddCallback(button_max_zoom_change, XmNactivateCallback, map_properties_max_zoom_change, map_properties_dialog);
         XtAddCallback(button_min_zoom_change, XmNactivateCallback, map_properties_min_zoom_change, map_properties_dialog);
         XtAddCallback(button_layer_change, XmNactivateCallback, map_properties_layer_change, map_properties_dialog);
-        XtAddCallback(button_auto_maps_yes, XmNactivateCallback,
-map_properties_auto_maps_yes, map_properties_dialog);
-        XtAddCallback(button_auto_maps_no, XmNactivateCallback,
-map_properties_auto_maps_no, map_properties_dialog);
+        XtAddCallback(button_auto_maps_yes, XmNactivateCallback, map_properties_auto_maps_yes, map_properties_dialog);
+        XtAddCallback(button_auto_maps_no, XmNactivateCallback, map_properties_auto_maps_no, map_properties_dialog);
 
         pos_dialog(map_properties_dialog);
 
         delw = XmInternAtom(XtDisplay(map_properties_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(map_properties_dialog, delw, map_properties_destroy_shell, (XtPointer)map_properties_dialog);
 
-        XtManageChild(rowcol);
+        XtManageChild(rowcol1);
+        XtManageChild(rowcol2);
         XtManageChild(my_form);
         XtManageChild(map_properties_list);
         XtVaSetValues(map_properties_list, XmNbackground, colors[0x0f], NULL);
