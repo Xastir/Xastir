@@ -591,7 +591,7 @@ static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] = {
-    { 0, BEGIN, NULL, NULL, 0, 0, "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=8192; label_level=0",0 },
+    { 0, BEGIN, NULL, NULL, 0, 0, "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=8192; label_level=0",0 },
 };
 #define dbfawk_default_nrules (sizeof(dbfawk_default_rules)/sizeof(dbfawk_default_rules[0]))
 static dbfawk_sig_info *dbfawk_default_sig = NULL;
@@ -668,6 +668,7 @@ void draw_shapefile_map (Widget w,
     static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
     static int      color,lanes,filled,pattern,display_level,label_level;
     static int      fill_style,fill_color;
+    static int      fill_stipple;
     //static int layer;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
@@ -704,6 +705,7 @@ void draw_shapefile_map (Widget w,
     filled=0;
     fill_style=0;
     fill_color=13;
+    fill_stipple=0;
     pattern=0;
     display_level=8192;
     label_level=0;
@@ -837,6 +839,7 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"filled",INT,&filled,sizeof(filled));
                 awk_declare_sym(Symtbl,"fill_style",INT,&fill_style,sizeof(fill_style));
                 awk_declare_sym(Symtbl,"fill_color",INT,&fill_color,sizeof(fill_color));
+                awk_declare_sym(Symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));
                 awk_declare_sym(Symtbl,"pattern",INT,&pattern,sizeof(pattern));
                 awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
                 awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
@@ -1670,6 +1673,7 @@ void draw_shapefile_map (Widget w,
                     fprintf(stderr,"filled=%d ",filled);
                     fprintf(stderr,"fill_style=%d ",fill_style);
                     fprintf(stderr,"fill_color=%d ",fill_color);
+                    fprintf(stderr,"fill_stipple=%d ",fill_stipple);
                     fprintf(stderr,"pattern=%d ",pattern);
                     fprintf(stderr,"display_level=%d ",display_level);
                     fprintf(stderr,"label_level=%d ",label_level);
@@ -1679,8 +1683,24 @@ void draw_shapefile_map (Widget w,
                 /* set attributes */
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                 draw_filled = filled; /* this overrides map properties! */
-                if (weather_alert_flag) /* XXX will this fix WX alerts? */
+                if (weather_alert_flag) { /* XXX will this fix WX alerts? */
                     fill_style = FillStippled;
+                } else if (filled != 0 && fill_style == FillStippled) {
+                    switch (fill_stipple) {
+                    case 0:
+                        (void)XSetStipple(XtDisplay(w), gc, 
+                                          pixmap_13pct_stipple);
+                        break;
+                    case 1:
+                        (void)XSetStipple(XtDisplay(w), gc, 
+                                          pixmap_25pct_stipple);
+                        break;
+                    default:
+                        (void)XSetStipple(XtDisplay(w), gc, 
+                                          pixmap_25pct_stipple);
+                        break;
+                    }
+                }
 
                 (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
                 
@@ -3162,6 +3182,11 @@ if (on_screen) {
                             XtWindow(w),
                             0,
                             &gc_temp_values);
+                        // now copy the fill style and stipple from gc.
+                        XCopyGC(XtDisplay(w),
+                                gc, 
+                                (GCFillStyle|GCStipple),
+                                gc_temp);
 
                         // Set the clip-mask into the GC.  This GC
                         // is now ruined for other purposes, so
