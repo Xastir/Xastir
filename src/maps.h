@@ -64,6 +64,16 @@ typedef struct {
   char label_text[30];
 } symbol_label;
 
+typedef struct _map_index_record{
+    char filename[400];
+    unsigned long bottom;
+    unsigned long top;
+    unsigned long left;
+    unsigned long right;
+    struct _map_index_record *next;
+} map_index_record;
+extern map_index_record *map_index_head;
+
 char *get_map_ext (char *filename);
 void load_auto_maps(Widget w, char *dir);
 void load_maps(Widget w);

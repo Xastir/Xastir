@@ -9157,6 +9157,7 @@ void map_chooser_fill_in (void) {
     FILE *f;
     char temp[600];
     XmString str_ptr;
+    map_index_record *current = map_index_head;
 
 
     busy_cursor(appshell);
@@ -9164,13 +9165,24 @@ void map_chooser_fill_in (void) {
     i=0;
     if (map_chooser_dialog) {
 
+	// Empty the map_list widget first
+	XmListDeleteAllItems(map_list);
+
         // Find the names of all the map files on disk and put them into map_list
         n=1;
-        // Clear out the database file
-        clear_sort_file(get_user_base_dir("data/sort_maps_db.dat"));    // defined in db.c
-        // populate the database file with filenames from disk
-        dir_sort(SELECTED_MAP_DIR);  // defined in main.c
-        sort_list(get_user_base_dir("data/sort_maps_db.dat"),1000,map_list,&n); // defined in main.c
+
+        while (current != NULL) {
+
+            //printf("%s\n",current->filename);
+
+            XmListAddItem(map_list,
+                str_ptr = XmStringCreateLtoR(current->filename,
+                                XmFONTLIST_DEFAULT_TAG),
+                                n);
+            n++;
+            current = current->next;
+            XmStringFree(str_ptr);
+        }
 
         (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
 

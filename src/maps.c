@@ -1673,8 +1673,11 @@ void draw_shapefile_map (Widget w,
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+        statusline(status_text,0);       // Indexing ...
+
         // We're indexing only.  Save the extents in the index.
-        index_update_ll(file,  // Full filename
+        index_update_ll(filenm,	// Filename only
             adfBndsMin[1],  // Bottom
             adfBndsMax[1],  // Top
             adfBndsMin[0],  // Left
@@ -4517,7 +4520,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
                 || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
             // We're indexing only.  Save the extents in the index.
-            index_update_xastir(file,   // Full filename
+            index_update_xastir(filenm, // Filename only
                 bottom_extent, // Bottom
                 top_extent,    // Top
                 left_extent,   // Left
@@ -5314,7 +5317,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         // We're indexing only.  Save the extents in the index.
-        index_update_xastir(file,   // Full filename
+        index_update_xastir(filenm, // Filename only
             tp[1].y_lat,    // Bottom
             tp[0].y_lat,    // Top
             tp[0].x_long,   // Left
@@ -6984,20 +6987,26 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
          *
          *   bottom          top             left           right
          */
-        if (!map_visible( south_bounding + 1000,
-                             north_bounding - 1000,
-                             west_bounding - 1000,
-                             east_bounding + 1000 ) )
-        {
-            if (debug_level & 16) {
-                printf ("Map not within current view.\n");
-                printf ("Skipping map: %s\n", file);
-            }
 
-            /* Map isn't inside our current view.  We're done.
-             * Free any memory used and return.
-             */
-            return;                     /* Skip this map */
+        // Check whether we're indexing or drawing the map
+        if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
+            && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
+
+            // We're drawing.
+            if (!map_visible( south_bounding + 1000,
+                              north_bounding - 1000,
+                              west_bounding - 1000,
+                              east_bounding + 1000 ) ) {
+                if (debug_level & 16) {
+                    printf ("Map not within current view.\n");
+                    printf ("Skipping map: %s\n", file);
+                }
+
+                // Map isn't inside our current view.  We're done.
+                // Free any memory used and return.
+                //
+                return;    // Skip this map
+            }
         }
     }
 
@@ -7382,8 +7391,11 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+        statusline(map_it,0);       // Indexing ...
+
         // We're indexing only.  Save the extents in the index.
-        index_update_xastir(file,   // Full filename
+        index_update_xastir(filenm, // Filename only
             south_bounding_wgs84,   // Bottom
             north_bounding_wgs84,   // Top
             west_bounding_wgs84,    // Left
@@ -8848,7 +8860,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                 || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
             // We're indexing only.  Save the extents in the index.
-            index_update_xastir(filename,   // Full filename
+            index_update_xastir(filenm,     // Filename only
                 map_bottom, // Bottom
                 map_top,    // Top
                 map_left,   // Left
@@ -9209,19 +9221,54 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     char symbol_color;
     int embedded_object;
 
-    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
-    // Check map index to see if map is visible.  If not, skip it.
-    if (map_onscreen_index(file) == 0) {
+    // Skip maps that end in .dbf or .shx
+    ext = get_map_ext(filenm);
+
+    if (ext == NULL)
+        return;
+
+    // Only crunch data on known map types, skipping all other junk
+    // that might be in the map directory.  draw_map() gets called
+    // on every file in the map directory during auto_maps runs and
+    // during map indexing.
+    if (       (strcasecmp(ext,"pdb" ) != 0)
+            && (strcasecmp(ext,"map" ) != 0)
+            && (strcasecmp(ext,"shp" ) != 0)
+            && (strcasecmp(ext,"tif" ) != 0)
+            && (strcasecmp(ext,"geo" ) != 0)
+            && (strcasecmp(ext,"gnis") != 0) ) {
         return;
     }
+
+
+    // Check map index
+    // Returns: 0 if map is _not_ visible
+    //          1 if map _is_ visible
+    //          2 if the map is not in the index
+    i = map_onscreen_index(filenm);
+ 
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing maps
+        if (i != 2) // We already have an index entry for this map.
+            return; // Skip it.
+    }
+    else {  // We're drawing maps
+        // See if map is visible.  If not, skip it.
+        if (i == 0) // Map is not visible, skip it.
+            return;
+    }
+
+
+    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
     // Used for debugging.  If we get a segfault on a map, this is
     // often the only way of finding out which map file we can't
     // handle.
     //printf("draw_map: %s\n",file);
-
-    ext = get_map_ext (filenm);
 
     x = 0;
     y = 0;
@@ -9433,7 +9480,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                     || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
                 // We're indexing only.  Save the extents in the index.
-                index_update_xastir(file,   // Full filename
+                index_update_xastir(filenm, // Filename only
                     bottom_boundary,        // Bottom
                     top_boundary,           // Top
                     left_boundary,          // Left
@@ -9936,7 +9983,10 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     }
  
 
-    // Look for well-known non-map types:
+    // Look for well-known non-map types.  Note that this code
+    // doesn't get reached for these types anymore due to the code
+    // at the top that exits the function if the file extension is
+    // not one of the known map types.
     else if ( (ext != NULL)
             && (   (strlen(ext) == 0)
                 || (strcasecmp (ext, "html" ) == 0)  // html
@@ -10305,15 +10355,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
 
 
-// Struct and list pointers for the map index linked list.
-typedef struct _map_index_record{
-    char filename[400];
-    unsigned long bottom;
-    unsigned long top;
-    unsigned long left;
-    unsigned long right;
-    struct _map_index_record *next;
-} map_index_record;
+// List pointer for the map index linked list.
 map_index_record *map_index_head = NULL;
 
 // Might wish to have another variable in the index which is used to
@@ -10342,7 +10384,7 @@ void index_update_xastir(char *filename,
     int done = 0;
 
 
-    //printf( "File Index: %s: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
+    //printf( "File Index: %s: (%lu,%lu)\n\t(%lu,%lu)\n",
     //    filename, bottom, top, left, right );
 
     //if (map_index_head == NULL)
@@ -10649,7 +10691,7 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%08ld,%08ld,%08ld,%09ld,%s\n",
+                "%010lu,%010lu,%010lu,%010lu,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
@@ -10715,7 +10757,7 @@ void index_restore_from_file(void) {
 
                 // Fill in the values
                 sscanf(in_string,
-                    "%ld,%ld,%ld,%ld,%400c",
+                    "%lu,%lu,%lu,%lu,%400c",
                     &temp_record->bottom,
                     &temp_record->top,
                     &temp_record->left,
@@ -10985,57 +11027,30 @@ void load_alert_maps (Widget w, char *dir) {
  **********************************************************/
 void load_auto_maps (Widget w, char *dir) {
     map_index_record *current = map_index_head;
-    char directory[8000];
-    char filename[500];
-    int i;
-    int done;
 
-
-    //map_search (w, dir, NULL, NULL, (int)TRUE, DRAW_TO_PIXMAP);
 
     // Run through the entire map_index linked list
     while (current != NULL) {
 
-        // Snag the complete path/filename
-        xastir_snprintf(directory,sizeof(directory),"%s",current->filename);
-
-        // Find the last '/' character
-        done = 0;
-        for (i = strlen(directory); i > 0 && !done; i--) {
-            if (directory[i] == '/') {
-                done++;
-            }
+        if (auto_maps_skip_raster
+                && (   strstr(current->filename,"geo")
+                    || strstr(current->filename,"GEO")
+                    || strstr(current->filename,"tif")
+                    || strstr(current->filename,"TIF")
+                    || strstr(current->filename,"gnis")
+                    || strstr(current->filename,"GNIS") ) ) {
+            // Skip this map
         }
+        else {  // Draw this map
 
-        if (!done) {
-            printf("Couldn't find slash in path/filename\n");
-        }
-        else {
-            // Copy the filename portion to "filename"
-            xastir_snprintf(filename,sizeof(filename),"%s",&current->filename[i+2]);
+            //printf("Loading: %s/%s\n",SELECTED_MAP_DIR,current->filename);
 
-            // Insert a '\0' after the last '/' char in the path
-            directory[i+2] = '\0';
-
-            //printf("%s\t%s\n",directory,filename);
-
-            if (auto_maps_skip_raster
-                && (   strstr(filename,"geo")
-                    || strstr(filename,"GEO")
-                    || strstr(filename,"tif")
-                    || strstr(filename,"TIF")
-                    || strstr(filename,"gnis")
-                    || strstr(filename,"GNIS") ) ) {
-                // Skip this map
-            }
-            else {  // Draw this map
-                draw_map (w,
-                    directory,
-                    filename,
-                    NULL,
-                    '\0',
-                    DRAW_TO_PIXMAP);
-            }
+            draw_map (w,
+                SELECTED_MAP_DIR,
+                current->filename,
+                NULL,
+                '\0',
+                DRAW_TO_PIXMAP);
         }
         current = current->next;
     }
