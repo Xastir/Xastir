@@ -1335,8 +1335,11 @@ void mdata_delete_type(const char msg_type, const time_t reference_time) {
     // Mark message records with RECORD_NOTACTIVE.  This will mark
     // them for re-use.
     for (i = 0; msg_index && i < msg_index_end; i++)
-        if ((msg_type == '\0' || msg_type == msg_data[i].type) &&
-                msg_data[i].active == RECORD_ACTIVE && msg_data[i].sec_heard < reference_time)
+
+        if ((msg_type == '\0' || msg_type == msg_data[i].type)
+                && msg_data[i].active == RECORD_ACTIVE
+                && msg_data[i].sec_heard < reference_time)
+
             msg_data[i].active = RECORD_NOTACTIVE;
 }
 
@@ -1357,6 +1360,10 @@ void check_message_remove(void) {       // called in timing loop
 
         last_message_remove = sec_now();
     }
+
+    // Should we sort them at this point so that the unused ones are
+    // near the end?  It looks like the message input functions do
+    // this, so I guess we don't need to do it here.
 }
 
 
