@@ -1184,6 +1184,22 @@ directory and re-untaring the source again than trying to recompile
 in that blown directory.  Make Clean doesn't do a thing and the old
 settings and mistakes stick arround no matter what you try."
 
+Download "gdal-1.2.0b.tar.gz".  In a cygwin window, type the
+following:
+
+
+    tar xzvf gdal-1.2.0b.tar.gz
+    cd gdal-1.2.0b
+    ./configure
+    make
+    make install
+
+
+The GDAL/OGR library should now be installed on your system.  Return
+to the xastir directory and start with the ./configure command.  It
+should pick up the fact that GDAL/OGR has been installed and compile
+support for it into Xastir.  Follow with the rest of the commands to
+make/install Xastir.
 
 
 
