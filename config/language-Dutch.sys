@@ -16,6 +16,7 @@
 # Modified 1.1.4 : May 20 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.3.2 : Jun 08 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.3.x : Sept 1 2004, Han Sytsma <h.l.sytsma@hetnet.nl> / # Henk de Groot <pe1dnn@amsat.org>
+
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -97,7 +98,7 @@ PULDNMP025|Kaart label font||
 PULDNMP015|Xfont selectie||
 #
 #
-# PopUp "Configureren Tigermap"
+# PopUp "Configure Tigermap"
 MPUPTGR001|Raster|
 MPUPTGR002|Provincies||
 MPUPTGR003|Stads Labels||
@@ -163,7 +164,6 @@ PULDNOT003|Kort||
 PULDNDP014|Zoek station|Z|
 PULDNDP001|Volg station|V|
 PULDNDP022|Spoor downloaden|p|
-# SubMenu "Filter data"
 PULDNDP032|Filter gegevens||
 PULDNDP040|Deselecteer alles||
 PULDNDP041|Selecteer mijn||
@@ -181,7 +181,6 @@ PULDNDP045|Selecteer Objecten/Items||
 PULDNDP026|- Selecteer  weer Objecten/Items||
 PULDNDP039|- Selecteer  water Hoogte Objecten/Items||
 PULDNDP031|- Selecteer  andere Objecten/Items||
-# SubMenu "Filter Display"
 PULDNDP033|Filter weergave||
 PULDNDP010|Roepnaam|R|
 PULDNDP012|Symbolen|y|
@@ -206,14 +205,13 @@ PULDNDP037|- Geef richting weer||
 PULDNDP038|- Geef symbool weer||
 PULDNDP005|Afst/koers|A|
 PULDNDP024|Geeft tijd laatste rapport||
-#
 PULDNDP015|Wis alle stations|W|
 PULDNDP016|Wis Alle sporen|S|
 PULDNDP025|Wis Object/Item geschiedenis||
 PULDNDP048|Herlaad Object/Item geschiedenis||
-PULDNDP049|Wis alle gemarkeerde roepnamen||
-PULDNDP050|Wis gemarkeerde roepnamen geschiedenis||
-PULDNDP051|Selecteer alleen gemarkeerde roepnamen||
+PULDNDP049|Wis alle gemarkeerde bijnamen||
+PULDNDP050|Wis gemarkeerde bijnamen geschiedenis||
+PULDNDP051|Selecteer alleen gemarkeerde bijnamen||
 PULDNDP052|- Label route punten||
 #
 # Units
@@ -733,7 +731,9 @@ WPUPSTI061|Ontbrandings temp: %søF   ||
 WPUPSTI062|Vochtigheids gehalte in brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Vraag NWS waarschuwing||
-WPUPSTI065|Gemarkeerde roepnaam: %s||
+WPUPSTI065|Gemarkeerde bijnaam: %s||
+WPUPSTI066|Geef station een bijnaam||
+#
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC databank doorzoeken||
@@ -976,6 +976,7 @@ SPCHSTR009|Nieuwe weer waarschuwing||
 SPCHSTR010|Nieuwe roepnaam||
 SPCHSTR011|Gehoord, D X, %s, op een afstand van %.1f %s||
 #
+#
 SPCHDIRN00|ten noorden van||
 SPCHDIRS00|ten zuiden van||
 SPCHDIRE00|ten oosten van||
@@ -999,6 +1000,7 @@ PRINT0005|Pas schaal beeld automatisch aan||
 PRINT0006|Schaal:||
 PRINT0007|Forceer standaard witte achtergrondkleur||
 PRINT0008|Print in Zwart/Wit||
+PRINT0016|Inverteer kleuren||
 PRINT0009|Postscript resolutie:||
 PRINT0010|Voorbeeld||
 PRINT0011|Print naar bestand||
@@ -1006,7 +1008,6 @@ PRINT0012|Bezig met printen naar bestand...||
 PRINT0013|Converteren naar postscript...||
 PRINT0014|Gereed met aanmaken print bestand||
 PRINT0015|Printer status||
-PRINT0016|Inverteer kleuren||
 #
 # Locate Feature Dialog
 FEATURE001|Naam:||
@@ -1049,6 +1050,7 @@ GAMMA001|Stel Gamma Correctie bij||
 GAMMA002|Gamma Correctie||
 #
 #
+# 
 # Map labels font Dialog
 MAPFONT001|Verander Kaart Labels Font||
 MAPFONT002|Kaart Labels Font||
@@ -1057,6 +1059,8 @@ MAPFONT004|Klein||
 MAPFONT005|Gemiddeld||
 MAPFONT006|Groot||
 MAPFONT007|Enorm||
+#
+#
 #
 # Distance/Bearing on status line
 PULDNDB001|Afst/Richting Status||
