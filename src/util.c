@@ -2723,9 +2723,9 @@ void reload_tactical_calls(void) {
                         line);
 
                     // Decode this packet.  This will put it into
-                    // our station database.  Port is set to -2
-                    // here.
-                    decode_ax25_line( line2, DATA_VIA_LOCAL, -2, 1);
+                    // our station database.  Port is set to -3
+                    // here to prevent igating/transmitting them.
+                    decode_ax25_line( line2, DATA_VIA_LOCAL, -3, 1);
 
                     // Add the tactical callsign to the recently
                     // added station.  We must search for it first.

@@ -641,13 +641,30 @@ void output_igate_net(char *line, int port, int third_party) {
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
-    // If received from x_spider port or it's our own tactical call
-    if (port < -2)
-        igate_options = 0;
-    else if (port == -2)    // From x_spider server port
-        igate_options = 1;
-    else
+    // If received from x_spider port or it's our own tactical call.
+    // Here are the special port numbers we might see:
+    // -1: We're reading in from a log file
+    // -2: Packet came from x_spider server port (therefore it's
+    //     already authenticated)
+    // -3: We're reading in tactical calls from file
+    //
+    if (port == -1)         // Packet came from a log file.
+        igate_options = 0;  // Don't igate it.
+
+    else if (port == -2)    // Packet came from x_spider server port
+        igate_options = 1;  // Ok to igate.
+
+    else if (port == -3)    // We're reading tactical call from file.
+        igate_options = 0;  // Don't igate it.
+
+    else if (port < -2)     // Errant port number.
+        igate_options = 0;  // Don't igate it.
+
+    else    // Port number is 0 or positive number.  A real port.
+            // Decide whether to igate it based on the port's
+            // configuration.
         igate_options = devices[port].igate_options;
+
 
 end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
