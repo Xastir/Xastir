@@ -609,6 +609,9 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     Atom delw;
 //    DataRow *p_station;
 
+
+//fprintf(stderr,"Send_message\n");
+
     groupon=0;
     box_len=90;
     i=0;
