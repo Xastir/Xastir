@@ -965,12 +965,34 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             sscanf(data,"%f %f %f %f %f %f %d %d %f %f %f %f",
                 &tmp1,&tmp2,&tmp3,&tmp4,&tmp5,&tmp6,&tmp7,&tmp8,&tmp9,&tmp10,&tmp11,&tmp12);
+
+
+            // The format of the data originates here:
+            // http://weather.henriksens.net/
+
+            // tmp1: primary temp (C)
+            // tmp2: temp max (C)
+            // tmp3: temp min (C)
+            // tmp4: anemometer (mps)
+            // tmp5: anemometer gust (peak speed MS)
+            // tmp6: anemometer speed max * 0.447040972 (max speed MS)
+            // tmp7: vane bearing - 1 (current wind direction)
+            // tmp8: vane mode (max dir)
+            // tmp9: rain rate
+            // tmp10: rain total?
+            // tmp11: rain since ??
+            // tmp12: rain since ??
+
+
+            // Temperature
             xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
                 (int)((tmp1 + 0.5) * 9.0 / 5.0 + 32.0));
 
-// xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°C ",
-//                        tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
- 
+            // Wind direction.  Each vane increment equals 22.5 degrees.
+            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                    (int)(tmp7 * 22.5 + 0.5));
+
+
             break;
 
         ////////////////////////////////
