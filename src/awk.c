@@ -718,7 +718,7 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
  */
 int awk_compile_program(awk_program *rs)
 {
-    pcre *re;
+    pcre *re = NULL;
     pcre_extra *pe;
     const unsigned char *tables;
     const char *error;
