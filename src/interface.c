@@ -2446,6 +2446,13 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                 // We must limit the length here.  APRS Item packets
                 // can handle 43 chars in the comment field, Base-91
                 // compressed position packets can handle 40.
+                //
+                // Wait a minute!  We don't care how long they are
+                // as long as they fit through our APRS decoding.
+                // We're not transmitting these as APRS packets, so
+                // the max length in the APRS Spec doesn't matter
+                // here!
+                //
                 strncat(buffer,comment,126);
             }
         }
