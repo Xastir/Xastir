@@ -326,6 +326,9 @@ void save_data(void)  {
                 "Couldn't rename %s to %s, cancelling save_data()\n",
                 config_file_bak2,
                 config_file_bak3);
+
+            // Attempt to restore to previous state
+            // Nothing to do here!  bak3 was deleted.
             return;
         }
     }
@@ -346,6 +349,9 @@ void save_data(void)  {
                 "Couldn't rename %s to %s, cancelling save_data()\n",
                 config_file_bak1,
                 config_file_bak2);
+
+            // Attempt to restore to previous state
+            rename (config_file_bak3, config_file_bak2);
             return;
         }
     }
@@ -366,6 +372,10 @@ void save_data(void)  {
                 "Couldn't rename %s to %s, cancelling save_data()\n",
                 config_file,
                 config_file_bak1);
+
+            // Attempt to restore to previous state
+            rename (config_file_bak2, config_file_bak1);
+            rename (config_file_bak3, config_file_bak2);
             return;
         }
     }
