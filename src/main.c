@@ -694,21 +694,100 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
 
 
 
-// WE7U
-// This one needs a bit of work yet (needs to actually _do_ something!).
-void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer callData) {
+void Coordinate_calc_output(char *full_zone, long northing,
+            long easting, double latitude, double longitude) {
     char temp_string[1024];
+    int south = 0;
+    int west = 0;
+    double my_lat,my_lon,lat_abs,lon_abs,lat_min,lon_min,lat_sec,lon_sec;
+    int lat_deg_int,lat_min_int,lat_sec_int;
+    int lon_deg_int,lon_min_int,lon_sec_int;
+
+    // Round the values first so we don't get strange rounding errors
+    // later.
+    xastir_snprintf(temp_string,sizeof(temp_string),"%8.5f",latitude);
+    my_lat = atof(temp_string);
+    xastir_snprintf(temp_string,sizeof(temp_string),"%9.5f",longitude);
+    my_lon = atof(temp_string);
+       
+    lat_abs = fabs(my_lat);
+    lon_abs = fabs(my_lon); 
+
+    lat_deg_int = (int)lat_abs;
+    lon_deg_int = (int)lon_abs;
+
+    lat_min = (lat_abs - lat_deg_int) * 60;
+    lon_min = (lon_abs - lon_deg_int) * 60;
+
+    lat_min_int = (int)lat_min;
+    lon_min_int = (int)lon_min;
+
+    lat_sec = (lat_min - lat_min_int) * 60;
+    lon_sec = (lon_min - lon_min_int) * 60;
+
+    lat_sec_int = (int)lat_sec;
+    lon_sec_int = (int)lon_sec;
+
+    if (my_lat < 0)
+        south++;
+    if (my_lon < 0)
+        west++;
+
+    
+/*
     xastir_snprintf(temp_string,
-        sizeof(temp_string),"%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+        sizeof(temp_string),
+        "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
         "*** Simulated output ***",
         "",
-        "             Decimal Degrees:  48.00000N   122.00000W",
-        "     Degrees/Decimal Minutes:  48 00.000N  122 00.000W",
-        "     Degrees/Minutes/Seconds:  48 00 00N   122 00 00W",
-        "Universal Tranverse Mercator:  10T  0574598  5316888",
+        "              Decimal Degrees:  48.00000N   122.00000W",
+        "      Degrees/Decimal Minutes:  48 00.000N  122 00.000W",
+        "      Degrees/Minutes/Seconds:  48 00 00N   122 00 00W",
+        "Universal Transverse Mercator:  10T  0574598  5316888",
         "",
         "*** Simulated output ***");
+*/
+
+    xastir_snprintf(temp_string,
+        sizeof(temp_string),
+        "              Decimal Degrees:  %8.5f%c   %9.5f%c\n      Degrees/Decimal Minutes:  %02d %06.3f%c  %03d %06.3f%c\n      Degrees/Minutes/Seconds:  %02d %02d %02d%c   %03d %02d %02d%c\nUniversal Transverse Mercator:  %3s  %07lu  %07lu",
+        lat_abs, (south) ? 'S':'N',
+        lon_abs, (west) ?  'W':'E',
+        lat_deg_int, lat_min, (south) ? 'S':'N',
+        lon_deg_int, lon_min, (west) ?  'W':'E',
+        lat_deg_int, lat_min_int, lat_sec_int, (south) ? 'S':'N',
+        lon_deg_int, lon_min_int, lon_sec_int, (west) ?  'W':'E',
+        full_zone, easting, northing);
     XmTextSetString(coordinate_calc_result_text, temp_string);
+}
+
+
+
+
+
+// WE7U
+// Coordinate_calc_compute
+//
+// This one needs a bit of work yet (needs to actually _do_ something!).
+//
+// Inputs:  coordinate_calc_zone
+//          coordinate_calc_latitude_easting
+//          coordinate_calc_longitude_northing
+//
+// Output:  coordinate_calc_result_text
+//
+void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *str_ptr;
+    char zone_letter;
+    int zone_number = 0;
+    char full_zone[5];
+    int i;
+    int have_utm;
+    int have_lat_lon;
+    long easting = 0;
+    long northing = 0;
+    double latitude;
+    double longitude;
 
 
     // Goal is to suck in the format provided, figure out what
@@ -743,8 +822,8 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // dd mm ss.s N ddd mm ss.s W
     // -dd mm ss.s  -ddd mm ss.s
 
-    // 10T  0123456     1234567
-    // 10T   123456     1234567
+    // 10T  0123456     1234567     DONE
+    // 10T   123456     1234567     DONE
     // 10T  012 3456    123 4567
     // 10T   12 3456    123 4567
 
@@ -752,6 +831,141 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // output test widget, the dd mm.mmmN/ddd mm.mmmW formatted
     // output should also be saved for later pasting into the
     // calling dialog's input fields.
+    //
+    // Must also make sure that the calling dialog is still up and
+    // active before we try to write to it's widgets.
+
+
+    // First check for something in the zone field that looks like a
+    // valid zone.
+    str_ptr = XmTextGetString(coordinate_calc_zone);
+    i = strlen(str_ptr);
+    have_utm = 1;
+    if ( (i == 2) || (i == 3) ) {   // String is the correct length: Has
+                                    // to be either 2 or 3 chars total.
+        int j;
+        for (j = 0; j < (i-1); j++) {
+            if ( (str_ptr[j] < '0') && (str_ptr[j] > '9') ) {
+                // Not UTM, need either one or two digits first
+                have_utm = 0;
+            }
+        }
+        if ( ( (str_ptr[i-1] < 'A') || (str_ptr[i-1] > 'Z') )
+            && ( (str_ptr[i-1] < 'a') || (str_ptr[i-1] > 'z') ) ) {
+            // Not UTM, zone character isn't correct
+            have_utm = 0;
+        }
+    }
+    else {  // Not UTM, wrong length for zone
+        have_utm = 0;
+    }
+    // If we've made it to this point and have_utm == 1, then zone looks
+    // like a UTM zone.
+    if (have_utm) {
+        zone_letter = toupper(str_ptr[i-1]);
+        zone_number = atoi(str_ptr);
+printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
+        // Save it away for later use
+        xastir_snprintf(full_zone,
+            sizeof(full_zone),
+            "%d%c",
+            zone_number,
+            zone_letter);
+        have_lat_lon = 0;
+    }
+    else {
+printf("Bad zone, not a UTM coordinate\n");
+        have_lat_lon = 1;
+    }
+    // We're done with that variable.  Free the space.
+    XtFree(str_ptr);
+
+
+    str_ptr = XmTextGetString(coordinate_calc_latitude_easting);
+    i = strlen(str_ptr);
+    // Check for exactly six or seven chars.  If seven, first one must
+    // be a zero.
+    if ( have_utm && (i != 6) && (i != 7) ) {
+        have_utm = 0;
+printf("Bad Easting value: Not 6 or 7 chars\n");
+    }
+    if ( have_utm && (i == 7) && (str_ptr[0] != '0') ) {
+        have_utm = 0;
+printf("Bad Easting value: 7 chars but first one not 0\n");
+    }
+    if (have_utm) {
+        int j;
+
+        // Might be good to get rid of spaces at this point as we think
+        // it's a UTM number.  Might have to put it in our own string
+        // first though to do that.
+
+        for (j = 0; j< i; j++) {
+            if ( (str_ptr[j] < '0') || (str_ptr[j] > '9') ) {
+                // Not UTM, found a non-number
+                have_utm = 0;
+            }
+        }
+        if (have_utm) { // If we still think it's a valid UTM number
+            easting = atol(str_ptr);
+printf("Easting: %lu\n",easting);
+        }
+        else {
+printf("Bad Easting value\n");
+        }
+    }
+    // We're done with that variable.  Free the space.
+    XtFree(str_ptr); 
+
+
+    str_ptr = XmTextGetString(coordinate_calc_longitude_northing);
+    i = strlen(str_ptr);
+    // Check for exactly seven chars.
+    if (have_utm && (i != 7) ) {
+        have_utm = 0;
+printf("Bad Northing value: Not 7 chars\n");
+    }
+    if (have_utm) {
+        int j;
+
+        // Might be good to get rid of spaces at this point as we think
+        // it's a UTM number.  Might have to put it in our own string
+        // first though to do that.
+
+        for (j = 0; j< i; j++) {
+            if ( (str_ptr[j] < '0') || (str_ptr[j] > '9') ) {
+                // Not UTM, found a non-number
+                have_utm = 0;
+            }
+        }
+        if (have_utm) { // If we still think it's a valid UTM number
+            northing = atol(str_ptr);
+printf("Northing: %lu\n",northing);
+        }
+        else {
+printf("Bad Northing value\n");
+        }
+    }
+    // We're done with that variable.  Free the space.
+    XtFree(str_ptr);
+
+    // If we get to this point and have_utm == 1, then we're fairly sure
+    // we have a good value and can convert it to the other formats for
+    // display.
+    if (have_utm) {
+        utm_to_ll(gDatum[E_WGS_84].ellipsoid,
+            (double)northing,
+            (double)easting,
+            full_zone,
+            &latitude,
+            &longitude);
+printf("Latitude: %f, Longitude: %f\n",latitude,longitude); 
+        Coordinate_calc_output(full_zone,
+            northing,
+            easting,
+            latitude,
+            longitude);
+    }
 }
 
 
@@ -829,6 +1043,10 @@ struct {
 // specify where to put each piece of the DD MM.MMM output value,
 // and where to get it's input from.  It would need to be a static
 // array.
+//
+// We could grey-out the OK button until we have a successful
+// calculation.  This would make sure that an invalid location didn't
+// get written to the calling dialog.
 //
 void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, form, label1, label2, label3,
@@ -993,8 +1211,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
 
         coordinate_calc_result_text = NULL;
         coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
-                            XmNrows, 8,
-                            XmNcolumns, 60,
+                            XmNrows, 4,
+                            XmNcolumns, 56,
                             XmNeditable, FALSE,
                             XmNtraversalOn, FALSE,
                             XmNeditMode, XmMULTI_LINE_EDIT,
