@@ -126,10 +126,16 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             else
                 xastir_snprintf(status, sizeof(status), "  Until: ");
 
-            xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   %s%c%c @ %c%c%c%c%c   %-7s   %-20s   %s",
-
+            xastir_snprintf(temp, sizeof(temp),
+                    "%-9s  %-9s  %c%c @ %c%c%c%cz %s%c%c @ %c%c%c%c%c  %-7s  %-20s  %s",
                     alert_list[n].from,
                     alert_list[n].to,
+                    alert_list[n].issue_date_time[0],
+                    alert_list[n].issue_date_time[1],
+                    alert_list[n].issue_date_time[2],
+                    alert_list[n].issue_date_time[3],
+                    alert_list[n].issue_date_time[4],
+                    alert_list[n].issue_date_time[5],
                     status,
                     alert_list[n].activity[0],
                     alert_list[n].activity[1],
@@ -178,35 +184,35 @@ void Display_Wx_Alert( /*@unused@*/ Widget wdgt, /*@unused@*/ XtPointer clientDa
 begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
 
         wx_alert_shell = XtVaCreatePopupShell(langcode("WPUPWXA001"), xmDialogShellWidgetClass, Global.top,
-                           XmNdeleteResponse, XmDESTROY,
-                           XmNdefaultPosition, FALSE,
-                                               XmNminWidth, 550,
-                           NULL);
+                        XmNdeleteResponse, XmDESTROY,
+                        XmNdefaultPosition, FALSE,
+                        XmNminWidth, 600,
+                        NULL);
 
         pane = XtVaCreateWidget("Display_Wx_Alert pane",xmPanedWindowWidgetClass, wx_alert_shell,
-                          XmNbackground, colors[0xff],
-                          NULL); 
+                        XmNbackground, colors[0xff],
+                        NULL); 
 
         my_form =  XtVaCreateWidget("Display_Wx_Alert my_form", xmFormWidgetClass, pane,
-XmNtraversalOn, TRUE,
-                                          XmNfractionBase, 5,
-                                          XmNbackground, colors[0xff], 
-                                          XmNwidth, 550,
-                                          XmNautoUnmanage, FALSE,
-                                          XmNshadowThickness, 1,  
-                      NULL);
+                        XmNtraversalOn, TRUE,
+                        XmNfractionBase, 5,
+                        XmNbackground, colors[0xff], 
+                        XmNwidth, 600,
+                        XmNautoUnmanage, FALSE,
+                        XmNshadowThickness, 1,  
+                        NULL);
         
         mess = XtVaCreateManagedWidget(langcode("WPUPWXA002"), xmLabelWidgetClass, my_form,
-XmNtraversalOn, FALSE,
-                       XmNtopAttachment, XmATTACH_FORM,
-                                       XmNtopOffset, 5,
-                       XmNbottomAttachment, XmATTACH_NONE,
-                               XmNleftAttachment, XmATTACH_FORM,
-                                       XmNleftOffset, 5,
-                           XmNrightAttachment, XmATTACH_FORM,
-                                       XmNrightOffset, 5,
-                                       XmNbackground, colors[0xff], 
-                           NULL);
+                        XmNtraversalOn, FALSE,
+                        XmNtopAttachment, XmATTACH_FORM,
+                        XmNtopOffset, 5,
+                        XmNbottomAttachment, XmATTACH_NONE,
+                        XmNleftAttachment, XmATTACH_FORM,
+                        XmNleftOffset, 5,
+                        XmNrightAttachment, XmATTACH_FORM,
+                        XmNrightOffset, 5,
+                        XmNbackground, colors[0xff], 
+                        NULL);
 
 
         /* set args for color */
@@ -238,7 +244,7 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
                         XmNtopAttachment, XmATTACH_FORM,
                         XmNtopOffset, 265,
                         XmNbottomAttachment, XmATTACH_FORM,
-                                                XmNbottomOffset,10,
+                        XmNbottomOffset,10,
                         XmNleftAttachment, XmATTACH_POSITION,
                         XmNleftPosition, 2,
                         XmNrightAttachment, XmATTACH_POSITION,

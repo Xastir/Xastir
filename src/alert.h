@@ -54,6 +54,7 @@ typedef struct {
     char flags[16];
     char filename[64];
     char seq[10];
+    char issue_date_time[10];
 } alert_entry;
 
 extern alert_entry *alert_list;

@@ -978,6 +978,56 @@ printf("Zone:%s%s\n",prefix,suffix);
         entry[0].expiration = time_from_aprsstring(entry[0].activity);
 
         xastir_snprintf(entry[0].seq,sizeof(entry[0].seq),"%s",fill->seq);
+
+        // Now compute issue_date_time from the first three characters of
+        // the sequence number:
+        // 0-9    = 0-9
+        // 10-35 = A-Z
+        // 36-61 = a-z
+        // The 3 characters are Day/Hour/Minute of the issue date time in
+        // zulu time.
+        if (strlen(fill->seq) == 5) {   // Looks ok so far
+            // Could add another check to make sure that the first two
+            // chars are a digit or a capital letter.
+            char c;
+            int i;
+            char date_time[10];
+            char temp[3];
+
+            date_time[0] = '\0';
+            for ( i = 0; i < 3; i++ ) {
+                c = fill->seq[i];   // Snag one character
+
+                if (is_num_chr(c)) {    // Found numeric char
+                    temp[0] = '0';
+                    temp[1] = c;
+                    temp[2] = '\0';
+                }
+
+                else if (c >= 'A' && c <= 'Z') {    // Found upper-case letter
+                    // Need to take ord(c) - 55 to get the number
+                    xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 55);
+                }
+
+                else if (c >= 'a' && c <= 'z') {    // Found lower-case letter
+                    // Need to take ord(c) - 61 to get the number
+                    xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 61);
+                }
+
+                strncat(date_time,temp,2);  // Concatenate the strings
+            }
+            strncat(date_time,"z",1);   // Add a 'z' on the end.
+
+            if (debug_level & 1)
+                printf("Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
+
+            xastir_snprintf(entry[0].issue_date_time,
+                sizeof(entry[0].issue_date_time),
+                "%s",
+                date_time);
+            //entry[0].issue_date_time = time_from_aprsstring(date_time);
+        }
+        
  
         // flags[0] specifies whether it's onscreen or not
         memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
@@ -1036,6 +1086,7 @@ printf("Zone:%s%s\n",prefix,suffix);
             strcpy(entry[i].to, fill->call_sign);
             strcpy(entry[i].seq, fill->seq);
             entry[i].expiration = entry[0].expiration;
+            strcpy(entry[i].issue_date_time, entry[0].issue_date_time);
             memcpy(entry[i].flags, entry[0].flags, sizeof(entry[0].flags));
 
             if (strstr(entry[i].alert_tag, "CANCL") || strstr(entry[i].to, "CANCL"))
