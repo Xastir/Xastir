@@ -2151,15 +2151,17 @@ void display_file(Widget w) {
                             if (temp_sec_heard > t_old) {
                                 // New trail, so draw solid trail
                                 if (debug_level & 256) {
-                                    printf("Drawing Solid trail for %s\n",
-                                    p_station->call_sign);
+                                    printf("Drawing Solid trail for %s, secs old: %ld\n",
+                                        p_station->call_sign,
+                                        sec_now() - temp_sec_heard);
                                 }
                                 draw_trail(w,p_station,1);
                             }
                             else {
                                 if (debug_level & 256) {
-                                    printf("Drawing trail for %s\n",
-                                        p_station->call_sign);
+                                    printf("Drawing trail for %s, secs old: %ld\n",
+                                        p_station->call_sign,
+                                        sec_now() - temp_sec_heard);
                                 }
                                 draw_trail(w,p_station,0);
                             }
@@ -6599,6 +6601,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     int ok, store;
     int ok_to_display;
     int compr_pos;
+    int my_object = 0;
 
     // call and path had been validated before
     // Check "data" against the max APRS length, and dump the packet if too long.
@@ -6655,6 +6658,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // some other method as well?
 
             new_station = (char)FALSE;
+            my_object++;
         }
         else {
             move_station_time(p_station,p_time);        // update time, change position in time sorted list
@@ -6938,15 +6942,12 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     if (!ok && new_station)
         delete_station_memory(p_station);       // remove unused record
 
-    if (store) {           
+    if (store) {
         // we now have valid data to store into database
         // make time index unique by adding a serial number
 
         // Check whether it's a locally-owned object/item
-        if ( (is_my_call(p_station->origin,1))                  // If station is owned by me
-                && !new_station                                 // and we've seen this station before
-                && ( ((p_station->flag & ST_OBJECT) != 0)       // and it's an object
-                  || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
+        if (my_object) {
             // Do nothing.  We don't want to update the last-heard time
             // so that it'll expire from the queue normally.
 
@@ -6957,7 +6958,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // when we move it).  We should be able to move expired
             // objects/items to make them active again.  Perhaps
             // some other method as well?.
-
         }
         else {
             p_station->sec_heard = curr_sec;    // Give it a new timestamp
@@ -7076,18 +7076,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                     p_station->call_sign);
                             }
                             moving = 1;                 // it's moving if it has changed the position
-
-                            // Check whether it's a locally-owned object/item
-                            if ( (is_my_call(p_station->origin,1))  // If station is owned by me
-                                    && (   ((p_station->flag & ST_OBJECT) != 0) // And it's an object
-                                        || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
-
-                                // Update time, change position in time-sorted list
-                                move_station_time(p_station,p_time);
-
-                                // Give it a new timestamp
-                                p_station->sec_heard = curr_sec;
-                            }
                         }
                         else {
                             if (debug_level & 256) {
@@ -7136,6 +7124,19 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         if (!is_trailpoint_echo(p_station)) {
                             (void)store_trail_point(p_station,p_station->coord_lon,p_station->coord_lat,p_station->sec_heard,p_station->altitude,p_station->speed,p_station->course,p_station->flag);
                             changed_pos = 1;
+
+                            // Check whether it's a locally-owned object/item
+                            if (my_object) {
+
+                                // Update time, change position in
+                                // time-sorted list to change
+                                // expiration time.
+                                move_station_time(p_station,p_time);
+
+                                // Give it a new timestamp
+                                p_station->sec_heard = curr_sec;
+                                //printf("Updating last heard time\n");
+                            }
                         }
                         else if (debug_level & 256) {
                             printf("Trailpoint echo detected for %s\n",
