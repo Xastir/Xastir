@@ -15919,9 +15919,13 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     // This implements persistent objects.
     reload_object_item();
 
+
+//  We shouldn't have to call this next function here once the new
+//  function is fully implemented.
     // Reload tactical calls from file.  This implements persistence
     // for this feature as well.
     reload_tactical_calls();
+
 
     redraw_on_new_data=2;
 }

@@ -2683,7 +2683,7 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
 // Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
-void reload_tactical_calls(void) {
+void reload_tactical_calls_old(void) {
     char *file;
     FILE *f;
     char line[300+1];
@@ -2786,6 +2786,86 @@ void reload_tactical_calls(void) {
     else {
         if (debug_level & 1)
             fprintf(stderr,"Couldn't open file for reading: %s\n", file);
+    }
+}
+
+
+
+
+
+//
+// Function to load saved tactical calls back into xastir.  This
+// is called on startup.  This implements persistent tactical calls
+// across xastir restarts.
+//
+// Here we create a hash lookup and store one record for each valid
+// line read from the tactical calls log file.  The key for each
+// hash entry is the callsign-SSID.  Here we simply read them in and
+// create the hash.  When a new station is heard on the air, it is
+// checked against this hash and the tactical call field filled in
+// if there is a match.
+//
+// Note that the length of "line" can be up to max_device_buffer,
+// which is currently set to 4096.
+//
+void reload_tactical_calls(void) {
+    char *file;
+    FILE *f;
+    char line[300+1];
+
+
+/////////////////////////////////////////////////////////////////////
+// Call the old function so that everything works until this new
+// function is fully implemented.  Remember to delete the 2nd call
+// to this function in main.c when all done too.
+/////////////////////////////////////////////////////////////////////
+reload_tactical_calls_old();
+
+
+    file = get_user_base_dir("config/tactical_calls.log");
+
+    f=fopen(file,"r");
+    if (f!=NULL) {
+
+        while (fgets(line, 300, f) != NULL) {
+
+            if (debug_level & 1)
+                fprintf(stderr,"loading tactical calls from file: %s",line);
+   
+            if (line[0] != '#') {   // skip comment lines
+                char *ptr;
+
+                // we're dealing with comma-separated files, so
+                // break the two pieces at the comma.
+                ptr = index(line,',');
+
+                if (ptr != NULL) {
+                    char *ptr2;
+
+
+                    ptr[0] = '\0';  // terminate the callsign
+                    ptr++;  // point to the tactical callsign
+
+                    // check for lf
+                    ptr2 = index(ptr,'\n');
+                    if (ptr2 != NULL)
+                        ptr2[0] = '\0';
+
+                    // check for cr
+                    ptr2 = index(ptr,'\r');
+                    if (ptr2 != NULL)
+                        ptr2[0] = '\0';
+
+                    if (debug_level & 1)
+                        fprintf(stderr, "call=%s\ttac=%s\n", line, ptr);
+                }
+            }
+        }
+        (void)fclose(f);
+    }
+    else {
+        if (debug_level & 1)
+            fprintf(stderr,"couldn't open file for reading: %s\n", file);
     }
 }
 
@@ -3358,15 +3438,16 @@ char *sec_to_loc(long longitude, long latitude)
   // database.h:    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
   // database.h:    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
 
-  longitude /= 100;
-  latitude  =  2* 90 * 3600L - latitude / 100;
-  *loc++ = (char) (longitude / 72000 + 'A'); longitude = longitude % 72000;
-  *loc++ = (char) (latitude  / 36000 + 'A'); latitude  = latitude % 36000;
-  *loc++ = (char) (longitude /  7200 + '0'); longitude = longitude %  7200;
-  *loc++ = (char) (latitude  /  3600 + '0'); latitude  = latitude %  3600;
-  *loc++ = (char) (longitude /   300 + 'a');
-  *loc++ = (char) (latitude  /   150 + 'a');
-  *loc   = 0;
+  longitude /= 100L;
+  latitude  =  2L * 90L * 3600L - 1L - (latitude / 100L);
+
+  *loc++ = (char) (longitude / 72000L + 'A'); longitude = longitude % 72000L;
+  *loc++ = (char) (latitude  / 36000L + 'A'); latitude  = latitude %  36000L;
+  *loc++ = (char) (longitude /  7200L + '0'); longitude = longitude %  7200L;
+  *loc++ = (char) (latitude  /  3600L + '0'); latitude  = latitude %   3600L;
+  *loc++ = (char) (longitude /   300L + 'a');
+  *loc++ = (char) (latitude  /   150L + 'a');
+  *loc   = 0;   // Terminate the string
   return buf;
 }
 
