@@ -9,7 +9,7 @@
 # and can just delete the sudo keyword from the lines below.
 
 
-cvs update
+cvs update -P -d
 ./bootstrap.sh
 ./configure --without-errorpopups
 sudo make clean
