@@ -1245,7 +1245,12 @@ WINDOWS/CYGWIN NOTES:
 
      If you keep seeing "EOF" at the end of a short error message, it might
      be that the anonymous CVS server at SourceForge is overloaded.  Keep
-     trying!
+     trying!  Here's the coolest thing about CVS:  Once you've done this
+     initial download, you'll never have to do it again.  You just go into
+     the "xastir" directory and type "cvs update".  That snags down just the
+     _changes_ to the files, not the entire files, and is very fast.
+     Compile and install and you'll be running the latest developer's
+     version!
 
         ./bootstrap.sh
         ./configure
