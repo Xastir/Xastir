@@ -10877,9 +10877,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // Specifically do NOT set the ST_VIATNC flag if it
                 // was a third-party packet.
             }
-        } else {                                        // heard other than TNC
-            if (new_station) {                          // new station
-                p_station->flag &= (~ST_VIATNC);        // clear "via TNC" flag
+        } else {  // heard other than TNC
+            if (new_station) {  // new station
+                p_station->flag &= (~ST_VIATNC);  // clear "via TNC" flag
                 p_station->heard_via_tnc_last_time = 0l;
             }
         }
@@ -10996,11 +10996,11 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
 
         // If heard on TNC then overwrite node_path_ptr.  If heard
-        // on INET then overwrite node_path_ptr only if direct_heard
-        // is older than one hour (zero counts as well!), plus clear
-        // the ST_DIRECT and ST_VIATNC bits in this case.  This
-        // makes us keep the RF path around for at least one hour
-        // after the station is heard.
+        // on INET then overwrite node_path_ptr only if
+        // heard_via_tnc_last_time is older than one hour (zero
+        // counts as well!), plus clear the ST_DIRECT and ST_VIATNC
+        // bits in this case.  This makes us keep the RF path around
+        // for at least one hour after the station is heard.
         //
         if ((from == DATA_VIA_TNC)  // Heard via TNC
                 && !third_party     // Not a 3RD-Party packet
@@ -11021,17 +11021,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 && !third_party        // Not a 3RD-Party packet
                 && path != NULL) {     // Path is not NULL
 
-            // Heard on INET interface.  Check if direct_heard is
-            // older than an hour.  If so, overwrite the path and
-            // clear a few bits to show that it has timed out on RF
-            // and we're now receiving that station from the INET
-            // feeds.
+            // Heard on INET interface.  Check if
+            // heard_via_tnc_last_time is older than an hour.  If
+            // so, overwrite the path and clear a few bits to show
+            // that it has timed out on RF and we're now receiving
+            // that station from the INET feeds.
             //
-            if (sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+            if (sec_now() > (p_station->heard_via_tnc_last_time + 60*60)) {
 
                 // Yep, more than one hour old or is a zero,
                 // overwrite the node_path_ptr variable with the new
-                // one.
+                // one.  We're only hearing this station on INET
+                // now.
 
                 // Free any old path we might have
                 if (p_station->node_path_ptr != NULL)
@@ -11042,8 +11043,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
                 substr(p_station->node_path_ptr,path,strlen(path));
 
-                // Clear the ST_VIATNC and ST_DIRECT bits
+                // Clear the ST_VIATNC bit
                 p_station->flag &= ~ST_VIATNC;
+            }
+
+            // If direct_heard is over an hour old, clear the
+            // ST_DIRECT flag.  We're only hearing this station on
+            // INET now.
+            // 
+            if (sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+
+                // Yep, more than one hour old or is a zero, clear
+                // the ST_DIRECT flag.
                 p_station->flag &= ~ST_DIRECT;
             }
         }
