@@ -1170,22 +1170,40 @@ Getting Data Files for Xastir:
        If the FCC database is installed, a Search FCC Database button will
        appear in the station info box. If the RAC (Radio Amateurs of Canada)
        database is installed, a Search RAC Database button will appear for
-       callsigns beginning with a "VE" or a "VA".
+       callsigns beginning with "VE" or "VA".
 
-       To use the FCC lookup download:
-       ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
-       (The only file needed from this 60Meg zip is the EN.dat file)
 
-       **** NOTE To use the data base file it must be sorted first!!! ****
-      
-       Make sure you have plenty of disk space for this as the file is BIG!
-       To sort the file:
+       To use the FCC lookup:
+       ----------------------
+
+         Download:
+         ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+
+         (The only file needed from this 60Meg zip is the EN.dat file)
+
+         **** NOTE To use the data base file it must be sorted first!!! ****
+     
+         unzip l_amat.zip
+ 
+         To sort the file: Make sure you have plenty of disk space
+         for this as the file is BIG!
+
          sort +4 -t \| EN.dat >EN.dat.sorted
-         rm EN.dat
-         mv EN.dat.sorted EN.dat
 
-       To use the RAC lookup download:
+         Install it in the xastir/fcc directory:
+
+         su
+         mv EN.dat.sorted /usr/local/xastir/fcc/EN.dat
+
+
+       To use the RAC lookup:
+       ----------------------
+
+         Download:
          ftp://ftp.rac.ca/pub/cdncaldb.zip
+
+         unzip cdncaldb.zip
+         mv AMATEUR.RPT /usr/local/xastir/fcc/AMACALL.LST
 
 
  Current List of APRS Internet Servers:
