@@ -13244,7 +13244,12 @@ int extract_object(char *call, char **info, char *origin) {
 /*
  *  Extract third-party traffic from information field before processing
  */
-int extract_third_party(char *call, char *path, int path_size, char **info, char *origin) {
+int extract_third_party(char *call,
+                        char *path,
+                        int path_size,
+                        char **info,
+                        char *origin,
+                        int origin_size) {
     int ok;
     char *p_call;
     char *p_path;
@@ -13295,7 +13300,7 @@ int extract_third_party(char *call, char *path, int path_size, char **info, char
 
     if (ok) {                                         // check callsign
         (void)remove_trailing_asterisk(p_call);       // is an asterisk valid here ???
-        if (valid_inet_name(p_call,(*info),origin)) { // accept some of the names used in internet
+        if (valid_inet_name(p_call,(*info),origin,origin_size)) { // accept some of the names used in internet
             // treat is as object with special origin
             xastir_snprintf(call,
                 MAX_CALLSIGN+1,
@@ -14005,7 +14010,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if (ok) {                                                   // check callsign
         (void)remove_trailing_asterisk(call_sign);              // is an asterisk valid here ???
-        if (valid_inet_name(call_sign,info,origin)) {           // accept some of the names used in internet
+        if (valid_inet_name(call_sign,info,origin,sizeof(origin))) { // accept some of the names used in internet
             xastir_snprintf(call,
                 sizeof(call),
                 "%s",
@@ -14039,7 +14044,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     }
 
     if (ok && info[0] == '}') {                                 // look for third-party traffic
-        ok = extract_third_party(call,path,sizeof(path),&info,origin);       // extract third-party data
+        ok = extract_third_party(call,path,sizeof(path),&info,origin,sizeof(origin)); // extract third-party data
         third_party = 1;
 
         // Add it to the HEARD queue for this interface.  We use this

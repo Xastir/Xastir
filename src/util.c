@@ -427,7 +427,10 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
     len = strlen(phg_decoded);
 
     if (strlen(phg) != 7) {
-        xastir_snprintf(phg_decoded, phg_decoded_length, langstr, "BAD PHG");
+        xastir_snprintf(phg_decoded,
+            phg_decoded_length,
+            langstr,
+            "BAD PHG");
         return;
     }
 
@@ -457,42 +460,86 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
 
     switch (phg[6]) {
         case '0':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " omni");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " omni");
             break;
         case '1':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " NE");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " NE");
             break;
         case '2':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " E");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " E");
             break;
         case '3':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " SE");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " SE");
             break;
         case '4':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " S");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " S");
             break;
         case '5':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " SW");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " SW");
             break;
         case '6':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " W");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " W");
             break;
         case '7':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " NW");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " NW");
             break;
         case '8':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " N");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " N");
             break;
         default:
             directivity[0] = '\0';  break;
     }
 
     if (units_english_metric)
-        xastir_snprintf(temp, sizeof(temp), "%.0fW @ %.0fft HAAT, %ddB%s, range %.1fmi", power, height, gain_db, directivity, range);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%.0fW @ %.0fft HAAT, %ddB%s, range %.1fmi",
+            power,
+            height,
+            gain_db,
+            directivity,
+            range);
     else
-        xastir_snprintf(temp, sizeof(temp), "%.0fW @ %.1fm HAAT, %ddB%s, range %.1fkm", power, height*0.3048, gain_db, directivity, range*1.609344);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%.0fW @ %.1fm HAAT, %ddB%s, range %.1fkm",
+            power,
+            height*0.3048,
+            gain_db,
+            directivity,
+            range*1.609344);
 
-    xastir_snprintf(phg_decoded, phg_decoded_length, langstr, temp);
+    xastir_snprintf(phg_decoded,
+        phg_decoded_length,
+        langstr,
+        temp);
 }
 
 
@@ -512,7 +559,10 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
 
     len = strlen(shg_decoded);
     if (strlen(shg) != 7) {
-        xastir_snprintf(shg_decoded, shg_decoded_length, langstr, "BAD SHG");
+        xastir_snprintf(shg_decoded,
+            shg_decoded_length,
+            langstr,
+            "BAD SHG");
         return;
     }
 
@@ -523,34 +573,64 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
 
     switch (s) {
         case '0':
-            xastir_snprintf(signal, sizeof(signal), "%s", "No signal detected");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "No signal detected");
             break;
         case '1':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Detectible signal (Maybe)");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Detectible signal (Maybe)");
             break;
         case '2':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Detectible signal but not copyable)");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Detectible signal but not copyable)");
             break;
         case '3':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Weak signal, marginally readable");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Weak signal, marginally readable");
             break;
         case '4':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Noisy but copyable signal");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Noisy but copyable signal");
             break;
         case '5':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Some noise, easy to copy signal");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Some noise, easy to copy signal");
             break;
         case '6':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Good signal w/detectible noise");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Good signal w/detectible noise");
             break;
         case '7':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Near full-quieting signal");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Near full-quieting signal");
             break;
         case '8':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Full-quieting signal");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Full-quieting signal");
             break;
         case '9':
-            xastir_snprintf(signal, sizeof(signal), "%s", "Extremely strong & full-quieting signal");
+            xastir_snprintf(signal,
+                sizeof(signal),
+                "%s",
+                "Extremely strong & full-quieting signal");
             break;
         default:
             signal[0] = '\0';
@@ -581,42 +661,86 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
 
     switch (shg[6]) {
         case '0':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " omni");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " omni");
             break;
         case '1':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " NE");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " NE");
             break;
         case '2':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " E");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " E");
             break;
         case '3':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " SE");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " SE");
             break;
         case '4':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " S");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " S");
             break;
         case '5':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " SW");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " SW");
             break;
         case '6':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " W");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " W");
             break;
         case '7':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " NW");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " NW");
             break;
         case '8':
-            xastir_snprintf(directivity, sizeof(directivity), "%s", " N");
+            xastir_snprintf(directivity,
+                sizeof(directivity),
+                "%s",
+                " N");
             break;
         default:
             directivity[0] = '\0';  break;
     }
 
     if (units_english_metric)
-        xastir_snprintf(temp, sizeof(temp), "%.0fft HAAT, %ddB%s, DF Range: %.1fmi, %s", height, gain_db, directivity, range, signal);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%.0fft HAAT, %ddB%s, DF Range: %.1fmi, %s",
+            height,
+            gain_db,
+            directivity,
+            range,
+            signal);
     else
-        xastir_snprintf(temp, sizeof(temp), "%.1fm HAAT, %ddB%s, DF Range: %.1fkm, %s", height*0.3048, gain_db, directivity, range*1.609344, signal);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%.1fm HAAT, %ddB%s, DF Range: %.1fkm, %s",
+            height*0.3048,
+            gain_db,
+            directivity,
+            range*1.609344,
+            signal);
 
-    xastir_snprintf(shg_decoded, shg_decoded_length, langstr, temp);
+    xastir_snprintf(shg_decoded,
+        shg_decoded_length,
+        langstr,
+        temp);
 }
 
 
@@ -638,12 +762,18 @@ void bearing_decode(const char *langstr, const char *bearing_str,
     len = strlen(bearing_decoded);
 
     if (strlen(bearing_str) != 3) {
-        xastir_snprintf(bearing_decoded, bearing_decoded_length, langstr, "BAD BEARING");
+        xastir_snprintf(bearing_decoded,
+            bearing_decoded_length,
+            langstr,
+            "BAD BEARING");
         return;
     }
 
     if (strlen(NRQ) != 3) {
-        xastir_snprintf(bearing_decoded, bearing_decoded_length, langstr, "BAD NRQ");
+        xastir_snprintf(bearing_decoded,
+            bearing_decoded_length,
+            langstr,
+            "BAD NRQ");
         return;
     }
 
@@ -697,15 +827,31 @@ void bearing_decode(const char *langstr, const char *bearing_str,
         //fprintf(stderr,"Width = %d\n",width);
 
         if (units_english_metric) {
-            xastir_snprintf(temp, sizeof(temp), "%i°, DF Beamwidth: %i°, DF Length: %i mi", bearing, width, range);
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%i°, DF Beamwidth: %i°, DF Length: %i mi",
+                bearing,
+                width,
+                range);
         } else {
-            xastir_snprintf(temp, sizeof(temp), "%i°, DF Beamwidth: %i°, DF Length: %0.2f km", bearing, width, range*1.609344);
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%i°, DF Beamwidth: %i°, DF Length: %0.2f km",
+                bearing,
+                width,
+                range*1.609344);
         }
     } else {
-        xastir_snprintf(temp, sizeof(temp), "%s", "Not Valid");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s",
+            "Not Valid");
         //fprintf(stderr,"N was 0\n");
     }
-    xastir_snprintf(bearing_decoded, bearing_decoded_length, langstr, temp);
+    xastir_snprintf(bearing_decoded,
+        bearing_decoded_length,
+        langstr,
+        temp);
 }
 
 
@@ -754,7 +900,10 @@ char *get_line(FILE *f, char *linedata, int maxline) {
         }
     }
 
-    xastir_snprintf(linedata,maxline,"%s",temp_line);
+    xastir_snprintf(linedata,
+        maxline,
+        "%s",
+        temp_line);
 
     return(linedata);
 }
@@ -1116,9 +1265,24 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     // according to the spec!
     //
     //if ( (c == ' ') && (s == ' ') && (t == ' ') )
-    //    xastir_snprintf(pos, sizeof(pos), "%c%s%s%c ", group, lat, lon, symbol);
+    //    xastir_snprintf(pos,
+    //    sizeof(pos),
+    //    "%c%s%s%c ",
+    //    group,
+    //    lat,
+    //    lon,
+    //    symbol);
     //else
-    xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
+    xastir_snprintf(pos,
+        sizeof(pos),
+        "%c%s%s%c%c%c%c",
+        group,
+        lat,
+        lon,
+        symbol,
+        c,
+        s,
+        t);
 
     //fprintf(stderr,"New compressed pos: (%s)\n",pos);
     return pos;
@@ -1194,8 +1358,12 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
     utmZone[9] = '\0';
     //fprintf(stderr,"%s %07.0f %07.0f\n", utmZone, utmEasting,
     //utmNorthing );
-    xastir_snprintf(str, str_len, "%s %07.0f %07.0f",
-        utmZone, utmEasting, utmNorthing );
+    xastir_snprintf(str,
+        str_len,
+        "%s %07.0f %07.0f",
+        utmZone,
+        utmEasting,
+        utmNorthing);
 }
 
 
@@ -1506,31 +1674,78 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
     sec = (temp % 1000) * 60.0 / 1000.0;
 
     switch (type) {
-        case(CONVERT_LP_NOSP): /* do low P w/no space */
-            xastir_snprintf(str, str_len, "%02d%05.2f%c", ideg, min, ns);
-            break;
-        case(CONVERT_LP_NORMAL): /* do low P normal */
-            xastir_snprintf(str, str_len, "%02d %05.2f%c", ideg, min, ns);
-            break;
-        case(CONVERT_HP_NOSP): /* do HP w/no space */
-            xastir_snprintf(str, str_len, "%02d%06.3f%c", ideg, min, ns);
-            break;
-        case(CONVERT_VHP_NOSP): /* do Very HP w/no space */
-            xastir_snprintf(str, str_len, "%02d%07.4f%c", ideg, min, ns);
-            break;
-        case(CONVERT_UP_TRK): /* for tracklog files */
-            xastir_snprintf(str, str_len, "%c%02d %07.4f", ns, ideg, min);
-            break;
-        case(CONVERT_DEC_DEG):
-            xastir_snprintf(str, str_len, "%08.5f%c", ideg+min/60.0, ns);
-            break;
-        case(CONVERT_DMS_NORMAL):
-            xastir_snprintf(str, str_len, "%02d %02d %04.1f%c", ideg, imin, sec, ns);
-            break;
-        case(CONVERT_HP_NORMAL):
 
+        case(CONVERT_LP_NOSP): /* do low P w/no space */
+            xastir_snprintf(str,
+                str_len,
+                "%02d%05.2f%c",
+                ideg,
+                min,
+                ns);
+            break;
+
+        case(CONVERT_LP_NORMAL): /* do low P normal */
+            xastir_snprintf(str,
+                str_len,
+                "%02d %05.2f%c",
+                ideg,
+                min,
+                ns);
+            break;
+
+        case(CONVERT_HP_NOSP): /* do HP w/no space */
+            xastir_snprintf(str,
+                str_len,
+                "%02d%06.3f%c",
+                ideg,
+                min,
+                ns);
+            break;
+
+        case(CONVERT_VHP_NOSP): /* do Very HP w/no space */
+            xastir_snprintf(str,
+                str_len,
+                "%02d%07.4f%c",
+                ideg,
+                min,
+                ns);
+            break;
+
+        case(CONVERT_UP_TRK): /* for tracklog files */
+            xastir_snprintf(str,
+                str_len,
+                "%c%02d %07.4f",
+                ns,
+                ideg,
+                min);
+            break;
+
+        case(CONVERT_DEC_DEG):
+            xastir_snprintf(str,
+                str_len,
+                "%08.5f%c",
+                ideg+min/60.0,
+                ns);
+            break;
+
+        case(CONVERT_DMS_NORMAL):
+            xastir_snprintf(str,
+                str_len,
+                "%02d %02d %04.1f%c",
+                ideg,
+                imin,
+                sec,
+                ns);
+            break;
+
+        case(CONVERT_HP_NORMAL):
         default: /* do HP normal */
-            xastir_snprintf(str, str_len, "%02d %06.3f%c", ideg, min, ns);
+            xastir_snprintf(str,
+                str_len,
+                "%02d %06.3f%c",
+                ideg,
+                min,
+                ns);
             break;
     }
 }
@@ -1580,31 +1795,78 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
     sec = (temp % 1000) * 60.0 / 1000.0;
 
     switch(type) {
-        case(CONVERT_LP_NOSP): /* do low P w/nospacel */
-            xastir_snprintf(str, str_len, "%03d%05.2f%c", ideg, min, ew);
-            break;
-        case(CONVERT_LP_NORMAL): /* do low P normal */
-            xastir_snprintf(str, str_len, "%03d %05.2f%c", ideg, min, ew);
-            break;
-        case(CONVERT_HP_NOSP): /* do HP w/nospace */
-            xastir_snprintf(str, str_len, "%03d%06.3f%c", ideg, min, ew);
-            break;
-        case(CONVERT_VHP_NOSP): /* do Very HP w/nospace */
-            xastir_snprintf(str, str_len, "%03d%07.4f%c", ideg, min, ew);
-            break;
-        case(CONVERT_UP_TRK): /* for tracklog files */
-            xastir_snprintf(str, str_len, "%c%03d %07.4f", ew, ideg, min);
-            break;
-        case(CONVERT_DEC_DEG):
-            xastir_snprintf(str, str_len, "%09.5f%c", ideg+min/60.0, ew);
-            break;
-        case(CONVERT_DMS_NORMAL):
-            xastir_snprintf(str, str_len, "%03d %02d %04.1f%c", ideg, imin, sec, ew);
-            break;
-        case(CONVERT_HP_NORMAL):
 
+        case(CONVERT_LP_NOSP): /* do low P w/nospacel */
+            xastir_snprintf(str,
+                str_len,
+                "%03d%05.2f%c",
+                ideg,
+                min,
+                ew);
+            break;
+
+        case(CONVERT_LP_NORMAL): /* do low P normal */
+            xastir_snprintf(str,
+                str_len,
+                "%03d %05.2f%c",
+                ideg,
+                min,
+                ew);
+            break;
+
+        case(CONVERT_HP_NOSP): /* do HP w/nospace */
+            xastir_snprintf(str,
+                str_len,
+                "%03d%06.3f%c",
+                ideg,
+                min,
+                ew);
+            break;
+
+        case(CONVERT_VHP_NOSP): /* do Very HP w/nospace */
+            xastir_snprintf(str,
+                str_len,
+                "%03d%07.4f%c",
+                ideg,
+                min,
+                ew);
+            break;
+
+        case(CONVERT_UP_TRK): /* for tracklog files */
+            xastir_snprintf(str,
+                str_len,
+                "%c%03d %07.4f",
+                ew,
+                ideg,
+                min);
+            break;
+
+        case(CONVERT_DEC_DEG):
+            xastir_snprintf(str,
+                str_len,
+                "%09.5f%c",
+                ideg+min/60.0,
+                ew);
+            break;
+
+        case(CONVERT_DMS_NORMAL):
+            xastir_snprintf(str,
+                str_len,
+                "%03d %02d %04.1f%c",
+                ideg,
+                imin,
+                sec,
+                ew);
+            break;
+
+        case(CONVERT_HP_NORMAL):
         default: /* do HP normal */
-            xastir_snprintf(str, str_len, "%03d %06.3f%c", ideg, min, ew);
+            xastir_snprintf(str,
+                str_len,
+                "%03d %06.3f%c",
+                ideg,
+                min,
+                ew);
             break;
     }
 }
@@ -1621,7 +1883,11 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     char copy[11];
     char n[11];
 
-    xastir_snprintf(copy,sizeof(copy),"%s",lat);
+    xastir_snprintf(copy,
+        sizeof(copy),
+        "%s",
+        lat);
+
     copy[10] = '\0';
     centi_sec=0l;
     if (copy[4]=='.'
@@ -1683,7 +1949,11 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     char copy[12];
     char n[12];
 
-    xastir_snprintf(copy,sizeof(copy),"%s",lon);
+    xastir_snprintf(copy,
+        sizeof(copy),
+        "%s",
+        lon);
+
     copy[11] = '\0';
     centi_sec=0l;
     if (copy[5]=='.'
@@ -1825,7 +2095,10 @@ double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *co
     }
 
     // Return the course
-    xastir_snprintf(course_deg, course_deg_length, "%.1f", (180.0/M_PI)*r_c);
+    xastir_snprintf(course_deg,
+        course_deg_length,
+        "%.1f",
+        (180.0/M_PI)*r_c);
 
     // Return the distance (nautical miles?)
     ret = r_d*180*60/M_PI;
@@ -2058,12 +2331,14 @@ void disown_object_item(char *call_sign, char *new_owner) {
     }
 
     ptr =  get_user_base_dir("config/object.log");
+
     xastir_snprintf(file,
         sizeof(file),
         "%s",
         ptr);
 
     ptr =  get_user_base_dir("config/object-temp.log");
+
     xastir_snprintf(file_temp,
         sizeof(file_temp),
         "%s",
@@ -2279,7 +2554,12 @@ void reload_object_item(void) {
                 fprintf(stderr,"Loading object/item from file: %s",line);
    
             if (line[0] != '#') {   // Skip comment lines
-                xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
+                xastir_snprintf(line2,
+                    sizeof(line2),
+                    "%s>%s:%s",
+                    my_callsign,
+                    VERSIONFRM,
+                    line);
 
                 // Decode this packet.  This will put it into our
                 // station database and cause it to be transmitted at
@@ -2443,7 +2723,10 @@ void reload_tactical_calls(void) {
                     // without a position, perhaps a status packet
                     // or an ID packet.  This is just to get it into
                     // our in-memory station database.
-                    xastir_snprintf(line2,sizeof(line2),"%s>APRS:ID",line);
+                    xastir_snprintf(line2,
+                        sizeof(line2),
+                        "%s>APRS:ID",
+                        line);
 
                     // Decode this packet.  This will put it into
                     // our station database.  Port is set to -2
@@ -2960,7 +3243,7 @@ int valid_item(char *name) {
  *  Check for a valid internet name.
  *  Accept only a few well-formed names...
  */
-int valid_inet_name(char *name, char *info, char *origin) {
+int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
     int len, i, ok;
     char *ptr;
     
@@ -2974,7 +3257,7 @@ int valid_inet_name(char *name, char *info, char *origin) {
             return(0);                  // not printable
 
     if (len >= 5 && strncmp(name,"aprsd",5) == 0) {
-        xastir_snprintf(origin, 5, "INET");
+        xastir_snprintf(origin, origin_size, "INET");
         origin[4] = '\0';   // Terminate it
         return(1);                      // aprsdXXXX is ok
     }
@@ -2995,7 +3278,7 @@ int valid_inet_name(char *name, char *info, char *origin) {
             }
         }
         if (ok) {
-            xastir_snprintf(origin, 9, "INET-NWS");
+            xastir_snprintf(origin, origin_size, "INET-NWS");
             origin[8] = '\0';
             return(1);                      // weather alerts
         }

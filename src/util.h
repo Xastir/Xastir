@@ -86,7 +86,7 @@ extern int  valid_path(char *path);
 extern int  valid_call(char *call);
 extern int  valid_object(char *name);
 extern int  valid_item(char *name);
-extern int  valid_inet_name(char *name, char *info, char *origin);
+extern int  valid_inet_name(char *name, char *info, char *origin, int origin_size);
 
 extern char echo_digis[6][9+1];
 extern void upd_echo(char *path);
