@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -32,10 +32,20 @@ typedef struct {
     XColor color;
 } color_load;
 
+typedef enum {
+    NOT_TRUE_NOR_DIRECT,
+    RGB_565,
+    RGB_555,
+    RGB_888,
+    RGB_OTHER
+} Pixel_Format;
+extern Pixel_Format visual_type;
+
 /* from color.c */
 extern int load_color_file(void);
 extern Pixel GetPixelByName(Widget w, char *colorname);
-
+extern void setup_visual_info(Display* dpy, int scr);
+extern void pack_pixel_bits(unsigned short r, unsigned short g, unsigned short b, unsigned long* pixel);
 
 #endif /* XASTIR_COLOR_H */
 

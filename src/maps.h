@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -79,8 +79,13 @@ extern time_t last_snapshot;
 
 
 
-#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
+#if !defined(NO_GRAPHICS)
+#if defined(HAVE_IMAGEMAGICK)
+extern float imagemagick_gamma_adjust;
+#endif
+#if defined(HAVE_GEOTIFF)
 extern float geotiff_map_intensity;
+#endif
 #endif
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);

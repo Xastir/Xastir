@@ -218,9 +218,15 @@ Widget map_bgcolor[12];
 static void Map_background(Widget w, XtPointer clientData, XtPointer calldata);
 int map_background_color;       /* Background color for maps */
 
-#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
-Widget map_intensity[11];
-static void Map_intensity(Widget w, XtPointer clientData, XtPointer calldata);
+#if !defined(NO_GRAPHICS)
+#if defined(HAVE_GEOTIFF)
+Widget geotiff_intensity[11];
+static void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata);
+#endif
+#if defined(HAVE_IMAGEMAGICK)
+Widget gamma_adjust_dialog = (Widget)NULL;
+Widget gamma_adjust_text;
+#endif
 #endif
 
 Widget map_station_label0,map_station_label1,map_station_label2;
@@ -528,9 +534,10 @@ time_t last_weather_cycle;      // Time of last call to cycle_weather()
 int colors[256];                /* screen colors */
 int trail_colors[32];           /* station trail colors, duh */
 int current_trail_color;        /* what color to draw station trails with */
-int max_trail_colors = 32; 
-int install_colormap;           /* KD6ZWR - should we install priv colormap */
-Colormap cmap;                  /* KD6ZWR - current colormap */
+int max_trail_colors = 32;
+Pixel_Format visual_type = NOT_TRUE_NOR_DIRECT;
+int install_colormap;           /* if visual_type == NOT_TRUE..., should we install priv cmap */
+Colormap cmap;                  /* current colormap */
 
 int redo_list;                  // Station List update request
 int redraw_on_new_data;         // Station redraw request
@@ -2323,6 +2330,148 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    gamma_adjust_dialog = (Widget)NULL;
+}
+
+void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *temp;
+    char temp_string[10];
+
+    temp = XmTextGetString(gamma_adjust_text);
+
+    imagemagick_gamma_adjust = atof(temp);
+    if (imagemagick_gamma_adjust < -9.9)
+        imagemagick_gamma_adjust = -9.9;
+    else if (imagemagick_gamma_adjust > 9.9)
+        imagemagick_gamma_adjust = 9.9;
+
+    XtFree(temp);
+
+    xastir_snprintf(temp_string, sizeof(temp_string), "%+.1f", imagemagick_gamma_adjust);
+    XmTextSetString(gamma_adjust_text, temp_string);
+
+    create_image(da);
+    XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+}
+
+void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
+    static Widget  pane, my_form, button_ok, button_close;
+    Atom delw;
+    Arg al[2];
+    register unsigned int ac = 0;
+    char temp_string[10];
+
+    if (!gamma_adjust_dialog) {
+        gamma_adjust_dialog = XtVaCreatePopupShell("Adjust Gamma Correction",
+                                                   xmDialogShellWidgetClass, Global.top,
+                                                   XmNdeleteResponse,        XmDESTROY,
+                                                   XmNdefaultPosition,       FALSE,
+                                                   NULL);
+
+        pane = XtVaCreateWidget("Adjust Gamma pane",
+                                xmPanedWindowWidgetClass, gamma_adjust_dialog,
+                                XmNbackground,            colors[0xff],
+                                NULL);
+
+        my_form =  XtVaCreateWidget("Adjust Gamma my_form",
+                                    xmFormWidgetClass,  pane,
+                                    XmNfractionBase,    5,
+                                    XmNbackground,      colors[0xff],
+                                    XmNautoUnmanage,    FALSE,
+                                    XmNshadowThickness, 1,
+                                    NULL);
+
+        ac=0;
+        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+
+        gamma_adjust_text = XtVaCreateManagedWidget("Adjust Gamma text",
+                                                    xmTextWidgetClass,        my_form,
+                                                    XmNeditable,              TRUE,
+                                                    XmNcursorPositionVisible, TRUE,
+                                                    XmNsensitive,             TRUE,
+                                                    XmNshadowThickness,       1,
+                                                    XmNcolumns,               4,
+                                                    XmNwidth,                 4*10,
+                                                    XmNmaxLength,             4,
+                                                    XmNbackground,            colors[0x0f],
+                                                    XmNtopOffset,             5,
+                                                    XmNtopAttachment,         XmATTACH_FORM,
+                                                    XmNbottomAttachment,      XmATTACH_NONE,
+                                                    XmNleftAttachment,        XmATTACH_POSITION,
+                                                    XmNleftPosition,          2,
+                                                    XmNrightAttachment,       XmATTACH_POSITION,
+                                                    XmNrightPosition,         3,
+                                                    XmNnavigationType,        XmTAB_GROUP,
+                                                    NULL);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%+.1f", imagemagick_gamma_adjust);
+        XmTextSetString(gamma_adjust_text, temp_string);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                                            xmPushButtonGadgetClass, my_form,
+                                            XmNtopAttachment,        XmATTACH_WIDGET,
+                                            XmNtopWidget,            gamma_adjust_text,
+                                            XmNtopOffset,            5,
+                                            XmNbottomAttachment,     XmATTACH_FORM,
+                                            XmNbottomOffset,         5,
+                                            XmNleftAttachment,       XmATTACH_POSITION,
+                                            XmNleftPosition,         1,
+                                            XmNrightAttachment,      XmATTACH_POSITION,
+                                            XmNrightPosition,        2,
+                                            XmNbackground,           colors[0xff],
+                                            XmNnavigationType,       XmTAB_GROUP,
+                                            NULL);
+
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                                               xmPushButtonGadgetClass, my_form,
+                                               XmNtopAttachment,        XmATTACH_WIDGET,
+                                               XmNtopWidget,            gamma_adjust_text,
+                                               XmNtopOffset,            5,
+                                               XmNbottomAttachment,     XmATTACH_FORM,
+                                               XmNbottomOffset,         5,
+                                               XmNleftAttachment,       XmATTACH_POSITION,
+                                               XmNleftPosition,         3,
+                                               XmNrightAttachment,      XmATTACH_POSITION,
+                                               XmNrightPosition,        4,
+                                               XmNbackground,           colors[0xff],
+                                               XmNnavigationType,       XmTAB_GROUP,
+                                               NULL);
+
+        XtAddCallback(button_ok,
+                      XmNactivateCallback, Gamma_adjust_change_data,   gamma_adjust_dialog);
+        XtAddCallback(button_close,
+                      XmNactivateCallback, Gamma_adjust_destroy_shell, gamma_adjust_dialog);
+
+        pos_dialog(gamma_adjust_dialog);
+
+        delw = XmInternAtom(XtDisplay(gamma_adjust_dialog), "WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(gamma_adjust_dialog,
+                                delw, Gamma_adjust_destroy_shell, (XtPointer)gamma_adjust_dialog);
+
+        XtManageChild(my_form);
+        XtManageChild(pane);
+
+        XtPopup(gamma_adjust_dialog, XtGrabNone);
+        fix_dialog_size(gamma_adjust_dialog);
+
+        // Move focus to the Close button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(gamma_adjust_dialog);
+        XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
+
+    } else
+        (void)XRaiseWindow(XtDisplay(gamma_adjust_dialog), XtWindow(gamma_adjust_dialog));
+}
+
+
+
+
 
 void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[200];
@@ -2456,7 +2605,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane, stationspane, messagepane, ifacepane, helppane;
 
-    Widget measure_frame, move_frame, display_button, 
+    Widget measure_frame, move_frame, display_button,
        track_button, download_trail_button,
        symbols_button,
        station_trails_button,
@@ -2469,8 +2618,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
        map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
        Map_background_color_Pane, map_background_button, map_pointer_menu_button,
-#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
-       Map_intensity_Pane, map_intensity_button,
+#if !defined(NO_GRAPHICS)
+#if defined(HAVE_GEOTIFF)
+       Geotiff_intensity_Pane, geotiff_intensity_button,
+#endif
+#if defined(HAVE_IMAGEMAGICK)
+       gamma_adjust_button,
+#endif
 #endif
        Map_station_label_Pane, map_station_label_button,
        map_wx_alerts_button,
@@ -2902,45 +3056,55 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_bgcolor[8],  XmNactivateCallback,Map_background,"8");
     XtAddCallback(map_bgcolor[9],  XmNactivateCallback,Map_background,"9");
 
-#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
-    Map_intensity_Pane = XmCreatePulldownMenu(mappane,"create_appshell map_intensity",al,ac);
-    map_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),xmCascadeButtonWidgetClass,mappane,
-                                XmNsubMenuId, Map_intensity_Pane,XmNmnemonic,
-                                langcode_hotkey("PULDNMP008"),XmNbackground,colors[0xff],NULL);
-    map_intensity[0] = XtVaCreateManagedWidget("0%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"0%",XmNbackground,colors[0xff],NULL);
-    map_intensity[1] = XtVaCreateManagedWidget("10%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"10%",XmNbackground,colors[0xff],NULL);
-    map_intensity[2] = XtVaCreateManagedWidget("20%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"20%",XmNbackground,colors[0xff],NULL);
-    map_intensity[3] = XtVaCreateManagedWidget("30%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"30%",XmNbackground,colors[0xff],NULL);
-    map_intensity[4] = XtVaCreateManagedWidget("40%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"40%",XmNbackground,colors[0xff],NULL);
-    map_intensity[5] = XtVaCreateManagedWidget("50%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"50%",XmNbackground,colors[0xff],NULL);
-    map_intensity[6] = XtVaCreateManagedWidget("60%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"60%",XmNbackground,colors[0xff],NULL);
-    map_intensity[7] = XtVaCreateManagedWidget("70%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"70%",XmNbackground,colors[0xff],NULL);
-    map_intensity[8] = XtVaCreateManagedWidget("80%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"80%",XmNbackground,colors[0xff],NULL);
-    map_intensity[9] = XtVaCreateManagedWidget("90%",xmPushButtonGadgetClass,Map_intensity_Pane,
-                        XmNmnemonic,"90%",XmNbackground,colors[0xff],NULL);
-    map_intensity[10] = XtVaCreateManagedWidget("100%",xmPushButtonGadgetClass,Map_intensity_Pane,
+#if !defined(NO_GRAPHICS)
+#if defined(HAVE_GEOTIFF)
+    Geotiff_intensity_Pane = XmCreatePulldownMenu(mappane,"create_appshell geotiff_intensity",al,ac);
+    geotiff_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),xmCascadeButtonWidgetClass,mappane,
+                               XmNsubMenuId, Geotiff_intensity_Pane,XmNmnemonic,
+                               langcode_hotkey("PULDNMP008"),XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[0] = XtVaCreateManagedWidget("0%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"0%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[1] = XtVaCreateManagedWidget("10%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"10%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[2] = XtVaCreateManagedWidget("20%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"20%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[3] = XtVaCreateManagedWidget("30%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"30%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[4] = XtVaCreateManagedWidget("40%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"40%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[5] = XtVaCreateManagedWidget("50%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"50%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[6] = XtVaCreateManagedWidget("60%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"60%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[7] = XtVaCreateManagedWidget("70%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"70%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[8] = XtVaCreateManagedWidget("80%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"80%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[9] = XtVaCreateManagedWidget("90%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
+                           XmNmnemonic,"90%",XmNbackground,colors[0xff],NULL);
+    geotiff_intensity[10] = XtVaCreateManagedWidget("100%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
                             XmNmnemonic,"100%",XmNbackground,colors[0xff],NULL);
-    XtSetSensitive(map_intensity[(int)(geotiff_map_intensity * 10.0)],FALSE);
-    XtAddCallback(map_intensity[0],  XmNactivateCallback,Map_intensity,"0.0");
-    XtAddCallback(map_intensity[1],  XmNactivateCallback,Map_intensity,"0.1");
-    XtAddCallback(map_intensity[2],  XmNactivateCallback,Map_intensity,"0.2");
-    XtAddCallback(map_intensity[3],  XmNactivateCallback,Map_intensity,"0.3");
-    XtAddCallback(map_intensity[4],  XmNactivateCallback,Map_intensity,"0.4");
-    XtAddCallback(map_intensity[5],  XmNactivateCallback,Map_intensity,"0.5");
-    XtAddCallback(map_intensity[6],  XmNactivateCallback,Map_intensity,"0.6");
-    XtAddCallback(map_intensity[7],  XmNactivateCallback,Map_intensity,"0.7");
-    XtAddCallback(map_intensity[8],  XmNactivateCallback,Map_intensity,"0.8");
-    XtAddCallback(map_intensity[9],  XmNactivateCallback,Map_intensity,"0.9");
-    XtAddCallback(map_intensity[10], XmNactivateCallback,Map_intensity,"1.0");
+    XtSetSensitive(geotiff_intensity[(int)(geotiff_map_intensity * 10.0)],FALSE);
+    XtAddCallback(geotiff_intensity[0],  XmNactivateCallback,Geotiff_intensity,"0.0");
+    XtAddCallback(geotiff_intensity[1],  XmNactivateCallback,Geotiff_intensity,"0.1");
+    XtAddCallback(geotiff_intensity[2],  XmNactivateCallback,Geotiff_intensity,"0.2");
+    XtAddCallback(geotiff_intensity[3],  XmNactivateCallback,Geotiff_intensity,"0.3");
+    XtAddCallback(geotiff_intensity[4],  XmNactivateCallback,Geotiff_intensity,"0.4");
+    XtAddCallback(geotiff_intensity[5],  XmNactivateCallback,Geotiff_intensity,"0.5");
+    XtAddCallback(geotiff_intensity[6],  XmNactivateCallback,Geotiff_intensity,"0.6");
+    XtAddCallback(geotiff_intensity[7],  XmNactivateCallback,Geotiff_intensity,"0.7");
+    XtAddCallback(geotiff_intensity[8],  XmNactivateCallback,Geotiff_intensity,"0.8");
+    XtAddCallback(geotiff_intensity[9],  XmNactivateCallback,Geotiff_intensity,"0.9");
+    XtAddCallback(geotiff_intensity[10], XmNactivateCallback,Geotiff_intensity,"1.0");
+#endif
+#if defined(HAVE_IMAGEMAGICK)
+    gamma_adjust_button = XtVaCreateManagedWidget("Adjust Gamma Correction",
+                                                  xmPushButtonWidgetClass, mappane,
+                                                  XmNmnemonic,             "G",
+                                                  XmNbackground,           colors[0xff],
+                                                  NULL);
+    XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
+#endif
 #endif
 
     Map_station_label_Pane = XmCreatePulldownMenu(mappane,"create_appshell map_station_label",al,ac);
@@ -5469,8 +5633,8 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 
 
 
-#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
-void Map_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
+#if !defined(NO_GRAPHICS) && defined(HAVE_GEOTIFF)
+void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     float my_intensity;
     int i;
 
@@ -5479,9 +5643,9 @@ void Map_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     if(display_up){
         for (i=0;i<11;i++){
             if (i == (int)((float)(my_intensity * 10.0)) )
-                XtSetSensitive(map_intensity[i],FALSE);
+                XtSetSensitive(geotiff_intensity[i],FALSE);
             else
-                XtSetSensitive(map_intensity[i],TRUE);
+                XtSetSensitive(geotiff_intensity[i],TRUE);
         }
 
         geotiff_map_intensity=my_intensity;
@@ -15033,19 +15197,22 @@ int main(int argc, char *argv[], char *envp[]) {
             display = XtOpenDisplay(app_context, NULL, argv[0], "XApplication",NULL, 0, &argc, argv);
             (void)setlocale(LC_NUMERIC, "en_US");       // repairs wrong scanf
             // DK7IN: scanf again uses '.' instead of ','
-            
+
             if (!display) {
                 printf("%s: can't open display, exiting...\n", argv[0]);
                 exit (-1);
             }
 
-            /* KD6ZWR - Get colormap */
-            cmap = DefaultColormapOfScreen ( XtScreen( Global.top));
-            if ( install_colormap ) {
-                cmap = XCopyColormapAndFree ( display, cmap );
-                XtVaSetValues ( Global.top, XmNcolormap, cmap, NULL);
-            }
+            setup_visual_info(display, DefaultScreen(display));
 
+            /* Get colormap (N7TAP: do we need this if the screen visual is TRUE or DIRECT? */
+            cmap = DefaultColormapOfScreen(XtScreen(Global.top));
+            if (visual_type == NOT_TRUE_NOR_DIRECT) {
+                if (install_colormap) {
+                    cmap = XCopyColormapAndFree(display, cmap);
+                    XtVaSetValues(Global.top, XmNcolormap, cmap, NULL);
+                }
+            }
 
             XtRealizeWidget(Global.top);
             create_appshell(display, argv[0], argc, argv);      // does the init

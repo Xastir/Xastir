@@ -144,7 +144,8 @@ long vectors_num;
 long text_label_num;
 long object_label_num;
 
-float geotiff_map_intensity = 0.65;  // Map color intensity, set from Maps->Map Intensity
+float geotiff_map_intensity = 0.65;    // Geotiff map color intensity, set from Maps->Geotiff Map Intensity
+float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma correction, set from Maps->Adjust Gamma
 
 
 
@@ -4470,6 +4471,13 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
 
 
+#if !defined(NO_GRAPHICS) && defined(HAVE_IMAGEMAGICK) && (MagickLibVersion >= 0x0539)
+// Note that some versions of ImageMagick 5.4 mis-report the
+// version as 5.3.9.  Also note that the API changed in some
+// of the 5.4 versions, and IsPseudoClass() isn't supported
+// in newer versions of the library.
+inline int IsPseudoClass(Image* image) { return (image->storage_class == PseudoClass); }
+#endif
 
 /**********************************************************
  * draw_geo_image_map()
@@ -4546,20 +4554,28 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     ExceptionInfo exception;
     Image *image;
     ImageInfo *image_info;
-    PixelPacket pixel_pack;
+    PixelPacket *pixel_pack;
     PixelPacket temp_pack;
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
-/*    Colormap cmap;  KD6ZWR - now set in main()*/
-    int DirectClass = 0;
     char tempfile[2000];
+    char gamma[16];
+    struct {
+        float r_gamma;
+        float g_gamma;
+        float b_gamma;
+        int gamma_flag;
+        int contrast;
+        int negate;
+        int equalize;
+        int normalize;
+        char* level;
+        char* modulate;
+    } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, NULL, NULL };
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
-    XVisualInfo *visual_list;
-    XVisualInfo visual_template;
-    int visuals_matched;
     // Terraserver variables
     double top_n=0, left_e=0, bottom_n=0, right_e=0, map_top_n=0, map_left_e=0;
     int z, url_n=0, url_e=0, t_zoom=16, t_scale=12800;
@@ -4589,8 +4605,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
     // Read the .geo file to find out map filename and tiepoint info
     n_tp = 0;
-    geo_datum[0]      = '\0';    
-    geo_projection[0] = '\0';    
+    geo_datum[0]      = '\0';
+    geo_projection[0] = '\0';
     f = fopen (file, "r");
     if (f != NULL) {
         while (!feof (f)) {
@@ -4629,6 +4645,26 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
             if (strncasecmp (line, "CALL", 4) == 0)
                 (void)sscanf (line + 5, "%s", remote_callsign);
+
+#ifdef HAVE_IMAGEMAGICK
+            if (strncasecmp(line, "GAMMA", 5) == 0)
+                imagemagick_options.gamma_flag = sscanf(line + 6, "%f,%f,%f",
+                                                        &imagemagick_options.r_gamma,
+                                                        &imagemagick_options.g_gamma,
+                                                        &imagemagick_options.b_gamma);
+            if (strncasecmp(line, "CONTRAST", 8) == 0)
+                (void)sscanf(line + 9, "%d", &imagemagick_options.contrast);
+            if (strncasecmp(line, "NEGATE", 6) == 0)
+                (void)sscanf(line + 7, "%d", &imagemagick_options.negate);
+            if (strncasecmp(line, "EQUALIZE", 8) == 0)
+                imagemagick_options.equalize = 1;
+            if (strncasecmp(line, "NORMALIZE", 9) == 0)
+                imagemagick_options.normalize = 1;
+            if (strncasecmp(line, "LEVEL", 5) == 0)
+                imagemagick_options.level = line + 6;
+            if (strncasecmp(line, "MODULATE", 8) == 0)
+                imagemagick_options.modulate = line + 9;
+#endif
         }
         (void)fclose (f);
     }
@@ -4656,13 +4692,13 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
     if (geo_projection[0] == '\0')
         strcpy(geo_projection,"LatLon");        // default
-    //printf("Map Projection: %s\n",geo_projection);    
+    //printf("Map Projection: %s\n",geo_projection);
     (void)to_upper(geo_projection);
     if (strcmp(geo_projection,"TM") == 0)
         map_proj = 1;           // Transverse Mercator
-    else 
+    else
         map_proj = 0;           // Lat/Lon, default
-    
+
 #ifdef HAVE_IMAGEMAGICK
     if (tiger_flag || findu_flag) {  // Must generate our own calibration data for some maps
 
@@ -4672,7 +4708,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         tp[0].img_y = 0;                // Pixel Coordinates
         tp[0].x_long = x_long_offset;   // Xastir Coordinates
         tp[0].y_lat  = y_lat_offset;    // Xastir Coordinates
-        
+
         // Tiepoint for lower right screen corner
         //
         tp[1].img_x =  screen_width - 1; // Pixel Coordinates
@@ -4706,7 +4742,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
           printf("map width is %f\n", map_width);
           printf("map height is %f\n", map_height);
         }
- 
+
         long_center = (left + right)/2.0l;
         lat_center  = (top + bottom)/2.0l;
 
@@ -4992,66 +5028,22 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 // getting the map in this thread and aren't redrawing?
 
 
-// Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
-if (findu_flag) {
-    // We have the log data we're interested in within the /var/tmp/xastir_<username>_map.log file.
-    // Cause that file to be read by the "File->Open Log File" routine.  HTML
-    // tags will be ignored just fine.
-    read_file_ptr = fopen(file, "r");
-    if (read_file_ptr != NULL)
-        read_file = 1;
-    else
-        printf("Couldn't open file: %s\n", file);
+    // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
+    if (findu_flag) {
+        // We have the log data we're interested in within the /var/tmp/xastir_<username>_map.log file.
+        // Cause that file to be read by the "File->Open Log File" routine.  HTML
+        // tags will be ignored just fine.
+        read_file_ptr = fopen(file, "r");
+        if (read_file_ptr != NULL)
+            read_file = 1;
+        else
+            printf("Couldn't open file: %s\n", file);
 
-    return;
-}
-
-
-#ifdef HAVE_IMAGEMAGICK
-// Need to figure out the visual and color depth/type here so
-// that we can draw the right colors on the screen.
-
-    if (debug_level & 16) {
-        visual_list = XGetVisualInfo ( XtDisplay(w), VisualNoMask, &visual_template, &visuals_matched );
-        if (visuals_matched) {
-            int ii;
-
-            printf("Found %d visuals\n", visuals_matched);
-            for (ii = 0; ii < visuals_matched; ii++) {
-                printf("\tID:           %ld\n", visual_list[ii].visualid);
-                printf("\tScreen:       %d\n",  visual_list[ii].screen);
-                printf("\tDepth:        %d\n",  visual_list[ii].depth);
-                printf("\tClass:        %d",    visual_list[ii].class);
-                switch (visual_list[ii].class) {
-                    case 0:
-                        printf(",  StaticGray\n");
-                        break;
-                    case 1:
-                        printf(",  GrayScale\n");
-                        break;
-                    case 2:
-                        printf(",  StaticColor\n");
-                        break;
-                    case 3:
-                        printf(",  PseudoColor\n");
-                        break;
-                    case 4:
-                        printf(",  TrueColor\n");
-                        break;
-                    case 5:
-                        printf(",  DirectColor\n");
-                        break;
-                    default:
-                        printf(",  ??\n");
-                        break;
-                }
-                printf("\tClrmap Size:  %d\n", visual_list[ii].colormap_size);
-                printf("\tBits per RGB: %d\n", visual_list[ii].bits_per_rgb);
-            }
-        }
+        return;
     }
 
 
+#ifdef HAVE_IMAGEMAGICK
     GetExceptionInfo(&exception);
     image_info=CloneImageInfo((ImageInfo *) NULL);
     (void) strcpy(image_info->filename, file);
@@ -5080,73 +5072,168 @@ if (findu_flag) {
         return;
     }
 
-    if (debug_level & 16) 
+    if (debug_level & 16)
         printf("Color depth is %i \n", (int)image->depth);
 
-//    if (image->colors == 0) {
-//        if (image)
-//           DestroyImage(image);
-//        if (image_info)
-//           DestroyImageInfo(image_info); 
-//        return;
-//    }
+    if (image->colorspace != RGBColorspace) {
+        puts("TBD: I don't think we can deal with colorspace != RGB");
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
 
     atb.width = image->columns;
     atb.height = image->rows;
 
-// Do this to minimize the number of colors, does not eliminate distinct colors.
-    CompressColormap(image);
+
+    // gamma setup
+    if (imagemagick_options.gamma_flag == 0 ||
+        imagemagick_options.gamma_flag == 1) {
+        if (imagemagick_options.gamma_flag == 0) // if not set in file, set to 1.0
+            imagemagick_options.r_gamma = 1.0;
+
+        imagemagick_options.gamma_flag = 1; // set flag to do gamma
+
+        imagemagick_options.r_gamma += imagemagick_gamma_adjust;
+
+        if (imagemagick_options.r_gamma > 0.95 && imagemagick_options.r_gamma < 1.05)
+            imagemagick_options.gamma_flag = 0; // don't bother if near 1.0
+        else if (imagemagick_options.r_gamma < 0.1)
+            imagemagick_options.r_gamma = 0.1; // 0.0 is black and negative is really wacky
+
+        xastir_snprintf(gamma, sizeof(gamma), "%.1f", imagemagick_options.r_gamma);
+    }
+    else if (imagemagick_options.gamma_flag == 3) {
+        // No checking if you specify 3 channel gamma correction, so you can try negative
+        // numbers, etc. if you wish.
+        imagemagick_options.gamma_flag = 1; // set flag to do gamma
+        imagemagick_options.r_gamma += imagemagick_gamma_adjust;
+        imagemagick_options.g_gamma += imagemagick_gamma_adjust;
+        imagemagick_options.b_gamma += imagemagick_gamma_adjust;
+        xastir_snprintf(gamma, sizeof(gamma), "%.1f,%.1f,%.1f",
+                        imagemagick_options.r_gamma,
+                        imagemagick_options.g_gamma,
+                        imagemagick_options.b_gamma);
+    }
+    else
+        imagemagick_options.gamma_flag = 0;
+
+    if (imagemagick_options.gamma_flag) {
+        if (debug_level & 16)
+            printf("gamma=%s\n", gamma);
+        GammaImage(image, gamma);
+    }
+
+    if (imagemagick_options.contrast != 0) {
+        if (debug_level & 16)
+            printf("contrast=%d\n", imagemagick_options.contrast);
+        ContrastImage(image, imagemagick_options.contrast);
+    }
+
+    if (imagemagick_options.negate != -1) {
+        if (debug_level & 16)
+            printf("negate=%d\n", imagemagick_options.negate);
+        NegateImage(image, imagemagick_options.negate);
+    }
+
+    if (imagemagick_options.equalize) {
+        if (debug_level & 16)
+            puts("equalize");
+        EqualizeImage(image);
+    }
+
+    if (imagemagick_options.normalize) {
+        if (debug_level & 16)
+            puts("normalize");
+        NormalizeImage(image);
+    }
+
+    if (imagemagick_options.level) {
+        if (debug_level & 16)
+            printf("level=%s\n", imagemagick_options.level);
+        LevelImage(image, imagemagick_options.level);
+    }
+
+    if (imagemagick_options.modulate) {
+        if (debug_level & 16)
+            printf("modulate=%s\n", imagemagick_options.modulate);
+        ModulateImage(image, imagemagick_options.modulate);
+    }
 
 
-//    SyncImage(image);   // Synchronize DirectClass colors to
-                        // current PseudoClass colormap.
+    if (IsPseudoClass(image)) {
+        // We may want Quantize here...
+        CompressColormap(image); // does not eliminate distinct colors.
+    }
 
-    //if (AllocateImageColormap(image, image->colors))
-        //printf("Colormap Allocated\n");
-    //else
-        //printf("Colormap Not Allocated\n");
+    pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+    if (!pixel_pack) {
+        puts("pixel_pack == NULL!!!");
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
 
-/*    cmap = DefaultColormap(XtDisplay(w), DefaultScreen(XtDisplay(w)));  KD6ZWR - now set in main()*/
+    index_pack = GetIndexes(image);
+    if (IsPseudoClass(image) && !index_pack) {
+        puts("IsPseudoClass && index_pack == NULL!!!");
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
 
-    for (l = 0; l < (int)image->colors; l++) {
-        // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
-        // of image files
-        temp_pack = image->colormap[l];
-        if (debug_level & 16) 
-            printf("Colormap color is %i  %i  %i \n", temp_pack.red, temp_pack.green, temp_pack.blue);
+    if (IsPseudoClass(image) && (GetNumberColors(image, NULL, &exception) != image->colors))
+        printf("colors mismatch!!! %ld != %ld\n", GetNumberColors(image, NULL, &exception),
+               image->colors);
 
-
-        // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
-        // is defined in /usr/include/magick/image.h as either an unsigned short or an
-        // unsigned char, depending on what "configure" decided when ImageMagick was installed.
-        // We can determine which by looking at MaxRGB or QuantumDepth.
-        //
-        if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
+    if (IsPseudoClass(image) && image->colors <= 256) {
+        for (l = 0; l < image->colors; l++) {
+            // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
+            // of image files
+            temp_pack = image->colormap[l];
             if (debug_level & 16)
-                printf("Color quantum is [0..65535]\n");
-            my_colors[l].red   = (unsigned short)(temp_pack.red  * geotiff_map_intensity);
-            my_colors[l].green = (unsigned short)(temp_pack.green* geotiff_map_intensity);
-            my_colors[l].blue  = (unsigned short)(temp_pack.blue * geotiff_map_intensity);
-        }
-        else {  // QuantumDepth = 8
+                printf("Colormap color is %i  %i  %i \n",
+                       temp_pack.red, temp_pack.green, temp_pack.blue);
+
+            // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
+            // is defined in /usr/include/magick/image.h as either an unsigned short or an
+            // unsigned char, depending on what "configure" decided when ImageMagick was installed.
+            // We can determine which by looking at MaxRGB or QuantumDepth.
+            //
+            if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
+                if (debug_level & 16)
+                    printf("Color quantum is [0..65535]\n");
+                my_colors[l].red   = temp_pack.red;
+                my_colors[l].green = temp_pack.green;
+                my_colors[l].blue  = temp_pack.blue;
+            }
+            else {  // QuantumDepth = 8
+                if (debug_level & 16)
+                    printf("Color quantum is [0..255]\n");
+                my_colors[l].red   = temp_pack.red   << 8;
+                my_colors[l].green = temp_pack.green << 8;
+                my_colors[l].blue  = temp_pack.blue  << 8;
+            }
+
+            //  Get the color allocated.  Allocated pixel color is written to my_colors.pixel
+            XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
             if (debug_level & 16)
-                printf("Color quantum is [0..255]\n");
-            my_colors[l].red   = (unsigned short)(temp_pack.red  * geotiff_map_intensity) << 8;
-            my_colors[l].green = (unsigned short)(temp_pack.green* geotiff_map_intensity) << 8;
-            my_colors[l].blue  = (unsigned short)(temp_pack.blue * geotiff_map_intensity) << 8;
+                printf("Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
+                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
         }
-
-
-        //  Get the color allocated.  Allocated pixel color is written to my_colors.pixel
-        XAllocColor( XtDisplay (w), cmap, &my_colors[l] );
-        if (debug_level & 16) 
-            printf("Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel, my_colors[l].red, my_colors[l].blue, my_colors[l].green);
-    } 
+    }
 
     if (debug_level & 16) {
        printf ("Image size %d %d\n", atb.width, atb.height);
-       printf ("Total colors = %d\n", (int)image->colors); 
-       printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+       printf ("Total colors = %ld\n", GetNumberColors(image, NULL, &exception));
+       printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
+               map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
 
        #if (MagickLibVersion < 0x0540)
            printf ("is Gray Image = %i\n", IsGrayImage(image));
@@ -5160,8 +5247,8 @@ if (findu_flag) {
            //printf ("is PseudoClass = %i\n", IsPseudoClass( image, &exception ));
        #endif
 
-       printf ("Colorspace = %i\n", image->colorspace); 
        printf ("image matte is %i\n", image->matte);
+       printf ("Colorspace = %i\n", image->colorspace);
        if (image->colorspace == UndefinedColorspace)
             printf("Class Type = Undefined\n");
        else if (image->colorspace == RGBColorspace)
@@ -5171,18 +5258,6 @@ if (findu_flag) {
        else if (image->colorspace == sRGBColorspace)
             printf("Class Type = sRGBColorspace\n");
     }
-
-    // Note that some versions of ImageMagick 5.4 mis-report the
-    // version as 5.3.9.  Also note that the API changed in some
-    // of the 5.4 versions, and IsPseudoClass() isn't supported
-    // in newer versions of the library.
-    #if (MagickLibVersion < 0x0539)
-    if ( (image->colorspace == RGBColorspace)
-            && (IsPseudoClass(image) == 0) ) {
-        DirectClass = 1;
-    }
-    #else
-    #endif
 
 #else   // HAVE_IMAGEMAGICK
 
@@ -5206,14 +5281,6 @@ if (findu_flag) {
     }
 
 #endif  // HAVE_IMAGEMAGICK
-
-//if (image->colors == 0) {
-//    if (image)
-//       DestroyImage(image);
-//    if (image_info)
-//       DestroyImageInfo(image_info); 
-//   return;
-//}
 
     // draw the image from the file out to the map screen
 
@@ -5255,7 +5322,7 @@ if (findu_flag) {
 //            c_y = c_y_min;      // south
 //    }
 //    scale_x0 = get_x_scale(0,(long)c_y,scale_y); // calc widest map area in x
-    
+
 //    if (map_proj != 1) {
         // calculate map pixel range in x direction that falls into screen area
         map_x_min = map_x_max = 0l;
@@ -5298,7 +5365,7 @@ if (findu_flag) {
             if (map_proj == 1) {                // Transverse Mercator correction in x
                 scale_xa = get_x_scale(0,(long)c_y,scale_y); // recalc scale_x for current y
                 c_dx = map_c_dx * scale_xa / scale_x0;       // adjusted map pixel width
-                
+
                 map_x_min = map_x_ctr - (map_c_xc - x_long_offset) / c_dx;
                 if (map_x_min < 0)
                     map_x_min = 0;
@@ -5308,7 +5375,7 @@ if (findu_flag) {
                     map_x_max = atb.width;
                 scr_dx = (int) (c_dx / scale_x) + 1;    // at least 1 pixel wide
             }
-            
+
 //            if (c_y == (double)c_y_min) {  // first call
 //                printf("map: min %ld ctr %ld max %ld, c_dx %ld, c_x_min %ld, c_y_min %ld\n",map_x_min,map_x_ctr,map_x_max,(long)c_dx,c_x_min,c_y_min);
 //            }
@@ -5356,40 +5423,23 @@ if (findu_flag) {
 //                // 65529
 //            }
 
-                    // now copy a pixel from the map image to the screen
+                        // now copy a pixel from the map image to the screen
 #ifdef HAVE_IMAGEMAGICK
-                    pixel_pack = GetOnePixel(image, map_x, map_y);
-                    index_pack = GetIndexes(image);
-
-                    // Check for RGBColorspace
-                    if (DirectClass) {
-                        my_colors[0].red  = pixel_pack.red  * geotiff_map_intensity * 256;
-                        my_colors[0].green= pixel_pack.green* geotiff_map_intensity * 256;
-                        my_colors[0].blue = pixel_pack.blue * geotiff_map_intensity * 256;
-                        //  Get the color allocated.  Allocated pixel color is written to my_colors.pixel
-                        XAllocColor( XtDisplay (w), cmap, &my_colors[0] );
- 
-                        //XSetForeground (XtDisplay(w), gc, pixel_pack);
-                        XSetForeground (XtDisplay(w), gc, my_colors[0].pixel);
-                    }
-                    else {
-                        XSetForeground (XtDisplay(w), gc, my_colors[index_pack[0]].pixel); 
-                    }
-
-#else   // HAVE_IMAGEMAGICK
-
-//                if (scr_x > scr_xp+1) {         // we want to interpolate
-//                    for (x=scr_xp+1;x<=scr_x;x++) {
-//    unsigned long color;
-//                        color = XGetPixel (xi, x, map_y);
-//                        (void)XSetForeground (XtDisplay (w), gc, color);
-//                    }
-//                } else
-                    (void)XSetForeground (XtDisplay (w), gc, XGetPixel (xi, map_x, map_y));
-                    
-#endif  // HAVE_IMAGEMAGICK
-                    (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
-//--------------------------
+                        l = map_x + map_y * image->columns;
+                        if (IsPseudoClass(image)) {
+                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                        }
+                        else {
+                            pack_pixel_bits(pixel_pack[l].red,
+                                            pixel_pack[l].green,
+                                            pixel_pack[l].blue,
+                                            &my_colors[0].pixel);
+                            XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                        }
+#else
+                        (void)XSetForeground (XtDisplay (w), gc, XGetPixel (xi, map_x, map_y));
+#endif
+                        (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
                     } // check map boundaries in y direction
                 }
             } // loop over map pixel columns
@@ -5402,14 +5452,13 @@ if (findu_flag) {
     if (image)
        DestroyImage(image);
     if (image_info)
-       DestroyImageInfo(image_info); 
+       DestroyImageInfo(image_info);
 #else   // HAVE_IMAGEMAGICK
     if (xi)
         XDestroyImage (xi);
 #endif // HAVE_IMAGEMAGICK
 
 #endif // NO_GRAPHICS
-
 }
 
 
@@ -5749,7 +5798,6 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     int num_colors;             /* Number of colors in the geotiff colormap */
     uint16 *red_orig, *green_orig, *blue_orig; /* Used for storing geotiff colors */
     XColor my_colors[256];      /* Used for translating colormaps */
-/*    Colormap cmap;  KD6ZWR - now set in main()*/
     unsigned long west_bounding = 0;
     unsigned long east_bounding = 0;
     unsigned long north_bounding = 0;
@@ -6690,7 +6738,6 @@ Samples Per Pixel: 1
      * "geotiff_map_intensity" variable below.
      */
 
-/*    cmap = DefaultColormap( XtDisplay (w), DefaultScreen( XtDisplay (w) ) );  KD6ZWR - now set in main()*/
     {
         int l;
         // float geotiff_map_intensity = 1.00;    // Change this to reduce the
@@ -6701,7 +6748,7 @@ Samples Per Pixel: 1
             my_colors[l].red   =   (uint16)(red_orig[l] * geotiff_map_intensity);
             my_colors[l].green = (uint16)(green_orig[l] * geotiff_map_intensity);
             my_colors[l].blue  =  (uint16)(blue_orig[l] * geotiff_map_intensity);
-      
+
             XAllocColor( XtDisplay (w), cmap, &my_colors[l] );
         }
     }
