@@ -1536,7 +1536,9 @@ void disown_object_item(char *call_sign, char *new_owner) {
     char file_temp[200];
     FILE *f;
     FILE *f_temp;
+#ifdef HAVE_CP
     char command[300];
+#endif
     char line[300];
     char name[15];
 
@@ -1565,11 +1567,12 @@ void disown_object_item(char *call_sign, char *new_owner) {
 
     //fprintf(stderr,"%s\t%s\n",file,file_temp);
 
+#ifdef HAVE_CP
     // Copy to a temp file
     xastir_snprintf(command,
         sizeof(command),
         "%s -f %s %s",
-        (HAVE_CP) ? CP_PATH : "echo",
+        CP_PATH,
         file,
         file_temp);
 
@@ -1581,6 +1584,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
             file_temp);
         return;
     }
+#endif
 
     // Open the temp file and write to the original file, with hash
     // marks in front of the appropriate lines.

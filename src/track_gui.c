@@ -378,7 +378,9 @@ end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail_de
 void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[MAX_CALL+1];
     char fileimg[400];
+#ifdef HAVE_WGET
     char tempfile[500];
+#endif
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -407,16 +409,16 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         "\'http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d\'",
         download_trail_station_call,posit_start,posit_length);
 
+#ifdef HAVE_WGET
     xastir_snprintf(tempfile, sizeof(tempfile),
-            "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
-            (HAVE_WGET) ? WGET_PATH : "echo",
-            log_filename,
-            fileimg);
+        "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+        WGET_PATH,
+        log_filename,
+        fileimg);
 
     if (debug_level & 2)
         fprintf(stderr,"%s",tempfile);
 
-#ifdef HAVE_WGET
     if ( system(tempfile) ) {   // Go get the file
         fprintf(stderr,"Couldn't download the trail\n");
         return;

@@ -51,10 +51,10 @@
 #ifdef HAVE_XPMI
   #ifndef NO_XPM
     #include <Xm/XpmI.h>
-  #endif
+  #endif    // NO_XPM
 #else
 #include <X11/xpm.h>
-#endif
+#endif  // HAVE_XPMI
 
 #include <X11/Xlib.h>
 
@@ -95,8 +95,8 @@
 #ifdef NO_XPM
   #ifndef HAVE_IMAGEMAGICK
     #define NO_GRAPHICS 1
-  #endif
-#endif
+  #endif    // HAVE_IMAGEMAGICK
+#endif  // NO_XPM
 
 
 // Print options
@@ -3278,10 +3278,11 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         // Bessel (no)
         // Sinc (not too bad)
 
+#ifdef HAVE_CONVERT
         xastir_snprintf(command,
             sizeof(command),
             "%s -filter Point %s%s%s%s%s %s %s",
-            (HAVE_CONVERT) ? CONVERT_PATH : "echo",
+            CONVERT_PATH,
             mono,
             invert,
             rotate,
@@ -3296,6 +3297,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
             fprintf(stderr,"\n\nPrint: Couldn't convert from XPM to PS!\n\n\n");
             return;
         }
+#endif  // HAVE_CONVERT
 
         chmod( ps_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
@@ -3316,7 +3318,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         xastir_snprintf(command,
             sizeof(command),
             "%s -Plp %s",
-            (HAVE_LPR) ? LPR_PATH : "echo",
+            LPR_PATH,
             ps_filename );
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -3328,12 +3330,13 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 */
 
 
+#ifdef HAVE_GV
         // Bring up the "gv" postscript viewer
         xastir_snprintf(command,
             sizeof(command),
 //            "%s %s-scale -2 -media Letter %s &",
             "%s %s-scale -2 %s &",
-            (HAVE_GV) ? GV_PATH : "echo",
+            GV_PATH,
             format,
             ps_filename );
 
@@ -3344,6 +3347,8 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
             fprintf(stderr,"\n\nPrint: Couldn't bring up the gv viewer!\n\n\n");
             return;
         }
+#endif  // HAVE_GV
+
 /*
         if ( !(debug_level & 512) )
             unlink( ps_filename );
@@ -3922,7 +3927,9 @@ void Snapshot(void) {
  
     char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
+#ifdef HAVE_CONVERT
     char command[MAX_FILENAME*2];
+#endif  // HAVE_CONVERT
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -3960,12 +3967,13 @@ void Snapshot(void) {
         if ( debug_level & 512 )
             fprintf(stderr,"Convert %s ==> %s\n", xpm_filename, png_filename );
 
+#ifdef HAVE_CONVERT
         // Convert it to a png file.  This depends on having the
         // ImageMagick command "convert" installed.
         xastir_snprintf(command,
             sizeof(command),
             "%s -quality 100 %s %s",
-            (HAVE_CONVERT) ? CONVERT_PATH : "echo",
+            CONVERT_PATH,
             xpm_filename,
             png_filename );
 
@@ -3981,6 +3989,7 @@ void Snapshot(void) {
             if ( debug_level & 512 )
                 fprintf(stderr,"  Done creating png.\n");
         }
+#endif  // HAVE_CONVERT
     }
 
 #endif // NO_GRAPHICS
@@ -5229,7 +5238,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
+#ifdef HAVE_WGET
     char tempfile[MAX_FILENAME];
+#endif  // HAVE_WGET
     char gamma[16];
     struct {
         float r_gamma;
@@ -5266,7 +5277,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG
     time_mark(1);
-#endif
+#endif  // TIMING_DEBUG
 
     // Get user info
     user_id=getuid();
@@ -5331,12 +5342,12 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
                 strncpy(imagemagick_options.level, line + 6, 31);
                 imagemagick_options.level[31] = '\0';
             }
-#endif
+#endif  // MagickLibVersion >= 0x0539
             if (strncasecmp(line, "MODULATE", 8) == 0) {
                 strncpy(imagemagick_options.modulate, line + 9, 31);
                 imagemagick_options.modulate[31] = '\0';
             }
-#endif
+#endif  // HAVE_IMAGEMAGICK
         }
         (void)fclose (f);
     }
@@ -5619,24 +5630,24 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s",
                 username,ext);
 
+#ifdef HAVE_WGET
         xastir_snprintf(tempfile, sizeof(tempfile),
                 "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
-                (HAVE_WGET) ? WGET_PATH : "echo",
+                WGET_PATH,
                 local_filename,
                 fileimg);
 
         if (debug_level & 16)
             fprintf(stderr,"%s",tempfile);
 
-#ifdef HAVE_WGET
 //fprintf(stderr,"Getting file\n");
         if ( system(tempfile) ) {   // Go get the file
             fprintf(stderr,"Couldn't download the geo or Terraserver image\n");
             return;
         }
-#else
+#else   // HAVE_WGET
         fprintf(stderr,"'wget' not installed.  Can't download image\n");
-#endif
+#endif  // HAVE_WGET
 
         // Set permissions on the file so that any user can overwrite it.
         chmod(local_filename, 0666);
@@ -5773,7 +5784,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             fprintf(stderr,"level=%s\n", imagemagick_options.level);
         LevelImage(image, imagemagick_options.level);
     }
-#endif
+#endif  // MagickLibVersion >= 0x0539
 
     if (imagemagick_options.modulate[0] != '\0') {
         if (debug_level & 16)
@@ -5796,7 +5807,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             CompressColormap(image); // Remove duplicate colors
 #else // MagickLib >= 0x0549
             CompressImageColormap(image); // Remove duplicate colors
-#endif
+#endif  // MagickLibVersion < 0x0549
         }
 
         // Quantize down to 128 will go here...
@@ -5866,15 +5877,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
 #ifdef TIMING_DEBUG
     time_mark(0);
-#endif
+#endif  // TIMING_DEBUG
 
     if (debug_level & 16) {
        fprintf(stderr,"Image size %d %d\n", atb.width, atb.height);
 #if (MagickLibVersion < 0x0540)
        fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
-#else
+#else   // MagickLibVersion < 0x0540
        fprintf(stderr,"Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
-#endif
+#endif  // MagickLibVersion < 0x0540
        fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
                map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
 
@@ -5883,12 +5894,12 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
            fprintf(stderr,"is Monochrome Image = %i\n", IsMonochromeImage(image));
            //fprintf(stderr,"is Opaque Image = %i\n", IsOpaqueImage(image));
            //fprintf(stderr,"is PseudoClass = %i\n", image->storage_class == PseudoClass);
-       #else
+       #else    // MagickLibVersion < 0x0540
            fprintf(stderr,"is Gray Image = %i\n", IsGrayImage( image, &exception ));
            fprintf(stderr,"is Monochrome Image = %i\n", IsMonochromeImage( image, &exception ));
            //fprintf(stderr,"is Opaque Image = %i\n", IsOpaqueImage( image, &exception ));
            //fprintf(stderr,"is PseudoClass = %i\n", image->storage_class == PseudoClass);
-       #endif
+       #endif   // MagickLibVersion < 0x0540
 
        fprintf(stderr,"image matte is %i\n", image->matte);
        fprintf(stderr,"Colorspace = %i\n", image->colorspace);
@@ -6001,7 +6012,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
 #ifdef TIMING_DEBUG
     time_mark(0);
-#endif
+#endif  // TIMING_DEBUG
     // loop over map pixel rows
     for (map_y_0 = map_y_min, c_y = (double)c_y_min;
                 (map_y_0 <= map_y_max) || (map_proj == 1 && !map_done && scr_y < screen_height);
@@ -6083,9 +6094,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
                                             &my_colors[0].pixel);
                             XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
                         }
-#else
+#else   // HAVE_IMAGEMAGICK
                         (void)XSetForeground (XtDisplay (w), gc, XGetPixel (xi, map_x, map_y));
-#endif
+#endif  // HAVE_IMAGEMAGICK
                         (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
                     } // check map boundaries in y direction
                 }
@@ -6107,7 +6118,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
 #ifdef TIMING_DEBUG
     time_mark(0);
-#endif
+#endif  // TIMING_DEBUG
 
 #endif // NO_GRAPHICS
 }
@@ -6171,7 +6182,9 @@ void draw_tiger_map (Widget w) {
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
+#ifdef HAVE_WGET
     char tempfile[MAX_FILENAME];
+#endif  // HAVE_WGET
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
@@ -6322,9 +6335,10 @@ void draw_tiger_map (Widget w) {
 
     xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
 
+#ifdef HAVE_WGET
     xastir_snprintf(tempfile, sizeof(tempfile),
         "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
-        (HAVE_WGET) ? WGET_PATH : "echo",
+        WGET_PATH,
         tigermap_timeout,
         local_filename,
         fileimg);
@@ -6332,14 +6346,13 @@ void draw_tiger_map (Widget w) {
     if (debug_level & 512)
        fprintf(stderr,"%s",tempfile);
 
-#ifdef HAVE_WGET
     if (system(tempfile)) {   // Go get the file
        fprintf(stderr,"Couldn't download the Tigermap image\n");
        return;
     }
-#else
+#else   // HAVE_WGET
     fprintf(stderr,"'wget' not installed.  Can't download image\n");
-#endif
+#endif  // HAVE_WGET
 
 
 
@@ -6429,7 +6442,7 @@ void draw_tiger_map (Widget w) {
             CompressColormap(image); // Remove duplicate colors
 #else // MagickLib >= 0x0549
             CompressImageColormap(image); // Remove duplicate colors
-#endif
+#endif  // MagickLibVersion < 0x0549
         }
 
         // Quantize down to 128 will go here...
