@@ -3202,16 +3202,20 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
     if (x < 0)
-        x = 0l;                 // 180°W
+//        x = 0l;                 // 180°W
+        return;
 
     if (x > 129600000l)
-        x = 129600000l;         // 180°E
+//        x = 129600000l;         // 180°E
+        return;
 
     if (y < 0)
-        y = 0l;                 //  90°N
+//        y = 0l;                 //  90°N
+        return;
 
     if (y > 64800000l)
-        y = 64800000l;          //  90°S
+//        y = 64800000l;          //  90°S
+        return;
 
     if (coordinate_system == USE_UTM) {
         // Create a UTM string from coordinate in Xastir coordinate
