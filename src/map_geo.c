@@ -847,8 +847,8 @@ void draw_geo_image_map (Widget w,
         url_e = (int)(left_e / t_scale); // N/E of the map corner
 
         xastir_snprintf(fileimg, sizeof(fileimg),
-//          "http://terraservice.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
-            "http://terraserver-usa.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
+            "http://terraservice.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
+//            "http://terraserver-usa.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
             (toposerver_flag) ? 2 : 1,
             t_zoom,
             url_e,
