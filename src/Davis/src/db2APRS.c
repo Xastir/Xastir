@@ -20,7 +20,7 @@
         (See http://meteo.othello.ch for source) to
         xastir-1.2.1 (See http://www.xastir.org for source)
 
-        Note:  "meteo-0.9.4" is a weather data accumulator
+        Note:  "meteo-0.9.x" is a weather data accumulator
         aimed at Davis weather stations, which stores weather
         data in a mysql database.  It is configured in two 
         places, an XML file (default name meteo.xml) and in
@@ -130,6 +130,7 @@ int debug_level;
 
 char wxAPRShost[BUFLEN];
 int wxAPRSport = PORT;
+int outdoor_instr = OUTDOOR_SENSOR;
 
 /******************************************************************
 1/4/2003
@@ -142,14 +143,15 @@ void usage(int ret)
         printf("Content-type: text/plain\nStatus: 200\n\n");
 	printf("usage: %s [options] \n",progname);
 	printf("VERSION: %s\n",VERSION);
-    printf("  -h	--help					show this help and exit\n");
-    printf("  -v    --verbose				debugging info --> stderr\n");
-    printf("  -c	--cport [port#]			IP port for data output\n");
-    printf("  -u 	--user [database user]	username for mysql - default meteo\n");
-    printf("  -p 	--password [db passwd]	password for mysql - default none\n");
-    printf("  -b 	--database [database]	database name - default meteo\n");
-    printf("  -n	--nodaemon				do not run as daemon\n");
-    printf("  -r	--repeat				keep running\n");
+    printf("  -h    --help                      show this help and exit\n");
+    printf("  -v    --verbose                   debugging info --> stderr\n");
+    printf("  -c    --cport [port#]             IP port for data output\n");
+    printf("  -s    --sensor [sensor group#]    from meteo, your OUTDOOR sensor set\n");
+    printf("  -u    --user [database user]      username for mysql - default meteo\n");
+    printf("  -p    --password [db passwd]      password for mysql - default none\n");
+    printf("  -b    --database [database]       database name - default meteo\n");
+    printf("  -n    --nodaemon                  do not run as daemon\n");
+    printf("  -r    --repeat                    keep running\n");
     printf("options may be uniquely abbreviated; units are as defined in APRS\n"); 
     printf("Specification 1.0.1 for positionless weather data (English/hPa).\n");
     exit(ret);
@@ -522,7 +524,7 @@ int Get_Latest_WX( double *winddir,
     for (row_cnt = 0; row_cnt < nrows; row_cnt++) {
         row = mysql_fetch_row(result);
 
-        if(atoi(row[1]) == OUTDOOR_SENSOR) {	 // sensors are really groups of data
+        if(atoi(row[1]) == outdoor_instr) {	 // sensors are really groups of data
 
             if(debug_level & 1)
                 fprintf(stderr,"info: found an outdoor sensor: ");
@@ -589,7 +591,21 @@ int Get_Latest_WX( double *winddir,
                     break;
             }
         } 
-        else if (debug_level & 1) fprintf(stderr,"info: indoor sensor found\n");
+        else {
+            if (debug_level & 1) fprintf(stderr,"info: indoor sensor found\n");
+            switch (atoi(row[2]))  {  // type of reading
+                case AIR_PRESSURE :
+                    *airpressure = strtod(row[0],NULL);
+                    *valid_data_flgs |= VALID_AIRPRESS;
+                    item_count++;
+                    if(debug_level & 1)
+                        fprintf(stderr,"air pressure %f\n ",*airpressure);
+                    break;
+                 default :
+                    if(debug_level & 1) fprintf(stderr,"unused field %s\n",row[2]);
+                    break;
+            }         
+        }
     }
 
     *Metric_Data = 1;  // Always for meteo 
@@ -657,7 +673,7 @@ void term_handler(int sig)		/*  */
 *******************************************************************/
 int main(int argc, char **argv)
 {
-    const char *flags = "Hhvnc:u:p:d:r";
+    const char *flags = "Hhvnc:u:p:d:s:r";
     char WX_APRS[120];
     int data_len = 0 ;
     double winddir;
@@ -687,6 +703,7 @@ int main(int argc, char **argv)
         {"password", 1, 0, 'p'},
         {"database", 1, 0, 'd'},
         {"cport", 1, 0, 'c'},
+        {"sensor",1, 0, 's'},
         {"nodaemon", 0, 0, 'n'},
         {0, 0, 0, 0}
     };
@@ -730,6 +747,10 @@ int main(int argc, char **argv)
             case 'c':			/* port to use */
                 tcp_wx_port = strtol(optarg, NULL, 0);
                 break;
+            case 's':                   /* sensor number for outdoor data */
+                outdoor_instr  = atoi(optarg);
+                break;
+ 
             case '?':
             case 'h':
             case 'H':
@@ -748,6 +769,7 @@ int main(int argc, char **argv)
         if(not_a_daemon) fprintf(stdout," as a program ");
         else fprintf(stdout," as a daemon ");
         fprintf(stdout, " using TCP port %d\n",tcp_wx_port);
+        fprintf(stdout, "an with an outdoor sensor group number of %d\n",outdoor_instr);
     }
 
         // Data base connection

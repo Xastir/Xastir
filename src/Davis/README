@@ -41,13 +41,10 @@ Steps in order:
    the mysql-devel headers. For the latest image-version, see 
    http://www.mysql.com and follow the links to the downloads. 
    I used mysql-3.23.58-pc-linux-i686.tar.gz from that site.   
-   (NOTE: I had to create a link in /usr/lib libmysqlclient.so  
-   to libmysqlclient.so.10.0.0 after installation for db2APRS to
-   link with).
 
-2) Install meteo - initial tested version meteo-0.9.4
-   once again version 0.9.5 is going to be out soon and should 
-   work fine. See the instructions for installing & then setting 
+2) Install meteo - tested versions meteo-0.9.4 and meteo-0.9.8
+   Version 0.9.9 is available and based on the change documented
+   will work. See the instructions for installing & then setting 
    up meteo that come with the tar ball. Obtain the latest meteo 
    at http://meteo.othello.ch - the setup is rather involved but
    worth the efort. Some SQL/XML skills can help here, but are 
@@ -56,7 +53,7 @@ Steps in order:
 3) Install or update your installation for Xastir to the latest
    version (http://www.sourceforge.net, project Xastir) 
 
-4) Install db2APRS -  version 0.1.1
+4) Install db2APRS -  version 0.1.2
    See instructions below.
 
 
@@ -115,6 +112,14 @@ options, which can be displayed by "db2APRS -?". Here's the list:
       port number 1313 is the default. HINT: "telnet localhost 
       [port#]" is a handy way to verify db2APRS operation.
 
+  -s	--sensor [sensor group#]
+
+      Indicate what group of sensors are the outdoor ones. 
+      If not supplied, sensor number 1 is the default. 
+      HINT: Tables "station" and "sensor" in the meteo
+      database control what your "sensor" (which means 
+      sensor group) definitions are for your "station".
+      
   -u 	--user [database user]	
 
       Username for mysql database connection. If unspecfied 
@@ -152,7 +157,8 @@ OPERATIONAL DETAILS
 
 db2APRS connects to the specified mysql database, extracts the 
 latest timestamp and compares it to the last timestamp it read. 
-If newer, the weather data bearing this timestamp is extracted 
+If newer, the outdoor weather data (extception: air pressure is
+taken as indoor=outdoor) bearing this timestamp is extracted 
 and formatted in the APRS "position less" string format with a  
 Davis and X-APRS tag on the end. Any connecting client is given 
 this string at 25 second intervals, after new database entries 
