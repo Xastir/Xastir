@@ -3,12 +3,12 @@
 # Copyright (C) 2000-2004  The Xastir Group
 #
 # Xastir Version : 1.0.0
-# Creator        : Alessandro Frigeri, IK0YUP <IK0YUP@infinito.it>
+# Creator        : Alessandro Frigeri, IK0YUP <afrigeri@email.it>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Last Modified  : Fri 25 Apr 23:30:00 CEST 2003 by IK5BCU <ik5bcu@tin.it>
+# Last Modified  : Thu 03 Jun 21:15:00 CEST 2004 by IK0YUP
 #
 # comment lines with pound signs in front are ignored
-# Il formato del file e' il seguente:
+# Il formato del file è il seguente:
 # ID (10 caratteri alfanumerici)|(Stringa associata all'ID)|TastiDiSceltaRapida|#commento
 # WARNING:
 # Some strings contain formatting commands like %s and %d, you should not
@@ -74,7 +74,7 @@ PULDNMP009|Colora le aree chiuse|F|
 PULDNMP007|Mappe Contee Allarme Meteo|W|
 PULDNMP005|Colore dello sfondo della mappa|B|
 PULDNMP006|Etichette Stazione|S|
-PULDNMP026|Icon Outline Style|O|
+PULDNMP026|Stile Bordo Icone|O|
 PULDNMP011|Menù sul puntatore del mouse|M|
 PULDNMP008|Intensità Mappa|I|
 PULDNMP020|Configura Tigermap||
@@ -138,11 +138,11 @@ PULDNMSL01|Bordo nero||
 PULDNMSL02|Ombra nera e sfondo uniforme||
 PULDNMSL03|Testo su sfondo nero|T|
 #
-# PullDown "Icon Outline Style"
-PULDNMIO01|No Outline|N|
-PULDNMIO02|Black Outline|B|
-PULDNMIO03|Grey Outline|G|
-PULDNMIO04|White Outline|W|
+# PullDown "Stile Bordo Icone"
+PULDNMIO01|Nessun Bordo|N|
+PULDNMIO02|Bordo Nero|B|
+PULDNMIO03|Bordo Grigio|G|
+PULDNMIO04|Bordo Bianco|W|
 #
 # ATTIVO/DISATTIVO
 PULDNOT001|Attiva||
@@ -211,7 +211,7 @@ PULDQUS002|Cerca le stazioni Gateway|I|
 PULDQUS003|Cerca le stazioni meteo|W|
 PULDNMG004|Imposta risposta automatica ai messaggi in arrivo|S|
 PULDNMG005|Risposta automatica ai messaggi in arrivo|R|
-PULDNMG006|Modalita' Satellite Ack|M|
+PULDNMG006|Modalità Satellite Ack|M|
 #
 # Menu "Interfaces"
 PULDNTNT04|Avvia/Ferma|S|
@@ -220,9 +220,9 @@ PULDNTNT03|Disabilita Trasmissioni: TUTTE||
 PULDNTNT05|Disabilita Trasmissioni: Mia Posizione||
 PULDNTNT06|Disabilita Trasmissioni: Oggetti/Entità||
 PULDNTNT01|Trasmetti Ora!|T|
-PULDNTNT07|Prendi il tracciato GPS|F|
-PULDNTNT08|Prendi le rotte GPS|R|
-PULDNTNT09|Prendi le direzioni GPS|W|
+PULDNTNT07|Carica tracciato GPS|F|
+PULDNTNT08|Carica rotte GPS|R|
+PULDNTNT09|Carica punti GPS|W|
 #
 # Menù Aiuto
 PULDNHEL01|Versione di Xastir|A|
@@ -253,8 +253,8 @@ POPUPMA014|Sposta a destra||
 POPUPMA020|Misurazione distanze|D|
 POPUPMA021|Muovi||
 POPUPMA022|RintracciaMi||
-POPUPMA023|Trovato Blocchi Tastiera!||
-POPUPMA024|Per Favore disabilita Blocco Maiuscole/Numeri/Scorrimento/||
+POPUPMA023|Trovato Blocco Tastiera!||
+POPUPMA024|Per Favore disabilita Blocco Maiuscole/BlocNum/Scorrimento/||
 POPUPMA026|Center & Zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
@@ -288,7 +288,7 @@ BBARSTA021|Connessione fallita!||
 BBARSTA022|Non posso utilizzare la porta di rete!||
 BBARSTA023|Risoluzione IP host fallita!||
 BBARSTA024|Non è stato specificato nessun host||
-BBARSTA025|Host trovato, sto connettendomi a %d||
+BBARSTA025|Host trovato, connessione a %d||
 BBARSTA026|Sto attendendo dati dal GPS via HSP..||
 BBARSTA027|Libero HSP, ricezione dati da TNC..||
 BBARSTA028|Caricamento %s|| #
@@ -326,7 +326,7 @@ WPUPLSP006|Localizzazione di Emergenza!||
 #
 # Configure defaults popup
 WPUPCFD001|Parametri originali||
-WPUPCFD002|Dopo quanto tempo una stazione e' da considerarsi vecchia?||
+WPUPCFD002|Dopo quanto tempo una stazione è da considerarsi vecchia?||
 WPUPCFD003|15 Minuti||
 WPUPCFD004|30 Minuti||
 WPUPCFD005|45 Minuti||
@@ -702,7 +702,6 @@ WPUPSTI060|Temp Carburante: %02.1f°C  ||
 WPUPSTI061|Temp Carburante: %s°F   ||
 WPUPSTI062|Umidità Carburante: %s%%   ||
 WPUPSTI063|Pressione: %0.2f in Hg||
-WPUPSTI064|Fetch NWS Alert||
 #
 # FCC-RAC Call Look up
 STIFCC0001|Ricerca nel database FCC||
@@ -914,9 +913,9 @@ POPEM00031|Cambiato al simbolo Meteo '/_', altre opzioni:  '\_'  '/W'  e  '\W'||
 POPEM00032|Attenzione: Stai usando il simbolo Meteo del Servizio Nazionale!||
 POPEM00033|Nessun dato GPS!||
 POPEM00034|Disabilito TX Mia Posizione fino all'arrivo dei dati GPS!||
-POPEM00035|Warning||
-POPEM00036|Notice||
-POPEM00037|HSP interface present: GPS timing has been increased||
+POPEM00035|Attenzione||
+POPEM00036|Nota||
+POPEM00037|presente interfaccia HSP: l'intervallo di lettura del GPS viene aumentato||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||
@@ -939,8 +938,8 @@ SPCHSTR003|miglia||
 SPCHSTR004|yards||
 SPCHSTR005|%s, distanza è %d %s.||
 SPCHSTR006|%s, distanza è %.1f %s.||
-SPCHSTR007|%s, distance è %d %s %s %s.||
-SPCHSTR008|%s, distance è %.1f %s %s %s.||
+SPCHSTR007|%s, distanza è %d %s %s %s.||
+SPCHSTR008|%s, distanza è %.1f %s %s %s.||
 SPCHSTR009|Nuovo Allarme Meteo||
 SPCHSTR010|Nuovo Nominativo||
 SPCHSTR011|Ascoltato, D X, %s, alla distanza di %.1f %s||
@@ -999,7 +998,7 @@ COORD010|UTM Nord||
 #
 #
 # Smart Beaconing Dialog
-SMARTB001|Smart Beaconing||
+SMARTB001|SmartBeaconing||
 SMARTB002|Tasso Alto (secs):||
 SMARTB003|Alta Velocità (mph):||
 SMARTB004|Alta Velocità (kmh):||
@@ -1014,18 +1013,18 @@ SMARTB011|Abilita SmartBeaconing(tm)||
 #
 #
 # Gamma Adjust Dialog
-GAMMA001|Aggiustamento Correzione Gamma||
+GAMMA001|Impostazione Correzione Gamma||
 GAMMA002|Correzione Gamma||
 #
 #
 # Map labels font Dialog
-MAPFONT001|Change Map Labels Font||
-MAPFONT002|Map Labels Font||
-MAPFONT003|Tiny||
-MAPFONT004|Small||
-MAPFONT005|Medium||
-MAPFONT006|Large||
-MAPFONT007|Huge||
+MAPFONT001|Cambia il Carattere delle Etichette||
+MAPFONT002|Carattere delle Etichette||
+MAPFONT003|Minuscolo||
+MAPFONT004|Piccolo||
+MAPFONT005|Medio||
+MAPFONT006|Grande||
+MAPFONT007|Enorme||
 #
 # Distance/Bearing on status line
 PULDNDB001|Stato Distanza/Puntamento||
