@@ -3194,7 +3194,7 @@ void draw_shapefile_map (Widget w,
 // We don't handle the "hole" drawing in polygon shapefiles, where
 // clockwise direction around the ring means a fill, and CCW means a
 // hole in the polygon.  Once we do handle this correctly, delete
-// this note and the one in the function comment block.
+// this note and the note in the main function comment block above.
 //
 //
 // Could try to implement the holes in several ways:
@@ -3203,47 +3203,156 @@ void draw_shapefile_map (Widget w,
 // somewhere, but add a piece that will check for being inside a
 // "hole" polygon and just not draw while traversing it (change the
 // pen color to transparent over the holes?).
+// SUMMARY: How to do this?
 //
 // 2) Draw to another layer, then copy only the filled pixels to
-// their final destination pixmap.  Draw polygons once, then a copy
-// operation.
+// their final destination pixmap.
+// SUMMARY: Draw polygons once, then a copy operation.
 //
-// 3) Use bitmasks to prevent drawing over the hole areas:  Draw to
-// another 1-bit pixmap or region.  This area can be the size of the
-// max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap as a
-// clip-mask to draw the polygons again onto the final pixmap.  With
-// this method we end up drawing the shape twice.
+// 3) Separate area:  Draw polygon.  Copy from other map layer into
+// holes, then copy the result back.
+// SUMMARY:  How to determine outline?
 //
-// 4) Draw just the holes to a separate pixmap.  Either use that as
-// a keep-away clip-mask, or reverse the bits and use it as a
-// regular clip-mask for drawing the other parts of the shape to the
-// final destination.  I don't see an easy way to reverse the
-// clip-mask bits.  Might have to do that by hand, bit by bit.
+// 4) Use clip-masks to prevent drawing over the hole areas:  Draw
+// to another 1-bit pixmap or region.  This area can be the size of
+// the max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap
+// as a clip-mask to draw the polygons again onto the final pixmap.
+// SUMMARY: We end up drawing the shape twice!
+//
+// 5) Inverted clip-mask:  Draw just the holes to a separate pixmap:
+// Create a pixmap filled with 1's (XFillRectangle & GXset).  Draw
+// the holes and use GXinvert to draw zero's to the mask where the
+// holes go.  Use this as a clip-mask to draw the filled areas of
+// the polygon to the map pixmap.
+// SUMMARY: Faster than methods 1-4?
+//
+// 6) Use Regions to do the same method as #5 but with more ease.
+// Create a polygon Region, then create a Region for each hole and
+// subtract the hole from the polygon Region.  Once we have a
+// complete polygon + holes, use that as the clip-mask for drawing
+// the real polygon.  Use XSetRegion() on the GC to set this up.
+//
+// 7) Do method 6 but instead of drawing a polygon region, draw a
+// rectangle region first, then knock holes in it.  Use that region
+// as the clip-mask for the XFillPolygon() later by calling
+// XSetRegion() on the GC.  We don't really need a polygon region
+// for a clip-mask.  A rectangle with holes in it will work just as
+// well and should be faster overall.
+// SUMMARY:  This should be the fast method of the ones listed.  We
+// end up drawing the polygon only once instead of twice, and each
+// hole only once.  The only added drawing time would be the
+// creation of the rectangle region, which should be fairly fast,
+// and the subtracting of the hole regions from it.
 //
 //
 // Shapefiles also allow identical points to be next to each other
 // in the vertice list.  We should look for that and get rid of
 // duplicate vertices.
 //
-// Here are some X11 functions that set up a clip-mask so that we
-// can fill a polygon without drawing over the holes (hopefully).
-// The trick is:  Can we reverse the bit pattern so that we draw
-// only where we don't specify the hole?  Might have to draw the
-// polygons and holes into a separate 1-bit pixmap, then use that as
-// the clip-mask to draw the same thing onto the real pixmap.  It
-// looks like we could malloc a very small pixmap that is the size
-// of the polygon extents for this and free() it when we're done.
-// Only malloc if we find out we have holes in our shape, else just
-// draw it normally.
+// Here are some X11 functions that may be of use:
 //
 // XSetRegion:
 // XPolygonRegion: Creates a region from a polygon
 // XCreateRegion
 // XDestroyRegion
 // XUnionRegion:  Creates a new region from two
-//
-// Then set the clip-mask for the XFillPolygon() function when we
-// know we have holes in our polygon.
+// XOffsetRegion
+
+/*
+    // Determine first whether we have any CCW rotation of vertices
+    // in the Shape.  If so, we need to go through the below steps.
+    // If not, just draw the filled polygon directly.
+
+    // Creates separate structures for each hole.  It might be good
+    // to separate out the main polygon (without holes) as well for
+    // speed reasons: Use that for drawing when we have our Region
+    // set up instead of the full polygon + holes.
+    holes = create_hole_list();
+
+    if (!holes) {   // No holes in this shape.  Draw it the easy way.
+        (void)XFillPolygon(XtDisplay(w),
+            pixmap,
+            gc,
+            points,
+            i,
+            Nonconvex,
+            CoordModeOrigin);
+    }
+    else {  // Holes found in the shape.  Draw it the hard way.
+
+        // Create three regions and rotate between them due to the
+        // XSubtractRegion() call needing three parameters.  If we
+        // later find that two of the parameters can be repeated, we
+        // can simplify our code.  We'll rotate through them mod 3.
+        Region region[3];
+
+        int temp_region1 = 0;
+        int temp_region2;
+        int temp_region3;
+
+
+        // Draw the polygon region, whether we skip the hole
+        // vertices shouldn't matter at this point except perhaps
+        // for speed.  They lie inside the rest of the filled region
+        // so those areas just get filled more than once.
+// Speed-up:  Create a rectangle region instead of a polygon.  That
+// way we won't draw the polygon twice.
+        region[temp_region1] = XPolygonRegion(Xpoint points,
+            int n,
+            WindingRule);
+
+        // Create a region for each set of hole vertices (CCW
+        // rotation of the vertices) and subtract each from the
+        // polygon region.
+        while (more_holes) {
+
+            temp_region2 = (temp_region1 + 1) % 3;
+            temp_region3 = (temp_region1 + 2) % 3;
+
+            region[temp_region2] = XPolygonRegion(Xpoint points,
+                int n,
+                WindingRule);
+
+            // Subtract 2 from 1 and put the result in 3
+            XSubtractRegion(region[temp_region1],
+                region[temp_region2],
+                region[temp_region3]);
+
+            // Get rid of the two we no longer need
+            XDestroyRegion(region[temp_region1]);
+            XDestroyRegion(region[temp_region2]);
+
+            // Indicate the final result region for the next
+            // iteration or the exit of the loop.
+            temp_region1 = temp_region3;
+        }
+        // region[temp_region1] now contains a clip-mask of the
+        // original polygon but with holes cut out of it.
+
+        // Set up the GC for using the region.  This will be used as
+        // the clip-mask for drawing the polygon.
+        XSetRegion(XtDisplay(w), gc, region[temp_region1]);
+        XDestroyRegion(region[temp_region1]);
+
+        // Draw the original polygon.  Whether or not we subtract
+        // out the hole vectors here doesn't matter (except for
+        // speed reasons).  They won't get drawn due to the region
+        // clip-mask.
+        (void)XFillPolygon(XtDisplay(w),
+            pixmap,
+            gc,
+            points,
+            i,
+            Nonconvex,
+            CoordModeOrigin);
+ 
+        // Remember to get rid of that clipmask for the next drawing
+        // routines to come along.
+        XSetRegion(display, gc, NULL);
+    }
+*/
+
+
 
 
 
