@@ -882,7 +882,38 @@ First Time Install:
      Xastir is run. On new installs Xastir will default to English unless
      you use this command line option.
 
-   
+
+   CONNECTING TO AN INTERNET SERVER:
+
+   Here's a current list of internet servers:
+
+        http://members.aol.com/wa8lmf3/miscinfo/APRServe.txt
+
+   The procedure to connect to one of them is this:
+
+    *) Select Interface->Properties.
+    *) Click Add.
+    *) Select Internet Server, click Add.
+    *) Fill in the "Host" and "Port" boxes.
+    *) Enter the Pass-code found by running "callpass" with your callsign
+       in an xterm window.
+    *) Set the togglebuttons and filter parameters per your preferences.  The
+       "filter" keyword is added by Xastir, so you don't need to add that word
+       to the box.  If the box has anything in it, "filter" is prepended to the
+       text when Xastir sends the string to the server
+    *) Optionally put in a comment.  That shows up in the Interface and
+       Properties dialogs to remind you of the details for that connection.
+    *) Click OK.
+
+   A short list of the first-tier servers (you may want to connect to the
+   second-tier servers or regional/local servers instead):
+
+     first.aprs.net ports 10151 (history) or 10152 (no history)
+     second.aprs.net ports 10151 (history) or 10152 (no history)
+     third.aprs.net ports 10151 (history) or 10152 (no history)
+     fourth.aprs.net ports 10151 (history) or 10152 (no history)
+
+
    FESTIVAL NOTE:  From: J. Lance Cotton:
    One thing that I found that I had to do to finally get festival to work was
    to get rid of the 'only localhost can connect to the server' pref in the
