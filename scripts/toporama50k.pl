@@ -169,7 +169,7 @@ sub process
         # Create the output file
         $out = substr($file, 0, 6) . ".geo";
         open (OUT, ">$out") or die "Can't open $OUT: $!\n";
-        print OUT "# Automatically created by toporama50k2geo.pl\n";
+        print OUT "# Automatically created by toporama50k.pl\n";
         print OUT "FILENAME\t$file\n";
         print OUT "#\t\tx\ty\tlon\tlat\n";
         print OUT "TIEPOINT\t0\t0\t$topx\t$topy\n";
