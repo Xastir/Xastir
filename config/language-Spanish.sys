@@ -3,7 +3,7 @@
 #
 # Creador        : por Jose R. Marte A. <hi8gn@amsat.org>
 # Mantenido por  : El Xastir Grupo <xastir@xastir.org>
-# Ult. Revisión  : 11/24/2001, Jose R. Marte A. <hi8gn@amsat.org>
+# Ult. Revisión  : 04/09/2002, Jose R. Marte A. <hi8gn@amsat.org>
 #
 # Líneas de comentarios con un signo de libra en frente son ignorado
 # El formato del archivo es como sigue:
@@ -27,7 +27,7 @@ PULDNFI001|Configurar|C|
 PULDNFI002|Abrir Bitácora|B|
 PULDNFI003|Prueba|P|
 PULDNFI004|Salir|S|
-PULDNFI005|Yes I'm Sure!|Y|
+PULDNFI005|Si Estoy Seguro!|E|
 PULDNFI007|Cambia nivel Debug|D|
 PULDNFI010|Bitácora del TNC|T|
 PULDNFI011|Bitácora de Internet|I|
@@ -53,7 +53,7 @@ PULDNVI014|Programar SobreHora||
 # Menú de Configuración
 PULDNCF004|Estación|E|
 PULDNCF001|Predefinidos|P|
-PULDNCF002|Coordinate System|C|
+PULDNCF002|Sistema de Coordenada|C|
 PULDNCF006|Audio Alarmas|A|
 PULDNCF007|Sintetizador de Voz|S|
 PULDNCF008|Guardar Configuración!|G|
@@ -266,11 +266,11 @@ WPUPCFD022|Posición de la estación, fecha-hora Zulu, y Tiempo|f|
 WPUPCFD023|Transmitir datos WX en Raw?||
 WPUPCFD024|Dato de posición comprimida cuando transmita?||
 WPUPCFD025|Activar Red Alternada?|A|
-WPUPCFD026|Enviar reportes de posición en qué intervalos?|||
+WPUPCFD026|Enviar reportes de posición en qué intervalos?||
 #
-# PopUp "Configure Coordinate System"
-WPUPCFC001|Configure Coordinate System||
-WPUPCFC002|Select Coordinate System||
+# Configurar Sistema de Coordenada"
+WPUPCFC001|Configurar Sistema de Coordenada||
+WPUPCFC002|Seleccione Sistema de Coordenada||
 WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
@@ -335,10 +335,10 @@ WPUPCFT029|Configurar el TNC c/MAL ENUM||
 # Configurar el Puerto de la Estación Meteorológica
 WPUPCFWX01|Configurar el Puerto de la Estación Meteorológica||
 WPUPCFWX02|Dispositivo de la Estación Meteorológica||
-WPUPCFWX03|Rain Gauge Correction (Global Setting)||
-WPUPCFWX04|.1 inch/2.5mm||
-WPUPCFWX05|.01 inch/.25mm||
-WPUPCFWX06|.1mm||
+WPUPCFWX03|Tipo Medida de lluvia (Configuración Global)||
+WPUPCFWX04|0.1 pg / 2.5 mm||
+WPUPCFWX05|0.01 pg / 0.25 mm||
+WPUPCFWX06|0.1 mm||
 WPUPCFWX07|No Correction||
 #
 # Configurar la Estación
@@ -453,7 +453,7 @@ WPUPCFSP05|<- Anuncia Cuerpo de Nuevo Mensaje||
 WPUPCFSP06|<- Anuncia la Proximidad de estaciones||
 WPUPCFSP07|<- Anuncia DX condición de Banda Abierta||
 WPUPCFSP08|<- Anuncia Alerta sobre condiciones del Tiempo||
-WPUPCFSP09|Tracked Station Proximity Alert||
+WPUPCFSP09|<- Estación Rastreada Alerta de Proximidad||
 #
 # Rastreo de Estación
 WPUPTSP001|Rastreo estación|| 
@@ -577,17 +577,17 @@ UNIOP00013|mph||
 UNIOP00014|C||
 UNIOP00015|F||
 UNIOP00016|mm||
-UNIOP00017|plg||
+UNIOP00017|pg||
 UNIOP00018|mm/día||
-UNIOP00019|plg/día||
+UNIOP00019|pg/día||
 UNIOP00020|mm/hora||
-UNIOP00021|plg/hora||
+UNIOP00021|pg/hora||
 UNIOP00022|mm/med||
-UNIOP00023|plg/med||
+UNIOP00023|pg/med||
 UNIOP00024|grd||
 UNIOP00025|mb||
 UNIOP00026|%||
-UNIOP00027|in Hg||
+UNIOP00027|pg Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Fije el tiempo del sistema del GPS||
 #
@@ -702,7 +702,7 @@ LHPUPNI205|Baro||
 LHPUPNI206|RN-H||
 LHPUPNI207|RNSM||
 LHPUPNI208|RN24||
-LHPUPNI209|Lat/Lon or UTM||
+LHPUPNI209|Lat/Lon o UTM||
 #
 # Traza Alertas WX sobre mapas
 PULDNMAT01|Muestra mapa de alarma sobre otros mapas||
@@ -729,7 +729,7 @@ POPEM00017|No hay mas interfáz disponible!||
 POPEM00018|Dato requerido - Simple Línea de Mensaje|
 POPEM00019|El Puerto de transmisión está "off" para puerto %d|
 POPEM00020|Error banco de Datos!|
-POPEM00021|AX.25 support not compiled into Xastir!||
+POPEM00021|El soporte de AX.25 no está compilado en Xastir!||
 POPEM00022|Error de entrada!|
 POPEM00023|Nombre de locación no especificada!|
 POPEM00024|Nombre de Locación especificada en uso!|
@@ -738,8 +738,8 @@ POPEM00026|El Rastreo empezará cuando el aparezca||
 POPEM00027|Info Impropia. Algunos campos vacío?||
 POPEM00028|No se puede abrir el archivo||
 POPEM00029|Encontrado!||
-POPEM00030|Weather Station Symbol||
-POPEM00031|Changed to WX symbol '/_', other option is '\_'||
+POPEM00030|Símbolo de Estación Meteorológica||
+POPEM00031|Símbolo WX Cambiado a '/_', otra opción es '\_'||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||
@@ -762,17 +762,17 @@ SPCHSTR003|millas||
 SPCHSTR004|yardas||
 SPCHSTR005|%s, distancia es %d %s.||
 SPCHSTR006|%s, distancia es %.1f %s.||
-SPCHSTR007|%s, distance is %d %s %s %s.||
-SPCHSTR008|%s, distance is %.1f %s %s %s.||
+SPCHSTR007|%s, distancia es %d %s %s %s.||
+SPCHSTR008|%s, distancia es %.1f %s %s %s.||
 #
-SPCHDIRN00|north of||
-SPCHDIRS00|south of||
-SPCHDIRE00|east of||
-SPCHDIRW00|west of||
-SPCHDIRNE0|northeast of||
-SPCHDIRNW0|northwest of||
-SPCHDIRSE0|southeast of||
-SPCHDIRSW0|southwest of||
+SPCHDIRN00|norte de||
+SPCHDIRS00|sur de||
+SPCHDIRE00|este de||
+SPCHDIRW00|oeste de||
+SPCHDIRNE0|noreste de||
+SPCHDIRNW0|noroeste de||
+SPCHDIRSE0|sureste de||
+SPCHDIRSW0|suroeste de||
 #
 # Diálogo de seleción de Símbolo
 SYMSEL0001|Seleccione Símbolo||
@@ -782,8 +782,8 @@ SYMSEL0003|Tabla de Símbolo Secundario||
 # Diálogo de la Propiedades de Impresora
 PRINT0001|Propiedades de Impresora||
 PRINT0002|Ancho del Paper||
-PRINT0003|Auto-Rotatar Imagen
-PRINT0004|Rotatar Imagen 90° CCW||
+PRINT0003|Auto-Rotar Imagen
+PRINT0004|Rotar Imagen 90° CCW||
 PRINT0005|Auto-Balancear Imagen||
 PRINT0006|Balanza:||
 PRINT0007|Forza el predefinido color de fondo a blanco||
@@ -805,10 +805,10 @@ FEATURE004|Mapa Quad:||
 FEATURE005|Tipo:||
 FEATURE006|GNIS Archivo:||
 #
-# Coordinate Calculator Dialog
-COORD001|Coordinate Calc||
+# Diálogo de Calcular Coordenada
+COORD001|Calcula Coordenada||
 COORD002|Calc||
-COORD003|Calculate||
-COORD004|Clear||
+COORD003|Calcular||
+COORD004|Limpiar||
 #
 #
