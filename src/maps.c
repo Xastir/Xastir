@@ -7461,25 +7461,114 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
         if (alert->filename[0] == '\0') {   // No filename in struct, so will have
                                             // to search for the shape in the files.
             switch (alert->title[3]) {
-                case 'C':   // Check for a 'C' in the 4th character of the title
-                    // County file c_??????
-printf("%c:County file\n",alert->title[3]);
+                case 'C':   // 'C' in 4th char means county
+                    // Use County file c_??????
+                    printf("%c:County file\n",alert->title[3]);
                     break;
-                case 'A':
-                    // County warning area w_?????
-printf("%c:County warning area file\n",alert->title[3]);
+                case 'A':   // 'A' in 4th char means county warning area
+                    // Use County warning area w_?????
+                    printf("%c:County warning area file\n",alert->title[3]);
                     break;
                 case 'Z':
-                    // Zone or marine zone file z_????? or mz_????? or
-                    // oz_?????
-printf("%c:Zone or marine zone file\n",alert->title[3]);
+                    // Zone or marine zone file z_????? or mz_????? or // oz_?????
+                    // oz_: ANZ081-086,088,PZZ081-085
+                    // mz_: AM,AN,GM,LC,LE,LH,LM,LO,LS,PH,PK,PM,PS,PZ,SL
+                    // z_: All others
+                    if (strncasecmp(alert->title,"AM",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"AN",2) == 0) {
+                        // Need to check for Z081-Z086, Z088, if so use oz_, else use mz_
+                        if (       (strncasecmp(&alert->title[3],"Z081",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z082",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z083",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z084",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z085",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z086",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z088",4) == 0) ) {
+                            printf("%c:High seas marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "oz_", sizeof (alert->filename));
+                        }
+                        else {
+                            printf("%c:Marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        }
+                    }
+                    else if (strncasecmp(alert->title,"GM",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"LC",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"LE",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"LH",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"LM",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"LO",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"LS",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"PH",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"PK",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"PM",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"PS",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else if (strncasecmp(alert->title,"PZ",2) == 0) {
+// Need to check for PZZ081-085, if so use oz_, else use mz_
+                        if (       (strncasecmp(&alert->title[3],"Z081",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z082",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z083",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z084",4) == 0)
+                                || (strncasecmp(&alert->title[3],"Z085",4) == 0) ) {
+                            printf("%c:High seas marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "oz_", sizeof (alert->filename));
+                        }
+                        else {
+                            printf("%c:Marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        }
+                    }
+                    else if (strncasecmp(alert->title,"SL",2) == 0) {
+                        printf("%c:Marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                    }
+                    else {
+                        printf("%c:Zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "z_", sizeof (alert->filename));
+                    }
                     break;
                 default:
                     // Unknown type
-printf("%c:Unknown weather warning file\n",alert->title[3]);
+                    printf("%c:Unknown weather warning file\n",alert->title[3]);
                     break;
             }
-            strncpy (alert->filename, "we7u", sizeof (alert->filename));
+//            strncpy (alert->filename, "we7u", sizeof (alert->filename));
 //            printf("%s\t%s\t%s\n",alert->activity,alert->alert_tag,alert->title);
             printf("File: %s\n",alert->filename);
         }
