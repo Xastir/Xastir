@@ -52,6 +52,7 @@ Widget interface_type_list = NULL;
 Widget control_interface_dialog = NULL;
 Widget control_iface_list = NULL;
 
+
 static xastir_mutex control_interface_dialog_lock;
 
 ioparam devices[MAX_IFACE_DEVICES];
@@ -4135,6 +4136,390 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_Inet" );
 
 
 
+//WE7U-DATABASE
+/*****************************************************/
+/* Configure Database Server GUI                     */
+/*****************************************************/
+
+/**** DATABASE CONFIGURE ******/
+Widget config_Database_dialog = (Widget)NULL;
+Widget Database_active_on_startup;
+Widget Database_host_data;
+Widget Database_port_data;
+Widget Database_password_data;
+Widget Database_filter_data;
+Widget Database_transmit_data;
+Widget Database_reconnect_data;
+int    Database_port;
+
+
+
+
+
+void Database_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    config_Database_dialog = (Widget)NULL;
+    if (choose_interface_dialog != NULL)
+        Choose_interface_destroy_shell(choose_interface_dialog,choose_interface_dialog,NULL);
+
+    choose_interface_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void Database_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    int was_up;
+
+    busy_cursor(appshell);
+    was_up=0;
+    if (get_device_status(Database_port) == DEVICE_IN_USE) {
+        /* if active shutdown before changes are made */
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
+        (void)del_device(Database_port);
+        was_up=1;
+    }
+
+begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
+
+    strcpy(devices[Database_port].device_host_name,XmTextFieldGetString(Database_host_data));
+    (void)remove_trailing_spaces(devices[Database_port].device_host_name);
+    strcpy(devices[Database_port].device_host_pswd,XmTextFieldGetString(Database_password_data));
+    (void)remove_trailing_spaces(devices[Database_port].device_host_pswd);
+    strcpy(devices[Database_port].device_host_filter_string,XmTextFieldGetString(Database_filter_data));
+    (void)remove_trailing_spaces(devices[Database_port].device_host_filter_string);
+
+    devices[Database_port].sp=atoi(XmTextFieldGetString(Database_port_data));
+
+    if(XmToggleButtonGetState(Database_active_on_startup))
+        devices[Database_port].connect_on_startup=1;
+    else
+        devices[Database_port].connect_on_startup=0;
+
+    if(XmToggleButtonGetState(Database_transmit_data))
+        devices[Database_port].transmit_data=1;
+    else
+        devices[Database_port].transmit_data=0;
+
+    if(XmToggleButtonGetState(Database_reconnect_data))
+        devices[Database_port].reconnect=1;
+    else
+        devices[Database_port].reconnect=0;
+
+    if (devices[Database_port].connect_on_startup==1 || was_up) {
+        (void)add_device(Database_port,
+            DEVICE_NET_STREAM,
+            devices[Database_port].device_host_name,
+            devices[Database_port].device_host_pswd,
+            devices[Database_port].sp,
+            0,
+            0,
+            devices[Database_port].reconnect,
+            devices[Database_port].device_host_filter_string);
+    }
+
+    /* delete list */
+    modify_device_list(0,0);
+
+    /* add device type */
+    devices[Database_port].device_type=DEVICE_NET_STREAM;
+
+    /* rebuild list */
+    modify_device_list(2,0);
+
+end_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
+
+    Database_destroy_shell(widget,clientData,callData);
+}
+
+
+
+
+
+void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
+    static Widget  pane, form, button_ok, button_cancel,
+                ihost, iport, password, password_fl, filter, sep;
+
+    Atom delw;
+    char temp[40];
+
+    if(!config_Database_dialog) {
+        Database_port=port;
+        config_Database_dialog = XtVaCreatePopupShell(langcode("WPUPCFID01"),xmDialogShellWidgetClass,Global.top,
+                                  XmNdeleteResponse,XmDESTROY,
+                                  XmNdefaultPosition, FALSE,
+                                  NULL);
+
+        pane = XtVaCreateWidget("Config_Database pane",xmPanedWindowWidgetClass, config_Database_dialog,
+                          XmNbackground, colors[0xff],
+                          NULL);
+
+        form =  XtVaCreateWidget("Config_Database form",xmFormWidgetClass, pane,
+                            XmNfractionBase, 5,
+                            XmNbackground, colors[0xff],
+                            XmNautoUnmanage, FALSE,
+                            XmNshadowThickness, 1,
+                            NULL);
+
+        Database_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Database_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, Database_active_on_startup,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        ihost = XtVaCreateManagedWidget(langcode("WPUPCFID02"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, Database_transmit_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Database_host_data = XtVaCreateManagedWidget("Config_Database host_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 30,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, Database_transmit_data,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, ihost,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        iport = XtVaCreateManagedWidget(langcode("WPUPCFID03"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget,Database_transmit_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget,Database_host_data,
+                                      XmNleftOffset, 20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Database_port_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 5,
+                                      XmNmaxLength, 6,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, Database_transmit_data,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, iport,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset,10,
+                                      NULL);
+
+        password = XtVaCreateManagedWidget(langcode("WPUPCFID09"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, ihost,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Database_password_data = XtVaCreateManagedWidget("Config_Database password_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, FALSE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 5,
+                                      XmNmaxLength, 5,
+                                      XmNbackground, colors[0x0f],
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, password,
+                                      XmNleftOffset, 10,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, ihost,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        password_fl = XtVaCreateManagedWidget(langcode("WPUPCFID10"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, ihost,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget,Database_password_data,
+                                      XmNleftOffset,20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        filter = XtVaCreateManagedWidget(langcode("WPUPCFID15"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Database_filter_data = XtVaCreateManagedWidget("Config_Database filter_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, FALSE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 30,
+                                      XmNmaxLength, 190,
+                                      XmNbackground, colors[0x0f],
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, filter,
+                                      XmNleftOffset, 10,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        Database_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFID11"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, filter,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        sep = XtVaCreateManagedWidget("Config_Database sep", xmSeparatorGadgetClass,form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, Database_reconnect_data,
+                                      XmNtopOffset, 14,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 1,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 2,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 3,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 4,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        XtAddCallback(button_ok, XmNactivateCallback, Database_change_data, config_Database_dialog);
+        XtAddCallback(button_cancel, XmNactivateCallback, Database_destroy_shell, config_Database_dialog);
+
+        pos_dialog(config_Database_dialog);
+
+        delw = XmInternAtom(XtDisplay(config_Database_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(config_Database_dialog, delw, Database_destroy_shell, (XtPointer)config_Database_dialog);
+
+        if (config_type==0) {
+            /* first time port */
+            XmToggleButtonSetState(Database_active_on_startup,TRUE,FALSE);
+            XmToggleButtonSetState(Database_transmit_data,TRUE,FALSE);
+            //XmTextFieldSetString(Database_host_data,"first.aprs.net");
+            XmTextFieldSetString(Database_host_data,"");
+            XmTextFieldSetString(Database_port_data,"10151");
+
+            XmToggleButtonSetState(Database_reconnect_data,FALSE,FALSE);
+        } else {
+            /* reconfig */
+
+begin_critical_section(&devices_lock, "interface_gui.c:Config_Database" );
+
+           if (devices[Database_port].connect_on_startup)
+                XmToggleButtonSetState(Database_active_on_startup,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Database_active_on_startup,FALSE,FALSE);
+
+            if (devices[Database_port].transmit_data)
+                XmToggleButtonSetState(Database_transmit_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Database_transmit_data,FALSE,FALSE);
+
+            XmTextFieldSetString(Database_host_data,devices[Database_port].device_host_name);
+            xastir_snprintf(temp, sizeof(temp), "%d", devices[Database_port].sp);
+            XmTextFieldSetString(Database_port_data,temp);
+            XmTextFieldSetString(Database_password_data,devices[Database_port].device_host_pswd);
+            XmTextFieldSetString(Database_filter_data,devices[Database_port].device_host_filter_string);
+
+            if (devices[Database_port].reconnect)
+                XmToggleButtonSetState(Database_reconnect_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Database_reconnect_data,FALSE,FALSE);
+
+end_critical_section(&devices_lock, "interface_gui.c:Config_Database" );
+
+        }
+        XtManageChild(form);
+        XtManageChild(pane);
+
+        XtPopup(config_Database_dialog,XtGrabNone);
+        fix_dialog_size(config_Database_dialog);
+    } else {
+        (void)XRaiseWindow(XtDisplay(config_Database_dialog), XtWindow(config_Database_dialog));
+    }
+}
+
+
+
+
+
 /*****************************************************/
 /* Configure Interface GUI                           */
 /*****************************************************/
@@ -4163,7 +4548,11 @@ int are_shells_up(void) {
                         } else {
                             if (config_NWX_dialog) {
                                 (void)XRaiseWindow(XtDisplay(config_NWX_dialog), XtWindow(config_NWX_dialog));
-                            } else up=0;
+                            } else {
+                                if (config_Database_dialog) {
+                                    (void)XRaiseWindow(XtDisplay(config_Database_dialog), XtWindow(config_Database_dialog));
+                                } else up=0;
+                            }
                         }
                     }
                 }
@@ -4250,6 +4639,8 @@ void modify_device_list(int option, int port) {
                             strcat(temp,"    ");
                             break;
 
+                        case DEVICE_NET_DATABASE:
+
                         case DEVICE_NET_STREAM:
 
                         case DEVICE_NET_GPSD:
@@ -4325,6 +4716,8 @@ void modify_device_list(int option, int port) {
                                 devices[i].device_name, temp2);
                             strcat(temp,"    ");
                             break;
+
+                        case DEVICE_NET_DATABASE:
 
                         case DEVICE_NET_STREAM:
 
@@ -4491,6 +4884,13 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                         if (debug_level & 1)
                             fprintf(stderr,"ADD NET STREAM\n");
                         Config_Inet(w, 0, port);
+                        break;
+
+                    case DEVICE_NET_DATABASE:
+                        /* configure this port */
+                        if (debug_level & 1)
+                            fprintf(stderr,"ADD NET DATABASE\n");
+                        Config_Database(w, 0, port);
                         break;
 
                     default:
@@ -4807,6 +5207,16 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                             if (debug_level & 1)
                                 fprintf(stderr,"Modify NET STREAM\n");
                             Config_Inet(w, 1, port);
+                            break;
+
+                        case DEVICE_NET_DATABASE:
+ 
+end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
+
+                            /* configure this port */
+                            if (debug_level & 1)
+                                fprintf(stderr,"Modify NET DATABASE\n");
+                            Config_Database(w, 1, port);
                             break;
 
                         default:
@@ -5286,21 +5696,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                     break;
 
                 case DEVICE_SERIAL_WX:
-                    s='3';  // Select icon for status bar
-                    break;
-
                 case DEVICE_NET_WX:
                     s='3';  // Select icon for status bar
                     break;
 
+                case DEVICE_NET_DATABASE:
                 case DEVICE_NET_STREAM:
                     s='4';  // Select icon for status bar
                     break;
 
                 case DEVICE_AX25_TNC:
-                    s='5';  // Select icon for status bar
-                    break;
-
                 case DEVICE_SERIAL_KISS_TNC:
                     s='5';  // Select icon for status bar
                     break;

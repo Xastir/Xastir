@@ -2902,6 +2902,7 @@ void init_device_names(void) {
     strcpy(dtype[DEVICE_NET_WX].device_name,langcode("IFDNL00008"));
     strcpy(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name,langcode("IFDNL00009"));
     strcpy(dtype[DEVICE_SERIAL_KISS_TNC].device_name,langcode("IFDNL00010"));
+    strcpy(dtype[DEVICE_NET_DATABASE].device_name,langcode("IFDNL00011"));
 }
 
 
