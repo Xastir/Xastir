@@ -137,16 +137,20 @@ PULDNDP022|Tirar o rasto de Findu|F|
 # SubMenu "Filter Data"
 PULDNDP032|Filtrar datos||
 PULDNDP040|Select None||
-PULDNDP041|Select TNC||
-PULDNDP027|Mostrar estações Direct||
+PULDNDP041|Select Mine||
+PULDNDP042|Select TNC||
+PULDNDP027|- Mostrar estações Direct||
+PULDNDP043|- Select Via Digi||
 PULDNDP034|Mostrar estações net||
 PULDNDP019|Mostrar infos expiradas||
-PULDNDP028|Mostrar estações fixas||
-PULDNDP029|Mostrar estações móveis||
-PULDNDP030|Mostrar estações de tempo||
-PULDNDP026|Mostrar Objects/Items metereológicos||
-PULDNDP039|Display Water Gauge Objects/Items||
-PULDNDP031|Mostrar Objectos/Items||
+PULDNDP044|Mostrar estações||
+PULDNDP028|- Mostrar estações fixas||
+PULDNDP029|- Mostrar estações móveis||
+PULDNDP030|- Mostrar estações de tempo||
+PULDNDP045|Mostrar Objectos/Items||
+PULDNDP026|- Mostrar Objectos/Items metereológicos||
+PULDNDP039|- Mostrar Water Gauge Objectos/Items||
+PULDNDP031|- Mostrar otros Objectos/Items||
 # SubMenu "Filter Display"
 PULDNDP033|Filtrar display||
 PULDNDP010|Mostrar indicativo|i|

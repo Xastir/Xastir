@@ -252,14 +252,18 @@ int wx_alert_style;             /* WX alert map style */
 
 // ------------------------ Filter and Display menus -----------------------------
 Selections Select_ = { 0, // none
+                       1, // mine
                        1, // tnc
-                       1, // local
+                       1, // direct
+                       1, // via_digi
                        1, // net
                        1, // old_data
 
-                       1, // stationary_stations
+                       1, // stations
+                       1, // fixed_stations
                        1, // moving_stations
                        1, // weather_stations
+                       1, // objects
                        1, // weather_objects
                        1, // gauge_objects
                        1, // other_objects
@@ -294,14 +298,18 @@ What_to_display Display_ = { 1, // callsign
 };
 
 Widget select_none_button;
+Widget select_mine_button;
 Widget select_tnc_button;
-Widget select_local_button;
+Widget select_direct_button;
+Widget select_via_digi_button;
 Widget select_net_button;
 Widget select_old_data_button;
 
-Widget select_stationary_stations_button;
+Widget select_stations_button;
+Widget select_fixed_stations_button;
 Widget select_moving_stations_button;
 Widget select_weather_stations_button;
+Widget select_objects_button;
 Widget select_weather_objects_button;
 Widget select_gauge_objects_button;
 Widget select_other_objects_button;
@@ -336,14 +344,18 @@ Widget display_last_heard_button;
 
 
 static void Select_none_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_mine_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_tnc_toggle(Widget w, XtPointer clientData, XtPointer calldata);
-static void Select_local_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_direct_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_via_digi_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_net_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_old_data_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
-static void Select_stationary_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_fixed_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_moving_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_weather_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_weather_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_other_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_gauge_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -3573,6 +3585,24 @@ void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
 
 
 
+inline int no_data_selected()
+{
+    return (
+        Select_.none || (
+            !Select_.mine &&
+            !Select_.net  && (
+                !Select_.tnc || (
+                    !Select_.direct && !Select_.via_digi
+                )
+            )
+        )
+    );
+}
+
+
+
+
+
 void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
     Atom WM_DELETE_WINDOW;
     Widget children[8];         /* Children to manage */
@@ -4116,7 +4146,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep1b",
+    (void)XtVaCreateManagedWidget("create_appshell sep1d",
             xmSeparatorGadgetClass,
             configpane,
             MY_FOREGROUND_COLOR,
@@ -4302,7 +4332,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(map_wx_alerts_button,TRUE,FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep2b",
+    (void)XtVaCreateManagedWidget("create_appshell sep2a",
             xmSeparatorGadgetClass,
             mappane,
             MY_FOREGROUND_COLOR,
@@ -4579,7 +4609,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep_map",
+    (void)XtVaCreateManagedWidget("create_appshell sep2b",
             xmSeparatorGadgetClass,
             mappane,
             MY_FOREGROUND_COLOR,
@@ -4661,7 +4691,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(select_none_button, TRUE, FALSE);
 
 
-    select_tnc_button = XtVaCreateManagedWidget(langcode("PULDNDP041"),
+    select_mine_button = XtVaCreateManagedWidget(langcode("PULDNDP041"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_mine_button, XmNvalueChangedCallback, Select_mine_toggle, "1");
+    if (Select_.mine)
+        XmToggleButtonSetState(select_mine_button, TRUE, FALSE);
+    if (Select_.none)
+        XtSetSensitive(select_mine_button, FALSE);
+
+
+    select_tnc_button = XtVaCreateManagedWidget(langcode("PULDNDP042"),
             xmToggleButtonGadgetClass,
             filter_data_pane,
             XmNvisibleWhenOff, TRUE,
@@ -4676,7 +4721,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(select_tnc_button, FALSE);
 
 
-    select_local_button = XtVaCreateManagedWidget(langcode("PULDNDP027"),
+    select_direct_button = XtVaCreateManagedWidget(langcode("PULDNDP027"),
             xmToggleButtonGadgetClass,
             filter_data_pane,
             XmNvisibleWhenOff, TRUE,
@@ -4684,11 +4729,26 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(select_local_button, XmNvalueChangedCallback, Select_local_toggle, "1");
-    if (Select_.local)
-        XmToggleButtonSetState(select_local_button, TRUE, FALSE);
-    if (Select_.none)
-        XtSetSensitive(select_local_button, FALSE);
+    XtAddCallback(select_direct_button, XmNvalueChangedCallback, Select_direct_toggle, "1");
+    if (Select_.direct)
+        XmToggleButtonSetState(select_direct_button, TRUE, FALSE);
+    if (!Select_.tnc || Select_.none)
+        XtSetSensitive(select_direct_button, FALSE);
+
+
+    select_via_digi_button = XtVaCreateManagedWidget(langcode("PULDNDP043"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_via_digi_button, XmNvalueChangedCallback, Select_via_digi_toggle, "1");
+    if (Select_.via_digi)
+        XmToggleButtonSetState(select_via_digi_button, TRUE, FALSE);
+    if (!Select_.tnc || Select_.none)
+        XtSetSensitive(select_via_digi_button, FALSE);
 
 
     select_net_button = XtVaCreateManagedWidget(langcode("PULDNDP034"),
@@ -4717,11 +4777,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(select_old_data_button, XmNvalueChangedCallback, Select_old_data_toggle, "1");
     if (Select_.old_data)
         XmToggleButtonSetState(select_old_data_button, TRUE, FALSE);
-    if (Select_.none)
+    if (no_data_selected())
         XtSetSensitive(select_old_data_button, FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep4",
+    (void)XtVaCreateManagedWidget("create_appshell sep3a",
             xmSeparatorGadgetClass,
             filter_data_pane,
             MY_FOREGROUND_COLOR,
@@ -4729,7 +4789,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
-    select_stationary_stations_button = XtVaCreateManagedWidget(langcode("PULDNDP028"),
+    select_stations_button = XtVaCreateManagedWidget(langcode("PULDNDP044"),
             xmToggleButtonGadgetClass,
             filter_data_pane,
             XmNvisibleWhenOff, TRUE,
@@ -4737,13 +4797,28 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(select_stationary_stations_button, XmNvalueChangedCallback,
-                  Select_stationary_stations_toggle, "1");
-    if (Select_.stationary_stations)
-        XmToggleButtonSetState(select_stationary_stations_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
-        XtSetSensitive(select_stationary_stations_button, FALSE);
+    XtAddCallback(select_stations_button, XmNvalueChangedCallback,
+                  Select_stations_toggle, "1");
+    if (Select_.stations)
+        XmToggleButtonSetState(select_stations_button, TRUE, FALSE);
+    if (no_data_selected())
+        XtSetSensitive(select_stations_button, FALSE);
+
+
+    select_fixed_stations_button = XtVaCreateManagedWidget(langcode("PULDNDP028"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_fixed_stations_button, XmNvalueChangedCallback,
+                  Select_fixed_stations_toggle, "1");
+    if (Select_.fixed_stations)
+        XmToggleButtonSetState(select_fixed_stations_button, TRUE, FALSE);
+    if (!Select_.stations || no_data_selected())
+        XtSetSensitive(select_fixed_stations_button, FALSE);
 
 
     select_moving_stations_button = XtVaCreateManagedWidget(langcode("PULDNDP029"),
@@ -4758,8 +4833,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                   Select_moving_stations_toggle, "1");
     if (Select_.moving_stations)
         XmToggleButtonSetState(select_moving_stations_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Select_.stations || no_data_selected())
         XtSetSensitive(select_moving_stations_button, FALSE);
 
 
@@ -4775,9 +4849,24 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                   Select_weather_stations_toggle, "1");
     if (Select_.weather_stations)
         XmToggleButtonSetState(select_weather_stations_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Select_.stations || no_data_selected())
         XtSetSensitive(select_weather_stations_button, FALSE);
+
+
+    select_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP045"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_objects_button, XmNvalueChangedCallback,
+                  Select_objects_toggle, "1");
+    if (Select_.objects)
+        XmToggleButtonSetState(select_objects_button, TRUE, FALSE);
+    if (no_data_selected())
+        XtSetSensitive(select_objects_button, FALSE);
 
 
     select_weather_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP026"),
@@ -4792,8 +4881,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                   Select_weather_objects_toggle, "1");
     if (Select_.weather_objects)
         XmToggleButtonSetState(select_weather_objects_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Select_.objects || no_data_selected())
         XtSetSensitive(select_weather_objects_button, FALSE);
 
 
@@ -4809,8 +4897,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                   Select_gauge_objects_toggle, "1");
     if (Select_.gauge_objects)
         XmToggleButtonSetState(select_gauge_objects_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Select_.objects || no_data_selected())
         XtSetSensitive(select_gauge_objects_button, FALSE);
 
 
@@ -4826,8 +4913,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                   Select_other_objects_toggle, "1");
     if (Select_.other_objects)
         XmToggleButtonSetState(select_other_objects_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Select_.objects || no_data_selected())
         XtSetSensitive(select_other_objects_button, FALSE);
 
 
@@ -4861,8 +4947,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_callsign_button, XmNvalueChangedCallback, Display_callsign_toggle, "1");
     if (Display_.callsign)
         XmToggleButtonSetState(display_callsign_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_callsign_button, FALSE);
 
 
@@ -4877,8 +4962,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_symbol_button, XmNvalueChangedCallback, Display_symbol_toggle, "1");
     if (Display_.symbol)
         XmToggleButtonSetState(display_symbol_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_symbol_button, FALSE);
 
 
@@ -4893,9 +4977,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_symbol_rotate_button, XmNvalueChangedCallback, Display_symbol_rotate_toggle, "1");
     if (Display_.symbol_rotate)
         XmToggleButtonSetState(display_symbol_rotate_button, TRUE, FALSE);
-    if (!Display_.symbol ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.symbol || no_data_selected())
         XtSetSensitive(display_symbol_rotate_button, FALSE);
 
 
@@ -4910,12 +4992,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_trail_button, XmNvalueChangedCallback, Display_trail_toggle, "1");
     if (Display_.trail)
         XmToggleButtonSetState(display_trail_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_trail_button, FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep5",
+    (void)XtVaCreateManagedWidget("create_appshell sep3b",
             xmSeparatorGadgetClass,
             filter_display_pane,
             MY_FOREGROUND_COLOR,
@@ -4934,8 +5015,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_course_button, XmNvalueChangedCallback, Display_course_toggle, "1");
     if (Display_.course)
         XmToggleButtonSetState(display_course_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_course_button, FALSE);
 
 
@@ -4950,8 +5030,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_speed_button, XmNvalueChangedCallback, Display_speed_toggle, "1");
     if (Display_.speed)
         XmToggleButtonSetState(display_speed_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_speed_button, FALSE);
 
 
@@ -4966,9 +5045,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_speed_short_button, XmNvalueChangedCallback, Display_speed_short_toggle, "1");
     if (Display_.speed_short)
         XmToggleButtonSetState(display_speed_short_button, TRUE, FALSE);
-    if (!Display_.speed ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.speed || no_data_selected())
         XtSetSensitive(display_speed_short_button, FALSE);
 
 
@@ -4983,12 +5060,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_altitude_button, XmNvalueChangedCallback, Display_altitude_toggle, "1");
     if (Display_.altitude)
         XmToggleButtonSetState(display_altitude_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_altitude_button, FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep6",
+    (void)XtVaCreateManagedWidget("create_appshell sep3c",
             xmSeparatorGadgetClass,
             filter_display_pane,
             MY_FOREGROUND_COLOR,
@@ -5007,8 +5083,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_weather_button, XmNvalueChangedCallback, Display_weather_toggle, "1");
     if (Display_.weather)
         XmToggleButtonSetState(display_weather_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_weather_button, FALSE);
 
 
@@ -5023,13 +5098,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_weather_short_button, XmNvalueChangedCallback, Display_weather_short_toggle, "1");
     if (Display_.weather_short)
         XmToggleButtonSetState(display_weather_short_button, TRUE, FALSE);
-    if (!Display_.weather ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.weather || no_data_selected())
         XtSetSensitive(display_weather_short_button, FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep7",
+    (void)XtVaCreateManagedWidget("create_appshell sep3d",
             xmSeparatorGadgetClass,
             filter_display_pane,
             MY_FOREGROUND_COLOR,
@@ -5048,8 +5121,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_ambiguity_button, XmNvalueChangedCallback, Display_ambiguity_toggle, "1");
     if (Display_.ambiguity)
         XmToggleButtonSetState(display_ambiguity_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_ambiguity_button, FALSE);
 
 
@@ -5064,8 +5136,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_phg_button, XmNvalueChangedCallback, Display_phg_toggle, "1");
     if (Display_.phg)
         XmToggleButtonSetState(display_phg_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_phg_button, FALSE);
 
 
@@ -5080,9 +5151,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_default_phg_button, XmNvalueChangedCallback, Display_default_phg_toggle, "1");
     if (Display_.default_phg)
         XmToggleButtonSetState(display_default_phg_button, TRUE, FALSE);
-    if (!Display_.phg ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.phg || no_data_selected())
         XtSetSensitive(display_default_phg_button, FALSE);
 
 
@@ -5097,13 +5166,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_phg_of_moving_button, XmNvalueChangedCallback, Display_phg_of_moving_toggle, "1");
     if (Display_.phg_of_moving)
         XmToggleButtonSetState(display_phg_of_moving_button, TRUE, FALSE);
-    if (!Display_.phg ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.phg || no_data_selected())
         XtSetSensitive(display_phg_of_moving_button, FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep7",
+    (void)XtVaCreateManagedWidget("create_appshell sep3e",
             xmSeparatorGadgetClass,
             filter_display_pane,
             MY_FOREGROUND_COLOR,
@@ -5122,8 +5189,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_df_data_button, XmNvalueChangedCallback, Display_df_data_toggle, "1");
     if (Display_.df_data)
         XmToggleButtonSetState(display_df_data_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_df_data_button, FALSE);
 
 
@@ -5138,8 +5204,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_dr_data_button, XmNvalueChangedCallback, Display_dr_data_toggle, "1");
     if (Display_.dr_data)
         XmToggleButtonSetState(display_dr_data_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_dr_data_button, FALSE);
 
 
@@ -5154,9 +5219,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_dr_arc_button, XmNvalueChangedCallback, Display_dr_arc_toggle, "1");
     if (Display_.dr_arc)
         XmToggleButtonSetState(display_dr_arc_button, TRUE, FALSE);
-    if (!Display_.dr_data ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.dr_data || no_data_selected())
         XtSetSensitive(display_dr_arc_button, FALSE);
 
 
@@ -5171,9 +5234,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_dr_course_button, XmNvalueChangedCallback, Display_dr_course_toggle, "1");
     if (Display_.dr_course)
         XmToggleButtonSetState(display_dr_course_button, TRUE, FALSE);
-    if (!Display_.dr_data ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.dr_data || no_data_selected())
         XtSetSensitive(display_dr_course_button, FALSE);
 
 
@@ -5188,13 +5249,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_dr_symbol_button, XmNvalueChangedCallback, Display_dr_symbol_toggle, "1");
     if (Display_.dr_symbol)
         XmToggleButtonSetState(display_dr_symbol_button, TRUE, FALSE);
-    if (!Display_.dr_data ||
-        Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (!Display_.dr_data || no_data_selected())
         XtSetSensitive(display_dr_symbol_button, FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep7",
+    (void)XtVaCreateManagedWidget("create_appshell sep3f",
             xmSeparatorGadgetClass,
             filter_display_pane,
             MY_FOREGROUND_COLOR,
@@ -5213,8 +5272,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_dist_bearing_button, XmNvalueChangedCallback, Display_dist_bearing_toggle, "1");
     if (Display_.dist_bearing)
         XmToggleButtonSetState(display_dist_bearing_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_dist_bearing_button, FALSE);
 
 
@@ -5229,8 +5287,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(display_last_heard_button, XmNvalueChangedCallback, Display_last_heard_toggle, "1");
     if (Display_.last_heard)
         XmToggleButtonSetState(display_last_heard_button, TRUE, FALSE);
-    if (Select_.none ||
-        (!Select_.tnc && !Select_.local && !Select_.net))
+    if (no_data_selected())
         XtSetSensitive(display_last_heard_button, FALSE);
 
 
@@ -5238,7 +5295,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3",
+    (void)XtVaCreateManagedWidget("create_appshell sep3g",
             xmSeparatorGadgetClass,
             stationspane,
             MY_FOREGROUND_COLOR,
@@ -5349,7 +5406,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
     XtAddCallback(auto_msg_toggle,XmNvalueChangedCallback,Auto_msg_toggle,"1");
 
-   (void)XtVaCreateManagedWidget("create_appshell sep5a",
+   (void)XtVaCreateManagedWidget("create_appshell sep5",
             xmSeparatorGadgetClass,
             messagepane,
             MY_FOREGROUND_COLOR,
@@ -5385,7 +5442,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep5",
+    (void)XtVaCreateManagedWidget("create_appshell sep5a",
             xmSeparatorGadgetClass,
             ifacepane,
             MY_FOREGROUND_COLOR,
@@ -5436,7 +5493,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(object_tx_disable_toggle,FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep6",
+    (void)XtVaCreateManagedWidget("create_appshell sep5b",
             xmSeparatorGadgetClass,
             ifacepane,
             MY_FOREGROUND_COLOR,
@@ -5824,7 +5881,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    sep = XtVaCreateManagedWidget("create_appshell sep",
+    sep = XtVaCreateManagedWidget("create_appshell sep6",
             xmSeparatorGadgetClass,
             form,
             XmNorientation,         XmHORIZONTAL,
@@ -5885,7 +5942,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             right_menu_popup,
             al,
             ac);
-    (void)XtCreateManagedWidget("create_appshell sep",
+    (void)XtCreateManagedWidget("create_appshell sep7",
             xmSeparatorWidgetClass,
             right_menu_popup,
             al,
@@ -6102,7 +6159,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(last_loc,XmNactivateCallback,Last_location,NULL);
 
-    (void)XtCreateManagedWidget("create_appshell sep",
+    (void)XtCreateManagedWidget("create_appshell sep7a",
             xmSeparatorWidgetClass,
             right_menu_popup,
             al,
@@ -6136,7 +6193,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
-    XtCreateManagedWidget("create_appshell sep",
+    XtCreateManagedWidget("create_appshell sep7b",
             xmSeparatorWidgetClass,
             right_menu_popup,
             al,
@@ -6158,7 +6215,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(setmyposition,XmNactivateCallback,SetMyPosition,"1");
 
-    XtCreateManagedWidget("create_appshell sep",
+    XtCreateManagedWidget("create_appshell sep7c",
             xmSeparatorWidgetClass,
             right_menu_popup,
             al,
@@ -8324,20 +8381,44 @@ void WX_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
 // support functions
 void set_sensitive_select_sources(int sensitive)
 {
+    XtSetSensitive(select_mine_button,     sensitive);
     XtSetSensitive(select_tnc_button,      sensitive);
-    XtSetSensitive(select_local_button,    sensitive);
+    if (!Select_.tnc) {
+        XtSetSensitive(select_direct_button,   FALSE);
+        XtSetSensitive(select_via_digi_button, FALSE);
+    }
+    else {
+        XtSetSensitive(select_direct_button,   sensitive);
+        XtSetSensitive(select_via_digi_button, sensitive);
+    }
     XtSetSensitive(select_net_button,      sensitive);
     XtSetSensitive(select_old_data_button, sensitive);
 }
 
 void set_sensitive_select_types(int sensitive)
 {
-    XtSetSensitive(select_stationary_stations_button, sensitive);
-    XtSetSensitive(select_moving_stations_button,     sensitive);
-    XtSetSensitive(select_weather_stations_button,    sensitive);
-    XtSetSensitive(select_weather_objects_button,     sensitive);
-    XtSetSensitive(select_gauge_objects_button,       sensitive);
-    XtSetSensitive(select_other_objects_button,       sensitive);
+    XtSetSensitive(select_stations_button, sensitive);
+    if (!Select_.stations) {
+        XtSetSensitive(select_fixed_stations_button, FALSE);
+        XtSetSensitive(select_moving_stations_button,     FALSE);
+        XtSetSensitive(select_weather_stations_button,    FALSE);
+    }
+    else {
+        XtSetSensitive(select_fixed_stations_button, sensitive);
+        XtSetSensitive(select_moving_stations_button,     sensitive);
+        XtSetSensitive(select_weather_stations_button,    sensitive);
+    }
+    XtSetSensitive(select_objects_button, sensitive);
+    if (!Select_.objects) {
+        XtSetSensitive(select_weather_objects_button, FALSE);
+        XtSetSensitive(select_gauge_objects_button,   FALSE);
+        XtSetSensitive(select_other_objects_button,   FALSE);
+    }
+    else {
+        XtSetSensitive(select_weather_objects_button, sensitive);
+        XtSetSensitive(select_gauge_objects_button,   sensitive);
+        XtSetSensitive(select_other_objects_button,   sensitive);
+    }
 }
 
 void set_sensitive_display(int sensitive)
@@ -8406,7 +8487,7 @@ void Select_none_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
     else {
         Select_.none = 0;
         set_sensitive_select_sources(TRUE);
-        if (!Select_.tnc && !Select_.local && !Select_.net) { // no sources selected
+        if (no_data_selected()) {
             set_sensitive_select_types(FALSE);
             set_sensitive_display(FALSE);
         }
@@ -8419,6 +8500,34 @@ void Select_none_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
     redraw_on_new_data = 2;     // Immediate screen update
 }
 
+
+
+
+
+
+void Select_mine_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set) {
+        Select_.mine = atoi(which);
+        set_sensitive_select_types(TRUE);
+        set_sensitive_display(TRUE);
+    }
+    else {
+        Select_.mine = 0;
+        if (no_data_selected()) {
+            set_sensitive_select_types(FALSE);
+            set_sensitive_display(FALSE);
+        }
+        else {
+            set_sensitive_select_types(TRUE);
+            set_sensitive_display(TRUE);
+        }
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
 
 
 
@@ -8430,12 +8539,16 @@ void Select_tnc_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
 
     if (state->set) {
         Select_.tnc = atoi(which);
+        XtSetSensitive(select_direct_button,   TRUE);
+        XtSetSensitive(select_via_digi_button, TRUE);
         set_sensitive_select_types(TRUE);
         set_sensitive_display(TRUE);
     }
     else {
         Select_.tnc = 0;
-        if (!Select_.local && !Select_.net) { // no other sources selected
+        XtSetSensitive(select_direct_button,   FALSE);
+        XtSetSensitive(select_via_digi_button, FALSE);
+        if (no_data_selected()) {
             set_sensitive_select_types(FALSE);
             set_sensitive_display(FALSE);
         }
@@ -8452,18 +8565,46 @@ void Select_tnc_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
 
 
 
-void Select_local_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void Select_direct_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if (state->set) {
-        Select_.local = atoi(which);
+        Select_.direct = atoi(which);
         set_sensitive_select_types(TRUE);
         set_sensitive_display(TRUE);
     }
     else {
-        Select_.local = 0;
-        if (!Select_.tnc && !Select_.net) { // no other sources selected
+        Select_.direct = 0;
+        if (no_data_selected()) {
+            set_sensitive_select_types(FALSE);
+            set_sensitive_display(FALSE);
+        }
+        else {
+            set_sensitive_select_types(TRUE);
+            set_sensitive_display(TRUE);
+        }
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Select_via_digi_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set) {
+        Select_.via_digi = atoi(which);
+        set_sensitive_select_types(TRUE);
+        set_sensitive_display(TRUE);
+    }
+    else {
+        Select_.via_digi = 0;
+        if (no_data_selected()) {
             set_sensitive_select_types(FALSE);
             set_sensitive_display(FALSE);
         }
@@ -8491,7 +8632,7 @@ void Select_net_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
     }
     else {
         Select_.net = 0;
-        if (!Select_.tnc && !Select_.local) { // no other sources selected
+        if (no_data_selected()) {
             set_sensitive_select_types(FALSE);
             set_sensitive_display(FALSE);
         }
@@ -8523,16 +8664,38 @@ void Select_old_data_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoin
 
 
 
-void Select_stationary_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void Select_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set) {
+        Select_.stations = atoi(which);
+        XtSetSensitive(select_fixed_stations_button,   TRUE);
+        XtSetSensitive(select_moving_stations_button,  TRUE);
+        XtSetSensitive(select_weather_stations_button, TRUE);
+    }
+    else {
+        Select_.stations = 0;
+        XtSetSensitive(select_fixed_stations_button,   FALSE);
+        XtSetSensitive(select_moving_stations_button,  FALSE);
+        XtSetSensitive(select_weather_stations_button, FALSE);
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Select_fixed_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if (state->set)
-        Select_.stationary_stations = atoi(which);
+        Select_.fixed_stations = atoi(which);
     else
-        Select_.stationary_stations = 0;
-
-    // TBD: May want to disable based on other Select options
+        Select_.fixed_stations = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }
@@ -8565,6 +8728,30 @@ void Select_weather_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData
         Select_.weather_stations = atoi(which);
     else
         Select_.weather_stations = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Select_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set) {
+        Select_.objects = atoi(which);
+        XtSetSensitive(select_weather_objects_button, TRUE);
+        XtSetSensitive(select_gauge_objects_button,   TRUE);
+        XtSetSensitive(select_other_objects_button,   TRUE);
+    }
+    else {
+        Select_.objects = 0;
+        XtSetSensitive(select_weather_objects_button, FALSE);
+        XtSetSensitive(select_gauge_objects_button,   FALSE);
+        XtSetSensitive(select_other_objects_button,   FALSE);
+    }
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

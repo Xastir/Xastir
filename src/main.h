@@ -128,14 +128,18 @@ extern int output_station_type;
 
 typedef struct _selections {
     int none;
+    int mine;
     int tnc;
-    int local;
+    int direct;
+    int via_digi;
     int net;
     int old_data;
 
-    int stationary_stations;
+    int stations;
+    int fixed_stations;
     int moving_stations;
     int weather_stations;
+    int objects;
     int weather_objects;
     int gauge_objects;
     int other_objects;

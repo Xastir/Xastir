@@ -138,16 +138,20 @@ PULDNDP022|Fetch Findu Trail|u|
 # SubMenu "Filter Data"
 PULDNDP032|Filter Data||
 PULDNDP040|Select None||
-PULDNDP041|Select TNC||
-PULDNDP027|Select Direct||
+PULDNDP041|Select Mine||
+PULDNDP042|Select TNC||
+PULDNDP027|- Select Direct||
+PULDNDP043|- Select Via Digi||
 PULDNDP034|Select Net||
 PULDNDP019|Include Expired Data||
-PULDNDP028|Select Fixed Stations||
-PULDNDP029|Select Moving Stations||
-PULDNDP030|Select WX Stations||
-PULDNDP026|Select WX Objects/Items||
-PULDNDP039|Select Water Gauge Objects/Items||
-PULDNDP031|Select Other Objects/Items||
+PULDNDP044|Select Stations||
+PULDNDP028|- Select Fixed Stations||
+PULDNDP029|- Select Moving Stations||
+PULDNDP030|- Select WX Stations||
+PULDNDP045|Select Objects/Items||
+PULDNDP026|- Select WX Objects/Items||
+PULDNDP039|- Select Water Gauge Objects/Items||
+PULDNDP031|- Select Other Objects/Items||
 # SubMenu "Filter Display"
 PULDNDP033|Filter Display||
 PULDNDP010|Display Callsign||

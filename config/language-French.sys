@@ -138,16 +138,20 @@ PULDNDP022|Télécharger piste Findu||
 # SubMenu "Filter Data"
 PULDNDP032|Filtrer données||
 PULDNDP040|Choisir rien||
-PULDNDP041|Choisir TNC||
-PULDNDP027|Choisir direct||
+PULDNDP041|Choisir à moi||
+PULDNDP042|Choisir TNC||
+PULDNDP027|- Choisir direct||
+PULDNDP043|- Choisir par digi||
 PULDNDP034|Choisir net||
 PULDNDP019|Inclure données périmées||
-PULDNDP028|Choisir stations fixes||
-PULDNDP029|Choisir stations mobiles||
-PULDNDP030|Choisir stations météo||
-PULDNDP026|Choisir objets/articles météo||
-PULDNDP039|Choisir objets/articles indicateurs d'eau||
-PULDNDP031|Choisir autres objets/articles||
+PULDNDP044|Choisir stations||
+PULDNDP028|- Choisir stations fixes||
+PULDNDP029|- Choisir stations mobiles||
+PULDNDP030|- Choisir stations météo||
+PULDNDP045|Choisir objets/articles||
+PULDNDP026|- Choisir objets/articles météo||
+PULDNDP039|- Choisir objets/articles indicateurs d'eau||
+PULDNDP031|- Choisir autres objets/articles||
 # SubMenu "Filter Display"
 PULDNDP033|Filtrer affichage||
 PULDNDP010|Afficher indicatif|n|

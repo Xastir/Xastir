@@ -139,16 +139,20 @@ PULDNDP022|Sacar Rastro de Findu|F|
 # SubMenu "Filter Data"
 PULDNDP032|Filtrar Datos||
 PULDNDP040|Seleccionar Nada||
-PULDNDP041|Seleccionar TNC||
-PULDNDP027|Seleccionar Directo||
+PULDNDP041|Seleccionar Mío||
+PULDNDP042|Seleccionar TNC||
+PULDNDP027|- Seleccionar Directo||
+PULDNDP043|- Seleccionar Via Digi||
 PULDNDP034|Seleccionar Net||
 PULDNDP019|Incluir Datos Expirados||
-PULDNDP028|Seleccionar Estaciónes Fijas||
-PULDNDP029|Seleccionar Estaciónes Mobiles||
-PULDNDP030|Seleccionar Estaciónes de Tiempo||
-PULDNDP026|Seleccionar Objetos/Artículos de Tiempo||
-PULDNDP039|Seleccionar Objetos/Artículos Medidores de Agua||
-PULDNDP031|Seleccionar Otros Objetos/Artículos||
+PULDNDP044|Seleccionar Estaciónes||
+PULDNDP028|- Seleccionar Estaciónes Fijas||
+PULDNDP029|- Seleccionar Estaciónes Mobiles||
+PULDNDP030|- Seleccionar Estaciónes de Tiempo||
+PULDNDP045|Seleccionar Objetos/Artículos||
+PULDNDP026|- Seleccionar Objetos/Artículos de Tiempo||
+PULDNDP039|- Seleccionar Objetos/Artículos Medidores de Agua||
+PULDNDP031|- Seleccionar Otros Objetos/Artículos||
 # SubMenu "Filter Display"
 PULDNDP033|Filtrar Visualización||
 PULDNDP010|Mostrar Indicativo|I|

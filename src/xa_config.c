@@ -376,13 +376,17 @@ void save_data(void)  {
 
         // filter values
         // NOT SAVED: Select_.none
+        // NOT SAVED: Select_.mine
         // NOT SAVED: Select_.tnc
-        // NOT SAVED: Select_.local
+        // NOT SAVED: Select_.direct
+        // NOT SAVED: Select_.via_digi
         // NOT SAVED: Select_.net
         store_int (fout, "DISPLAY_OLD_STATION_DATA",      Select_.old_data);
-        // NOT SAVED: Select_.stationary_stations
+        // NOT SAVED: Select_.stations
+        // NOT SAVED: Select_.fixed_stations
         // NOT SAVED: Select_.moving_stations
         // NOT SAVED: Select_.weather_stations
+        // NOT SAVED: Select_.objects
         store_int (fout, "DISPLAY_STATION_WX_OBJ",        Select_.weather_objects);
         store_int (fout, "DISPLAY_WATER_GAGE_OBJ",        Select_.gauge_objects);
         // NOT SAVED: Select_.other_objects

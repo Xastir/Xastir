@@ -1868,79 +1868,90 @@ int is_altnet(DataRow *p_station) {
 // 1 = ok to draw this station/object
 //
 int ok_to_draw_station(DataRow *p_station) {
-    int ok = 0;
-
     // Check overall flag
     if (Select_.none)
         return 0;
 
-    // Special check for our station that makes it appear all the time
-    // unless none is set.  (TBD: This may not be quite what we want.)
-    if (strcmp(p_station->call_sign, my_callsign) == 0)
-        return 1;
-
-    // Check whether we wish to display TNC heard stations
-    if (p_station->flag & ST_VIATNC    && !Select_.tnc)
-        return 0;
-
-    // Check whether we wish to display stations heard direct
-    if (p_station->flag & ST_DIRECT     && !Select_.local)
-        return 0;
-
-    // Check whether we wish to display net stations
-    if (!(p_station->flag & ST_VIATNC) && !Select_.net)
-        return 0;
-
-    // Check whether object or item
-    if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
-	// Check whether we wish to display objects/items
-        if (Select_.weather_objects || Select_.gauge_objects || Select_.other_objects) {
-
-            // Check if WX info and we wish to see it
-            if (p_station->weather_data) {
-                ok = Select_.weather_objects;
-            }
-            // Check if water gage and we wish to see it
-            else if (p_station->aprs_symbol.aprs_type == '/'
-                    && p_station->aprs_symbol.aprs_symbol == 'w') {
-                ok = Select_.gauge_objects;
-            }
-            else {  // Object doesn't contain weather
-                ok = 1;
-            }
-        }
-        else {  // We don't wish to display objects/items
-            ok = 0;
-        }
-    }
-    else {    // Not an object or item
-        // Check for weather
-        if (p_station->weather_data) {
-            ok = Select_.weather_stations;
-        }
-        else {    // No weather associated with this symbol
-            if (p_station->flag & ST_MOVING) {
-                ok = Select_.moving_stations;
-            }
-            else {
-                ok = Select_.stationary_stations;
-            }
-        }
-    }
-
-    // If this is me or my object, don't do the old data check
+    // Check for my station and my objects/items
     if (strcmp(p_station->call_sign, my_callsign) == 0
         || (is_my_call(p_station->origin, 1)        // If station is owned by me
             && (   p_station->flag & ST_OBJECT      // And it's an object
                 || p_station->flag & ST_ITEM) ) ) { // or an item
-        return ok;
+        if (!Select_.mine)
+            return 0;
+    }
+    // Not mine, so check these next things
+    else {
+        // Check whether we wish to display TNC heard stations
+        if (p_station->flag & ST_VIATNC) {
+            if (!Select_.tnc)
+                return 0;
+
+            // Check whether we wish to display directly heard stations
+            if (p_station->flag & ST_DIRECT) {
+                if (!Select_.direct)
+                    return 0;
+            }
+            // Check whether we wish to display stations heard via a digi
+            else {
+                if (!Select_.via_digi)
+                    return 0;
+            }
+        }
+        // Check whether we wish to display net stations
+        else {
+            if (!Select_.net)
+                return 0;
+        }
+
+        // Check if we want to display data past the clear time
+        if (!Select_.old_data) {
+            if ((p_station->sec_heard + sec_clear) < sec_now())
+                return 0;
+        }
     }
 
-    // If this is old data past the clear time, check if we want to display it
-    if (Select_.old_data || (sec_clear + p_station->sec_heard) > sec_now())
-        return ok;
-    else
-        return 0;
+
+    // Check whether object or item
+    if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
+	// Check whether we wish to display objects/items
+        if (!Select_.objects ||
+            (!Select_.weather_objects && !Select_.gauge_objects && !Select_.other_objects))
+            return 0;
+
+        // Check if WX info and we wish to see it
+        if (p_station->weather_data) {
+            return Select_.weather_objects;
+        }
+        // Check if water gage and we wish to see it
+        else if (p_station->aprs_symbol.aprs_type == '/'
+                 && p_station->aprs_symbol.aprs_symbol == 'w') {
+            return Select_.gauge_objects;
+        }
+        // Check if we wish to see other objects/items
+        else {
+            return Select_.other_objects;
+        }
+    }
+    else {    // Not an object or item
+        if (!Select_.stations ||
+            (!Select_.fixed_stations && !Select_.moving_stations && !Select_.weather_stations))
+            return 0;
+
+        // Check if we wish to see weather stations
+        if (p_station->weather_data) {
+            return Select_.weather_stations;
+        }
+        // Check if we wish to see other stations
+        else {
+            if (p_station->flag & ST_MOVING) {
+                return Select_.moving_stations;
+            }
+            else {
+                return Select_.fixed_stations;
+            }
+        }
+    }
 }
 
 
