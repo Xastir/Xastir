@@ -737,6 +737,10 @@ First Time Install:
    Then restart the festival server.
    -Lance KJ5O
 
+   Additional note from Alan Crosswell:  If you run the festival_server
+   script instead of festival -server, then the permissions for localhost
+   get set up for you.
+
 
 You probably want to download some maps and additional data files. The
 instructions for this are in the README.MAPS.
