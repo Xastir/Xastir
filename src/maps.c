@@ -2865,7 +2865,12 @@ void draw_shapefile_map (Widget w,
                         // Convert to Xastir coordinates:
                         // If quad overlay shapefile, need to
                         // snag the label coordinates from the DBF
-                        // file instead.
+                        // file instead.  Note that the coordinates
+                        // are for the bottom right corner of the
+                        // quad, so we need to shift it left by 7.5'
+                        // to make the label appear inside the quad
+                        // (attached to the bottom left corner in
+                        // this case).
                         if (quad_overlay_flag) {
                             const char *dbf_temp;
                             float lat_f;
@@ -2876,13 +2881,14 @@ void draw_shapefile_map (Widget w,
                                 sscanf(dbf_temp, "%f", &lat_f);
                                 dbf_temp = DBFReadStringAttribute( hDBF, structure, 3 );
                                 sscanf(dbf_temp, "%f", &lon_f);
+                                lon_f = lon_f - 0.125;
                             }
                             else {
                                 lat_f = 0.0;
                                 lon_f = 0.0;
                             }
 
-                            //printf("Lat: %f, Lon: %f\t", lat_f, lon_f);
+                            //printf("Lat: %f, Lon: %f\t, Quad: %s\n", lat_f, lon_f, quad_label);
 
                             temp_ok = convert_to_xastir_coordinates(&my_long,
                                 &my_lat,
