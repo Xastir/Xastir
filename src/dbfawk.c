@@ -78,6 +78,7 @@ void dbfawk_free_info ( dbfawk_field_info *list) {
         p = p->next;
         free(x);
 //WE7U
+// Free's memory
 //fprintf(stderr,"f1\n");
     }
 }
@@ -102,10 +103,13 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
     int w,prec;
 
     fi = calloc(1,sizeof(dbfawk_field_info));
-    if (!fi)
+    if (!fi) {
+// Should instead free whatever list we have at this point?
         return NULL;
+    }
 
 //WE7U
+// Allocates memory
 //fprintf(stderr,"a1\n");    
  
     if (prev) {
@@ -156,7 +160,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         return NULL;
 
 //WE7U2
-// Allocates new memory, free'd before each return.
+// Allocates new memory, free'd before each return, so we're ok with
+// this memory allocation.
     symtbl = awk_new_symtab();
 // We should check the return value for NULL
 
@@ -166,11 +171,13 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
 
     while ((e = readdir(d)) != NULL) {
         int len = strlen(e->d_name);
+//WE7U
+// Allocates memory, free'd later
         char *path = calloc(1,len+strlen(dir)+2);
  
         if (!path) {
 //WE7U2
-// Frees memory
+// Free's memory before return
             if (symtbl)
             awk_free_symtab(symtbl);
  
@@ -185,10 +192,12 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
             if (!head) {
                 i = head = calloc(1,sizeof(dbfawk_sig_info));
 //WE7U
+// Allocates memory
 //fprintf(stderr,"a3\n");    
             } else {
                 i->next = calloc(1,sizeof(dbfawk_sig_info));
 //WE7U
+// Allocates memory
 //fprintf(stderr,"a4\n");    
                 i = i->next;
             }
@@ -216,12 +225,13 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         }
         free(path);
 //WE7U
+// Free's memory
 //fprintf(stderr,"f2\n");
 
     }
 
 //WE7U2
-// Frees memory
+// Free's memory
     if (symtbl)
         awk_free_symtab(symtbl);
 
@@ -236,11 +246,12 @@ void dbfawk_free_sig(dbfawk_sig_info *sig) {
     if (sig) {
         if (sig->prog)
 //WE7U2
-// Frees memory
+// Free's memory
             awk_free_program(sig->prog);
         if (sig) {
             free(sig);
 //WE7U
+// Free's memory
 //fprintf(stderr,"f3\n");
         }
     }
@@ -256,6 +267,8 @@ void dbfawk_free_sigs(dbfawk_sig_info *list) {
     for (p = list; p; ) {
         x = p;
         p = p->next;
+//WE7U
+// Free's memory
         dbfawk_free_sig(x);
     }
 }
@@ -284,6 +297,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             return NULL;
         }
 //WE7U
+// Allocates memory
 //fprintf(stderr,"a5\n");
 
 
@@ -300,9 +314,11 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             return NULL;
         }
 //WE7U
+// Allocates memory
 //fprintf(stderr,"a6\n");
  
 //WE7U2
+// Calls awk_new_program/awk_new_rule which allocate new memory
         info->prog = awk_load_program_file(perfile);
         /* N.B. info->sig is left NULL since it won't be searched, and 
            to flag that it's safe to free this memory when we're done with
@@ -310,6 +326,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
         info->sig = NULL;
         free(perfile);
 //WE7U
+// Free's memory
 //fprintf(stderr,"f4\n");
         if (info->prog) {
             return info;
@@ -317,6 +334,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
         else {
             free(info);
 //WE7U
+// Free's memory
 //fprintf(stderr,"f5\n");
         }
         /* fall through and do normal signature search */
