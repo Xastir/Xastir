@@ -457,7 +457,10 @@ void draw_tiger_map (Widget w,
 
     image_info=CloneImageInfo((ImageInfo *) NULL);
 
-    (void) strncpy(image_info->filename, file, sizeof(file));
+    xastir_snprintf(image_info->filename,
+        sizeof(image_info->filename),
+        "%s",
+        file);
 
     if (debug_level & 512) {
            fprintf(stderr,"Copied %s into image info.\n", file);

@@ -26,7 +26,7 @@
 #ifndef __XASTIR_HOSTNAME_H
 #define __XASTIR_HOSTNAME_H
 
-extern char *host_lookup(char *host, char *ip, int time);
+extern char *host_lookup(char *host, char *ip, int ip_size, int time);
 
 #endif  // __XASTIR_HOSTNAME_H
 

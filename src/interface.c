@@ -306,7 +306,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             // Copy Data onto the end of the string.  This one
             // doesn't have to be null-terminated, so strncpy() is
             // ok to use here.  strncpy stops at the first null byte
-            // though.  Proper for a binary output routine?
+            // though.  Proper for a binary output routine?  NOPE!
             strncpy(&output_string[header_size], Data, length);
 
             full_length = length + header_size;
@@ -326,7 +326,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 
         // Doesn't need to be null-terminated, so strncpy is ok to
         // use here.  strncpy stops at the first null byte though.
-        // Proper for a binary output routine?
+        // Proper for a binary output routine?  NOPE!
         strncpy(path_string, Path, sizeof(path_string));
 
         // Convert path_string to upper-case
@@ -4496,7 +4496,10 @@ int net_init(int port) {
     statusline(st,1);   // Looking up host
 
     // We currently give 13 seconds to look up the hostname
-    (void)host_lookup(port_data[port].device_host_name,ip_addrs,13);
+    (void)host_lookup(port_data[port].device_host_name,
+        ip_addrs,
+        sizeof(ip_addrs),
+        13);
 
     if (strcmp(ip_addrs,"NOIP") != 0) {
         if (strcmp(ip_addrs,"NOHOST") != 0) {

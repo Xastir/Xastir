@@ -167,11 +167,15 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
         }
 
         if (strncmp(call_sign, "java",4) == 0) {
-            strncpy(call_sign, "Broadcast", 9);
+            xastir_snprintf(call_sign,
+                MAX_CALLSIGN,
+                "Broadcast");
             xastir_snprintf(temp, my_size, "%s %s\n%s\n%s\n", from_call, call_sign,
                     data1, data2);
         } else if (strncmp(call_sign, "USER", 4) == 0) {
-            strncpy(call_sign, "Broadcast", 9);
+            xastir_snprintf(call_sign,
+                MAX_CALLSIGN,
+                "Broadcast");
             xastir_snprintf(temp, my_size, "%s %s\n%s\n%s\n", from_call, call_sign,
                     data1, data2);
         } else

@@ -4254,7 +4254,11 @@ void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callDat
     for (i = 0; i < FONT_MAX; i++) {
         temp = XmTextGetString(map_font_text[i]);
 
-        strncpy(rotated_label_fontname[i],temp,sizeof(rotated_label_fontname[0]));
+        xastir_snprintf(rotated_label_fontname[i],
+            sizeof(rotated_label_fontname[i]),
+            "%s",
+            temp);
+
         XtFree(temp);
         XmTextSetString(map_font_text[i], rotated_label_fontname[i]);
     }
@@ -4497,7 +4501,7 @@ char *report_gps_status(void) {
     gps_status_save_time = sec_now();
  
     // Reset the variables.
-    strncpy(gps_sats, "00", 3);
+    xastir_snprintf(gps_sats, sizeof(gps_sats), "00");
     gps_valid = 0;
 
     return(gps_temp);
@@ -4771,7 +4775,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         int t_size;
 
         t_size = strlen(t) + 42 + strlen(PACKAGE);
-        strncpy(title, "XASTIR ", t_size);
+        xastir_snprintf(title,
+            t_size,
+            "XASTIR");
         strncat(title, " - ", t_size - strlen(title));
         strncat(title, t, t_size - strlen(title));
         strncat(title, " @ ", t_size - strlen(title));
@@ -10418,9 +10424,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 if (ret1 && ret2) {
                                     char temp[200];
 
-                                    strncpy(temp,
-                                        "GPS:GPRMC,GPGGA ",
-                                        sizeof(temp));
+                                    xastir_snprintf(temp,
+                                        sizeof(temp),
+                                        "GPS:GPRMC,GPGGA ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - strlen(temp));
@@ -10429,9 +10435,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 else if (ret1) {
                                     char temp[200];
  
-                                    strncpy(temp,
-                                        "GPS:GPRMC ",
-                                        sizeof(temp));
+                                    xastir_snprintf(temp,
+                                        sizeof(temp),
+                                        "GPS:GPRMC ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - strlen(temp));
@@ -10439,10 +10445,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 }
                                 else if (ret2) {
                                     char temp[200];
- 
-                                    strncpy(temp,
-                                        "GPS:GPGGA ",
-                                        sizeof(temp));
+
+                                    xastir_snprintf(temp,
+                                        sizeof(temp), 
+                                        "GPS:GPGGA ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - strlen(temp));
@@ -10451,9 +10457,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 else {
                                     char temp[200];
 
-                                    strncpy(temp,
-                                        "GPS: ",
-                                        sizeof(temp));
+                                    xastir_snprintf(temp,
+                                        sizeof(temp),
+                                        "GPS: ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - strlen(temp));
@@ -10789,9 +10795,9 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 (void)gps_data_find((char *)incoming_data,
                                     data_port);
 
-                                strncpy(temp,
-                                    "GPS: ",
-                                    sizeof(temp));
+                                xastir_snprintf(temp,
+                                    sizeof(temp),
+                                    "GPS: ");
                                 strncat(temp,
                                     report_gps_status(),
                                     sizeof(temp) - strlen(temp));
@@ -10841,9 +10847,9 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 (void)gps_data_find((char *)incoming_data,
                                     data_port);
 
-                                strncpy(temp,
-                                    "GPS: ",
-                                    sizeof(temp));
+                                xastir_snprintf(temp,
+                                    sizeof(temp),
+                                    "GPS: ");
                                 strncat(temp,
                                     report_gps_status(),
                                     sizeof(temp) - strlen(temp));
@@ -10892,9 +10898,9 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             {
                                 char temp[200];
 
-                                strncpy(temp,
-                                    "GPS: ",
-                                    sizeof(temp));
+                                xastir_snprintf(temp,
+                                    sizeof(temp),
+                                    "GPS: ");
                                 strncat(temp,
                                     report_gps_status(),
                                     sizeof(temp) - strlen(temp));
@@ -12607,15 +12613,25 @@ void process_RINO_waypoints(void) {
                 // 07/09/2004 09:22:28
 //fprintf(stderr,"%s %s", name, datetime);
 
-                strncpy(temp2,&datetime[3],2);
+                xastir_snprintf(temp2,
+                    sizeof(temp2),
+                    "%s",
+                    &datetime[3]);
                 temp2[2] = '\0';
                 date = atoi(temp2);
 //fprintf(stderr, "%02d\n", date);
 
-                strncpy(temp2,&datetime[11],2);
+                xastir_snprintf(temp2,
+                    sizeof(temp2),
+                    "%s",
+                    &datetime[11]);
                 temp2[2] = '\0';
                 hour = atoi(temp2);
-                strncpy(temp2,&datetime[14],2);
+
+                xastir_snprintf(temp2,
+                    sizeof(temp2),
+                    "%s",
+                    &datetime[14]);
                 temp2[2] = '\0';
                 minute = atoi(temp2);
 //fprintf(stderr,"\t\t%02d%02d%02d/\n", date, hour, minute);
@@ -15737,11 +15753,18 @@ if (current->temp_select) {
                     // Center the string in the column
                     len = strlen(langcode("MAPP006"));
                     start = (int)( (5 - len) / 2 + 0.5);
+
                     if (start < 0)
                         start = 0;
                     else
-                        strncpy(temp_filled, "     ", start);
-                    strncpy(&temp_filled[start], langcode("MAPP006"), 5-start);
+                        // Note "start" or strlen must be less than
+                        // sizeof(temp_filled)
+                        xastir_snprintf(temp_filled, start, "     ");
+
+                    xastir_snprintf(&temp_filled[start],
+                        5-start,
+                        "%s",
+                        langcode("MAPP006"));
                     // Fill with spaces past the end
                     strncat(temp_filled, "     ", 5);
                     // Truncate it so it fits our column width.
@@ -15762,8 +15785,15 @@ if (current->temp_select) {
                     if (start < 0)
                         start = 0;
                     else
-                        strncpy(temp_auto, "     ", start);
-                    strncpy(&temp_auto[start], langcode("MAPP006"), 5-start);
+                        // Note:  "start" must be less than
+                        // sizeof(temp_auto)
+                        xastir_snprintf(temp_auto,
+                            start,
+                            "     ");
+                    xastir_snprintf(&temp_auto[start],
+                        5-start,
+                        "%s",
+                        langcode("MAPP006"));
                     // Fill with spaces past the end
                     strncat(temp_auto, "     ", 5);
                     // Truncate it so it fits our column width.
@@ -28060,7 +28090,9 @@ int main(int argc, char *argv[], char *envp[]) {
     ag_error=0;
 
     // Reset the gps variables.
-    strncpy(gps_sats, "00", 3);
+    xastir_snprintf(gps_sats,
+        sizeof(gps_sats),
+        "00");
     gps_valid = 0;
 
     while ((ag = getopt(argc, argv, "v:l:012346789tim")) != EOF) {

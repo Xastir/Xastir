@@ -306,7 +306,10 @@ void store_most_recent_ack(char *callsign, char *ack) {
     char call[MAX_CALLSIGN+1];
     char new_ack[5+1];
 
-    strncpy(call,callsign,sizeof(call));
+    xastir_snprintf(call,
+        sizeof(call),
+        "%s",
+        callsign);
     remove_trailing_spaces(call);
 
     // Get a copy of "ack".  We might need to change it.
@@ -365,7 +368,10 @@ char *get_most_recent_ack(char *callsign) {
     int done = 0;
     char call[MAX_CALLSIGN+1];
 
-    strncpy(call,callsign,sizeof(call));
+    xastir_snprintf(call,
+        sizeof(call),
+        "%s",
+        callsign);
     remove_trailing_spaces(call);
 
     // Search for matching callsign through linked list
@@ -2158,8 +2164,10 @@ void display_station(Widget w, DataRow *p_station, int single) {
         // >= 0.
         if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) >= 0) ) {
             speed_ok++;
-            strncpy(tmp, un_spd, sizeof(tmp));
-            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+            xastir_snprintf(tmp,
+                sizeof(tmp),
+                "%s",
+                un_spd);
             if (Display_.speed_short)
                 tmp[0] = '\0';          // without unit
 
@@ -2173,8 +2181,10 @@ void display_station(Widget w, DataRow *p_station, int single) {
         else if ( (p_station->newest_trackpoint != NULL)
                   && (p_station->newest_trackpoint->prev != NULL) ) {
 
-            strncpy(tmp, un_spd, sizeof(tmp));
-            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+            xastir_snprintf(tmp,
+                sizeof(tmp),
+                "%s",
+                un_spd);
 
             if (Display_.speed_short)
                 tmp[0] = '\0';          // without unit
@@ -3089,7 +3099,9 @@ void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
     rac_record my_data;
     char *station = (char *) clientData;
 
-    strncpy(temp," ",sizeof(temp));
+    xastir_snprintf(temp,
+        sizeof(temp),
+        " ");
     (void)check_rac_data();
     //busy_cursor(XtParent(w));
     busy_cursor(appshell);
@@ -3623,37 +3635,55 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    strncpy(temp, p_station->packet_time, 2);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        p_station->packet_time);
     temp[2]='/';
     temp[3]='\0';
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    strncpy(temp,p_station->packet_time+2,2);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        p_station->packet_time+2);
     temp[2]='/';
     temp[3]='\0';
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    strncpy(temp,p_station->packet_time+4,4);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        p_station->packet_time+4);
     temp[4]=' ';
     temp[5]='\0';
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    strncpy(temp,p_station->packet_time+8,2);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        p_station->packet_time+8);
     temp[2]=':';
     temp[3]='\0';
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    strncpy(temp,p_station->packet_time+10,2);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        p_station->packet_time+10);
     temp[2]=':';
     temp[3]='\0';
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    strncpy(temp,p_station->packet_time+12,2);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        p_station->packet_time+12);
     temp[2]='\n';
     temp[3]='\0';
     XmTextInsert(si_text,pos,temp);
@@ -4695,7 +4725,10 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             // checked (most recent).
             //
 
-            strncpy(temp,p_station->origin,6);
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                p_station->origin);
             temp[6] = '\0';
             ptr3 = strstr(p_station->comment_data->text_ptr,"{");
             ptr3++; // Skip over the '{' character
@@ -5708,7 +5741,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 //            wx_done=1;
 //            weather->wx_type=data[wx_strpos];
 //            if(strlen(data)>wx_strpos+1)
-//                strncpy(weather->wx_station,data+wx_strpos+1,MAX_WXSTATION);
+//                xastir_snprintf(weather->wx_station,    
+//                    sizeof(weather->wx_station),
+//                    "%s",
+//                    data+wx_strpos+1);
 //            break;
     }
     return(ok);
@@ -6758,19 +6794,19 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 void month2str(int month, char *str) {
 
     switch (month) {
-        case 0:         strncpy(str,"Jan",4); break;
-        case 1:         strncpy(str,"Feb",4); break;
-        case 2:         strncpy(str,"Mar",4); break;
-        case 3:         strncpy(str,"Apr",4); break;
-        case 4:         strncpy(str,"May",4); break;
-        case 5:         strncpy(str,"Jun",4); break;
-        case 6:         strncpy(str,"Jul",4); break;
-        case 7:         strncpy(str,"Aug",4); break;
-        case 8:         strncpy(str,"Sep",4); break;
-        case 9:         strncpy(str,"Oct",4); break;
-        case 10:        strncpy(str,"Nov",4); break;
-        case 11:        strncpy(str,"Dec",4); break;
-        default:        strncpy(str,"   ",4); break;
+        case  0:  strncpy(str,"Jan",4); break;
+        case  1:  strncpy(str,"Feb",4); break;
+        case  2:  strncpy(str,"Mar",4); break;
+        case  3:  strncpy(str,"Apr",4); break;
+        case  4:  strncpy(str,"May",4); break;
+        case  5:  strncpy(str,"Jun",4); break;
+        case  6:  strncpy(str,"Jul",4); break;
+        case  7:  strncpy(str,"Aug",4); break;
+        case  8:  strncpy(str,"Sep",4); break;
+        case  9:  strncpy(str,"Oct",4); break;
+        case 10:  strncpy(str,"Nov",4); break;
+        case 11:  strncpy(str,"Dec",4); break;
+        default:  strncpy(str,"   ",4); break;
     }
 }
 
@@ -6781,14 +6817,14 @@ void month2str(int month, char *str) {
 void wday2str(int wday, char *str) {
 
     switch (wday) {
-        case 0:         strncpy(str,"Sun",4); break;
-        case 1:         strncpy(str,"Mon",4); break;
-        case 2:         strncpy(str,"Tue",4); break;
-        case 3:         strncpy(str,"Wed",4); break;
-        case 4:         strncpy(str,"Thu",4); break;
-        case 5:         strncpy(str,"Fri",4); break;
-        case 6:         strncpy(str,"Sat",4); break;
-        default:        strncpy(str,"   ",4); break;
+        case 0:   strncpy(str,"Sun",4); break;
+        case 1:   strncpy(str,"Mon",4); break;
+        case 2:   strncpy(str,"Tue",4); break;
+        case 3:   strncpy(str,"Wed",4); break;
+        case 4:   strncpy(str,"Thu",4); break;
+        case 5:   strncpy(str,"Fri",4); break;
+        case 6:   strncpy(str,"Sat",4); break;
+        default:  strncpy(str,"   ",4); break;
     }
 }
 
@@ -8105,11 +8141,17 @@ int extract_position(DataRow *p_station, char **info, int type) {
                 my_data[6]  = my_data[16] = '5';
             }
 
-            strncpy(temp_lat,my_data,7);
+            xastir_snprintf(temp_lat,
+                sizeof(temp_lat),
+                "%s",
+                my_data);
             temp_lat[7] = toupper(my_data[7]);
             temp_lat[8] = '\0';
 
-            strncpy(temp_lon,my_data+9,8);
+            xastir_snprintf(temp_lon,
+                sizeof(temp_lon),
+                "%s",
+                my_data+9);
             temp_lon[8] = toupper(my_data[17]);
             temp_lon[9] = '\0';
 
@@ -8127,7 +8169,10 @@ int extract_position(DataRow *p_station, char **info, int type) {
         ok = (int)(ok && ((my_data[0]>='A')&&(my_data[0]<='R')));
         ok = (int)(ok && ((my_data[1]>='A')&&(my_data[1]<='R')));
         if (ok) {
-            strncpy(temp_grid,my_data,8);
+            xastir_snprintf(temp_grid,
+                sizeof(temp_grid),
+                "%s",
+                my_data);
             // this test treats >6 digit grids as 4 digit grids; >6 are uncommon.
             // the spec mentioned 4 or 6, I'm not sure >6 is even allowed.
             if ( (temp_grid[6] != ']') || (temp_grid[4] == 0) || (temp_grid[5] == 0)){
@@ -9139,7 +9184,10 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
     // Make a copy of the incoming data.  The string passed to
     // split_string() gets destroyed.
-    strncpy(temp_string, data, sizeof(temp_string));
+    xastir_snprintf(temp_string,
+        sizeof(temp_string),
+        "%s",
+        data);
     split_string(temp_string, Substring, 12);
 
     // The Substring[] array contains pointers to each substring in
@@ -9304,7 +9352,10 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     // Make a copy of the incoming data.  The string passed to
     // split_string() gets destroyed.
-    strncpy(temp_string, data, sizeof(temp_string));
+    xastir_snprintf(temp_string,
+        sizeof(temp_string),
+        "%s",
+        data);
     split_string(temp_string, Substring, 15);
 
     // The Substring[] array contains pointers to each substring in
@@ -9399,17 +9450,14 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
             temp_num);
     }
 
+
 // Check for valid number for HDOP instead of just throwing it away?
 
-    if (strlen(Substring[9]) < MAX_ALTITUDE)    // Not too long
-        xastir_snprintf(p_station->altitude,
-            sizeof(p_station->altitude),
-            "%s",
-            Substring[9]); // Get altitude
-    else // Too long, truncate it
-        strncpy(p_station->altitude,Substring[9],MAX_ALTITUDE);
 
-    p_station->altitude[MAX_ALTITUDE] = '\0'; // Terminate it, just in case
+    xastir_snprintf(p_station->altitude,
+        sizeof(p_station->altitude),
+        "%s",
+        Substring[9]); // Get altitude
 
 // Need to check for valid altitude before conversion
 
@@ -9479,7 +9527,10 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     // Make a copy of the incoming data.  The string passed to
     // split_string() gets destroyed.
-    strncpy(temp_string, data, sizeof(temp_string));
+    xastir_snprintf(temp_string,
+        sizeof(temp_string),
+        "%s",
+        data);
     split_string(temp_string, Substring, 7);
 
     // The Substring[] array contains pointers to each substring in
@@ -9691,7 +9742,10 @@ void add_status(DataRow *p_station, char *status_string) {
             CHECKMALLOC(p_station->status_data->text_ptr);
 
             // Fill in the string
-            strncpy(p_station->status_data->text_ptr,status_string,len+1);
+            xastir_snprintf(p_station->status_data->text_ptr,
+                sizeof(p_station->status_data->text_ptr),
+                "%s",
+                status_string);
 
             // Fill in the timestamp
             p_station->status_data->sec_heard = sec_now();
@@ -9842,7 +9896,10 @@ void add_comment(DataRow *p_station, char *comment_string) {
             CHECKMALLOC(p_station->comment_data->text_ptr);
 
             // Fill in the string
-            strncpy(p_station->comment_data->text_ptr,comment_string,len+1);
+            xastir_snprintf(p_station->comment_data->text_ptr,
+                sizeof(p_station->comment_data->text_ptr),
+                "%s",
+                comment_string);
 
             // Fill in the timestamp
             p_station->comment_data->sec_heard = sec_now();
@@ -11437,10 +11494,16 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     p_station->aprs_symbol.aprs_symbol = my_symbol;
 
     p_station->pos_amb = my_amb;
-    strncpy(temp_data, my_lat, 9);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        my_lat);
     temp_data[9] = '\0';
     strp = &temp_data[20];
-    strncpy(strp, my_long, 10);
+    xastir_snprintf(strp,
+        sizeof(strp),
+        "%s",
+        my_long);
     strp[10] = '\0';
     switch (my_amb) {
     case 1: // 1/10th minute
@@ -12373,7 +12436,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
 
         // Save the original msg_id away.
-        strncpy(orig_msg_id,msg_id,5+1);
+        xastir_snprintf(orig_msg_id,
+            sizeof(orig_msg_id),
+            "%s",
+            msg_id);
 
         // Check for Reply/Ack protocol in msg_id, which looks like
         // this:  "{XX}BB", where XX is the sequence number for the
@@ -13199,9 +13265,16 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
     if (ok) {                                         // check callsign
         (void)remove_trailing_asterisk(p_call);       // is an asterisk valid here ???
         if (valid_inet_name(p_call,(*info),origin)) { // accept some of the names used in internet
-            strncpy(call,p_call,MAX_CALLSIGN+1);      // treat is as object with special origin
+            // treat is as object with special origin
+            xastir_snprintf(call,
+                MAX_CALLSIGN+1,
+                "%s",
+                p_call);
         } else if (valid_call(p_call)) {              // accept real AX.25 calls
-            strncpy(call,p_call,MAX_CALLSIGN+1);
+            xastir_snprintf(call,
+                MAX_CALLSIGN+1,
+                "%s",
+                p_call);
         } else {
             ok = 0;
             if (debug_level & 1) {
@@ -13565,7 +13638,10 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 
     // Make a copy of the incoming path.  The string passed to
     // split_string() gets destroyed.
-    strncpy(temp_string, path, sizeof(temp_string));
+    xastir_snprintf(temp_string,
+        sizeof(temp_string),
+        "%s",
+        path);
     split_string(temp_string, Substring, MAX_RELAY_SUBSTRINGS);
     // Each element in the path is now pointed to by a char ptr in
     // the Substring array.  If a NULL is found in the array, that's
@@ -14391,7 +14467,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     if ( (p_station->comment_data != NULL)
             && (p_station->comment_data->text_ptr != NULL) ){
         //strcpy(comment,p_station->comments);
-        strncpy(comment,p_station->comment_data->text_ptr,sizeof(comment));
+        xastir_snprintf(comment,
+            sizeof(comment),
+            "%s",
+            p_station->comment_data->text_ptr);
     }
     else {
         comment[0] = '\0';  // Empty string

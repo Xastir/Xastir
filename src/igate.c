@@ -241,8 +241,10 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
     c2 = strstr(line2, ":"); // Find end of path
 
     if ( (c1 != NULL) && (c2 != NULL) ) {           // Found both separators
+
         strncpy(match_line,line2,(int)(c1 - line2));// Copy source/destination portion
         match_line[(int)(c1-line2)] = '\0';         // Terminate the substring
+
         strncat(match_line,                         // Copy info portion
             c2+1,
             sizeof(match_line) - strlen(match_line));

@@ -386,8 +386,10 @@ void alert_print_list(void) {
         // Check whether it's an active alert
         if (alert_list[i].title[0] != '\0') {
 
-            strncpy(title, alert_list[i].title, 99);
-            title[99] = '\0';
+            xastir_snprintf(title,
+                sizeof(title),
+                "%s",
+                alert_list[i].title);
 
             for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
                 *c_ptr = '\0';
@@ -623,8 +625,11 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     // Shorten the title
     normal_title(alert->title, title_e);
 
-    strncpy(filename, alert->filename, 32);
-    title_e[32] = title_m[32] = alert_f[32] = filename[32] = '\0';
+    xastir_snprintf(filename,
+        sizeof(filename),
+        "%s",
+        alert->filename);
+    title_e[32] = title_m[32] = '\0';
 
     // Truncate at '.'
     if ((ptr = strpbrk(filename, ".")))
@@ -650,8 +655,10 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         // Shorten the title
         normal_title(alert_list[i].title, title_m);
 
-        strncpy(alert_f, alert_list[i].filename, 32);
-        alert_f[32] = '\0';
+        xastir_snprintf(alert_f,
+            sizeof(alert_f),
+            "%s",
+            alert_list[i].filename);
 
         // Truncate at '.'
         if ((ptr = strpbrk(alert_f, ".")))
@@ -757,9 +764,14 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     // parameters from new alert into existing alert_list entry.
     if ((ptr = alert_match(alert, match_level))) {
         if (!ptr->filename[0]) {    // We found a match!  Fill it in.
-            strncpy(ptr->filename, alert->filename, sizeof(ptr->filename)-1);
-            strncpy(ptr->title, alert->title, sizeof(ptr->title)-1);
-            ptr->filename[sizeof(ptr->filename)-1] = ptr->title[sizeof(ptr->title)-1] = '\0';
+            xastir_snprintf(ptr->filename,
+                sizeof(ptr->filename),
+                "%s",
+                alert->filename);
+            xastir_snprintf(ptr->title,
+                sizeof(ptr->title),
+                "%s",
+                alert->title);
             // Boundary markers now being used for shape lookup
             //ptr->top_boundary = alert->top_boundary;
             //ptr->left_boundary = alert->left_boundary;
@@ -788,14 +800,18 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
                     // Update parameters
                     if (!alert_list[i].filename[0]) {
-                        strncpy(alert_list[i].filename, alert->filename, sizeof(alert_list[0].filename)-1);
-                        alert_list[i].filename[sizeof(alert_list[0].filename)-1] = '\0';
+                        xastir_snprintf(alert_list[i].filename,
+                            sizeof(alert_list[i].filename),
+                            "%s",
+                            alert->filename);
                         //alert_list[i].top_boundary = alert->top_boundary;
                         //alert_list[i].left_boundary = alert->left_boundary;
                         //alert_list[i].bottom_boundary = alert->bottom_boundary;
                         //alert_list[i].right_boundary = alert->right_boundary;
-                        strncpy(alert_list[i].title, alert->title, 32);
-                        alert_list[i].title[32] = '\0';
+                        xastir_snprintf(alert_list[i].title,
+                            sizeof(alert_list[i].title),
+                            "%s",
+                            alert->title);
                     }
                     alert_list[i].flags[on_screen] = alert->flags[on_screen];
                 }
@@ -1136,27 +1152,35 @@ void alert_build_list(Message *fill) {
 
                 switch (fill->seq[4]) {
                     case 'B':
-                        strncpy(alert_list[ii].desc0,fill->message_line,68);
-                        alert_list[ii].desc0[67] = '\0';
+                        xastir_snprintf(alert_list[ii].desc0,
+                            sizeof(alert_list[ii].desc0),
+                            "%s",
+                            fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
-                        strncpy(alert_list[ii].desc1,fill->message_line,68);
-                        alert_list[ii].desc1[67] = '\0';
+                        xastir_snprintf(alert_list[ii].desc1,
+                            sizeof(alert_list[ii].desc1),
+                            "%s",
+                            fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
-                        strncpy(alert_list[ii].desc2,fill->message_line,68);
-                        alert_list[ii].desc2[67] = '\0';
+                        xastir_snprintf(alert_list[ii].desc2,
+                            sizeof(alert_list[ii].desc2),
+                            "%s",
+                            fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
                         break;
                     case 'E':
                     default:
-                        strncpy(alert_list[ii].desc3,fill->message_line,68);
-                        alert_list[ii].desc3[67] = '\0';
+                        xastir_snprintf(alert_list[ii].desc3,
+                            sizeof(alert_list[ii].desc3),
+                            "%s",
+                            fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                         break;
@@ -1270,7 +1294,10 @@ void alert_build_list(Message *fill) {
 
 
                 // Snag the ALPHA portion
-                strncpy(prefix,ptr,2);
+                xastir_snprintf(prefix,
+                    sizeof(prefix),
+                    "%s",
+                    ptr);
                 ptr += 2;
                 prefix[2] = '_';
                 prefix[3] = ptr[0];
@@ -1281,7 +1308,10 @@ void alert_build_list(Message *fill) {
                 // Snag the NUMERIC portion.  Note that the field
                 // width can vary between 1 and 3.  The leading
                 // zeroes have been removed.
-                strncpy(temp_suffix,ptr,3);
+                xastir_snprintf(temp_suffix,
+                    sizeof(temp_suffix),
+                    "%s",
+                    ptr);
                 temp_suffix[3] = '\0';   // Terminate the string
                 if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
                     temp_suffix[1] = '\0';
@@ -1297,7 +1327,9 @@ void alert_build_list(Message *fill) {
                 // temp_suffix should now contain something like
                 // "039" or "45" or "2".  Add leading zeroes to give
                 // "suffix" a length of 3.
-                strncpy(suffix,"000",3);
+                xastir_snprintf(suffix,
+                    sizeof(suffix),
+                    "000");
                 switch (strlen(temp_suffix)) {
                     case 1: // Copy one char across
                         suffix[2] = temp_suffix[0];
@@ -1307,7 +1339,10 @@ void alert_build_list(Message *fill) {
                         suffix[2] = temp_suffix[1];
                         break;
                     case 3: // Copy all three chars across
-                        strncpy(suffix,temp_suffix,3);
+                        xastir_snprintf(suffix,
+                            sizeof(suffix),
+                            "%s",
+                            temp_suffix);
                         break;
                 }
                 // Make sure suffix is terminated properly
@@ -1351,7 +1386,10 @@ void alert_build_list(Message *fill) {
                         ptr++;  // Skip past the '>' character
 
                         // Snag the NUMERIC portion
-                        strncpy(ending,ptr,3);  
+                        xastir_snprintf(ending,
+                            sizeof(ending),
+                            "%s",
+                            ptr);
                         ending[3] = '\0';   // Terminate the string
                         if (is_num_chr(ending[0])) {
                             ptr += 1;
@@ -1415,7 +1453,10 @@ void alert_build_list(Message *fill) {
                             // Snag the NUMERIC portion.  Note that the field
                             // width can vary between 1 and 3.  The leading
                             // zeroes have been removed.
-                            strncpy(temp_suffix,ptr,3);
+                            xastir_snprintf(temp_suffix,
+                                sizeof(temp_suffix),
+                                "%s",
+                                ptr);
                             temp_suffix[3] = '\0';   // Terminate the string
                             if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
                                 temp_suffix[1] = '\0';
@@ -1431,7 +1472,9 @@ void alert_build_list(Message *fill) {
                             // temp_suffix should now contain something like
                             // "039" or "45" or "2".  Add leading zeroes to give
                             // "suffix" a length of 3.
-                            strncpy(suffix,"000",3);
+                            xastir_snprintf(suffix,
+                                sizeof(suffix),
+                                "000");
                             switch (strlen(temp_suffix)) {
                                 case 1: // Copy one char across
                                     suffix[2] = temp_suffix[0];
@@ -1441,7 +1484,10 @@ void alert_build_list(Message *fill) {
                                     suffix[2] = temp_suffix[1];
                                                 break;
                                 case 3: // Copy all three chars across
-                                    strncpy(suffix,temp_suffix,3);
+                                    xastir_snprintf(suffix,
+                                        sizeof(suffix),
+                                        "%s",
+                                        temp_suffix);
                                     break;
                             }
                             // Make sure that suffix is terminated properly
@@ -1509,14 +1555,22 @@ void alert_build_list(Message *fill) {
             // that are too long.  Assure that we don't overwrite
             // the strings.
             for (jj = 4; jj > 0; jj--) {
-                strncpy(&title[jj][0], &title[jj-1][0], 33);
-                title[jj][32] = '\0';   // Force a terminator
+//                strncpy(&title[jj][0], &title[jj-1][0], 33);
+                xastir_snprintf(&title[jj][0],
+                    sizeof(&title[jj][0]),
+                    "%s",
+                    &title[jj-1][0]);
             }
  
-            strncpy(&title[0][0], entry.alert_tag, 33);
-            title[0][32] = '\0';
+            xastir_snprintf(&title[0][0],
+                sizeof(&title[0][0]),
+                "%s",
+                entry.alert_tag);
  
-            strncpy(entry.alert_tag, entry.activity, 21);
+            xastir_snprintf(entry.alert_tag,
+                sizeof(entry.alert_tag),
+                "%s",
+                entry.activity);
             entry.alert_tag[20] = '\0';
  
             // Shouldn't we clear out entry.activity in this
@@ -1651,7 +1705,10 @@ void alert_build_list(Message *fill) {
         for (ii = 0; ii < MAX_SUB_ALERTS && title_ptr[ii]; ii++) {
 
             // Copy into our entry.title variable
-            strncpy(entry.title, title_ptr[ii], sizeof(entry.title));
+            xastir_snprintf(entry.title,
+                sizeof(entry.title),
+                "%s",
+                title_ptr[ii]);
 
             // Terminate title string
             entry.title[sizeof(entry.title)-1] = '\0';
@@ -1692,12 +1749,18 @@ void alert_build_list(Message *fill) {
             if (entry.title[0] == '\0')
                 continue;
 
-            strncpy(entry.from, fill->from_call_sign, 10);
-            entry.from[9] = '\0';
-            strncpy(entry.to, fill->call_sign, 10);
-            entry.to[9] = '\0';
-            strncpy(entry.seq, fill->seq, 10);
-            entry.seq[9] = '\0';
+            xastir_snprintf(entry.from,
+                sizeof(entry.from),
+                "%s",
+                fill->from_call_sign);
+            xastir_snprintf(entry.to,
+                sizeof(entry.to),
+                "%s",
+                fill->call_sign);
+            xastir_snprintf(entry.seq,
+                sizeof(entry.seq),
+                "%s",
+                fill->seq);
 
             // NWS_ADVIS or NWS_CANCL normally appear in the "to"
             // field.  ADVIS can appear in the alert_tag field on a
@@ -1761,19 +1824,31 @@ void alert_build_list(Message *fill) {
                 if ( (list_ptr->alert_level != 'C') // Stored alert is _not_ a CANCEL
                         || (entry.alert_level == 'C') ) { // Or new one _is_ a CANCEL
                     list_ptr->expiration = entry.expiration;
-                    strncpy(list_ptr->activity, entry.activity, 21);
-                    list_ptr->activity[20] = '\0';
-                    strncpy(list_ptr->alert_tag, entry.alert_tag, 21);
-                    list_ptr->alert_tag[20] = '\0';
+                    xastir_snprintf(list_ptr->activity,
+                        sizeof(list_ptr->activity),
+                        "%s",
+                        entry.activity);
+                    xastir_snprintf(list_ptr->alert_tag,
+                        sizeof(list_ptr->alert_tag),
+                        "%s",
+                        entry.alert_tag);
                     list_ptr->alert_level = entry.alert_level;
-                    strncpy(list_ptr->seq, entry.seq, 10);
-                    list_ptr->seq[9] = '\0';
-                    strncpy(list_ptr->from, entry.from, 10);
-                    list_ptr->from[9] = '\0';
-                    strncpy(list_ptr->to, entry.to, 10);
-                    list_ptr->to[9] = '\0';
-                    strncpy(list_ptr->issue_date_time, entry.issue_date_time, 10);
-                    list_ptr->issue_date_time[9] = '\0';
+                    xastir_snprintf(list_ptr->seq,
+                        sizeof(list_ptr->seq),
+                        "%s",
+                        entry.seq);
+                    xastir_snprintf(list_ptr->from,
+                        sizeof(list_ptr->from),
+                        "%s",
+                        entry.from);
+                    xastir_snprintf(list_ptr->to,
+                        sizeof(list_ptr->to),
+                        "%s",
+                        entry.to);
+                    xastir_snprintf(list_ptr->issue_date_time,
+                        sizeof(list_ptr->issue_date_time),
+                        "%s",
+                        entry.issue_date_time);
                 }
                 else {
                     // Don't copy the info across, as we'd be making a

@@ -89,7 +89,7 @@ static void host_time_out( /*@unused@*/ int sig) {
 /* TIMEOUT for time exceeded                                             */
 /*************************************************************************/
 
-char *host_lookup(char *host, char *ip, int time) {
+char *host_lookup(char *host, char *ip, int ip_size, int time) {
     /*struct sockaddr_in address;*/
     char **names, **addrs;
     static struct hostent *hostinfo;
@@ -299,7 +299,8 @@ char *host_lookup(char *host, char *ip, int time) {
                     }
                 }
                 (void)read(fp[0],buf,sizeof(buf)-1);
-                strncpy(ip, buf, sizeof(buf));
+
+                xastir_snprintf(ip, ip_size, "%s", buf);
 
                 if (debug_level & 1024)
                     fprintf(stderr,"Parent closing read end of pipe\n");

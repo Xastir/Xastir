@@ -552,17 +552,25 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         if (clientData != NULL) {
             substr(group,(char *)clientData, MAX_CALLSIGN);
             if (group[0] == '*') {
-                strncpy(mw[i].to_call_sign,"***",4);
+                xastir_snprintf(mw[i].to_call_sign,
+                    sizeof(mw[i].to_call_sign),
+                    "***");
                 mw[i].to_call_sign[3] = '\0';   // Terminate it
                 memmove(group, &group[1], strlen(group));
                 groupon=1;
                 box_len=100;
             } else {
-                strncpy(mw[i].to_call_sign, my_callsign, MAX_CALLSIGN+1);
+                xastir_snprintf(mw[i].to_call_sign,
+                    sizeof(mw[i].to_call_sign),
+                    "%s",
+                    my_callsign);
                 mw[i].to_call_sign[MAX_CALLSIGN] = '\0';    // Terminate it
             }
         } else {
-            strncpy(mw[i].to_call_sign, my_callsign, MAX_CALLSIGN+1);
+            xastir_snprintf(mw[i].to_call_sign,
+                sizeof(mw[i].to_call_sign),
+                "%s",
+                my_callsign);
             mw[i].to_call_sign[MAX_CALLSIGN] = '\0';    // Terminate it
         }
 

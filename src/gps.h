@@ -30,7 +30,7 @@
 
 #define MAX_GPS_STRING 300
 
-extern char gps_sats[];
+extern char gps_sats[4];
 extern int  gps_valid;
 
 extern int gps_stop_now;

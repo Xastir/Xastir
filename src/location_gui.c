@@ -124,9 +124,15 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 if (!feof(f) && strlen(temp)>8) {
                     temp_ptr=strtok(temp,"|");  /* get the name */
                     if (temp_ptr!=NULL) {
-                        strncpy(name,temp,100);
+                        xastir_snprintf(name,
+                            sizeof(name),
+                            "%s",
+                            temp);
                         temp_ptr=strtok(NULL,"|");  /* get the pos */
-                        strncpy(pos,temp_ptr,100);
+                        xastir_snprintf(pos,
+                            sizeof(pos),
+                            "%s",
+                            temp_ptr);
                         if (strcmp(location,name)==0) {
                             (void)sscanf(pos,"%19s %19s %9s", s_lat, s_long, s_sz);
                             map_pos(convert_lat_s2l(s_lat),convert_lon_s2l(s_long),atol(s_sz));
@@ -164,7 +170,10 @@ void jump_sort(void) {
             if (!feof(f) && strlen(temp)>8) {
                 temp_ptr=strtok(temp,"|");  /* get the name */
                 if (temp_ptr!=NULL) {
-                    strncpy(name,temp,100);
+                    xastir_snprintf(name,
+                        sizeof(name),
+                        "%s",
+                        temp);
                     (void)sort_input_database(get_user_base_dir("data/locations_db.dat"),name,200);
                 }
             }
@@ -218,9 +227,15 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
                     if (!feof(f) && strlen(temp)>8) {
                         temp_ptr=strtok(temp,"|");  /* get the name */
                         if (temp_ptr!=NULL) {
-                            strncpy(name,temp,100);
+                            xastir_snprintf(name,
+                                sizeof(name),
+                                "%s",
+                                temp);
                             temp_ptr=strtok(NULL,"|");  /* get the pos */
-                            strncpy(pos,temp_ptr,100);
+                            xastir_snprintf(pos,
+                                sizeof(pos),
+                                "%s",
+                                temp_ptr);
                             if (strcmp(location,name)!=0) {
                                 fprintf(fout,"%s|%s\n",name,pos);
                             }

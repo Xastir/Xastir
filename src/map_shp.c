@@ -2313,12 +2313,18 @@ void draw_shapefile_map (Widget w,
 
                             // Take care to not insert spaces if
                             // some of the strings are empty.
-                            if (strlen(temp3) != 0) strncpy(a," ",2);
-                            else                    a[0] = '\0';
-                            if (strlen(temp4) != 0) strncpy(b," ",2);
-                            else                    b[0] = '\0';
-                            if (strlen(temp5) != 0) strncpy(c," ",2);
-                            else                    c[0] = '\0';
+                            if (strlen(temp3) != 0)
+                                xastir_snprintf(a,sizeof(a)," ");
+                            else
+                                a[0] = '\0';
+                            if (strlen(temp4) != 0)
+                                xastir_snprintf(b,sizeof(b)," ");
+                            else
+                                b[0] = '\0';
+                            if (strlen(temp5) != 0)
+                                xastir_snprintf(c,sizeof(c)," ");
+                            else
+                                c[0] = '\0';
 
                             xastir_snprintf(temp2,sizeof(temp2),"%s%s%s%s%s%s%s",
                                 temp3,a,temp4,b,temp5,c,temp6);

@@ -123,10 +123,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL)   // No comma found
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(sampletime, temp_ptr, 6);
-    sampletime[6] = '\0';
+    xastir_snprintf(sampletime,
+        sizeof(sampletime),
+        "%s",
+        temp_ptr);
 
     temp_ptr=strtok(NULL,",");  // get fix status
 
@@ -138,9 +138,10 @@ int decode_gps_rmc( char *data,
     else
         *status = 0;
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,2);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[2] = '\0';
 
     if (temp_data[0] != 'A')  // V is a warning but we can get good data still ?
@@ -151,9 +152,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL || temp_ptr[4] != '.')
         return(0);  // Doesn't look like latitude
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(lat_pos_y,temp_ptr,9);
+    xastir_snprintf(lat_pos_y,
+        sizeof(lat_pos_y),
+        "%s",
+        temp_ptr);
     lat_pos_y[9] = '\0';
 
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
@@ -167,9 +169,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL)   // No comma found
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,1);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[1] = '\0';
 
     lat_ns=toupper((int)temp_data[0]);
@@ -182,9 +185,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL || temp_ptr[5] != '.')
         return(0);  // Doesn't look like longitude
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(long_pos_x,temp_ptr,10);
+    xastir_snprintf(long_pos_x,
+        sizeof(long_pos_x),
+        "%s",
+        temp_ptr);
     long_pos_x[10] = '\0';
 
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
@@ -198,9 +202,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL)   // No comma found
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,1);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[1] = '\0';
 
     long_ew=toupper((int)temp_data[0]);
@@ -213,9 +218,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == 0)  // No comma found
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(speed,temp_ptr,9);
+    xastir_snprintf(speed,
+        sizeof(speed),
+        "%s",
+        temp_ptr);
     speed[9] = '\0';
 
     speed_unit='K';
@@ -224,9 +230,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL)   // No comma found
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(course,temp_ptr,7);
+    xastir_snprintf(course,
+        sizeof(course),
+        "%s",
+        temp_ptr);
     course[7] = '\0';
 
     temp_ptr=strtok(NULL,",");   // get date of fix
@@ -234,8 +241,10 @@ int decode_gps_rmc( char *data,
     if (temp_ptr == NULL)   // No comma found
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We null-terminate it ourselves to make sure it's terminated.
-    strncpy(sampledate, temp_ptr, 6);
+    xastir_snprintf(sampledate,
+        sizeof(sampledate),
+        "%s",
+        temp_ptr);
     sampledate[6] = '\0';
 
 
@@ -318,9 +327,10 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(lat_pos_y,temp_ptr,9);
+    xastir_snprintf(lat_pos_y,
+        sizeof(lat_pos_y),
+        "%s",
+        temp_ptr);
     lat_pos_y[9] = '\0';
 
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
@@ -334,9 +344,10 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,1);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[1] = '\0';
 
     lat_ns=toupper((int)temp_data[0]);
@@ -349,9 +360,10 @@ int decode_gps_gga( char *data,
     if(temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(long_pos_x,temp_ptr,10);
+    xastir_snprintf(long_pos_x,
+        sizeof(long_pos_x),
+        "%s",
+        temp_ptr);
     long_pos_x[10] = '\0';
 
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
@@ -365,9 +377,10 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,1);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[1] = '\0';
 
     long_ew=toupper((int)temp_data[0]);
@@ -380,9 +393,10 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,2);
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[1] = '\0';
 
     if(temp_data[0] != '1' && temp_data[0] != '2' )
@@ -396,9 +410,10 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(sats_visible,temp_ptr,3);
+    xastir_snprintf(sats_visible,
+        sizeof(sats_visible),
+        "%s",
+        temp_ptr);
     sats_visible[2] = '\0';
 
     temp_ptr=strtok(NULL,",");      // get hoz dil
@@ -411,7 +426,11 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    strncpy(altitude,temp_ptr,7);   // Get altitude
+    // Get altitude
+    xastir_snprintf(altitude,
+        sizeof(altitude),
+        "%s",
+        temp_ptr);
     altitude[7] = '\0';
 
     temp_ptr=strtok(NULL,",");      // get UNIT
@@ -419,9 +438,11 @@ int decode_gps_gga( char *data,
     if (temp_ptr == NULL)
         return(0);
 
-    // strncpy is ok here as long as nulls not in data.  We
-    // null-terminate it ourselves to make sure it's terminated.
-    strncpy(temp_data,temp_ptr,1);  // get UNIT
+    // get UNIT
+    xastir_snprintf(temp_data,
+        sizeof(temp_data),
+        "%s",
+        temp_ptr);
     temp_data[1] = '\0';
 
     alt_unit=temp_data[0];
@@ -459,12 +480,10 @@ int gps_data_find(char *gps_line_data, int port) {
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
 
-            // Make sure not to overrun our local variable.
-            // strncpy is ok here as long as nulls not in data.  We
-            // null-terminate it ourselves to make sure it's
-            // terminated.
-            strncpy(filtered_data, gps_line_data, MAX_LINE_SIZE);
-            filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                gps_line_data);
             
             makePrintable(filtered_data);
             fprintf(stderr,"Got RMC %s\n", filtered_data);
@@ -475,10 +494,10 @@ int gps_data_find(char *gps_line_data, int port) {
             statusline(langcode("BBARSTA015"),0);
         }
 
-        // strncpy is ok here as long as nulls not in data.  We
-        // null-terminate it ourselves to make sure it's terminated.
-        strncpy(gps_gprmc, gps_line_data, MAX_GPS_STRING);
-        gps_gprmc[MAX_GPS_STRING] = '\0';   // Terminate it
+        xastir_snprintf(gps_gprmc,
+            sizeof(gps_gprmc),
+            "%s",
+            gps_line_data);
 
         xastir_snprintf(temp_str, sizeof(temp_str), "%s", gps_gprmc);
         // decode_gps_rmc is destructive to its first parameter
@@ -539,11 +558,10 @@ DISABLE_SETUID_PRIVILEGE;
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
 
-            // strncpy is ok here as long as nulls not in data.  We
-            // null-terminate it ourselves to make sure it's
-            // terminated.
-            strncpy(filtered_data, gps_line_data, MAX_LINE_SIZE);
-            filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                gps_line_data);
 
             makePrintable(filtered_data);
             fprintf(stderr,"Got GGA %s\n", filtered_data);
@@ -554,10 +572,10 @@ DISABLE_SETUID_PRIVILEGE;
             statusline(langcode("BBARSTA016"),0);
         }
 
-        // strncpy is ok here as long as nulls not in data.  We
-        // null-terminate it ourselves to make sure it's terminated.
-        strncpy(gps_gpgga, gps_line_data, MAX_GPS_STRING);
-        gps_gpgga[MAX_GPS_STRING] = '\0';   // Terminate it
+        xastir_snprintf(gps_gpgga,
+            sizeof(gps_gpgga),
+            "%s",
+            gps_line_data);
 
         xastir_snprintf(temp_str, sizeof(temp_str), "%s", gps_gpgga);
 

@@ -251,7 +251,7 @@ static char *my_strtok(char *str1, char *str2) {
 
 float XRotVersion(char *str, int n) {
     if(str!=NULL)
-        strncpy(str, XV_COPYRIGHT, n);
+        xastir_snprintf(str, n, "%s", XV_COPYRIGHT);
     return XV_VERSION;
 }
 

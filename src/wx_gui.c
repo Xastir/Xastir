@@ -268,7 +268,8 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
     // Grab the first 13 characters.  Remove spaces.  This is our handle
     // into the weather server for the full weather alert text.
 
-    strncpy(handle,choice,sizeof(handle));
+    xastir_snprintf(handle, sizeof(handle), "%s", choice);
+
     handle[13] = '\0';  // Terminate the string
     // Remove spaces
     ptr = handle;
