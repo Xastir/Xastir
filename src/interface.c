@@ -2299,7 +2299,7 @@ void port_read(int port) {
                                 // Compute length of string in
                                 // circular queue
 
-printf("%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
+                                //printf("%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
 
                                 // KISS TNC sends binary data
                                 if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
