@@ -787,7 +787,16 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
             // Note that the packet length often increases here in
             // decode_ax25_header, as we add '*' characters and such
             // to the header as it's decoded.
+
+            // Throw a terminator on the end to start with.  We
+            // probably don't have a string terminator by this
+            // point, as AGWPE raw packets are binary packets.
+            // Adding a string terminator here allows us to process
+            // most of it as a regular string, after we process the
+            // header portion the entire thing is a regular string.
             //
+            input_string[data_length+36] = '\0';
+
             if ( !decode_ax25_header( (char *)&input_string[37], data_length ) ) {
 //                int zz;
 
