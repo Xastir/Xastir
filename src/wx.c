@@ -77,10 +77,10 @@ char raw_wx_string[800];
 
 /* rain totals */
 float rain_minute[60];              // Total rain for each min. of last hour, hundredths of an inch
-float rain_minute_total = 0.0;     // Total for last hour, hundredths of an inch
+float rain_minute_total = 0.0;      // Total for last hour, hundredths of an inch
 int rain_minute_last_write = -1;    // Write pointer for rain_minute[] array, set to an invalid number
-float rain_00 = 0.0;               // hundredths of an inch
-float rain_24 = 0.0;               // hundredths of an inch
+float rain_00 = 0.0;                // hundredths of an inch
+float rain_24 = 0.0;                // hundredths of an inch
 float rain_base[24];                // hundredths of an inch
 int rain_check = 0;                 // Flag for re-checking rain_total each hour
 
@@ -412,13 +412,13 @@ void cycle_weather(void) {
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0) {
                 /* get last speed */
-                last_speed = atof(weather->wx_gust);
+                last_speed = (float)atof(weather->wx_gust);
                 last_speed_time = weather->wx_speed_sec_time;
             } else
                 last_speed = 0.0;
 
             /* wind speed */
-            computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+            computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
             weather->wx_speed_sec_time = sec_now();
             if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
                 xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
@@ -516,7 +516,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     /* get last gust speed */
     if (strlen(weather->wx_gust) > 0 && !from) {
         /* get last speed */
-        last_speed = atof(weather->wx_gust);
+        last_speed = (float)atof(weather->wx_gust);
         last_speed_time = weather->wx_speed_sec_time;
     }
 
@@ -533,7 +533,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
             weather->wx_speed_sec_time = sec_now();
         } else {
             /* local station */
-            computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+            computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
             weather->wx_speed_sec_time = sec_now();
             xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
                     (int)(0.5 + computed_gust)); // Cheater's way of rounding
@@ -655,7 +655,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     /* get last gust speed */
     if (strlen(weather->wx_gust) > 0 && !from) {
         /* get last speed */
-        last_speed = atof(weather->wx_gust);
+        last_speed = (float)atof(weather->wx_gust);
         last_speed_time = weather->wx_speed_sec_time;
     }
 
@@ -677,7 +677,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
             if (len < 51) {
                 xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
                         (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+                computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
                 weather->wx_speed_sec_time = sec_now();
                 xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
                         (int)(0.5 + computed_gust));
@@ -775,7 +775,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
             weather->wx_speed_sec_time = sec_now();
         } else {
             /* local station */
-            computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+            computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
             weather->wx_speed_sec_time = sec_now();
             xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
                     (int)(0.5 + computed_gust));
@@ -831,7 +831,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     /* get last gust speed */
     if (strlen(weather->wx_gust) > 0 && !from) {
         /* get last speed */
-        last_speed = atof(weather->wx_gust);
+        last_speed = (float)atof(weather->wx_gust);
         last_speed_time = weather->wx_speed_sec_time;
     }
 
@@ -849,7 +849,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
         weather->wx_speed_sec_time = sec_now();
     } else {
         /* local station */
-        computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+        computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
         weather->wx_speed_sec_time = sec_now();
         xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
                 (int)(0.5 + computed_gust));
@@ -967,7 +967,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
                 /* get last speed */
-                last_speed=atof(weather->wx_gust);
+                last_speed=(float)atof(weather->wx_gust);
                 last_speed_time=weather->wx_speed_sec_time;
             }
 
@@ -987,7 +987,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 weather->wx_speed_sec_time = sec_now();
             } else {
                 /* local station */
-                computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+                computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
                 weather->wx_speed_sec_time = sec_now();
                 if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
                     xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
@@ -1058,7 +1058,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
                 /* get last speed */
-                last_speed=atof(weather->wx_gust);
+                last_speed=(float)atof(weather->wx_gust);
                 last_speed_time=weather->wx_speed_sec_time;
             }
 
@@ -1071,7 +1071,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_speed_sec_time = sec_now();
                 } else {
                     /* local station */
-                    computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+                    computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
                     weather->wx_speed_sec_time = sec_now();
                     if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
                         xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
@@ -1189,7 +1189,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
                 /* get last speed */
-                last_speed=atof(weather->wx_gust);
+                last_speed=(float)atof(weather->wx_gust);
                 last_speed_time=weather->wx_speed_sec_time;
             }
 
@@ -1207,7 +1207,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     if (len<56) {
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
                                 (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                        computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+                        computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
                         weather->wx_speed_sec_time = sec_now();
                         if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
                             xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
@@ -1324,7 +1324,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_speed_sec_time = sec_now();
                 } else {
                     /* local station */
-                    computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+                    computed_gust = compute_gust((float)atof(weather->wx_speed),last_speed,&last_speed_time);
                     weather->wx_speed_sec_time = sec_now();
                     if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
                         xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust),
@@ -1622,7 +1622,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%0.1f",
                                 ((data[17]&0x08) ? '-' : '+'),(data[17]&0x7),rswnc(data[16])/10.0);
                         /*printf("temp data: <%s> %d %d %d\n", temp_data1,((data[17]&0x08)==0x08),(data[17]&0x7),rswnc(data[16]));*/
-                        temp_temp = (atof(temp_data1)*1.8)+32;
+                        temp_temp = (float)((atof(temp_data1)*1.8)+32);
                         if ( (temp_temp >= -99.0) && (temp_temp < 200.0) ) {
                             xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
                                     (int)((atof(temp_data1)*1.8)+32));
@@ -1670,7 +1670,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         xastir_snprintf(temp_data1, sizeof(temp_data1), "%02d%02d",
                             rswnc(data[6]), rswnc(data[5]));
 
-                        temp_temp = atof(temp_data1) * 3.9370079;
+                        temp_temp = (float)(atof(temp_data1) * 3.9370079);
 
                         if ( (temp_temp >= 0) && (temp_temp < 51200.0) ) { // Between 0 and 512 inches
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
@@ -1699,7 +1699,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         /* get last gust speed */
                         if (strlen(weather->wx_gust) > 0) {
                             /* get last speed */
-                            last_speed=atof(weather->wx_gust);
+                            last_speed=(float)atof(weather->wx_gust);
                             last_speed_time=weather->wx_speed_sec_time;
                         }
                         /* all data in m/s */
@@ -1736,7 +1736,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d",
                             ((data[21]&0x20) ? '-' : '+'),rswnc(data[16]));
 
-                        temp_temp = (atof(temp_data1)*1.8)+32;
+                        temp_temp = (float)((atof(temp_data1)*1.8)+32);
                         if ( (temp_temp > -200.0) && (temp_temp < 200.0) )
                             xastir_snprintf(wx_wind_chill, sizeof(wx_wind_chill), "%03d",
                                 (int)((atof(temp_data1)*1.8)+32));
