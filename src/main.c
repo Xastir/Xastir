@@ -25455,7 +25455,7 @@ int main(int argc, char *argv[]) {
     // Note that this symlink will probably not fail.  It's easy to
     // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/help.dat")) == -1) {
-        fprintf(stderr,"Error creating database link\n");
+        fprintf(stderr,"Error creating database link for help.dat\n");
         exit(0);
     }
 
@@ -25465,7 +25465,7 @@ int main(int argc, char *argv[]) {
     // Note that this symlink will probably not fail.  It's easy to
     // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/language.sys")) == -1) {
-        fprintf(stderr,"Error creating database link\n");
+        fprintf(stderr,"Error creating database link for language.sys\n");
         exit(0);
     }
 
