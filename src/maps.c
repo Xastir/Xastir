@@ -1835,6 +1835,7 @@ void draw_shapefile_map (Widget w,
                         }
                     }
 
+// Set up width and zoom level for roads
                     if (road_flag) {
                         int lanes = 0;
 
@@ -1852,9 +1853,26 @@ void draw_shapefile_map (Widget w,
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
                                     break;
                                 case '3':   // A3? = Secondary road & connecting road, state highways
+                                    if (scale_y > 256)
+                                        skip_label++;
                                     lanes = 3;
                                     // Use the default color instead (black)
                                     //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
+                                    switch (temp[2]) {
+                                        case '1':
+                                        case '2':
+                                        case '3':
+                                        case '4':
+                                        case '5':
+                                        case '6':
+                                            break;
+                                        case '7':
+                                        case '8':
+                                        default:
+                                            if (scale_y > 128)
+                                                skip_label++;
+                                            break;
+                                    }
                                     break;
                                 case '4':   // A4? = Local, neighborhood & rural roads, city streets
                                     // Skip the road if we're above zoom 100
@@ -1903,6 +1921,8 @@ void draw_shapefile_map (Widget w,
                             (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
                         }
                     }
+
+// Set up width and zoom levels for water
                     else if (river_flag || lake_flag) {
                         int lanes = 0;
 
@@ -1917,6 +1937,8 @@ void draw_shapefile_map (Widget w,
                                     lanes = 0;
                                     break;
                                 case '1':
+                                    if (scale_y > 128)
+                                        skip_label++;
                                     switch (temp[2]) {
                                         case '0':
                                             if (scale_y > 16)
@@ -2237,6 +2259,8 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (lake_flag) {
+                        if (scale_y > 128)
+                            skip_label++;
                         if (mapshots_labels_flag && (fieldcount >= 4) )
                             temp = DBFReadStringAttribute( hDBF, structure, 3 );
                         else if (fieldcount >= 1)
@@ -2245,7 +2269,10 @@ void draw_shapefile_map (Widget w,
                             temp = NULL;
                     }
 
-                    if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
+                    if ( (temp != NULL)
+                            && (strlen(temp) != 0)
+                            && map_labels
+                            && !skip_label ) {
                         ok = 1;
 
                         // Convert to Xastir coordinates
