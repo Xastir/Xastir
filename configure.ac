@@ -176,8 +176,15 @@ AC_HEADER_TIME
 AC_TYPE_SIGNAL 
 AC_STRUCT_TIMEZONE
 
+#Some (Mac?) systems don't define this where it should be, so we kludge
 AC_CHECK_TYPES(socklen_t,,,[#include <sys/types.h>
 #include <sys/socket.h>])
+
+#Force this into config.h.in
+AH_BOTTOM([#ifndef HAVE_SOCKLEN_T
+#define socklen_t int
+#endif])
+
 
 # Check for tm_gmtoff in tm
 AC_CHECK_GMTOFF
@@ -512,10 +519,6 @@ AC_SUBST(X_CFLAGS)
 #AC_SUBST(X_PRE_LIBS) 
 #AC_SUBST(X_LIBS) 
 #AC_SUBST(X_EXTRA_LIBS) 
-
-AH_BOTTOM([#ifndef HAVE_SOCKLEN_T
-#define socklen_t int
-#endif])
 
 AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
