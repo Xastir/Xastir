@@ -620,6 +620,15 @@ int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing(tm) is disab
                                 // we'll beacon at the POSIT_slow rate (mph)
 int sb_high_speed_limit = 60;   // Speed above which we'll beacon at the
                                 // POSIT_fast rate (mph)
+Widget smart_beacon_dialog = (Widget)NULL;
+Widget sb_hi_rate_data = (Widget)NULL;
+Widget sb_hi_mph_data = (Widget)NULL;
+Widget sb_lo_rate_data = (Widget)NULL;
+Widget sb_lo_mph_data = (Widget)NULL;
+Widget sb_min_turn_data = (Widget)NULL;
+Widget sb_turn_slope_data = (Widget)NULL;
+Widget sb_wait_time_data = (Widget)NULL;
+
 
 
 time_t GPS_time;                /* gps time out */
@@ -757,6 +766,465 @@ int moving_object = 0;
 
 
 /////////////////////////////////////////////////////////////////////////
+
+
+
+// SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
+// objects & items, sb_POSIT_rate computed via SmartBeaconing(tm) will
+// be used for posits.
+//int smart_beaconing;            // Master enable/disable for SmartBeaconing(tm) mode
+//int sb_POSIT_rate = 30 * 60;    // Computed SmartBeaconing(tm) posit rate (secs)
+//int sb_last_heading = -1;       // Heading at time of last posit
+//int sb_current_heading = -1;    // Most recent heading parsed from GPS sentence
+//int sb_turn_min = 20;           // Min threshold for corner pegging (degrees)
+//int sb_turn_slope = 25;         // Threshold slope for corner pegging
+//int sb_turn_time = 5;           // Time between other beacon & turn beacon (secs)
+//int sb_posit_fast = 90;         // Fast beacon rate (secs)
+//int sb_posit_slow = 30;         // Slow beacon rate (mins)
+//int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing(tm) is disabled &
+//                                // we'll beacon at the POSIT_slow rate (mph)
+//int sb_high_speed_limit = 60;   // Speed above which we'll beacon at the
+//                                // POSIT_fast rate (mph)
+//
+//WE7U
+void Smart_Beacon_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    smart_beacon_dialog = (Widget)NULL;
+}
+
+
+
+
+
+// Still need to do some bounds checking on the values here.
+//
+// If the user enters 0's or non-numeric data, this function sets the
+// values to reasonable defaults.
+//
+// Another thing that'd be good to do is to recalculate the next
+// beacon time if one of the posit rates is shortened.  Otherwise we
+// might be waiting a while to get into the "right rythm".
+//
+void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    // Snag the XmTextString data and write it into the variables
+    if (smart_beacon_dialog != NULL) {
+        char *str_ptr1;
+        int i;
+
+        str_ptr1 = XmTextGetString(sb_hi_rate_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 90;
+        sb_posit_fast = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        str_ptr1 = XmTextGetString(sb_hi_mph_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 60;
+        sb_high_speed_limit = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        str_ptr1 = XmTextGetString(sb_lo_rate_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 30;
+        sb_posit_slow = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        str_ptr1 = XmTextGetString(sb_lo_mph_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 2;
+        sb_low_speed_limit = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        str_ptr1 = XmTextGetString(sb_min_turn_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 20;
+        sb_turn_min = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        str_ptr1 = XmTextGetString(sb_turn_slope_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 25;
+        sb_turn_slope = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        str_ptr1 = XmTextGetString(sb_wait_time_data);
+        i = atoi(str_ptr1);
+        if (i == 0)
+            i = 5;
+        sb_turn_time = i;
+        // Free the space.
+        XtFree(str_ptr1);
+ 
+        Smart_Beacon_destroy_shell(widget,clientData,callData);
+    }
+}
+
+
+
+
+
+// Need to put in langcode() calls to support other languages.
+// Strings are currently hard-coded.
+void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
+    static Widget  pane, form, label1, label2, label3,
+        label4, label5, label6, label7,
+        button_ok, button_cancel;
+
+    Atom delw;
+    Arg args[2];                    // Arg List
+    register unsigned int n = 0;    // Arg Count
+    char temp_string[10];
+
+    // Destroy the dialog if it exists.  This is to make sure the
+    // title is correct based on the last dialog that called us.
+    if (smart_beacon_dialog) {
+        Smart_Beacon_destroy_shell( w, smart_beacon_dialog, callData);
+    }
+ 
+    if (!smart_beacon_dialog) {
+
+//        smart_beacon_dialog = XtVaCreatePopupShell(langcode(""),xmDialogShellWidgetClass,Global.top,
+        smart_beacon_dialog = XtVaCreatePopupShell("Smart Beaconing",xmDialogShellWidgetClass,Global.top,
+                                    XmNdeleteResponse,XmDESTROY,
+                                    XmNdefaultPosition, FALSE,
+                                    NULL);
+
+        pane = XtVaCreateWidget("Smart_Beacon pane",xmPanedWindowWidgetClass, smart_beacon_dialog,
+                            XmNbackground, colors[0xff],
+                            NULL);
+
+        form =  XtVaCreateWidget("Smart_Beacon form",xmFormWidgetClass, pane,
+                                XmNfractionBase, 2,
+                                XmNbackground, colors[0xff],
+                                XmNautoUnmanage, FALSE,
+                                XmNshadowThickness, 1,
+                                NULL);
+
+//        label1 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label1 = XtVaCreateManagedWidget("High Rate (secs):", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_FORM,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_hi_rate_data = XtVaCreateManagedWidget("Smart_Beacon hi_rate_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 5,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_FORM,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label1,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+//        label2 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label2 = XtVaCreateManagedWidget("High Speed (mph):", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label1,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_hi_mph_data = XtVaCreateManagedWidget("Smart_Beacon hi_mph_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 3,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, label1,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label2,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+//        label3 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label3 = XtVaCreateManagedWidget("Low Rate (mins):", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label2,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_lo_rate_data = XtVaCreateManagedWidget("Smart_Beacon lo_rate_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 3,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, label2,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label3,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+//        label4 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label4 = XtVaCreateManagedWidget("Low Speed (mph):", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label3,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_lo_mph_data = XtVaCreateManagedWidget("Smart_Beacon lo_mph_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 3,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, label3,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label4,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+//        label5 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label5 = XtVaCreateManagedWidget("Minimum Turn (Deg):", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label4,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_min_turn_data = XtVaCreateManagedWidget("Smart_Beacon min_turn_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 3,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, label4,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label5,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+//        label6 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label6 = XtVaCreateManagedWidget("Turn Slope:", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label5,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_turn_slope_data = XtVaCreateManagedWidget("Smart_Beacon turn_slope_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 5,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, label5,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label6,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+//        label7 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
+        label7 = XtVaCreateManagedWidget("Wait Time (secs):", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label6,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        sb_wait_time_data = XtVaCreateManagedWidget("Smart_Beacon wait_time_data", xmTextWidgetClass, form,
+                                XmNeditable,   TRUE,
+                                XmNcursorPositionVisible, TRUE,
+                                XmNsensitive, TRUE,
+                                XmNshadowThickness,    1,
+                                XmNcolumns, 6,
+                                XmNwidth, ((6*7)+2),
+                                XmNmaxLength, 3,
+                                XmNbackground, colors[0x0f],
+                                XmNtopOffset, 5,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, label6,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, label7,
+                                XmNrightAttachment,XmATTACH_FORM,
+                                XmNrightOffset, 10,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+        /*set args for color */
+        n=0;
+        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, sb_wait_time_data,
+                                        XmNtopOffset, 5,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 5,
+                                        XmNleftAttachment, XmATTACH_POSITION,
+                                        XmNleftPosition, 0,
+                                        XmNrightAttachment, XmATTACH_POSITION,
+                                        XmNrightPosition, 1,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+        XtAddCallback(button_ok, XmNactivateCallback, Smart_Beacon_change_data, smart_beacon_dialog);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, sb_wait_time_data,
+                                        XmNtopOffset, 5,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 5,
+                                        XmNleftAttachment, XmATTACH_POSITION,
+                                        XmNleftPosition, 1,
+                                        XmNrightAttachment, XmATTACH_POSITION,
+                                        XmNrightPosition, 2,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+        XtAddCallback(button_cancel, XmNactivateCallback, Smart_Beacon_destroy_shell, smart_beacon_dialog);
+
+        pos_dialog(smart_beacon_dialog);
+
+        delw = XmInternAtom(XtDisplay(smart_beacon_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(smart_beacon_dialog, delw, Smart_Beacon_destroy_shell, (XtPointer)smart_beacon_dialog);
+
+        XtManageChild(form);
+        XtManageChild(pane);
+        XtPopup(smart_beacon_dialog,XtGrabNone);
+        fix_dialog_size(smart_beacon_dialog);
+
+        // Move focus to the Close button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(smart_beacon_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    } else {
+        (void)XRaiseWindow(XtDisplay(smart_beacon_dialog), XtWindow(smart_beacon_dialog));
+    }
+
+    // Fill in the current values
+    if (smart_beacon_dialog != NULL) {
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_fast);
+        XmTextSetString(sb_hi_rate_data, temp_string);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_high_speed_limit);
+        XmTextSetString(sb_hi_mph_data, temp_string);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_slow);
+        XmTextSetString(sb_lo_rate_data, temp_string);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_low_speed_limit);
+        XmTextSetString(sb_lo_mph_data, temp_string);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_turn_min);
+        XmTextSetString(sb_min_turn_data, temp_string);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_turn_slope);
+        XmTextSetString(sb_turn_slope_data, temp_string);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_turn_time);
+        XmTextSetString(sb_wait_time_data, temp_string);
+    }
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
 
 
 
@@ -2716,7 +3184,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        transmit_disable_toggle,
        net_logging, igate_logging, wx_logging, enable_snapshots, print_button,
        test_button, debug_level_button, aa_button, speech_button,
-       auto_msg_set_button,
+       smart_beacon_button, auto_msg_set_button,
        message_button, send_message_to_button, open_messages_group_button, clear_messages_button,
        General_q_button, IGate_q_button, WX_q_button,
 
@@ -2970,6 +3438,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     speech_button = XtVaCreateManagedWidget(langcode("PULDNCF007"),xmPushButtonGadgetClass,configpane,
                     XmNmnemonic,langcode_hotkey("PULDNCF007"),XmNbackground,colors[0xff],NULL);
 
+    smart_beacon_button = XtVaCreateManagedWidget("Smart Beaconing",xmPushButtonGadgetClass,configpane,
+                    XmNmnemonic,"Smart Beaconing",XmNbackground,colors[0xff],NULL);
 
 
     units_choice_button = XtVaCreateManagedWidget(langcode("PULDNUT001"),xmToggleButtonGadgetClass,
@@ -3585,6 +4055,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(coordinates_button,   XmNactivateCallback,Configure_coordinates,NULL);
     XtAddCallback(aa_button,            XmNactivateCallback,Configure_audio_alarms,NULL);
     XtAddCallback(speech_button,        XmNactivateCallback,Configure_speech,NULL);
+    XtAddCallback(smart_beacon_button,  XmNactivateCallback,Smart_Beacon,NULL);
     XtAddCallback(station_button,       XmNactivateCallback,Configure_station,NULL);
 
     XtAddCallback(help_about,           XmNactivateCallback,Help_About,NULL);
