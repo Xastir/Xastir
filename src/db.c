@@ -2042,7 +2042,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(dr_speed,"");
     strcpy(temp_course,"");
 
-    if (Display_.speed) {
+    if (Display_.speed || Display_.dr_data) {
         // don't display 'fixed' stations speed and course.
         // Check whether we have speed in the current data and it's
         // >= 0.
@@ -2079,7 +2079,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
     }
 
-    if (Display_.course) {
+    if (Display_.course || Display_.dr_data) {
         // Check whether we have course in the current data
         if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
             course_ok++;
@@ -2100,13 +2100,13 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
     }
 
-    // Save the speed into the dr string, in case we need it later
+    // Save the speed into the dr string for later
     strcpy(dr_speed,temp_speed);
 
-    if (!speed_ok)
+    if (!speed_ok  || !Display_.speed)
         strcpy(temp_speed,"");
 
-    if (!course_ok)
+    if (!course_ok || !Display_.course)
         strcpy(temp_course,"");
 
     // Set up distance and bearing strings for display
@@ -2267,8 +2267,8 @@ _do_the_drawing:
         && ( (p_station->flag & ST_MOVING)
 //        && (p_station->newest_trackpoint!=0
              && course_ok
-             && atof(dr_speed)>0
-             && speed_ok) ) {
+             && speed_ok
+             && atof(dr_speed) > 0) ) {
         if ( (sec_now()-temp_sec_heard) < sec_old ) {
             draw_deadreckoning_features(p_station,
                                         drawing_target,
