@@ -298,7 +298,7 @@ void draw_toporama_map (Widget w,
         my_screen_height,
         my_zoom);
 
-fprintf(stderr,"%s\n", fileimg);
+//fprintf(stderr,"%s\n", fileimg);
 
     // Create a local filename that we'll save to.
     xastir_snprintf(local_filename,
