@@ -840,7 +840,15 @@ void msg_record_ack(char *to_call_sign,
     }
 
     if (do_update) {
-        update_messages(1); // Force an update
+
+//        update_messages(1); // Force an update
+
+        // Call check_popup_messages() here in order to pop up any
+        // closed Send Message dialogs.  For first ack's or
+        // CANCELLED messages it is less important, but for TIMEOUT
+        // messages it is very important.a
+        //
+        (void)check_popup_window(m_fill.call_sign, 2);  // Calls update_messages()
     }
 }
 
@@ -976,7 +984,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (strcmp(m_fill.message_line,data) != 0) {
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
-            //fprintf(stderr,"Message is different this time: Setting last_ack_sent to 0\n");
+//fprintf(stderr,"Message is different this time: Setting last_ack_sent to 0\n");
  
             if (type != MESSAGE_BULLETIN) { // Not a bulletin
                 do_msg_update++;
@@ -992,7 +1000,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (m_fill.sec_heard < (sec_now() - (8 * 60 * 60) )) {
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
-            //fprintf(stderr,"Found >8hrs old: Setting last_ack_sent to 0\n");
+//fprintf(stderr,"Found >8hrs old: Setting last_ack_sent to 0\n");
 
             if (type != MESSAGE_BULLETIN) { // Not a bulletin
                 do_msg_update++;
@@ -1014,6 +1022,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         //fprintf(stderr,"New msg: Setting last_ack_sent to 0\n");
 
         if (type != MESSAGE_BULLETIN) { // Not a bulletin
+//fprintf(stderr,"Found new message\n");
             do_msg_update++;    // Always do an update to the
                                 // message window for new messages
         }
@@ -1214,6 +1223,8 @@ void update_messages(int force) {
 
     if ( message_update_time() || force) {
 
+//fprintf(stderr,"update_messages()\n");
+
         //fprintf(stderr,"Um %d\n",(int)sec_now() );
 
         /* go through all mw_p's! */
@@ -1227,6 +1238,8 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
             if (mw[mw_p].send_message_dialog!=NULL/* && mw[mw_p].message_group==1*/) {
 
 //fprintf(stderr,"\n");
+
+//fprintf(stderr,"found send_message_dialog\n");
 
                 // Clear the text from message window
                 XmTextReplace(mw[mw_p].send_message_text,
@@ -13263,11 +13276,21 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // the alerts or pop up the Send Message dialog again.  If
         // last_ack_sent == (time_t)0, then it is a new message.
         //
-        if (last_ack_sent == (time_t)0) {   // New message
+//        if (last_ack_sent == (time_t)0) {   // New message
+        if (record == -1l) { // Msg we've never received before
 
             new_message_data += 1;
+
+            // Note that the check_popup_window() function will
+            // re-create a Send Message dialog if one doesn't exist
+            // for this QSO.  Only call it for the first message
+            // line or the first ack, not for any repeats.
+            //
+//fprintf(stderr,"***check_popup_window 1\n");
             (void)check_popup_window(call, 2);  // Calls update_messages()
+
             //update_messages(1); // Force an update
+
             if (sound_play_new_message)
                 play_sound(sound_command,sound_new_message);
 
@@ -13396,15 +13419,24 @@ else {
         fprintf(stderr,"6b\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber
-        long dummy;
+        long record_out;
 
         if (debug_level & 2) fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
-        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&dummy);
+        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record_out);
         new_message_data += look_for_open_group_data(addr);
-        if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
-                || check_popup_window(call, 0) != -1
-                || check_popup_window(addr, 1) != -1) {
-            //update_messages(1); // Force an update
+
+        // Note that the check_popup_window() function will
+        // re-create a Send Message dialog if one doesn't exist for
+        // this QSO.  Only call it for the first message line or the
+        // first ack, not for any repeats.
+        //
+        if (record_out == -1l) { // Msg we've never received before
+//fprintf(stderr,"***check_popup_window 2\n");
+            if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
+                    || check_popup_window(call, 0) != -1
+                    || check_popup_window(addr, 1) != -1) {
+                //update_messages(1); // Force an update
+            }
         }
 
         /* Now if I have Igate on and I allow to retransmit station data           */
@@ -13457,15 +13489,24 @@ else {
     // be messages between other people (much more common).
     //--------------------------------------------------------------------------
     if (!done) {                                   // message without line number
-        long dummy;
+        long record_out;
 
         if (debug_level & 4)
             fprintf(stderr,"found Msg: |%s| |%s|\n",addr,message);
 
-        (void)msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from,&dummy);
+        (void)msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from,&record_out);
         new_message_data++;      // ??????
-        if (check_popup_window(addr, 1) != -1) {
-            //update_messages(1); // Force an update
+
+        // Note that the check_popup_window() function will
+        // re-create a Send Message dialog if one doesn't exist for
+        // this QSO.  Only call it for the first message line or the
+        // first ack, not for any repeats.
+        //
+        if (record_out == -1l) { // Msg we've never received before
+//fprintf(stderr,"***check_popup_window 3\n");
+            if (check_popup_window(addr, 1) != -1) {
+                //update_messages(1); // Force an update
+            }
         }
 
         // Could be response to a query.  Popup a messsage.
@@ -13546,8 +13587,18 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 
         last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record);
         new_message_data += 1;
-        (void)check_popup_window(call, 2);
-        //update_messages(1); // Force an update
+
+        // Note that the check_popup_window() function will
+        // re-create a Send Message dialog if one doesn't exist for
+        // this QSO.  Only call it for the first message line or the
+        // first ack, not for any repeats.
+        //
+        if (record == -1l) { // Msg we've never received before
+//fprintf(stderr,"***check_popup_window 4\n");
+            (void)check_popup_window(call, 2);
+            //update_messages(1); // Force an update
+        }
+
         if (sound_play_new_message)
             play_sound(sound_command,sound_new_message);
 
