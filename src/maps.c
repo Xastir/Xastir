@@ -1209,6 +1209,7 @@ void draw_shapefile_map (Widget w,
     int             ok_to_draw = 0;
     int             high_water_mark_i = 0;
     int             high_water_mark_index = 0;
+    char            quad_label[100];
 
     typedef struct _label_string {
         char   label[50];
@@ -2834,10 +2835,23 @@ void draw_shapefile_map (Widget w,
                     }
 
                     if (quad_overlay_flag) {
-                        if (fieldcount >= 1)
-                            temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME of quad
-                        else
-                            temp = NULL;
+                        if (fieldcount >= 5) {
+                            // Use just the last two characters of
+                            // the quad index.  "44072-A3" converts
+                            // to "A3"
+                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
+                            xastir_snprintf(quad_label,
+                                sizeof(quad_label),
+                                "%s ",
+                                &temp[strlen(temp) - 2]);
+
+                            // Append the name of the quad
+                            temp = DBFReadStringAttribute( hDBF, structure, 0 );
+                            strcat(quad_label,temp);
+                        }
+                        else {
+                            quad_label[0] = '\0';
+                        }
                     }
 
                     if ( (temp != NULL)
@@ -2874,13 +2888,6 @@ void draw_shapefile_map (Widget w,
                                 &my_lat,
                                 (float)lon_f,
                                 (float)lat_f);
-
-                            // Snag label from DBF file
-                            if (fieldcount >= 1)
-                                temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME of quad
-                            else
-                                temp = NULL;
-
                         }
                         else {  // Not quad overlay, use vertices
                             temp_ok = convert_to_xastir_coordinates(&my_long,
@@ -2913,10 +2920,23 @@ void draw_shapefile_map (Widget w,
 
                             if (ok == 1 && ok_to_draw) {
                                 if (quad_overlay_flag) {
-                                    draw_nice_string(w, pixmap, 0, x+2, y-1, (char*)temp, 0xf, 0x10, strlen(temp));
+                                    draw_nice_string(w,
+                                        pixmap,
+                                        0,
+                                        x+2,
+                                        y-1,
+                                        (char*)quad_label,
+                                        0xf,
+                                        0x10,
+                                        strlen(quad_label));
                                 }
                                 else {
-                                    (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                    (void)draw_label_text ( w,
+                                        x,
+                                        y,
+                                        strlen(temp),
+                                        colors[0x08],
+                                        (char *)temp);
                                 }
                             }
                         }
