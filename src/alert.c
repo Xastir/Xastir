@@ -47,7 +47,9 @@
 // Global alert_tag string contains three characters for each alert.
 // These contain the first two characters of the title, and then 0
 // or 1 for the source of the alert (DATA_VIA_TNC or
-// DATA_VIA_LOCAL).
+// DATA_VIA_LOCAL).  This string was probably initially added so
+// that we would know which subdirectory to look for the maps in, as
+// they use two-character abbreviations by state.
 //
 
 
