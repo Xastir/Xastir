@@ -1658,7 +1658,7 @@ void display_file(Widget w) {
                         }
                     }
                     else if (debug_level & 256) {
-                        printf("Station trails %d, tarck_data %x\n",
+                        printf("Station trails %d, track_data %x\n",
                             station_trails, (int)p_station->track_data);
                     }
                     display_station(w,p_station,0);
