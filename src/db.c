@@ -221,18 +221,8 @@ int is_my_call(char *call, int exact) {
     if (exact) {
         // We're looking for an exact match
         ok = (int)( !strcmp(call,my_callsign) );
-        if (ok) {
-            // Ok so far.  Now check that the length of each is the
-            // same.
-            if (strlen(call) != strlen(my_callsign)) {
-                ok = 0; // Not the same!
-            }
-            else {
-//fprintf(stderr,"My exact call found: %s\n",call);
-            }
-        }
+        //fprintf(stderr,"My exact call found: %s\n",call);
     }
-
     else {
         // We're looking for a similar match.  Compare only up to
         // the '-' in each (if present).
