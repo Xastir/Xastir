@@ -1726,32 +1726,182 @@ int net_detach(int port) {
 
 
 
+// This routine changes callsign chars to proper uppercase chars or
+// numerals, fixes the callsign to six bytes, shifts the letters left by
+// one bit, and puts the SSID number into the proper bits in the seventh
+// byte.  The callsign as processed will be nearly ready for inclusion
+// in an AX.25 header.
 //
-void send_ax25_frame(int port, char *data) {
+void fix_up_callsign(char *data) {
+    unsigned char new_call[8] = "       ";  // Start with seven spaces
+    int ssid = 0;
+    int i;
+    int j = 0;
 
-// Not implemented yet.  Lot's of bit-twiddling to do.
-printf("KISS String:%s\n",data);
+
+    for (i = 0; i < strlen(data); i++) {
+        toupper(data[i]);   // Change everything to upper-case
+
+        if (data[i] == '-') {   // Stop at '-'
+            break;
+        }
+        else {
+            new_call[j++] = data[i];
+        }
+    }
+    new_call[7] = '\0';
+    // Callsign should now be six chars, with space padding on the
+    // right.
+
+    //printf("new_call:(%s)\n",new_call);
+
+    // Handle SSID.  'i' should now be pointing at a dash or at the
+    // terminating zero character.
+    if ( (i < strlen(data)) && (data[i++] == '-') ) {   // We might have an SSID
+        if (data[i] != '\0')
+            ssid = data[i++] - 0x30;
+        if (data[i] != '\0')
+            ssid = (ssid * 10) + data[i] - 0x30;
+    }
+
+    //printf("SSID:%d\n",ssid);
+
+    if (ssid >= 0 && ssid <= 15) {
+        new_call[6] = ssid | 0x30;  // Set 2 reserved bits
+    }
+
+    // Shift each byte one bit to the left
+    for (i = 0; i < 7; i++)
+        new_call[i] = new_call[i] << 1;
+
+    strcpy(data,new_call);
+}
+
+
+
 
 
 // WE7U
-// Need code here to create the AX.25 frame and send it to the KISS
-// TNC.  These will all be UI frames.  Use my own callsign and the
-// path that was computed in output_my_aprs_data() and
-// output_my_data() functions.
+void send_ax25_frame(int port, char *source, char *destination, char *path, char *data) {
+    unsigned char temp_source[15];
+    unsigned char temp_dest[15];
+    unsigned char temp[15];
+    unsigned char control[2], pid[2];
+    unsigned char transmit_txt[MAX_LINE_SIZE*2];
+    unsigned char transmit_txt2[MAX_LINE_SIZE*2];
+    unsigned char c;
+    int i, j, erd, write_in_pos_hold;
 
-// Examples:
-//
-// KISS String:WE7U-15>APX112,RELAY,WIDE:=4756.10N/12216.20WxRNG0001Xastir
-// KISS String::N7TAP    :test2{3G}
-//
-// Obviously we need to work on output_my_data() a bit more so that
-// it sends proper strings to us for KISS TNC's.
+ 
+    //printf("KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
-    // Convert each callsign/SSID to proper format, including six
-    // chars for the callsign portion, left shift each char, set the
-    // higher/lower bits properly, format the SSID byte properly.
-    // Add the control and PID bytes.  Remove the ':' byte.  Call
-    // port_write_string() with the result.
+    transmit_txt[0] = '\0';
+
+    strcpy(temp_dest,destination);
+    fix_up_callsign(temp_dest);
+    strcat(transmit_txt,temp_dest);
+
+    strcpy(temp_source,source);
+    fix_up_callsign(temp_source);
+    strcat(transmit_txt,temp_source);
+
+    // Need to break up the path into individual callsigns and send them
+    // one by one to fix_up_callsign()
+
+    j = 0;
+    if ( (path != NULL) && (strlen(path) != 0) ) {
+        while (path[j] != '\0') {
+            i = 0;
+            while ( (path[j] != ',') && (path[j] != '\0') ) {
+                temp[i++] = path[j++];
+            }
+            temp[i] = '\0';
+
+            if (path[j] == ',') {   // Skip over comma
+                j++;
+            }
+
+            //printf("%s\n",temp);
+
+            fix_up_callsign(temp);
+            strcat(transmit_txt,temp);
+        }
+    }
+
+    // Set the end-of-address bit
+    transmit_txt[strlen(transmit_txt) - 1] |= 0x01;
+
+    // Add the Control byte
+    control[0] = 0x03;
+    control[1] = '\0';
+    strcat(transmit_txt,control);
+
+    // Add the PID byte
+    pid[0] = 0xf0; 
+    pid[1] = '\0';
+    strcat(transmit_txt,pid);
+
+    // Append the information
+    strcat(transmit_txt,data);
+
+    // Need to add the KISS framing characters and do the proper
+    // escapes.
+
+    j = 0;
+    transmit_txt2[j++] = KISS_FEND;
+
+    transmit_txt2[j++] = 0x00;  // Note, this is where different
+                                // interfaces would be specified.
+
+    for (i = 0; i < strlen(transmit_txt); i++) {
+        c = transmit_txt[i];
+        if (c == KISS_FEND) {
+            transmit_txt2[j++] = KISS_FESC;
+            transmit_txt2[j++] = KISS_TFEND;
+        }
+        else if (c == KISS_FESC) {
+            transmit_txt2[j++] = KISS_FESC;
+            transmit_txt2[j++] = KISS_TFESC;
+        }
+        else {
+            transmit_txt2[j++] = c;
+        }
+    }
+    transmit_txt2[j++] = KISS_FEND;
+    transmit_txt2[j++] = '\0';  // Terminate the string
+
+
+//-------------------------------------------------------------------
+// Had to snag code from port_write_string() below because our string
+// needs to have 0x00 chars in it.  port_write_string() can't handle
+// that case.
+//-------------------------------------------------------------------
+
+    erd = 0;
+
+    if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(1)" ) > 0)
+        printf("write_lock, Port = %d\n", port);
+
+    write_in_pos_hold = port_data[port].write_in_pos;
+
+    for (i = 0; i < j && !erd; i++) {
+        port_data[port].device_write_buffer[port_data[port].write_in_pos++] = transmit_txt2[i];
+        if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
+            port_data[port].write_in_pos = 0;
+
+        if (port_data[port].write_in_pos == port_data[port].write_out_pos) {
+            if (debug_level & 2)
+                printf("Port %d Buffer overrun\n",port);
+
+            /* clear this restore original write_in pos and dump this string */
+            port_data[port].write_in_pos = write_in_pos_hold;
+            port_data[port].errors++;
+            erd = 1;
+        }
+    }
+
+    if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
+        printf("write_lock, Port = %d\n", port);
 }
 
 
@@ -3220,7 +3370,7 @@ void output_my_aprs_data(void) {
     char header_txt_save[MAX_LINE_SIZE+5];
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
-    char kiss_tnc_txt[MAX_LINE_SIZE*2];
+    char path_txt[MAX_LINE_SIZE+5];
     char data_txt2[5];
     struct tm *day_time;
     time_t sec;
@@ -3320,6 +3470,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                             if (strlen(devices[port].unproto1) > 0) {
                                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto1);
                                 xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:", my_callsign, VERSIONFRM, devices[port].unproto1);
+                                xastir_snprintf(path_txt,sizeof(path_txt),"%s",devices[port].unproto1);
                                 done++;
                             }
                             else {
@@ -3331,6 +3482,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                             if (strlen(devices[port].unproto2) > 0) {
                                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto2);
                                 xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:",my_callsign,VERSIONFRM,devices[port].unproto2);
+                                xastir_snprintf(path_txt,sizeof(path_txt),"%s",devices[port].unproto2);
                                 done++;
                             }
                             else {
@@ -3342,6 +3494,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                             if (strlen(devices[port].unproto3) > 0) {
                                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto3);
                                 xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:", my_callsign, VERSIONFRM, devices[port].unproto3);
+                                xastir_snprintf(path_txt,sizeof(path_txt),"%s",devices[port].unproto3);
                                 done++;
                             }
                             else {
@@ -3355,6 +3508,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 if (!done) {   // We found no entries in the unproto fields for the interface.
                     xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, "RELAY,WIDE");
                     xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:", my_callsign, VERSIONFRM, "RELAY,WIDE");
+                    xastir_snprintf(path_txt,sizeof(path_txt),"RELAY,WIDE");
                 }
                 // Increment the path number for the next round of transmissions.
                 // This will round-robin the paths so that all entered paths get used.
@@ -3572,11 +3726,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
 // Note:  This one has callsign & destination in the string
 
-                    xastir_snprintf(kiss_tnc_txt, sizeof(kiss_tnc_txt),
-                        "%s%s",
-                        header_txt_save,
-                        data_txt);
-                    send_ax25_frame(port, kiss_tnc_txt);  // Transmit the posit
+                    // Transmit the posit out the KISS interface
+                    send_ax25_frame(port,
+                                    my_callsign,    // source
+                                    VERSIONFRM,     // destination
+                                    path_txt,       // path
+                                    data_txt);      // data
                 }
                 else {  // Not a Serial KISS TNC interface
                     port_write_string(port, data_txt);  // Transmit the posit
@@ -3648,7 +3803,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path, char *path) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
-    char kiss_tnc_txt[MAX_LINE_SIZE*2];
+    char path_txt[MAX_LINE_SIZE+5];
     char output_net[100];
     int ok, start, finish, i;
     /*char temp[150]; for port message -FG */
@@ -3754,6 +3909,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             VERSIONFRM,
                             devices[i].unproto_igate);
 
+                        xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "%s",
+                            devices[i].unproto_igate);
+
                         done++;
                     }
 
@@ -3774,6 +3934,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             "%s>%s,%s:",
                             my_callsign,
                             VERSIONFRM,
+                            path);
+
+                        xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "%s",
                             path);
 
                         done++;
@@ -3802,6 +3967,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                             VERSIONFRM,
                                             devices[i].unproto1);
 
+                                    xastir_snprintf(path_txt,
+                                        sizeof(path_txt),
+                                        "%s",
+                                        devices[i].unproto1);
+
                                     done++;
                                 }
                                 else {
@@ -3825,6 +3995,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                         "%s>%s,%s:",
                                         my_callsign,
                                         VERSIONFRM,
+                                        devices[i].unproto2);
+
+                                    xastir_snprintf(path_txt,
+                                        sizeof(path_txt),
+                                        "%s",
                                         devices[i].unproto2);
 
                                     done++;
@@ -3852,6 +4027,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                         VERSIONFRM,
                                         devices[i].unproto3);
 
+                                    xastir_snprintf(path_txt,
+                                        sizeof(path_txt),
+                                        "%s",
+                                        devices[i].unproto3);
+
                                     done++;
                                 }
                                 else {
@@ -3869,6 +4049,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                         xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%s>%s,%s:",
                                 my_callsign, VERSIONFRM, "RELAY,WIDE");
+
+                        xastir_snprintf(path_txt, sizeof(path_txt), "RELAY,WIDE");
                     }
                     // Increment the path number for the next round of transmissions.
                     // This will round-robin the paths so that all entered paths get used.
@@ -3921,11 +4103,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 // or create a new string just for KISS TNC's.
 
                 if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
-                    xastir_snprintf(kiss_tnc_txt, sizeof(kiss_tnc_txt),
-                        "%s%s",
-                        data_txt_save,
-                        data_txt);
-                    send_ax25_frame(i, kiss_tnc_txt);  // Transmit
+
+                    // Transmit
+                    send_ax25_frame(i,
+                                    my_callsign,    // source
+                                    VERSIONFRM,     // destination
+                                    path_txt,       // path
+                                    data_txt);      // data
                 }
                 else {  // Not a Serial KISS TNC interface
                     port_write_string(i, data_txt);  // Transmit
