@@ -50,6 +50,8 @@ while (1) {
     # Snag the input
     $_ = <>;
 
+    print "\n";
+
     # If the first item has 2 digits and one character and there are
     # three "words" in the input, we're starting with a UTM value.
     if (/^\d\d[a-zA-Z]\s+\w+\s+\w+\s*$/) {
