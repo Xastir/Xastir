@@ -502,6 +502,23 @@ WPUPCFI013|Broadcast messages via TNC when an I-Gate?||
 WPUPCFI014|Log I-Gate Transactions?||
 WPUPCFI015|Filter Parameters||
 #
+# PopUp "Configure Database"
+WPUPCFID01|Configure Database (TBD)||
+WPUPCFID02|Host ||
+WPUPCFID03|Port ||
+WPUPCFID04|(Secondary hosts)||
+WPUPCFID05|Host1||
+WPUPCFID06|Port1||
+WPUPCFID07|Host2||
+WPUPCFID08|Port2||
+WPUPCFID09|Pass-code||
+WPUPCFID10|(Leave Blank if None)||
+WPUPCFID11|Reconnect on NET failure?||
+WPUPCFID12|Run as an I-Gate?||
+WPUPCFID13|Broadcast messages via TNC when an I-Gate?||
+WPUPCFID14|Log I-Gate Transactions?||
+WPUPCFID15|Filter Parameters||
+#
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Configure Audio Alarms||
 WPUPCFA002|Audio Play Command||
@@ -697,6 +714,7 @@ IFDNL00007|Networked GPS (via gpsd)||
 IFDNL00008|Networked WX||
 IFDNL00009|Serial TNC w/GPS on AUX port||
 IFDNL00010|Serial KISS TNC||
+IFDNL00011|Networked Database (Not Implemented Yet)||
 #
 # Interface device info 
 IFDIN00000|%s %d %s on serial %s||

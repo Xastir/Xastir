@@ -502,6 +502,23 @@ WPUPCFI013|Diffusion de messages par le TNC lorsqu'en IGate?||
 WPUPCFI014|Archivage des transactions IGate?|||
 WPUPCFI015|Filter Parameters||
 #
+# PopUp "Configure Database"
+WPUPCFID01|Configurer Database (TBD)||
+WPUPCFID02|Hôte ||
+WPUPCFID03|Port ||
+WPUPCFID04|(Hôte secondaire)||
+WPUPCFID05|Hôte1||
+WPUPCFID06|Port1||
+WPUPCFID07|Hôte2||
+WPUPCFID08|Port2||
+WPUPCFID09|Code d'accès||
+WPUPCFID10|(Laisser vide si nul)||
+WPUPCFID11|Reconnexion sur erreur réseau?||
+WPUPCFID12|Fonction IGate?||
+WPUPCFID13|Diffusion de messages par le TNC lorsqu'en IGate?||
+WPUPCFID14|Archivage des transactions IGate?|||
+WPUPCFID15|Filter Parameters||
+#
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Configurer alarmes sonores||
 WPUPCFA002|Commande audio à utiliser||
@@ -696,6 +713,7 @@ IFDNL00007|GPS réseau (par gpsd)||
 IFDNL00008|Météo par réseau||
 IFDNL00009|TNC série + GPS sur câble AUX||
 IFDNL00010|Serial KISS TNC||
+IFDNL00011|Networked Database (Not Implemented Yet)||
 #
 # Interface device info 
 IFDIN00000|%s %d %s sur port série %s||

@@ -507,6 +507,23 @@ WPUPCFI013|Bij I-Gate Berichten verspreiden via TNC?||
 WPUPCFI014|I-Gate Transacties Loggen?|||
 WPUPCFI015|Filter Parameters||
 #
+# PopUp "Configure Database"
+WPUPCFID01|Database Instelling (TBD)||
+WPUPCFID02|Host ||
+WPUPCFID03|Poort ||
+WPUPCFID04|(Alternatieve hosts)||
+WPUPCFID05|Host1||
+WPUPCFID06|Poort1||
+WPUPCFID07|Host2||
+WPUPCFID08|Poort2||
+WPUPCFID09|Wachtwoord||
+WPUPCFID10|(Bij Geen Blanco Laten)||
+WPUPCFID11|Verbinding herstellen bij NET fout?||
+WPUPCFID12|Laten lopen als I-Gate?||
+WPUPCFID13|Bij I-Gate Berichten verspreiden via TNC?||
+WPUPCFID14|I-Gate Transacties Loggen?|||
+WPUPCFID15|Filter Parameters||
+#
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Audio Alarm Instellen||
 WPUPCFA002|Audio Afspeel Commando||
@@ -701,6 +718,7 @@ IFDNL00007|Netwerk GPS (via gpsd)||
 IFDNL00008|Netwerk WX||
 IFDNL00009|Serieele TNC met GPS op een AUX kabel||
 IFDNL00010|Serieele KISS TNC||
+IFDNL00011|Networked Database (Not Implemented Yet)||
 #
 # Interface device info
 IFDIN00000|%s %d %s via serieel device %s||

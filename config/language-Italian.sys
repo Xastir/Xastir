@@ -503,6 +503,23 @@ WPUPCFI013|Trasmetto i dati al TNC quando sono collegato ad Internet?||
 WPUPCFI014|Scrivo nel log le trasmissioni dalla Rete al TNC?|||
 WPUPCFI015|Filter Parameters||
 #
+#Configure Database
+WPUPCFID01|Configura Database (TBD)||
+WPUPCFID02|Host ||
+WPUPCFID03|Porta ||
+WPUPCFID04|(host secondari)||
+WPUPCFID05|Host1||
+WPUPCFID06|Porta 1||
+WPUPCFID07|Host2||
+WPUPCFID08|Porta 2||
+WPUPCFID09|codice||
+WPUPCFID10|(Lascia vuoto se non necessario)||
+WPUPCFID11|Riconnettersi in caso di sconnessione?||
+WPUPCFID12|Funzionare da Gateway?||
+WPUPCFID13|Trasmetto i dati al TNC quando sono collegato ad Internet?||
+WPUPCFID14|Scrivo nel log le trasmissioni dalla Rete al TNC?|||
+WPUPCFID15|Filter Parameters||
+#
 #Configure Audio Alarms
 WPUPCFA001|Configura Suoni||
 WPUPCFA002|Comando esecuzione audio||
@@ -697,6 +714,7 @@ IFDNL00007|GPS in rete (via gpsd)||
 IFDNL00008|Meteo in rete||
 IFDNL00009|TNC Seriale con GPS connesso con cavo AUX||
 IFDNL00010|Serial KISS TNC||
+IFDNL00011|Networked Database (Not Implemented Yet)||
 #
 #Interface device info 
 IFDIN00000|%s %d %s sulla seriale %s|| 

@@ -501,6 +501,23 @@ WPUPCFI013|Difundir mensagens via TNC quando houver um I-Gate?||
 WPUPCFI014|Log de transações do I-Gate?|||
 WPUPCFI015|Filter Parameters||
 #
+# Configurar Database
+WPUPCFID01|Configurar Database (TBD)||
+WPUPCFID02|Servidor||
+WPUPCFID03|Porta||
+WPUPCFID04|(Servidores secundários)||
+WPUPCFID05|Servidor1||
+WPUPCFID06|Porta1||
+WPUPCFID07|Servidor2||
+WPUPCFID08|Porta2||
+WPUPCFID09|Senha||
+WPUPCFID10|(Deixar em branco se não houver nada)||
+WPUPCFID11|Voltar a ligar em caso de falha de rede?||
+WPUPCFID12|Correr como num I-Gate?||
+WPUPCFID13|Difundir mensagens via TNC quando houver um I-Gate?||
+WPUPCFID14|Log de transações do I-Gate?|||
+WPUPCFID15|Filter Parameters||
+#
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar alarme de audio||
 WPUPCFA002|Aplicação audio||
@@ -695,6 +712,7 @@ IFDNL00007|GPS ligado via o servidor gpsd||
 IFDNL00008|Est. meteorológica ligada a uma REDE||
 IFDNL00009|TNC com GPS na porta AUX||
 IFDNL00010|Serial KISS TNC||
+IFDNL00011|Networked Database (Not Implemented Yet)||
 #
 # Info dispositivo interface
 IFDIN00000|%s %d %s sobre série %s||
