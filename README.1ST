@@ -1212,9 +1212,11 @@ WINDOWS/CYGWIN NOTES:
      It is running right now in X.  It has over 2000 stations reported.
      I am very happy with it.
 
-     WE7U:  Install default Cygwin plus these packages via a network
-     install.  Note that clicking on some of these causes others to
-     be selected and downloaded as well:
+     --- End of note from Charles
+
+     Install default Cygwin plus these packages via a network install.  Note
+     that clicking on some of these causes others to be selected and
+     downloaded as well:
 
             devel/autoconf
             devel/automake
@@ -1231,23 +1233,22 @@ WINDOWS/CYGWIN NOTES:
             XFree86/lesstif
             XFree86/XFree86-prog
 
-     So far "wget" from the Cygwin distribution doesn't appear to work.  CVS
-     has been tested on Cygwin and it appears to work, although strangely
-     enough the "CVS/" directories did not get created, so the bookkeeping
-     info that CVS needs in order to do quick updates is missing.  Other
-     than that little problem, it appears to work.
+     CVS has been tested on Cygwin and it appears to work.  It might take
+     some fiddling with adding things to "~/.cvsrc" before it works properly
+     though:  Without those entries, CVS wasn't creating the "CVS/"
+     directories, which it needs in order to maintain bookkeeping
+     information.
 
      Some map libraries (ImageMagick, Shapelib) have been tested (see
-     below), while libgeotiff, libproj have not been tested yet under
-     Cygwin.  Anyone doing so is encouraged to share their findings with the
-     Xastir mailing lists.
+     below), while libgeotiff, libproj have not.  Anyone doing so is
+     encouraged to share their findings with the Xastir mailing lists.
 
      As far as what Xastir paths look like from within Windows (in case
      you're moving maps around with Explorer):  Just prefix them all with
      "cygwin/".  For instance, maps go into /cygwin/usr/local/xastir/maps
      instead of /usr/local/xastir/maps.  Xastir will continue to see them
      as "/usr/local/xastir/maps" though from inside Cygwin.  It kind'a
-     looks like a mini Unix box from inside there.
+     looks like a mini Unix box from inside Cygwin.
 
      Run Windows in 15-bit color or better (32768 colors or more) or you'll
      get lots of warnings about Xastir not being able to allocate colors
@@ -1275,13 +1276,13 @@ WINDOWS/CYGWIN NOTES:
      to look for both binaries and libraries.  Add this line (create the
      file if the file doesn't exist):
 
-        export PATH=$PATH:/usr/local/lib
+        export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib
 
-     I haven't actually managed to get configure to find these installed
-     libraries yet.  Run configure, then add "#define HAVE_SHAPELIB 1" to
-     the config.h file.  Run make, then run the link line listed above from
-     the src directory, but add "-L/usr/local/lib -lshp" to the end of it.
-     Once all that is done, run make install.
+     I haven't managed to get "configure" to automatically find these
+     installed libraries yet.  Instead, run "./configure", then add "#define
+     HAVE_SHAPELIB 1" to the "config.h" file.  Run "make", then run the link
+     line listed above from the src directory, but add "-L/usr/local/lib
+     -lshp" to the end of it.  Once all that is done, run "make install".
 
      Cygwin ImageMagick:
      -------------------
