@@ -104,7 +104,7 @@ MPUPTGR014|Meren||
 MPUPTGR015|Vliegvelden, Parken, enz||
 MPUPTGR016|Kaart Intensiteit||
 MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
+MPUPTGR018|Zet Tiger Kaarten aan||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Kaart Kiezer||
@@ -317,7 +317,7 @@ WPUPLSP006|Spoed Lokatiseren!||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Standaardinstellingen Aanpassen||
-WPUPCFD002|Na hoeveel tijd moet een station als oud beschoud worden?||
+WPUPCFD002|Na hoeveel tijd moet een station als oud beschouwd worden?||
 WPUPCFD003|15 Minuten||
 WPUPCFD004|30 Minuten||
 WPUPCFD005|45 Minuten||
@@ -338,22 +338,22 @@ WPUPCFD019|Mobiel Station m/Zulu tijd-secondes||
 WPUPCFD021|Stations Positie m/weer||
 WPUPCFD022|Stations Positie, Zulu datum-tijd en weer||
 WPUPCFD023|Verzend Ruwe WX gegevens?||
-WPUPCFD024|Comprimeer object/item Gegevens Bij Uitzenden?||
+WPUPCFD024|Comprimeer Object/Item Gegevens Bij Uitzenden?||
 WPUPCFD025|Activeer Alternatief net?||
 WPUPCFD026|Met welk Interval Positie Gegevens Verzenden?||
 WPUPCFD027|Nieuwe Berichten Weergeven||
 WPUPCFD028|Waarschuw als Speciale Functie Toetsen Aanstaan||
-WPUPCFD029|Geef zero-distance Bulletins Weer||
+WPUPCFD029|Geef Bulletins Zonder Afstand Weer||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configureer Tijdsinstelling|||
-WPUPCFTM02|Posit TX Interval (min)||
+WPUPCFTM02|Interval Verzenden Positie (min)||
 WPUPCFTM03|Station Ghosting Time (min)||
-WPUPCFTM04|Object/Item TX Interval (min)||
-WPUPCFTM05|Station Clear Time (hours)||
-WPUPCFTM06|GPS Check Interval (sec)||
-WPUPCFTM07|Station Delete Time (days)||
-WPUPCFTM08|Dead-Reckoning Timeout (min)||
+WPUPCFTM04|Interval Verzenden Object/Item (min)||
+WPUPCFTM05|Tijd Tot Verdwijnen Van Kaart (uren)||
+WPUPCFTM06|GPS Status Controle Interval (sec)||
+WPUPCFTM07|Tijd Tot Wissen Station (dagen)||
+WPUPCFTM08|Timeout Berekening Geschatte Waarden (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||
@@ -626,7 +626,7 @@ WPUPSTI012|laatste via Onbekend||
 WPUPSTI013|, en is van positie veranderd||
 WPUPSTI014|Huidig Vermogen en Winst: %s||
 WPUPSTI016|Hoogte: %.0f%s ||
-WPUPSTI017|Richting: %s° ||
+WPUPSTI017|Richting: %sø ||
 WPUPSTI018|Snelheid: %.1fkm/h||
 WPUPSTI019|Snelheid: %.1fmph||
 WPUPSTI020|%0.1f Mijl||
@@ -638,10 +638,10 @@ WPUPSTI025|Wind Richting: %s Snelheid: %03d km/h||
 WPUPSTI026|Wind Richting: %s Snelheid: %s mph||
 WPUPSTI027| Piek: %03d km/h||
 WPUPSTI028| Piek: %s mph||
-WPUPSTI029|Temperatuur: %02.1f°C   ||
-WPUPSTI030|Temperatuur: %s°F   ||
+WPUPSTI029|Temperatuur: %02.1føC   ||
+WPUPSTI030|Temperatuur: %søF   ||
 WPUPSTI031|Vochigheid: %s%%   ||
-WPUPSTI032|Gevoels temperatuur: %02.1f°C  ||
+WPUPSTI032|Gevoels temperatuur: %02.1føC  ||
 WPUPSTI033|Baro: %s hPa||
 WPUPSTI034|Sneeuw: %0.2f (cm/h)||
 WPUPSTI035|Sneeuw: %0.2f (inch/h)||
@@ -669,8 +669,8 @@ WPUPSTI056|Zet Automatisch Bijwerken Aan||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Richting:||
 WPUPSTI059|Status: %s||
-WPUPSTI060|Ontbrandings Temp: %02.1f°C  ||
-WPUPSTI061|Ontbrandings Temp: %s°F   ||
+WPUPSTI060|Ontbrandings Temp: %02.1føC  ||
+WPUPSTI061|Ontbrandings Temp: %søF   ||
 WPUPSTI062|Vochtigheids Gehalte in Brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 #
@@ -926,7 +926,7 @@ SYMSEL0003|Secondaire Symbolen Databank||
 PRINT0001|Print Eigenschappen||
 PRINT0002|Papier Formaat||
 PRINT0003|Draai Beeld Automatisch||
-PRINT0004|Draai Beeld 90° CCW||
+PRINT0004|Draai Beeld 90ø CCW||
 PRINT0005|Pas Schaal Beeld Automatisch Aan||
 PRINT0006|Schaal:||
 PRINT0007|Forceer Standaard Witte Achtergrondkleur||
