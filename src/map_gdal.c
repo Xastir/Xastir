@@ -898,7 +898,7 @@ void draw_ogr_map(Widget w,
         filenm);
 
     if (debug_level & 16)
-        fprintf(stderr,"Opening datasource\n");
+        fprintf(stderr,"Opening datasource %s\n", full_filename);
 
 //
 // WE7U:  One of my computers segfaults here if a .prj file is
@@ -911,19 +911,16 @@ void draw_ogr_map(Widget w,
         &driver);
 
     if (datasourceH == NULL) {
+/*
         fprintf(stderr,
             "Unable to open %s\n",
             full_filename);
+*/
         return;
     }
 
     if (debug_level & 16)
         fprintf(stderr,"Opened datasource\n");
-
-
-//(void)XSetFunction();
-(void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-
 
     ptr = OGR_Dr_GetName(driver);
     fprintf(stderr,"%s: ", ptr);
@@ -1375,6 +1372,13 @@ fprintf(stderr, "  DATUM: %s\n", datum);
 // expensive operation.  Skip the layer if it's completely outside
 // our viewport.
  
+
+
+//(void)XSetFunction();
+(void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
+
+
+
     // Loop through all layers in the data source.
     //
     numLayers = OGR_DS_GetLayerCount(datasourceH);
@@ -1559,8 +1563,8 @@ fprintf(stderr, "  DATUM: %s\n", datum);
 */
 
 
+// Dump info about this layer
 /*
-        // Dump info about this layer
         layerDefn = OGR_L_GetLayerDefn( layer );
         if (layerDefn != NULL) {
             numFields = OGR_FD_GetFieldCount( layerDefn );
@@ -1571,11 +1575,11 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 OGRFieldDefnH fieldDefn;
 
                 fieldDefn = OGR_FD_GetFieldDefn( layerDefn, jj );
-//                fprintf(stderr,"  Field %d: %s (%s)\n", 
-//                       jj, OGR_Fld_GetNameRef(fieldDefn), 
-//                       OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
+                fprintf(stderr,"  Field %d: %s (%s)\n", 
+                       jj, OGR_Fld_GetNameRef(fieldDefn), 
+                       OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
             }
-//            fprintf(stderr,"\n");
+            fprintf(stderr,"\n");
         }
 */
 
@@ -1621,7 +1625,7 @@ fprintf(stderr, "  DATUM: %s\n", datum);
 
 
             // Debug code
-            //OGR_F_DumpReadable( featureH, stderr );
+//OGR_F_DumpReadable( featureH, stderr );
 
 
             // Get a handle to the geometry itself
