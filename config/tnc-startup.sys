@@ -8,6 +8,7 @@ MYAlias RELAY
 B E 0
 DIGI on
 EXP on
+Filt off
 FLow off
 FUll off
 HEA off

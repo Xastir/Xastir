@@ -9,6 +9,7 @@ B E 0
 DIGI on
 ECho off
 EXP on
+FILT off
 FLow off
 FUll off
 HEA off
@@ -16,7 +17,6 @@ LFadd off
 LFSup ON
 AUTOLF off
 MCOM off
-MFILT off
 MON ON
 MResp OFF
 MRPt on
