@@ -10498,23 +10498,32 @@ void Center_Zoom_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
+static Widget center_zoom_latitude,
+            center_zoom_longitude,
+            center_zoom_zoom_level;
+
+
+
+
+
 void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-//    Widget shell = (Widget) clientData;
+    unsigned long x, y;
 
-/*
-    // This stuff is from the Pan_ctr function above
-    Dimension width, height;
+    f_center_latitude  = atof( XmTextFieldGetString(center_zoom_latitude) ); 
+    f_center_longitude = atof( XmTextFieldGetString(center_zoom_longitude) ); 
 
-    if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-        new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-        new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
-        new_scale_y = scale_y;          // keep size
-        display_zoom_image(1);          // check range and do display, recenter
-    }
-*/
+    //Convert to Xastir coordinate system for lat/long
+    convert_to_xastir_coordinates(&x,
+        &y,
+        f_center_longitude,
+        f_center_latitude);
 
+    scale_y = atoi( XmTextFieldGetString(center_zoom_zoom_level) ); 
 
+    new_mid_x = x;
+    new_mid_y = y;
+    new_scale_y = scale_y;
+    display_zoom_image(1);
 }
 
 
@@ -10523,14 +10532,18 @@ void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
 
 // Function to bring up a dialog.  User can then select the center
 // and zoom for the display directly.
+//
+// Later it would be nice to have a "Calc" button so that the user
+// could input lat/long in any of the supported formats.  Right now
+// it is DD.DDDD format only.
+//
 void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     static Widget  pane,form, button_ok, button_cancel,
-            lat_label, latitude,
-            lon_label, longitude,
-            zoom_label, zoom_level;
+            lat_label, lon_label, zoom_label;
 //    Arg al[20];           /* Arg List */
 //    unsigned int ac = 0;           /* Arg Count */
     Atom delw;
+    char temp[50];
 
     if(!center_zoom_dialog) {
 
@@ -10574,7 +10587,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        latitude = XtVaCreateManagedWidget("Center_Zoom latitude",
+        center_zoom_latitude = XtVaCreateManagedWidget("Center_Zoom latitude",
                 xmTextFieldWidgetClass,
                 form,
                 XmNeditable,   TRUE,
@@ -10609,7 +10622,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        longitude = XtVaCreateManagedWidget("Center_Zoom longitude",
+        center_zoom_longitude = XtVaCreateManagedWidget("Center_Zoom longitude",
                 xmTextFieldWidgetClass,
                 form,
                 XmNeditable,   TRUE,
@@ -10645,7 +10658,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        zoom_level = XtVaCreateManagedWidget("Center_Zoom zoom_level",
+        center_zoom_zoom_level = XtVaCreateManagedWidget("Center_Zoom zoom_level",
                 xmTextFieldWidgetClass,
                 form,
                 XmNeditable,   TRUE,
@@ -10705,6 +10718,28 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
         delw = XmInternAtom(XtDisplay(center_zoom_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(center_zoom_dialog, delw, Center_Zoom_destroy_shell, (XtPointer)center_zoom_dialog);
+
+
+        // Snag the current lat/long/center values, convert them to
+        // displayable values, and fill in the fields.
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%f",
+            f_center_latitude);
+        XmTextFieldSetString(center_zoom_latitude, temp); 
+
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%f",
+            f_center_longitude);
+        XmTextFieldSetString(center_zoom_longitude, temp); 
+
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%ld",
+            scale_y);
+        XmTextFieldSetString(center_zoom_zoom_level, temp); 
+
 
         XtManageChild(form);
         XtManageChild(pane);
