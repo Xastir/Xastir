@@ -9292,7 +9292,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     float x_distance_real;
     float y_distance_real;
     float full_distance;
-    float area;
+    double area;
     long a_x, a_y, b_x, b_y;
     char str_lat[20];
     char str_long[20];
@@ -9442,6 +9442,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 //////////////////////
 
                 if (measuring_distance) {   // Measure distance function
+                    double R = 6367000.0;   // 6367 km or 3956 mi
+
 
                     // Check whether we already have a box on screen
                     // that we need to erase.
@@ -9527,9 +9529,44 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                                 y_distance_real = y_distance_real * 1000;   // convert from kilometers to meters
                                 break;
                         }
-                        // Compute the total area
-                        area = x_distance_real * y_distance_real;
-                            xastir_snprintf(temp,
+
+// See this URL for a method of calculating the area of a lat/long
+// rectangle on a sphere:
+// http://mathforum.org/library/drmath/view/63767.html
+// area = (pi/180)*R^2 * abs(sin(lat1)-sin(lat2)) * abs(lon1-lon2)
+//
+// Their formula is incorrect due to the mistake of mixing radians
+// and degrees.  The correct formula is (WE7U):
+// area = R^2 * abs(sin(lat1)-sin(lat2)) * abs(lon1-lon2)
+
+                        // Compute correct units
+                        switch (english_units) {
+                            case 1:     // English
+                                R = 3956.0 * 5280.0;    // feet
+                                break;
+                            case 2:     // Nautical miles and knots
+                                R = 3956.0 * 5280.0;    // feet
+                                break;
+                            default:    // Metric
+                                R = 6367000.0;  // Meters
+                                break;
+                        }
+
+                        // Compute the total area in feet or meters
+
+                        // New method using area on a sphere:
+                        area = R*R
+                            * fabs( sin(convert_lat_l2r(a_y)) - sin(convert_lat_l2r(b_y)) )
+                            * fabs( convert_lon_l2r(a_x) - convert_lon_l2r(b_x) );
+
+                        // Old method using planar geometry:
+                        //area = x_distance_real * y_distance_real;
+
+//fprintf(stderr,"Old method: %f\nNew method: %f\n\n",
+//    x_distance_real * y_distance_real,
+//    area);
+
+                        xastir_snprintf(temp,
                             sizeof(temp),
                             "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s, %0.2f square %s,  Bearing: %s degrees",
                             full_distance, un_alt,      // feet/meters
@@ -9539,8 +9576,34 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                             temp_course);
                     }
                     else {
-                        // Compute the total area
-                        area = x_distance_real * y_distance_real;
+                        // Compute the total area in miles or
+                        // kilometers
+
+                        // Compute correct units
+                        switch (english_units) {
+                            case 1:     // English
+                                R = 3956.0; // Statute miles
+                                break;
+                            case 2:     // Nautical miles and knots
+                                R = 6367.0/1.852; // Nautical miles
+                                break;
+                            default:    // Metric
+                                R = 6367.0;  // kilometers
+                                break;
+                        }
+
+                        // New method, area on a sphere:
+                        area = R*R
+                            * fabs(sin(convert_lat_l2r(a_y))-sin(convert_lat_l2r(b_y)))
+                            * fabs(convert_lon_l2r(a_x)-convert_lon_l2r(b_x));
+
+                        // Old method using planar geometry:
+                        //area = x_distance_real * y_distance_real;
+
+//fprintf(stderr,"Old method: %f\nNew method: %f\n\n",
+//    x_distance_real * y_distance_real,
+//    area);
+
                         xastir_snprintf(temp,
                             sizeof(temp),
                             "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s, %0.2f square %s,  Bearing: %s degrees",
