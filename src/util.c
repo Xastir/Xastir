@@ -3914,7 +3914,6 @@ void split_string( char *data, char *cptr[], int max ) {
 
 
 
-
 // This function checks to make sure an unproto path falls within
 // the socially acceptable values, such as only one RELAY which may
 // appear only as the first option, use of WIDE4-4 and higher should
@@ -4000,7 +3999,7 @@ int check_unproto_path ( char *data ) {
                             break;
                         }
 
-                        if (atoi(ViaCalls[ii]+=6) > 3) {
+                        if (atoi(ViaCalls[ii]+=6) > MAX_WIDES) {
                             // Greater than WIDEn-3
                             bad_path = 1;
                             break;
@@ -4028,7 +4027,7 @@ int check_unproto_path ( char *data ) {
                         }
 
                         // Valid TRACEn-n, check for > 3
-                        if (atoi(ViaCalls[ii]+=7) > 3) {
+                        if (atoi(ViaCalls[ii]+=7) > MAX_WIDES) {
                             bad_path = 1;
                             break;
                         }
@@ -4047,14 +4046,14 @@ int check_unproto_path ( char *data ) {
                     have_trace++;
                 }
 
-                if (have_relay && (ii > 3)) {
+                if (have_relay && (ii > MAX_WIDES)) {
                     // RELAY and more than 3 WIDE/TRACE calls
 // Here we could check have_wide/have_trace to see what the actual
 // count of WIDE/TRACE calls is at this point...
                     bad_path = 1;
                     break;
                 }
-                else if (!have_relay && ii > 2) {
+                else if (!have_relay && ii > (MAX_WIDES - 1)) {
                     // More than WIDE,WIDE,WIDE or TRACE,TRACE,TRACE
 // Here we could check have_wide/have_trace to see what the actual
 // count of WIDE/TRACE calls is at this point...
@@ -4101,7 +4100,7 @@ int check_unproto_path ( char *data ) {
                         bad_path = 1;
                         break;
                     }
-                    else if (atoi(ViaCalls[ii]+=strlen(ViaCalls[ii]) - 1) > 3) {
+                    else if (atoi(ViaCalls[ii]+=strlen(ViaCalls[ii]) - 1) > MAX_WIDES) {
                         // Greater than -3
                         bad_path = 1;
                         break;
