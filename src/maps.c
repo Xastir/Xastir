@@ -1137,6 +1137,7 @@ void draw_shapefile_map (Widget w,
     int             river_flag = 0;
     int             railroad_flag = 0;
     int             path_flag = 0;
+    int             city_flag = 0;
     int             mapshots_labels_flag = 0;
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
@@ -1326,6 +1327,7 @@ void draw_shapefile_map (Widget w,
 
             if (strstr(filename,"ccdcu")) {         // Cities:  Arlington
                 if (debug_level & 16) {
+                    city_flag++;
                     printf("*** Found (mapshots political subdivisions: Cities) ***\n");
                     break;
                 }
@@ -1680,11 +1682,13 @@ void draw_shapefile_map (Widget w,
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
     } else {
         if (lake_flag || river_flag)
-            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x48]); // Blue
         else if (path_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
         else if (railroad_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // purple
+        else if (city_flag)
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]); // yellow
         else
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
     }
@@ -1897,30 +1901,41 @@ void draw_shapefile_map (Widget w,
 
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
-                                case '1':
-                                    lanes = 4;
+                                case '1':   // A1? = Primary road or interstate highway
+                                    lanes = 5;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // Purple
                                     break;
-                                case '2':
+                                case '2':   // A2? = Primary road w/o limited access, US highways
+                                    lanes = 5;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
+                                    break;
+                                case '3':   // A3? = Secondary road & connecting road, state highways
                                     lanes = 3;
+//                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
-                                case '3':
-                                    lanes = 2;
-                                    break;
-                                case '4':
+                                case '4':   // A4? = Local, neighborhood & rural roads, city streets
                                     lanes = 1;
+//if (scale_y) > 64
+//ok = 0;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
                                     break;
-                                case '5':
+                                case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
                                     lanes = 1;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
-                                case '6':
+                                case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
+                                            // service drive, ferry crossing
                                     lanes = 1;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x07]); // darkgray
                                     break;
-                                case '7':
+                                case '7':   // A7? = Walkway or pedestrian trail, stairway,
+                                            // alley, driveway or service road
                                     lanes = 1;
-                                    break;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
                                 default:
                                     lanes = 1;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
                                     break;
                             }
                         }
@@ -1935,13 +1950,73 @@ void draw_shapefile_map (Widget w,
                             (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
                         }
                     }
+                    else if (river_flag || lake_flag) {
+                        int lanes = 0;
+
+                        if ( mapshots_labels_flag && (fieldcount >= 9) ) {
+                            const char *temp;
+
+                            temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
+                            switch (temp[1]) {
+                                case '0':   // H0? = Water feature/shoreline
+                                    lanes = 0;
+                                    break;
+                                case '1':
+                                    switch (temp[2]) {
+                                        case '0':
+                                            lanes = 1;
+                                            break;
+                                        case '1':
+                                            lanes = 3;
+                                            break;
+                                        case '2':
+                                            lanes = 1;
+                                            break;
+                                        case '3':
+                                            lanes = 1;
+                                            break;
+                                        default:
+                                            lanes = 1;
+                                            break;
+                                    }
+                                    break;
+                                case '2':
+                                    lanes = 1;
+                                    break;
+                                case '3':
+                                    lanes = 1;
+                                    break;
+                                case '4':
+                                    lanes = 1;
+                                    break;
+                                case '5':
+                                    lanes = 1;
+                                    break;
+                                case '6':
+                                    lanes = 1;
+                                    break;
+                                case '7':
+                                    lanes = 1;
+                                    break;
+                                case '8':
+                                    lanes = 1;
+                                    break;
+                                default:
+                                    lanes = 1;
+                                    break;
+                            }
+                            (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
+                        }
+                        else {
+                            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                        }
+                        (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x48]); // Blue
+                    }
                     else {  // Set default line width
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
 
                     if (ok_to_draw) {
-                        if (river_flag || lake_flag)
-                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
                         (void)XDrawLines(XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
                     }
                     break;
@@ -2022,7 +2097,7 @@ void draw_shapefile_map (Widget w,
 
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
                             if (lake_flag) {
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // SteelBlue
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x48]); // Blue
                                 if (map_color_fill) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
@@ -2030,7 +2105,7 @@ void draw_shapefile_map (Widget w,
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (river_flag) {
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // SteelBlue
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x48]); // Blue
                                 if (map_color_fill)
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 else
@@ -2043,7 +2118,7 @@ void draw_shapefile_map (Widget w,
                                 (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
                             }
                             else if (map_color_fill) {  // Land masses?
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey73 fill
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
                                 (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
