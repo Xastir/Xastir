@@ -95,7 +95,7 @@ extern int awk_get_sym(awk_symbol *s,
                    char *store,
                    int size,   
                    int *len);   
-extern awk_compile_stmt(awk_symtab *this,
+extern int awk_compile_stmt(awk_symtab *this,
                     awk_action *p,
                     const char *stmt,
                     int len);
@@ -104,7 +104,7 @@ extern void awk_eval_expr(awk_symtab *this,
 		      awk_symbol *dest, 
 		      const char *expr,
 		      int exprlen);
-extern awk_exec_action(awk_symtab *this, const awk_action *code);
+extern int awk_exec_action(awk_symtab *this, const awk_action *code);
 extern awk_rule *awk_new_rule(void);
 extern void awk_free_rule(awk_rule *r);
 extern awk_program *awk_new_program(void);
@@ -115,7 +115,7 @@ extern awk_program *awk_load_program_array(awk_symtab *this,
 				int nrules);
 extern awk_program *awk_load_program_file(awk_symtab *this,
 			       const char *file);
-extern awk_compile_program(awk_program *rs);
+extern int awk_compile_program(awk_program *rs);
 extern int awk_exec_program(awk_program *this, char *buf, int len);
 extern int awk_exec_begin(awk_program *this);
 extern int awk_exec_end(awk_program *this);

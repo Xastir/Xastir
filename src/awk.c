@@ -38,10 +38,13 @@
  * TODO
  *   permit embedded ;#} inside string assignment (balance delims)
  *   implement \t, \n, \0[x]nn etc.
+ *   instantiate new symbols instead of ignoring them?
  */
 #include "config.h"
 #ifdef HAVE_LIBPCRE
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include "awk.h"
 
 #define min(a,b) ((a)<(b)?(a):(b))
@@ -247,7 +250,7 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
 /*
  * awk_compile_stmt: "Compiles" a single action statement.
  */
-awk_compile_stmt(awk_symtab *this,
+int awk_compile_stmt(awk_symtab *this,
              awk_action *p,
              const char *stmt,
              int len)
@@ -260,7 +263,7 @@ awk_compile_stmt(awk_symtab *this,
     }
     ep = &s[len];
 
-    if (op = strchr(s,'=')) {   /* it's either an assignment */
+    if ((op = strchr(s,'=')) != NULL) {   /* it's either an assignment */
         const char *val = op+1;
         while (isspace(*val)) {
             val++;
@@ -457,13 +460,12 @@ void awk_eval_expr(awk_symtab *this,
 /*
  * awk_exec_action: interpret the compiled action.
  */
-awk_exec_action(awk_symtab *this, const awk_action *code)
+int awk_exec_action(awk_symtab *this, const awk_action *code)
 {
     const awk_action *p;
     int done = 0;
 
     for (p = code; p && !done; p = p->next_act) {
-        char *evaled;
         switch (p->opcode) {
         case NEXT:
             done = 1;
@@ -554,7 +556,7 @@ awk_program *awk_load_program_array(awk_symtab *this, /* symtab that goes w/this
                          int nrules) /* size of array */
 {
     awk_program *n = awk_new_program();
-    awk_rule *r,*pr; 
+    awk_rule *r; 
 
     if (!n)
         return NULL;
@@ -607,7 +609,7 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
                         const char *file) /* rules filename */
 {
     awk_program *n = awk_new_program();
-    awk_rule *r,*pr; 
+    awk_rule *r; 
     FILE *f = fopen(file,"r");
     char in[1024];
     int line = 0;
@@ -714,7 +716,7 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
 /*
  * awk_compile_program: Once loaded (from array or file), the program is compiled.
  */
-awk_compile_program(awk_program *rs)
+int awk_compile_program(awk_program *rs)
 {
     pcre *re;
     pcre_extra *pe;
@@ -773,7 +775,6 @@ int awk_exec_program(awk_program *this, char *buf, int len)
             rc = pcre_exec(r->re,r->pe,buf,len,0,0,ovector,OVECLEN);
             /* assign values to as many of $0 thru $9 as were set */
             for (i = 0; rc > 0 && i < rc && i < MAXSUBS ; i++) {
-                int ret;
                 char symname[10];
                 awk_symbol *s;
                 
