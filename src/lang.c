@@ -178,7 +178,8 @@ int load_language_file(char *filename) {
                             printf("Too many Language codes error on line %d\n",line_num);
                         }
                         if (ok) {
-                            if (debug_level & 32) printf("Code #%d <%s> data <%s> hotkey <%c>\n",lang_code_number,
+                            if (debug_level & 32)
+                                printf("Code #%d <%s> data <%s> hotkey <%c>\n",lang_code_number,
                                     lang_code[lang_code_number],lang_code_ptr[lang_code_number],
                                     lang_hotkey[lang_code_number]);
                                 lang_code_number++;

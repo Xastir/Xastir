@@ -3607,13 +3607,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
         map_c_L = tp[0].x_long - x_long_offset;     // delta ??
         tp[0].img_x = 0;
-        if (debug_level & 512) printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
+        if (debug_level & 512)
+            printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
     }
     if (tp[0].img_y != 0) {
         tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
         map_c_T = tp[0].y_lat - y_lat_offset;
         tp[0].img_y = 0;
-        if (debug_level & 512) printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
+        if (debug_level & 512)
+            printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
     }
 
     // calculate bottom right map corner from tiepoints
@@ -3621,12 +3623,14 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     if (tp[1].img_x != (geo_image_width - 1) ) {
         tp[1].img_x = geo_image_width - 1;
         tp[1].x_long = tp[0].x_long + (tp[1].img_x * map_c_dx); // right
-        if (debug_level & 512) printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
+        if (debug_level & 512)
+            printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
     }
     if (tp[1].img_y != (geo_image_height - 1) ) {
         tp[1].img_y = geo_image_height - 1;
         tp[1].y_lat = tp[0].y_lat + (tp[1].img_y * map_c_dy);   // bottom
-        if (debug_level & 512) printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
+        if (debug_level & 512)
+            printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
     }
 
     // Check whether map is inside our current view
@@ -3671,7 +3675,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 #ifdef HAVE_IMAGEMAGICK
         char *ext;
 
-        if (debug_level & 16) printf("ftp or http file: %s\n", fileimg);
+        if (debug_level & 16)
+            printf("ftp or http file: %s\n", fileimg);
 
         if (findu_flag)
             ext = "log";
@@ -3784,7 +3789,7 @@ if (findu_flag) {
     GetExceptionInfo(&exception);
     image_info=CloneImageInfo((ImageInfo *) NULL);
     (void) strcpy(image_info->filename, file);
-    if (debug_level & 16){
+    if (debug_level & 16) {
            printf ("Copied %s into image info.\n", file);
            printf ("image_info got: %s\n", image_info->filename);
            printf ("Entered ImageMagick code.\n");
@@ -3852,13 +3857,15 @@ if (findu_flag) {
         // We can determine which by looking at MaxRGB or QuantumDepth.
         //
         if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
-            if (debug_level & 16) printf("Color quantum is [0..65535]\n");
+            if (debug_level & 16)
+                printf("Color quantum is [0..65535]\n");
             my_colors[l].red   = (unsigned short)(temp_pack.red  * geotiff_map_intensity);
             my_colors[l].green = (unsigned short)(temp_pack.green* geotiff_map_intensity);
             my_colors[l].blue  = (unsigned short)(temp_pack.blue * geotiff_map_intensity);
         }
         else {  // QuantumDepth = 8
-            if (debug_level & 16) printf("Color quantum is [0..255]\n");
+            if (debug_level & 16)
+                printf("Color quantum is [0..255]\n");
             my_colors[l].red   = (unsigned short)(temp_pack.red  * geotiff_map_intensity) << 8;
             my_colors[l].green = (unsigned short)(temp_pack.green* geotiff_map_intensity) << 8;
             my_colors[l].blue  = (unsigned short)(temp_pack.blue * geotiff_map_intensity) << 8;
@@ -4270,8 +4277,7 @@ int read_fgd_file ( char* tif_filename,
     }
 
 
-    if (debug_level & 512)
-    {
+    if (debug_level & 512) {
         printf("%f %f %f %f\n",
         *f_south_bounding,
         *f_north_bounding,
@@ -4674,8 +4680,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
                              west_bounding - 1000,
                              east_bounding + 1000 ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf ("Map not within current view.\n");
                 printf ("Skipping map: %s\n", file);
             }
@@ -4785,16 +4790,14 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = 0.0;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )   // Do all 4 of these in one call?
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "%-13s ", "Upper Left" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )   // Do all 4 of these in one call?
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
                 printf("%f  %f\n", xxx, yyy);
@@ -4809,16 +4812,14 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = 0.0;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "%-13s ", "Lower Right" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
                 printf("%f  %f\n", xxx, yyy);
@@ -4832,16 +4833,14 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = height - 1;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "%-13s ", "Lower Right" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
                 printf("%f  %f\n", xxx, yyy);
@@ -4855,16 +4854,14 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = height - 1;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "%-13s ", "Lower Right" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 16)
-            {
+            if (debug_level & 16) {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
                 printf("%f  %f\n", xxx, yyy);
@@ -5047,8 +5044,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
                          west_bounding_wgs84,
                          east_bounding_wgs84 ) )
     {
-        if (debug_level & 16)
-        {
+        if (debug_level & 16) {
             printf ("Map not within current view.\n");
             printf ("Skipping map: %s\n", file);
         }
@@ -5075,8 +5071,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     TIFFGetField (tif, TIFFTAG_PLANARCONFIG, &planarConfig);
 
 
-    if (debug_level & 16)
-    {
+    if (debug_level & 16) {
         printf ("            Width: %ld\n", width);
         printf ("           Height: %ld\n", height);
         printf ("   Rows Per Strip: %ld\n", rowsPerStrip);
@@ -5137,8 +5132,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
     /* Print out the colormap info */
-    //    if (debug_level & 16)
-    //    {
+    //    if (debug_level & 16) {
     //        int l;
     //
     //        for (l = 0; l < num_colors; l++)
@@ -5368,8 +5362,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     // outside these ranges.
 
 
-    if (debug_level & 16)
-    {
+    if (debug_level & 16) {
         printf("Crop points (pixels):\n");
         printf("Top: %d\tBottom: %d\tLeft: %d\tRight: %d\n",
         top_crop,
@@ -5428,8 +5421,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
     bytesPerRow = TIFFScanlineSize(tif);
 
-    if (debug_level & 16)
-    {
+    if (debug_level & 16) {
         printf("\nInitial Bytes Per Row: %d\n", bytesPerRow);
     }
 
@@ -5706,8 +5698,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     }
 
 
-    if (debug_level & 16)
-    {
+    if (debug_level & 16) {
         printf(" Left x increments: %f %f\n", xastir_left_x_increment, left_x_increment);
         printf(" Left y increments: %f %f\n", xastir_left_y_increment, left_y_increment);
         printf("Right x increments: %f %f\n", xastir_right_x_increment, right_x_increment);
@@ -7684,4 +7675,5 @@ void load_maps (Widget w) {
     if (debug_level & 1)
         printf ("Load maps stop\n");
 }
+
 

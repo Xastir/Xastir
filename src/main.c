@@ -180,7 +180,7 @@ Widget map_fill_on, map_fill_off;
 static void Map_fill_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int map_color_fill;             /* Whether or not to fill in map polygons with solid color */
 
-Widget map_bgcolor[11];
+Widget map_bgcolor[12];
 static void Map_background(Widget w, XtPointer clientData, XtPointer calldata);
 int map_background_color;       /* Background color for maps */
 
@@ -742,6 +742,10 @@ void create_image(Widget w) {
             colors[0xfd] = (int)GetPixelByName(w,"white");
             break;
 
+		case 11 :
+			colors[0xfd] = (int)GetPixelByName(w, "black");
+			break;
+
         default:
             colors[0xfd] = (int)GetPixelByName(appshell,"gray73");
             map_background_color=0;
@@ -1110,7 +1114,7 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
     temp = XmTextGetString(debug_level_text);
 
     debug_level = atoi(temp);
-    if ( (debug_level < 0) || (debug_level > 255) )
+    if ( (debug_level < 0) || (debug_level > 2047) )
         debug_level = 0;
 
     XtFree(temp);
@@ -1750,6 +1754,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                                 langcode_hotkey("PULDNMP005"),XmNbackground,colors[0xff],NULL);
     map_bgcolor[10] = XtVaCreateManagedWidget(langcode("PULDNMBC11"),xmPushButtonGadgetClass,Map_background_color_Pane,
                             XmNmnemonic,langcode_hotkey("PULDNMBC11"),XmNbackground,colors[0xff],NULL);
+    map_bgcolor[11] = XtVaCreateManagedWidget(langcode("PULDNMBC12"),xmPushButtonGadgetClass,Map_background_color_Pane,
+                            XmNmnemonic,langcode_hotkey("PULDNMBC12"),XmNbackground,colors[0xff],NULL);
     map_bgcolor[0] = XtVaCreateManagedWidget(langcode("PULDNMBC01"),xmPushButtonGadgetClass,Map_background_color_Pane,
                         XmNmnemonic,langcode_hotkey("PULDNMBC01"),XmNbackground,colors[0xff],NULL);
     map_bgcolor[1] = XtVaCreateManagedWidget(langcode("PULDNMBC02"),xmPushButtonGadgetClass,Map_background_color_Pane,
@@ -1772,6 +1778,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                         XmNmnemonic,langcode_hotkey("PULDNMBC10"),XmNbackground,colors[0xff],NULL);
     XtSetSensitive(map_bgcolor[map_background_color],FALSE);
     XtAddCallback(map_bgcolor[10], XmNactivateCallback,Map_background,"10");
+    XtAddCallback(map_bgcolor[11], XmNactivateCallback,Map_background,"11");
     XtAddCallback(map_bgcolor[0],  XmNactivateCallback,Map_background,"0");
     XtAddCallback(map_bgcolor[1],  XmNactivateCallback,Map_background,"1");
     XtAddCallback(map_bgcolor[2],  XmNactivateCallback,Map_background,"2");
@@ -3257,6 +3264,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     time_t nexttime;
     int do_time;
     int max;
+	int i;
     static int last_alert_on_screen;
 
     do_time = 0;
@@ -3343,9 +3351,38 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 sec_next_gps = sec_now()+gps_time;
                 /*printf("Check GPS\n");*/
                 /* set dtr lines down */
+				/* works for SERIAL_GPS and SERIAL_TNC_HSP_GPS */
                 dtr_all_set(1);
                 if(gps_stop_now)
                     gps_stop_now = 0;
+
+                /* Tell TNC to send GPS data for SERIAL_TNC_AUX_GPS */
+                for(i=0; i<MAX_IFACE_DEVICES; i++) {
+                    if (port_data[i].status &&
+                            port_data[i].device_type == DEVICE_SERIAL_TNC_AUX_GPS) {
+                        /* Device is correct type and is UP (or ERROR) */
+
+                        char tmp[3];
+
+                        /* Send character to device (prefixed with CTRL-C
+                         * so that we exit CONV if necessary
+                         */
+                        if (debug_level & 128) {
+                            printf( "Retrieving GPS AUX port %d\n", i);
+                        }
+                        sprintf(tmp, "%c%c",
+                            '\3',
+                            devices[i].gps_retrieve);
+
+                        if (debug_level & 1) {
+                            printf( "Using %d %d to retrieve GPS\n",
+                                '\3',
+                                devices[i].gps_retrieve);
+                        }
+                        port_write_string(i, tmp);
+                    }
+                }
+                sec_next_gps = sec_now()+gps_time;
             }
 
             /* Check to reestablish a connection */
@@ -3434,6 +3471,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
     printf("data_lock\n");
 
                 if (data_avail) {
+                    int data_type;		/* 0=AX25, 1=GPS */
+
                     switch (port_data[data_port].device_type) {
                         /* NET Data stream */
                         case DEVICE_NET_STREAM:
@@ -3441,7 +3480,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 log_data(LOGFILE_NET,(char *)data);
 
                             packet_data_add(langcode("WPUPDPD006"),(char *)data);
-                            decode_ax25_line((char *)data,'I',data_port);
+                            decode_ax25_line((char *)data,'I',data_port, 1);
                             break;
 
                         /* TNC Devices */
@@ -3452,7 +3491,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 log_data(LOGFILE_TNC,(char *)data);
 
                             packet_data_add(langcode("WPUPDPD005"),(char *)data);
-                            decode_ax25_line((char *)data,'T',data_port);
+                            decode_ax25_line((char *)data,'T',data_port, 1);
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -3464,7 +3503,22 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                     log_data(LOGFILE_TNC,(char *)data);
 
                                 packet_data_add(langcode("WPUPDPD005"),(char *)data);
-                                decode_ax25_line((char *)data,'T',data_port);
+                                decode_ax25_line((char *)data,'T',data_port, 1);
+                            }
+                            break;
+
+                        case DEVICE_SERIAL_TNC_AUX_GPS:
+                            tnc_data_clean((char *)data);
+                            data_type=tnc_get_data_type((char *)data, data_port);
+                            if (data_type)
+                                gps_data_find((char *)data, data_port);
+                            else {
+                                if (log_tnc_data)
+                                    log_data(LOGFILE_TNC, (char *)data);
+
+                                packet_data_add(langcode("WPUPDPD005"),
+                                    (char *)data);
+                                decode_ax25_line((char *)data, 'T', data_port, 1);
                             }
                             break;
 
@@ -3527,7 +3581,7 @@ void quit(int sig) {
     /* shutdown all interfaces */
     shutdown_all_active_or_defined_port(-1);
 
-    if (debug_level)
+    if (debug_level & 1)
         printf("Exiting..\n");
 
     exit (sig);
@@ -4170,7 +4224,7 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
     bgcolor=atoi((char *)clientData);
 
     if(display_up){
-        for (i=0;i<11;i++){
+        for (i=0;i<12;i++){
             if (i == bgcolor)
                 XtSetSensitive(map_bgcolor[i],FALSE);
             else
@@ -13029,7 +13083,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 /////////////////////////////////////////////   main   /////////////////////////////////////////////
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[], char *envp[]) {
     int ag, ag_error, trap_segfault;
     uid_t user_id;
     struct passwd *user_info;

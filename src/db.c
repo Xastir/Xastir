@@ -467,11 +467,11 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     long record;
     char time_data[MAX_TIME];
 
-    if (debug_level & 4)
+    if (debug_level & 1)
         printf("msg_data_add start\n");
 
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
-        if (debug_level & 4)
+        if (debug_level & 2)
             printf("msg_data_add:  Message length too long\n");
 
         return;
@@ -512,7 +512,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     if (type == MESSAGE_MESSAGE)
         all_messages(from,call_sign,from_call,data);
 
-    if (debug_level & 4)
+    if (debug_level & 1)
         printf("msg_data_add end\n");
 }
  
@@ -1206,6 +1206,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char tmp[7+1];
 
 
+    if (debug_level & 128)
+	printf("Display station called for Single=%d.\n", single);
+
     if (!symbol_display)
         return;
 
@@ -1616,6 +1619,9 @@ void display_file(Widget w) {
     temp_sec_heard = 0l;
     p_station = t_first;                // start with oldest station, have newest on top at t_last
     while (p_station != NULL) {
+        if (debug_level & 64) {
+            printf("display_file: Examining %s\n", p_station->call_sign);
+        }
         if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
 
             temp_sec_heard = (is_my_call(p_station->call_sign,1))? sec_now(): p_station->sec_heard;
@@ -1623,18 +1629,48 @@ void display_file(Widget w) {
             if ((p_station->flag & ST_INVIEW) != 0) {  // skip far away stations...
                 // we make better use of the In View flag in the future
                 if ( !altnet || is_altnet(p_station) ) {
+                    if (debug_level & 256) {
+                        printf("display_file:  Inview, check for trail\n");
+                    }
                     if (station_trails && p_station->track_data != NULL) {
                         // ????????????   what is the difference? :
-                        if (temp_sec_heard > t_clr) {      // Not too old, so draw trail
-                            if (temp_sec_heard > t_old)    // New trail, so draw solid trail
-                                draw_trail(w,p_station,1);
-                            else
-                                draw_trail(w,p_station,0);
+                        if (debug_level & 256) {
+                            printf( "%s:    Trails on and track_data\n",
+                                    "display_file");
                         }
+                        if (temp_sec_heard > t_clr) {
+                            // Not too old, so draw trail
+                            if (temp_sec_heard > t_old) {
+                                // New trail, so draw solid trail
+                                if (debug_level & 256) {
+                                    printf("Drawing Solid trail for %s\n",
+                                    p_station->call_sign);
+                                }
+                                draw_trail(w,p_station,1);
+                            }
+                            else {
+                                if (debug_level & 256) {
+                                    printf("Drawing trail for %s\n",
+                                        p_station->call_sign);
+                                }
+                                draw_trail(w,p_station,0);
+                            }
+                        }
+                    }
+                    else if (debug_level & 256) {
+                        printf("Station trails %d, tarck_data %x\n",
+                            station_trails, (int)p_station->track_data);
                     }
                     display_station(w,p_station,0);
                 }
+                else if (debug_level & 64) {
+                    printf("display_file: Station %s skipped altnet\n",
+                        p_station->call_sign);
+                }
             }
+        }
+        else if (debug_level & 64) {
+            printf("display_file: ignored deleted %s\n", p_station->call_sign);
         }
         p_station = p_station->t_next;  // next station
     }
@@ -1887,7 +1923,7 @@ static void PosTestExpose(Widget parent, XtPointer clientData, XEvent *event, Bo
 
     XtVaGetValues(parent, XmNx, &x, XmNy, &y, NULL);
 
-    if (debug_level & 2)
+    if (debug_level & 1)
         printf("Window Decoration Offsets:  X:%d\tY:%d\n", x, y);
 
     // Store the new-found offets in global variables
@@ -2081,7 +2117,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNlabelPixmap,icon,
                                 XmNbackground, colors[0xff],
                                 NULL);
-            if (debug_level) {
+            if (debug_level & 1) {
                 station_type = XtVaCreateManagedWidget("Station Data type", xmTextFieldWidgetClass, form,
                                 XmNeditable,   FALSE,
                                 XmNcursorPositionVisible, FALSE,
@@ -3572,10 +3608,10 @@ int new_trail_color(char *call) {
         // all other callsigns get some other color out of the color table
         color = current_trail_color;
         for(i=0,found=0;!found && i<max_trail_colors;i++) {
-            color = (color + 1) % max_trail_colors;     // try next color in list
-            if (color != MY_TRAIL_COLOR)        // skip special color
-                if (trail_color_active(color))
-                    found = 1;
+            color = (color + 1) % max_trail_colors; // try next color in list
+            // skip special and or inactive colors.
+            if (color != MY_TRAIL_COLOR && trail_color_active(color))
+                found = 1;
         }
         if (found)
             current_trail_color = color;        // save it for next time
@@ -3608,19 +3644,36 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
     int trail_inp, trail_prev;
     char flag;
 
+    if (debug_level & 256) {
+        printf("store_trail_point: for %s\n", p_station->call_sign);
+    }
     if (p_station->track_data == NULL) {       // new trail, allocate storage and do initialisation
+        if (debug_level & 256) {
+            printf("Creating new trail.\n");
+        }
         p_station->track_data = malloc(sizeof(TrackRow));
-        if (p_station->track_data == NULL)
+        if (p_station->track_data == NULL) {
+            if (debug_level & 256) {
+                printf("store_trail_point: MALLOC failed for trail.\n");
+            }
             ok = 0;
+        }
         else {
             p_station->track_data->trail_out   = p_station->track_data->trail_inp = 0;
             p_station->track_data->trail_color = new_trail_color(p_station->call_sign);
             tracked_stations++;
         }
-    } else
-        if (p_station->track_data->trail_out == p_station->track_data->trail_inp)                  // ring buffer is full
-            p_station->track_data->trail_out = (p_station->track_data->trail_out+1) % MAX_TRACKS;  // increment and keep inside buffer
+    }
+    else if (p_station->track_data->trail_out ==
+                p_station->track_data->trail_inp) {   // ring buffer is full
+        p_station->track_data->trail_out =   // increment and keep inside buffer
+            (p_station->track_data->trail_out+1) % MAX_TRACKS;
+    }
     if (ok) {
+        if (debug_level & 256) {
+            printf("store_trail_point: Storing data for %s[%d]n",
+                p_station->call_sign, p_station->track_data->trail_inp);
+        }
         trail_inp = p_station->track_data->trail_inp;
         p_station->track_data->trail_long_pos[trail_inp] = lon;
         p_station->track_data->trail_lat_pos[trail_inp]  = lat;
@@ -3659,6 +3712,9 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
 }
 
 
+
+
+
 /*
  *  Check if current packet is a delayed echo
  */
@@ -3671,36 +3727,40 @@ int is_trailpoint_echo(DataRow *p_station) {
         return(0);                      // first point couldn't be an echo
     checktime = p_station->sec_heard - TRAIL_ECHO_TIME*60;
     for (i = (p_station->track_data->trail_inp -1 +MAX_TRACKS)%MAX_TRACKS,j=0;
-        j < TRAIL_ECHO_COUNT; i = (--i+MAX_TRACKS)%MAX_TRACKS ,j++) {
-            if (p_station->track_data->sec[i] < checktime)
-                return(0);              // outside time frame
-            if ((p_station->coord_lon == p_station->track_data->trail_long_pos[i])
-             && (p_station->coord_lat == p_station->track_data->trail_lat_pos[i])
-             && (p_station->speed == '\0' || p_station->track_data->speed[i] < 0
-                    || (long)(atof(p_station->speed)*18.52) == p_station->track_data->speed[i])
-                    // current: char knots, trail: long 0.1m (-1 is undef)
-             && (p_station->course == '\0' || p_station->track_data->course[i] <= 0
-                    || atoi(p_station->course) == p_station->track_data->course[i])
-                    // current: char, trail: int (-1 is undef)
-             && (p_station->altitude == '\0' || p_station->track_data->altitude[i] <= -99999
-                    || atoi(p_station->altitude)*10 == p_station->track_data->altitude[i])) {
-                    // current: char, trail: int (-99999 is undef)
-		if (debug_level & 1) {
-                    if (j > 0) {
-                        printf("delayed echo for %s",p_station->call_sign);
-                        convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
-                        printf(" at %s",temp);
-                        convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
-                        printf(" %s, already heard %d packets ago\n",temp,j+1);
-                    }
+            j < TRAIL_ECHO_COUNT; i = (--i+MAX_TRACKS)%MAX_TRACKS ,j++) {
+        if (p_station->track_data->sec[i] < checktime)
+            return(0);              // outside time frame
+        if ((p_station->coord_lon == p_station->track_data->trail_long_pos[i])
+                && (p_station->coord_lat == p_station->track_data->trail_lat_pos[i])
+                && (p_station->speed == '\0' || p_station->track_data->speed[i] < 0
+                        || (long)(atof(p_station->speed)*18.52) == p_station->track_data->speed[i])
+                        // current: char knots, trail: long 0.1m (-1 is undef)
+                && (p_station->course == '\0' || p_station->track_data->course[i] <= 0
+                        || atoi(p_station->course) == p_station->track_data->course[i])
+                        // current: char, trail: int (-1 is undef)
+                && (p_station->altitude == '\0' || p_station->track_data->altitude[i] <= -99999
+                        || atoi(p_station->altitude)*10 == p_station->track_data->altitude[i])) {
+                        // current: char, trail: int (-99999 is undef)
+            if (debug_level & 1) {
+                if (j > 0) {
+                    printf("delayed echo for %s",p_station->call_sign);
+                    convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
+                    printf(" at %s",temp);
+                    convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
+                    printf(" %s, already heard %d packets ago\n",temp,j+1);
                 }
-                return(1);              // we found a delayed echo
             }
-        if (i == p_station->track_data->trail_out)
+            return(1);              // we found a delayed echo
+        }
+        if (i == p_station->track_data->trail_out) {
             return(0);                  // that was the last available point!
+        }
     }
     return(0);                          // no echo found
 }
+
+
+
 
 
 /*
@@ -3734,7 +3794,12 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
     if (fill->track_data != NULL) {
         // trail should have at least two points:
-        if ((fill->track_data->trail_inp-fill->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS != 1) {
+        if ( (fill->track_data->trail_inp - fill->track_data->trail_out +
+                MAX_TRACKS) % MAX_TRACKS != 1) {
+            if (debug_level & 256) {
+                printf("draw_trail called for %s with %s.\n",
+                    fill->call_sign, (solid? "Solid" : "Non-Solid"));
+            }
             col_trail = trail_colors[fill->track_data->trail_color];
 
             // define color of position dots in trail
@@ -3803,8 +3868,14 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
             }
             (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
         }
+        else if (debug_level & 256) {
+            printf("Trail for %s does not contain 2 or more points.\n",
+                fill->call_sign);
+        }
     }
 }
+
+
 
 
 
@@ -5193,92 +5264,93 @@ void extract_area(DataRow *p_station, char *data) {
     len = (int)strlen(data);
     val = data[0] - '0';
     if (val >= 0 && val <= AREA_MAX) {
-	    temp_area.type = val;
-	    val = data[4] - '0';
-	    if (data[3] == '/') {
-	        if (val >=0 && val <= 9) {
-		        temp_area.color = val;
+        temp_area.type = val;
+        val = data[4] - '0';
+        if (data[3] == '/') {
+            if (val >=0 && val <= 9) {
+                temp_area.color = val;
             }
-	        else {
-		        if (debug_level & 2)
-		            puts("Bad area color (/)");
-		        return;
-	        }
-	    }
-	    else if (data[3] == '1') {
-	        if (val >=0 && val <= 5) {
-		        temp_area.color = 10 + val;
+            else {
+                if (debug_level & 2)
+                    puts("Bad area color (/)");
+                return;
             }
-	        else {
-		        if (debug_level & 2)
-		            puts("Bad area color (1)");
-		        return;
-	        }
-	    }
-
-	    val = 0;
-	    if (isdigit(data[1]) && isdigit(data[2])) {
-	        val = (10 * (data[1] - '0')) + (data[2] - '0');
         }
-	    else {
-	        if (debug_level & 2)
-		        puts("Bad area sqrt_lat_off");
-	        return;
-	    }
-	    temp_area.sqrt_lat_off = val;
-
-	    val = 0;
-	    if (isdigit(data[5]) && isdigit(data[6])) {
-	        val = (10 * (data[5] - '0')) + (data[6] - '0');
+        else if (data[3] == '1') {
+            if (val >=0 && val <= 5) {
+                temp_area.color = 10 + val;
+            }
+            else {
+                if (debug_level & 2)
+                    puts("Bad area color (1)");
+                return;
+            }
         }
-	    else {
-	        if (debug_level & 2)
-		        puts("Bad area sqrt_lon_off");
-	        return;
-	    }
-	    temp_area.sqrt_lon_off = val;
 
-	    for (i = 0; i <= len-7; i++) // delete area object from data extension field
-	        data[i] = data[i+7];
-	    len -= 7;
+        val = 0;
+        if (isdigit(data[1]) && isdigit(data[2])) {
+            val = (10 * (data[1] - '0')) + (data[2] - '0');
+        }
+        else {
+            if (debug_level & 2)
+                puts("Bad area sqrt_lat_off");
+            return;
+        }
+        temp_area.sqrt_lat_off = val;
 
-	    if (temp_area.type == AREA_LINE_RIGHT || temp_area.type == AREA_LINE_LEFT) {
-	        if (data[0] == '{') {
-		        if (sscanf(data, "{%u}", &val) == 1) {
-		            temp_area.corridor_width = val & 0xff;
-		            for (i = 0; i <= len; i++)
-			            if (data[i] == '}') break;
-		            val = i+1;
-		            for (i = 0; i <= len-val; i++)
-			            data[i] = data[i+val]; // delete corridor width
-		        }
-		        else {
-		            if (debug_level & 2)
-			            puts("Bad corridor width identifier");
+        val = 0;
+        if (isdigit(data[5]) && isdigit(data[6])) {
+            val = (10 * (data[5] - '0')) + (data[6] - '0');
+        }
+        else {
+            if (debug_level & 2)
+                puts("Bad area sqrt_lon_off");
+            return;
+        }
+        temp_area.sqrt_lon_off = val;
+
+        for (i = 0; i <= len-7; i++) // delete area object from data extension field
+            data[i] = data[i+7];
+        len -= 7;
+
+        if (temp_area.type == AREA_LINE_RIGHT || temp_area.type == AREA_LINE_LEFT) {
+            if (data[0] == '{') {
+                if (sscanf(data, "{%u}", &val) == 1) {
+                    temp_area.corridor_width = val & 0xff;
+                    for (i = 0; i <= len; i++)
+                        if (data[i] == '}')
+                            break;
+                    val = i+1;
+                    for (i = 0; i <= len-val; i++)
+                        data[i] = data[i+val]; // delete corridor width
+                }
+                else {
+                    if (debug_level & 2)
+                        puts("Bad corridor width identifier");
                     temp_area.corridor_width = 0;
-		            return;
-		        }
-	        }
+                    return;
+                }
+            }
             else {
                 if (debug_level & 2)
                     puts("No corridor width specified");
                 temp_area.corridor_width = 0;
             }
-	    }
+        }
         else {
             temp_area.corridor_width = 0;
         }
     }
     else {
-	    if (debug_level & 2)
-	        printf("Bad area type: %c\n", data[0]);
-	    return;
+        if (debug_level & 2)
+            printf("Bad area type: %c\n", data[0]);
+        return;
     }
 
     memcpy(&(p_station->aprs_symbol.area_object), &temp_area, sizeof(AreaObject));
 
-    if (debug_level >= 2) {
-	    printf("AreaObject: type=%d color=%d sqrt_lat_off=%d sqrt_lon_off=%d corridor_width=%d\n",
+    if (debug_level & 2) {
+        printf("AreaObject: type=%d color=%d sqrt_lat_off=%d sqrt_lon_off=%d corridor_width=%d\n",
                 p_station->aprs_symbol.area_object.type,
                 p_station->aprs_symbol.area_object.color,
                 p_station->aprs_symbol.area_object.sqrt_lat_off,
@@ -5577,6 +5649,17 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
 /*
  *  Extract data for $GPGGA
+ *
+ * GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+ *
+ * hhmmss = UTC
+ * ddmm.mmm[m] = Degrees(dd) Minutes (mm.mmm[m]) (may be 3 or 4 digits of precision) Lattitude (N|S=North/South)
+ * dddmm.mmm[m] = Degrees (ddd) Minutes (mm.mmm[m]) (may be 3 or 4 digits of precision) Longitude (E|W=East/West)
+ * 0|1|2 == invalid/GPS/DGPS
+ * nsat=Number of Sattelites being tracked
+ * mmm.m,M=Meters MSL
+ * mm.mM = Meters above GPS Ellipsoid
+ *
  */
 int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     char *temp_ptr;
@@ -5842,7 +5925,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
     // call and path had been validated before
     // Check "data" against the max APRS length, and dump the packet if too long.
-    if ( (data != NULL) && (strlen(data) > MAX_INFO_FIELD_SIZE) ){   // Overly long packet.  Throw it away.
+    if ( (data != NULL) && (strlen(data) > MAX_INFO_FIELD_SIZE) ) {   // Overly long packet.  Throw it away.
         if (debug_level & 1)
             printf("data_add: Overly long packet.  Throwing it away.\n");
         return(0);  // Not an ok packet
@@ -5972,10 +6055,12 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             case (APRS_GRID):
                 ok = extract_position(p_station, &data, type);
                 if (ok) { 
-		   if (debug_level & 1) printf("data_add: Got grid data for %s\n", call);
+                    if (debug_level & 1)
+                        printf("data_add: Got grid data for %s\n", call);
                     substr(p_station->comments,data,MAX_COMMENTS);
                 } else {
-                    if (debug_level & 1) printf("data_add: Bad grid data for %s : %s\n", call, data);
+                    if (debug_level & 1)
+                        printf("data_add: Bad grid data for %s : %s\n", call, data);
                 }
                 break;
 
@@ -6227,6 +6312,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
         scrupd = 0;
         if (new_station) {
+            if (debug_level & 256) {
+                printf("New Station %s\n", p_station->call_sign);
+            }
             if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0)
                 p_station->flag |= (ST_MOVING); // it has a speed, so it's moving
             if (position_on_screen(p_station->coord_lat,p_station->coord_lon)) {
@@ -6239,30 +6327,87 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
             }
         } else {        // we had seen this station before...
+            if (debug_level & 256) {
+                printf("New Data for %s %ld %ld\n", p_station->call_sign,
+                    p_station->coord_lat, p_station->coord_lon);
+            }
             if (found_pos && position_defined(p_station->coord_lat,p_station->coord_lon,1)) { // ignore undefined and 0N/0E
-                if (p_station->track_data != NULL)
+                if (debug_level & 256) {
+                    printf("  Valid position for %s\n",
+                        p_station->call_sign);
+                }
+                if (p_station->track_data != NULL) {
+                    if (debug_level & 256) {
+                        printf("Station has a trail: %s\n",
+                            p_station->call_sign);
+                    }
                     moving = 1;                         // it's moving if it has a trail
-                else
-                    if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0)
+				}
+                else {
+                    if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0) {
+                        if (debug_level & 256) {
+                            printf("Speed detected on %s\n",
+                                p_station->call_sign);
+                        }
                         moving = 1;                     // declare it moving, if it has a speed
-                    else
+					}
+                    else {
+                        if (debug_level & 256) {
+                            printf("Position defined: %d, Changed: %s\n",
+                                position_defined(last_lat, last_lon, 1),
+                                (p_station->coord_lat != last_lat ||
+                                p_station->coord_lon != last_lon) ?
+                                "Yes" : "No");
+                        }
                         if (position_defined(last_lat,last_lon,1)
-                                && (p_station->coord_lat != last_lat || p_station->coord_lon != last_lon))
+                                && (p_station->coord_lat != last_lat || p_station->coord_lon != last_lon)) {
+                            if (debug_level & 256) {
+                                printf("Position Change detected on %s\n",
+                                    p_station->call_sign);
+                            }
                             moving = 1;                 // it's moving if it has changed the position
-                        else
+						}
+                        else {
+                            if (debug_level & 256) {
+                                printf("Station %s still appears stationary.\n",
+                                    p_station->call_sign);
+                                printf(" %s stationary at %ld %ld (%ld %ld)\n",
+                                    p_station->call_sign,
+                                    p_station->coord_lat, p_station->coord_lon,
+                                    last_lat,             last_lon);
+                            }
                             moving = 0;
+						}
+					}
+				}
                 changed_pos = 0;
                 if (moving == 1) {                      
                     p_station->flag |= (ST_MOVING);
                     // we have a moving station, process trails
                     if (atoi(p_station->speed) < TRAIL_MAX_SPEED) {     // reject high speed data (undef gives 0)
                         // we now may already have the 2nd position, so store the old one first
-                        if (p_station->track_data == NULL)
-                            if (position_defined(last_lat,last_lon,1))  // ignore undefined and 0N/0E
+                        if (debug_level & 256) {
+                            printf("Station %s valid speed %s\n",
+                                p_station->call_sign, p_station->speed);
+                        }
+                        if (p_station->track_data == NULL) {
+                            if (debug_level & 256) {
+                                printf("Station %s no trail history.\n",
+                                    p_station->call_sign);
+                            }
+                            if (position_defined(last_lat,last_lon,1)) {  // ignore undefined and 0N/0E
+                                if (debug_level & 256) {
+                                    printf("Storing old position for %s\n",
+                                        p_station->call_sign);
+                                }
                                 (void)store_trail_point(p_station,last_lon,last_lat,last_stn_sec,last_alt,last_speed,last_course,last_flag);
+							}
+						}
                         //if (   p_station->coord_lon != last_lon
                         //    || p_station->coord_lat != last_lat ) {
-                            // we don't store redundant points (may change this later ?)
+                        // we don't store redundant points (may change this
+						// later ?)
+						//
                         // there are often echoes delayed 15 minutes or so
                         // it looks ugly on the trail, so I want to discard them
                         // This also discards immediate echoes
@@ -6270,9 +6415,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             (void)store_trail_point(p_station,p_station->coord_lon,p_station->coord_lat,p_station->sec_heard,p_station->altitude,p_station->speed,p_station->course,p_station->flag);
                             changed_pos = 1;
                         }
-                    } else
-                        if (debug_level & 1)
+                        else if (debug_level & 256) {
+                            printf("Trailpoint echo detected for %s\n",
+                                p_station->call_sign);
+                        }
+                    }
+					else {
+                        if (debug_level & 256 || debug_level & 1)
                             printf("Speed over %d mph\n",TRAIL_MAX_SPEED);
+                    }
                             
                     if (track_station_on == 1)          // maybe we are tracking a station
                         track_station(da,tracking_station_call,p_station);
@@ -6283,8 +6434,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 scrupd = 0;
                 if (changed_pos == 1 && station_trails && ((p_station->flag & ST_INVIEW) != 0)) {
                     if (ok_to_display) {
+                        if (debug_level & 256) {
+                            printf("Adding Solid Trail for %s\n",
+                            p_station->call_sign);
+						}
                         draw_trail(da,p_station,1);         // update trail
                         scrupd = 1;
+                    }
+                    else if (debug_level & 256) {
+                        printf("Skipped trail for %s (altnet)\n",
+                            p_station->call_sign);
                     }
                 }
                 if (position_on_screen(p_station->coord_lat,p_station->coord_lon)) {
@@ -6470,19 +6629,27 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->coord_lat = convert_lat_s2l(my_lat);
     p_station->coord_lon = convert_lon_s2l(my_long);
 
-    if(debug_level)
-        printf("GPS MY_LAT <%s> MY_LONG <%s>\n", my_lat, my_long);
-
     if ((p_station->coord_lon != pos_long_temp) || (p_station->coord_lat != pos_lat_temp)) {
         /* check to see if enough to change pos on screen */
         if ((pos_long_temp>x_long_offset) && (pos_long_temp<(x_long_offset+(long)(screen_width *scale_x)))) {
             if ((pos_lat_temp>y_lat_offset) && (pos_lat_temp<(y_lat_offset+(long)(screen_height*scale_y)))) {
                 if((labs((p_station->coord_lon+(scale_x/2))-pos_long_temp)/scale_x)>0 || (labs((p_station->coord_lat+(scale_y/2))-pos_lat_temp)/scale_y)>0) {
                     redraw_on_new_data = 1;  // redraw next chance
-                    /*printf("Redraw on new gps data \n");*/
-                    statusline("Position Change on My Station",0);
+                    if (debug_level & 256) {
+                        printf("Redraw on new gps data \n");
+                    }
+                    statusline(langcode("BBARSTA038"),0);
+                }
+                else if (debug_level & 256) {
+                    printf("New Position same pixel as old.\n");
                 }
             }
+            else if (debug_level & 256) {
+                printf("New Position is off edge of screen.\n");
+            }
+        }
+        else if (debug_level & 256) {
+            printf("New position is off side of screen.\n");
         }
     }
 
@@ -6497,6 +6664,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     strcpy(p_station->course,course);
     strcpy(p_station->altitude,alt);
     // altu;    unit should always be meters  ????
+
+    if(debug_level & 256)
+        printf("GPS MY_LAT <%s> MY_LONG <%s> MY_ALT <%s>\n",
+            my_lat, my_long, alt);
 
     /* get my last altitude meters to feet */
     my_last_altitude=(long)(atof(alt)*3.28084);
@@ -7301,7 +7472,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     // 01234567890123456    old
     // we get message with already extracted data ID
 
-    if (debug_level & 1) printf("decode_message: start\n");
+    if (debug_level & 1)
+        printf("decode_message: start\n");
 
     if (debug_level & 1) {
         if ( (message != NULL) && (strlen(message) > (MAX_MESSAGE_LENGTH + 10) ) ) { // Overly long message.  Throw it away.  We're done.
@@ -7326,7 +7498,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         done = 0;
     } else
         done = 1;                               // fall through...
-    if (debug_level & 1) printf("1\n");
+    if (debug_level & 1)
+        printf("1\n");
     len = (int)strlen(message);
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"ack",3) == 0) {              // ACK
@@ -7353,7 +7526,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
         done = 1;
     }
-    if (debug_level & 1) printf("2\n");
+    if (debug_level & 1)
+        printf("2\n");
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"rej",3) == 0) {              // REJ
         substr(msg_id,message+3,5);
@@ -7361,7 +7535,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // we ignore it
         done = 1;
     }
-    if (debug_level & 1) printf("3\n");
+    if (debug_level & 1)
+        printf("3\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"BLN",3) == 0) {                       // Bulletin
         // printf("found BLN: |%s| |%s|\n",addr,message);
@@ -7369,7 +7544,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         msg_data_add(addr,call,message,"",MESSAGE_BULLETIN,from);
         done = 1;
     }
-    if (debug_level & 1) printf("4\n");
+    if (debug_level & 1)
+        printf("4\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) {   // message for me
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
@@ -7407,7 +7583,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
         done = 1;
     }
-    if (debug_level & 1) printf("5\n");
+    if (debug_level & 1)
+        printf("5\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"NWS-",4) == 0) {             // NWS weather alert
         // printf("found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
@@ -7423,7 +7600,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             output_nws_igate_rf(call,path,ipacket_message,port,third_party);
         }
     }
-    if (debug_level & 1) printf("6\n");
+    if (debug_level & 1)
+        printf("6\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber
         // printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
@@ -7449,12 +7627,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
         done = 1;
     }
-    if (debug_level & 1) printf("7\n");
+    if (debug_level & 1)
+        printf("7\n");
     //--------------------------------------------------------------------------
     if (!done && len > 5 && message[0] == '?' && is_my_call(addr,1)) { // directed query
         done = process_directed_query(call,path,message+1,from);
     }
-    if (debug_level & 1) printf("8\n");
+    if (debug_level & 1)
+        printf("8\n");
     //--------------------------------------------------------------------------
     // special treatment required?: Msg w/o line for me ???
     //--------------------------------------------------------------------------
@@ -7468,7 +7648,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             update_messages(0); // No force
         // done = 1;
     }
-    if (debug_level & 1) printf("9\n");
+    if (debug_level & 1)
+        printf("9\n");
     //--------------------------------------------------------------------------
     if (ok)
         (void)data_add(STATION_CALL_DATA,call,path,message,from,port,NULL,third_party);
@@ -7635,12 +7816,14 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
         switch (data_id) {
             case '=':   // Position without timestamp (with APRS messaging)
-                if (debug_level & 1) printf("decode_info_field: = (position w/o timestamp)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: = (position w/o timestamp)\n");
                 done = data_add(APRS_MSGCAP,call,path,message,from,port,origin,third_party);
                 break;
 
             case '!':   // Position without timestamp (no APRS messaging) or Ultimeter 2000 WX
-                if (debug_level & 1) printf("decode_info_field: ! (position w/o timestamp or Ultimeter 2000 WX)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: ! (position w/o timestamp or Ultimeter 2000 WX)\n");
                 if (message[0] == '!' && is_xnum_or_dash(message+1,40))   // Ultimeter 2000 WX
                     done = data_add(APRS_WX3,call,path,message+1,from,port,origin,third_party);
                 else
@@ -7648,7 +7831,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 break;
 
             case '/':   // Position with timestamp (no APRS messaging)
-                if (debug_level & 1) printf("decode_info_field: / (position w/timestamp)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: / (position w/timestamp)\n");
                 done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
                 break;
 
@@ -7656,7 +7840,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 // DK7IN: could we need to test the message length first?
                 if ((message[14] == 'N' || message[14] == 'S') &&
                     (message[24] == 'W' || message[24] == 'E')) {       // uncompressed format
-                    if (debug_level & 1) printf("decode_info_field: @ (uncompressed position w/timestamp)\n");
+                    if (debug_level & 1)
+                        printf("decode_info_field: @ (uncompressed position w/timestamp)\n");
                     if (message[29] == '/') {
                         if (message[33] == 'g' && message[37] == 't')
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
@@ -7665,7 +7850,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                     } else
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
                 } else {                                                // compressed format
-                    if (debug_level & 1) printf("decode_info_field: @ (compressed position w/timestamp)\n");
+                    if (debug_level & 1)
+                        printf("decode_info_field: @ (compressed position w/timestamp)\n");
                     if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
                         if (message[20] == 'g' && message[24] == 't')   // Wx data
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
@@ -7683,29 +7869,34 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             case 0x60:  // Mic-E  Current GPS data (but not used in Kennwood TM-D700)
             //case 0x1c:// Mic-E  Current GPS data (Rev. 0 beta units only)
             //case 0x1d:// Mic-E  Old GPS data (Rev. 0 beta units only)
-                if (debug_level & 1) printf("decode_info_field: 0x27 or 0x60 (Mic-E)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: 0x27 or 0x60 (Mic-E)\n");
                 done = decode_Mic_E(call,path,message,from,port,third_party);
                 break;
 
             case '_':   // Positionless weather data                [APRS Reference, chapter 12]
-                if (debug_level & 1) printf("decode_info_field: _ (positionless wx data)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: _ (positionless wx data)\n");
                 done = data_add(APRS_WX2,call,path,message,from,port,origin,third_party);
                 break;
 
             case '#':   // Peet Bros U-II Weather Station (mph)     [APRS Reference, chapter 12]
-                if (debug_level & 1) printf("decode_info_field: # (peet bros u-II wx station)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: # (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
                     done = data_add(APRS_WX4,call,path,message,from,port,origin,third_party);
                 break;
 
             case '*':   // Peet Bros U-II Weather Station (km/h)
-                if (debug_level & 1) printf("decode_info_field: * (peet bros u-II wx station)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: * (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
                     done = data_add(APRS_WX6,call,path,message,from,port,origin,third_party);
                 break;
 
             case '$':   // Raw GPS data or Ultimeter 2000
-                if (debug_level & 1) printf("decode_info_field: $ (raw gps or ultimeter 2000)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: $ (raw gps or ultimeter 2000)\n");
                 if (strncmp("ULTW",message,4) == 0 && is_xnum_or_dash(message+4,44))
                     done = data_add(APRS_WX5,call,path,message+4,from,port,origin,third_party);
                 else if (strncmp("GPGGA",message,5) == 0)
@@ -7720,18 +7911,21 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 break;
 
             case ':':   // Message
-                if (debug_level & 1) printf("decode_info_field: : (message)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: : (message)\n");
                 done = decode_message(call,path,message,from,port,third_party);
                 // there could be messages I should not retransmit to internet... ??? Queries to me...
                 break;
 
             case '>':   // Status                                   [APRS Reference, chapter 16]
-                if (debug_level & 1) printf("decode_info_field: > (status)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: > (status)\n");
                 done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party);
                 break;
 
             case '?':   // Query
-                if (debug_level & 1) printf("decode_info_field: ? (query)\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: ? (query)\n");
                 done = process_query(call,path,message,from,port,third_party);
                 ignore = 1;     // don't treat undecoded packets as status text
                 break;
@@ -7743,13 +7937,13 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             case '%':   // Agrelo DFJr / MicroFinder
             case '&':   // Reserved -- Map Feature
             case 'T':   // Telemetrie data                          [APRS Reference, chapter 13]
-                if (debug_level & 1) printf("decode_info_field: ~,<{%%&T[\n");
+                if (debug_level & 1)
+                    printf("decode_info_field: ~,<{%%&T[\n");
                 ignore = 1;     // don't treat undecoded packets as status text
                 break;
         }
 
-        if (debug_level & 1)
-        {
+        if (debug_level & 1) {
             if (done)
                 printf("decode_info_field: done = 1\n");
             else
@@ -7950,8 +8144,11 @@ void extract_TNC_text(char *info) {
  *  Decode AX.25 line
  *  \r and \n should already be stripped from end of line
  *  line should not be NULL
+ *
+ * If dbadd is set, add to database.  Otherwise, just return true/false
+ * to indicate whether input is valid AX25 line.
  */
-void decode_ax25_line(char *line, char from, int port) {
+int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char *call_sign;
     char *path0;
     char path[100+1];           // new one, we may add an '*'
@@ -7960,18 +8157,25 @@ void decode_ax25_line(char *line, char from, int port) {
     char origin[MAX_CALL+1];
     int ok;
     int third_party;
+	char backup[MAX_LINE_SIZE+1];
 
-    if (debug_level & 1)
-        printf("decode_ax25_line: start\n");
+	strcpy(backup, line);
+
+    if (debug_level & 1) {
+        char filtered_data[MAX_LINE_SIZE+1];
+        strcpy(filtered_data, line);
+        makePrintable(filtered_data);
+        printf("decode_ax25_line: start parsing %s\n", filtered_data);
+    }
 
     if (line == NULL) {
         printf("decode_ax25_line: line == NULL.\n");
-        return;
+        return(FALSE);
     }
     if ( (line != NULL) && (strlen(line) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.  We're done.
         if (debug_level & 1)
             printf("decode_ax25_line: LONG packet.  Dumping it.\n");
-        return;
+        return(FALSE);
     }
 
     if (line[strlen(line)-1] == '\n')           // better: look at other places,
@@ -7996,9 +8200,11 @@ void decode_ax25_line(char *line, char from, int port) {
         path0 = strtok(NULL,":");               // extract path from AX.25 line
         if (path0 != NULL) {
             info = strtok(NULL,"");             // rest is info_field
-            if (info != NULL)
-                if ((info - path0) < 100)       // check if path could be copied
+            if (info != NULL) {
+                if ((info - path0) < 100) {     // check if path could be copied
                     ok = 1;                     // we have found all three components
+                }
+            }
         }
     }
 
@@ -8020,12 +8226,12 @@ void decode_ax25_line(char *line, char from, int port) {
         extract_TNC_text(info);                 // extract leading text from TNC X-1J4
         if (strlen(info) > 256)                 // first check if information field conforms to APRS specs
             ok = 0;                             // drop packets too long
-            if ((debug_level & 1) && !ok) {
-                char filtered_data[MAX_LINE_SIZE + 1];
-                strcpy(filtered_data,info);
-                makePrintable(filtered_data);
-                printf("decode_ax25_line: info field too long: %s\n",filtered_data);
-            }
+        if ((debug_level & 1) && !ok) {
+            char filtered_data[MAX_LINE_SIZE + 1];
+            strcpy(filtered_data,info);
+            makePrintable(filtered_data);
+            printf("decode_ax25_line: info field too long: %s\n",filtered_data);
+        }
     }
 
     if (ok) {                                                   // check callsign
@@ -8045,6 +8251,11 @@ void decode_ax25_line(char *line, char from, int port) {
         }
     }
 
+    if (!dbadd)
+    {
+	return(ok);
+    }
+
     if (ok && info[0] == '}') {                                 // look for third-party traffic
         ok = extract_third_party(call,path,&info,origin);       // extract third-party data
         third_party = 1;
@@ -8059,11 +8270,21 @@ void decode_ax25_line(char *line, char from, int port) {
         // decode APRS information field, always called with valid call and path
         // info is a string with 0 - 256 bytes
         // printf("dec: %s (%s) %s\n",call,origin,info);
+        if (debug_level & 1) {
+            char filtered_data[MAX_LINE_SIZE+80];
+            sprintf(filtered_data,
+                "Registering data %s %s %s %s %c %d %d\n",
+                call, path, info, origin, from, port, third_party);
+            makePrintable(filtered_data);
+            printf("c/p/i/o fr pt tp: %s", filtered_data);
+        }
         decode_info_field(call,path,info,origin,from,port,third_party);
     }
 
     if (debug_level & 1)
         printf("decode_ax25_line: exiting\n");
+
+    return(ok);
 }
     
 
@@ -8090,7 +8311,7 @@ void  read_file_line(FILE *f) {
                 if (cin == (char)10) {                  // Found LF as EOL char
                     line[pos] = '\0';                   // Always add a terminating zero after last char
                     pos = 0;                            // start next line
-                    decode_ax25_line(line,'F',-1);      // Decode the packet
+                    decode_ax25_line(line,'F',-1, 1);   // Decode the packet
                     return;                             // only read line by line
                 }
             }
@@ -8250,9 +8471,9 @@ void search_tracked_station(DataRow **p_tracked) {
 		                        langcode("SPCHSTR001"), convert_bearing_to_name(bearing,1),
 		                        curr->call_sign);
 	                }
-	                if (debug_level & 1) 
-	                    printf(" %s\n",station_id);
-	                SayText(station_id);
+                    if (debug_level & 1) 
+                        printf(" %s\n",station_id);
+                    SayText(station_id);
                 }
 #endif  /* HAVE_FESTIVAL */
             }
@@ -8748,7 +8969,7 @@ void check_and_transmit_objects_items(time_t time) {
     if (sec_now() < (last_object_check + POSIT_rate) ) // Check every POSIT_rate seconds
         return;
 
-    if (debug_level)
+    if (debug_level & 1)
         printf("Retransmitting objects/items now\n");
 
     last_object_check = sec_now();
@@ -8762,7 +8983,7 @@ void check_and_transmit_objects_items(time_t time) {
             if ( ((p_station->flag & ST_OBJECT) != 0)           // And it's an object
                     || ((p_station->flag & ST_ITEM) != 0) ) {   // or an item
 
-                if (debug_level)
+                if (debug_level & 1)
                     printf("Found a locally-owned object or item: %s\n",p_station->call_sign);
 
                 // Here we need to re-assemble and re-transmit the object or item

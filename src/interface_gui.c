@@ -97,10 +97,6 @@ void speed_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
         device_speed = 0;
 }
 
-
-
-
-
 void style_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
@@ -216,6 +212,7 @@ Widget TNC_unproto2_data;
 Widget TNC_unproto3_data;
 Widget TNC_up_file_data;
 Widget TNC_down_file_data;
+Widget TNC_GPS_set_time;
 
 
 
@@ -252,7 +249,7 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
     /* device type */
     type=DEVICE_SERIAL_TNC;
     if (TNC_device)
-        type=DEVICE_SERIAL_TNC_HSP_GPS;
+        type=TNC_device; // Modified to support more than two types
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 
@@ -268,6 +265,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         devices[TNC_port].transmit_data=1;
     else
         devices[TNC_port].transmit_data=0;
+
+	if (XmToggleButtonGetState(TNC_GPS_set_time))
+		devices[TNC_port].set_time=1;
+	else
+		devices[TNC_port].set_time=0;
 
     set_port_speed(TNC_port);
     devices[TNC_port].style=device_style;
@@ -323,11 +325,44 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
     Atom delw;
     Arg al[2];                      /* Arg List */
     register unsigned int ac = 0;   /* Arg Count */
+	register char *tmp;
+
+	tmp=(char *)NULL;
 
     if(!config_TNC_dialog) {
         TNC_port=port;
         TNC_device=device_type;
-        config_TNC_dialog = XtVaCreatePopupShell(device_type ? langcode("WPUPCFT023"):langcode("WPUPCFT001"),
+/* config_TNC_dialog = XtVaCreatePopupShell(device_type ? langcode("WPUPCFT023"):langcode("WPUPCFT001"),
+ -- replaced by KB6MER with the lines below for adding AUX GPS type TNC
+*/
+		switch(device_type)
+		{
+			case DEVICE_SERIAL_TNC:
+				tmp=langcode("WPUPCFT001");
+				break;
+
+			case DEVICE_SERIAL_TNC_HSP_GPS:
+				tmp=langcode("WPUPCFT023");
+				break;
+
+			case DEVICE_SERIAL_TNC_AUX_GPS:
+				tmp=langcode("WPUPCFT028");
+                if (debug_level & 128) {
+                    printf("Storing %d to gps_retrieve for %d\n",
+                    DEFAULT_GPS_RETR, port);
+                }
+				devices[port].gps_retrieve=DEFAULT_GPS_RETR;
+				break;
+
+			default:
+				sprintf(tmp, langcode("WPUPCFT029"), (int)device_type);
+				break;
+		}
+
+		config_TNC_dialog = XtVaCreatePopupShell(
+			tmp,
+/* End of KB6MER modification -- Hopefully this is a good cleanup */
+
                                     xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
@@ -360,7 +395,18 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, TNC_active_on_startup,
-                                      XmNleftOffset ,120,
+                                      XmNleftOffset ,35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+		TNC_GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_transmit_data,
+                                      XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -784,9 +830,15 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
         if (config_type==0) {
             /* first time port */
+			devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
+            if (debug_level & 128) {
+                printf("Storing %d to gps_retrieve for %d\n",
+                DEFAULT_GPS_RETR, port);
+            }
             XmTextFieldSetString(TNC_device_name_data,TNC_PORT);
             XmToggleButtonSetState(TNC_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(TNC_transmit_data,TRUE,FALSE);
+			XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
             XmToggleButtonSetState(speed_4800,TRUE,FALSE);
             device_speed=4;
             XmToggleButtonSetState(style_8n1,TRUE,FALSE);
@@ -813,6 +865,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                 XmToggleButtonSetState(TNC_transmit_data,TRUE,FALSE);
             else
                 XmToggleButtonSetState(TNC_transmit_data,FALSE,FALSE);
+
+			if (devices[TNC_port].set_time)
+				XmToggleButtonSetState(TNC_GPS_set_time, TRUE, FALSE);
+			else
+				XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
 
             switch (devices[TNC_port].sp) {
                 case(B300):
@@ -3398,6 +3455,8 @@ void modify_device_list(int option, int port) {
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
 
+                        case DEVICE_SERIAL_TNC_AUX_GPS:
+
                         case DEVICE_SERIAL_GPS:
 
                         case DEVICE_SERIAL_WX:
@@ -3469,6 +3528,8 @@ void modify_device_list(int option, int port) {
                         case DEVICE_SERIAL_TNC:
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
+
+                        case DEVICE_SERIAL_TNC_AUX_GPS:
 
                         case DEVICE_SERIAL_GPS:
 
@@ -3571,44 +3632,58 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                 switch (found) {
                     case DEVICE_SERIAL_TNC:
                         /* configure this port */
-                        /*printf("ADD SERIAL TNC\n");*/
-                        Config_TNC(w, 0, 0, port);
+                        if (debug_level & 1)
+                            printf("ADD SERIAL TNC\n");
+                        Config_TNC(w, DEVICE_SERIAL_TNC, 0, port);
                         break;
 
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                         /* configure this port */
-                        /*printf("ADD SERIAL TNC w HSP GPS\n");*/
-                        Config_TNC(w, 1, 0, port);
+                        if (debug_level & 1)
+                            printf("ADD SERIAL TNC w HSP GPS\n");
+                        Config_TNC(w, DEVICE_SERIAL_TNC_HSP_GPS, 0, port);
                         break;
+
+					case DEVICE_SERIAL_TNC_AUX_GPS:
+						/* configure this port */
+                        if (debug_level & 1)
+                            printf("ADD SERIAL TNC w AUX GPS\n");
+						Config_TNC(w, DEVICE_SERIAL_TNC_AUX_GPS, 0, port);
+						break;
 
                     case DEVICE_SERIAL_GPS:
                         /* configure this port */
-                        /*printf("ADD SERIAL GPS\n");*/
+                        if (debug_level & 1)
+                            printf("ADD SERIAL GPS\n");
                         Config_GPS(w, 0, port);
                         break;
 
                     case DEVICE_SERIAL_WX:
                         /* configure this port */
-                        /*printf("ADD SERIAL WX\n");*/
+                        if (debug_level & 1)
+                            printf("ADD SERIAL WX\n");
                         Config_WX(w, 0, port);
                         break;
 
                     case DEVICE_NET_WX:
                         /* configure this port */
-                        /*printf("ADD Network WX\n");*/
+                        if (debug_level & 1)
+                            printf("ADD Network WX\n");
                         Config_NWX(w, 0, port);
                         break;
 
                     case DEVICE_NET_GPSD:
                         /* configure this port */
-                        /*printf("ADD Network GPS\n");*/
+                        if (debug_level & 1)
+                            printf("ADD Network GPS\n");
                         Config_NGPS(w, 0, port);
                         break;
 
                     case DEVICE_AX25_TNC:
                         /* configure this port */
+                        if (debug_level & 1)
 #ifdef HAVE_AX25
-                        /*printf("ADD AX.25 TNC\n");*/
+                            printf("ADD AX.25 TNC\n");
                         Config_AX25(w, 0, port);
 #else
                         printf("AX.25 support not compiled into Xastir!\n");
@@ -3619,7 +3694,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 
                     case DEVICE_NET_STREAM:
                         /* configure this port */
-                        /*printf("ADD NET STREAM\n");*/
+                        printf("ADD NET STREAM\n");
                         Config_Inet(w, 0, port);
                         break;
 
@@ -3701,7 +3776,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 /*set args for color */
                 ac=0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-                XtSetArg(al[ac], XmNvisibleItemCount, 8); ac++;
+                XtSetArg(al[ac], XmNvisibleItemCount, 9); ac++;
                 XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
                 XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
                 XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -3833,15 +3908,19 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
 begin_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
-                    /*printf("Changing device  %s on port %d\n",dtype[devices[port].device_type].device_name,port);*/
+                    if (debug_level & 1) {
+                        printf("Changing device  %s on port %d\n",
+                            dtype[devices[port].device_type].device_name,port);
+                    }
                     switch (devices[port].device_type) {
                         case DEVICE_SERIAL_TNC:
 
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify SERIAL TNC\n");*/
-                            Config_TNC(w, 0, 1, port);
+                            if (debug_level & 1)
+                                printf("Modify SERIAL TNC\n");
+                            Config_TNC(w, DEVICE_SERIAL_TNC, 1, port);
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -3849,16 +3928,25 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify SERIAL TNC with HSP GPS\n");*/
-                            Config_TNC(w, 1, 1, port);
+                            if (debug_level & 1)
+                                printf("Modify SERIAL TNC with HSP GPS\n");
+                            Config_TNC(w, DEVICE_SERIAL_TNC_HSP_GPS, 1, port);
                             break;
+
+						case DEVICE_SERIAL_TNC_AUX_GPS:
+							/* configure this port */
+                            if (debug_level & 1)
+                                printf("Modify SERIAL TNC with AUX GPS\n");
+							Config_TNC(w, DEVICE_SERIAL_TNC_AUX_GPS, 1, port);
+							break;
 
                         case DEVICE_SERIAL_GPS:
  
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify SERIAL GPS\n");*/
+                            if (debug_level & 1)
+                                printf("Modify SERIAL GPS\n");
                             Config_GPS(w, 1, port);
                             break;
 
@@ -3867,7 +3955,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify SERIAL WX\n");*/
+                            if (debug_level & 1)
+                                printf("Modify SERIAL WX\n");
                             Config_WX(w, 1, port);
                             break;
 
@@ -3876,7 +3965,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify Network WX\n");*/
+                            if (debug_level & 1)
+                                printf("Modify Network WX\n");
                             Config_NWX(w, 1, port);
                             break;
 
@@ -3885,7 +3975,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify Network GPS\n");*/
+                            if (debug_level & 1)
+                                printf("Modify Network GPS\n");
                             Config_NGPS(w, 1, port);
                             break;
 
@@ -3894,7 +3985,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify AX.25 TNC\n");*/
+                            if (debug_level & 1)
+                                printf("Modify AX.25 TNC\n");
                             Config_AX25(w, 1, port);
                             break;
 
@@ -3903,7 +3995,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
-                            /*printf("Modify NET STREAM\n");*/
+                            if (debug_level & 1)
+                                printf("Modify NET STREAM\n");
                             Config_Inet(w, 1, port);
                             break;
 
@@ -4402,6 +4495,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                 case DEVICE_NET_GPSD:
                     s='6';
                     break;
+
+				case DEVICE_SERIAL_TNC_AUX_GPS:
+					s='7';
+					break;
 
                 default:
                     break;

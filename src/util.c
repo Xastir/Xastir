@@ -1394,8 +1394,38 @@ int valid_call(char *call) {
     ok      = 1;
     len = (int)strlen(call);
 
-    if (len > 9 || len == 0)
+    if (len == 0)
         return(0);                              // wrong size
+
+	while (call[0]=='c' && call[1]=='m' && call[2]=='d' && call[3]==':')
+	{	// Erase TNC prompts from beginning of callsign.
+		// This may not be the right place to do this, but it came in
+		// handy here, so that's where I put it. -- KB6MER
+
+        if (debug_level & 1) {
+            char filtered_data[MAX_LINE_SIZE+1];
+            strcpy(filtered_data, call);
+            makePrintable(filtered_data);
+            printf("valid_call: Command Prompt removed from: %s",
+                filtered_data);
+        }
+		for(i=0; call[i+4]; i++)
+			call[i]=call[i+4];
+		call[i++]=0;
+		call[i++]=0;
+		call[i++]=0;
+		call[i++]=0;
+		len=strlen(call);
+        if (debug_level & 1) {
+            char filtered_data[MAX_LINE_SIZE+1];
+            strcpy(filtered_data, call);
+            makePrintable(filtered_data);
+            printf(" result: %s", filtered_data);
+		}
+	}
+
+	if (len > 9)
+		return(0);	// Too long for valid call (6-2 max e.g. KB6MER-12)
 
     del = 0;
     for (i=len-2;ok && i>0 && i>=len-3;i--) {   // search for optional SSID

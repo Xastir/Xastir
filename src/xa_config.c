@@ -55,13 +55,13 @@
 
 void store_string(FILE * fout, char *option, char *value) {
 
-//    if (debug_level & 1)
-//        printf ("Store String Start\n");
+    if (debug_level & 1)
+        printf ("Store String Start\n");
 
     fprintf (fout, "%s:%s\n", option, value);
 
-//    if (debug_level & 1)
-//        printf ("Store String Stop\n");
+    if (debug_level & 1)
+        printf ("Store String Stop\n");
 
 }
 
@@ -211,8 +211,8 @@ void save_data(void)  {
     FILE * fout;
     char config_file[MAX_VALUE], config_file_bak[MAX_VALUE];
 
-//    if (debug_level & 1)
-//        printf ("Store String Start\n");
+    if (debug_level & 1)
+        printf ("Store String Start\n");
 
     strcpy (config_file, get_user_base_dir (CONFIG_FILE));
     strcpy (config_file_bak, get_user_base_dir (CONFIG_FILE_BAK));
@@ -246,8 +246,8 @@ void save_data(void)  {
         store_char (fout, "STATION_MESSAGE_TYPE", aprs_station_message_type);
         store_string (fout, "STATION_POWER", my_phg);
         store_string (fout, "STATION_COMMENTS", my_comment);
-//        if (debug_level & 2)
-//            printf ("Save Data 1\n");
+        if (debug_level & 1)
+            printf ("Save Data 1\n");
 
         /* default values */
         store_long (fout, "SCREEN_WIDTH", screen_width);
@@ -360,6 +360,12 @@ void save_data(void)  {
             strcpy (name, name_temp);
             strcat (name, "ONSTARTUP");
             store_int (fout, name, devices[i].connect_on_startup);
+			strcpy (name, name_temp);
+			strcat(name, "GPSRETR");
+			store_int (fout, name, devices[i].gps_retrieve);
+			strcpy (name, name_temp);
+			strcat (name, "SETTIME");
+			store_int (fout, name, devices[i].set_time);
         }
         /* TNC */
         store_int (fout, "TNC_LOG_DATA", log_tnc_data);
@@ -783,6 +789,15 @@ void load_data_or_default(void) {
         if (!get_int (name, &devices[i].connect_on_startup))
             devices[i].connect_on_startup = 0;
 
+		strcpy (name, name_temp);
+		strcat (name, "GPSRETR");
+		if (!get_int (name, &devices[i].gps_retrieve))
+			devices[i].gps_retrieve = 0;
+
+		strcpy (name, name_temp);
+		strcat (name, "SETTIME");
+		if (!get_int (name, &devices[i].set_time))
+			devices[i].set_time = 0;
     }
 
     /* TNC */

@@ -125,7 +125,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
                                         if (log_igate)
                                             log_data(LOGFILE_IGATE,temp);
 
-                                        if (debug_level & 2)
+                                        if (debug_level & 1024)
                                             printf("%s\n",temp);
 
                                         /* ok write this data out to the Inet port */
@@ -137,7 +137,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
                                 }
                             }
                             else {
-                                if (log_igate && (debug_level & 2) ) {
+                                if (log_igate && (debug_level & 1024) ) {
                                     xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
                                     log_data(LOGFILE_IGATE,temp);
 
@@ -151,7 +151,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
                         }
                         else {
-                            if (log_igate && (debug_level & 2) ) {
+                            if (log_igate && (debug_level & 1024) ) {
                                 xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
                                 log_data(LOGFILE_IGATE,temp);
 
@@ -162,7 +162,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                         }
                     }
                     else {
-                        if (log_igate && (debug_level & 2) ) {
+                        if (log_igate && (debug_level & 1024) ) {
                             xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
                             log_data(LOGFILE_IGATE,temp);
 
@@ -213,6 +213,8 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
                 for (x=0; x<MAX_IFACE_DEVICES;x++) {
                     if (x != port) {
                         switch (port_data[x].device_type) {
+                            case DEVICE_SERIAL_TNC_AUX_GPS:
+
                             case DEVICE_SERIAL_TNC_HSP_GPS:
 
                             case DEVICE_SERIAL_TNC:
@@ -236,7 +238,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                     if (log_igate)
                                         log_data(LOGFILE_IGATE,temp);
 
-                                    if (debug_level & 2)
+                                    if (debug_level & 1024)
                                         printf(temp);
 
                                     /* ok write this data out to the RF port */
@@ -245,7 +247,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                 }
                                 else {
-                                    if (log_igate && (debug_level & 2) ) {
+                                    if (log_igate && (debug_level & 1024) ) {
                                         xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                                         log_data(LOGFILE_IGATE,temp);
 
@@ -266,7 +268,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                 }
             }
             else {
-                if (log_igate && (debug_level & 2) ) {
+                if (log_igate && (debug_level & 1024) ) {
                     xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                     log_data(LOGFILE_IGATE,temp);
 
@@ -284,7 +286,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
             }
         }
         else {  // "TCPXX*" was found in the header.  We have an unregistered user.
-            if (log_igate && (debug_level & 2) ) {
+            if (log_igate && (debug_level & 1024) ) {
                 xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                 log_data(LOGFILE_IGATE,temp);
 
@@ -340,7 +342,7 @@ void load_NWS_stations(char *file) {
                     if (NWS_station_data != NULL) {
                         /* add data */
                         (void)sscanf(line,"%s",NWS_station_data[NWS_stations-1].call);
-                        if (debug_level & 2)
+                        if (debug_level & 1024)
                             printf("LINE:%s\n",line);
                     }
                     else {
@@ -452,7 +454,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                         if (log_igate)
                                             log_data(LOGFILE_IGATE,temp);
 
-                                        if (debug_level & 2)
+                                        if (debug_level & 1024)
                                             printf(temp);
 
                                         /* ok write this data out to the RF port */
@@ -461,7 +463,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
 begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                     }
                                     else {
-                                        if (log_igate && (debug_level & 2) ) {
+                                        if (log_igate && (debug_level & 1024) ) {
                                             xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                                             log_data(LOGFILE_IGATE,temp);
 
@@ -482,7 +484,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                     }
                 }
                 else { /* end check for NWS station */
-                    if (log_igate && (debug_level & 2) ) {
+                    if (log_igate && (debug_level & 1024) ) {
                         xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                         log_data(LOGFILE_IGATE,temp);
 
@@ -493,7 +495,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                 }
             }
             else { /* end check for NWS file check */
-                if (log_igate && (debug_level & 2) ) {
+                if (log_igate && (debug_level & 1024) ) {
                     xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                     log_data(LOGFILE_IGATE,temp);
 
@@ -504,7 +506,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
             }
         }
         else {  // Found "TCPXX*".  We have an unregistered net user.
-            if (log_igate && (debug_level & 2) ) {
+            if (log_igate && (debug_level & 1024) ) {
                 xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                 log_data(LOGFILE_IGATE,temp);
 

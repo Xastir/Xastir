@@ -243,7 +243,7 @@ void channel_data(int port, unsigned char *string) {
         if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
             printf("data_lock, Port = %d\n", port);
 
-        if (debug_level & 128)
+        if (debug_level & 1)
             printf("Channel data on Port %d [%s]\n",port,(char *)string);
 
         /* wait until data is processed */
@@ -2038,7 +2038,12 @@ void port_write(int port) {
 
             if (port_data[port].write_in_pos != port_data[port].write_out_pos && port_data[port].status == DEVICE_UP){
                 if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03){
-                    /*printf("Writing command on port %d, at pos %d\n",port,port_data[port].write_out_pos);*/
+					if (debug_level & 128) {
+						printf("Writing command [%x] on port %d, at pos %d\n",
+							*(port_data[port].device_write_buffer + 
+								port_data[port].write_out_pos),
+							port, port_data[port].write_out_pos);
+					}
                     wait_max = 0;
                     bytes_input = port_data[port].bytes_input + 40;
                     while (port_data[port].bytes_input != bytes_input && port_data[port].status == DEVICE_UP && wait_max < 100){
@@ -2276,15 +2281,16 @@ void clear_all_port_data(void) {
 // INIT Device names Data
 //***********************************************************
 void init_device_names(void) {
-    strcpy(dtype[0].device_name,langcode("IFDNL00000"));
-    strcpy(dtype[1].device_name,langcode("IFDNL00001"));
-    strcpy(dtype[2].device_name,langcode("IFDNL00002"));
-    strcpy(dtype[3].device_name,langcode("IFDNL00003"));
-    strcpy(dtype[4].device_name,langcode("IFDNL00004"));
-    strcpy(dtype[5].device_name,langcode("IFDNL00005"));
-    strcpy(dtype[6].device_name,langcode("IFDNL00006"));
-    strcpy(dtype[7].device_name,langcode("IFDNL00007"));
-    strcpy(dtype[8].device_name,langcode("IFDNL00008"));
+    strcpy(dtype[DEVICE_NONE].device_name,langcode("IFDNL00000"));
+    strcpy(dtype[DEVICE_SERIAL_TNC].device_name,langcode("IFDNL00001"));
+    strcpy(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name,langcode("IFDNL00002"));
+    strcpy(dtype[DEVICE_SERIAL_GPS].device_name,langcode("IFDNL00003"));
+    strcpy(dtype[DEVICE_SERIAL_WX].device_name,langcode("IFDNL00004"));
+    strcpy(dtype[DEVICE_NET_STREAM].device_name,langcode("IFDNL00005"));
+    strcpy(dtype[DEVICE_AX25_TNC].device_name,langcode("IFDNL00006"));
+    strcpy(dtype[DEVICE_NET_GPSD].device_name,langcode("IFDNL00007"));
+    strcpy(dtype[DEVICE_NET_WX].device_name,langcode("IFDNL00008"));
+    strcpy(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name,langcode("IFDNL00009"));
 }
 
 
@@ -2302,7 +2308,7 @@ int del_device(int port) {
         printf("Delete Device start\n");
 
     ok = -1;
-    switch (port_data[port].device_type){
+    switch (port_data[port].device_type) {
         case(DEVICE_SERIAL_TNC):
 
         case(DEVICE_SERIAL_GPS):
@@ -2310,6 +2316,8 @@ int del_device(int port) {
         case(DEVICE_SERIAL_WX):
 
         case(DEVICE_SERIAL_TNC_HSP_GPS):
+
+		case(DEVICE_SERIAL_TNC_AUX_GPS):
             switch (port_data[port].device_type){
                 case DEVICE_SERIAL_TNC:
                     if (debug_level & 2)
@@ -2351,6 +2359,19 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                     //(void)sleep(3);
                     usleep(3000000);    // 3secs
                     break;
+
+				case DEVICE_SERIAL_TNC_AUX_GPS:
+					if (debug_level & 2)
+						printf("Close a Serial TNC w/AUX GPS\n");
+					begin_critical_section(&devices_lock,
+						"interface.c:del_device");
+					sprintf(temp, "config/%s", devices[port].tnc_down_file);
+					end_critical_section(&devices_lock,
+						"interface.c:del_device");
+					(void)command_file_to_tnc_port(port,
+						get_data_base_dir(temp));
+					usleep(3000000);
+					break;
 
                 default:
                     break;
@@ -2500,6 +2521,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             case DEVICE_SERIAL_WX:
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
+
+			case DEVICE_SERIAL_TNC_AUX_GPS:
                 switch (dev_type) {
                     case DEVICE_SERIAL_TNC:
                         if (debug_level & 2)
@@ -2521,7 +2544,13 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                         if (debug_level & 2)
-                            printf("Opening a Serial TNC w/GPS device\n");
+                            printf("Opening a Serial TNC w/HSP GPS device\n");
+
+                        break;
+
+					case DEVICE_SERIAL_TNC_AUX_GPS:
+                        if (debug_level & 2)
+                            printf("Opening a Serial TNC w/AUX GPS device\n");
 
                         break;
 
@@ -2666,6 +2695,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 case DEVICE_SERIAL_TNC:
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
+
+				case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (ok == 1) {
                         xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
                         (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
@@ -2798,6 +2829,8 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                 case DEVICE_SERIAL_TNC:
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
+
+				case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (devices[i].connect_on_startup == 1 || override) {
                         (void)add_device(i,devices[i].device_type,devices[i].device_name,"",-1,
                             devices[i].sp,devices[i].style,0);
@@ -2992,13 +3025,13 @@ void output_my_aprs_data(void) {
     // Format latitude string for transmit later
     strcpy(my_output_lat,my_lat);
     (void)output_lat(my_output_lat,transmit_compressed_posit);
-    if (debug_level)
+    if (debug_level & 128)
         printf("OUT LAT <%s>\n",my_output_lat);
 
     // Format longitude string for transmit later
     strcpy(my_output_long,my_long);
     (void)output_long(my_output_long,transmit_compressed_posit);
-    if (debug_level)
+    if (debug_level & 128)
         printf("OUT LONG <%s>\n",my_output_long);
 
 begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
@@ -3018,6 +3051,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case DEVICE_SERIAL_TNC_HSP_GPS:
                 /* make dtr normal */
                 port_dtr(port,0);
+            case DEVICE_SERIAL_TNC_AUX_GPS:
             case DEVICE_SERIAL_TNC:
             case DEVICE_AX25_TNC:
                 /* clear this for a TNC */
@@ -3371,6 +3405,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     port_dtr(port,0);           // make DTR normal
 
+            	case DEVICE_SERIAL_TNC_AUX_GPS:
+
                 case DEVICE_SERIAL_TNC:
 
                 case DEVICE_AX25_TNC:
@@ -3546,7 +3582,119 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // Decode our own transmitted packets.
     // Note that this function call is destructive to the first parameter.
     // This is why we call it _after_ we call the log_data functions.
-    decode_ax25_line( data_txt, DATA_VIA_LOCAL, port);
+    decode_ax25_line( data_txt, DATA_VIA_LOCAL, port, 1);
+}
+
+
+
+
+
+// Added by KB6MER for KAM XL(SERIAL_TNC_AUX_GPS) support
+// buf is a null terminated string
+// returns buf as a null terminated string after cleaning.
+// Currently:
+//    removes leading 'cmd:' prompts from TNC if needed
+// Can be used to add any additional data cleaning functions desired.
+// Currently only called for SERIAL_TNC_AUX_GPS, but could be added
+// to other device routines to improve packet decode on other devices.
+void tnc_data_clean(char *buf) {
+    register int i;
+
+    if (debug_level & 1) {
+        char filtered_data[MAX_LINE_SIZE+1];
+        strcpy(filtered_data, buf);
+        makePrintable(filtered_data);
+        printf("tnc_data_clean: called to clean %s\n", filtered_data);
+    }
+    while (buf[0]=='c' && buf[1]=='m' && buf[2]=='d' && buf[3]==':') {
+        for(i=4; i<strlen(buf); i++) {
+            buf[i-4]=buf[i];
+        }
+        buf[i++]=0;     //Null out any remaining old data just in case
+        buf[i++]=0;
+        buf[i++]=0;
+        buf[i++]=0;
+    }
+    if (debug_level & 1) {
+        char filtered_data[MAX_LINE_SIZE+1];
+        strcpy(filtered_data, buf);
+        makePrintable(filtered_data);
+        printf("tnc_data_clean: clean result %s\n", filtered_data);
+    }
+}
+
+
+
+
+
+// Added by KB6MER for KAM XL (SERIAL_TNC_AUX_GPS) support
+// buf is a null terminated string.
+// port is integer offset into port_data[] array of iface data (see interface.h)
+// returns int 0=AX25, 1=GPS
+// Tries to guess from the contents of buf whether it represents data from
+// the GPS or data from an AX25 packet.
+int tnc_get_data_type(char *buf, int port) {
+    register int i;
+    int type=-1;      // Don't know what it is yet.
+
+    if (debug_level & 1) {
+        char filtered_data[MAX_LINE_SIZE+1];
+        strcpy(filtered_data, buf);
+        makePrintable(filtered_data);
+        printf("tnc_get_data_type: parsing %s\n", filtered_data);
+    }
+
+    // First, let's look for NMEA-ish things.
+    if (buf[0]=='$') {
+        //This looks kind of NMEA-ish, let's check for known message type
+        //headers ($P[A-Z][A-Z][A-Z][A-Z] or $GP[A-Z][A-Z][A-Z])
+        if(buf[1]=='P') {
+            type=1; // Assume NMEA until disqualified.
+            for(i=2; i<=5; i++) {
+                if (buf[i]<'A' || buf[i]>'Z') {
+                    type=-1; // Disqualified, not valid NMEA-0183
+                    if (debug_level & 1) {
+                        char filtered_data[MAX_LINE_SIZE+1];
+                        strcpy(filtered_data, buf);
+                        makePrintable(filtered_data);
+                        printf("tnc_get_data_type: Not NMEA %s\n",
+                            filtered_data);
+                    }
+                }
+            }
+        }
+
+        if(buf[1]=='G' && buf[2]=='P') {
+            for(i=3; i<=5; i++) {
+                if (buf[i]<'A' || buf[i]>'Z') {
+                    type=-1; // Disqualified, not valid NMEA-0183
+                    if (debug_level & 1) {
+                        char filtered_data[MAX_LINE_SIZE+1];
+                        strcpy(filtered_data, buf);
+                        makePrintable(filtered_data);
+                        printf("tnc_get_data_type: Not NMEA %s\n",
+                            filtered_data);
+                    }
+                }
+            }
+        }
+    }
+    // Next, let's look for AX25-ish things
+    // call>path:data
+    else if (decode_ax25_line(buf, 'T', port, 0)) {
+        type=0;
+    }
+    else if (type < 0) {
+        if (debug_level & 1) {
+            char filtered_data[MAX_LINE_SIZE+1];
+            strcpy(filtered_data, buf);
+            makePrintable(filtered_data);
+            printf("tnc_get_data_type: Couldn't decode %s made GPS\n",
+                filtered_data);
+        }
+        type=1;
+    }
+    return(type);
 }
 
 

@@ -36,9 +36,11 @@
 #define MAX_DEVICE_HOSTPW 40
 
 #define MAX_IFACE_DEVICES 10
-#define MAX_IFACE_DEVICE_TYPES 9
+#define MAX_IFACE_DEVICE_TYPES 10
 
 #define NET_CONNECT_TIMEOUT 20
+
+#define DEFAULT_GPS_RETR 0x05 /* CTRL-E */
 
 /* Define Device Types */
 enum Device_Types {
@@ -50,7 +52,8 @@ enum Device_Types {
     DEVICE_NET_STREAM,
     DEVICE_AX25_TNC,
     DEVICE_NET_GPSD,
-    DEVICE_NET_WX
+    DEVICE_NET_WX,
+    DEVICE_SERIAL_TNC_AUX_GPS // KB6MER -> KAM XL or other TNC w/GPS on AUX port
 };
 
 enum Device_Active {
@@ -127,6 +130,8 @@ typedef struct {
     int    transmit_data;                         /* Data transmit out of this port          */
     int    reconnect;                             /* reconnect on net failure                */
     int    connect_on_startup;                    /* connect to this device on startup       */
+	int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
+	int    set_time;							  /* Set System Time from GPS on this port   */
 } ioparam;
 
 
@@ -173,8 +178,12 @@ extern void check_ports(void);
 extern void clear_all_port_data(void);
 extern char aprs_station_message_type;
 extern void port_dtr(int port, int dtr);
+void port_write_string(int port, char *data);
 extern void init_device_names(void);
 extern void output_my_data(char *message, int port, int type, int loopback_only);
+int tnc_get_data_type(char *buf, int port);
+void tnc_data_clean(char *buf);
+
 
 extern pid_t getpgid(pid_t pid);
 
