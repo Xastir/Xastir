@@ -170,6 +170,34 @@ int is_my_call(char *call, int exact) {
 
 
 
+char *remove_leading_spaces(char *data) {
+    int i,j;
+
+    if (data == NULL)
+        return NULL;
+
+    if (strlen(data) == 0)
+        return NULL;
+
+    j = 0;
+    for( i = 0; i < strlen(data); i++ ) {
+        if(data[i] != ' ') {
+            data[j++] = data[i];
+        }
+        else {
+            break;
+        }
+    }
+
+    data[j] = '\0'; // Terminate the string
+
+    return(data);
+}
+
+
+
+
+
 char *remove_trailing_spaces(char *data) {
     int i;
 
@@ -489,7 +517,11 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
     (void)remove_trailing_asterisk(m_fill.call_sign);
 
     substr(m_fill.from_call_sign, my_call, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.from_call_sign);
+
     substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
 
     // Look for a message with the same to_call_sign, my_call,
     // and seq number
@@ -539,7 +571,11 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     (void)remove_trailing_asterisk(m_fill.call_sign);
 
     substr(m_fill.from_call_sign, from_call, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
     substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
 
     // Look for a message with the same call_sign, from_call_sign,
     // and seq number
@@ -549,8 +585,12 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         msg_get_data(&m_fill, record);
         //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
     }
-
-    m_fill.sec_heard = sec_now();
+    else {
+        // Only do this if it's a new message.  This keeps things
+        // more in sequence by not updating the time stamps
+        // constantly on old messages that don't get ack'ed.
+        m_fill.sec_heard = sec_now();
+    }
 
     /* FROM */
     m_fill.data_via=from;
@@ -560,18 +600,26 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         m_fill.heard_via_tnc = (from == 'T') ? VIA_TNC : NOT_VIA_TNC;
 
     substr(m_fill.call_sign,call_sign,MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
     substr(m_fill.from_call_sign,from_call,MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.from_call_sign);
+
     substr(m_fill.message_line,data,MAX_MESSAGE_LENGTH);
+
     substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
+
     strcpy(m_fill.packet_time,get_time(time_data));
 
-    if(record == -1L) {
-        m_fill.acked = 0;
-        msg_input_database(&m_fill);
+    if(record == -1L) {     // No old record found
+        m_fill.acked = 0;   // We can't have been acked yet
+        msg_input_database(&m_fill);    // Create a new entry
     }
-    else {
+    else {  // Old record found
         //printf("Replacing the message in the database, seq %s\n",seq);
-        msg_replace_data(&m_fill, record);
+        msg_replace_data(&m_fill, record);  // Update fields
     }
 
     /* display messages */
