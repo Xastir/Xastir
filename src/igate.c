@@ -685,9 +685,11 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
     if (operate_as_an_igate <= 1)
         return;
 
-    // Check for TCPXX* in string.
+    // Check for TCPXX* in string.  If found, we have an
+    // unregistered net user.
     if (strstr(path,"TCPXX*") != NULL) {
-        // "TCPXX*" was found in the header.  We have an unregistered user.
+        // "TCPXX*" was found in the header.  We have an
+        // unregistered user.
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
                 sizeof(temp),
@@ -947,9 +949,9 @@ int check_NWS_stations(char *call) {
 /****************************************************************/
 void output_nws_igate_rf(char *from, char *path, char *line, int port, int third_party) {
     char temp[MAX_LINE_SIZE+20];
-    int x,first;
+    int x;
+    int first = 1;
 
-    first = 1;
 
     if ( (from == NULL) || (path == NULL) || (line == NULL) )
         return;
@@ -957,12 +959,15 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
     if ( (from[0] == '\0') || (path[0] == '\0') || (line[0] == '\0') )
         return;
 
-    // should we output as an Igate?
+    // Should we Igate from NET->RF?
     if (operate_as_an_igate <= 1)
         return;
 
-    // check for TCPXX* in string!  If found, we have an unregistered net user.
+    // Check for TCPXX* in string!  If found, we have an
+    // unregistered net user.
     if (strstr(path,"TCPXX*") != NULL) {
+        // "TCPXX*" was found in the header.  We have an
+        // unregistered user.
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
                 sizeof(temp),
