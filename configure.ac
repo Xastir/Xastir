@@ -513,6 +513,10 @@ AC_SUBST(X_CFLAGS)
 #AC_SUBST(X_LIBS) 
 #AC_SUBST(X_EXTRA_LIBS) 
 
+AH_BOTTOM([#ifndef HAVE_SOCKLEN_T
+#define socklen_t int
+#endif])
+
 AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
     config/Makefile \
