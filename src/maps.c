@@ -1777,11 +1777,10 @@ void draw_shapefile_map (Widget w,
             const char *temp;
             char temp2[50];
             int jj;
-            float angle = 0.0;  // Angle for the beginning of this
-                                // polyline, used for drawing labels at
-                                // the proper orientation.
-            int x0 = 0;
+            int x0 = 0; // Used for computing label rotation
+            int x1 = 0;
             int y0 = 0;
+            int y1 = 0;
 
 
             //printf("Shape %d is visible, drawing it\t", structure);
@@ -1818,9 +1817,6 @@ void draw_shapefile_map (Widget w,
 
 // Draw the PolyLines themselves:
 
-                    angle = 0.0;
-                    x0 = 0;
-                    y0 = 0;
                     index = 0;  // Index into our own points array.
                                 // Tells how many points we've
                                 // collected so far.
@@ -1848,32 +1844,19 @@ void draw_shapefile_map (Widget w,
                         y = y / scale_y;
 
 
-// Compute the angle for later use in label rotation
+//WE7U
+                        // Save the endpoints of the first line
+                        // segment for later use in label rotation
                         if (ring == 0) {
                             // Save the first set of screen coordinates
                             x0 = (int)x;
                             y0 = (int)y;
                         }
                         else if (ring == 1) {
-                            // We're at the 2nd set of screen coordinates, Compute the
-                            // angle so we can later use it for label rotation.
-                            float diff_X = (int)x - x0;
-                            float diff_Y = (int)y - y0;
-                        
-                            if (diff_X == 0.0) {  // Avoid divide by zero errors
-                                diff_X = 0.0000001;
-                            }
-                            angle = atan( diff_X / diff_Y );    // Compute in radians
-                            // Convert to degrees
-                            angle = angle / (2.0 * M_PI );
-                            angle = angle * 360.0;
-
-                            // Change to fit our rotate label function's idea of angle
-                            angle = 360.0 - angle;
-
-                            //printf("Y: %f\tX: %f\tAngle: %f\n",diff_Y,diff_X,angle);
+                            // Save the second set of screen coordinates
+                            x1 = (int)x;
+                            y1 = (int)y;
                         }
-// Done computing angle
 
 
                         // XDrawLines uses 16-bit unsigned integers
@@ -2246,8 +2229,31 @@ void draw_shapefile_map (Widget w,
                                 }
                             }
                             if (!skip_label) {  // Draw the string
-//                                (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
-                    (void)draw_rotated_label_text (w, (int)angle, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                // Compute the label rotation angle
+                                float diff_X = (int)x1 - x0;
+                                float diff_Y = (int)y1 - y0;
+                                float angle = 0.0;  // Angle for the beginning of this polyline
+                        
+                                if (diff_X == 0.0) {  // Avoid divide by zero errors
+                                    diff_X = 0.0000001;
+                                }
+                                angle = atan( diff_X / diff_Y );    // Compute in radians
+                                // Convert to degrees
+                                angle = angle / (2.0 * M_PI );
+                                angle = angle * 360.0;
+
+                                // Change to fit our rotate label function's idea of angle
+                                angle = 360.0 - angle;
+
+                                //printf("Y: %f\tX: %f\tAngle: %f ==> ",diff_Y,diff_X,angle);
+
+                                if ( angle > 90.0 ) {angle += 180.0;}
+                                if ( angle >= 360.0 ) {angle -= 360.0;}
+
+                                //printf("%f\t%s\n",angle,temp);
+
+//                              (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                (void)draw_rotated_label_text (w, (int)angle, x, y, strlen(temp), colors[0x08], (char *)temp);
                             }
                             if (new_label) {
 
