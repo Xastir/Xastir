@@ -6,7 +6,7 @@
 bin_PROGRAMS = xastir
 noinst_PROGRAMS = testawk
 
-SUBDIRS =
+SUBDIRS = rtree
 
 xastir_SOURCES = \
     alert.c alert.h \
@@ -53,6 +53,7 @@ xastir_SOURCES = \
     rotated.c rotated.h \
     snprintf.c snprintf.h \
     sound.c symbols.h \
+    shp_hash.c shp_hash.h \
     track_gui.c track_gui.h \
     util.c util.h \
     view_message_gui.c \
@@ -67,6 +68,7 @@ testawk_SOURCES = \
     awk.c \
     dbfawk.c
 
+xastir_LDADD=-Lrtree -lrtree
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 

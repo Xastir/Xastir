@@ -1825,8 +1825,19 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
 
 
 
+/////////////////////////////////////////////////////////////////////
+// get_viewport_lat_lon(double *xmin, double *ymin, double* xmax, double *ymax)
+// Simply returns the viewport variables used by map_visible_lat_lon
+void get_viewport_lat_lon(double *xmin, 
+                          double *ymin, 
+                          double* xmax, 
+                          double *ymax) {
 
-
+    *xmin=view_min_x;
+    *ymin=view_min_y;
+    *xmax=view_max_x;
+    *ymax=view_max_y;
+}
 /////////////////////////////////////////////////////////////////////
 // map_visible_lat_lon()
 //

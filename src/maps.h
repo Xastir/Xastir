@@ -137,6 +137,10 @@ extern int index_retrieve(char *filename, unsigned long *bottom,
 extern void index_restore_from_file(void);
 extern void index_save_to_file(void);
 extern void map_indexer(int parameter);
+extern void get_viewport_lat_lon(double *xmin, 
+                                 double *ymin, 
+                                 double *xmax,
+                                 double *ymax);
 extern int map_visible (unsigned long bottom_map_boundary,
                         unsigned long top_map_boundary,
                         unsigned long left_map_boundary,

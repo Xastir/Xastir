@@ -82,6 +82,7 @@
 #include "xa_config.h"
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
+#define CHECKREALLOC(m)  if (!m) { fprintf(stderr, "***** Realloc Failed *****\n"); exit(0); }
 
 #ifdef HAVE_LIBSHP
 #ifdef HAVE_LIBPCRE
@@ -99,6 +100,37 @@
 #endif // HAVE_SHAPEFIL_H
 
 extern int npoints;		/* tsk tsk tsk -- globals */
+
+#ifdef USE_RTREE
+#include <rtree/index.h>    
+#include "shp_hash.h"
+
+static int *RTree_hitarray=NULL;
+int RTree_hitarray_size=0;
+int RTree_hitarray_index=0;
+
+//This trivial routine is used by the RTreeSearch as a callback when it finds
+// a match.
+int RTreeSearchCallback(int id, void* arg) 
+{
+    if (!RTree_hitarray) {
+        RTree_hitarray = (int *)malloc(1000*sizeof(int));
+        RTree_hitarray_size=1000;
+    }
+    if (RTree_hitarray_size <= RTree_hitarray_index) {
+        int *ptr;
+        ptr = realloc(RTree_hitarray, (RTree_hitarray_size+1000)*sizeof(int));
+        CHECKREALLOC(ptr);  // fatal error if we can't get 'em :-(
+        RTree_hitarray=ptr;
+        RTree_hitarray_size += 1000;
+        //        fprintf(stderr,"Hitarray now at %d\n",RTree_hitarray_size);
+    }
+
+        
+    RTree_hitarray[RTree_hitarray_index++]=id-1;
+    return 1;  // signal to keep searching for more matches
+}
+#endif // USE_RTREE
 
 /*******************************************************************
  * create_shapefile_map()
@@ -697,6 +729,12 @@ void draw_shapefile_map (Widget w,
 
     label_string *ptr2 = NULL;
 
+#ifdef USE_RTREE
+    struct Rect viewportRect;
+    double rXmin, rYmin, rXmax,rYmax;
+    shpinfo *si;
+    int nhits;
+#endif // USE_RTREE
 
     // Initialize the hash table label pointers
     for (i = 0; i < 256; i++) {
@@ -1327,9 +1365,30 @@ void draw_shapefile_map (Widget w,
         return;
     }
 
+#ifdef USE_RTREE
+    // be sure we have this file in the shapefile hash.  
+    si = get_shp_from_hash(file);
+    if (!si) {
+        add_shp_to_hash(file,hSHP); // this will index all the shapes in 
+                                    // an RTree and save the root in a 
+                                    // shpinfo structure
+        si=get_shp_from_hash(file); // now get that structure
+        if (!si) {
+            fprintf(stderr,
+                    "Panic!  added %s, lost it already!\n",file);
+            exit(1);
+        }
+    }
+    // we need this for the rtree search
+    get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
+    viewportRect.boundary[0] = (RectReal) rXmin;
+    viewportRect.boundary[1] = (RectReal) rYmin;
+    viewportRect.boundary[2] = (RectReal) rXmax;
+    viewportRect.boundary[3] = (RectReal) rYmax;
+#endif // USE_RTREE
+
     // Get the extents of the map file
     SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
-
 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -1558,20 +1617,6 @@ void draw_shapefile_map (Widget w,
     // Now that we have the file open, we can read out the structures.
     // We can handle Point, PolyLine and Polygon shapefiles at the moment.
 
-    if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
-        if (found_shape != -1) {    // Found the record
-            start_record = found_shape;
-            end_record = found_shape + 1;
-        }
-        else {  // Didn't find the record
-            start_record = 0;
-            end_record = 0;
-        }
-    }
-    else {  // Draw an entire Shapefile map
-        start_record = 0;
-        end_record = nEntities;
-    }
 
 
     HandlePendingEvents(app_context);
@@ -1591,13 +1636,62 @@ void draw_shapefile_map (Widget w,
         return;
     }
 
+#ifdef USE_RTREE
+    // Now instead of looping over all the shapes, search for the ones that
+    // are in our viewport and only loop over those
+    if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
+        if (found_shape != -1) {    // Found the record
+            // just in case we haven't drawn any real maps yet...
+            if (!RTree_hitarray) {
+                RTree_hitarray = (int *)malloc(sizeof(int)*1000);
+                RTree_hitarray_size=1000;
+            }
+            CHECKMALLOC(RTree_hitarray);
+            RTree_hitarray[0]=found_shape;
+            nhits=1;
+        }
+        else {  // Didn't find the record
+            nhits=0;
+        }
+    }
+    else {  // Draw an entire Shapefile map
+        RTree_hitarray_index=0;
+        // the callback will be executed every time the search finds a 
+        // shape whose bounding box overlaps the viewport.
+        nhits = RTreeSearch(si->root, &viewportRect, RTreeSearchCallback, 0);
+    }
+#else
+    if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
+        if (found_shape != -1) {    // Found the record
+            start_record = found_shape;
+            end_record = found_shape + 1;
+        }
+        else {  // Didn't find the record
+            start_record = 0;
+            end_record = 0;
+        }
+    }
+    else {  // Draw an entire Shapefile map
+        start_record = 0;
+        end_record = nEntities;
+    }
+#endif
 
+#ifdef USE_RTREE
+    // only iterate over the hits found by RTreeSearch, not all of them
+    for (RTree_hitarray_index=0; RTree_hitarray_index<nhits; 
+         RTree_hitarray_index++) {
+#else
     // Here's where we actually iterate through the entire file, drawing
     // each structure as we find it.
     for (structure = start_record; structure < end_record; structure++) {
+#endif
         int skip_it = 0;
         int skip_label = 0;
 
+#ifdef USE_RTREE
+        structure=RTree_hitarray[RTree_hitarray_index];
+#endif
 
         // Have had segfaults before at the SHPReadObject() call
         // when the Shapefile was corrupted.
@@ -3742,7 +3836,6 @@ if (on_screen) {
         dbfawk_free_sigs(sig_info);
     }
 #endif
-
 
     DBFClose( hDBF );
     SHPClose( hSHP );
