@@ -644,6 +644,7 @@ void draw_shapefile_map (Widget w,
     /* these have to be static since I recycle Symtbl between calls */
     static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
     static int      color,lanes,filled,pattern,display_level,label_level;
+    static int      fillstyle,fillcolor;
     //static int layer;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
@@ -744,6 +745,8 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"key",STRING,key,sizeof(key));
                 awk_declare_sym(Symtbl,"symbol",STRING,sym,sizeof(sym));
                 awk_declare_sym(Symtbl,"filled",INT,&filled,sizeof(filled));
+                awk_declare_sym(Symtbl,"fillstyle",INT,&fillstyle,sizeof(fillstyle));
+                awk_declare_sym(Symtbl,"fillcolor",INT,&fillcolor,sizeof(fillcolor));
                 awk_declare_sym(Symtbl,"pattern",INT,&pattern,sizeof(pattern));
                 awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
                 awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
@@ -1178,6 +1181,8 @@ void draw_shapefile_map (Widget w,
         // We've been here before and we already know the index into the
         // file to fetch this particular shape.
         found_shape = alert->index;
+        if (debug_level & 16)
+            fprintf(stderr,"wx_alert: found_shape = %d\n",found_shape);
     }
 
     //fprintf(stderr,"Found shape: %d\n", found_shape);
@@ -1290,7 +1295,7 @@ void draw_shapefile_map (Widget w,
     // NOTE: Setting the color here and in the "else" may not stick if we do more
     //       complex drawing further down like a SteelBlue lake with a black boundary,
     //       or if we have labels turned on which resets our color to black.
-    if (weather_alert_flag) {
+    if (weather_alert_flag) {   /* XXX */
         char xbm_path[MAX_FILENAME];
         int _w, _h, _xh, _yh;
         int ret_val;
@@ -1490,6 +1495,8 @@ void draw_shapefile_map (Widget w,
                     fprintf(stderr,"key=%s ",key);
                     fprintf(stderr,"symbol=%s ",sym);
                     fprintf(stderr,"filled=%d ",filled);
+                    fprintf(stderr,"fillstyle=%d ",fillstyle);
+                    fprintf(stderr,"fillcolor=%d ",fillcolor);
                     fprintf(stderr,"pattern=%d ",pattern);
                     fprintf(stderr,"display_level=%d ",display_level);
                     fprintf(stderr,"label_level=%d ",label_level);
@@ -1499,8 +1506,14 @@ void draw_shapefile_map (Widget w,
                 /* set attributes */
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                 draw_filled = filled; /* this overrides map properties! */
+                if (weather_alert_flag) /* XXX will this fix WX alerts? */
+                    fillstyle = FillStippled;
+
+                (void)XSetFillStyle(XtDisplay(w), gc, fillstyle);
+                
                 skip_it = (map_color_levels && scale_y > display_level);
                 skip_label = (map_color_levels && scale_y > label_level);
+
             }
 #endif /* WITH_DBFAWK */
 
