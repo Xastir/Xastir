@@ -1,8 +1,11 @@
 #! /bin/sh
+# Updated on 7/5/03 to reflect the new directory structure
+# N0VH
+#
 cd /var/tmp
 wget ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
-unzip -p l_amat.zip EN.dat|sort +4 -t \| >/usr/local/xastir/fcc/EN.dat
+unzip -p l_amat.zip EN.dat|sort +4 -t \| >/usr/local/share/xastir/fcc/EN.dat
 wget ftp://ftp.rac.ca/pub/cdncaldb.zip
 unzip cdncaldb.zip AMATEUR.RPT
-mv AMATEUR.RPT /usr/local/xastir/fcc/AMACALL.LST
+mv AMATEUR.RPT /usr/local/share/xastir/fcc/AMACALL.LST
 rm l_amat.zip cdncaldb.zip
