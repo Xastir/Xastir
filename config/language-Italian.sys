@@ -255,6 +255,9 @@ POPUPMA021|Muovi||
 POPUPMA022|RintracciaMi||
 POPUPMA023|Trovato Blocchi Tastiera!||
 POPUPMA024|Per Favore disabilita Blocco Maiuscole/Numeri/Scorrimento/||
+POPUPMA026|Center & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||

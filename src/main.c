@@ -752,6 +752,8 @@ static void Pan_left(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_left_less(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_right(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_right_less(Widget w, XtPointer clientData, XtPointer calldata);
+static void Center_Zoom(Widget w, XtPointer clientData, XtPointer calldata);
+Widget center_zoom_dialog = (Widget)NULL;
 
 static void Menu_Quit(Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -4408,6 +4410,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
+    Widget ctr_zoom;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
@@ -7012,6 +7015,20 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
     XtAddCallback(pan_ctr,XmNactivateCallback,Pan_ctr,NULL);
+
+    // "Center & Zoom"
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA026")); ac++;
+    ctr_zoom=XtCreateManagedWidget(langcode("POPUPMA026"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(ctr_zoom,XmNactivateCallback,Center_Zoom,NULL);
 
     // "Station info"
     ac = 0;
@@ -10463,6 +10480,250 @@ void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
+    }
+}
+
+
+
+
+
+void Center_Zoom_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    center_zoom_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+//    Widget shell = (Widget) clientData;
+
+/*
+    // This stuff is from the Pan_ctr function above
+    Dimension width, height;
+
+    if(display_up) {
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
+        new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+        new_scale_y = scale_y;          // keep size
+        display_zoom_image(1);          // check range and do display, recenter
+    }
+*/
+
+
+}
+
+
+
+
+
+// Function to bring up a dialog.  User can then select the center
+// and zoom for the display directly.
+void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+    static Widget  pane,form, button_ok, button_cancel,
+            lat_label, latitude,
+            lon_label, longitude,
+            zoom_label, zoom_level;
+//    Arg al[20];           /* Arg List */
+//    unsigned int ac = 0;           /* Arg Count */
+    Atom delw;
+
+    if(!center_zoom_dialog) {
+
+        // "Center & Zoom"
+        center_zoom_dialog = XtVaCreatePopupShell(langcode("POPUPMA026"),
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                XmNresize, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Jump_location pane",
+                xmPanedWindowWidgetClass,
+                center_zoom_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        form =  XtVaCreateWidget("Jump_location form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 2,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // "Latitude"
+        lat_label = XtVaCreateManagedWidget(langcode("POPUPMA027"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        latitude = XtVaCreateManagedWidget("Center_Zoom latitude",
+                xmTextFieldWidgetClass,
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,      1,
+                XmNcolumns,21,
+                XmNwidth,((21*7)+2),
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, lat_label,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                NULL);
+
+        // "Longitude"
+        lon_label = XtVaCreateManagedWidget(langcode("POPUPMA028"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, lat_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        longitude = XtVaCreateManagedWidget("Center_Zoom longitude",
+                xmTextFieldWidgetClass,
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,      1,
+                XmNcolumns,21,
+                XmNwidth,((21*7)+2),
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, lat_label,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, lon_label,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                NULL);
+
+        // "Zoom Level"
+        zoom_label = XtVaCreateManagedWidget(langcode("POPUPMA004"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, lon_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        zoom_level = XtVaCreateManagedWidget("Center_Zoom zoom_level",
+                xmTextFieldWidgetClass,
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,      1,
+                XmNcolumns,21,
+                XmNwidth,((21*7)+2),
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, lon_label,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, zoom_label,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("JMLPO00002"),
+                xmPushButtonGadgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, zoom_label,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, zoom_label,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        XtAddCallback(button_cancel, XmNactivateCallback, Center_Zoom_destroy_shell, center_zoom_dialog);
+        XtAddCallback(button_ok, XmNactivateCallback, Center_Zoom_do_it, NULL);
+
+        pos_dialog(center_zoom_dialog);
+
+        delw = XmInternAtom(XtDisplay(center_zoom_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(center_zoom_dialog, delw, Center_Zoom_destroy_shell, (XtPointer)center_zoom_dialog);
+
+        XtManageChild(form);
+        XtManageChild(pane);
+
+        XtPopup(center_zoom_dialog,XtGrabNone);
+        fix_dialog_size(center_zoom_dialog);
+
+        // Move focus to the Close button.  This appears to
+        // highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit
+        // the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(center_zoom_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    } else {
+        XtPopup(center_zoom_dialog,XtGrabNone);
+        (void)XRaiseWindow(XtDisplay(center_zoom_dialog), XtWindow(center_zoom_dialog));
     }
 }
 

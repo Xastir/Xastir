@@ -261,6 +261,9 @@ POPUPMA021|Bewegen||
 POPUPMA022|Verfolge mich||
 POPUPMA023|Modifikationstasten aktiv!||
 POPUPMA024|Bitte Umschalt/Num/Rollen/andere Modifikationstasten ausschalten||
+POPUPMA026|Center & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||

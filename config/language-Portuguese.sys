@@ -258,6 +258,9 @@ POPUPMA021|Movimento||
 POPUPMA022|Siga-me||
 POPUPMA023|Modificadores encontrados!||
 POPUPMA024|Por favor desligue as teclas CapsLock/NumLock/ScrollLock/outros||
+POPUPMA026|Center & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
 #
 # Menú dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||

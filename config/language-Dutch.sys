@@ -265,6 +265,9 @@ POPUPMA021|Verplaatsen||
 POPUPMA022|Volg Me||
 POPUPMA023|Functie Toetsen Actief!||
 POPUPMA024|Schakel CapsLock/NumLock/ScrollLock/andere Toetsen UIT||
+POPUPMA026|Center & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

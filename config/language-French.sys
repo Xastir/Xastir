@@ -254,6 +254,9 @@ POPUPMA021|Déplacer||
 POPUPMA022|SuivreMoi||
 POPUPMA023|Modificateurs trouvés!||
 POPUPMA024|SVP désactiver CapsLock/NumLock/ScrollLock/autres modificateurs||
+POPUPMA026|Center & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
