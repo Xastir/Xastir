@@ -845,7 +845,7 @@ void load_data_or_default(void) {
     if (!get_int ("USE_TIGERMAPS", &tiger_flag, 0, 1, 0))
         tiger_flag = 0;
 
-    if (!get_int ("TIGERMAP_INTENSITY", &tigermap_intensity, 50, 100, 100))
+    if (!get_int ("TIGERMAP_INTENSITY", &tigermap_intensity, 0, 100, 100))
         tigermap_intensity = 100;
 
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))

@@ -11893,7 +11893,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
-                XmNminimum, 50,
+                XmNminimum, 0,
                 XmNmaximum, 100,
                 XmNshowValue, TRUE,
                 XmNvalue, tigermap_intensity,
