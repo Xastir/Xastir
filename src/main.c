@@ -1334,6 +1334,16 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+// Find the extents of every map we have
+// 
+void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
+    map_indexer();
+}
+
+
+
+
+
 void check_weather_symbol(void) {
     // Check for weather station, if so, make sure symbol is proper type
     if ( (output_station_type == 4) || (output_station_type == 5) ) {
@@ -3515,7 +3525,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         transmit_disable_toggle,
         net_logging, igate_logging, wx_logging, enable_snapshots, print_button,
         test_button, debug_level_button, aa_button, speech_button,
-        smart_beacon_button, auto_msg_set_button,
+        smart_beacon_button, map_indexer_button, auto_msg_set_button,
         message_button, send_message_to_button, open_messages_group_button,
         clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
@@ -3973,14 +3983,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    smart_beacon_button = XtVaCreateManagedWidget("Smart Beaconing",
+    smart_beacon_button = XtVaCreateManagedWidget(langcode("SMARTB001"),
             xmPushButtonGadgetClass,
             configpane,
-            XmNmnemonic,"Smart Beaconing",
+            XmNmnemonic,langcode_hotkey("SMARTB001"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
 
+    map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNCF003"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF003"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     units_choice_button = XtVaCreateManagedWidget(langcode("PULDNUT001"),
             xmToggleButtonGadgetClass,
@@ -5247,6 +5264,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(aa_button,            XmNactivateCallback,Configure_audio_alarms,NULL);
     XtAddCallback(speech_button,        XmNactivateCallback,Configure_speech,NULL);
     XtAddCallback(smart_beacon_button,  XmNactivateCallback,Smart_Beacon,NULL);
+    XtAddCallback(map_indexer_button,   XmNactivateCallback,Index_Maps_Now,NULL);
     XtAddCallback(station_button,       XmNactivateCallback,Configure_station,NULL);
 
     XtAddCallback(help_about,           XmNactivateCallback,Help_About,NULL);

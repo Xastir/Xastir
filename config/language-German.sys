@@ -62,6 +62,7 @@ PULDNCF002|Coordinate System|C|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Sprachausgabe|S|
 PULDNCF008|Einstellungen sichern|E|
+PULDNCF003|Re-Index Maps|R|
 # (Einheiten siehe PULDNDP006)
 #
 # Menu "Karten"

@@ -57,6 +57,7 @@ PULDNCF002|Sistema de Coordenada|C|
 PULDNCF006|Audio Alarmas|A|
 PULDNCF007|Sintetizador de Voz|S|
 PULDNCF008|Guardar Configuración!|G|
+PULDNCF003|Re-Index Maps|R|
 # (Unidades ver PULDNDP006)
 #
 # Menú de Mapas
