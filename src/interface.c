@@ -398,6 +398,9 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 #endif  // HAVE_LIBAX25
 
 
+
+
+
 //***********************************************************
 // ui connect: change call and proto paths and reconnect net
 // port device to work with
@@ -598,6 +601,7 @@ static void data_out_ax25(int port, unsigned char *string) {
                         (void)close(port_data[port].channel2);
                         port_data[port].channel2 = -1;
                     }
+
                     if ((port_data[port].channel2 = ui_connect(port,to)) < 0) {
                         popup_message(langcode("POPEM00004"),langcode("POPEM00012"));
                         port_data[port].errors++;
