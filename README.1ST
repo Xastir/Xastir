@@ -834,6 +834,12 @@ END OF MANDRAKE LINUX NOTES.
    screen message, and "SPEAK_ID" variable to 1 to enable festival to speak
    the message.  These variables are in the ~/.xastir/config/xastir.cnf file.
 
+   To use speech you must have a sound card and the 'festival' speech
+   synthesis software installed.  Install Festival and start it in 'server'
+   mode prior to starting up XASTIR.  The normal command for this is
+   "festival --server &".  More info about the speech features is in the
+   Xastir help file.
+
 
 You probably want to download some maps and additional data files. The
 instructions for this are below in the "Getting data files for Xastir" section.
