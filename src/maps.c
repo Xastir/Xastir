@@ -687,7 +687,7 @@ void draw_grid(Widget w) {
 
     /* Set the line width in the GC */
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
-    (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x08]); // Black
+    (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);
     (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
 
     if (coordinate_system == USE_UTM) {
