@@ -166,7 +166,11 @@
 // configuration to correspond.  This will more than likely mess up
 // other X11 applications as well.
 
-
+// Yet another useful item:  Puts the mouse menu on button 1 instead
+// of button3.  Useful for one-button devices like touchscreens.
+//
+//#define SWAP_MOUSE_BUTTONS
+ 
 
 // If next line uncommented, Xastir will use a large font for the
 // station text in the drawing area.
@@ -3878,8 +3882,13 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
         return;
     }
 
+#ifdef SWAP_MOUSE_BUTTONS
+    if (event->button != Button1) {
+        //fprintf(stderr,"Pressed a mouse button, but not Button1: %x\n",event->button);
+#else   // SWAP_MOUSE_BUTTONS
     if (event->button != Button3) {
         //fprintf(stderr,"Pressed a mouse button, but not Button3: %x\n",event->button);
+#endif  // SWAP_MOUSE_BUTTONS
         return;
     }
 
@@ -6441,7 +6450,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
+#ifdef SWAP_MOUSE_BUTTONS
+    XtSetArg(al[ac], XmNmenuPost, "<Btn1Down>"); ac++;  // Set for popup menu on button 1
+#else   // SWAP_MOUSE_BUTTONS
     XtSetArg(al[ac], XmNmenuPost, "<Btn3Down>"); ac++;  // Set for popup menu on button 3
+#endif  // SWAP_MOUSE_BUTTONS
+
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
