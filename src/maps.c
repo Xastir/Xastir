@@ -1396,12 +1396,11 @@ void create_map_from_trail(char *call_sign) {
         }
 
         // Create a Shapefile from the APRS trail.  Write it into
-        // "/maps/GPS" and add a date/timestamp to the end.
+        // "~/.xastir/tracklogs" and add a date/timestamp to the end.
         //
-        // Create directory name ("maps/GPS/")
         xastir_snprintf(temp, sizeof(temp),
-            "%s/GPS/",
-            get_data_base_dir("maps"));
+            "%s/",
+            get_user_base_dir("tracklogs"));
 
         // Create filename
         xastir_snprintf(temp2, sizeof(temp2),
@@ -1728,9 +1727,9 @@ void draw_shapefile_map (Widget w,
     if (alert)
         weather_alert_flag++;
 
-    // Check for maps/GPS directory.  We set up the labels and
-    // colors differently for these types of files.
-    if (strstr(filenm,"GPS")) { // We're in the maps/GPS directory
+    // Check for ~/.xastir/tracklogs directory.  We set up the
+    // labels and colors differently for these types of files.
+    if (strstr(filenm,".xastir/tracklogs")) { // We're in the ~/.xastir/tracklogs directory
         gps_flag++;
     }
 
