@@ -103,6 +103,8 @@ MPUPTGR013|Rivieren||
 MPUPTGR014|Meren||
 MPUPTGR015|Vliegvelden, Parken, enz||
 MPUPTGR016|Kaart Intensiteit||
+MPUPTGR017|Timeout (sec)||
+MPUPTGR018|Enable Tiger Maps||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Kaart Kiezer||
@@ -157,7 +159,7 @@ PULDNDP029|- Selecteer Bewegende Stations||
 PULDNDP030|- Selecteer Weer Stations||
 PULDNDP045|Selecteer Objecten/Items||
 PULDNDP026|- Selecteer  Weer Objecten/Items||
-PULDNDP039|- Selecteer  Water Gauge Objecten/Items||
+PULDNDP039|- Selecteer  Water Hoogte Objecten/Items||
 PULDNDP031|- Selecteer  Andere Objecten/Items||
 # SubMenu "Filter Display"
 PULDNDP033|Filter Weergave||
@@ -172,7 +174,7 @@ PULDNDP002|Hoogte|H|
 PULDNDP009|Weer Informatie|W|
 PULDNDP046|- Weer Tekst||
 PULDNDP018|-- Geef alleen Temperatuur weer||
-PULDNDP047|- Wind Richting||
+PULDNDP047|- Wind Indicator||
 PULDNDP013|Zet Stations Nadering aan||
 PULDNDP008|Stations Vermogen/Winst|V|
 PULDNDP021|- Activeer Standaard Vermogen/Winst||
@@ -215,7 +217,7 @@ PULDNTNC01|Zend Nu!|Z|
 PULDNTNT01|Zend Nu!|T|
 PULDNTNT07|Volg GPS Spoor|F|
 PULDNTNT08|Volg GPS Routes|R|
-PULDNTNT09|Volg GPS Waypoints|W|
+PULDNTNT09|Volg GPS Routepunten|W|
 #
 # Menu "Help"
 PULDNHEL01|Informatie|A|
@@ -660,9 +662,9 @@ WPUPSTI056|Zet Automatisch Bijwerken Aan||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Richting:||
 WPUPSTI059|Status: %s||
-WPUPSTI060|Gevoels Temp: %02.1f°C  ||
-WPUPSTI061|Gevoels Temp: %s°F   ||
-WPUPSTI062|Gevoels Vochtigheid: %s%%   ||
+WPUPSTI060|Ontbrandings Temp: %02.1f°C  ||
+WPUPSTI061|Ontbrandings Temp: %s°F   ||
+WPUPSTI062|Vochtigheids Gehalte in Brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 #
 # FCC-RAC Call Look up

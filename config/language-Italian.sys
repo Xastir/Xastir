@@ -97,6 +97,8 @@ MPUPTGR013|Rivers||
 MPUPTGR014|Lakes||
 MPUPTGR015|Airports, Parks, etc||
 MPUPTGR016|Map Intensity||
+MPUPTGR017|Timeout (sec)||
+MPUPTGR018|Enable Tiger Maps||
 #
 #
 # Finestra di dialogo mappe

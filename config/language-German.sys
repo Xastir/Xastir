@@ -102,6 +102,8 @@ MPUPTGR013|Flüsse||
 MPUPTGR014|Seen||
 MPUPTGR015|Flughäfen, parks, etc||
 MPUPTGR016|Karten Intensität||
+MPUPTGR017|Timeout (sec)||
+MPUPTGR018|Enable Tiger Maps||
 #
 #
 # PopUp "Kartenauswahl"

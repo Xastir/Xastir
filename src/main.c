@@ -12624,6 +12624,8 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
 //
 void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_label1, sep, sep2;
+    int intensity_length;
+    int timeout_length;
 
     Atom delw;
 
@@ -12653,7 +12655,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        tiger_enable_widget = XtVaCreateManagedWidget("Enable Tiger Maps",
+        tiger_enable_widget = XtVaCreateManagedWidget(langcode("MPUPTGR018"),
                 xmToggleButtonWidgetClass, 
                 tiger_form,
                 XmNtopAttachment, XmATTACH_FORM,
@@ -12911,6 +12913,8 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+       intensity_length = strlen(langcode("MPUPTGR016")) + 1;
+
        tiger_intensity  = XtVaCreateManagedWidget("Intensity", 
                 xmScaleWidgetClass,
                 tiger_form,
@@ -12931,10 +12935,12 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNmaximum, 100,
                 XmNshowValue, TRUE,
                 XmNvalue, tigermap_intensity,
-                XtVaTypedArg, XmNtitleString, XmRString, "Intensity", 10,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR016"), intensity_length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+       timeout_length = strlen(langcode("MPUPTGR017")) + 1;
 
        tiger_timeout  = XtVaCreateManagedWidget("Timeout", 
                 xmScaleWidgetClass,
@@ -12956,7 +12962,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNmaximum, 120,
                 XmNshowValue, TRUE,
                 XmNvalue, tigermap_timeout,
-                XtVaTypedArg, XmNtitleString, XmRString, "Timeout (sec)", 14,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
