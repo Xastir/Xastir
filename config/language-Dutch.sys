@@ -791,12 +791,12 @@ IFDNL00012|AGWPE Via Netwerk||
 IFDNL00013|Serieele Multi-Port KISS TNC||
 #
 # Interface device info
-IFDIN00000|%s %2d %s via serieel device %s||
-IFDIN00001|%s %2d %s verbonden met %s:%d||
-IFDIN00002|%s %2d %s gebruikt device genaamd %s||
-IFDIN00003|%s %2d  %s  %s %s||
-IFDIN00004|%s %2d  %s  %s %s:%d||
-IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00000|%s %2d %s via serieel device %s   %s||
+IFDIN00001|%s %2d %s verbonden met %s:%d   %s||
+IFDIN00002|%s %2d %s gebruikt device genaamd %s   %s||
+IFDIN00003|%s %2d  %s  %s %s   %s||
+IFDIN00004|%s %2d  %s  %s %s:%d   %s||
+IFDIN00005|%s %2d  %s  %s %s   %s||
 IFDIN00006|INACTIEF ||
 IFDIN00007| ACTIEF  ||
 IFDIN00008|  FOUT   ||

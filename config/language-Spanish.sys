@@ -784,12 +784,12 @@ IFDNL00012|Red AGWPE||
 IFDNL00013|Serial Multi-Port KISS TNC||
 #
 # Info dispositivo Interfáz
-IFDIN00000|%s %2d %s sobre serial %s||
-IFDIN00001|%s %2d %s conectado a %s:%d||
-IFDIN00002|%s %2d %s usando dispositivo nombrado %s||
-IFDIN00003|%s %2d  %s  %s %s||
-IFDIN00004|%s %2d  %s  %s %s:%d||
-IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00000|%s %2d %s sobre serial %s   %s||
+IFDIN00001|%s %2d %s conectado a %s:%d   %s||
+IFDIN00002|%s %2d %s usando dispositivo nombrado %s   %s||
+IFDIN00003|%s %2d  %s  %s %s   %s||
+IFDIN00004|%s %2d  %s  %s %s:%d   %s||
+IFDIN00005|%s %2d  %s  %s %s   %s||
 IFDIN00006|  ABAJO    ||
 IFDIN00007|  ARRIBA   ||
 IFDIN00008|  ERROR    ||

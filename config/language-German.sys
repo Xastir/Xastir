@@ -787,12 +787,12 @@ IFDNL00012|AGWPE über Netz||
 IFDNL00013|Serieller Multi-Port KISS TNC||
 #
 # Interface device info 
-IFDIN00000|%s %2d %s an ser. Schnittstelle %s||
-IFDIN00001|%s %2d %s verbunden mit %s:%d||
-IFDIN00002|%s %2d %s über Device namens %s||
-IFDIN00003|%s %2d  %s  %s %s||
-IFDIN00004|%s %2d  %s  %s %s:%d||
-IFDIN00005|%s %2d  %s  %s %s||
+IFDIN00000|%s %2d %s an ser. Schnittstelle %s   %s||
+IFDIN00001|%s %2d %s verbunden mit %s:%d   %s||
+IFDIN00002|%s %2d %s über Device namens %s   %s||
+IFDIN00003|%s %2d  %s  %s %s   %s||
+IFDIN00004|%s %2d  %s  %s %s:%d   %s||
+IFDIN00005|%s %2d  %s  %s %s   %s||
 IFDIN00006|  INAKTIV  ||
 IFDIN00007|   AKTIV   ||
 IFDIN00008|  FEHLER   ||
