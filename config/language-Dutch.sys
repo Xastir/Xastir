@@ -72,7 +72,7 @@ PULDNMP014|Lokaliseer Kaart Functie|L|
 PULDNMP013|Zet alle Kaarten uit|Z|
 PULDNMP002|Automatische Kaart Keuze|A|
 PULDNMP003|Kaart Graadlijnen|G|
-PULDNMP004|Kaart Niveaus|N|
+PULDNMP004|Kaart Niveaus||
 PULDNMP010|Kaartlabels||
 PULDNMP009|Kleur Gevulde Gebieden|K|
 PULDNMP007|Kaart WX Waarschuwing Counties|W|
@@ -83,8 +83,8 @@ PULDNMP008|Kaart Intensiteit|I|
 PULDNMP020|Aanzetten/Configureren Tigermap||
 PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
-PULDNMP023|Index: Voeg nieuwe kaarten toe|N|
-PULDNMP024|Index: Herindexeer ALLE kaarten|R|
+PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
+PULDNMP024|Index: Herindexeer ALLE kaarten|H|
 #
 #
 # PopUp "Configureren Tigermap"
