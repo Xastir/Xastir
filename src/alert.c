@@ -430,6 +430,19 @@ void alert_print_list(void) {
 
 
 //
+// alert_active_count()
+//
+// Returns the quantity of active alerts
+//
+int alert_active_count(void) {
+    return(alert_list_count);
+}
+
+
+
+
+
+//
 // alert_expire()
 //
 // Delete stored alerts that have expired, by zeroing the title
@@ -437,8 +450,11 @@ void alert_print_list(void) {
 // makes sure that the expired alert doesn't get drawn or shown in
 // the View->WX Alerts dialog.
 //
-void alert_expire(void) {
+// Returns the quantity of alerts that were just expired.
+//
+int alert_expire(void) {
     int ii;
+    int expire_count = 0;
 
     // Delete stored alerts that have expired (zero the title string)
     for (ii = 0; ii < alert_max_count; ii++) {
@@ -453,8 +469,10 @@ void alert_expire(void) {
             }
             alert_list[ii].title[0] = '\0'; // Clear this alert
             alert_list_count--;
+            expire_count++;
         }
     }
+    return(expire_count);
 }
 
 
