@@ -862,6 +862,7 @@ int last_popup_y;
 char last_object[9+1];
 char last_obj_grp;
 char last_obj_sym;
+char last_obj_overlay;
 char last_obj_comment[34+1];
 
 time_t program_start_time;
@@ -15104,6 +15105,15 @@ int Setup_object_data(char *line, int line_length) {
     if(isalpha((int)last_obj_grp))
         last_obj_grp = toupper((int)line[0]);          // todo: toupper in dialog
 
+    // Check for overlay character
+    if (last_obj_grp != '/' && last_obj_grp != '\\') {
+        last_obj_overlay = last_obj_grp;
+        last_obj_grp = '\\';
+    }
+    else {
+        last_obj_overlay = '\0';
+    }
+
     strcpy(line,XmTextFieldGetString(object_symbol_data));
     last_obj_sym = line[0];
 
@@ -15295,6 +15305,10 @@ int Setup_object_data(char *line, int line_length) {
         if (transmit_compressed_objects_items) {
 
 // Need to compute "csT" at some point and add it to the object
+
+//WE7U
+// Need to handle the conversion of numeric overlay chars to "a-j" here as well.
+
             xastir_snprintf(line, line_length, ";%-9s*%s%s",
                 last_object,
                 time,
@@ -15311,7 +15325,7 @@ int Setup_object_data(char *line, int line_length) {
                 last_object,
                 time,
                 lat_str,
-                last_obj_grp,
+                last_obj_overlay ? last_obj_overlay : last_obj_grp,
                 lon_str,
                 last_obj_sym,
                 speed_course,
@@ -15448,6 +15462,15 @@ int Setup_item_data(char *line, int line_length) {
     last_obj_grp = line[0];
     if(isalpha((int)last_obj_grp))
         last_obj_grp = toupper((int)line[0]);          // todo: toupper in dialog
+
+    // Check for overlay character
+    if (last_obj_grp != '/' && last_obj_grp != '\\') {
+        last_obj_overlay = last_obj_grp;
+        last_obj_grp = '\\';
+    }
+    else {
+        last_obj_overlay = '\0';
+    }
 
     strcpy(line,XmTextFieldGetString(object_symbol_data));
     last_obj_sym = line[0];
@@ -15621,6 +15644,10 @@ int Setup_item_data(char *line, int line_length) {
         if (transmit_compressed_objects_items) {
 
 // Need to compute "csT" at some point and add it to the item
+
+//WE7U
+// Need to handle the conversion of numeric overlay chars to "a-j" here as well.
+
             xastir_snprintf(line, line_length, ")%s!%s",
                 last_object,
                 compress_posit(ext_lat_str,
@@ -15635,7 +15662,7 @@ int Setup_item_data(char *line, int line_length) {
             xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
                 last_object,
                 lat_str,
-                last_obj_grp,
+                last_obj_overlay ? last_obj_overlay : last_obj_grp,
                 lon_str,
                 last_obj_sym,
                 speed_course,
@@ -18544,7 +18571,14 @@ else if (DF_object_enabled) {
             XtSetSensitive(object_name_data, FALSE);
             // Would be nice to change the colors too
 
-            temp_data[0] = p_station->aprs_symbol.aprs_type;
+            // Check for overlay character
+            if (p_station->aprs_symbol.special_overlay) {
+                // Found an overlay character
+                temp_data[0] = p_station->aprs_symbol.special_overlay;
+            }
+            else {  // No overlay character
+                temp_data[0] = p_station->aprs_symbol.aprs_type;
+            }
             temp_data[1] = '\0';
             XmTextFieldSetString(object_group_data,temp_data);
 
