@@ -369,8 +369,23 @@ Note that one user running Cygwin on XP had it crash every time his
 screensaver kicked in.  Disabling the screenserver fixed that
 problem.
 
+Another interesting "feature" of Cygwin/Xwindows is that some of the
+modifier keys like ScrollLock/CapsLock/NumLock must be pressed while
+that X-window is the active foreground window.  If not, the event
+can be missed, and Xwindows can get out of sync with the actual
+state of the key.  This doesn't appear to be an Xastir-specific
+problem, but a Cygwin problem.
+
 Please see the INSTALL file and the Help menu in Xastir itself
 for additional information not mentioned in this document.
+
+Additional info can be found on the cygwin website:
+
+    http://www.cygwin.com
+
+or the Cygwin/XFree86 website:
+
+    http://cygwin.com/xfree/
 
 
 
