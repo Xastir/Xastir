@@ -929,6 +929,10 @@ void Draw_OGR_Labels( Widget w,
 
 //fprintf(stderr,"Draw_OGR_Labels start\n");
 
+    if (featureH == NULL)
+        return; // Exit early
+
+
     // Recursively call this routine if we have a lot of points, so
     // that we draw labels at multiple points along the line.  The
     // number of points skipped should probably be tied to the zoom
@@ -1816,10 +1820,10 @@ void Draw_OGR_Polygons( Widget w,
     int num_outer_points = 0;
 
 
+//fprintf(stderr,"Draw_OGR_Polygons\n");
+
     if (geometryH == NULL)
         return; // Exit early
-
-//fprintf(stderr,"Draw_OGR_Polygons\n");
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
@@ -3325,10 +3329,13 @@ clear_dangerous();
     //    we draw vectors on top of the polygons, so that roads and
     //    railroads and such will get drawn on top of water, streams
     //    will get drawn on top of city color-fill, etc.
+//DONE!
     // *) Once we've processed the CompleteChain layer, turn those 
     //    geometries into real polygons:
     //      Create a wkbGeometryCollection object.
+//DONE!
     //      BuildPolygonFromEdges()
+//DONE!
     //      Draw the polygons.  Decide whether to draw based on the
     //        WATER field and/or the CFCC field if present.
     // *) Draw non-polygon vectors.
@@ -3941,7 +3948,7 @@ fprintf(stderr,"Done with Polygon data reassembly\n");
                                 "OGR_G_AddGeometry: Unsupported geometry type?\n");
                     }
                     else {
-fprintf(stderr,"?");
+//fprintf(stderr,"?");
                     }
  
                     // Skip to the next record
@@ -3963,8 +3970,35 @@ fprintf(stderr,"?");
                 }
 
 
+
+
+
 // Here's where we would draw the polygon.  All of the information
 // is in one place now.
+/*
+guess_vector_attributes(w,
+    driver_type,
+    full_filename,
+    layerH,
+    featureH,
+    geometry_type);
+*/
+
+//if (label_color_guess != -1) {
+    Draw_OGR_Polygons(w,
+//        featureH,
+        NULL,
+        newpolygonH,
+        1,
+        transformH,
+        draw_filled,
+//        fast_extents);
+        1);
+//}
+ 
+
+
+
 
                 // Free the polygon structure
                 OGR_G_DestroyGeometry(newpolygonH);
