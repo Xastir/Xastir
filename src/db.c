@@ -8024,6 +8024,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     char addr[9+1];
     char addr9[9+1];
     char msg_id[5+1];
+    char ack_string[6];
     int done;
 
 
@@ -8063,6 +8064,78 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             substr(msg_id,temp_ptr+1,5);        // extract message ID, could be non-digit
             temp_ptr[0] = '\0';                 // adjust message end (chops off message ID)
         }
+
+        // Check for Reply/Ack protocol, which looks like this:
+        // "{XX}BB", where XX is the sequence number for the
+        // message, and BB is the ack for the previous message from
+        // my station.  I've also seen this from APRS+: "{XX}B", so
+        // perhaps this is also possible "{X}B" or "{X}BB}".  We can
+        // also get auto-reply responses from APRS+ that just have
+        // "}X" or "}XX" at the end.  We need to decode these as
+        // well.
+        //
+        ack_string[0] = '\0';   // Make sure the string is empty
+
+        temp_ptr = strstr(msg_id,"}"); // look for Reply Ack in msg_id
+
+        if (temp_ptr != NULL) { // Found Reply/Ack protocol!
+            int zz = 1;
+            int yy = 0;
+
+if (is_my_call(addr,1)) {
+printf("Found Reply/Ack:%s\n",message);
+printf("Orig_msg_id:%s\t",msg_id);
+}
+
+// Put this code into the UI message area as well?
+
+            // Separate out the extra ack so that we can deal with
+            // it properly.
+            while (temp_ptr[zz] != '\0') {
+                ack_string[yy++] = temp_ptr[zz++];
+            }
+            ack_string[yy] = '\0';  // Terminate the string
+
+            // Terminate it here so that rest of decode works
+            // properly.  We can get duplicate messages
+            // otherwise.
+            temp_ptr[0] = '\0'; // adjust msg_id end
+
+if (is_my_call(addr,1)) {
+printf("New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
+}
+
+        }
+
+        // Look for Reply Ack in message without sequence number
+        temp_ptr = strstr(message,"}");
+
+        if (temp_ptr != NULL) {
+            int zz = 1;
+            int yy = 0;
+
+if (is_my_call(addr,1)) {
+printf("Found Reply/Ack:%s\n",message);
+}
+
+// Put this code into the UI message area as well?
+
+            while (temp_ptr[zz] != '\0') {
+                ack_string[yy++] = temp_ptr[zz++];
+            }
+            ack_string[yy] = '\0';  // Terminate the string
+
+            // Terminate it here so that rest of decode works
+            // properly.  We can get duplicate messages
+            // otherwise.
+            temp_ptr[0] = '\0'; // adjust message end
+
+if (is_my_call(addr,1)) {
+printf("Reply_ack:%s\n\n",ack_string);
+}
+ 
+        }
+ 
         done = 0;
     } else
         done = 1;                               // fall through...
@@ -8118,42 +8191,16 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     if (debug_level & 1)
         printf("4\n");
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) {   // message for me
+    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) {   // message for me with msg_id
         time_t last_ack_sent;
         long record;
-        char ack_string[6];
 
-        // Check for Reply/Ack protocol, which looks like this:
-        // {XX}BB, where XX is the sequence number for the message,
-        // and BB is the ack for the previous message from my
-        // station.
-        ack_string[0] = '\0';   // Terminate the string
-
-        if (msg_id[2] == '}') { // They're sending Reply/Ack protocol!
-
-            msg_id[2] = '\0';   // Terminate it here so that rest of
-                                // decode works properly.  We can
-                                // get duplicate messages otherwise.
-
-            // Separate out the extra ack so that we can deal with
-            // it properly.
-            if (strlen(msg_id) > 4) {   // We have 2 ack chars
-                ack_string[0] = msg_id[3];
-                ack_string[1] = msg_id[4];
-                ack_string[2] = '\0';
-            }
-            else if (strlen(msg_id) > 3) {  // We have 1 ack chars
-                ack_string[0] = msg_id[3];
-                ack_string[1] = '\0';
-            }
-            if (strlen(ack_string) != 0) {  // Have an ack to deal with
-
-printf("Found Reply/Ack protocol.  Extra ack for me!\n");
 // Remember to put this code into the UI message area as well.
 
-                clear_acked_message(call,addr,ack_string);  // got an ACK for me
-                msg_record_ack(call,addr,ack_string);   // Record the ack for this message
-            }
+        // Check for Reply/Ack
+        if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
+            clear_acked_message(call,addr,ack_string);  // got an ACK for me
+            msg_record_ack(call,addr,ack_string);   // Record the ack for this message
         }
 
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
@@ -8316,8 +8363,16 @@ else {
         }
 
         // Could be response to a query.  Popup a messsage.
-        if ( (message[0] != '?') && is_my_call(addr,1) )
+        if ( (message[0] != '?') && is_my_call(addr,1) ) {
             popup_message(langcode("POPEM00018"),message);
+
+            // Check for Reply/Ack (APRS+ sends an AA: response back
+            // for auto-reply, with an embedded Reply/Ack.
+            if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
+                clear_acked_message(call,addr,ack_string);  // got an ACK for me
+                msg_record_ack(call,addr,ack_string);   // Record the ack for this message
+            }
+        }
  
         // done = 1;
     }
