@@ -347,7 +347,7 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 
 
     if (debug_level & 1)
-        printf("normal_title: Incoming: %s\n",incoming_title);
+        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
 
     strncpy(outgoing_title, incoming_title, 32);
     outgoing_title[32] = '\0';
@@ -374,7 +374,7 @@ void normal_title(char *incoming_title, char *outgoing_title) {
     outgoing_title[8] = '\0';
 
     if (debug_level & 1)
-        printf("normal_title: Outgoing: %s\n",outgoing_title);
+        fprintf(stderr,"normal_title: Outgoing: %s\n",outgoing_title);
 }
 
 
@@ -393,7 +393,7 @@ void alert_print_list(void) {
     int i;
     char title[100], *c_ptr;
 
-    printf("Alert counts: %d/%d\n", alert_list_count, alert_max_count);
+    fprintf(stderr,"Alert counts: %d/%d\n", alert_list_count, alert_max_count);
     for (i = 0; i < alert_list_count; i++) {
         strncpy(title, alert_list[i].title, 99);
         title[99] = '\0';
@@ -401,7 +401,7 @@ void alert_print_list(void) {
             *c_ptr = '\0';
 
 // Alert: 10Y, MSPTOR> NWS-TEST, TAG: T  TORNDO, ACTIVITY: 191915z, Expiration: 1019234700, Title: WI_Z003
-        printf("Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
+        fprintf(stderr,"Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
                 i,                                          // 10
                 alert_list[i].flags[0],                     // Y
                 alert_list[i].from,                         // MSPTOR
@@ -435,16 +435,16 @@ void alert_print_list(void) {
 
 
     if (debug_level & 1)
-        printf("alert_add_entry\n");
+        fprintf(stderr,"alert_add_entry\n");
 
     // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
     // interest us.
     if (strcmp(entry->to, "NWS-SOLAR") == 0) {
-        //printf("NWS-SOLAR, skipping\n");
+        //fprintf(stderr,"NWS-SOLAR, skipping\n");
         return (NULL);
     }
     if (strcasecmp(entry->title, "-NoActivationExpected") == 0) {
-        //printf("NoActivationExpected, skipping\n");
+        //fprintf(stderr,"NoActivationExpected, skipping\n");
         return (NULL);
     }
 
@@ -459,7 +459,7 @@ void alert_print_list(void) {
     }
 
     if (entry->expiration < time(NULL)) {
-        //printf("Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
+        //fprintf(stderr,"Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
     }
 
     // Check for non-zero alert title, non-expired alert time
@@ -472,21 +472,21 @@ void alert_print_list(void) {
         for (i = 0; i < alert_list_count; i++) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
                 memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
-                //printf("Found empty entry, filling it\n");
+                //fprintf(stderr,"Found empty entry, filling it\n");
                 return ( &alert_list[i]);
             }
         }
 
         // Else fill in the entry at the end and bump up the count
         if (alert_list_count < alert_max_count) {
-            //printf("Adding new entry\n");
+            //fprintf(stderr,"Adding new entry\n");
             memcpy(&alert_list[alert_list_count], entry, sizeof(alert_entry));
             return (&alert_list[alert_list_count++]);
         }
     }
 
     // The title was empty or the alert has already expired
-    //printf("Title empty or alert expired, skipping\n");
+    //fprintf(stderr,"Title empty or alert expired, skipping\n");
     return (NULL);
 }
 
@@ -508,7 +508,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
     if (debug_level & 1)
-        printf("alert_match\n");
+        fprintf(stderr,"alert_match\n");
  
     // Shorten the title
     normal_title(alert->title, title_e);
@@ -580,7 +580,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
                     || strcasecmp(title_m, filename) == 0
                     || strcasecmp(alert_f, title_e) == 0))) {
             if (debug_level & 1)
-                printf("Found a cancellation: %s\t%s\n",title_e,title_m);
+                fprintf(stderr,"Found a cancellation: %s\t%s\n",title_e,title_m);
 
             return (&alert_list[i]);
         }
@@ -610,7 +610,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
                     || strcasecmp(title_m, filename) == 0
                     || strcasecmp(alert_f, title_e) == 0))) {
             if (debug_level & 1)
-                printf("New alert that matches a cancel: %s\t%s\n",title_e,title_m);
+                fprintf(stderr,"New alert that matches a cancel: %s\t%s\n",title_e,title_m);
 
             return (&alert_list[i]);
         }
@@ -638,7 +638,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
 
     if (debug_level & 1)
-        printf("alert_update_list\n");
+        fprintf(stderr,"alert_update_list\n");
 
     // Find the matching alert in alert_list, copy updated
     // parameters from new alert into existing alert_list entry.
@@ -719,7 +719,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
 
     if (debug_level & 1)
-        printf("alert_active\n");
+        fprintf(stderr,"alert_active\n");
 
     (void)time(&now);
 
@@ -808,7 +808,7 @@ void alert_sort_active(void) {
 
 
     if (debug_level & 1)
-        printf("alert_sort_active\n");
+        fprintf(stderr,"alert_sort_active\n");
 
     qsort(alert_list, (size_t)alert_list_count, sizeof(alert_entry), alert_compare);
     for (; alert_list_count && alert_list[alert_list_count-1].title[0] == '\0'; alert_list_count--);
@@ -830,7 +830,7 @@ int alert_display_request(void) {
 
 
     if (debug_level & 1)
-        printf("alert_display_request\n");
+        fprintf(stderr,"alert_display_request\n");
 
     // Iterate through entire alert_list
     for (i = 0, alert_count = 0; i < alert_list_count; i++) {
@@ -868,7 +868,7 @@ int alert_on_screen(void) {
 
 
     if (debug_level & 1)
-        printf("alert_on_screen\n");
+        fprintf(stderr,"alert_on_screen\n");
 
     for (i = 0, alert_count = 0; i < alert_list_count; i++) {
         if (alert_active(&alert_list[i], ALERT_ALL)
@@ -961,14 +961,14 @@ static void alert_build_list(Message *fill) {
     DataRow *p_station;
     int compressed_wx_packet = 0;
 
-    //printf("Message_line:%s\n",fill->message_line);
+    //fprintf(stderr,"Message_line:%s\n",fill->message_line);
 
     if (debug_level & 1)
-        printf("alert_build_list\n");
+        fprintf(stderr,"alert_build_list\n");
 
     // Check for "SKY" text in the "call_sign" field.
     if (strncmp(fill->call_sign,"SKY",3) == 0) {
-        //printf("Sky Message: %s\n",fill->message_line);
+        //fprintf(stderr,"Sky Message: %s\n",fill->message_line);
 
         // Find a matching alert_record, check whether or not it is
         // expired.  If not, add this additional text into the
@@ -1001,29 +1001,29 @@ static void alert_build_list(Message *fill) {
                     && ( strncmp(alert_list[i].seq,fill->seq,4) == 0 ) ) {
 
                 if (debug_level & 1)
-                    printf("%d:Found a matching alert to a SKY message:\t",i);
+                    fprintf(stderr,"%d:Found a matching alert to a SKY message:\t",i);
 
                 switch (fill->seq[4]) {
                     case 'B':
                         strcpy(alert_list[i].desc0,fill->message_line);
                         if (debug_level & 1)
-                            printf("Wrote into desc0: %s\n",fill->message_line);
+                            fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
                         strcpy(alert_list[i].desc1,fill->message_line);
                         if (debug_level & 1)
-                            printf("Wrote into desc1: %s\n",fill->message_line);
+                            fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
                         strcpy(alert_list[i].desc2,fill->message_line);
                         if (debug_level & 1)
-                            printf("Wrote into desc2: %s\n",fill->message_line);
+                            fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
                         break;
                     case 'E':
                     default:
                         strcpy(alert_list[i].desc3,fill->message_line);
                         if (debug_level & 1)
-                            printf("Wrote into desc3: %s\n",fill->message_line);
+                            fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                         break;
                 }
 //                return; // All done with this sky message
@@ -1059,8 +1059,8 @@ static void alert_build_list(Message *fill) {
             char *ptr;
 //            alert_entry temp_entry;
 
-//printf("Compressed Weather Alert:%s\n",fill->message_line);
-//printf("Compressed alerts are not fully implemented yet.\n");
+//fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
+//fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
 
             // Create a new weather alert for each of these and then
             // call this function on each one?  Seems like it might
@@ -1076,7 +1076,7 @@ static void alert_build_list(Message *fill) {
                 compressed_wx);     // Stick the long string in here
             compressed_wx[255] = '\0';
             compressed_wx_packet++; // Set the flag
-//printf("Line:%s\n",compressed_wx);
+//fprintf(stderr,"Line:%s\n",compressed_wx);
 
             // Snag alpha characters (should be three) at the start
             // of the string.  Use those until we hit more alpha
@@ -1110,7 +1110,7 @@ static void alert_build_list(Message *fill) {
                 // suffix should now contain something like "039"
 
 // We have our first zone extracted
-//printf("Zone:%s%s\n",prefix,suffix);
+//fprintf(stderr,"Zone:%s%s\n",prefix,suffix);
 
                 // Here we keep looping until we hit another alpha
                 // portion.
@@ -1139,7 +1139,7 @@ static void alert_build_list(Message *fill) {
                         for ( k=start_number+1; k<=end_number; k++) {
                             xastir_snprintf(temp,4,"%03d",k);
 // And another zone...
-//printf("Zone:%s%s\n",prefix,temp);
+//fprintf(stderr,"Zone:%s%s\n",prefix,temp);
                         }
                     }
                     else if (ptr[0] == '-') {   // New zone number
@@ -1152,7 +1152,7 @@ static void alert_build_list(Message *fill) {
                             ptr += 3;
                             // suffix should now contain something like "046"
 // And another zone...
-//printf("Zone:%s%s\n",prefix,suffix);
+//fprintf(stderr,"Zone:%s%s\n",prefix,suffix);
 
                         }
                         else {  // New prefix (not a number)
@@ -1245,7 +1245,7 @@ static void alert_build_list(Message *fill) {
             strncat(date_time,"z",1);   // Add a 'z' on the end.
 
             if (debug_level & 1)
-                printf("Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
+                fprintf(stderr,"Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
 
             xastir_snprintf(entry[0].issue_date_time,
                 sizeof(entry[0].issue_date_time),
@@ -1271,7 +1271,7 @@ static void alert_build_list(Message *fill) {
 
             // Terminate title string for each of five structs
             entry[i].title[32] = '\0';
-            //printf("Title: %s\n",entry[i].title);
+            //fprintf(stderr,"Title: %s\n",entry[i].title);
 
             // This one removes spaces from the title.
             //while ((ptr = strpbrk(entry[i].title, " ")))
@@ -1421,7 +1421,7 @@ int alert_message_scan(void) {
 
 
     if (debug_level & 1)
-        printf("alert_message_scan\n");
+        fprintf(stderr,"alert_message_scan\n");
 
     // This is the shorthand way we keep track of which state's we just got alerts for.
     // Looks like "CO?MO?ID?". The 3rd position is to indicate if the alert came via local or

@@ -188,7 +188,7 @@ int decode_gps_rmc( char *data,
             }
         }
     }
-    //printf("Speed %s\n",spd);
+    //fprintf(stderr,"Speed %s\n",spd);
     return(ok);
 }
 
@@ -324,7 +324,7 @@ void gps_data_find(char *gps_line_data, int port) {
             filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
             
             makePrintable(filtered_data);
-            printf("Got RMC %s\n", filtered_data);
+            fprintf(stderr,"Got RMC %s\n", filtered_data);
         }
 
         statusline(langcode("BBARSTA015"),0);
@@ -347,11 +347,11 @@ void gps_data_find(char *gps_line_data, int port) {
             /* got GPS data */
             have_valid_string++;
             if (debug_level & 128)
-                printf("RMC <%s> <%s><%s> %c <%s>\n",
+                fprintf(stderr,"RMC <%s> <%s><%s> %c <%s>\n",
                     long_pos,lat_pos,gps_spd,gps_sunit[0],gps_cse);
 
             if (debug_level & 128) {
-                printf("Checking for Time Set on %d (%d)\n",
+                fprintf(stderr,"Checking for Time Set on %d (%d)\n",
                     port, devices[port].set_time);
             }
 
@@ -362,7 +362,7 @@ void gps_data_find(char *gps_line_data, int port) {
                 tz.tz_dsttime=0;
 
                 if (debug_level & 128) {
-                    printf("Setting Time %ld EUID: %d, RUID: %d\n",
+                    fprintf(stderr,"Setting Time %ld EUID: %d, RUID: %d\n",
                         (long)t, (int)getuid(), (int)getuid());
                 }
 #ifdef __linux__
@@ -374,10 +374,10 @@ void gps_data_find(char *gps_line_data, int port) {
     else {
         if (debug_level & 128) {
             int i;
-            printf("Not $GPRMC: ");
+            fprintf(stderr,"Not $GPRMC: ");
             for (i = 0; i<7; i++)
-                printf("%c", gps_line_data[i]);
-            printf("\n");
+                fprintf(stderr,"%c", gps_line_data[i]);
+            fprintf(stderr,"\n");
         }
     }
 
@@ -390,7 +390,7 @@ void gps_data_find(char *gps_line_data, int port) {
             filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
             makePrintable(filtered_data);
-            printf("Got GGA %s\n", filtered_data);
+            fprintf(stderr,"Got GGA %s\n", filtered_data);
         }
 
         statusline(langcode("BBARSTA016"),0);
@@ -412,17 +412,17 @@ void gps_data_find(char *gps_line_data, int port) {
             /* got GPS data */
             have_valid_string++;
             if (debug_level & 128)
-                printf("GGA <%s> <%s> <%s> <%s> %c\n",
+                fprintf(stderr,"GGA <%s> <%s> <%s> <%s> %c\n",
                     long_pos,lat_pos,gps_sats,gps_alt,aunit[0]);
         }
     }
     else {
         if (debug_level & 128) {
             int i;
-            printf("Not $GPGGA: ");
+            fprintf(stderr,"Not $GPGGA: ");
             for (i = 0; i<7; i++)
-                printf("%c",gps_line_data[i]);
-            printf("\n");
+                fprintf(stderr,"%c",gps_line_data[i]);
+            fprintf(stderr,"\n");
         }
     }
 
@@ -566,7 +566,7 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
     // case waypoint names
     to_upper(short_callsign);
 
-    //printf("Creating waypoint for %s:%s\n",call_sign,short_callsign);
+    //fprintf(stderr,"Creating waypoint for %s:%s\n",call_sign,short_callsign);
 
     xastir_snprintf(out_string, sizeof(out_string),
         "$GPWPL,%s,%c,%s,%c,%s*",
@@ -586,7 +586,7 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
 
     output_waypoint_data(out_string2);
 
-    //printf("%s\n",out_string2);
+    //fprintf(stderr,"%s\n",out_string2);
 }
 
 

@@ -270,7 +270,7 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
     was_up=0;
     if (get_device_status(TNC_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(TNC_port);
         was_up=1;
     }
@@ -452,7 +452,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             case DEVICE_SERIAL_TNC_AUX_GPS:
                 tmp=langcode("WPUPCFT028");
                 if (debug_level & 128) {
-                    printf("Storing %d to gps_retrieve for %d\n",
+                    fprintf(stderr,"Storing %d to gps_retrieve for %d\n",
                     DEFAULT_GPS_RETR, port);
                 }
                 devices[port].gps_retrieve=DEFAULT_GPS_RETR;
@@ -1162,7 +1162,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
             /* first time port */
                         devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
             if (debug_level & 128) {
-                printf("Storing %d to gps_retrieve for %d\n",
+                fprintf(stderr,"Storing %d to gps_retrieve for %d\n",
                 DEFAULT_GPS_RETR, port);
             }
             XmTextFieldSetString(TNC_device_name_data,TNC_PORT);
@@ -1217,7 +1217,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
             /* reconfig */
 
             if (debug_level & 128)
-                printf("Reconfiguring interface\n");
+                fprintf(stderr,"Reconfiguring interface\n");
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
@@ -1455,7 +1455,7 @@ void Config_GPS_change_data(Widget widget, XtPointer clientData, XtPointer callD
     was_up=0;
     if (get_device_status(GPS_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(GPS_port);
         was_up=1;
     }
@@ -1928,7 +1928,7 @@ void Config_WX_change_data(Widget widget, XtPointer clientData, XtPointer callDa
     was_up=0;
     if (get_device_status(WX_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(WX_port);
         was_up=1;
     }
@@ -2510,7 +2510,7 @@ void Config_NWX_change_data(Widget widget, XtPointer clientData, XtPointer callD
     was_up=0;
     if (get_device_status(NWX_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(NWX_port);
         was_up=1;
     }
@@ -2941,7 +2941,7 @@ void Config_NGPS_change_data(Widget widget, XtPointer clientData, XtPointer call
     was_up=0;
     if (get_device_status(NGPS_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(NGPS_port);
         was_up=1;
     }
@@ -3255,7 +3255,7 @@ void Config_AX25_change_data(Widget widget, XtPointer clientData, XtPointer call
     was_up=0;
     if (get_device_status(AX25_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(AX25_port);
         was_up=1;
     }
@@ -3793,7 +3793,7 @@ void Inet_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     was_up=0;
     if (get_device_status(Inet_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
-        /*printf("Device is up, shutting down\n");*/
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(Inet_port);
         was_up=1;
     }
@@ -4401,7 +4401,7 @@ void interface_setup(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer cal
     if (found) {
         if (do_w==0) {  // Add an interface
             /* add */
-            /*printf("ADD DEVICE\n");*/
+            /*fprintf(stderr,"ADD DEVICE\n");*/
 
             /* delete list */
 
@@ -4410,66 +4410,66 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 
             port=get_open_device();     // Find an unused port number
-            /*printf("Open_port %d\n",port);*/
+            /*fprintf(stderr,"Open_port %d\n",port);*/
             if(port!=-1) {
                 /*devices[port].device_type=found;*/
-                /*printf("adding device %s on port %d\n",dtype[found].device_name,port);*/
+                /*fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);*/
                 switch (found) {
 
 //WE7U:  Set up for new KISS device type
                     case DEVICE_SERIAL_KISS_TNC:
                         // configure this port
                         if (debug_level & 1)
-                            printf("ADD SERIAL KISS TNC\n");
+                            fprintf(stderr,"ADD SERIAL KISS TNC\n");
                         Config_TNC(w, DEVICE_SERIAL_KISS_TNC, 0, port);
                         break;
 
                     case DEVICE_SERIAL_TNC:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD SERIAL TNC\n");
+                            fprintf(stderr,"ADD SERIAL TNC\n");
                         Config_TNC(w, DEVICE_SERIAL_TNC, 0, port);
                         break;
 
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD SERIAL TNC w HSP GPS\n");
+                            fprintf(stderr,"ADD SERIAL TNC w HSP GPS\n");
                         Config_TNC(w, DEVICE_SERIAL_TNC_HSP_GPS, 0, port);
                         break;
 
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD SERIAL TNC w AUX GPS\n");
+                            fprintf(stderr,"ADD SERIAL TNC w AUX GPS\n");
                         Config_TNC(w, DEVICE_SERIAL_TNC_AUX_GPS, 0, port);
                         break;
 
                     case DEVICE_SERIAL_GPS:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD SERIAL GPS\n");
+                            fprintf(stderr,"ADD SERIAL GPS\n");
                         Config_GPS(w, 0, port);
                         break;
 
                     case DEVICE_SERIAL_WX:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD SERIAL WX\n");
+                            fprintf(stderr,"ADD SERIAL WX\n");
                         Config_WX(w, 0, port);
                         break;
 
                     case DEVICE_NET_WX:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD Network WX\n");
+                            fprintf(stderr,"ADD Network WX\n");
                         Config_NWX(w, 0, port);
                         break;
 
                     case DEVICE_NET_GPSD:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD Network GPS\n");
+                            fprintf(stderr,"ADD Network GPS\n");
                         Config_NGPS(w, 0, port);
                         break;
 
@@ -4477,10 +4477,10 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                         /* configure this port */
                         if (debug_level & 1)
 #ifdef HAVE_AX25
-                            printf("ADD AX.25 TNC\n");
+                            fprintf(stderr,"ADD AX.25 TNC\n");
                         Config_AX25(w, 0, port);
 #else
-                        printf("AX.25 support not compiled into Xastir!\n");
+                        fprintf(stderr,"AX.25 support not compiled into Xastir!\n");
                         popup_message(langcode("POPEM00004"),langcode("POPEM00021"));
 
 #endif
@@ -4489,7 +4489,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                     case DEVICE_NET_STREAM:
                         /* configure this port */
                         if (debug_level & 1)
-                            printf("ADD NET STREAM\n");
+                            fprintf(stderr,"ADD NET STREAM\n");
                         Config_Inet(w, 0, port);
                         break;
 
@@ -4505,7 +4505,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 
         }
-        /*printf("SELECTION is %s\n",temp);*/
+        /*fprintf(stderr,"SELECTION is %s\n",temp);*/
         XtFree(temp);
     }
 }
@@ -4670,11 +4670,11 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 (void)sscanf(temp,"%s %d",temp2,&port);
                 if(do_w==1) {
                     /* delete interface */
-                    /*printf("delete interface port %d\n",port);*/
+                    /*fprintf(stderr,"delete interface port %d\n",port);*/
 
                     if (port_data[port].active==DEVICE_IN_USE) {
                         /* shut down and delete port */
-                        /*printf("Shutting down port %d\n",port);*/
+                        /*fprintf(stderr,"Shutting down port %d\n",port);*/
                         (void)del_device(port);
                     }
 
@@ -4705,7 +4705,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 begin_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                     if (debug_level & 1) {
-                        printf("Changing device  %s on port %d\n",
+                        fprintf(stderr,"Changing device  %s on port %d\n",
                             dtype[devices[port].device_type].device_name,port);
                     }
                     switch (devices[port].device_type) {
@@ -4715,7 +4715,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify SERIAL TNC\n");
+                                fprintf(stderr,"Modify SERIAL TNC\n");
                             Config_TNC(w, DEVICE_SERIAL_TNC, 1, port);
                             break;
 
@@ -4725,7 +4725,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify SERIAL KISS TNC\n");
+                                fprintf(stderr,"Modify SERIAL KISS TNC\n");
                             Config_TNC(w, DEVICE_SERIAL_KISS_TNC, 1, port);
                             break;
 
@@ -4735,7 +4735,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify SERIAL TNC with HSP GPS\n");
+                                fprintf(stderr,"Modify SERIAL TNC with HSP GPS\n");
                             Config_TNC(w, DEVICE_SERIAL_TNC_HSP_GPS, 1, port);
                             break;
 
@@ -4745,7 +4745,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify SERIAL TNC with AUX GPS\n");
+                                fprintf(stderr,"Modify SERIAL TNC with AUX GPS\n");
                             Config_TNC(w, DEVICE_SERIAL_TNC_AUX_GPS, 1, port);
                             break;
 
@@ -4755,7 +4755,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify SERIAL GPS\n");
+                                fprintf(stderr,"Modify SERIAL GPS\n");
                             Config_GPS(w, 1, port);
                             break;
 
@@ -4765,7 +4765,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify SERIAL WX\n");
+                                fprintf(stderr,"Modify SERIAL WX\n");
                             Config_WX(w, 1, port);
                             break;
 
@@ -4775,7 +4775,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify Network WX\n");
+                                fprintf(stderr,"Modify Network WX\n");
                             Config_NWX(w, 1, port);
                             break;
 
@@ -4785,7 +4785,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify Network GPS\n");
+                                fprintf(stderr,"Modify Network GPS\n");
                             Config_NGPS(w, 1, port);
                             break;
 
@@ -4795,7 +4795,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify AX.25 TNC\n");
+                                fprintf(stderr,"Modify AX.25 TNC\n");
                             Config_AX25(w, 1, port);
                             break;
 
@@ -4805,7 +4805,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
                             /* configure this port */
                             if (debug_level & 1)
-                                printf("Modify NET STREAM\n");
+                                fprintf(stderr,"Modify NET STREAM\n");
                             Config_Inet(w, 1, port);
                             break;
 
@@ -4816,7 +4816,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                             break;
                     }
                 }
-                /*printf("interface - %s\n",temp);*/
+                /*fprintf(stderr,"interface - %s\n",temp);*/
                 XtFree(temp);
             }
             break;
@@ -5030,14 +5030,14 @@ end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
 
         /* look at list data (Must be "Device" port#) */
         (void)sscanf(temp,"%s %d",temp2,&port);
-        /*printf("Port to change %d\n",port);*/
+        /*fprintf(stderr,"Port to change %d\n",port);*/
         do_w = atoi(which);
         if (do_w) {
             shutdown_all_active_or_defined_port(port);
         } else {
-            /*printf("DO port up\n");*/
+            /*fprintf(stderr,"DO port up\n");*/
             if (port_data[port].active==DEVICE_IN_USE) {
-                /*printf("Device was up, Shutting down\n");*/
+                /*fprintf(stderr,"Device was up, Shutting down\n");*/
                 shutdown_all_active_or_defined_port(port);
             }
             /* now start port */
@@ -5074,7 +5074,7 @@ end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" 
             shutdown_all_active_or_defined_port(port);
         }
         else {        // We wish to start up all ports
-            /*printf("DO port up\n");*/
+            /*fprintf(stderr,"DO port up\n");*/
             /* now start port */
             startup_all_or_defined_port(port);
         }
@@ -5320,20 +5320,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                 if (port_data[i].status==DEVICE_UP) {
                     if (port_data[i].bytes_input_last != port_data[i].bytes_input) {
 if (begin_critical_section(&port_data_lock, "interface_gui.c:interface_status(1)" ) > 0)
-    printf("port_data_lock, Port = %d\n", i);
+    fprintf(stderr,"port_data_lock, Port = %d\n", i);
                         port_data[i].bytes_input_last = port_data[i].bytes_input;
                         port_data[i].port_activity = 1;
 if (end_critical_section(&port_data_lock, "interface_gui.c:interface_status(2)" ) > 0)
-    printf("port_data_lock, Port = %d\n", i);
+    fprintf(stderr,"port_data_lock, Port = %d\n", i);
                         read_data=1;
                     }
                     if (port_data[i].bytes_output_last != port_data[i].bytes_output) {
 if (begin_critical_section(&port_data_lock, "interface_gui.c:interface_status(3)" ) > 0)
-    printf("port_data_lock, Port = %d\n", i);
+    fprintf(stderr,"port_data_lock, Port = %d\n", i);
                         port_data[i].bytes_output_last = port_data[i].bytes_output;
                         port_data[i].port_activity = 1;
 if (end_critical_section(&port_data_lock, "interface_gui.c:interface_status(4)" ) > 0)
-    printf("port_data_lock, Port = %d\n", i);
+    fprintf(stderr,"port_data_lock, Port = %d\n", i);
                         write_data=1;
                     }
                     if (write_data)

@@ -205,7 +205,7 @@ int is_tracked_station(char *call_sign) {
     }
 
     if (debug_level & 256) {
-        printf("is_tracked_station(): CALL %s %s %s\n",
+        fprintf(stderr,"is_tracked_station(): CALL %s %s %s\n",
             tracking_station_call,
             call_find, call_sign);
     }
@@ -387,12 +387,12 @@ void store_most_recent_ack(char *callsign, char *ack) {
     }
 
     if (done) { // Found it.  Update the ack field.
-        //printf("Found callsign %s on recent ack list, Old:%s, New:%s\n",call,p->ack,new_ack);
+        //fprintf(stderr,"Found callsign %s on recent ack list, Old:%s, New:%s\n",call,p->ack,new_ack);
         xastir_snprintf(p->ack,sizeof(p->ack),"%s",new_ack);
     }
     else {  // Not found.  Add a new record to the beginning of the
             // list.
-        //printf("New callsign %s, adding to list.  Ack: %s\n",call,new_ack);
+        //fprintf(stderr,"New callsign %s, adding to list.  Ack: %s\n",call,new_ack);
         p = (ack_record *)malloc(sizeof(ack_record));
         xastir_snprintf(p->callsign,sizeof(p->callsign),"%s",call);
         xastir_snprintf(p->ack,sizeof(p->ack),"%s",new_ack);
@@ -426,11 +426,11 @@ char *get_most_recent_ack(char *callsign) {
     }
 
     if (done) { // Found it.  Return pointer to ack string.
-        //printf("Found callsign %s on linked list, returning ack: %s\n",call,p->ack);
+        //fprintf(stderr,"Found callsign %s on linked list, returning ack: %s\n",call,p->ack);
         return(&p->ack[0]);
     }
     else {
-        //printf("Callsign %s not found\n",call);
+        //fprintf(stderr,"Callsign %s not found\n",call);
         return(NULL);
     }
 }
@@ -616,7 +616,7 @@ long msg_find_data(Message *m_fill) {
 
             if (strcmp(tempfill, tempfile) < 0) {
                 /* filename comes before */
-                /*printf("Before No data found!!\n");*/
+                /*fprintf(stderr,"Before No data found!!\n");*/
                 done=1;
                 break;
             } else { /* get data for record end */
@@ -691,12 +691,12 @@ void msg_get_data(Message *m_fill, long record_num) {
 
 void msg_update_ack_stamp(long record_num) {
 
-    //printf("Attempting to update ack stamp: %ld\n",record_num);
+    //fprintf(stderr,"Attempting to update ack stamp: %ld\n",record_num);
     if ( (record_num >= 0) && (record_num < msg_index_end) ) {
         msg_data[msg_index[record_num]].last_ack_sent = sec_now();
-        //printf("Ack stamp: %ld\n",msg_data[msg_index[record_num]].last_ack_sent);
+        //fprintf(stderr,"Ack stamp: %ld\n",msg_data[msg_index[record_num]].last_ack_sent);
     }
-    //printf("\n\n\n*** Record: %ld ***\n\n\n",record_num);
+    //fprintf(stderr,"\n\n\n*** Record: %ld ***\n\n\n",record_num);
 }
 
 
@@ -716,7 +716,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
     int do_update = 0;
 
     if (debug_level & 1) {
-        printf("Recording ack for message to: %s, seq: %s\n",
+        fprintf(stderr,"Recording ack for message to: %s, seq: %s\n",
             to_call_sign,
             seq);
     }
@@ -739,7 +739,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
     record = msg_find_data(&m_fill);
     if(record != -1L) {     // Found a match!
         if (debug_level & 1) {
-            printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n",
+            fprintf(stderr,"Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n",
                 msg_data[msg_index[record]].acked,
                 seq,
                 record);
@@ -752,7 +752,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
             // dialogs
             if (is_my_call(msg_data[msg_index[record]].from_call_sign, 1) ) {
 
-                //printf("From: %s\tTo: %s\n",
+                //fprintf(stderr,"From: %s\tTo: %s\n",
                 //    msg_data[msg_index[record]].from_call_sign,
                 //    msg_data[msg_index[record]].call_sign);
 
@@ -768,7 +768,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
             msg_data[msg_index[record]].acked = (char)1;
 
         if (debug_level & 1) {
-            printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
+            fprintf(stderr,"Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
                 msg_data[msg_index[record]].acked,
                 seq,
                 record);
@@ -776,7 +776,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
     }
     else {
         if (debug_level & 1)
-            printf("Matching message not found\n");
+            fprintf(stderr,"Matching message not found\n");
     }
 
     if (do_update) {
@@ -803,11 +803,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
 
     if (debug_level & 1)
-        printf("msg_data_add start\n");
+        fprintf(stderr,"msg_data_add start\n");
 
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 2)
-            printf("msg_data_add:  Message length too long\n");
+            fprintf(stderr,"msg_data_add:  Message length too long\n");
 
         *record_out = -1L;
         return((time_t)0l);
@@ -830,9 +830,9 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
         last_ack_sent = m_fill.last_ack_sent;
-        //printf("Found: last_ack_sent: %ld\n",m_fill.last_ack_sent);
+        //fprintf(stderr,"Found: last_ack_sent: %ld\n",m_fill.last_ack_sent);
 
-        //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
+        //fprintf(stderr,"Found a duplicate message.  Updating fields, seq %s\n",seq);
 
         // If message is different this time, do an update to the
         // send message window and update the sec_heard field.  The
@@ -841,7 +841,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (strcmp(m_fill.message_line,data) != 0) {
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
-            //printf("Message is different this time: Setting last_ack_sent to 0\n");
+            //fprintf(stderr,"Message is different this time: Setting last_ack_sent to 0\n");
  
             if (type != MESSAGE_BULLETIN) { // Not a bulletin
                 do_msg_update++;
@@ -857,7 +857,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (m_fill.sec_heard < (sec_now() - (8 * 60 * 60) )) {
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
-            //printf("Found >8hrs old: Setting last_ack_sent to 0\n");
+            //fprintf(stderr,"Found >8hrs old: Setting last_ack_sent to 0\n");
 
             if (type != MESSAGE_BULLETIN) { // Not a bulletin
                 do_msg_update++;
@@ -867,7 +867,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         // Check for zero time
         if (m_fill.sec_heard == (time_t)0) {
             m_fill.sec_heard = sec_now();
-            printf("Zero time on a previous message.\n");
+            fprintf(stderr,"Zero time on a previous message.\n");
         }
     }
     else {
@@ -876,7 +876,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         // constantly on old messages that don't get ack'ed.
         m_fill.sec_heard = sec_now();
         last_ack_sent = (time_t)0;
-        //printf("New msg: Setting last_ack_sent to 0\n");
+        //fprintf(stderr,"New msg: Setting last_ack_sent to 0\n");
 
         if (type == MESSAGE_BULLETIN) { // Found a bulletin
             char temp[10];
@@ -937,10 +937,10 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
     if (distance != 0) {    // Have a posit from the sending station
         m_fill.position_known = 1;
-        //printf("Position known: %s\n",from_call);
+        //fprintf(stderr,"Position known: %s\n",from_call);
     }
     else {
-        //printf("Position not known: %s\n",from_call);
+        //fprintf(stderr,"Position not known: %s\n",from_call);
     }
 
     substr(m_fill.call_sign,call_sign,MAX_CALLSIGN);
@@ -969,10 +969,10 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         m_fill.last_ack_sent = sec_now();
 
         msg_input_database(&m_fill);    // Create a new entry
-        //printf("No record found: Setting last_ack_sent to sec_now()00\n");
+        //fprintf(stderr,"No record found: Setting last_ack_sent to sec_now()00\n");
     }
     else {  // Old record found
-        //printf("Replacing the message in the database, seq %s\n",seq);
+        //fprintf(stderr,"Replacing the message in the database, seq %s\n",seq);
         msg_replace_data(&m_fill, record);  // Copy fields from m_fill to record
     }
 
@@ -1003,7 +1003,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         prep_for_popup_bulletins();
 
         if (debug_level & 1) {
-            printf("%05d:%9s:%c:%c:%9s:%s:%s\n",
+            fprintf(stderr,"%05d:%9s:%c:%c:%9s:%s:%s\n",
                 distance,
                 call_sign,
                 type,
@@ -1016,7 +1016,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     }
  
     if (debug_level & 1)
-        printf("msg_data_add end\n");
+        fprintf(stderr,"msg_data_add end\n");
 
     // Return the important variables we'll need
     *record_out = record;
@@ -1054,7 +1054,7 @@ void update_messages(int force) {
 
     if ( message_update_time() || force) {
 
-        //printf("Um %d\n",(int)sec_now() );
+        //fprintf(stderr,"Um %d\n",(int)sec_now() );
 
         /* go through all mw_p's! */
 
@@ -1066,7 +1066,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
             if (mw[mw_p].send_message_dialog!=NULL/* && mw[mw_p].message_group==1*/) {
 
-//printf("\n");
+//fprintf(stderr,"\n");
 
                 // Clear the text from message window
                 XmTextReplace(mw[mw_p].send_message_text,
@@ -1126,7 +1126,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 p_next = p_prev->next;
                                 while (!done && (p_next != NULL)) {  // Loop until end of list or record inserted
 
-                                    //printf("Looping, looking for insertion spot\n");
+                                    //fprintf(stderr,"Looping, looking for insertion spot\n");
 
                                     if (p_next->sec_heard <= msg_data[msg_index[i]].sec_heard) {
                                         // Advance one record
@@ -1138,7 +1138,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     }
                                 }
 
-                                //printf("Inserting\n");
+                                //fprintf(stderr,"Inserting\n");
 
                                 // Add the record in between p_prev and
                                 // p_next, even if we're at the end of
@@ -1155,12 +1155,12 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                         // Done processing the entire list for this
                         // message window.
 
-                        //printf("Done inserting/looping\n");
+                        //fprintf(stderr,"Done inserting/looping\n");
 
                         if (head->next != NULL) {   // We have messages to display
                             int done = 0;
 
-                            //printf("We have messages to display\n");
+                            //fprintf(stderr,"We have messages to display\n");
 
                             // Run through the linked list and dump the
                             // info out.  It's now in time-sorted order.
@@ -1174,9 +1174,9 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                             while (!done && (p_prev != NULL)) {  // Loop until end of list
                                 int j = p_prev->index;  // Snag the index out of the record
 
-                                //printf("\nLooping through, reading messages\n");
+                                //fprintf(stderr,"\nLooping through, reading messages\n");
  
-//printf("acked: %d\n",msg_data[msg_index[j]].acked);
+//fprintf(stderr,"acked: %d\n",msg_data[msg_index[j]].acked);
  
                                 // Message matches so snag the important pieces into a string
                                 xastir_snprintf(stemp, sizeof(stemp),
@@ -1208,9 +1208,9 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     (msg_data[msg_index[j]].acked == 2) ? "*TIMEOUT* " : "",
                                     msg_data[msg_index[j]].message_line);
 
-//printf("update_message: %s|%s", temp1, temp2);
+//fprintf(stderr,"update_message: %s|%s", temp1, temp2);
  
-                                if (debug_level & 2) printf("update_message: %s|%s\n", temp1, temp2);
+                                if (debug_level & 2) fprintf(stderr,"update_message: %s|%s\n", temp1, temp2);
                                 // Replace the text from pos to pos+strlen(temp2) by the string "temp2"
                                 if (mw[mw_p].send_message_text != NULL) {
 
@@ -1225,10 +1225,10 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                             temp2);
  
                                     // Set highlighting based on the "acked" field
-//printf("acked: %d\t",msg_data[msg_index[j]].acked);
+//fprintf(stderr,"acked: %d\t",msg_data[msg_index[j]].acked);
                                     if ( (msg_data[msg_index[j]].acked == 0)    // Not acked yet
                                             && ( is_my_call(msg_data[msg_index[j]].from_call_sign, 1)) ) {
-//printf("Setting underline\t");
+//fprintf(stderr,"Setting underline\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
                                             pos+23,
                                             pos+strlen(temp2),
@@ -1236,14 +1236,14 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                             XmHIGHLIGHT_SELECTED);         // Reverse Video
                                     }
                                     else {  // Message was acked, get rid of highlighting
-//printf("Setting normal\t");
+//fprintf(stderr,"Setting normal\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
                                             pos+23,
                                             pos+strlen(temp2),
                                             XmHIGHLIGHT_NORMAL);
                                     }
 
-//printf("Text: %s\n",temp2); 
+//fprintf(stderr,"Text: %s\n",temp2); 
 
                                     pos += strlen(temp2);
 
@@ -1269,13 +1269,13 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //                            }
 //                        }
 
-                        //printf("Free'ing list\n");
+                        //fprintf(stderr,"Free'ing list\n");
 
                         // De-allocate the linked list
                         p_prev = head;
                         while (p_prev != NULL) {
 
-                            //printf("You're free!\n");
+                            //fprintf(stderr,"You're free!\n");
 
                             p_next = p_prev->next;
                             free(p_prev);
@@ -1294,7 +1294,7 @@ end_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
         }
         last_message_update = sec_now();
 
-//printf("Message index end: %ld\n",msg_index_end);
+//fprintf(stderr,"Message index end: %ld\n",msg_index_end);
  
     }
 }
@@ -1378,7 +1378,7 @@ void mscan_file(char msg_type, void (*function)(Message *)) {
 
 
 void mprint_record(Message *m_fill) {
-    printf("%-9s>%-9s seq:%5s type:%c :%s\n", m_fill->from_call_sign, m_fill->call_sign,
+    fprintf(stderr,"%-9s>%-9s seq:%5s type:%c :%s\n", m_fill->from_call_sign, m_fill->call_sign,
         m_fill->seq, m_fill->type, m_fill->message_line);
 }
 
@@ -1387,9 +1387,9 @@ void mprint_record(Message *m_fill) {
 
 
 void mdisplay_file(char msg_type) {
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
     mscan_file(msg_type, mprint_record);
-    printf("\tmsg_index_end %ld, msg_index_max %ld\n", msg_index_end, msg_index_max);
+    fprintf(stderr,"\tmsg_index_end %ld, msg_index_max %ld\n", msg_index_end, msg_index_max);
 }
 
 
@@ -1768,7 +1768,7 @@ long sort_input_database(char *filename, char *fill, int size) {
                 record_mid=(record_end-record_start)/2;
                 done=0;
                 while(!done) {
-                    /*printf("Records Start %ld, Mid %ld, End %ld\n",record_start,record_mid,record_end);*/
+                    /*fprintf(stderr,"Records Start %ld, Mid %ld, End %ld\n",record_start,record_mid,record_end);*/
                     /* get data for record start */
                     (void)fseek(pointer,(ptr_size*record_start),SEEK_SET);
                     (void)fread(&data_ptr,(size_t)ptr_size,1,pointer);
@@ -1778,7 +1778,7 @@ long sort_input_database(char *filename, char *fill, int size) {
                         (void)sscanf(file_data,"%1999s",tempfile);
                         if(strcasecmp(tempfill,tempfile)<0) {
                             /* file name comes before */
-                            /*printf("END - Before start\n");*/
+                            /*fprintf(stderr,"END - Before start\n");*/
                             done=1;
                             /* now place pointer before start*/
                             sort_reset_pointers(pointer,new_data_ptr,records,0,record_start);
@@ -1792,13 +1792,13 @@ long sort_input_database(char *filename, char *fill, int size) {
                                 (void)sscanf(file_data,"%1999s",tempfile);
                                 if(strcasecmp(tempfill,tempfile)>0) {
                                     /* file name comes after */
-                                    /*printf("END - After end\n");*/
+                                    /*fprintf(stderr,"END - After end\n");*/
                                     done=1;
                                     /* now place pointer after end */
                                 } else {
                                     if((record_mid==record_start) || (record_mid==record_end)) {
                                         /* no mid for compare check to see if in the middle */
-                                        /*printf("END - NO Middle\n");*/
+                                        /*fprintf(stderr,"END - NO Middle\n");*/
                                         done=1;
                                         /* now place pointer before start*/
                                         if (record_mid==record_start)
@@ -1818,13 +1818,13 @@ long sort_input_database(char *filename, char *fill, int size) {
                                                 /*record_start=0l;*/
                                                 record_end=record_mid;
                                                 record_mid=record_start+(record_end-record_start)/2;
-                                                /*printf("TOP %ld, mid %ld\n",record_mid,record_end);*/
+                                                /*fprintf(stderr,"TOP %ld, mid %ld\n",record_mid,record_end);*/
                                             } else {
                                                 /* checking comes after*/
                                                 record_start=record_mid;
                                                 /*record_end=end*/
                                                 record_mid=record_start+(record_end-record_start)/2;
-                                                /*printf("BOTTOM start %ld, mid %ld\n",record_start,record_mid);*/
+                                                /*fprintf(stderr,"BOTTOM start %ld, mid %ld\n",record_start,record_mid);*/
                                             }
                                         }
                                     }
@@ -1835,9 +1835,9 @@ long sort_input_database(char *filename, char *fill, int size) {
                 }
             }
         } else
-            printf("Could not open file %s\n",filename);
+            fprintf(stderr,"Could not open file %s\n",filename);
     } else
-        printf("Could not open file %s\n",filename);
+        fprintf(stderr,"Could not open file %s\n",filename);
 
     if(my_data!=NULL)
         (void)fclose(my_data);
@@ -1888,7 +1888,7 @@ int is_altnet(DataRow *p_station) {
                  || is_my_call(p_station->call_sign,1));
 
     if ( (debug_level & 1) && result )
-        printf( "%s  %-9s  %s\n", altnet_call, temp_altnet_call, temp2 );
+        fprintf(stderr,"%s  %-9s  %s\n", altnet_call, temp_altnet_call, temp2 );
 
     return(result);
 }
@@ -2028,7 +2028,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
     if (debug_level & 128)
-        printf("Display station called for Single=%d.\n", single);
+        fprintf(stderr,"Display station called for Single=%d.\n", single);
 
     if (!ok_to_draw_station(p_station))
         return;
@@ -2062,12 +2062,12 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     (float)(p_station->newest_trackpoint->prev->altitude * cvt_dm2len),
                     un_alt);
 
-//                printf("Trail data              with altitude: %s : %s\n",
+//                fprintf(stderr,"Trail data              with altitude: %s : %s\n",
 //                    p_station->call_sign,
 //                    temp_altitude);
             }
             else {
-                //printf("Trail data w/o altitude                %s\n",
+                //fprintf(stderr,"Trail data w/o altitude                %s\n",
                 //    p_station->call_sign);
             }
         }
@@ -2275,7 +2275,7 @@ _do_the_drawing:
 
     // Check for DF'ing data, draw DF circles if present and enabled
     if (Display_.df_data && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
-        //printf("SHGD:%s\n",p_station->signal_gain);
+        //fprintf(stderr,"SHGD:%s\n",p_station->signal_gain);
         draw_DF_circle(p_station->coord_lon,
                        p_station->coord_lat,
                        p_station->signal_gain,
@@ -2285,7 +2285,7 @@ _do_the_drawing:
 
     // Check for DF'ing beam heading/NRQ data
     if (Display_.df_data && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3)) {
-        //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
+        //fprintf(stderr,"Bearing: %s\n",p_station->signal_gain,NRQ);
         if (p_station->df_color == -1)
             p_station->df_color = rand() % 32;
 
@@ -2371,7 +2371,7 @@ _do_the_drawing:
         char temp[4];
 
 
-        //printf("Plotting a storm symbol:%s:%s:%s:\n",
+        //fprintf(stderr,"Plotting a storm symbol:%s:%s:%s:\n",
         //    weather->wx_hurricane_radius,
         //    weather->wx_trop_storm_radius,
         //    weather->wx_whole_gale_radius);
@@ -2562,7 +2562,7 @@ void draw_range_scale(Widget w) {
             temp2 = 1.0;
             range = 1;
             while (temp2 > distance) {
-                //printf("temp2: %f,  distance: %f\n", temp2, distance);
+                //fprintf(stderr,"temp2: %f,  distance: %f\n", temp2, distance);
                 temp2 = temp2 / 2.0;
                 range = range * 2;
             }
@@ -2615,8 +2615,8 @@ void draw_range_scale(Widget w) {
         }
     }
 
-    //printf("Distance: %f\t", distance);
-    //printf("Range: %ld\n", range);
+    //fprintf(stderr,"Distance: %f\t", distance);
+    //fprintf(stderr,"Range: %ld\n", range);
 
     if (units_english_metric) { // English units
         if (small_flag) {
@@ -2696,7 +2696,7 @@ void draw_ruler(Widget w) {
         }
     }
     xastir_snprintf(text, sizeof(text), "%.0f %s",ruler_siz,unit);      // Set up string
-    //printf("Ruler: %s, %d\n",text,ruler_pix);
+    //fprintf(stderr,"Ruler: %s, %d\n",text,ruler_pix);
 
     (void)XSetLineAttributes(XtDisplay(w),gc,1,LineSolid,CapRound,JoinRound);
     (void)XSetForeground(XtDisplay(w),gc,colors[0x20]);         // white
@@ -2739,7 +2739,7 @@ void display_file(Widget w) {
     time_t t_clr, t_old;
 
     if(debug_level & 1)
-        printf("Display File Start\n");
+        fprintf(stderr,"Display File Start\n");
 
 // Draw probability of detection circle, if enabled
 //draw_pod_circle(64000000l, 32400000l, 10, colors[0x44], pixmap_final);
@@ -2750,7 +2750,7 @@ void display_file(Widget w) {
     p_station = t_first;                // start with oldest station, have newest on top at t_last
     while (p_station != NULL) {
         if (debug_level & 64) {
-            printf("display_file: Examining %s\n", p_station->call_sign);
+            fprintf(stderr,"display_file: Examining %s\n", p_station->call_sign);
         }
         if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
 
@@ -2767,12 +2767,12 @@ void display_file(Widget w) {
                 // we make better use of the In View flag in the future
                 if ( !altnet || is_altnet(p_station) ) {
                     if (debug_level & 256) {
-                        printf("display_file:  Inview, check for trail\n");
+                        fprintf(stderr,"display_file:  Inview, check for trail\n");
                     }
                     if (Display_.trail && p_station->newest_trackpoint != NULL) {
                         // ????????????   what is the difference? :
                         if (debug_level & 256) {
-                            printf( "%s:    Trails on and have track data\n",
+                            fprintf(stderr,"%s:    Trails on and have track data\n",
                                     "display_file");
                         }
                         if (temp_sec_heard > t_clr) {
@@ -2780,7 +2780,7 @@ void display_file(Widget w) {
                             if (temp_sec_heard > t_old) {
                                 // New trail, so draw solid trail
                                 if (debug_level & 256) {
-                                    printf("Drawing Solid trail for %s, secs old: %ld\n",
+                                    fprintf(stderr,"Drawing Solid trail for %s, secs old: %ld\n",
                                         p_station->call_sign,
                                         sec_now() - temp_sec_heard);
                                 }
@@ -2788,7 +2788,7 @@ void display_file(Widget w) {
                             }
                             else {
                                 if (debug_level & 256) {
-                                    printf("Drawing trail for %s, secs old: %ld\n",
+                                    fprintf(stderr,"Drawing trail for %s, secs old: %ld\n",
                                         p_station->call_sign,
                                         sec_now() - temp_sec_heard);
                                 }
@@ -2796,34 +2796,34 @@ void display_file(Widget w) {
                             }
                         }
                         else if (debug_level & 256) {
-                            printf("Station too old\n");
+                            fprintf(stderr,"Station too old\n");
                         }
                     }
                     else if (debug_level & 256) {
-                        printf("Station trails %d, track data %x\n",
+                        fprintf(stderr,"Station trails %d, track data %x\n",
                             Display_.trail, (int)p_station->newest_trackpoint);
                     }
                     if (debug_level & 256)
-                        printf("calling display_station()\n");
+                        fprintf(stderr,"calling display_station()\n");
 
                     display_station(w,p_station,0);
                 }
                 else if (debug_level & 64) {
-                    printf("display_file: Station %s skipped altnet\n",
+                    fprintf(stderr,"display_file: Station %s skipped altnet\n",
                         p_station->call_sign);
                 }
             }
             else if (debug_level & 256) {
-                    printf("display_file: Station outside viewport\n");
+                    fprintf(stderr,"display_file: Station outside viewport\n");
             }
         }
         else if (debug_level & 64) {
-            printf("display_file: ignored deleted %s\n", p_station->call_sign);
+            fprintf(stderr,"display_file: ignored deleted %s\n", p_station->call_sign);
         }
         p_station = p_station->t_next;  // next station
     }
     if (debug_level & 1)
-        printf("Display File Stop\n");
+        fprintf(stderr,"Display File Stop\n");
     draw_ruler(w);
 }
 
@@ -2900,7 +2900,7 @@ void Station_data_add_fcc(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
     //busy_cursor(XtParent(w));
     busy_cursor(appshell);
     if (search_fcc_data_appl(station, &my_data)==1) {
-        /*printf("FCC call %s\n",station);*/
+        /*fprintf(stderr,"FCC call %s\n",station);*/
         xastir_snprintf(temp, sizeof(temp), "%s\n%s %s\n%s %s %s\n%s %s, %s %s, %s %s\n\n",
             langcode("STIFCC0001"),
             langcode("STIFCC0003"),my_data.name_licensee,
@@ -2930,7 +2930,7 @@ void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
     //busy_cursor(XtParent(w));
     busy_cursor(appshell);
     if (search_rac_data(station, &my_data)==1) {
-        /*printf("IC call %s\n",station);*/
+        /*fprintf(stderr,"IC call %s\n",station);*/
         xastir_snprintf(temp, sizeof(temp), "%s\n%s %s\n%s\n%s, %s\n%s\n",
                 langcode("STIFCC0002"),my_data.first_name,my_data.last_name,my_data.address,
                 my_data.city,my_data.province,my_data.postal_code);
@@ -3067,9 +3067,9 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station = clientData;
 
     //if (calldata != NULL)
-    //    printf("Modify_object:  calldata:  %s\n", calldata);
+    //    fprintf(stderr,"Modify_object:  calldata:  %s\n", calldata);
 
-    //printf("Object Name: %s\n", p_station->call_sign);
+    //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
     Set_Del_Object( w, p_station, calldata );
 }
 
@@ -3083,7 +3083,7 @@ static void PosTestExpose(Widget parent, XtPointer clientData, XEvent *event, Bo
     XtVaGetValues(parent, XmNx, &x, XmNy, &y, NULL);
 
     if (debug_level & 1)
-        printf("Window Decoration Offsets:  X:%d\tY:%d\n", x, y);
+        fprintf(stderr,"Window Decoration Offsets:  X:%d\tY:%d\n", x, y);
 
     // Store the new-found offets in global variables
     decoration_offset_x = (int)x;
@@ -3941,7 +3941,7 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
         // just like the XtVaGetValues call does.  I need the window
         // decoration location instead.
         //XtTranslateCoords(db_station_info, 0, 0, &xnew, &ynew);
-        //printf("%d:%d\t%d:%d\n", x, xnew, y, ynew);
+        //fprintf(stderr,"%d:%d\t%d:%d\n", x, xnew, y, ynew);
 
         if (last_station_info_x == 0)
             last_station_info_x = x - decoration_offset_x;
@@ -4160,7 +4160,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }            
 
     if ( ((p_station->flag & ST_OBJECT) == 0) && ((p_station->flag & ST_ITEM) == 0) ) { // Not an object/
-        // printf("Not an object or item...\n");
+        // fprintf(stderr,"Not an object or item...\n");
         // [Send Message]
         button_message = XtVaCreateManagedWidget(langcode("WPUPSTI002"),xmPushButtonGadgetClass, form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -4176,7 +4176,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 NULL);
         XtAddCallback(button_message, XmNactivateCallback, Send_message_call ,(XtPointer)p_station->call_sign);
     } else {
-        // printf("Found an object or item...\n");
+        // fprintf(stderr,"Found an object or item...\n");
         button_object_modify = XtVaCreateManagedWidget(langcode("WPUPSTI053"),xmPushButtonGadgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget,XtParent(si_text),
@@ -4546,7 +4546,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                             NULL);
 */
 
-                /*printf("What station\n");*/
+                /*fprintf(stderr,"What station\n");*/
                 n = 1;
                 p_station = n_first;
                 while (p_station != NULL) {    // search through database for nearby stations
@@ -4556,7 +4556,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                             diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
                                 + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
                             if (diff <= min_diff+(scale_x+scale_y)) {
-                                /*printf("Station %s\n",p_station->call_sign);*/
+                                /*fprintf(stderr,"Station %s\n",p_station->call_sign);*/
                                 XmListAddItem(station_list, str_ptr = XmStringCreateLtoR(p_station->call_sign,
                                         XmFONTLIST_DEFAULT_TAG), (int)n++);
                                 XmStringFree(str_ptr);
@@ -4654,17 +4654,17 @@ int heard_via_tnc_in_past_hour(char *call) {
             in_hour = (int)((p_station->heard_via_tnc_last_time+3600l) > sec_now());
 
             if(debug_level & 2)
-                printf("Call %s: %ld %ld ok %d\n",call,(long)(p_station->heard_via_tnc_last_time),(long)sec_now(),in_hour);
+                fprintf(stderr,"Call %s: %ld %ld ok %d\n",call,(long)(p_station->heard_via_tnc_last_time),(long)sec_now(),in_hour);
 
         }
         else {
             if (debug_level & 2)
-                printf("Call %s Not heard via tnc\n",call);
+                fprintf(stderr,"Call %s Not heard via tnc\n",call);
         }
     }
     else {
         if (debug_level & 2)
-            printf("IG:station not found\n");
+            fprintf(stderr,"IG:station not found\n");
     }
     return(in_hour);
 }
@@ -4727,7 +4727,7 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
         for (i=ofs-1;i<len-datalen;i++)        // delete item from info field
             data[i] = data[i+datalen+1];
         if (debug_level & 2) {
-            printf("extract_weather_item: %s\n",temp);
+            fprintf(stderr,"extract_weather_item: %s\n",temp);
         }
     } else
         temp[0] = '\0';
@@ -4753,7 +4753,7 @@ int test_extract_weather_item(char *data, char type, int datalen) {
             if (!is_weather_data(data+ofs+1, datalen))
                 found=0;
         }
-    //printf("test_extract: %c %d\n",type,found);
+    //fprintf(stderr,"test_extract: %c %d\n",type,found);
     return(found);
 }
 
@@ -4805,7 +4805,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             strcpy(course,p_station->course);
             in_knots = 1;
 
-            //printf("Found compressed wx\n");
+            //fprintf(stderr,"Found compressed wx\n");
         }
         // Look for weather data in non-fixed locations (RAWS WX
         // Stations?)
@@ -4822,14 +4822,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             strcpy(course,p_station->course);
             in_knots = 1;
 
-            //printf("Found compressed WX in non-fixed locations! %s:%s\n",
+            //fprintf(stderr,"Found compressed WX in non-fixed locations! %s:%s\n",
             //    p_station->call_sign,data);
 
         }
         else {  // No weather data found
             ok = 0;
 
-            //printf("No compressed wx\n");
+            //fprintf(stderr,"No compressed wx\n");
         }
     } else {    // Look for non-compressed weather data
         // Look for weather data in defined locations first
@@ -4852,7 +4852,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 in_knots = 0;
             }
 
-            //printf("Found Complete Weather Report\n");
+            //fprintf(stderr,"Found Complete Weather Report\n");
         }
         // Look for date/time and weather in fixed locations first
         else if (strlen(data)>=16
@@ -4876,7 +4876,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 in_knots = 0;
             }
 
-            //printf("Found weather\n");
+            //fprintf(stderr,"Found weather\n");
         }
         // Look for weather data in non-fixed locations (RAWS WX
         // Stations?)
@@ -4900,13 +4900,13 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 in_knots = 0;
             }
  
-            //printf("Found WX in non-fixed locations!  %s:%s\n",
+            //fprintf(stderr,"Found WX in non-fixed locations!  %s:%s\n",
             //    p_station->call_sign,data);
         }
         else {  // No weather data found
             ok = 0;
 
-            //printf("No wx found\n");
+            //fprintf(stderr,"No wx found\n");
         }
     }
 
@@ -5027,22 +5027,22 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
     if ((p = strstr(data, "/TS")) != NULL) {
         // We have a Tropical Storm
-//printf("Tropical Storm! %s\n",data);
+//fprintf(stderr,"Tropical Storm! %s\n",data);
     }
     else if ((p = strstr(data, "/TD")) != NULL) {
         // We have a Tropical Depression
-//printf("Tropical Depression! %s\n",data);
+//fprintf(stderr,"Tropical Depression! %s\n",data);
     }
     else if ((p = strstr(data, "/HC")) != NULL) {
         // We have a Hurricane
-//printf("Hurricane! %s\n",data);
+//fprintf(stderr,"Hurricane! %s\n",data);
     }
     else {  // Not one of the three we're trying to decode
         ok = 0;
         return(ok);
     }
 
-//printf("\n%s\n",data);
+//fprintf(stderr,"\n%s\n",data);
 
     // Back up 7 spots to try to extract the next items
     p2 = p - 7;
@@ -5050,26 +5050,26 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
         // Attempt to extract course/speed.  Speed in knots.
         if (!extract_speed_course(p2,speed,course)) {
             // No speed/course to extract
-//printf("No speed/course found\n");
+//fprintf(stderr,"No speed/course found\n");
             ok = 0;
             return(ok);
         }
     }
     else {  // Not enough characters for speed/course.  Must have
             // guessed wrong on what type of data it is.
-//printf("No speed/course found 2\n");
+//fprintf(stderr,"No speed/course found 2\n");
         ok = 0;
         return(ok);
     }
 
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
     if (ok) {
 
         // If we got this far, we have speed/course and know what type
         // of storm it is.
-//printf("Speed: %s, Course: %s\n",speed,course);
+//fprintf(stderr,"Speed: %s, Course: %s\n",speed,course);
 
         ok = get_weather_record(p_station);     // get existing or create new weather record
     }
@@ -5107,7 +5107,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
                 "%0.1f",
                 (float)(atoi(weather->wx_sustained)) * 1.1508);
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
         // Extract gust speed in knots
         (void)extract_weather_item(p2,'^',3,weather->wx_gust); // gust (peak wind speed in knots)
@@ -5120,7 +5120,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
                 "%0.1f",
                 (float)(atoi(weather->wx_gust)) * 1.1508);
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
 	// Pressure is already in millibars/hPa.  No conversion
         // needed.
@@ -5133,28 +5133,28 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
                 || (weather->wx_baro[0] == ' ') )
             weather->wx_baro[0] = '\0';
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
         (void)extract_weather_item(p2,'>',3,weather->wx_hurricane_radius); // Nautical miles
         if ( (weather->wx_hurricane_radius[0] == '.')
                 || (weather->wx_hurricane_radius[0] == ' ') )
             weather->wx_hurricane_radius[0] = '\0';
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
         (void)extract_weather_item(p2,'&',3,weather->wx_trop_storm_radius); // Nautical miles
         if ( (weather->wx_trop_storm_radius[0] == '.')
                 || (weather->wx_trop_storm_radius[0] == ' ') )
             weather->wx_trop_storm_radius[0] = '\0';
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
         (void)extract_weather_item(p2,'%',3,weather->wx_whole_gale_radius); // Nautical miles
         if ( (weather->wx_whole_gale_radius[0] == '.')
                 || (weather->wx_whole_gale_radius[0] == ' ') )
             weather->wx_whole_gale_radius[0] = '\0';
 
-//printf("%s\n",data);
+//fprintf(stderr,"%s\n",data);
 
         // Create a timestamp from the current time
         strcpy(weather->wx_time,get_time(time_data));
@@ -5227,7 +5227,7 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
         double d;
 
         if (debug_level & MULTI_DEBUG)
-            printf("station %s contains \"%s\"\n", p_station->call_sign, p);
+            fprintf(stderr,"station %s contains \"%s\"\n", p_station->call_sign, p);
 
         // The second character (the lowercase) indicates additional style information,
         // such as color, line type, etc.
@@ -5255,14 +5255,14 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
         p = p + 4;
 
         if (*p < '!' || *p > 'z') {
-            printf("extract_multipoints: invalid scale character %d\n", *p);
+            fprintf(stderr,"extract_multipoints: invalid scale character %d\n", *p);
         }
         else {
             d = (double)(*p);
             d = pow(10.0, ((d - 33) / 20)) / 10000.0 * 360000.0;
             multiplier = (long)d;
             if (debug_level & MULTI_DEBUG)
-                printf("    multiplier factor is: %c %d %f (%ld)\n", *p, *p, d, multiplier);
+                fprintf(stderr,"    multiplier factor is: %c %d %f (%ld)\n", *p, *p, d, multiplier);
 
             ++p;
 
@@ -5294,7 +5294,7 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
                     }
                     temp[strlen(data)] = '\0';
                     
-                    printf("extract_multipoints: invalid value in (filtered) \"%s\": %d,%d\n",
+                    fprintf(stderr,"extract_multipoints: invalid value in (filtered) \"%s\": %d,%d\n",
                         temp,
                         lat_val,
                         lon_val);
@@ -5304,7 +5304,7 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
                 }
 
                 if (debug_level & MULTI_DEBUG)
-                    printf("computed offset %d,%d\n", lat_val, lon_val);
+                    fprintf(stderr,"computed offset %d,%d\n", lat_val, lon_val);
 
                 // Add the offset to the object's position to obtain the position of the point.
                 // Note that we're working in Xastir coordinates, and in North America they
@@ -5320,14 +5320,14 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
                 p_station->multipoints[p_station->num_multipoints][1] = p_station->coord_lat - (lat_val * multiplier);
 
                 if (debug_level & MULTI_DEBUG)
-                    printf("computed point %ld, %ld\n", p_station->multipoints[p_station->num_multipoints][0], p_station->multipoints[p_station->num_multipoints][1]);
+                    fprintf(stderr,"computed point %ld, %ld\n", p_station->multipoints[p_station->num_multipoints][0], p_station->multipoints[p_station->num_multipoints][1]);
                 p += 2;
                 ++p_station->num_multipoints;
             }
         }
 
         if (debug_level & MULTI_DEBUG)
-            printf("    station has %d points\n", p_station->num_multipoints);
+            fprintf(stderr,"    station has %d points\n", p_station->num_multipoints);
     }
 }
 
@@ -5458,17 +5458,17 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
     char flag;
     TrackRow *ptr;
 
-    //printf("store_trail_point: %s\n",p_station->call_sign);
+    //fprintf(stderr,"store_trail_point: %s\n",p_station->call_sign);
 
     if (debug_level & 256) {
-        printf("store_trail_point: for %s\n", p_station->call_sign);
+        fprintf(stderr,"store_trail_point: for %s\n", p_station->call_sign);
     }
 
     // Allocate storage for the new track point
     ptr = malloc(sizeof(TrackRow));
     if (ptr == NULL) {
         if (debug_level & 256) {
-            printf("store_trail_point: MALLOC failed for trail.\n");
+            fprintf(stderr,"store_trail_point: MALLOC failed for trail.\n");
         }
         return(0); // Failed due to malloc
     }
@@ -5478,7 +5478,7 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
         // new trail, do initialization
 
         if (debug_level & 256) {
-            printf("Creating new trail.\n");
+            fprintf(stderr,"Creating new trail.\n");
         }
         tracked_stations++;
 
@@ -5502,7 +5502,7 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
     p_station->newest_trackpoint = ptr;
 
     if (debug_level & 256) {
-        printf("store_trail_point: Storing data for %s\n", p_station->call_sign);
+        fprintf(stderr,"store_trail_point: Storing data for %s\n", p_station->call_sign);
     }
 
     ptr->trail_long_pos = lon;
@@ -5588,11 +5588,11 @@ int is_trailpoint_echo(DataRow *p_station) {
                         || atoi(p_station->altitude)*10 == ptr->altitude)) {
                         // current: char, trail: int (-99999l is undef)
             if (debug_level & 1) {
-                printf("delayed echo for %s",p_station->call_sign);
+                fprintf(stderr,"delayed echo for %s",p_station->call_sign);
                 convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
-                printf(" at %s",temp);
+                fprintf(stderr," at %s",temp);
                 convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
-                printf(" %s, already heard %d packets ago\n",temp,packets);
+                fprintf(stderr," %s, already heard %d packets ago\n",temp,packets);
             }
             return(1);              // we found a delayed echo
         }
@@ -5621,10 +5621,10 @@ void expire_trail_points(DataRow *p_station, time_t sec) {
     int done = 0;
     TrackRow *ptr;
 
-    //printf("expire_trail_points: %s\n",p_station->call_sign);
+    //fprintf(stderr,"expire_trail_points: %s\n",p_station->call_sign);
 
     if (debug_level & 256) {
-        printf("expire_trail_points: %s\n",p_station->call_sign);
+        fprintf(stderr,"expire_trail_points: %s\n",p_station->call_sign);
     }
 
     // Check whether we have any track data saved
@@ -5641,7 +5641,7 @@ void expire_trail_points(DataRow *p_station, time_t sec) {
             done++;
         }
         else {
-            //printf("Found old trackpoint\n");
+            //fprintf(stderr,"Found old trackpoint\n");
 
             // Track too old.  Unlink this trackpoint and free it.
             p_station->oldest_trackpoint = ptr->next;
@@ -5657,7 +5657,7 @@ void expire_trail_points(DataRow *p_station, time_t sec) {
             // Free up the space used by the expired trackpoint
             free(ptr);
 
-            //printf("Free'ing a trackpoint\n");
+            //fprintf(stderr,"Free'ing a trackpoint\n");
 
             i++;
 
@@ -5669,7 +5669,7 @@ void expire_trail_points(DataRow *p_station, time_t sec) {
     }
 
     if ( (debug_level & 256) && i )
-        printf("expire_trail_points: %d trackpoints free'd for %s\n",i,p_station->call_sign);
+        fprintf(stderr,"expire_trail_points: %d trackpoints free'd for %s\n",i,p_station->call_sign);
 }
 
 
@@ -5788,7 +5788,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
     if ( (ptr != NULL) && (ptr->prev != NULL) ) {
 
         if (debug_level & 256) {
-            printf("draw_trail called for %s with %s.\n",
+            fprintf(stderr,"draw_trail called for %s with %s.\n",
                 fill->call_sign, (solid? "Solid" : "Non-Solid"));
         }
 
@@ -5863,7 +5863,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
         (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
     }
     else if (debug_level & 256) {
-        printf("Trail for %s does not contain 2 or more points.\n",
+        fprintf(stderr,"Trail for %s does not contain 2 or more points.\n",
             fill->call_sign);
     }
 }
@@ -6104,7 +6104,7 @@ void export_trail(DataRow *p_station) {
         }
         (void)fclose(f);
     } else
-        printf("Couldn't create or open tracklog file %s\n",file);
+        fprintf(stderr,"Couldn't create or open tracklog file %s\n",file);
 }
 
 
@@ -6322,7 +6322,7 @@ void delete_station_memory(DataRow *p_del) {
         insert_time(p_new,p_time);      // insert element into time ordered list
     }
     if (p_new == NULL)
-        printf("ERROR: we got no memory for station storage\n");
+        fprintf(stderr,"ERROR: we got no memory for station storage\n");
     return(p_new);                      // return pointer to new element
 }
 
@@ -6707,7 +6707,7 @@ void station_del_ptr(DataRow *p_name) {
 
     if (p_name != NULL) {
 
-        //printf("Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
+        //fprintf(stderr,"Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
@@ -6739,7 +6739,7 @@ void delete_all_stations(void) {
         //delete_station_memory(p_curr);  // free station memory
     }
     if (stations != 0) {
-        printf("ERROR: stations should be 0 after stations delete, is %ld\n",stations);
+        fprintf(stderr,"ERROR: stations should be 0 after stations delete, is %ld\n",stations);
         stations = 0;
     }    
 }
@@ -6956,9 +6956,9 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
 
     if (debug_level & 1)
-        printf("extract_comp_position: Start\n");
+        fprintf(stderr,"extract_comp_position: Start\n");
 
-    //printf("extract_comp_position start: %s\n",*info);
+    //fprintf(stderr,"extract_comp_position start: %s\n",*info);
 
     // compressed data format  /YYYYXXXX$csT  is a fixed 13-character field
     // used for ! / @ = data IDs
@@ -6974,7 +6974,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
     my_data = (*info);
 
-    //printf("my_data: %s\n",my_data);
+    //fprintf(stderr,"my_data: %s\n",my_data);
 
     // If c = space, csT bytes are ignored.  Minimum length:  8
     // bytes for lat/lon, 2 for symbol, "space" for c for a total of
@@ -7092,7 +7092,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
                         "%03.0f",
                         pow( 1.08,(double)s ) - 1.0);
 
-                    //printf("Decoded speed:%s, course:%s\n",p_station->speed,p_station->course);
+                    //fprintf(stderr,"Decoded speed:%s, course:%s\n",p_station->speed,p_station->course);
 
                 }
             } else {    // Found pre-calculated radio range bytes
@@ -7119,16 +7119,16 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
     if (debug_level & 1) {
         if (ok) {
-            printf("*** extract_comp_position: Succeeded: %ld\t%ld\n",
+            fprintf(stderr,"*** extract_comp_position: Succeeded: %ld\t%ld\n",
                 p_station->coord_lat,
                 p_station->coord_lon);
         }
         else {
-            printf("*** extract_comp_position: Failed!\n");
+            fprintf(stderr,"*** extract_comp_position: Failed!\n");
         }
     }
 
-    //printf("  extract_comp_position end: %s\n",*info);
+    //fprintf(stderr,"  extract_comp_position end: %s\n",*info);
 
     return(ok);
 }
@@ -7203,7 +7203,7 @@ int extract_bearing_NRQ(char *info, char *bearing, char *nrq) {
         substr(bearing,info+1,3);
         substr(nrq,info+5,3);
 
-        //printf("Bearing: %s\tNRQ: %s\n", bearing, nrq);
+        //fprintf(stderr,"Bearing: %s\tNRQ: %s\n", bearing, nrq);
 
         for (i=0;i<=len-8;i++)        // delete bearing/nrq from info field
             info[i] = info[i+8];
@@ -7400,7 +7400,7 @@ void extract_area(DataRow *p_station, char *data) {
        packet.  So we will work on temp_area and only copy to p_station at
        the end, returning on any error as we parse. N7TAP */
 
-    //printf("Area Data: %s\n", data);
+    //fprintf(stderr,"Area Data: %s\n", data);
 
     len = (int)strlen(data);
     val = data[0] - '0';
@@ -7484,14 +7484,14 @@ void extract_area(DataRow *p_station, char *data) {
     }
     else {
         if (debug_level & 2)
-            printf("Bad area type: %c\n", data[0]);
+            fprintf(stderr,"Bad area type: %c\n", data[0]);
         return;
     }
 
     memcpy(&(p_station->aprs_symbol.area_object), &temp_area, sizeof(AreaObject));
 
     if (debug_level & 2) {
-        printf("AreaObject: type=%d color=%d sqrt_lat_off=%d sqrt_lon_off=%d corridor_width=%d\n",
+        fprintf(stderr,"AreaObject: type=%d color=%d sqrt_lat_off=%d sqrt_lon_off=%d corridor_width=%d\n",
                 p_station->aprs_symbol.area_object.type,
                 p_station->aprs_symbol.area_object.color,
                 p_station->aprs_symbol.area_object.sqrt_lat_off,
@@ -7582,15 +7582,15 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
             clear_area(p_station); // we got a packet with a non area symbol, so clear the data
 
             if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
-            //printf("extracted speed/course\n");
+            //fprintf(stderr,"extracted speed/course\n");
                 if (atof(temp2) > 0) {
-                //printf("course is non-zero\n");
+                //fprintf(stderr,"course is non-zero\n");
                 xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%06.2f",atof(temp1));
                         strcpy(p_station->course, temp2);                    // in degrees
             }
 
             if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
-                //printf("extracted bearing and NRQ\n");
+                //fprintf(stderr,"extracted bearing and NRQ\n");
                 strcpy(p_station->bearing,bearing);
                 strcpy(p_station->NRQ,nrq);
                 p_station->signal_gain[0] = '\0';   // And blank out the shgd values
@@ -7600,7 +7600,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                         strcpy(p_station->power_gain,temp1);
 
                 if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
-                    //printf("extracted bearing and NRQ\n");
+                    //fprintf(stderr,"extracted bearing and NRQ\n");
                     strcpy(p_station->bearing,bearing);
                     strcpy(p_station->NRQ,nrq);
                     p_station->signal_gain[0] = '\0';   // And blank out the shgd values
@@ -7616,9 +7616,9 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     // come with DOSaprs show DFSxxxx/speed/course.  We'll take care of
                     // that possibility by trying to decode speed/course again.
                         if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
-                        //printf("extracted speed/course\n");
+                        //fprintf(stderr,"extracted speed/course\n");
                             if (atof(temp2) > 0) {
-                            //printf("course is non-zero\n");
+                            //fprintf(stderr,"course is non-zero\n");
                             xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%06.2f",atof(temp1));
                                     strcpy(p_station->course,temp2);                    // in degrees
                         }
@@ -7628,7 +7628,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     // packet, which makes no sense, but we'll try to decode it that
                     // way anyway.
                     if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
-                        //printf("extracted bearing and NRQ\n");
+                        //fprintf(stderr,"extracted bearing and NRQ\n");
                         strcpy(p_station->bearing,bearing);
                         strcpy(p_station->NRQ,nrq);
                         //p_station->signal_gain[0] = '\0';   // And blank out the shgd values
@@ -7637,7 +7637,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                 }
             }
         if (extract_signpost(data, temp2)) {
-            //printf("extracted signpost data\n");
+            //fprintf(stderr,"extracted signpost data\n");
             strcpy(p_station->signpost,temp2);
         }
     }
@@ -7656,7 +7656,7 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
         xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%.2f",atof(temp_data)*0.3048);
         // Create a timestamp from the current time
         strcpy(p_station->altitude_time,get_time(time_data));
-        //printf("%.2f\n",atof(temp_data)*0.3048);
+        //fprintf(stderr,"%.2f\n",atof(temp_data)*0.3048);
     }
     // do other things...
 }
@@ -7693,14 +7693,14 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     int ok;
 
     if (debug_level & 256)
-        printf("extract_RMC\n");
+        fprintf(stderr,"extract_RMC\n");
 
     // should we copy it before processing? it changes data: ',' gets substituted by '\0' !!
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
 
     if ( (data == NULL) || (strlen(data) < 34) ) {  // Not enough data to parse position from.
         if (debug_level & 256)
-            printf("Invalid RMC string: Too short\n");
+            fprintf(stderr,"Invalid RMC string: Too short\n");
         return(ok);
     }
 
@@ -7767,7 +7767,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
                                         p_station->coord_lon = convert_lon_s2l(long_s);
 
                                         if (debug_level & 256)
-                                            printf("%s, %s, %ld, %ld\n",
+                                            fprintf(stderr,"%s, %s, %ld, %ld\n",
                                                 lat_s,
                                                 long_s,
                                                 p_station->coord_lat,
@@ -7811,9 +7811,9 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
     if (debug_level & 256) {
         if (ok)
-            printf("extract_RMC succeeded\n");
+            fprintf(stderr,"extract_RMC succeeded\n");
         else
-            printf("extract_RMC failed\n");
+            fprintf(stderr,"extract_RMC failed\n");
     }
 
     return(ok);
@@ -7921,7 +7921,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 // Need to check for validity of this number.  Should be 0-12?  Perhaps a few more with WAAS, GLONASS, etc?
                                                     if ( (p_station->sats_visible[1] != '\0') && (p_station->sats_visible[2] != '\0') ) {
                                                         if (debug_level & 1)
-                                                            printf("extract_GGA: Exiting, number of sats not valid\n");
+                                                            fprintf(stderr,"extract_GGA: Exiting, number of sats not valid\n");
                                                         strcpy(p_station->sats_visible,""); // Store empty sats visible
                                                         strcpy(p_station->altitude,""); // Store empty altitude
                                                         ok = 1; // Invalid rest of packet.  We got all but altitude.
@@ -7943,7 +7943,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
                                                             if (temp_ptr!=NULL) {
                                                                 strncpy(temp_data,temp_ptr,1);    /* get UNIT */
                                                                 if (temp_data[0] != 'M') {
-                                                                    //printf("ERROR: should adjust altitude for meters\n");
+                                                                    //fprintf(stderr,"ERROR: should adjust altitude for meters\n");
                                                                 //} else {  // Altitude units wrong.  Assume altitude bad
                                                                     strcpy(p_station->altitude,"");
                                                                 }
@@ -8103,11 +8103,11 @@ void add_status(DataRow *p_station, char *status_string) {
     }
 
     // Shorten it
-    //printf("1Status: (%s)\n",status_string);
+    //fprintf(stderr,"1Status: (%s)\n",status_string);
     (void)remove_trailing_spaces(status_string);
-    //printf("2Status: (%s)\n",status_string);
+    //fprintf(stderr,"2Status: (%s)\n",status_string);
     (void)remove_leading_spaces(status_string);
-    //printf("3Status: (%s)\n",status_string);
+    //fprintf(stderr,"3Status: (%s)\n",status_string);
  
     len = strlen(status_string);
 
@@ -8123,7 +8123,7 @@ void add_status(DataRow *p_station, char *status_string) {
 // until we have a posit.
 
 
-        //printf("Station:%s\tStatus:%s\n",p_station->call_sign,status_string);
+        //fprintf(stderr,"Station:%s\tStatus:%s\n",p_station->call_sign,status_string);
 
         // Check whether we have any data stored for this station
         if (p_station->status_data == NULL) {
@@ -8136,7 +8136,7 @@ void add_status(DataRow *p_station, char *status_string) {
             while (ptr != NULL) {
                 if (strcmp(ptr->text_ptr, status_string) == 0) {
                     // Found a matching string
-                    //printf("Found match:
+                    //fprintf(stderr,"Found match:
                     //%s:%s\n",p_station->call_sign,status_string);
                     return; // No need to add the new string
                 }
@@ -8144,7 +8144,7 @@ void add_status(DataRow *p_station, char *status_string) {
             }
             // No matching string found, so add it
             add_it++;
-            //printf("No match:
+            //fprintf(stderr,"No match:
             //%s:%s\n",p_station->call_sign,status_string);
         }
 
@@ -8162,7 +8162,7 @@ void add_status(DataRow *p_station, char *status_string) {
             // Fill in the string
             strncpy(p_station->status_data->text_ptr,status_string,len+1);
 
-            //printf("Station:%s\tStatus:%s\n\n",p_station->call_sign,p_station->status_data->text_ptr);
+            //fprintf(stderr,"Station:%s\tStatus:%s\n\n",p_station->call_sign,p_station->status_data->text_ptr);
         }
     }
 }
@@ -8189,11 +8189,11 @@ void add_comment(DataRow *p_station, char *comment_string) {
     }
 
     // Shorten it
-    //printf("1Comment: (%s)\n",comment_string);
+    //fprintf(stderr,"1Comment: (%s)\n",comment_string);
     (void)remove_trailing_spaces(comment_string);
-    //printf("2Comment: (%s)\n",comment_string);
+    //fprintf(stderr,"2Comment: (%s)\n",comment_string);
     (void)remove_leading_spaces(comment_string);
-    //printf("3Comment: (%s)\n",comment_string);
+    //fprintf(stderr,"3Comment: (%s)\n",comment_string);
  
     len = strlen(comment_string);
 
@@ -8211,14 +8211,14 @@ void add_comment(DataRow *p_station, char *comment_string) {
             while (ptr != NULL) {
                 if (strcmp(ptr->text_ptr, comment_string) == 0) {
                     // Found a matching string
-                    //printf("Found match: %s:%s\n",p_station->call_sign,comment_string);
+                    //fprintf(stderr,"Found match: %s:%s\n",p_station->call_sign,comment_string);
                     return; // No need to add the new string
                 }
                 ptr = ptr->next;
             }
             // No matching string found, so add it
             add_it++;
-            //printf("No match: %s:%s\n",p_station->call_sign,comment_string);
+            //fprintf(stderr,"No match: %s:%s\n",p_station->call_sign,comment_string);
         }
 
         if (add_it) {   // We add to the beginning so we don't have
@@ -8278,12 +8278,12 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     // Check "data" against the max APRS length, and dump the packet if too long.
     if ( (data != NULL) && (strlen(data) > MAX_INFO_FIELD_SIZE) ) {   // Overly long packet.  Throw it away.
         if (debug_level & 1)
-            printf("data_add: Overly long packet.  Throwing it away.\n");
+            fprintf(stderr,"data_add: Overly long packet.  Throwing it away.\n");
         return(0);  // Not an ok packet
     }
 
     if (debug_level & 1)
-        printf("data_add:\n\ttype: %d\n\tcall_sign: %s\n\tpath: %s\n\tdata: %s\n\tfrom: %c\n\tport: %d\n\torigin: %s\n\tthird_party: %d\n",
+        fprintf(stderr,"data_add:\n\ttype: %d\n\tcall_sign: %s\n\tpath: %s\n\tdata: %s\n\tfrom: %c\n\tport: %d\n\torigin: %s\n\tthird_party: %d\n",
             type,
             call_sign,
             path,
@@ -8442,14 +8442,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 ok = extract_position(p_station, &data, type);
                 if (ok) { 
                     if (debug_level & 1)
-                        printf("data_add: Got grid data for %s\n", call);
+                        fprintf(stderr,"data_add: Got grid data for %s\n", call);
 
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                 } else {
                     if (debug_level & 1)
-                        printf("data_add: Bad grid data for %s : %s\n", call, data);
+                        fprintf(stderr,"data_add: Bad grid data for %s : %s\n", call, data);
                 }
                 break;
 
@@ -8631,7 +8631,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             default:
-                printf("ERROR: UNKNOWN TYPE in data_add\n");
+                fprintf(stderr,"ERROR: UNKNOWN TYPE in data_add\n");
                 ok = 0;
                 break;
         }
@@ -8645,7 +8645,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             char filtered_data[MAX_LINE_SIZE + 1];
             strcpy(filtered_data,data-1);
             makePrintable(filtered_data);
-            printf("store non-APRS data as status: %s: |%s|\n",call,filtered_data);
+            fprintf(stderr,"store non-APRS data as status: %s: |%s|\n",call,filtered_data);
         }
 
         // GPRMC etc. without a position is here too, but it should not be stored as status!
@@ -8811,7 +8811,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (direct == 1) {
             // This packet was heard direct.  Set the ST_DIRECT bit.
             if (debug_level & 1) {
-                printf("Setting ST_DIRECT for station %s\n", 
+                fprintf(stderr,"Setting ST_DIRECT for station %s\n", 
                     p_station->call_sign);
             }
             p_station->direct_heard = sec_now();
@@ -8827,7 +8827,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if ((p_station->flag & ST_DIRECT) != 0 &&
                     sec_now() > (p_station->direct_heard + st_direct_timeout)) {
                 if (debug_level & 1)
-                    printf("Clearing ST_DIRECT for station %s\n", 
+                    fprintf(stderr,"Clearing ST_DIRECT for station %s\n", 
                         p_station->call_sign);
                 p_station->flag &= (~ST_DIRECT);
             }
@@ -8842,19 +8842,19 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if (position_on_extd_screen(p_station->coord_lat,p_station->coord_lon)) {
                 p_station->flag |= (ST_INVIEW);   // set   "In View" flag
                 if (debug_level & 256)
-                    printf("Setting ST_INVIEW flag\n");
+                    fprintf(stderr,"Setting ST_INVIEW flag\n");
             }
             else {
                 p_station->flag &= (~ST_INVIEW);  // clear "In View" flag
                 if (debug_level & 256)
-                    printf("Clearing ST_INVIEW flag\n");
+                    fprintf(stderr,"Clearing ST_INVIEW flag\n");
             }
         }
 
         scrupd = 0;
         if (new_station) {
             if (debug_level & 256) {
-                printf("New Station %s\n", p_station->call_sign);
+                fprintf(stderr,"New Station %s\n", p_station->call_sign);
             }
             if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0) {
                 p_station->flag |= (ST_MOVING); // it has a speed, so it's moving
@@ -8871,17 +8871,17 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             }
         } else {        // we had seen this station before...
             if (debug_level & 256) {
-                printf("New Data for %s %ld %ld\n", p_station->call_sign,
+                fprintf(stderr,"New Data for %s %ld %ld\n", p_station->call_sign,
                     p_station->coord_lat, p_station->coord_lon);
             }
             if (found_pos && position_defined(p_station->coord_lat,p_station->coord_lon,1)) { // ignore undefined and 0N/0E
                 if (debug_level & 256) {
-                    printf("  Valid position for %s\n",
+                    fprintf(stderr,"  Valid position for %s\n",
                         p_station->call_sign);
                 }
                 if (p_station->newest_trackpoint != NULL) {
                     if (debug_level & 256) {
-                        printf("Station has a trail: %s\n",
+                        fprintf(stderr,"Station has a trail: %s\n",
                             p_station->call_sign);
                     }
                     moving = 1;                         // it's moving if it has a trail
@@ -8889,14 +8889,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 else {
                     if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0) {
                         if (debug_level & 256) {
-                            printf("Speed detected on %s\n",
+                            fprintf(stderr,"Speed detected on %s\n",
                                 p_station->call_sign);
                         }
                         moving = 1;                     // declare it moving, if it has a speed
                     }
                     else {
                         if (debug_level & 256) {
-                            printf("Position defined: %d, Changed: %s\n",
+                            fprintf(stderr,"Position defined: %d, Changed: %s\n",
                                 position_defined(last_lat, last_lon, 1),
                                 (p_station->coord_lat != last_lat ||
                                 p_station->coord_lon != last_lon) ?
@@ -8907,16 +8907,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         if (position_defined(last_lat,last_lon,1)
                                 && (p_station->coord_lat != last_lat || p_station->coord_lon != last_lon)) {
                             if (debug_level & 256) {
-                                printf("Position Change detected on %s\n",
+                                fprintf(stderr,"Position Change detected on %s\n",
                                     p_station->call_sign);
                             }
                             moving = 1;                 // it's moving if it has changed the position
                         }
                         else {
                             if (debug_level & 256) {
-                                printf("Station %s still appears stationary.\n",
+                                fprintf(stderr,"Station %s still appears stationary.\n",
                                     p_station->call_sign);
-                                printf(" %s stationary at %ld %ld (%ld %ld)\n",
+                                fprintf(stderr," %s stationary at %ld %ld (%ld %ld)\n",
                                     p_station->call_sign,
                                     p_station->coord_lat, p_station->coord_lon,
                                     last_lat,             last_lon);
@@ -8932,17 +8932,17 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if (atoi(p_station->speed) < TRAIL_MAX_SPEED) {     // reject high speed data (undef gives 0)
                         // we now may already have the 2nd position, so store the old one first
                         if (debug_level & 256) {
-                            printf("Station %s valid speed %s\n",
+                            fprintf(stderr,"Station %s valid speed %s\n",
                                 p_station->call_sign, p_station->speed);
                         }
                         if (p_station->newest_trackpoint == NULL) {
                             if (debug_level & 256) {
-                                printf("Station %s no trail history.\n",
+                                fprintf(stderr,"Station %s no trail history.\n",
                                     p_station->call_sign);
                             }
                             if (position_defined(last_lat,last_lon,1)) {  // ignore undefined and 0N/0E
                                 if (debug_level & 256) {
-                                    printf("Storing old position for %s\n",
+                                    fprintf(stderr,"Storing old position for %s\n",
                                         p_station->call_sign);
                                 }
                                 (void)store_trail_point(p_station,last_lon,last_lat,last_stn_sec,last_alt,last_speed,last_course,last_flag);
@@ -8977,17 +8977,17 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
                                 // Give it a new timestamp
                                 p_station->sec_heard = curr_sec;
-                                //printf("Updating last heard time\n");
+                                //fprintf(stderr,"Updating last heard time\n");
                             }
                         }
                         else if (debug_level & 256) {
-                            printf("Trailpoint echo detected for %s\n",
+                            fprintf(stderr,"Trailpoint echo detected for %s\n",
                                 p_station->call_sign);
                         }
                     }
                     else {
                         if (debug_level & 256 || debug_level & 1)
-                            printf("Speed over %d mph\n",TRAIL_MAX_SPEED);
+                            fprintf(stderr,"Speed over %d mph\n",TRAIL_MAX_SPEED);
                     }
 
                     if (track_station_on == 1)          // maybe we are tracking a station
@@ -9000,14 +9000,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (changed_pos == 1 && Display_.trail && ((p_station->flag & ST_INVIEW) != 0)) {
                     if (ok_to_display) {
                         if (debug_level & 256) {
-                            printf("Adding Solid Trail for %s\n",
+                            fprintf(stderr,"Adding Solid Trail for %s\n",
                             p_station->call_sign);
                         }
                         draw_trail(da,p_station,1);         // update trail
                         scrupd = 1;
                     }
                     else if (debug_level & 256) {
-                        printf("Skipped trail for %s (altnet)\n",
+                        fprintf(stderr,"Skipped trail for %s (altnet)\n",
                             p_station->call_sign);
                     }
                 }
@@ -9087,9 +9087,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"));
                 statusline(station_id,0);
                 play_sound(sound_command,sound_prox_message);
-                /*printf("%s> PROX distance %f\n",p_station->call_sign, distance);*/
+                /*fprintf(stderr,"%s> PROX distance %f\n",p_station->call_sign, distance);*/
 
-            //printf("Station within proximity circle, creating waypoint\n");
+            //fprintf(stderr,"Station within proximity circle, creating waypoint\n");
             create_garmin_waypoint(p_station->coord_lat,p_station->coord_lon,p_station->call_sign);
 
             }
@@ -9131,7 +9131,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         distance, units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"));
                 statusline(station_id,0);
                 play_sound(sound_command,sound_band_open_message);
-                /*printf("%s> BO distance %f\n",p_station->call_sign, distance);*/
+                /*fprintf(stderr,"%s> BO distance %f\n",p_station->call_sign, distance);*/
             }
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
@@ -9274,7 +9274,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
     // Check for the low speed threshold, set to slow posit rate if
     // we're going slow.
     if (speed <= sb_low_speed_limit) {
-        //printf("Slow speed\n");
+        //fprintf(stderr,"Slow speed\n");
 
 
 // EXPERIMENTAL!!!
@@ -9287,7 +9287,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         // have some hysteresis for these posits.
 //        if (sb_POSIT_rate != (sb_posit_slow * 60) ) { // Previous rate was _not_ the slow rate
 //            beacon_now++; // Force a posit right away
-//            //printf("Stopping, POSIT!\n");
+//            //fprintf(stderr,"Stopping, POSIT!\n");
 //        }
 ////////////////////////////////////////////////////////////////////
 
@@ -9306,7 +9306,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 //        if ( (secs_since_beacon > sb_turn_time)    // Haven't beaconed for a bit
 //                && (sb_POSIT_rate == (sb_posit_slow * 60) ) ) { // Last rate was the slow rate
 //            beacon_now++; // Force a posit right away
-//            //printf("Starting to move, POSIT!\n");
+//            //fprintf(stderr,"Starting to move, POSIT!\n");
 //        }
 ////////////////////////////////////////////////////////////////////
 
@@ -9317,11 +9317,11 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         // Adjust rate according to speed
         if (speed > sb_high_speed_limit) {  // We're above the high limit
             sb_POSIT_rate = sb_posit_fast;
-            //printf("Setting fast rate\n");
+            //fprintf(stderr,"Setting fast rate\n");
         }
         else {  // We're between the high/low limits.  Set a between rate
             sb_POSIT_rate = (sb_posit_fast * sb_high_speed_limit) / speed;
-            //printf("Setting medium rate\n");
+            //fprintf(stderr,"Setting medium rate\n");
 
             // Adjust turn threshold according to speed
             turn_threshold += (int)( (sb_turn_slope * 10) / speed);
@@ -9344,13 +9344,13 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         if (heading_change_since_beacon > 180)
             heading_change_since_beacon = 360 - heading_change_since_beacon;
 
-        //printf("course change:%d\n",heading_change_since_beacon);
+        //fprintf(stderr,"course change:%d\n",heading_change_since_beacon);
 
         if ( (heading_change_since_beacon > turn_threshold)
                 && (secs_since_beacon > sb_turn_time) ) {
             beacon_now++;   // Force a posit right away
 
-            //printf("Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\tSpeed: %d\tTurn Threshold:%d\n",
+            //fprintf(stderr,"Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\tSpeed: %d\tTurn Threshold:%d\n",
             //    sb_last_heading,
             //    course,
             //    heading_change_since_beacon,
@@ -9417,7 +9417,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
 
     // Recompute the SmartBeaconing(tm) parameters based on current/past
     // course & speed.  Sending the speed in knots.
-    //printf("Speed: %s\n",speed);
+    //fprintf(stderr,"Speed: %s\n",speed);
     compute_smart_beacon(course, speed);
 
     p_station = NULL;
@@ -9470,20 +9470,20 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
                     //redraw_on_new_data = 1;   // redraw next chance
                     //redraw_on_new_data = 2;     // better response?
                     if (debug_level & 256) {
-                        printf("Redraw on new gps data \n");
+                        fprintf(stderr,"Redraw on new gps data \n");
                     }
                     statusline(langcode("BBARSTA038"),0);
                 }
                 else if (debug_level & 256) {
-                    printf("New Position same pixel as old.\n");
+                    fprintf(stderr,"New Position same pixel as old.\n");
                 }
             }
             else if (debug_level & 256) {
-                printf("New Position is off edge of screen.\n");
+                fprintf(stderr,"New Position is off edge of screen.\n");
             }
         }
         else if (debug_level & 256) {
-            printf("New position is off side of screen.\n");
+            fprintf(stderr,"New position is off side of screen.\n");
         }
     }
 
@@ -9502,7 +9502,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     // altu;    unit should always be meters  ????
 
     if(debug_level & 256)
-        printf("GPS MY_LAT <%s> MY_LONG <%s> MY_ALT <%s>\n",
+        fprintf(stderr,"GPS MY_LAT <%s> MY_LONG <%s> MY_ALT <%s>\n",
             my_lat, my_long, alt);
 
     /* get my last altitude meters to feet */
@@ -9532,7 +9532,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
                                 p_station->flag);
     }
     if (debug_level & 256) {
-        printf("Adding Solid Trail for %s\n",
+        fprintf(stderr,"Adding Solid Trail for %s\n",
         p_station->call_sign);
     }
     draw_trail(da,p_station,1);         // update trail
@@ -9544,7 +9544,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     // We parsed a good GPS string, so allow beaconing to proceed
     // normally for a while.
     my_position_valid = 3;
-    //printf("Valid GPS input: my_position_valid = 3\n");
+    //fprintf(stderr,"Valid GPS input: my_position_valid = 3\n");
  
     //redraw_on_new_data = 1;   // redraw next chance
     redraw_on_new_data = 2;     // Immediate update of symbols/tracks
@@ -9797,7 +9797,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     *****************************************************************************/
 
     if (debug_level & 1)
-        printf("decode_Mic_E:  FOUND MIC-E\n");
+        fprintf(stderr,"decode_Mic_E:  FOUND MIC-E\n");
 
     // Note that the first MIC-E character was not passed to us, so we're
     // starting just past it.
@@ -9809,12 +9809,12 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
             // should check the chars we do print out to make sure
             // they're printable, else print a space char.
             if (debug_level & 1) {
-                printf("decode_Mic_E: Symbol table (%c), symbol (%c) swapped or corrupted packet?  Call=%s, Path=%s\n",
+                fprintf(stderr,"decode_Mic_E: Symbol table (%c), symbol (%c) swapped or corrupted packet?  Call=%s, Path=%s\n",
                     ((info[7] > 0x1f) && (info[7] < 0x7f)) ? info[7] : ' ',
                     ((info[6] > 0x1f) && (info[6] < 0x7f)) ? info[6] : ' ',
                     call_sign,
                     path);
-                printf("Returned from data_add, invalid symbol table character: %c\n",info[7]);
+                fprintf(stderr,"Returned from data_add, invalid symbol table character: %c\n",info[7]);
             }
         }
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
@@ -9824,7 +9824,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // Check for valid symbol.  Should be between '!' and '~' only.
     if (info[6] < '!' || info[6] > '~') {
         if (debug_level & 1)
-            printf("Returned from data_add, invalid symbol\n");
+            fprintf(stderr,"Returned from data_add, invalid symbol\n");
 
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
@@ -9833,13 +9833,13 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // Check for minimum MIC-E size.
     if (strlen(info) < 8) {
         if (debug_level & 1)
-            printf("Returned from data_add, packet too short\n");
+            fprintf(stderr,"Returned from data_add, packet too short\n");
 
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
     }
 
-    //printf("Path1:%s\n",path);
+    //fprintf(stderr,"Path1:%s\n",path);
 
     msg1 = (int)( ((unsigned char)path[0] & 0x40) >>4 );
     msg2 = (int)( ((unsigned char)path[1] & 0x40) >>5 );
@@ -9848,59 +9848,59 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     msg = msg ^ 0x07;           // And this is now the normal message number
     msgtyp = 0;                 // DK7IN: Std message, I have to add custom msg decoding
 
-    //printf("Msg: %d\n",msg);
+    //fprintf(stderr,"Msg: %d\n",msg);
 
     /* Snag the latitude from the destination field, Assume TAPR-2 */
     /* DK7IN: latitude now works with custom message */
     s_b1 = (unsigned char)( (path[0] & 0x0f) + (char)0x2f );
-    //printf("path0:%c\ts_b1:%c\n",path[0],s_b1);
+    //fprintf(stderr,"path0:%c\ts_b1:%c\n",path[0],s_b1);
     if (path[0] & 0x10)     // A-J
         s_b1 += (unsigned char)1;
 
     if (s_b1 > (unsigned char)0x39)        // K,L,Z
         s_b1 = (unsigned char)0x20;
-    //printf("s_b1:%c\n",s_b1);
+    //fprintf(stderr,"s_b1:%c\n",s_b1);
  
     s_b2 = (unsigned char)( (path[1] & 0x0f) + (char)0x2f );
-    //printf("path1:%c\ts_b2:%c\n",path[1],s_b2);
+    //fprintf(stderr,"path1:%c\ts_b2:%c\n",path[1],s_b2);
     if (path[1] & 0x10)     // A-J
         s_b2 += (unsigned char)1;
 
     if (s_b2 > (unsigned char)0x39)        // K,L,Z
         s_b2 = (unsigned char)0x20;
-    //printf("s_b2:%c\n",s_b2);
+    //fprintf(stderr,"s_b2:%c\n",s_b2);
  
     s_b3 = (unsigned char)( (path[2] & (char)0x0f) + (char)0x2f );
-    //printf("path2:%c\ts_b3:%c\n",path[2],s_b3);
+    //fprintf(stderr,"path2:%c\ts_b3:%c\n",path[2],s_b3);
     if (path[2] & 0x10)     // A-J
         s_b3 += (unsigned char)1;
 
     if (s_b3 > (unsigned char)0x39)        // K,L,Z
         s_b3 = (unsigned char)0x20;
-    //printf("s_b3:%c\n",s_b3);
+    //fprintf(stderr,"s_b3:%c\n",s_b3);
  
     s_b4 = (unsigned char)( (path[3] & 0x0f) + (char)0x30 );
-    //printf("path3:%c\ts_b4:%c\n",path[3],s_b4);
+    //fprintf(stderr,"path3:%c\ts_b4:%c\n",path[3],s_b4);
     if (s_b4 > (unsigned char)0x39)        // L,Z
         s_b4 = (unsigned char)0x20;
-    //printf("s_b4:%c\n",s_b4);
+    //fprintf(stderr,"s_b4:%c\n",s_b4);
  
     s_b5 = (unsigned char)( (path[4] & 0x0f) + (char)0x30 );
-    //printf("path4:%c\ts_b5:%c\n",path[4],s_b5);
+    //fprintf(stderr,"path4:%c\ts_b5:%c\n",path[4],s_b5);
     if (s_b5 > (unsigned char)0x39)        // L,Z
         s_b5 = (unsigned char)0x20;
-    //printf("s_b5:%c\n",s_b5);
+    //fprintf(stderr,"s_b5:%c\n",s_b5);
  
     s_b6 = (unsigned char)( (path[5] & 0x0f) + (char)0x30 );
-    //printf("path5:%c\ts_b6:%c\n",path[5],s_b6);
+    //fprintf(stderr,"path5:%c\ts_b6:%c\n",path[5],s_b6);
     if (s_b6 > (unsigned char)0x39)        // L,Z
         s_b6 = (unsigned char)0x20;
-    //printf("s_b6:%c\n",s_b6);
+    //fprintf(stderr,"s_b6:%c\n",s_b6);
  
     s_b7 =  (unsigned char)path[6];        // SSID, not used here
-    //printf("path6:%c\ts_b7:%c\n",path[6],s_b7);
+    //fprintf(stderr,"path6:%c\ts_b7:%c\n",path[6],s_b7);
  
-    //printf("\n");
+    //fprintf(stderr,"\n");
 
     // Special tests for 'L' due to position ambiguity deviances in
     // the APRS spec table.  'L' has the 0x40 bit set, but they
@@ -9924,7 +9924,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     else
         west = (int)((path[5] & 0x40) == (char)0x40);  // W/E Long Indicator
 
-    //printf("north:%c->%d\tlat:%c->%d\twest:%c->%d\n",path[3],north,path[4],long_offset,path[5],west);
+    //fprintf(stderr,"north:%c->%d\tlat:%c->%d\twest:%c->%d\n",path[3],north,path[4],long_offset,path[5],west);
 
     /* Put the latitude string into the temp variable */
     xastir_snprintf(temp, sizeof(temp), "%c%c%c%c.%c%c%c%c",s_b1,s_b2,s_b3,s_b4,s_b5,s_b6,
@@ -9966,8 +9966,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         course -= 400;
 
     /*  ???
-        printf("info[4]-28 mod 10 - 4 = %d\n",( ( (int)info[4]) - 28) % 10 - 4);
-        printf("info[5]-28 = %d\n", ( (int)info[5]) - 28 );
+        fprintf(stderr,"info[4]-28 mod 10 - 4 = %d\n",( ( (int)info[4]) - 28) % 10 - 4);
+        fprintf(stderr,"info[5]-28 = %d\n", ( (int)info[5]) - 28 );
     */
     xastir_snprintf(temp, sizeof(temp), "%03d/%03d",course,speed);
     strcat(new_info,temp);
@@ -9997,7 +9997,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         //packet may go.  Upper limit is mostly a guess.
         if ( (alt > 500000) || (alt < -32809) ) {  // Altitude is whacko.  Skip it.
             if (debug_level & 1)
-                printf("decode_Mic_E:  Altitude is whacko:  %ld feet, skipping altitude...\n", alt);
+                fprintf(stderr,"decode_Mic_E:  Altitude is whacko:  %ld feet, skipping altitude...\n", alt);
             offset += 4;
         }
         else {  // Altitude is ok
@@ -10090,8 +10090,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     }
 
     if (debug_level & 1) {
-        printf("decode_Mic_E:  Done decoding MIC-E\n");
-        printf("APRS_MICE, %s, %s, %s, %d, %d, NULL, %d\n",call_sign,path,new_info,from,port,third_party);
+        fprintf(stderr,"decode_Mic_E:  Done decoding MIC-E\n");
+        fprintf(stderr,"APRS_MICE, %s, %s, %s, %d, %d, NULL, %d\n",call_sign,path,new_info,from,port,third_party);
         // type:        APRS_MICE,
         // callsign:    N0EST-9,
         // path:        TTPQ9P,W0MXW-1,WIDE,N0QK-1*,
@@ -10105,7 +10105,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     ok = data_add(APRS_MICE,call_sign,path,new_info,from,port,NULL,third_party);
 
     if (debug_level & 1)
-        printf("Returned from data_add, end of function\n");
+        fprintf(stderr,"Returned from data_add, end of function\n");
 
     return(ok);
 }   // End of decode_Mic_E()
@@ -10124,7 +10124,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
     int ok;
 
     if (debug_level & 1)
-        printf("process_directed_query: %s\n",message);
+        fprintf(stderr,"process_directed_query: %s\n",message);
 
     ok = 0;
     if (!ok && strncmp(message,"APRSD",5) == 0 && from != 'F') {  // stations heard direct
@@ -10181,7 +10181,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
 // WE7U:It'd be nice to return via the reverse path here
         transmit_message_data(call,temp,NULL);
         if (debug_level & 1)
-            printf("Sent to %s:%s\n",call,temp);
+            fprintf(stderr,"Sent to %s:%s\n",call,temp);
     }
     return(ok);
 }
@@ -10401,8 +10401,8 @@ void shorten_path( char *path, char *short_path ) {
     }
 
     if (debug_level & 1) {
-        printf("%s\n",path);
-        printf("%s\n\n",short_path);
+        fprintf(stderr,"%s\n",path);
+        fprintf(stderr,"%s\n\n",short_path);
     }
 }
 
@@ -10441,11 +10441,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     // we get message with already extracted data ID
 
     if (debug_level & 1)
-        printf("decode_message: start\n");
+        fprintf(stderr,"decode_message: start\n");
 
     if (debug_level & 1) {
         if ( (message != NULL) && (strlen(message) > (MAX_MESSAGE_LENGTH + 10) ) ) { // Overly long message.  Throw it away.  We're done.
-            printf("decode_message: LONG message.  Dumping it.\n");
+            fprintf(stderr,"decode_message: LONG message.  Dumping it.\n");
             return(0);
         }
     }
@@ -10484,8 +10484,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             int yy = 0;
 
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
-                printf("Found Reply/Ack:%s\n",message);
-                printf("Orig_msg_id:%s\t",msg_id);
+                fprintf(stderr,"Found Reply/Ack:%s\n",message);
+                fprintf(stderr,"Orig_msg_id:%s\t",msg_id);
             }
 
 // Put this code into the UI message area as well (if applicable).
@@ -10503,7 +10503,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             temp_ptr[0] = '\0'; // adjust msg_id end
 
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
-                printf("New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
+                fprintf(stderr,"New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
             }
 
         }
@@ -10516,7 +10516,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 int yy = 0;
 
                 if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
-                    printf("Found Reply/Ack:%s\n",message);
+                    fprintf(stderr,"Found Reply/Ack:%s\n",message);
                 }
 
 // Put this code into the UI message area as well (if applicable).
@@ -10532,7 +10532,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 temp_ptr[0] = '\0'; // adjust message end
 
                 if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
-                    printf("Reply_ack:%s\n\n",ack_string);
+                    fprintf(stderr,"Reply_ack:%s\n\n",ack_string);
                 }
             } 
         }
@@ -10541,12 +10541,12 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     } else
         done = 1;                               // fall through...
     if (debug_level & 1)
-        printf("1\n");
+        fprintf(stderr,"1\n");
     len = (int)strlen(message);
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"ack",3) == 0) {              // ACK
         substr(msg_id,message+3,5);
-        // printf("ACK: %s: |%s| |%s|\n",call,addr,msg_id);
+        // fprintf(stderr,"ACK: %s: |%s| |%s|\n",call,addr,msg_id);
         if (is_my_call(addr,1)) {
             clear_acked_message(call,addr,msg_id);  // got an ACK for me
             msg_record_ack(call,addr,msg_id,0);     // Record the ack for this message
@@ -10559,11 +10559,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) {
                 char short_path[100];
 
-                /*printf("Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
+                /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
                 shorten_path(path,short_path);
                 xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
 
-//printf("Attempting to send ACK to RF\n");
+//fprintf(stderr,"Attempting to send ACK to RF\n");
 
                 output_igate_rf(call,addr,path,ipacket_message,port,third_party);
                 igate_msgs_tx++;
@@ -10572,27 +10572,27 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         done = 1;
     }
     if (debug_level & 1)
-        printf("2\n");
+        fprintf(stderr,"2\n");
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"rej",3) == 0) {              // REJ
         substr(msg_id,message+3,5);
-        // printf("REJ: %s: |%s| |%s|\n",call,addr,msg_id);
+        // fprintf(stderr,"REJ: %s: |%s| |%s|\n",call,addr,msg_id);
         // we ignore it
         done = 1;
     }
     if (debug_level & 1)
-        printf("3\n");
+        fprintf(stderr,"3\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"BLN",3) == 0) {                       // Bulletin
         long dummy;
 
-        // printf("found BLN: |%s| |%s|\n",addr,message);
+        // fprintf(stderr,"found BLN: |%s| |%s|\n",addr,message);
         bulletin_message(from,call,addr,message,sec_now());
         (void)msg_data_add(addr,call,message,"",MESSAGE_BULLETIN,from,&dummy);
         done = 1;
     }
     if (debug_level & 1)
-        printf("4\n");
+        fprintf(stderr,"4\n");
 
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) { // Message for me with msg_id
@@ -10613,7 +10613,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // station.  We need it to implement Reply/Ack protocol.
         store_most_recent_ack(call,msg_id);
  
-        // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
+        // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
         last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record); // id_fixed
 
         new_message_data += 1;
@@ -10644,7 +10644,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 && ((last_ack_sent + 30 ) < sec_now())
                 && !satellite_ack_mode ) {  // Disable separate ack's for satellite work
 
-            //printf("Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
+            //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
             // Update the last_ack_sent field for the message
             msg_update_ack_stamp(record);
@@ -10665,7 +10665,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                     sizeof(ipacket_message), "AA:%s", auto_reply_message);
 
                 if (debug_level & 2)
-                    printf("Send autoreply to <%s> from <%s> :%s\n",
+                    fprintf(stderr,"Send autoreply to <%s> from <%s> :%s\n",
                         call, my_callsign, ipacket_message);
 
                 if (!is_my_call(call,1))
@@ -10674,18 +10674,18 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
 
 else {
-//printf("Skipping ack: %ld %ld\n",last_ack_sent,sec_now());
+//fprintf(stderr,"Skipping ack: %ld %ld\n",last_ack_sent,sec_now());
 }
 
         done = 1;
     }
     if (debug_level & 1)
-        printf("5\n");
+        fprintf(stderr,"5\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"NWS-",4) == 0) {             // NWS weather alert
         long dummy;
 
-        //printf("found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+        //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
         (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
         (void)alert_message_scan();
         done = 1;
@@ -10705,12 +10705,12 @@ else {
         }
     }
     if (debug_level & 1)
-        printf("6a\n");
+        fprintf(stderr,"6a\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"SKY",3) == 0) {  // NWS weather alert additional info
         long dummy;
 
-        //printf("found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+        //fprintf(stderr,"found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
         (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
         (void)alert_message_scan();
         done = 1;
@@ -10730,12 +10730,12 @@ else {
         }
     }
     if (debug_level & 1)
-        printf("6b\n");
+        fprintf(stderr,"6b\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber
         long dummy;
 
-        if (debug_level & 2) printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
+        if (debug_level & 2) fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
         (void)msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&dummy);
         new_message_data += look_for_open_group_data(addr);
         if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
@@ -10751,12 +10751,12 @@ else {
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1) && !is_my_call(addr,1)) {
             char short_path[100];
 
-            /*printf("Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,
+            /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,
                         call,addr);*/     // {
             shorten_path(path,short_path);
             xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s{%s",call,short_path,my_callsign,addr9,message,msg_id);
 
-//printf("Attempting to send message to RF\n");
+//fprintf(stderr,"Attempting to send message to RF\n");
 
             output_igate_rf(call,addr,path,ipacket_message,port,third_party);
             igate_msgs_tx++;
@@ -10764,16 +10764,16 @@ else {
         done = 1;
     }
     if (debug_level & 1)
-        printf("7\n");
+        fprintf(stderr,"7\n");
     //--------------------------------------------------------------------------
     if (!done && len > 2 && message[0] == '?' && is_my_call(addr,1)) { // directed query
         // Smallest query known is "?WX".
         if (debug_level & 1)
-            printf("Received a directed query\n");
+            fprintf(stderr,"Received a directed query\n");
         done = process_directed_query(call,path,message+1,from);
     }
     if (debug_level & 1)
-        printf("8\n");
+        fprintf(stderr,"8\n");
     //--------------------------------------------------------------------------
     // special treatment required?: Msg w/o line for me ?  Can also
     // be messages between other people (much more common).
@@ -10782,7 +10782,7 @@ else {
         long dummy;
 
         if (debug_level & 4)
-            printf("found Msg: |%s| |%s|\n",addr,message);
+            fprintf(stderr,"found Msg: |%s| |%s|\n",addr,message);
 
         (void)msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from,&dummy);
         new_message_data++;      // ??????
@@ -10809,13 +10809,13 @@ else {
         // done = 1;
     }
     if (debug_level & 1)
-        printf("9\n");
+        fprintf(stderr,"9\n");
     //--------------------------------------------------------------------------
     if (ok)
         (void)data_add(STATION_CALL_DATA,call,path,message,from,port,NULL,third_party);
 
     if (debug_level & 1)
-        printf("decode_message: finish\n");
+        fprintf(stderr,"decode_message: finish\n");
 
     return(ok);
 }
@@ -10877,7 +10877,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         if ( (from != 'F')
                 && ( (last_ack_sent + 30) < sec_now()) ) {
 
-            //printf("Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
+            //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
             // Record the fact that we're sending an ack now
             msg_update_ack_stamp(record);
@@ -10894,7 +10894,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
                 xastir_snprintf(temp, sizeof(temp), "AA:%s", auto_reply_message);
 
                 if (debug_level & 2)
-                    printf("Send autoreply to <%s> from <%s> :%s\n",
+                    fprintf(stderr,"Send autoreply to <%s> from <%s> :%s\n",
                         call, my_callsign, temp);
 
                 if (!is_my_call(call,1))
@@ -10917,7 +10917,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
             /* spit the ACK out on the TNC -FG                                         */
 //            if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) {
 //                char short_path[100];
-                //printf("Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); {
+                //fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); {
 
 //                shorten_path(path,short_path);
                 //sprintf(ipacket_message,"}%s>%s:%s:%s",call,path,addr9,message);
@@ -10950,9 +10950,9 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
     /* remember fixed format starts with ! and can be up to 24 chars in the message */ // ???
     if (debug_level & 1)
-        printf("decode_info_field: c:%s p:%s m:%s f:%c\n",call,path,message,from);
+        fprintf(stderr,"decode_info_field: c:%s p:%s m:%s f:%c\n",call,path,message,from);
     if (debug_level & 1)
-        printf("decode_info_field: Past check\n");
+        fprintf(stderr,"decode_info_field: Past check\n");
 
     done         = 0;                                   // if 1, packet was decoded
     ignore       = 0;                                   // if 1, don't treat undecoded packets as status text
@@ -10961,7 +10961,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
     if ( (message != NULL) && (strlen(message) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.
         if (debug_level & 1)
-            printf("decode_info_field: Overly long message.  Throwing it away.\n");
+            fprintf(stderr,"decode_info_field: Overly long message.  Throwing it away.\n");
         done = 1;
     }
     else if (message == NULL || strlen(message) == 0) {      // we could have an empty message
@@ -10993,19 +10993,19 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
         if (debug_level & 1) {
             if (ok_igate_net)
-                printf("decode_info_field: ok_igate_net can be read\n");
+                fprintf(stderr,"decode_info_field: ok_igate_net can be read\n");
         }
 
         switch (data_id) {
             case '=':   // Position without timestamp (with APRS messaging)
                 if (debug_level & 1)
-                    printf("decode_info_field: = (position w/o timestamp)\n");
+                    fprintf(stderr,"decode_info_field: = (position w/o timestamp)\n");
                 done = data_add(APRS_MSGCAP,call,path,message,from,port,origin,third_party);
                 break;
 
             case '!':   // Position without timestamp (no APRS messaging) or Ultimeter 2000 WX
                 if (debug_level & 1)
-                    printf("decode_info_field: ! (position w/o timestamp or Ultimeter 2000 WX)\n");
+                    fprintf(stderr,"decode_info_field: ! (position w/o timestamp or Ultimeter 2000 WX)\n");
                 if (message[0] == '!' && is_xnum_or_dash(message+1,40))   // Ultimeter 2000 WX
                     done = data_add(APRS_WX3,call,path,message+1,from,port,origin,third_party);
                 else
@@ -11014,7 +11014,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
             case '/':   // Position with timestamp (no APRS messaging)
                 if (debug_level & 1)
-                    printf("decode_info_field: / (position w/timestamp)\n");
+                    fprintf(stderr,"decode_info_field: / (position w/timestamp)\n");
                 done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
                 break;
 
@@ -11023,7 +11023,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 if ((message[14] == 'N' || message[14] == 'S') &&
                     (message[24] == 'W' || message[24] == 'E')) {       // uncompressed format
                     if (debug_level & 1)
-                        printf("decode_info_field: @ (uncompressed position w/timestamp)\n");
+                        fprintf(stderr,"decode_info_field: @ (uncompressed position w/timestamp)\n");
                     if (message[29] == '/') {
                         if (message[33] == 'g' && message[37] == 't')
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
@@ -11033,7 +11033,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
                 } else {                                                // compressed format
                     if (debug_level & 1)
-                        printf("decode_info_field: @ (compressed position w/timestamp)\n");
+                        fprintf(stderr,"decode_info_field: @ (compressed position w/timestamp)\n");
                     if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
                         if (message[20] == 'g' && message[24] == 't')   // Wx data
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
@@ -11052,33 +11052,33 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             //case 0x1c:// Mic-E  Current GPS data (Rev. 0 beta units only)
             //case 0x1d:// Mic-E  Old GPS data (Rev. 0 beta units only)
                 if (debug_level & 1)
-                    printf("decode_info_field: 0x27 or 0x60 (Mic-E)\n");
+                    fprintf(stderr,"decode_info_field: 0x27 or 0x60 (Mic-E)\n");
                 done = decode_Mic_E(call,path,message,from,port,third_party);
                 break;
 
             case '_':   // Positionless weather data                [APRS Reference, chapter 12]
                 if (debug_level & 1)
-                    printf("decode_info_field: _ (positionless wx data)\n");
+                    fprintf(stderr,"decode_info_field: _ (positionless wx data)\n");
                 done = data_add(APRS_WX2,call,path,message,from,port,origin,third_party);
                 break;
 
             case '#':   // Peet Bros U-II Weather Station (mph)     [APRS Reference, chapter 12]
                 if (debug_level & 1)
-                    printf("decode_info_field: # (peet bros u-II wx station)\n");
+                    fprintf(stderr,"decode_info_field: # (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
                     done = data_add(APRS_WX4,call,path,message,from,port,origin,third_party);
                 break;
 
             case '*':   // Peet Bros U-II Weather Station (km/h)
                 if (debug_level & 1)
-                    printf("decode_info_field: * (peet bros u-II wx station)\n");
+                    fprintf(stderr,"decode_info_field: * (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
                     done = data_add(APRS_WX6,call,path,message,from,port,origin,third_party);
                 break;
 
             case '$':   // Raw GPS data or Ultimeter 2000
                 if (debug_level & 1)
-                    printf("decode_info_field: $ (raw gps or ultimeter 2000)\n");
+                    fprintf(stderr,"decode_info_field: $ (raw gps or ultimeter 2000)\n");
                 if (strncmp("ULTW",message,4) == 0 && is_xnum_or_dash(message+4,44))
                     done = data_add(APRS_WX5,call,path,message+4,from,port,origin,third_party);
                 else if (strncmp("GPGGA",message,5) == 0)
@@ -11094,20 +11094,20 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
             case ':':   // Message
                 if (debug_level & 1)
-                    printf("decode_info_field: : (message)\n");
+                    fprintf(stderr,"decode_info_field: : (message)\n");
                 done = decode_message(call,path,message,from,port,third_party);
                 // there could be messages I should not retransmit to internet... ??? Queries to me...
                 break;
 
             case '>':   // Status                                   [APRS Reference, chapter 16]
                 if (debug_level & 1)
-                    printf("decode_info_field: > (status)\n");
+                    fprintf(stderr,"decode_info_field: > (status)\n");
                 done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party);
                 break;
 
             case '?':   // Query
                 if (debug_level & 1)
-                    printf("decode_info_field: ? (query)\n");
+                    fprintf(stderr,"decode_info_field: ? (query)\n");
                 done = process_query(call,path,message,from,port,third_party);
                 ignore = 1;     // don't treat undecoded packets as status text
                 break;
@@ -11120,35 +11120,35 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             case '&':   // Reserved -- Map Feature
             case 'T':   // Telemetrie data                          [APRS Reference, chapter 13]
                 if (debug_level & 1)
-                    printf("decode_info_field: ~,<{%%&T[\n");
+                    fprintf(stderr,"decode_info_field: ~,<{%%&T[\n");
                 ignore = 1;     // don't treat undecoded packets as status text
                 break;
         }
 
         if (debug_level & 1) {
             if (done)
-                printf("decode_info_field: done = 1\n");
+                fprintf(stderr,"decode_info_field: done = 1\n");
             else
-                printf("decode_info_field: done = 0\n");
+                fprintf(stderr,"decode_info_field: done = 0\n");
             if (ok_igate_net)
-                printf("decode_info_field: ok_igate_net can be read 2\n");
+                fprintf(stderr,"decode_info_field: ok_igate_net can be read 2\n");
         }
 
         if (debug_level & 1)
-            printf("decode_info_field: done with big switch\n");
+            fprintf(stderr,"decode_info_field: done with big switch\n");
 
         if (!done && !ignore) {         // Other Packets        [APRS Reference, chapter 19]
             done = data_add(OTHER_DATA,call,path,message-1,from,port,origin,third_party);
             ok_igate_net = 0;           // don't put data on internet       ????
             if (debug_level & 1)
-                printf("decode_info_field: done with data_add(OTHER_DATA)\n");
+                fprintf(stderr,"decode_info_field: done with data_add(OTHER_DATA)\n");
         }
 
         if (!done) {                    // data that we do ignore...
-            //printf("decode_info_field: not decoding info: Call:%s ID:%c Msg:|%s|\n",call,data_id,message);
+            //fprintf(stderr,"decode_info_field: not decoding info: Call:%s ID:%c Msg:|%s|\n",call,data_id,message);
             ok_igate_net = 0;           // don't put data on internet
             if (debug_level & 1)
-                printf("decode_info_field: done with ignored data\n");
+                fprintf(stderr,"decode_info_field: done with ignored data\n");
         }
     }
 
@@ -11160,7 +11160,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
     if (ok_igate_net) {
         if (debug_level & 1)
-            printf("decode_info_field: ok_igate_net start\n");
+            fprintf(stderr,"decode_info_field: ok_igate_net start\n");
 
         if ( (from == DATA_VIA_TNC)             // Came in via a TNC port
                 && (strlen(my_data) > 0) ) {    // Not empty
@@ -11173,12 +11173,12 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             // added after the 'I' perhaps.
             xastir_snprintf(line, sizeof(line), "%s>%s,%s*,I:%s",call,path,my_callsign,my_data);
 
-            //printf("decode_info_field: IGATE>NET %s\n",line);
+            //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
             output_igate_net(line, port,third_party);
         }
     }
     if (debug_level & 1)
-        printf("decode_info_field: done\n");
+        fprintf(stderr,"decode_info_field: done\n");
 }
 
 
@@ -11226,7 +11226,7 @@ int extract_object(char *call, char **info, char *origin) {
             }
         }
     } else {
-        printf("Not an object, nor an item!!! call=%s, info=%s, origin=%s.\n",
+        fprintf(stderr,"Not an object, nor an item!!! call=%s, info=%s, origin=%s.\n",
                call, *info, origin);
     }
     return(ok);
@@ -11264,7 +11264,7 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
     }
 
     if ((debug_level & 1) && !ok)
-        printf("extract_third_party: invalid format from %s\n",call);
+        fprintf(stderr,"extract_third_party: invalid format from %s\n",call);
 
     if (ok) {
         strcpy(path,p_path);
@@ -11276,7 +11276,7 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
             char filtered_data[MAX_LINE_SIZE + 1];
             strcpy(filtered_data,path);
             makePrintable(filtered_data);
-            printf("extract_third_party: invalid path: %s\n",filtered_data);
+            fprintf(stderr,"extract_third_party: invalid path: %s\n",filtered_data);
         }
     }
 
@@ -11292,7 +11292,7 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
                 char filtered_data[MAX_LINE_SIZE + 1];
                 strcpy(filtered_data,p_call);
                 makePrintable(filtered_data);
-                printf("extract_third_party: invalid call: %s\n",filtered_data);
+                fprintf(stderr,"extract_third_party: invalid call: %s\n",filtered_data);
             }
         }
     }
@@ -11487,7 +11487,7 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 // end.
     for (i = ptr; i < length; i++) {
         if (incoming_data[i] == KISS_FEND) {
-            printf("***Found concatenated KISS packets:***\n");
+            fprintf(stderr,"***Found concatenated KISS packets:***\n");
             incoming_data[i] = '\0';    // Truncate the string
             break;
         }
@@ -11496,7 +11496,7 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
     // Add the Info field to the decoded header info
     strcat(result,&incoming_data[ptr]);
 
-//    printf("%s\n",result);
+//    fprintf(stderr,"%s\n",result);
 
     // Copy the result onto the top of the input data
     strcpy(incoming_data,result);
@@ -11588,15 +11588,15 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         strcpy(destination,path);
     }
 
-    //printf("Destination: %s\n",destination);
+    //fprintf(stderr,"Destination: %s\n",destination);
 
     // Check to see if we just ran out of path
     if (short_path == NULL || short_path[0] == '\0') {
         return;
     }
 
-    //printf("      Path: %s\n",path);
-    //printf("Short_path: %s\n",short_path);
+    //fprintf(stderr,"      Path: %s\n",path);
+    //fprintf(stderr,"Short_path: %s\n",short_path);
 
 
     // Check for RELAY or my_callsign in the string.  If neither one
@@ -11605,17 +11605,17 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     // through that callsign (or a later one).
     if ( (r_ptr = strstr(short_path,"RELAY")) != NULL) {
 //        if ( (r_ptr = strstr(short_path,"SOMTN")) != NULL) {  // DEBUG STATEMENT
-//        printf("*** FOUND RELAY: ", short_path);
+//        fprintf(stderr,"*** FOUND RELAY: ", short_path);
     }
 
     if ( (c_ptr = strstr(short_path,my_callsign)) != NULL) {
         // Note that my_callsign is in all caps already
-//        printf("*** FOUND MY CALLSIGN: ", short_path);
+//        fprintf(stderr,"*** FOUND MY CALLSIGN: ", short_path);
     }
 
     // Check whether either RELAY or my_callsign were found
     if (c_ptr == NULL && r_ptr == NULL) {   // Nope, neither one found
-        //printf("Nothing to see here folks, move along: %s\n", short_path);
+        //fprintf(stderr,"Nothing to see here folks, move along: %s\n", short_path);
         return;
     }
 
@@ -11659,7 +11659,7 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     }
 
     if (!ok) {
-        //printf("Used up digi: %s\n", short_path);
+        //fprintf(stderr,"Used up digi: %s\n", short_path);
         return;
     }
 
@@ -11710,8 +11710,8 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     }
 
     if (devices[port].device_type == DEVICE_SERIAL_KISS_TNC) {
-//        printf("KISS RELAY short_path: %s\n", short_path);
-//        printf("KISS RELAY   new_path: %s\n", new_path);
+//        fprintf(stderr,"KISS RELAY short_path: %s\n", short_path);
+//        fprintf(stderr,"KISS RELAY   new_path: %s\n", new_path);
 
 //WE7U
 //        send_ax25_frame(port, call, destination, new_path, info);
@@ -11722,8 +11722,8 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 #ifdef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
         char header_txt[MAX_LINE_SIZE+5];
 
-        //printf("AX25 RELAY short_path: %s\n", short_path);
-        //printf("AX25 RELAY   new_path: %s\n", new_path);
+        //fprintf(stderr,"AX25 RELAY short_path: %s\n", short_path);
+        //fprintf(stderr,"AX25 RELAY   new_path: %s\n", new_path);
 
         // set from call
         xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s\r", '\3', "MYCALL", call);
@@ -11785,17 +11785,17 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
         makePrintable(filtered_data);
-        printf("decode_ax25_line: start parsing %s\n", filtered_data);
+        fprintf(stderr,"decode_ax25_line: start parsing %s\n", filtered_data);
     }
 
     if (line == NULL) {
-        printf("decode_ax25_line: line == NULL.\n");
+        fprintf(stderr,"decode_ax25_line: line == NULL.\n");
         return(FALSE);
     }
 
     if ( (line != NULL) && (strlen(line) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.  We're done.
         if (debug_level & 1)
-            printf("\ndecode_ax25_line: LONG packet.  Dumping it:\n%s\n",line);
+            fprintf(stderr,"\ndecode_ax25_line: LONG packet.  Dumping it:\n%s\n",line);
         return(FALSE);
     }
 
@@ -11839,7 +11839,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             char filtered_data[MAX_LINE_SIZE + 1];
             strcpy(filtered_data,path);
             makePrintable(filtered_data);
-            printf("decode_ax25_line: invalid path: %s\n",filtered_data);
+            fprintf(stderr,"decode_ax25_line: invalid path: %s\n",filtered_data);
         }
     }
 
@@ -11856,7 +11856,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             char filtered_data[MAX_LINE_SIZE + 1];
             strcpy(filtered_data,info);
             makePrintable(filtered_data);
-            printf("decode_ax25_line: info field too long: %s\n",filtered_data);
+            fprintf(stderr,"decode_ax25_line: info field too long: %s\n",filtered_data);
         }
     }
 
@@ -11872,7 +11872,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                 char filtered_data[MAX_LINE_SIZE + 1];
                 strcpy(filtered_data,call_sign);
                 makePrintable(filtered_data);
-                printf("decode_ax25_line: invalid call: %s\n",filtered_data);
+                fprintf(stderr,"decode_ax25_line: invalid call: %s\n",filtered_data);
             }
         }
     }
@@ -11901,20 +11901,20 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     if (ok) {
         // decode APRS information field, always called with valid call and path
         // info is a string with 0 - 256 bytes
-        // printf("dec: %s (%s) %s\n",call,origin,info);
+        // fprintf(stderr,"dec: %s (%s) %s\n",call,origin,info);
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE+80];
             sprintf(filtered_data,
                 "Registering data %s %s %s %s %c %d %d",
                 call, path, info, origin, from, port, third_party);
             makePrintable(filtered_data);
-            printf("c/p/i/o fr pt tp: %s\n", filtered_data);
+            fprintf(stderr,"c/p/i/o fr pt tp: %s\n", filtered_data);
         }
         decode_info_field(call,path,info,origin,from,port,third_party);
     }
 
     if (debug_level & 1)
-        printf("decode_ax25_line: exiting\n");
+        fprintf(stderr,"decode_ax25_line: exiting\n");
 
     return(ok);
 }
@@ -12052,7 +12052,7 @@ void search_tracked_station(DataRow **p_tracked) {
                         sizeof(lat),
                         CONVERT_HP_NORMAL);
 
-        printf("Searching for stations close to tracked station %s at %s %s ...\n",
+        fprintf(stderr,"Searching for stations close to tracked station %s at %s %s ...\n",
                 t->call_sign,lat,lon);
     }
 
@@ -12072,13 +12072,13 @@ void search_tracked_station(DataRow **p_tracked) {
                                    sizeof(bearing)) * cvt_kn2len;
 
             if (debug_level & 1) 
-                printf("Looking at %s: distance %.3f bearing %s (%s)\n",
+                fprintf(stderr,"Looking at %s: distance %.3f bearing %s (%s)\n",
                         curr->call_sign,distance,bearing,convert_bearing_to_name(bearing,1));
 
             /* check ranges (copied from earlier prox alert code, above) */
             if ((distance > atof(prox_min)) && (distance < atof(prox_max))) {
                 if (debug_level & 1) 
-                        printf(" tracked station is near %s!\n",curr->call_sign);
+                        fprintf(stderr," tracked station is near %s!\n",curr->call_sign);
 
                 if (sound_play_prox_message) {
                         sprintf(station_id,"%s < %.3f %s from %s",t->call_sign, distance,
@@ -12117,7 +12117,7 @@ void search_tracked_station(DataRow **p_tracked) {
                                         curr->call_sign);
                         }
                     if (debug_level & 1) 
-                        printf(" %s\n",station_id);
+                        fprintf(stderr," %s\n",station_id);
                     SayText(station_id);
                 }
 #endif  /* HAVE_FESTIVAL */
@@ -12581,21 +12581,21 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         temp = 0;
         if ((p_station->flag & ST_OBJECT) != 0) {
             while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) ) {
-                //printf("temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
+                //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
                 line[strlen(line) + 1] = '\0';
                 line[strlen(line)] = comment[temp++];
             }
         }
         else {  // It's an item
             while ( (strlen(line) < (64 + strlen(p_station->call_sign))) && (temp < (int)strlen(comment)) ) {
-                //printf("temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
+                //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
                 line[strlen(line) + 1] = '\0';
                 line[strlen(line)] = comment[temp++];
             }
         }
     }
 
-    //printf("line: %s\n",line);
+    //fprintf(stderr,"line: %s\n",line);
 
 // NOTE:  Compressed mode will be shorter still.  Account
 // for that when compressed mode is implemented for objects/items.
@@ -12650,21 +12650,21 @@ void check_and_transmit_objects_items(time_t time) {
         return;
 
     if (debug_level & 1)
-        printf("Retransmitting objects/items now\n");
+        fprintf(stderr,"Retransmitting objects/items now\n");
 
     last_object_check = sec_now();
 
     p_station = n_first;    // Go through received stations alphabetically
     while (p_station != NULL) {
 
-        //printf("%s\t%s\n",p_station->call_sign,p_station->origin);
+        //fprintf(stderr,"%s\t%s\n",p_station->call_sign,p_station->origin);
 
         if (is_my_call(p_station->origin,1)) {   // If station is owned by me
             if ( ((p_station->flag & ST_OBJECT) != 0)           // And it's an object
                     || ((p_station->flag & ST_ITEM) != 0) ) {   // or an item
 
                 if (debug_level & 1)
-                    printf("Found a locally-owned object or item: %s\n",p_station->call_sign);
+                    fprintf(stderr,"Found a locally-owned object or item: %s\n",p_station->call_sign);
 
                 if (first) {    // "Transmitting objects/items"
                     statusline(langcode("BBARSTA042"),1);

@@ -102,7 +102,7 @@ void reverse_path(char *input_string) {
     for (i = 0; i < strlen(input_string); i++) {
         if (input_string[i] == ',') {
             indexes[j++] = i;
-            //printf("%d\n",i);     // Debug code
+            //fprintf(stderr,"%d\n",i);     // Debug code
         }
     }
 
@@ -140,7 +140,7 @@ void reverse_path(char *input_string) {
             //  "TRACE" -> "WIDE,"
             if (strncasecmp(temp,"WIDE",4) == 0) {
                 if ( (temp[4] != ',') && is_num_chr(temp[4]) ) {
-//printf("Found a WIDEn-N\n");
+//fprintf(stderr,"Found a WIDEn-N\n");
                     xastir_snprintf(temp,
                         sizeof(temp),
                         "WIDE%c-%c",
@@ -148,13 +148,13 @@ void reverse_path(char *input_string) {
                         temp[4]);
                 }
                 else {
-//printf("Found a WIDE\n");
+//fprintf(stderr,"Found a WIDE\n");
                     // Leave temp alone, it's just a WIDE
                 }
             }
             else if (strncasecmp(temp,"TRACE",5) == 0) {
                 if ( (temp[5] != ',') && is_num_chr(temp[5]) ) {
-//printf("Found a TRACEn-N\n");
+//fprintf(stderr,"Found a TRACEn-N\n");
                     xastir_snprintf(temp,
                         sizeof(temp),
                         "WIDE%c-%c",
@@ -162,7 +162,7 @@ void reverse_path(char *input_string) {
                         temp[5]);
                 }
                 else {
-//printf("Found a TRACE\n");
+//fprintf(stderr,"Found a TRACE\n");
                     // Convert it from TRACE to WIDE
                     xastir_snprintf(temp,
                         sizeof(temp),
@@ -198,7 +198,7 @@ void get_path_data(char *callsign, char *path) {
         xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
 
         if(debug_level & 2)
-            printf("\nPath from %s: %s\n",
+            fprintf(stderr,"\nPath from %s: %s\n",
                 callsign,
                 new_path);
 
@@ -213,7 +213,7 @@ void get_path_data(char *callsign, char *path) {
         reverse_path(new_path);
 
         if (debug_level & 2)
-            printf("  Path to %s: %s\n",
+            fprintf(stderr,"  Path to %s: %s\n",
                 callsign,
                 new_path);
 
@@ -222,7 +222,7 @@ void get_path_data(char *callsign, char *path) {
     else {  // Couldn't find callsign.  It's
             // not in our station database.
         if(debug_level & 2)
-            printf("Path from %s: No Path Known\n",callsign);
+            fprintf(stderr,"Path from %s: No Path Known\n",callsign);
 
         strcpy(path,"");
     }
@@ -336,7 +336,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         (void)to_upper(path);
 
         if(debug_level & 2)
-            printf("Send message to <%s> from <%s> :%s\n",temp1,mw[i].to_call_sign,temp2);
+            fprintf(stderr,"Send message to <%s> from <%s> :%s\n",temp1,mw[i].to_call_sign,temp2);
 
         if ( (strlen(temp1) != 0)                       // Callsign field is not blank
                 && (strlen(temp2) != 0)                 // Message field is not blank
@@ -379,7 +379,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_
         strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
         (void)remove_trailing_spaces(temp1);  
         (void)to_upper(temp1);
-        /*printf("Clear message from <%s> to <%s>\n",temp1,my_callsign);*/
+        /*fprintf(stderr,"Clear message from <%s> to <%s>\n",temp1,my_callsign);*/
         mdelete_messages_from(temp1);
         new_message_data=1;
     }
@@ -405,7 +405,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_
         strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
         (void)remove_trailing_spaces(temp1);  
         (void)to_upper(temp1);
-        /*printf("Clear message to <%s>\n",temp1);*/
+        /*fprintf(stderr,"Clear message to <%s>\n",temp1);*/
         mdelete_messages_to(temp1);
         new_message_data=1;
     }

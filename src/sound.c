@@ -50,16 +50,16 @@ pid_t play_sound(char *sound_cmd, char *soundfile) {
                     strcat(file,"/");
                     strcat(file,soundfile);
                     xastir_snprintf(command, sizeof(command), "%s %s", sound_cmd, file);
-                    /*printf("PS%d:%s\n",sound_pid,file);*/
+                    /*fprintf(stderr,"PS%d:%s\n",sound_pid,file);*/
                     (void)system(command);  // Note we're not caring about whether it succeeded or not
                     exit(0);
                 } else
                     last_sound_pid=sound_pid;
             } else
-                printf("Error! trying to play sound\n");
+                fprintf(stderr,"Error! trying to play sound\n");
         } else {
             sound_pid=last_sound_pid;
-            /*printf("Sound already running\n");*/
+            /*fprintf(stderr,"Sound already running\n");*/
         }
     }
     return(sound_pid);

@@ -103,13 +103,13 @@ int build_fcc_index(int type){
     /*                                    */
     fdb=fopen(get_data_base_dir(database_name),"rb");
     if (fdb==NULL){
-        printf("Build:Could not open FCC data base: %s\n", get_data_base_dir(database_name) );
+        fprintf(stderr,"Build:Could not open FCC data base: %s\n", get_data_base_dir(database_name) );
         return(0);
     }
 
     fndx=fopen(get_user_base_dir("data/appl.ndx"),"w");
     if (fndx==NULL){
-        printf("Build:Could not open/create FCC data base index: %s\n", get_user_base_dir("data/appl.ndx") );
+        fprintf(stderr,"Build:Could not open/create FCC data base index: %s\n", get_user_base_dir("data/appl.ndx") );
         (void)fclose(fdb);
         return(0);
     }
@@ -161,38 +161,38 @@ int check_fcc_data(void) {
     int fcc_data_available = 0;
     if (filethere(get_data_base_dir("fcc/EN.dat")) && filethere(get_data_base_dir("fcc/appl.dat"))) {
         if(file_time(get_data_base_dir("fcc/appl.dat"))<=file_time(get_data_base_dir("fcc/EN.dat"))) {
-            /*printf("NEW FORMAT FCC DATA FILE is NEWER THAN OLD FCC FORMAT\n");*/
+            /*fprintf(stderr,"NEW FORMAT FCC DATA FILE is NEWER THAN OLD FCC FORMAT\n");*/
             if (build_fcc_index(2))
                 fcc_data_available=2;
             else {
-                printf("Check:Could not build fcc data base index\n");
+                fprintf(stderr,"Check:Could not build fcc data base index\n");
                 fcc_data_available=0;
             }
         } else {
-            /*printf("OLD FORMAT FCC DATA FILE is NEWER THAN NEW FCC FORMAT\n");*/
+            /*fprintf(stderr,"OLD FORMAT FCC DATA FILE is NEWER THAN NEW FCC FORMAT\n");*/
             if (build_fcc_index(1))
                 fcc_data_available=1;
             else {
-                printf("Check:Could not build fcc data base index\n");
+                fprintf(stderr,"Check:Could not build fcc data base index\n");
                 fcc_data_available=0;
             }
         }
     } else {
         if (filethere(get_data_base_dir("fcc/EN.dat"))) {
-            /*printf("NO OLD FCC, BUT NEW FORMAT FCC DATA AVAILABLE\n");*/
+            /*fprintf(stderr,"NO OLD FCC, BUT NEW FORMAT FCC DATA AVAILABLE\n");*/
             if (build_fcc_index(2))
                 fcc_data_available=2;
             else {
-                printf("Check:Could not build fcc data base index\n");
+                fprintf(stderr,"Check:Could not build fcc data base index\n");
                 fcc_data_available=0;
             }
         } else {
             if (filethere(get_data_base_dir("fcc/appl.dat"))) {
-                /*printf("NO NEW FCC, BUT OLD FORMAT FCC DATA AVAILABLE\n");*/
+                /*fprintf(stderr,"NO NEW FCC, BUT OLD FORMAT FCC DATA AVAILABLE\n");*/
                 if (build_fcc_index(1))
                     fcc_data_available=1;
                 else {
-                    printf("Check:Could not build fcc data base index\n");
+                    fprintf(stderr,"Check:Could not build fcc data base index\n");
                     fcc_data_available=0;
                 }
             }
@@ -275,7 +275,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
             (void)fgets(index,(int)sizeof(index),fndx);
         }
     } else {
-        printf("Search:Could not open FCC data base index: %s\n", get_user_base_dir("data/appl.ndx") );
+        fprintf(stderr,"Search:Could not open FCC data base index: %s\n", get_user_base_dir("data/appl.ndx") );
         return (0);
     }
     call_offset = atol(char_offset);
@@ -312,7 +312,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                         }
                     } else {
                         line_pos=0;
-                        /*printf("line:%s\n",line);*/
+                        /*fprintf(stderr,"line:%s\n",line);*/
                         pos=0;
                         num=0;
                         if (which==2) {
@@ -326,7 +326,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                         }
                         if (strncmp(line+pos,temp,(size_t)len)==0) {
                             found=1;
-                            /*printf("line:%s\n",line);*/
+                            /*fprintf(stderr,"line:%s\n",line);*/
                             llen=(int)strlen(line);
                             /* replace "|" with 0 */
                             for (ii=pos;ii<llen;ii++) {
@@ -343,7 +343,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                                 }
                                 pos_it++;
                                 if (line[pos_it]!='\0') {
-                                    /*printf("DATA %d %d:%s\n",i,pos_it,line+pos_it);*/
+                                    /*fprintf(stderr,"DATA %d %d:%s\n",i,pos_it,line+pos_it);*/
                                     switch (which) {
                                         case(1):
                                             switch(i) {
@@ -451,7 +451,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                             if ( (temp[0] < line[pos]) ||
                                     ( (temp[0] == line[pos]) && (temp[1] < line[pos+1]) ) ) {
                                 popup_message("Callsign Search", "Callsign Not Found!");
-                                //printf("%c%c\t%c%c\n",temp[0],temp[1],line[pos],line[pos+1]);
+                                //fprintf(stderr,"%c%c\t%c%c\n",temp[0],temp[1],line[pos],line[pos+1]);
                                 (void)fclose(f);
                                 return(0);
                             }
@@ -462,7 +462,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
         }
         (void)fclose(f);
     } else {
-        printf("Could not open FCC appl data base at: %s\n", get_data_base_dir("fcc/") );
+        fprintf(stderr,"Could not open FCC appl data base at: %s\n", get_data_base_dir("fcc/") );
     }
     return(found);
 }

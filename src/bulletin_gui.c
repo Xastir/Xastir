@@ -123,7 +123,7 @@ void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char 
 
     if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 1)
-            printf("bulletin_message:  Message length too long\n");
+            fprintf(stderr,"bulletin_message:  Message length too long\n");
         return;
     }
 
@@ -214,7 +214,7 @@ void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag,
 
     if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 1)
-            printf("bulletin_message:  Message length too long\n");
+            fprintf(stderr,"bulletin_message:  Message length too long\n");
         return;
     }
 
@@ -268,7 +268,7 @@ static void zero_bulletin_processing(Message *fill) {
 
     if (!fill->position_known) {
 
-        //printf("Position unknown: %s:%s\n",
+        //fprintf(stderr,"Position unknown: %s:%s\n",
         //    fill->from_call_sign,
         //    fill->message_line);
 
@@ -284,11 +284,11 @@ static void zero_bulletin_processing(Message *fill) {
 
             if ( (p_station->coord_lon == 0l)
                     && (p_station->coord_lat == 0l) ) {
-                //printf("Found it but still no valid position!\n");
+                //fprintf(stderr,"Found it but still no valid position!\n");
             }
             else { // Found valid position for this bulletin
 
-                //printf("Found it now! %s:%s\n",
+                //fprintf(stderr,"Found it now! %s:%s\n",
                 //    fill->from_call_sign,
                 //    fill->message_line);
 
@@ -309,7 +309,7 @@ static void zero_bulletin_processing(Message *fill) {
         }
         else {
             // No position known for the bulletin.  Skip it for now.
-            //printf("Still not found\n");
+            //fprintf(stderr,"Still not found\n");
         }
     }
 }
@@ -351,7 +351,7 @@ void prep_for_popup_bulletins() {
     // Set the flag that gets the whole ball rolling
     new_bulletin_flag = 1;
 
-    //printf("Setting new_bulletin_flag and last_new_bulletin_time\n");
+    //fprintf(stderr,"Setting new_bulletin_flag and last_new_bulletin_time\n");
 }
 
 
@@ -387,7 +387,7 @@ void check_for_new_bulletins() {
     // Enough time passed since most recent bulletin?
     if ( (last_new_bulletin_time + 15) > sec_now() ) {
 
-        //printf("Not enough time has passed\n");
+        //fprintf(stderr,"Not enough time has passed\n");
 
         return;
     }
@@ -400,21 +400,21 @@ void check_for_new_bulletins() {
 
     new_bulletin_count = 0;
 
-    //printf("Checking for new bulletins\n");
+    //fprintf(stderr,"Checking for new bulletins\n");
 
     count_new_bulletins();
 
-    //printf("%d new bulletins found\n",new_bulletin_count);
+    //fprintf(stderr,"%d new bulletins found\n",new_bulletin_count);
 
     if (new_bulletin_count) {
         popup_bulletins();
 
         if (debug_level & 1)
-            printf("New bulletins (%d) caused popup!\n",new_bulletin_count);
+            fprintf(stderr,"New bulletins (%d) caused popup!\n",new_bulletin_count);
     }
     else {
         if (debug_level & 1)
-            printf("No bulletin popup generated.\n");
+            fprintf(stderr,"No bulletin popup generated.\n");
     }
 
     // Reset so that we can do it all over again later.  We need
@@ -454,7 +454,7 @@ void Display_bulletins_change_range(/*@unused@*/ Widget widget, /*@unused@*/ XtP
     bulletin_range = atoi(XmTextFieldGetString(dist_data));
 
     view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_data);
-    //printf("%d\n",view_zero_distance_bulletins);
+    //fprintf(stderr,"%d\n",view_zero_distance_bulletins);
 
     Display_bulletins_destroy_shell( widget, clientData, callData);
     Bulletins( widget, clientData, callData);

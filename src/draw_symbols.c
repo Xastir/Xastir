@@ -170,7 +170,7 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
                     a=diameter;
                     b=diameter/2;
 
-                    //printf("Range:%f\tDiameter:%f\n",range,diameter);
+                    //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
 
                     if (diameter>4.0) {
                         (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
@@ -244,7 +244,7 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                         diameter = 2.0 * ( range/
                             (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-                        //printf("PHG: %s, Diameter: %f\n", phg, diameter);
+                        //fprintf(stderr,"PHG: %s, Diameter: %f\n", phg, diameter);
 
                         a=diameter;
                         b=diameter/2;
@@ -308,7 +308,7 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                                 offy=0;
                                 break;
                             }
-                        //printf("PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
+                        //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
                         if (diameter>4.0) {
                             (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineSolid, CapButt,JoinMiter);
                             if ((sec_old+sec_heard)>sec_now())
@@ -387,7 +387,7 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                         diameter = 2.0 * ( range/
                             (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-                        //printf("PHG: %s, Diameter: %f\n", shgd, diameter);
+                        //fprintf(stderr,"PHG: %s, Diameter: %f\n", shgd, diameter);
 
                         a=diameter;
                         b=diameter/2;
@@ -451,9 +451,9 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                                 offy=0;
                                 break;
                         }
-                        //printf("PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
+                        //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
 
-                        //printf("scale_y: %u\n",scale_y);
+                        //fprintf(stderr,"scale_y: %u\n",scale_y);
 
                         if (diameter>4.0) {
                             if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
@@ -773,7 +773,7 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     // Convert from mph to knots for wind speed.
     my_speed = my_speed * 0.8689607;
 
-    //printf("mph:%s, knots:%d\n",speed,my_speed);
+    //fprintf(stderr,"mph:%s, knots:%d\n",speed,my_speed);
 
     // Adjust so that it fits our screen angles.  We're off by
     // 90 degrees.
@@ -798,7 +798,7 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 	shaft_length = 20;
 
     if (debug_level & 128) {
-	printf("Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
+	fprintf(stderr,"Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
 	       atoi(course),
 	       shaft_length,
 	       square_flags,
@@ -981,7 +981,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
     bearing_radians_min = (real_bearing_min/360.0) * 2.0 * M_PI;
     bearing_radians_max = (real_bearing_max/360.0) * 2.0 * M_PI;
 
-    //printf("Bearing: %i degrees, Range: %i miles, Width: %i degree(s), Radians: %f, ",
+    //fprintf(stderr,"Bearing: %i degrees, Range: %i miles, Width: %i degree(s), Radians: %f, ",
     //        real_bearing, range, width, bearing_radians); 
 
     // Range is in miles.  Bottom term is in meters before the 0.0006214
@@ -1020,9 +1020,9 @@ void draw_bearing(long x_long, long y_lat, char *course,
     */
 
 
-    //printf("offx_min: %li, offx_max: %li, offy_min: %li, offy_max: %li\n", offx_min, offx_max, offy_min, offy_max);
+    //fprintf(stderr,"offx_min: %li, offx_max: %li, offy_min: %li, offy_max: %li\n", offx_min, offx_max, offy_min, offy_max);
 
-    //printf("X miles: %f, Y miles: %f, screen_miles: %f\n",
+    //fprintf(stderr,"X miles: %f, Y miles: %f, screen_miles: %f\n",
     //    offx_miles,
     //    offy_miles,
     //    screen_miles);
@@ -1487,11 +1487,11 @@ void load_pixmap_symbol_file(char *filename) {
             (void)get_line(f,line,100);
             if (strncasecmp("TABLE ",line,6)==0) {
                 table_char=line[6];
-                /*printf("TABLE %c\n",table_char);*/
+                /*fprintf(stderr,"TABLE %c\n",table_char);*/
             } else {
                 if (strncasecmp("DONE",line,4)==0) {
                     done=1;
-                    /*printf("DONE\n");*/
+                    /*fprintf(stderr,"DONE\n");*/
                 } else {
                     if (strncasecmp("APRS ",line,5)==0) {
                         symbol_char=line[5];
@@ -1511,7 +1511,7 @@ void load_pixmap_symbol_file(char *filename) {
             }
         }
     } else {
-        printf("Error opening symbol file %s\n",filen);
+        fprintf(stderr,"Error opening symbol file %s\n",filen);
         popup_message("Error opening symbol file","Error opening symbol file");
     }
 
@@ -1661,7 +1661,7 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
     if (found == -1) {
         found=nosym;
         if (symbol_table && symbol_id && debug_level & 128)
-            printf("No Symbol Yet! %2x:%2x\n", (unsigned int)symbol_table, (unsigned int)symbol_id);
+            fprintf(stderr,"No Symbol Yet! %2x:%2x\n", (unsigned int)symbol_table, (unsigned int)symbol_id);
     } else {                    // maybe we want a rotated symbol
 
 // It looks like we originally did not want to rotate the symbol if
@@ -2014,7 +2014,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
             for (i = 0; i < numpoints; ++i) {
                 xpoints[i].x = (mypoints[i][0] - x_long_offset) / scale_x;
                 xpoints[i].y = (mypoints[i][1] - y_lat_offset) / scale_y;
-                // printf("   %d: %d,%d\n", i, xpoints[i].x, xpoints[i].y);
+                // fprintf(stderr,"   %d: %d,%d\n", i, xpoints[i].x, xpoints[i].y);
             }
 
             // The type parameter determines how the points will be used.
@@ -2091,15 +2091,15 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 
     i = (long)clientData;
 
-    //printf("Selected a symbol: %d\n", clientData);
+    //fprintf(stderr,"Selected a symbol: %d\n", clientData);
 
     if ( (int)clientData > 0) {
-        //printf("Symbol is from primary symbol table: /%c\n",(char)i);
+        //fprintf(stderr,"Symbol is from primary symbol table: /%c\n",(char)i);
         table[0] = '/';
         symbol[0] = (char)i;
     }
     else {
-        //printf("Symbol is from secondary symbol table: \\%c\n",(char)(-i));
+        //fprintf(stderr,"Symbol is from secondary symbol table: \\%c\n",(char)(-i));
         table[0] = '\\';
         symbol[0] = (char)(-i);
     }
@@ -2109,7 +2109,7 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 
     if (symbol_change_requested_from == 1) {        // Configure->Station Dialog
         symbol_change_requested_from = 0;
-        //printf("Updating Configure->Station Dialog\n");
+        //fprintf(stderr,"Updating Configure->Station Dialog\n");
 
         XmTextFieldSetString(station_config_group_data,table);
         XmTextFieldSetString(station_config_symbol_data,symbol);
@@ -2117,7 +2117,7 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
     }
     else if (symbol_change_requested_from == 2) {   // Create->Object/Item Dialog
         symbol_change_requested_from = 0;
-        //printf("Updating Create->Object/Item Dialog\n");
+        //fprintf(stderr,"Updating Create->Object/Item Dialog\n");
 
         XmTextFieldSetString(object_group_data,table);
         XmTextFieldSetString(object_symbol_data,symbol);
@@ -2412,7 +2412,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
 	    diameter = 2.0 * ( range/
 			       (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-	    //printf("Range:%f\tDiameter:%f\n",range,diameter);
+	    //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
 
 	    if (diameter > 10.0) {
 		int arc_degrees = (sec_now() - p_station->sec_heard) * 90 / (5*60);

@@ -114,7 +114,7 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     /* find station and go there */
     strcpy(locate_station_call,XmTextFieldGetString(locate_station_data));
     (void)remove_trailing_spaces(locate_station_call);
-    /*printf("looking for %s\n",locate_station_call);*/
+    /*fprintf(stderr,"looking for %s\n",locate_station_call);*/
     if (locate_station(da, locate_station_call, (int)XmToggleButtonGetState(locate_case_data),
                     (int)XmToggleButtonGetState(locate_match_data),1) ==0) {
         xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), locate_station_call);
@@ -343,7 +343,7 @@ void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     (void)remove_trailing_spaces(locate_quad_name);
     (void)remove_trailing_spaces(locate_type_name);
 
-    /*printf("looking for %s\n",locate_place_name);*/
+    /*fprintf(stderr,"looking for %s\n",locate_place_name);*/
     if (locate_place(da,
             locate_place_name,
             locate_state_name,

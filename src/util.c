@@ -91,7 +91,7 @@ void stop_timer(void) {
 
 // Print the difference in the two times saved above.
 void print_timer_results(void) {
-printf("Total: %f sec\n",
+fprintf(stderr,"Total: %f sec\n",
     (float)(timer_stop.tv_sec - timer_start.tv_sec +
     ((timer_stop.tv_usec - timer_start.tv_usec) / 1000000.0) ));
 }
@@ -270,7 +270,7 @@ double phg_range(char p, char h, char g) {
     range = sqrt(2.0 * height * sqrt((power / 10.0) * (gain / 2.0)));
 
 //    if (range > 70.0)
-//        printf("PHG%c%c%c results in range of %f\n", p, h, g, range);
+//        fprintf(stderr,"PHG%c%c%c results in range of %f\n", p, h, g, range);
 
     // Note:  Bob Bruninga, WB4APR, decided to cut PHG circles by
     // 1/2 in order to show more realistic mobile ranges.
@@ -312,7 +312,7 @@ double shg_range(char s, char h, char g) {
 
     range = (range * 40) / 51;   // Present fudge factors used in DOSaprs
 
-    //printf("SHG%c%c%c results in range of %f\n", s, h, g, range);
+    //fprintf(stderr,"SHG%c%c%c results in range of %f\n", s, h, g, range);
 
     return(range);
 }
@@ -542,7 +542,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
     char temp[64];
     int len;
 
-    //printf("bearing_decode incoming: bearing is %s, NRQ is %s\n", bearing_str, NRQ);
+    //fprintf(stderr,"bearing_decode incoming: bearing is %s, NRQ is %s\n", bearing_str, NRQ);
     len = strlen(bearing_decoded);
 
     if (strlen(bearing_str) != 3) {
@@ -565,7 +565,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 
     if (N != 0) {
 
-        //printf("N != 0\n");
+        //fprintf(stderr,"N != 0\n");
 
         range = (int)( pow(2.0,R - '0') );
 
@@ -602,7 +602,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
                 break;
         }
 
-        //printf("Width = %d\n",width);
+        //fprintf(stderr,"Width = %d\n",width);
 
         if (units_english_metric) {
             xastir_snprintf(temp, sizeof(temp), "%i°, DF Beamwidth: %i°, DF Length: %i mi", bearing, width, range);
@@ -611,7 +611,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
         }
     } else {
         xastir_snprintf(temp, sizeof(temp), "%s", "Not Valid");
-        //printf("N was 0\n");
+        //fprintf(stderr,"N was 0\n");
     }
     xastir_snprintf(bearing_decoded, bearing_decoded_length, langstr, temp);
 }
@@ -653,7 +653,7 @@ char *get_line(FILE *f, char *linedata, int maxline) {
                 if (temp_line[i] != '\n') {                         // LF
                     if ( (i != (strlen(temp_line) - 2) )            // CRLF
                             && (i != (strlen(temp_line) - 1) ) ) {  // CR
-                        printf("get_line: found control chars in: %s\n",
+                        fprintf(stderr,"get_line: found control chars in: %s\n",
                             temp_line);
                     }
                 }
@@ -841,7 +841,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     int temp, deg;
     double minutes;
 
-    //printf("lat:%s, long:%s, symbol:%c%c, course:%d, speed:%d, phg:%s\n",
+    //fprintf(stderr,"lat:%s, long:%s, symbol:%c%c, course:%d, speed:%d, phg:%s\n",
     //    input_lat,
     //    input_lon,
     //    group,
@@ -853,7 +853,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     (void)sscanf(input_lat, "%2d%lf%c", &deg, &minutes, &ext);
     temp = 380926 * (90 - (deg + minutes / 60.0) * ( ext=='N' ? 1 : -1 ));
 
-    //printf("temp: %d\t",temp);
+    //fprintf(stderr,"temp: %d\t",temp);
 
     lat[3] = (char)(temp%91 + 33); temp /= 91;
     lat[2] = (char)(temp%91 + 33); temp /= 91;
@@ -861,12 +861,12 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     lat[0] = (char)(temp    + 33);
     lat[4] = '\0';
 
-    //printf("%s\n",lat);
+    //fprintf(stderr,"%s\n",lat);
 
     (void)sscanf(input_lon, "%3d%lf%c", &deg, &minutes, &ext);
     temp = 190463 * (180 + (deg + minutes / 60.0) * ( ext=='W' ? -1 : 1 ));
 
-    //printf("temp: %d\t",temp);
+    //fprintf(stderr,"temp: %d\t",temp);
 
     lon[3] = (char)(temp%91 + 33); temp /= 91;
     lon[2] = (char)(temp%91 + 33); temp /= 91;
@@ -874,7 +874,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     lon[0] = (char)(temp    + 33);
     lon[4] = '\0';
 
-    //printf("%s\n",lon);
+    //fprintf(stderr,"%s\n",lon);
 
     // Set up csT bytes for course/speed if either are non-zero
     c = s = t = ' ';
@@ -934,7 +934,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     else
         xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
 
-    //printf("New compressed pos: (%s)\n",pos);
+    //fprintf(stderr,"New compressed pos: (%s)\n",pos);
     return pos;
 }
 
@@ -978,7 +978,7 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
         utmZone,
         sizeof(utmZone) );
     utmZone[9] = '\0';
-    //printf( "%s %07.0f %07.0f\n", utmZone, utmEasting,
+    //fprintf(stderr,"%s %07.0f %07.0f\n", utmZone, utmEasting,
     //utmNorthing );
     xastir_snprintf(str, str_len, "%s %07.0f %07.0f",
         utmZone, utmEasting, utmNorthing );
@@ -1377,13 +1377,13 @@ double distance_from_my_station(char *call_sign, char *course_deg) {
             else
                 distance = value * 1.852;           // nautical miles to km
         }
-//        printf("DistFromMy: %s %s -> %f\n",temp_lat,temp_long,distance);
+//        fprintf(stderr,"DistFromMy: %s %s -> %f\n",temp_lat,temp_long,distance);
     }
     else {  // Station not found
         distance = 0.0;
     }
 
-    //printf("Distance for %s: %f\n", call_sign, distance);
+    //fprintf(stderr,"Distance for %s: %f\n", call_sign, distance);
 
     return(distance);
 }
@@ -1459,7 +1459,7 @@ int filecreate(char *fn) {
     if (! filethere(fn)) {   // If no file
 
         ret = 0;
-        printf("Making user %s file\n", fn);
+        fprintf(stderr,"Making user %s file\n", fn);
         f=fopen(fn,"w+");   // Create it
         if (f != NULL) {
             ret=1;          // We were successful
@@ -1510,7 +1510,7 @@ void log_data(char *file, char *line) {
             (void)fclose(f);
         }
         else {
-            printf("Couldn't open file for appending: %s\n", file);
+            fprintf(stderr,"Couldn't open file for appending: %s\n", file);
         }
     }
 }
@@ -1550,10 +1550,10 @@ void disown_object_item(char *call_sign, char *new_owner) {
     // that we don't start retransmitting it on a restart.
 
     if (is_my_call(new_owner,1)) {
-        //printf("Commenting out %s in object.log\n", call_sign);
+        //fprintf(stderr,"Commenting out %s in object.log\n", call_sign);
     }
     else {
-        printf("Disowning '%s': '%s' is taking over control of it.\n",
+        fprintf(stderr,"Disowning '%s': '%s' is taking over control of it.\n",
             call_sign, new_owner);
     }
 
@@ -1563,17 +1563,17 @@ void disown_object_item(char *call_sign, char *new_owner) {
     ptr =  get_user_base_dir("config/object-temp.log");
     strcpy(file_temp,ptr);
 
-    //printf("%s\t%s\n",file,file_temp);
+    //fprintf(stderr,"%s\t%s\n",file,file_temp);
 
     // Copy to a temp file
     xastir_snprintf(command,
         sizeof(command), "cp -f %s %s", file, file_temp);
 
     if ( debug_level & 512 )
-        printf( "%s\n", command );
+        fprintf(stderr,"%s\n", command );
 
     if ( system( command ) != 0 ) {
-        printf("\n\nCouldn't create temp file %s!\n\n\n",
+        fprintf(stderr,"\n\nCouldn't create temp file %s!\n\n\n",
             file_temp);
         return;
     }
@@ -1584,11 +1584,11 @@ void disown_object_item(char *call_sign, char *new_owner) {
     f=fopen(file,"w");
 
     if (f == NULL) {
-        printf("Couldn't open %s\n",file);
+        fprintf(stderr,"Couldn't open %s\n",file);
         return;
     }
     if (f_temp == NULL) {
-        printf("Couldn't open %s\n",file_temp);
+        fprintf(stderr,"Couldn't open %s\n",file_temp);
         return;
     }
 
@@ -1620,7 +1620,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
 
         remove_trailing_spaces(name);
 
-        //printf("'%s'\t'%s'\n", name, call_sign);
+        //fprintf(stderr,"'%s'\t'%s'\n", name, call_sign);
 
         if (valid_object(name)) {
 
@@ -1629,11 +1629,11 @@ void disown_object_item(char *call_sign, char *new_owner) {
                 // already commented out.
                 if (line[0] != '#') {
                     fprintf(f,"#%s",line);
-                    //printf("#%s",line);
+                    //fprintf(stderr,"#%s",line);
                 }
                 else {
                     fprintf(f,"%s",line);
-                    //printf("%s",line);
+                    //fprintf(stderr,"%s",line);
                 }
             }
             else {
@@ -1641,7 +1641,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
                 // blank line.
                 if (line[0] != '\n') {
                     fprintf(f,"%s",line);
-                    //printf("%s",line);
+                    //fprintf(stderr,"%s",line);
                 }
             }
         }
@@ -1682,7 +1682,7 @@ void log_object_item(char *line, int disable_object, char *object_name) {
         (void)fclose(f);
 
         if (debug_level & 1)
-            printf("Saving object/item to file: %s",line);
+            fprintf(stderr,"Saving object/item to file: %s",line);
 
         // Comment out all instances of the object/item in the log
         // file.  This will make sure that the object is not
@@ -1693,7 +1693,7 @@ void log_object_item(char *line, int disable_object, char *object_name) {
 
     }
     else {
-        printf("Couldn't open file for appending: %s\n", file);
+        fprintf(stderr,"Couldn't open file for appending: %s\n", file);
     }
 }
 
@@ -1725,7 +1725,7 @@ void reload_object_item(void) {
     if (f!=NULL) {
         while (fgets(line, 300, f) != NULL) {
             if (debug_level & 1)
-                printf("Loading object/item from file: %s",line);
+                fprintf(stderr,"Loading object/item from file: %s",line);
    
             if (line[0] != '#') {   // Skip comment lines
                 xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
@@ -1744,7 +1744,7 @@ void reload_object_item(void) {
     }
     else {
         if (debug_level & 1)
-            printf("Couldn't open file for reading: %s\n", file);
+            fprintf(stderr,"Couldn't open file for reading: %s\n", file);
     }
 
     // Start transmitting these objects in about 30 seconds.
@@ -1828,20 +1828,20 @@ int valid_path(char *path) {
     // We need to remove the ",I" portion so it doesn't count as another
     // digi here.  This should be at the end of the path.
     if (len > 2 && path[len-2] == ',' && path[len-1] == 'I') {  // Found ",I"
-        //printf("%s\n",path);
-        //printf("Found ',I'\n");
+        //fprintf(stderr,"%s\n",path);
+        //fprintf(stderr,"Found ',I'\n");
         path[len-2] = '\0';
         len  = (int)strlen(path);
-        //printf("%s\n\n",path);
+        //fprintf(stderr,"%s\n\n",path);
     }
     // Now look for the same thing but with a '*' character at the end.
     // This should be at the end of the path.
     if (len > 3 && path[len-3] == ',' && path[len-2] == 'I' && path[len-1] == '*') {  // Found ",I*"
-        //printf("%s\n",path);
-        //printf("Found ',I*'\n");
+        //fprintf(stderr,"%s\n",path);
+        //fprintf(stderr,"Found ',I*'\n");
         path[len-3] = '\0';
         len  = (int)strlen(path);
-        //printf("%s\n\n",path);
+        //fprintf(stderr,"%s\n\n",path);
     }
 
 
@@ -1853,37 +1853,37 @@ int valid_path(char *path) {
     if (len > 6) {
         for (i=len-1; i>len-6; i--) {
             if (path[i] == '-' && path[i+1] == '0') {
-                //printf("%s\n",path);
+                //fprintf(stderr,"%s\n",path);
                 for (j=i+1; j<len; j++) {
                     path[j] = path[j+1];    // Shift everything left by one
                 }
                 len = (int)strlen(path);
-                //printf("%s\n\n",path);
+                //fprintf(stderr,"%s\n\n",path);
             }
             // Check whether we just chopped off the '0' from "-0".
             // If so, chop off the dash as well.
             if (path[i] == '-' && path[i+1] == '\0') {
-                //printf("%s\tChopping off dash\n",path);
+                //fprintf(stderr,"%s\tChopping off dash\n",path);
                 path[i] = '\0';
                 len = (int)strlen(path);
-                //printf("%s\n",path);
+                //fprintf(stderr,"%s\n",path);
             }
             // Check for "-*", change to '*' only
             if (path[i] == '-' && path[i+1] == '*') {
-                //printf("%s\tChopping off dash\n",path);
+                //fprintf(stderr,"%s\tChopping off dash\n",path);
                 path[i] = '*';
                 path[i+1] = '\0';
                 len = (int)strlen(path);
-                //printf("%s\n",path);
+                //fprintf(stderr,"%s\n",path);
             }
             // Check for "-0" or "-0*".  Change to "" or "*".
             if ( path[i] == '-' && path[i+1] == '0' ) {
-                //printf("%s\tShifting left by two\n",path);
+                //fprintf(stderr,"%s\tShifting left by two\n",path);
                 for (j=i; j<len; j++) {
                     path[j] = path[j+2];    // Shift everything left by two
                 }
                 len = (int)strlen(path);
-                //printf("%s\n",path);
+                //fprintf(stderr,"%s\n",path);
             }
         }
     }
@@ -1940,13 +1940,13 @@ int valid_path(char *path) {
         // We'll move the destination address between delimiters[0]
         // and [1] to the end of the string.
 
-        //printf("Orig. Path:%s\n",path);
+        //fprintf(stderr,"Orig. Path:%s\n",path);
         // Save the destination
         xastir_snprintf(dest,sizeof(dest),"%s",&path[delimiters[--k]+1]);
         dest[strlen(path) - delimiters[k] - 1] = '\0'; // Terminate it
         dest[14] = '\0';    // Just to make sure
         path[delimiters[k]] = '\0'; // Delete it from the original path
-        //printf("Destination: %s\n",dest);
+        //fprintf(stderr,"Destination: %s\n",dest);
 
         // TAPR-2 Format:
         // KC2ELS-1*>SX0PWT,RELAY,WIDE:`2`$l##>/>"4)}
@@ -1958,9 +1958,9 @@ int valid_path(char *path) {
         // We now need to insert the destination into the middle of
         // the string.  Save part of it in another variable first.
         strcpy(rest,path);
-        //printf("Rest:%s\n",rest);
+        //fprintf(stderr,"Rest:%s\n",rest);
         xastir_snprintf(path,len+1,"%s,%s",dest,rest);
-        //printf("New Path:%s\n",path);
+        //fprintf(stderr,"New Path:%s\n",path);
     }
 
     if (allast < 1) {                   // try to insert a missing asterisk
@@ -2051,7 +2051,7 @@ int valid_call(char *call) {
             char filtered_data[MAX_LINE_SIZE+1];
             strcpy(filtered_data, call);
             makePrintable(filtered_data);
-            printf("valid_call: Command Prompt removed from: %s",
+            fprintf(stderr,"valid_call: Command Prompt removed from: %s",
                 filtered_data);
         }
                 for(i=0; call[i+4]; i++)
@@ -2065,7 +2065,7 @@ int valid_call(char *call) {
             char filtered_data[MAX_LINE_SIZE+1];
             strcpy(filtered_data, call);
             makePrintable(filtered_data);
-            printf(" result: %s", filtered_data);
+            fprintf(stderr," result: %s", filtered_data);
                 }
         }
 
@@ -2482,7 +2482,7 @@ int begin_critical_section(xastir_mutex *lock, char *text) {
     if (pthread_equal( lock->threadID, calling_thread ))
     {
         // We tried to lock something that we already have the lock on.
-        printf("%s:This thread already has the lock on this resource\n", text);
+        fprintf(stderr,"%s:This thread already has the lock on this resource\n", text);
         problems++;
     }
 
@@ -2500,19 +2500,19 @@ int begin_critical_section(xastir_mutex *lock, char *text) {
     do {
         ret = pthread_mutex_lock(&lock->lock);
         if (ret == EDEADLK) {   // Normal operation.  At least two threads want this lock.
-            printf("%s:pthread_mutex_lock(&lock->lock) == EDEADLK\n", text);
+            fprintf(stderr,"%s:pthread_mutex_lock(&lock->lock) == EDEADLK\n", text);
             sched_yield();  // Yield the cpu to another thread
         }
         else if (ret == EINVAL) {
-            printf("%s:pthread_mutex_lock(&lock->lock) == EINVAL\n", text);
-            printf("Forgot to initialize the mutex object...\n");
+            fprintf(stderr,"%s:pthread_mutex_lock(&lock->lock) == EINVAL\n", text);
+            fprintf(stderr,"Forgot to initialize the mutex object...\n");
             problems++;
             sched_yield();  // Yield the cpu to another thread
         }
     } while (ret == EDEADLK);
 
     if (problems)
-        printf("Returning %d to calling thread\n", problems);
+        fprintf(stderr,"Returning %d to calling thread\n", problems);
 #else
     pthread_mutex_lock(&lock->lock);
 #endif
@@ -2549,7 +2549,7 @@ int end_critical_section(xastir_mutex *lock, char *text) {
     if (lock->threadID == 0)
     {
         // We have a problem.  This resource hasn't been locked.
-        printf("%s:Trying to unlock a resource that hasn't been locked:%ld\n",
+        fprintf(stderr,"%s:Trying to unlock a resource that hasn't been locked:%ld\n",
             text,
             (long int)lock->threadID);
         problems++;
@@ -2559,7 +2559,7 @@ int end_critical_section(xastir_mutex *lock, char *text) {
     {
         // We have a problem.  We just tried to unlock a mutex which
         // a different thread originally locked.  Not good.
-        printf("%s:Trying to unlock a resource that a different thread locked originally: %ld:%ld\n",
+        fprintf(stderr,"%s:Trying to unlock a resource that a different thread locked originally: %ld:%ld\n",
             text,
             (long int)lock->threadID,
             (long int)calling_thread);
@@ -2581,17 +2581,17 @@ int end_critical_section(xastir_mutex *lock, char *text) {
     ret = pthread_mutex_unlock(&lock->lock);
 
     if (ret == EPERM) {
-        printf("%s:pthread_mutex_unlock(&lock->lock) == EPERM\n", text);
+        fprintf(stderr,"%s:pthread_mutex_unlock(&lock->lock) == EPERM\n", text);
         problems++;
     }
     else if (ret == EINVAL) {
-        printf("%s:pthread_mutex_unlock(&lock->lock) == EINVAL\n", text);
-        printf("Someone forgot to initialize the mutex object\n");
+        fprintf(stderr,"%s:pthread_mutex_unlock(&lock->lock) == EINVAL\n", text);
+        fprintf(stderr,"Someone forgot to initialize the mutex object\n");
         problems++;
     }
 
     if (problems)
-        printf("Returning %d to calling thread\n", problems);
+        fprintf(stderr,"Returning %d to calling thread\n", problems);
 #else
     (void)pthread_mutex_unlock(&lock->lock);
 #endif
@@ -2619,7 +2619,7 @@ void time_mark(int start)
             sec--;
             usec += 1000000;
         }
-        printf("time:  %ld.%06lds\n", sec, usec);
+        fprintf(stderr,"time:  %ld.%06lds\n", sec, usec);
     }
 }
 #endif

@@ -62,7 +62,7 @@ int load_color_file(void) {
                     for (x=0; x<colors_loaded;x++) {
                         if (strcmp(color_choice[x].colorname,colorname)==0) {
                             ok=0;
-                            printf("Error! Duplicate color found %s\n",colorname);
+                            fprintf(stderr,"Error! Duplicate color found %s\n",colorname);
                         }
                     }
                     if (ok) {
@@ -75,14 +75,14 @@ int load_color_file(void) {
                     }
                 } else {
                     ok=0;
-                    printf("Error! MAX_COLORS has been exceeded\n");
+                    fprintf(stderr,"Error! MAX_COLORS has been exceeded\n");
                 }
             }
         }
         (void)fclose(f);
     } else {
         ok=0;
-        printf("Error! can not find color file: %s\n", get_data_base_dir(temp));
+        fprintf(stderr,"Error! can not find color file: %s\n", get_data_base_dir(temp));
     }
     return(ok);
 }
@@ -132,7 +132,7 @@ void setup_visual_info(Display* dpy, int scr) {
     visual_list = XGetVisualInfo(dpy, VisualNoMask, &visual_template, &visuals_matched);
     if (visuals_matched) {
         if (debug_level & 16)
-            printf("Found %d visuals\n", visuals_matched);
+            fprintf(stderr,"Found %d visuals\n", visuals_matched);
 
         for (i = 0; i < visuals_matched; i++) {
             vp = &visual_list[i];
@@ -180,43 +180,43 @@ void setup_visual_info(Display* dpy, int scr) {
                 else
                     visual_type = NOT_TRUE_NOR_DIRECT;
                 if (debug_level & 16)
-                    printf("\tID:           0x%lx,  Default\n", vp->visualid);
+                    fprintf(stderr,"\tID:           0x%lx,  Default\n", vp->visualid);
             }
             else if (debug_level & 16)
-                printf("\tID:           0x%lx\n", vp->visualid);
+                fprintf(stderr,"\tID:           0x%lx\n", vp->visualid);
 
             if (debug_level & 16) {
-                printf("\tScreen:       %d\n",  vp->screen);
-                printf("\tDepth:        %d\n",  vp->depth);
-                printf("\tClass:        %d",    vp->class);
+                fprintf(stderr,"\tScreen:       %d\n",  vp->screen);
+                fprintf(stderr,"\tDepth:        %d\n",  vp->depth);
+                fprintf(stderr,"\tClass:        %d",    vp->class);
                 switch (vp->class) {
                 case StaticGray:
-                    printf(",  StaticGray\n");
+                    fprintf(stderr,",  StaticGray\n");
                     break;
                 case GrayScale:
-                    printf(",  GrayScale\n");
+                    fprintf(stderr,",  GrayScale\n");
                     break;
                 case StaticColor:
-                    printf(",  StaticColor\n");
+                    fprintf(stderr,",  StaticColor\n");
                     break;
                 case PseudoColor:
-                    printf(",  PseudoColor\n");
+                    fprintf(stderr,",  PseudoColor\n");
                     break;
                 case TrueColor:
-                    printf(",  TrueColor\n");
+                    fprintf(stderr,",  TrueColor\n");
                     break;
                 case DirectColor:
-                    printf(",  DirectColor\n");
+                    fprintf(stderr,",  DirectColor\n");
                     break;
                 default:
-                    printf(",  ??\n");
+                    fprintf(stderr,",  ??\n");
                     break;
                 }
-                printf("\tClrmap Size:  %d\n", vp->colormap_size);
-                printf("\tBits per RGB: %d\n", vp->bits_per_rgb);
-                printf("\tRed Mask:     0x%lx\n",   vp->red_mask);
-                printf("\tGreen Mask:   0x%lx\n",   vp->green_mask);
-                printf("\tBlue Mask:    0x%lx\n\n", vp->blue_mask);
+                fprintf(stderr,"\tClrmap Size:  %d\n", vp->colormap_size);
+                fprintf(stderr,"\tBits per RGB: %d\n", vp->bits_per_rgb);
+                fprintf(stderr,"\tRed Mask:     0x%lx\n",   vp->red_mask);
+                fprintf(stderr,"\tGreen Mask:   0x%lx\n",   vp->green_mask);
+                fprintf(stderr,"\tBlue Mask:    0x%lx\n\n", vp->blue_mask);
             }
         }
     }

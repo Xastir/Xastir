@@ -64,7 +64,7 @@ char *langcode(char *code) {
     }
     else {  // Code is too long
         xastir_snprintf(invalid_code, sizeof(invalid_code), "IC>TOO LONG:%s",code);
-        printf("IC>TOO LONG:%s\n",code);
+        fprintf(stderr,"IC>TOO LONG:%s\n",code);
         return(invalid_code);
     }
 
@@ -75,18 +75,18 @@ char *langcode(char *code) {
                     return(lang_code_ptr[i]);   // Found it, length ok
                 }
                 else {
-                    printf("String size: %d,  Max size: %d, %s\n",
+                    fprintf(stderr,"String size: %d,  Max size: %d, %s\n",
                         (int)strlen(lang_code[i]),
                         MAX_LANG_LINE_SIZE,code);
                     return(invalid_code);       // Found it, but string too long
                 }
             }
         }
-        printf("Language String not found:%s\n",code);
+        fprintf(stderr,"Language String not found:%s\n",code);
         return(invalid_code);
     }
 
-    printf("No language strings loaded:%s\n",code);
+    fprintf(stderr,"No language strings loaded:%s\n",code);
     return(invalid_code);   // No strings loaded in language file
 }
 
@@ -105,7 +105,7 @@ char langcode_hotkey(char *code) {
         }
     }
 
-    printf("No hotkey for:%s\n",code);
+    fprintf(stderr,"No hotkey for:%s\n",code);
     return(' ');    // No strings loaded in language file
 }
 
@@ -139,7 +139,7 @@ int load_language_file(char *filename) {
                         line[i]='\0';
                     } else {
                         ok=0;
-                        printf("Error! Line %d too long in language file\n",line_num);
+                        fprintf(stderr,"Error! Line %d too long in language file\n",line_num);
                     }
                 } else {
                     i=0;
@@ -169,43 +169,43 @@ int load_language_file(char *filename) {
                                                         temp_ptr=strtok(NULL,"|");      /* get hotkey */
                                                         if (temp_ptr!=NULL) {
                                                             lang_hotkey[lang_code_number]=temp_ptr[0];
-                                                            /*printf("HOTKEY %c\n",lang_hotkey[lang_code_number]);*/
+                                                            /*fprintf(stderr,"HOTKEY %c\n",lang_hotkey[lang_code_number]);*/
                                                         }
                                                     } else {
                                                         ok=0;
-                                                        printf("Language data buffer full error on line %d\n",line_num);
+                                                        fprintf(stderr,"Language data buffer full error on line %d\n",line_num);
                                                     }
                                                 } else {
                                                     ok=0;
-                                                    printf("Language string parse error on line %d\n",line_num);
+                                                    fprintf(stderr,"Language string parse error on line %d\n",line_num);
                                                 }
                                             } else {
                                                 ok=0;
-                                                printf("Duplicate code! <%s> on line %d\n",temp_ptr,line_num);
+                                                fprintf(stderr,"Duplicate code! <%s> on line %d\n",temp_ptr,line_num);
                                             }
                                         } else {
                                             ok=0;
-                                            printf("Language code on line %d is too long\n",line_num);
+                                            fprintf(stderr,"Language code on line %d is too long\n",line_num);
                                         }
                                     } else {
                                         ok=0;
-                                        printf("Missing Language code data on line %d\n",line_num);
+                                        fprintf(stderr,"Missing Language code data on line %d\n",line_num);
                                     }
                                 } else {
                                     ok=0;
-                                    printf("Language code parse error on line %d\n",line_num);
+                                    fprintf(stderr,"Language code parse error on line %d\n",line_num);
                                 }
                             } else {
                                 ok=0;
-                                printf("Language data buffer full error on line %d\n",line_num);
+                                fprintf(stderr,"Language data buffer full error on line %d\n",line_num);
                             }
                         } else {
                             ok=0;
-                            printf("Too many Language codes error on line %d\n",line_num);
+                            fprintf(stderr,"Too many Language codes error on line %d\n",line_num);
                         }
                         if (ok) {
                             if (debug_level & 32)
-                                printf("Code #%d <%s> data <%s> hotkey <%c>\n",lang_code_number,
+                                fprintf(stderr,"Code #%d <%s> data <%s> hotkey <%c>\n",lang_code_number,
                                     lang_code[lang_code_number],lang_code_ptr[lang_code_number],
                                     lang_hotkey[lang_code_number]);
                                 lang_code_number++;
@@ -219,10 +219,10 @@ int load_language_file(char *filename) {
         (void)fclose(f);
     } else {
         ok=0;
-        printf("Could not read Language file: %s!\n",filename);
+        fprintf(stderr,"Could not read Language file: %s!\n",filename);
     }
     if (debug_level & 32)
-        printf("LANG %d\n",lang_code_number);
+        fprintf(stderr,"LANG %d\n",lang_code_number);
 
     return(ok);
 }

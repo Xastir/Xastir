@@ -70,11 +70,11 @@ static int debug=1;
 static int debug=0;
 #endif /*DEBUG*/
 
-#define DEBUG_PRINT1(a) if (debug) printf (a)
-#define DEBUG_PRINT2(a, b) if (debug) printf (a, b)
-#define DEBUG_PRINT3(a, b, c) if (debug) printf (a, b, c)
-#define DEBUG_PRINT4(a, b, c, d) if (debug) printf (a, b, c, d)
-#define DEBUG_PRINT5(a, b, c, d, e) if (debug) printf (a, b, c, d, e)
+#define DEBUG_PRINT1(a) if (debug) fprintf(stderr, a)
+#define DEBUG_PRINT2(a, b) if (debug) fprintf(stderr, a, b)
+#define DEBUG_PRINT3(a, b, c) if (debug) fprintf(stderr, a, b, c)
+#define DEBUG_PRINT4(a, b, c, d) if (debug) fprintf(stderr, a, b, c, d)
+#define DEBUG_PRINT5(a, b, c, d, e) if (debug) fprintf(stderr, a, b, c, d, e)
 
 
 /* ---------------------------------------------------------------------- */

@@ -115,7 +115,7 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
 
 
     XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
-    //printf("Selected item %d (%s)\n", selection->item_position, choice);
+    //fprintf(stderr,"Selected item %d (%s)\n", selection->item_position, choice);
 
     // Grab the first 13 characters.  Remove spaces.  This is our handle
     // into the weather server for the full weather alert text.
@@ -129,7 +129,7 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
     handle[9] = '\0';   // Terminate after first 9 chars
 
     if (debug_level & 1)
-        printf("Handle: %s\n",handle);
+        fprintf(stderr,"Handle: %s\n",handle);
 
     if(!wx_detailed_alert_shell) {
 
@@ -240,7 +240,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
     xastir_snprintf(temp, sizeof(temp), "/usr/bin/finger %s@wxsvr.net", handle);
     if (!(pp = popen (temp, "r"))) {    // Go do the finger command
         perror (temp);  // Print an error message if it failed
-        printf("Weather server didn't answer or 'finger' command couldn't be run\n");
+        fprintf(stderr,"Weather server didn't answer or 'finger' command couldn't be run\n");
     }
     else {
         while (fgets (temp, sizeof (temp), pp)) {   // While we have data to process
@@ -253,7 +253,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
                 memmove(ptr, ptr+1, strlen(ptr)+1);
 
             if (debug_level & 1)
-                printf("%s\n",temp);
+                fprintf(stderr,"%s\n",temp);
 
             // Create an XmString for each line and add it to the
             // end of the list.

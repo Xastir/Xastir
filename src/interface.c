@@ -195,12 +195,12 @@ int get_device_status(int port) {
     int stat;
 
     if (begin_critical_section(&port_data_lock, "interface.c:get_device_status(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     stat = port_data[port].status;
 
     if (end_critical_section(&port_data_lock, "interface.c:get_device_status(2)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     return(stat);
 }
@@ -224,7 +224,7 @@ void channel_data(int port, unsigned char *string, int length) {
     int max;
     struct timeval tmv;
 
-    //printf("channel_data: %x %d\n",string[0],length);
+    //fprintf(stderr,"channel_data: %x %d\n",string[0],length);
 
     // Save a backup copy of the incoming string.  Used for
     // debugging purposes.  If we get a segfault, we can print out
@@ -253,7 +253,7 @@ void channel_data(int port, unsigned char *string, int length) {
     // strlen() function may not work correctly.
     if (length > MAX_LINE_SIZE) {   // Too long!
         if (debug_level & 1) {
-            printf("\nchannel_data: LONG packet:%d,  Dumping it:\n%s\n",
+            fprintf(stderr,"\nchannel_data: LONG packet:%d,  Dumping it:\n%s\n",
             length,
             string);
         }
@@ -265,24 +265,24 @@ void channel_data(int port, unsigned char *string, int length) {
 // This protects channel_data from being run by more
 // than one thread at the same time
     if (begin_critical_section(&output_data_lock, "interface.c:channel_data(1)" ) > 0)
-        printf("output_data_lock, Port = %d\n", port);
+        fprintf(stderr,"output_data_lock, Port = %d\n", port);
 
     if (length > 0) {
 
         if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
-            printf("data_lock, Port = %d\n", port);
+            fprintf(stderr,"data_lock, Port = %d\n", port);
 
         incoming_data = string;
         incoming_data_length = length;
         data_port = port;
         data_avail = 1;
-        //printf("data_avail\n");
+        //fprintf(stderr,"data_avail\n");
 
         if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
-            printf("data_lock, Port = %d\n", port);
+            fprintf(stderr,"data_lock, Port = %d\n", port);
 
         if (debug_level & 1)
-            printf("Channel data on Port %d [%s]\n",port,(char *)string);
+            fprintf(stderr,"Channel data on Port %d [%s]\n",port,(char *)string);
 
         /* wait until data is processed */
         while (data_avail && max < 5400) {
@@ -294,7 +294,7 @@ void channel_data(int port, unsigned char *string, int length) {
     }
 
     if (end_critical_section(&output_data_lock, "interface.c:channel_data(4)" ) > 0)
-        printf("output_data_lock, Port = %d\n", port);
+        fprintf(stderr,"output_data_lock, Port = %d\n", port);
 }
 
 
@@ -429,12 +429,12 @@ int ui_connect( int port, char *to[]) {
 	sockopt = 0;
 
     if (setsockopt(s, SOL_AX25, AX25_IAMDIGI, &sockopt, sizeof(int))) {
-	printf("AX25 IAMDIGI setsockopt FAILED");
+	fprintf(stderr,"AX25 IAMDIGI setsockopt FAILED");
 	return -1;
     }
 
     if (debug_level & 2)
-       printf("*** Connecting to UNPROTO port for transmission...\n");
+       fprintf(stderr,"*** Connecting to UNPROTO port for transmission...\n");
 
     /*
      * Lets try and connect to the far end.
@@ -476,7 +476,7 @@ static void data_out_ax25(int port, unsigned char *string) {
         return;
 
     if (begin_critical_section(&port_data_lock, "interface.c:data_out_ax25(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     // Check for commands (start with Control-C)
     if (string[0] == (unsigned char)3) { // Yes, process TNC type commands
@@ -497,7 +497,7 @@ static void data_out_ax25(int port, unsigned char *string) {
                     substr(ui_mycall, temp, 9);
                     strcpy(port_data[port].ui_call, ui_mycall);
                     if (debug_level & 2)
-                        printf("*** MYCALL %s\n",port_data[port].ui_call);
+                        fprintf(stderr,"*** MYCALL %s\n",port_data[port].ui_call);
                 }
             }
         }
@@ -514,18 +514,18 @@ static void data_out_ax25(int port, unsigned char *string) {
                 temp = strtok(NULL," \t\r\n");
                 if (temp != NULL) {
                     to[quantity++] = temp; // Store it
-                    //printf("Destination call: %s\n",temp);
+                    //fprintf(stderr,"Destination call: %s\n",temp);
 
                     // Look for "via" or "v"
                     temp = strtok(NULL," \t\r\n");
-                    //printf("Via: %s\n",temp);
+                    //fprintf(stderr,"Via: %s\n",temp);
 
                     while (temp != NULL) {  // Found it
                         // Look for the rest of the callsigns (up to
                         // eight of them)
                         temp = strtok(NULL," ,\t\r\n");
                         if (temp != NULL) {
-                            //printf("Call: %s\n",temp);
+                            //fprintf(stderr,"Call: %s\n",temp);
                             if (quantity < 9) {
                                 to[quantity++] = temp;
                             }
@@ -536,15 +536,15 @@ static void data_out_ax25(int port, unsigned char *string) {
                     if (debug_level & 2) {
                         int i = 1;
 
-                        printf("UNPROTO %s VIA ",*to);
+                        fprintf(stderr,"UNPROTO %s VIA ",*to);
                         while (to[i] != NULL)
-                            printf("%s,",to[i++]);
-                        printf("\n");
+                            fprintf(stderr,"%s,",to[i++]);
+                        fprintf(stderr,"\n");
                     }
 
                     if (port_data[port].channel2 != -1) {
                         if (debug_level & 2)
-                            printf("Write DEVICE is UP!  Taking it down to reconfigure UI path.\n");
+                            fprintf(stderr,"Write DEVICE is UP!  Taking it down to reconfigure UI path.\n");
 
                         (void)close(port_data[port].channel2);
                         port_data[port].channel2 = -1;
@@ -555,7 +555,7 @@ static void data_out_ax25(int port, unsigned char *string) {
                     }
                     else {    // Port re-opened and re-configured
                         if (debug_level & 2)
-                            printf("WRITE port re-opened after UI path change\n");
+                            fprintf(stderr,"WRITE port re-opened after UI path change\n");
                     }
                 }
             }
@@ -565,16 +565,16 @@ static void data_out_ax25(int port, unsigned char *string) {
     // Else not a command, write the data directly out to the port
     else {
         if (debug_level & 2)
-            printf("*** DATA: %s\n",(char *)string);
+            fprintf(stderr,"*** DATA: %s\n",(char *)string);
 
         if (port_data[port].channel2 != -1)
             (void)write(port_data[port].channel2, string, strlen((char *)string));
         else if (debug_level & 2)
-            printf("\nPort down for writing!\n\n");
+            fprintf(stderr,"\nPort down for writing!\n\n");
     }
 
     if (end_critical_section(&port_data_lock, "interface.c:data_out_ax25(2)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 }
 
 
@@ -802,7 +802,7 @@ int ax25_init(int port) {
 #endif
 
     if (begin_critical_section(&port_data_lock, "interface.c:ax25_init(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     /* clear port_channel */
 //    port_data[port].channel = -1;
@@ -821,7 +821,7 @@ int ax25_init(int port) {
             popup_message(langcode("POPEM00004"),langcode("POPEM00013"));
 
             if (end_critical_section(&port_data_lock, "interface.c:ax25_init(2)" ) > 0)
-                printf("port_data_lock, Port = %d\n", port);
+                fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
             return -1;
         }
@@ -836,7 +836,7 @@ int ax25_init(int port) {
             popup_message(langcode("POPEM00004"),temp);
 
             if (end_critical_section(&port_data_lock, "interface.c:ax25_init(3)" ) > 0)
-                printf("port_data_lock, Port = %d\n", port);
+                fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
             return -1;
         }
@@ -858,7 +858,7 @@ int ax25_init(int port) {
     if (port_data[port].channel == -1) {
         perror("socket");
         if (end_critical_section(&port_data_lock, "interface.c:ax25_init(4)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         return -1;
     }
@@ -878,11 +878,11 @@ int ax25_init(int port) {
     temp[0] = proto = (int)dev;     // Converting pointer to int, then to char?????
     // ^^^^ this doesn't do anything
 #else /* HAVE_AX25 */
-    printf("AX.25 support not compiled into Xastir!\n");
+    fprintf(stderr,"AX.25 support not compiled into Xastir!\n");
     popup_message(langcode("POPEM00004"),langcode("POPEM00021"));
 #endif /* HAVE_AX25 */
     if (end_critical_section(&port_data_lock, "interface.c:ax25_init(5)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     return(1);
 }
@@ -929,7 +929,7 @@ int command_file_to_tnc_port(int port, char *filename) {
                     if (line[0] != '#' && strlen(line) > 0) {
                         xastir_snprintf(command, sizeof(command), "%c%s\r", (char)03, line);
                         if (debug_level & 2)
-                            printf("CMD:%s\n",command);
+                            fprintf(stderr,"CMD:%s\n",command);
 
                         port_write_string(port,command);
                         line[0] = (char)0;
@@ -940,7 +940,7 @@ int command_file_to_tnc_port(int port, char *filename) {
         (void)fclose(f);
     } else {
         if (debug_level & 2)
-            printf("Could not open TNC command file: %s\n",filename);
+            fprintf(stderr,"Could not open TNC command file: %s\n",filename);
     }
     return(error);
 }
@@ -967,7 +967,7 @@ void port_dtr(int port, int dtr) {
     dtr = (dtr & 0x1);
 
     if (begin_critical_section(&port_data_lock, "interface.c:port_dtr(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (port_data[port].active == DEVICE_IN_USE
             && port_data[port].status == DEVICE_UP
@@ -975,7 +975,7 @@ void port_dtr(int port, int dtr) {
 
         port_data[port].dtr = dtr;
         if (debug_level & 2)
-            printf("DTR %d\n",port_data[port].dtr);
+            fprintf(stderr,"DTR %d\n",port_data[port].dtr);
 #ifdef TIOCMGET
         (void)ioctl(port_data[port].channel, TIOCMGET, &sg);
 #endif
@@ -989,7 +989,7 @@ void port_dtr(int port, int dtr) {
             (void)ioctl(port_data[port].channel, TIOCMBIC, &sg);
 #endif
             if (debug_level & 2)
-                printf("Down\n");
+                fprintf(stderr,"Down\n");
 
             // statusline(langcode("BBARSTA026"),1);
 
@@ -999,14 +999,14 @@ void port_dtr(int port, int dtr) {
             (void)ioctl(port_data[port].channel, TIOCMBIS, &sg);
 #endif
             if (debug_level & 2)
-                printf("UP\n");
+                fprintf(stderr,"UP\n");
 
             // statusline(langcode("BBARSTA027"),1);
         }
     }
 
     if (end_critical_section(&port_data_lock, "interface.c:port_dtr(2)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
 #endif  // __CYGWIN__
 }
@@ -1044,7 +1044,7 @@ int serial_detach(int port) {
     ok = -1;
 
     if (begin_critical_section(&port_data_lock, "interface.c:serial_detach(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (port_data[port].active == DEVICE_IN_USE && port_data[port].status == DEVICE_UP){
 
@@ -1057,7 +1057,7 @@ int serial_detach(int port) {
             ok = 1;
         } else {
             if (debug_level & 2)
-                printf("Could not close port %s\n",port_data[port].device_name);
+                fprintf(stderr,"Could not close port %s\n",port_data[port].device_name);
 
             port_data[port].status = DEVICE_DOWN;
             usleep(200);
@@ -1067,7 +1067,7 @@ int serial_detach(int port) {
         // Now delete lock
         xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
         if (debug_level & 2)
-            printf("Delete lock file %s\n",fn);
+            fprintf(stderr,"Delete lock file %s\n",fn);
 
         ENABLE_SETUID_PRIVILEGE;
         (void)unlink(fn);
@@ -1075,7 +1075,7 @@ int serial_detach(int port) {
     }
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_detach(2)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     return(ok);
 }
@@ -1103,7 +1103,7 @@ int serial_init (int port) {
     status = -9999;
 
     if (begin_critical_section(&port_data_lock, "interface.c:serial_init(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     // clear port_channel
     port_data[port].channel = -1;
@@ -1119,12 +1119,12 @@ int serial_init (int port) {
             get_device_name_only(port_data[port].device_name));
     if (filethere(fn) == 1) {
         // Also look for pid of other process and see if it is a valid lock
-        printf("Found an existing lockfile %s for this port!\n",fn);
+        fprintf(stderr,"Found an existing lockfile %s for this port!\n",fn);
         lock = fopen(fn,"r");
         if (lock != NULL) { // We could open it so it must have
                             // been created by this userid
             if (fscanf(lock,"%d %s %s",&myintpid,temp,temp1) == 3) {
-                //printf("Current lock %d %s %s\n",mypid,temp,temp1);
+                //fprintf(stderr,"Current lock %d %s %s\n",mypid,temp,temp1);
                 mypid = (pid_t)myintpid;
 #ifdef USING_MAC_OS_X
                 status = getpgrp();
@@ -1145,24 +1145,24 @@ int serial_init (int port) {
 
             // check to see if it is stale
             if (status != mypid) {
-                printf("Lock is stale!  Removing it.\n");
+                fprintf(stderr,"Lock is stale!  Removing it.\n");
                 ENABLE_SETUID_PRIVILEGE;
                 (void)unlink(fn);
                 DISABLE_SETUID_PRIVILEGE;
             } else {
-                printf("Cannot open port:  Another program has the lock!\n");
+                fprintf(stderr,"Cannot open port:  Another program has the lock!\n");
 
                 if (end_critical_section(&port_data_lock, "interface.c:serial_init(2)" ) > 0)
-                    printf("port_data_lock, Port = %d\n", port);
+                    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
                 return (-1);
             }
         } else {    // Couldn't open it, so the lock must have been
                     // created by another userid
-            printf("Cannot open port:  Another program has the lock!\n");
+            fprintf(stderr,"Cannot open port:  Another program has the lock!\n");
 
             if (end_critical_section(&port_data_lock, "interface.c:serial_init(3)" ) > 0)
-                printf("port_data_lock, Port = %d\n", port);
+                fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
             return (-1);
         }
@@ -1175,10 +1175,10 @@ int serial_init (int port) {
     if (port_data[port].channel == -1){
 
         if (end_critical_section(&port_data_lock, "interface.c:serial_init(4)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not open channel on port %d!\n",port);
+            fprintf(stderr,"Could not open channel on port %d!\n",port);
 
         return (-1);
     }
@@ -1186,7 +1186,7 @@ int serial_init (int port) {
     // Attempt to create the lock file
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
     if (debug_level & 2)
-        printf("Create lock file %s\n",fn);
+        fprintf(stderr,"Create lock file %s\n",fn);
 
     ENABLE_SETUID_PRIVILEGE;
     lock = fopen(fn,"w");
@@ -1207,12 +1207,12 @@ int serial_init (int port) {
     else {
         // lock failed
         if (debug_level & 2)
-            printf("Warning:  Failed opening LCK file!  Continuing on...\n");
+            fprintf(stderr,"Warning:  Failed opening LCK file!  Continuing on...\n");
 
         /* if we can't create lock file don't fail!
 
 if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
-    printf("port_data_lock, Port = %d\n", port);
+    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         return (-1);*/
     }
@@ -1221,10 +1221,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     if (tcgetattr(port_data[port].channel, &port_data[port].t) != 0) {
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(6)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not get t port attributes for port %d!\n",port);
+            fprintf(stderr,"Could not get t port attributes for port %d!\n",port);
 
         // Here we should close the port and remove the lock.
         serial_detach(port);
@@ -1235,10 +1235,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     if (tcgetattr(port_data[port].channel, &port_data[port].t_old) != 0) {
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(7)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not get t_old port attributes for port %d!\n",port);
+            fprintf(stderr,"Could not get t_old port attributes for port %d!\n",port);
 
         // Here we should close the port and remove the lock.
         serial_detach(port);
@@ -1297,10 +1297,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     if (cfsetispeed(&port_data[port].t, port_data[port].sp) == -1) {
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(8)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not set port input speed for port %d!\n",port);
+            fprintf(stderr,"Could not set port input speed for port %d!\n",port);
 
         // Here we should close the port and remove the lock.
         serial_detach(port);
@@ -1311,10 +1311,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     if (cfsetospeed(&port_data[port].t, port_data[port].sp) == -1) {
 
         if (end_critical_section(&port_data_lock, "interface.c:serial_init(9)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not set port output speed for port %d!\n",port);
+            fprintf(stderr,"Could not set port output speed for port %d!\n",port);
 
         // Here we should close the port and remove the lock.
         serial_detach(port);
@@ -1325,10 +1325,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     if (tcflush(port_data[port].channel, TCIFLUSH) == -1) {
 
         if (end_critical_section(&port_data_lock, "interface.c:serial_init(10)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not flush data for port %d!\n",port);
+            fprintf(stderr,"Could not flush data for port %d!\n",port);
 
         // Here we should close the port and remove the lock.
         serial_detach(port);
@@ -1339,10 +1339,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     if (tcsetattr(port_data[port].channel,TCSANOW, &port_data[port].t) == -1) {
 
         if (end_critical_section(&port_data_lock, "interface.c:serial_init(11)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not set port attributes for port %d!\n",port);
+            fprintf(stderr,"Could not set port attributes for port %d!\n",port);
 
         // Here we should close the port and remove the lock.
         serial_detach(port);
@@ -1357,7 +1357,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     port_data[port].status = DEVICE_UP;
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(12)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     // return good condition
     return (1);
@@ -1392,7 +1392,7 @@ static void* net_connect_thread(void *arg) {
 
 
     if (debug_level & 2)
-        printf("net_connect_thread start\n");
+        fprintf(stderr,"net_connect_thread start\n");
 
     port = *((int *) arg);
     // This call means we don't care about the return code and won't
@@ -1401,7 +1401,7 @@ static void* net_connect_thread(void *arg) {
     ok = -1;
 
 //if (begin_critical_section(&port_data_lock, "interface.c:net_connect_thread(1)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     /* set address */
     address.sin_addr.s_addr = (port_data[port].address);
@@ -1415,34 +1415,34 @@ static void* net_connect_thread(void *arg) {
 
     if (port_data[port].channel != -1) {
         if (debug_level & 2)
-            printf("We have a socket to use\n");
+            fprintf(stderr,"We have a socket to use\n");
         address.sin_family = AF_INET;
         address.sin_port = htons(port_data[port].socket_port);
         if (debug_level & 2)
-            printf("after htons\n");
+            fprintf(stderr,"after htons\n");
         len = (int)sizeof(address);
         flag = 1;
         (void)setsockopt(port_data[port].channel, SOL_SOCKET, SO_KEEPALIVE, &flag, sizeof(int));
         if (debug_level & 2)
-            printf("after setsockopt\n");
+            fprintf(stderr,"after setsockopt\n");
         pthread_testcancel();  // Check for thread termination request
         if (debug_level & 2)
-            printf("calling connect(), port: %d\n", port_data[port].socket_port);
+            fprintf(stderr,"calling connect(), port: %d\n", port_data[port].socket_port);
         result = connect(port_data[port].channel, (struct sockaddr *)&address, len);
         if (debug_level & 2)
-            printf("connect result was: %d\n", result);
+            fprintf(stderr,"connect result was: %d\n", result);
         pthread_testcancel();  // Check for thread termination request
         if (result != -1){
             /* connection up */
             if (debug_level & 2)
-                printf("net_connect_thread():Net up, port %d\n",port);
+                fprintf(stderr,"net_connect_thread():Net up, port %d\n",port);
 
             port_data[port].status = DEVICE_UP;
             ok = 1;
         } else {    /* net connection failed */
             ok = 0;
             if (debug_level & 2)
-                printf("net_connect_thread():net connection failed, port %d, DEVICE_ERROR ***\n",port);
+                fprintf(stderr,"net_connect_thread():net connection failed, port %d, DEVICE_ERROR ***\n",port);
             port_data[port].status = DEVICE_ERROR;
 
             // Shut down and close the socket
@@ -1456,22 +1456,22 @@ static void* net_connect_thread(void *arg) {
             //stat = shutdown(port_data[port].channel,2);
             //pthread_testcancel();   // Check for thread termination request
             //if (debug_level & 2)
-            //    printf("net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
+            //    fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
 
             usleep(300);
             //pthread_testcancel();   // Check for thread termination request
             //stat = close(port_data[port].channel);
             //pthread_testcancel();   // Check for thread termination request
             //if (debug_level & 2)
-            //    printf("net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
+            //    fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
 
             //if (debug_level & 2)
-            //    printf("net_connect_thread():Net connection 1 failed, port %d\n",port);
+            //    fprintf(stderr,"net_connect_thread():Net connection 1 failed, port %d\n",port);
         }
     } else { /* Could not bind socket */
         ok = -1;
         if (debug_level & 2)
-            printf("net_connect_thread():could not bind socket, port %d, DEVICE_ERROR ***\n",port);
+            fprintf(stderr,"net_connect_thread():could not bind socket, port %d, DEVICE_ERROR ***\n",port);
         port_data[port].status = DEVICE_ERROR;
 
         // Shut down and close the socket
@@ -1484,33 +1484,33 @@ static void* net_connect_thread(void *arg) {
         //stat = shutdown(port_data[port].channel,2);
         //pthread_testcancel();   // Check for thread termination request
         //if (debug_level & 2)
-        //    printf("net_connect_thread():Net Shutdown 2 Returned %d, port %d\n",stat,port);
+        //    fprintf(stderr,"net_connect_thread():Net Shutdown 2 Returned %d, port %d\n",stat,port);
 
         usleep(300);
         //pthread_testcancel();   // Check for thread termination request
         //stat = close(port_data[port].channel);
         //pthread_testcancel();   // Check for thread termination request
         //if (debug_level & 2)
-        //    printf("net_connect_thread():Net Close 2 Returned %d, port %d\n",stat,port);
+        //    fprintf(stderr,"net_connect_thread():Net Close 2 Returned %d, port %d\n",stat,port);
 
         //if (debug_level & 2)
-        //    printf("net_connect_thread():Could not bind socket, port %d\n",port);
+        //    fprintf(stderr,"net_connect_thread():Could not bind socket, port %d\n",port);
     }
 
     if (begin_critical_section(&connect_lock, "interface.c:net_connect_thread(2)" ) > 0)
-        printf("net_connect_thread():connect_lock, Port = %d\n", port);
+        fprintf(stderr,"net_connect_thread():connect_lock, Port = %d\n", port);
 
     port_data[port].connect_status = ok;
     port_data[port].thread_status = 0;
 
     if (end_critical_section(&connect_lock, "interface.c:net_connect_thread(3)" ) > 0)
-        printf("net_connect_thread():connect_lock, Port = %d\n", port);
+        fprintf(stderr,"net_connect_thread():connect_lock, Port = %d\n", port);
 
 //if (end_critical_section(&port_data_lock, "interface.c:net_connect_thread(4)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (debug_level & 2)
-        printf("net_connect_thread terminating itself\n");
+        fprintf(stderr,"net_connect_thread terminating itself\n");
 
     return(NULL);   // This should kill the thread
 }
@@ -1537,7 +1537,7 @@ int net_init(int port) {
     time_t wait_time;
 
     if (begin_critical_section(&port_data_lock, "interface.c:net_init(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     /* clear port_channel */
 //    port_data[port].channel = -1;
@@ -1562,14 +1562,14 @@ int net_init(int port) {
                 /* get the first ip */
                 (void)sscanf(ip_addrs,"%s",ip_addr);
                 if (debug_level & 2)
-                    printf("IP Address: %s\n",ip_addr);
+                    fprintf(stderr,"IP Address: %s\n",ip_addr);
                 /* set address for connection */
                 port_data[port].address = inet_addr(ip_addr);
 
                 /* ok try to connect */
 
                 if (begin_critical_section(&connect_lock, "interface.c:net_init(2)" ) > 0)
-                    printf("connect_lock, Port = %d\n", port);
+                    fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                 port_data[port].thread_status = 1;
                 port_data[port].connect_status = -1;
@@ -1584,26 +1584,26 @@ int net_init(int port) {
                     stat = shutdown(port_data[port].channel,2);
                     pthread_testcancel();   // Check for thread termination request
                     if (debug_level & 2)
-                        printf("net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
+                        fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
                     usleep(100000);         // 100ms
                     pthread_testcancel();   // Check for thread termination request
                     stat = close(port_data[port].channel);
                     pthread_testcancel();   // Check for thread termination request
                     if (debug_level & 2)
-                        printf("net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
+                        fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
                     usleep(100000);         // 100ms
                     port_data[port].channel = -1;
                }
 
                 if (end_critical_section(&connect_lock, "interface.c:net_init(3)" ) > 0)
-                    printf("connect_lock, Port = %d\n", port);
+                    fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                 if (debug_level & 2)
-                    printf("Creating new thread\n");
+                    fprintf(stderr,"Creating new thread\n");
                 if (pthread_create(&connect_thread, NULL, net_connect_thread, &port)){
                     /* error starting thread*/
                     ok = -1;
-                    printf("Error creating net_connect thread, port %d\n",port);
+                    fprintf(stderr,"Error creating net_connect thread, port %d\n",port);
                 }
 
                 busy_cursor(appshell);
@@ -1612,17 +1612,17 @@ int net_init(int port) {
                 while (wait_on_connect && (sec_now() < wait_time)) {
 
                     if (begin_critical_section(&connect_lock, "interface.c:net_init(4)" ) > 0)
-                        printf("connect_lock, Port = %d\n", port);
+                        fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                     wait_on_connect = port_data[port].thread_status;
 
                     if (end_critical_section(&connect_lock, "interface.c:net_init(5)" ) > 0)
-                        printf("connect_lock, Port = %d\n", port);
+                        fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                     xastir_snprintf(st, sizeof(st), langcode("BBARSTA025"), wait_time - sec_now() );
                     statusline(st,1);           // Host found, connecting n
                     if (debug_level & 2)
-                        printf("%d\n", (int)(wait_time - sec_now()) );
+                        fprintf(stderr,"%d\n", (int)(wait_time - sec_now()) );
 
                     /* update display while waiting */
                     // XmUpdateDisplay(XtParent(da));
@@ -1635,43 +1635,43 @@ int net_init(int port) {
                 if ( (sec_now() >= wait_time)      // Timed out
                         || (ok != 1) ) {            // or connection failure of another type
                     if (debug_level & 2)
-                        printf("Thread exceeded it's time limit or failed to connect! Port %d\n",port);
+                        fprintf(stderr,"Thread exceeded it's time limit or failed to connect! Port %d\n",port);
 
                     if (begin_critical_section(&connect_lock, "interface.c:net_init(6)" ) > 0)
-                        printf("connect_lock, Port = %d\n", port);
+                        fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                     if (debug_level & 2)
-                        printf("Killing thread\n");
+                        fprintf(stderr,"Killing thread\n");
                     if (pthread_cancel(connect_thread)) {
                         // The only error code we can get here is ESRCH, which means
                         // that the thread number wasn't found.  The thread is already
                         // dead, so let's not print out an error code.
-                        //printf("Error on termination of connect thread!\n");
+                        //fprintf(stderr,"Error on termination of connect thread!\n");
                     }
 
                     if (sec_now() >= wait_time) {  // Timed out
                         port_data[port].connect_status = -2;
                         if (debug_level & 2)
-                            printf("It was a timeout.\n");
+                            fprintf(stderr,"It was a timeout.\n");
                     }
 
                     if (end_critical_section(&connect_lock, "interface.c:net_init(7)" ) > 0)
-                        printf("connect_lock, Port = %d\n", port);
+                        fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                     port_data[port].status = DEVICE_ERROR;
                     if (debug_level & 2)
-                        printf("Thread did not return, port %d, DEVICE_ERROR ***\n",port);
+                        fprintf(stderr,"Thread did not return, port %d, DEVICE_ERROR ***\n",port);
                 }
                 if (begin_critical_section(&connect_lock, "interface.c:net_init(8)" ) > 0)
-                    printf("connect_lock, Port = %d\n", port);
+                    fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                 ok = port_data[port].connect_status;
 
                 if (end_critical_section(&connect_lock, "interface.c:net_init(9)" ) > 0)
-                    printf("connect_lock, Port = %d\n", port);
+                    fprintf(stderr,"connect_lock, Port = %d\n", port);
 
                 if (debug_level & 2)
-                    printf("Net ok: %d, port %d\n", ok, port);
+                    fprintf(stderr,"Net ok: %d, port %d\n", ok, port);
 
                 switch (ok) {
                     case 1: /* connection up */
@@ -1705,7 +1705,7 @@ int net_init(int port) {
                 statusline(st,1);                       // Net Connection timed out
                 port_data[port].status = DEVICE_ERROR;
                 if (debug_level & 2)
-                    printf("Host lookup timeout, port %d, DEVICE_ERROR ***\n",port);
+                    fprintf(stderr,"Host lookup timeout, port %d, DEVICE_ERROR ***\n",port);
                 ok = 0;
             }
         } else {    /* Host ip look up failure (no ip address for that host) */
@@ -1713,7 +1713,7 @@ int net_init(int port) {
             statusline(st,1);                           // No IP for Host
             port_data[port].status = DEVICE_ERROR;
             if (debug_level & 2)
-                printf("Host IP lookup failure, port %d, DEVICE_ERROR ***\n",port);
+                fprintf(stderr,"Host IP lookup failure, port %d, DEVICE_ERROR ***\n",port);
         }
     }
     else {    /* Host look up failure (no host by that name) */
@@ -1721,14 +1721,14 @@ int net_init(int port) {
         statusline(st,1);                               // No IP for Host
         port_data[port].status = DEVICE_ERROR;
         if (debug_level & 2)
-            printf("Host lookup failure, port %d, DEVICE_ERROR ***\n",port);
+            fprintf(stderr,"Host lookup failure, port %d, DEVICE_ERROR ***\n",port);
     }
 
     if (end_critical_section(&port_data_lock, "interface.c:net_init(10)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (debug_level & 2)
-        printf("*** net_init is returning a %d ***\n",ok);
+        fprintf(stderr,"*** net_init is returning a %d ***\n",ok);
 
     return(ok);
 }
@@ -1748,19 +1748,19 @@ int net_detach(int port) {
     char quiti[2];
 
     if (debug_level & 2)
-        printf("Net detach Start, port %d\n",port);
+        fprintf(stderr,"Net detach Start, port %d\n",port);
 
     ok = -1;
     max = 0;
 
     if (begin_critical_section(&port_data_lock, "interface.c:net_detach(1)" ) > 0)
-        printf("net_detach():port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"net_detach():port_data_lock, Port = %d\n", port);
 
     if (port_data[port].active == DEVICE_IN_USE) {
         if (port_data[port].status == DEVICE_UP && port_data[port].device_type == DEVICE_NET_STREAM){
 
             if (debug_level & 2)
-                printf("net_detach():Found port %d up, shutting it down\n",port);
+                fprintf(stderr,"net_detach():Found port %d up, shutting it down\n",port);
 
             quiti[0] = (char)4;
             quiti[1] = (char)0;
@@ -1771,7 +1771,7 @@ int net_detach(int port) {
             /* wait to write */
             while (port_data[port].status == DEVICE_UP && port_data[port].write_in_pos != port_data[port].write_out_pos && max < 25) {
                 if (debug_level & 2)
-                    printf("net_detach():Waiting to finish writing data to port %d\n",port);
+                    fprintf(stderr,"net_detach():Waiting to finish writing data to port %d\n",port);
 
                 //(void)sleep(1);
                 usleep(100000);    // 100ms
@@ -1792,7 +1792,7 @@ int net_detach(int port) {
                 && (port_data[port].device_type != DEVICE_AX25_TNC) ) {
             stat = shutdown(port_data[port].channel,2);
             if (debug_level & 2)
-                printf("net_detach():Net Shutdown Returned %d, port %d\n",stat,port);
+                fprintf(stderr,"net_detach():Net Shutdown Returned %d, port %d\n",stat,port);
         }
 
         usleep(100000); // 100ms
@@ -1804,7 +1804,7 @@ int net_detach(int port) {
         // Close it
         stat = close(port_data[port].channel);
         if (debug_level & 2)
-            printf("net_detach():Net Close Returned %d, port %d\n",stat,port);
+            fprintf(stderr,"net_detach():Net Close Returned %d, port %d\n",stat,port);
 
         usleep(100000); // 100ms
 
@@ -1819,10 +1819,10 @@ int net_detach(int port) {
     port_data[port].active = DEVICE_NOT_IN_USE;
 
     if (end_critical_section(&port_data_lock, "interface.c:net_detach(2)" ) > 0)
-        printf("net_detach():port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"net_detach():port_data_lock, Port = %d\n", port);
 
     if (debug_level & 2)
-        printf("Net detach stop, port %d\n",port);
+        fprintf(stderr,"Net detach stop, port %d\n",port);
 
     return(ok);
 }
@@ -1862,7 +1862,7 @@ void fix_up_callsign(unsigned char *data) {
     }
     new_call[7] = '\0';
 
-    //printf("new_call:(%s)\n",new_call);
+    //fprintf(stderr,"new_call:(%s)\n",new_call);
 
     // Handle SSID.  'i' should now be pointing at a dash or at the
     // terminating zero character.
@@ -1873,7 +1873,7 @@ void fix_up_callsign(unsigned char *data) {
             ssid = (ssid * 10) + data[i] - 0x30;
     }
 
-    //printf("SSID:%d\n",ssid);
+    //fprintf(stderr,"SSID:%d\n",ssid);
 
     if (ssid >= 0 && ssid <= 15) {
         new_call[6] = ssid | 0x30;  // Set 2 reserved bits
@@ -1917,7 +1917,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     int erd;
     int write_in_pos_hold;
 
-    //printf("KISS String:%s>%s,%s:%s\n",source,destination,path,data);
+    //fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
     transmit_txt[0] = '\0';
 
@@ -1946,7 +1946,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
                 j++;
             }
 
-            //printf("%s\n",temp);
+            //fprintf(stderr,"%s\n",temp);
 
             fix_up_callsign(temp);
             strcat(transmit_txt,temp);
@@ -1970,7 +1970,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     // Append the information chars
     strcat(transmit_txt,data);
 
-    //printf("%s\n",transmit_txt);
+    //fprintf(stderr,"%s\n",transmit_txt);
 
     // Add the KISS framing characters and do the proper escapes.
     j = 0;
@@ -2008,7 +2008,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     erd = 0;
 
     if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(1)" ) > 0)
-        printf("write_lock, Port = %d\n", port);
+        fprintf(stderr,"write_lock, Port = %d\n", port);
 
     write_in_pos_hold = port_data[port].write_in_pos;
 
@@ -2019,7 +2019,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
         if (port_data[port].write_in_pos == port_data[port].write_out_pos) {
             if (debug_level & 2)
-                printf("Port %d Buffer overrun\n",port);
+                fprintf(stderr,"Port %d Buffer overrun\n",port);
 
             /* clear this restore original write_in pos and dump this string */
             port_data[port].write_in_pos = write_in_pos_hold;
@@ -2029,7 +2029,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     }
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
-        printf("write_lock, Port = %d\n", port);
+        fprintf(stderr,"write_lock, Port = %d\n", port);
 }
 
 
@@ -2058,17 +2058,17 @@ void send_kiss_config(int port, int device, int command, int value) {
 
 
     if (device < 0 || device > 15) {
-        printf("send_kiss_config: out-of-range value for device\n");
+        fprintf(stderr,"send_kiss_config: out-of-range value for device\n");
         return;
     }
 
     if (command < 1 || command > 6) {
-        printf("send_kiss_config: out-of-range value for command\n");
+        fprintf(stderr,"send_kiss_config: out-of-range value for command\n");
         return;
     }
 
     if (value < 0 || value > 255) {
-        printf("send_kiss_config: out-of-range value for value\n");
+        fprintf(stderr,"send_kiss_config: out-of-range value for value\n");
         return;
     }
 
@@ -2094,7 +2094,7 @@ void send_kiss_config(int port, int device, int command, int value) {
     erd = 0;
 
     if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(1)" ) > 0)
-        printf("write_lock, Port = %d\n", port);
+        fprintf(stderr,"write_lock, Port = %d\n", port);
 
     write_in_pos_hold = port_data[port].write_in_pos;
 
@@ -2105,7 +2105,7 @@ void send_kiss_config(int port, int device, int command, int value) {
 
         if (port_data[port].write_in_pos == port_data[port].write_out_pos) {
             if (debug_level & 2)
-                printf("Port %d Buffer overrun\n",port);
+                fprintf(stderr,"Port %d Buffer overrun\n",port);
 
             /* clear this restore original write_in pos and dump this string */
             port_data[port].write_in_pos = write_in_pos_hold;
@@ -2115,7 +2115,7 @@ void send_kiss_config(int port, int device, int command, int value) {
     }
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
-        printf("write_lock, Port = %d\n", port);
+        fprintf(stderr,"write_lock, Port = %d\n", port);
 }
 
 
@@ -2142,10 +2142,10 @@ void port_write_string(int port, char *data) {
     erd = 0;
 
     if (debug_level & 2)
-        printf("CMD:%s\n",data);
+        fprintf(stderr,"CMD:%s\n",data);
 
     if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write_string(1)" ) > 0)
-        printf("write_lock, Port = %d\n", port);
+        fprintf(stderr,"write_lock, Port = %d\n", port);
 
     write_in_pos_hold = port_data[port].write_in_pos;
 
@@ -2158,7 +2158,7 @@ void port_write_string(int port, char *data) {
 
             if (port_data[port].write_in_pos == port_data[port].write_out_pos){
                 if (debug_level & 2)
-                    printf("Port %d Buffer overrun\n",port);
+                    fprintf(stderr,"Port %d Buffer overrun\n",port);
 
                 /* clear this restore original write_in pos and dump this string */
                 port_data[port].write_in_pos = write_in_pos_hold;
@@ -2178,7 +2178,7 @@ void port_write_string(int port, char *data) {
     }
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_string(2)" ) > 0)
-        printf("write_lock, Port = %d\n", port);
+        fprintf(stderr,"write_lock, Port = %d\n", port);
 }
 
 
@@ -2229,7 +2229,7 @@ void port_read(int port) {
 #endif /* USE_AX25 */
 
     if (debug_level & 2)
-        printf("Port %d read start\n",port);
+        fprintf(stderr,"Port %d read start\n",port);
 
 //    init_critical_section(&port_data[port].read_lock);
 
@@ -2251,7 +2251,7 @@ void port_read(int port) {
                     pthread_testcancel();   // Check for thread termination request
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
-//printf("%c",cin);
+//fprintf(stderr,"%c",cin);
                     pthread_testcancel();   // Check for thread termination request
                 }
 
@@ -2288,7 +2288,7 @@ void port_read(int port) {
 
 // Somewhere between these lock statements the read_lock got unlocked.  How?
 // if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
-//    printf("read_lock, Port = %d\n", port);
+//    fprintf(stderr,"read_lock, Port = %d\n", port);
 
                     // Handle all except AX25_TNC interfaces here
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
@@ -2375,7 +2375,7 @@ void port_read(int port) {
                                 // Compute length of string in
                                 // circular queue
 
-                                //printf("%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
+                                //fprintf(stderr,"%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
 
                                 // KISS TNC sends binary data
                                 if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
@@ -2454,7 +2454,7 @@ void port_read(int port) {
                                     port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
                                 } else {
                                     if (debug_level & 2)
-                                        printf("Port read overrun (1) on %d\n",port);
+                                        fprintf(stderr,"Port read overrun (1) on %d\n",port);
 
                                     port_data[port].read_in_pos = 0;
                                 }
@@ -2482,7 +2482,7 @@ void port_read(int port) {
                                 }
                                 else {
                                     if (debug_level & 2)
-                                        printf("Port read overrun (2) on %d\n",port);
+                                        fprintf(stderr,"Port read overrun (2) on %d\n",port);
 
                                     port_data[port].read_in_pos = 0;
                                 }
@@ -2534,7 +2534,7 @@ void port_read(int port) {
                     }
 
 //if (end_critical_section(&port_data[port].read_lock, "interface.c:port_read(2)" ) > 0)
-//    printf("read_lock, Port = %d\n", port);
+//    fprintf(stderr,"read_lock, Port = %d\n", port);
 
                 }
                 else if (port_data[port].status == DEVICE_UP) {    /* error or close on read */
@@ -2547,38 +2547,38 @@ void port_read(int port) {
                         // timer solves that issue now anyway.  --we7u.
                         port_data[port].status = DEVICE_ERROR;
                         if (debug_level & 2)
-                            printf("end of file on read, or signal interrupted the read, port %d\n",port);
+                            fprintf(stderr,"end of file on read, or signal interrupted the read, port %d\n",port);
                     } else {
                         if (port_data[port].scan == -1) {
                             /* Should only get this if an real error occurs */
                             port_data[port].status = DEVICE_ERROR;
                             if (debug_level & 2) {
-                                printf("error on read with error no %d, or signal interrupted the read, port %d, DEVICE_ERROR ***\n",
+                                fprintf(stderr,"error on read with error no %d, or signal interrupted the read, port %d, DEVICE_ERROR ***\n",
                                     errno,port);
                                 switch (errno) {
                                     case EINTR:
-                                        printf("EINTR ERROR\n");
+                                        fprintf(stderr,"EINTR ERROR\n");
                                         break;
                                     case EAGAIN:
-                                        printf("EAGAIN ERROR\n");
+                                        fprintf(stderr,"EAGAIN ERROR\n");
                                         break;
                                     case EIO:
-                                        printf("EIO ERROR\n");
+                                        fprintf(stderr,"EIO ERROR\n");
                                         break;
                                     case EISDIR:
-                                        printf("EISDIR ERROR\n");
+                                        fprintf(stderr,"EISDIR ERROR\n");
                                         break;
                                     case EBADF: // Get this one when we terminate nearby threads
-                                        printf("EBADF ERROR\n");
+                                        fprintf(stderr,"EBADF ERROR\n");
                                         break;
                                     case EINVAL:
-                                        printf("EINVAL ERROR\n");
+                                        fprintf(stderr,"EINVAL ERROR\n");
                                         break;
                                     case EFAULT:
-                                        printf("EFAULT ERROR\n");
+                                        fprintf(stderr,"EFAULT ERROR\n");
                                         break;
                                     default:
-                                        printf("OTHER ERROR\n");
+                                        fprintf(stderr,"OTHER ERROR\n");
                                         break;
                                 }
                             }
@@ -2598,7 +2598,7 @@ void port_read(int port) {
     }
 
     if (debug_level & 2)
-        printf("Thread for port %d read down!\n",port);
+        fprintf(stderr,"Thread for port %d read down!\n",port);
 }
 
 
@@ -2622,7 +2622,7 @@ void port_write(int port) {
     unsigned long bytes_input;
 
     if (debug_level & 2)
-        printf("Port %d write start\n",port);
+        fprintf(stderr,"Port %d write start\n",port);
 
     init_critical_section(&port_data[port].write_lock);
 
@@ -2630,12 +2630,12 @@ void port_write(int port) {
         if (port_data[port].status == DEVICE_UP) {
 
             if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write(1)" ) > 0)
-                printf("write_lock, Port = %d\n", port);
+                fprintf(stderr,"write_lock, Port = %d\n", port);
 
             if (port_data[port].write_in_pos != port_data[port].write_out_pos && port_data[port].status == DEVICE_UP) {
                 if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
                     if (debug_level & 128) {
-                        printf("Writing command [%x] on port %d, at pos %d\n",
+                        fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
                             *(port_data[port].device_write_buffer + 
                             port_data[port].write_out_pos),
                             port, port_data[port].write_out_pos);
@@ -2655,9 +2655,9 @@ void port_write(int port) {
                         tmv.tv_usec = 80000l;   // Delay 80ms
                         (void)select(0,NULL,&wd,NULL,&tmv);
                         wait_max++;
-                        /*printf("Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
+                        /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
                     }
-                    /*printf("Wait_max %d\n",wait_max);*/
+                    /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
                 }
                 pthread_testcancel();   // Check for thread termination request
                 retval = (int)write(port_data[port].channel,
@@ -2676,12 +2676,12 @@ void port_write(int port) {
                     if (retval == 0) {
                         /* Should not get this unless the device is down */
                         if (debug_level & 2)
-                            printf("no data written %d, DEVICE_ERROR ***\n",port);
+                            fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
                     } else {
                         if (retval == -1) {
                             /* Should only get this if an real error occurs */
                             if (debug_level & 2)
-                                printf("error on write with error no %d, or port %d\n",errno,port);
+                                fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
                         }
                     }
                 }
@@ -2699,7 +2699,7 @@ void port_write(int port) {
             }
 
             if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write(2)" ) > 0)
-                printf("write_lock, Port = %d\n", port);
+                fprintf(stderr,"write_lock, Port = %d\n", port);
 
         }
         if (port_data[port].active == DEVICE_IN_USE) {
@@ -2712,7 +2712,7 @@ void port_write(int port) {
         }
     }
     if (debug_level & 2)
-        printf("Thread for port %d write down!\n",port);
+        fprintf(stderr,"Thread for port %d write down!\n",port);
 }
 
 
@@ -2779,34 +2779,34 @@ int start_port_threads(int port) {
 
     port_id[port] = port;
     if (debug_level & 2)
-        printf("Start port %d threads\n",port);
+        fprintf(stderr,"Start port %d threads\n",port);
 
     ok = 1;
     if (port_data[port].active == DEVICE_IN_USE && port_data[port].status == DEVICE_UP){
         if (debug_level & 2)
-            printf("*** Startup of read/write threads for port %d ***\n",port);
+            fprintf(stderr,"*** Startup of read/write threads for port %d ***\n",port);
 
         /* start the two threads */
         if (pthread_create(&port_data[port].read_thread, NULL, read_access_port_thread, &port_id[port])) {
             /* error starting read thread*/
-            printf("Error starting read thread, port %d\n",port);
+            fprintf(stderr,"Error starting read thread, port %d\n",port);
             port_data[port].read_thread = 0;
             ok = -1;
         }
         else if (pthread_create(&port_data[port].write_thread, NULL, write_access_port_thread, &port_id[port])) {
                 /* error starting write thread*/
-                printf("Error starting write thread, port %d\n",port);
+                fprintf(stderr,"Error starting write thread, port %d\n",port);
                 port_data[port].write_thread = 0;
                 ok = -1;
         }
 
     }
     else if (debug_level & 2) {
-        printf("*** Skipping startup of read/write threads for port %d ***\n",port);
+        fprintf(stderr,"*** Skipping startup of read/write threads for port %d ***\n",port);
     }
 
     if (debug_level & 2)
-        printf("End port %d threads\n",port);
+        fprintf(stderr,"End port %d threads\n",port);
 
     return(ok);
 }
@@ -2822,7 +2822,7 @@ int start_port_threads(int port) {
 void clear_port_data(int port, int clear_more) {
 
     if (begin_critical_section(&port_data_lock, "interface.c:clear_port_data(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     port_data[port].device_type = -1;
     port_data[port].active = DEVICE_NOT_IN_USE;
@@ -2831,7 +2831,7 @@ void clear_port_data(int port, int clear_more) {
     strcpy(port_data[port].device_host_name,"");
 
     if (begin_critical_section(&connect_lock, "interface.c:clear_port_data(2)" ) > 0)
-        printf("connect_lock, Port = %d\n", port);
+        fprintf(stderr,"connect_lock, Port = %d\n", port);
 
     port_data[port].thread_status = -1;
     port_data[port].connect_status = -1;
@@ -2839,7 +2839,7 @@ void clear_port_data(int port, int clear_more) {
     port_data[port].write_thread = 0;
 
     if (end_critical_section(&connect_lock, "interface.c:clear_port_data(3)" ) > 0)
-        printf("connect_lock, Port = %d\n", port);
+        fprintf(stderr,"connect_lock, Port = %d\n", port);
 
     port_data[port].decode_errors = 0;
     port_data[port].data_type = 0;
@@ -2866,7 +2866,7 @@ void clear_port_data(int port, int clear_more) {
     port_data[port].write_out_pos = 0;
 
     if (end_critical_section(&port_data_lock, "interface.c:clear_port_data(4)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        fprintf(stderr,"port_data_lock, Port = %d\n", port);
 }
 
 
@@ -2916,7 +2916,7 @@ int del_device(int port) {
     char temp[300];
 
     if (debug_level & 2)
-        printf("Delete Device start\n");
+        fprintf(stderr,"Delete Device start\n");
 
     ok = -1;
     switch (port_data[port].device_type) {
@@ -2938,7 +2938,7 @@ int del_device(int port) {
                 case DEVICE_SERIAL_TNC:
 
                     if (debug_level & 2)
-                        printf("Close a Serial TNC device\n");
+                        fprintf(stderr,"Close a Serial TNC device\n");
 
 begin_critical_section(&devices_lock, "interface.c:del_device" );
 
@@ -2953,13 +2953,13 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
 
                 case DEVICE_SERIAL_KISS_TNC:
                     if (debug_level & 2)
-                        printf("Close a Serial KISS TNC device\n");
+                        fprintf(stderr,"Close a Serial KISS TNC device\n");
                         break;
 
 
                 case DEVICE_SERIAL_GPS:
                     if (debug_level & 2)
-                        printf("Close a Serial GPS device\n");
+                        fprintf(stderr,"Close a Serial GPS device\n");
                         if (using_gps_position) {
                             using_gps_position--;
                         }
@@ -2967,13 +2967,13 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
 
                 case DEVICE_SERIAL_WX:
                     if (debug_level & 2)
-                        printf("Close a Serial WX device\n");
+                        fprintf(stderr,"Close a Serial WX device\n");
 
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     if (debug_level & 2)
-                        printf("Close a Serial TNC w/HSP GPS\n");
+                        fprintf(stderr,"Close a Serial TNC w/HSP GPS\n");
                         if (using_gps_position) {
                             using_gps_position--;
                         }
@@ -2991,7 +2991,7 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (debug_level & 2)
-                        printf("Close a Serial TNC w/AUX GPS\n");
+                        fprintf(stderr,"Close a Serial TNC w/AUX GPS\n");
                         if (using_gps_position) {
                             using_gps_position--;
                         }
@@ -3011,7 +3011,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
                     break;
             }
             if (debug_level & 2)
-                printf("Serial detach\n");
+                fprintf(stderr,"Serial detach\n");
 
             ok = serial_detach(port);
             break;
@@ -3026,13 +3026,13 @@ end_critical_section(&devices_lock, "interface.c:del_device");
             switch (port_data[port].device_type){
                 case DEVICE_NET_STREAM:
                     if (debug_level & 2)
-                        printf("Close a Network stream\n");
+                        fprintf(stderr,"Close a Network stream\n");
 
                     break;
 
                 case DEVICE_AX25_TNC:
                     if (debug_level & 2)
-                        printf("Close a AX25 TNC device\n");
+                        fprintf(stderr,"Close a AX25 TNC device\n");
 
                     //(void)sleep(3);
                     //usleep(3000000);  // 3secs
@@ -3040,7 +3040,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
                 case DEVICE_NET_GPSD:
                     if (debug_level & 2)
-                        printf("Close a Network GPSd device\n");
+                        fprintf(stderr,"Close a Network GPSd device\n");
                         if (using_gps_position) {
                             using_gps_position--;
                         }
@@ -3049,7 +3049,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
                 case DEVICE_NET_WX:
                     if (debug_level & 2)
-                        printf("Close a Network WX\n");
+                        fprintf(stderr,"Close a Network WX\n");
 
                     break;
 
@@ -3057,7 +3057,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
                     break;
             }
             if (debug_level & 2)
-                printf("Net detach\n");
+                fprintf(stderr,"Net detach\n");
 
             ok = net_detach(port);
             break;
@@ -3070,46 +3070,46 @@ end_critical_section(&devices_lock, "interface.c:del_device");
         int retvalue;
 
         if (debug_level & 2)
-            printf("port detach OK\n");
+            fprintf(stderr,"port detach OK\n");
 
         //(void)sleep(1);
         usleep(100000);    // 100ms
         if (debug_level & 2)
-            printf("Cancel threads\n");
+            fprintf(stderr,"Cancel threads\n");
 
         if (begin_critical_section(&port_data_lock, "interface.c:del_device(1)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (begin_critical_section(&connect_lock, "interface.c:del_device(2)" ) > 0)
-            printf("connect_lock, Port = %d\n", port);
+            fprintf(stderr,"connect_lock, Port = %d\n", port);
 
         if (port_data[port].read_thread != 0) { // If we have a thread defined
             retvalue = pthread_cancel(port_data[port].read_thread);
             if (retvalue == ESRCH) {
-                //printf("ERROR: Could not cancel read thread on port %d\n", port);
-                //printf("No thread found with that thread ID\n");
+                //fprintf(stderr,"ERROR: Could not cancel read thread on port %d\n", port);
+                //fprintf(stderr,"No thread found with that thread ID\n");
             }
         }
 
         if (port_data[port].write_thread != 0) {    // If we have a thread defined
             retvalue = pthread_cancel(port_data[port].write_thread);
             if (retvalue == ESRCH) {
-                //printf("ERROR: Could not cancel write thread on port %d\n", port);
-                //printf("No thread found with that thread ID\n");
+                //fprintf(stderr,"ERROR: Could not cancel write thread on port %d\n", port);
+                //fprintf(stderr,"No thread found with that thread ID\n");
             }
         }
 
         if (end_critical_section(&connect_lock, "interface.c:del_device(3)" ) > 0)
-            printf("connect_lock, Port = %d\n", port);
+            fprintf(stderr,"connect_lock, Port = %d\n", port);
 
         if (end_critical_section(&port_data_lock, "interface.c:del_device(4)" ) > 0)
-            printf("port_data_lock, Port = %d\n", port);
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         //(void)sleep(1);
         usleep(100000); // 100ms
     } else {
         if (debug_level & 2)
-            printf("Port %d could not be closed\n",port);
+            fprintf(stderr,"Port %d could not be closed\n",port);
     }
     usleep(10);
     return(ok);
@@ -3149,7 +3149,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
     ok = -1;
     if (port_avail >= 0){
         if (debug_level & 2)
-            printf("Port Available %d\n",port_avail);
+            fprintf(stderr,"Port Available %d\n",port_avail);
 
         switch(dev_type){
             case DEVICE_SERIAL_TNC:
@@ -3166,49 +3166,49 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 switch (dev_type) {
                     case DEVICE_SERIAL_TNC:
                         if (debug_level & 2)
-                            printf("Opening a Serial TNC device\n");
+                            fprintf(stderr,"Opening a Serial TNC device\n");
 
                         break;
 
                     case DEVICE_SERIAL_KISS_TNC:
                         if (debug_level & 2)
-                            printf("Opening a Serial KISS TNC device\n");
+                            fprintf(stderr,"Opening a Serial KISS TNC device\n");
 
                         break;
 
                     case DEVICE_SERIAL_GPS:
                         if (debug_level & 2)
-                            printf("Opening a Serial GPS device\n");
+                            fprintf(stderr,"Opening a Serial GPS device\n");
                         my_position_valid = 0;  // Must wait for valid GPS parsing
                         using_gps_position++;
                         statusline(langcode("BBARSTA041"),1);
-//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
                     case DEVICE_SERIAL_WX:
                         if (debug_level & 2)
-                            printf("Opening a Serial WX device\n");
+                            fprintf(stderr,"Opening a Serial WX device\n");
 
                         break;
 
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                         if (debug_level & 2)
-                            printf("Opening a Serial TNC w/HSP GPS device\n");
+                            fprintf(stderr,"Opening a Serial TNC w/HSP GPS device\n");
                         my_position_valid = 0;  // Must wait for valid GPS parsing
                         using_gps_position++;
                         statusline(langcode("BBARSTA041"),1);
-//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                         if (debug_level & 2)
-                            printf("Opening a Serial TNC w/AUX GPS device\n");
+                            fprintf(stderr,"Opening a Serial TNC w/AUX GPS device\n");
                         my_position_valid = 0;  // Must wait for valid GPS parsing
                         using_gps_position++;
                         statusline(langcode("BBARSTA041"),1);
-//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
@@ -3218,7 +3218,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 clear_port_data(port_avail,0);
 
 //if (begin_critical_section(&port_data_lock, "interface.c:add_device(1)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);    
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
                 port_data[port_avail].device_type = dev_type;
                 strcpy(port_data[port_avail].device_name,dev_nm);
@@ -3230,19 +3230,19 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 }
 
 //if (end_critical_section(&port_data_lock, "interface.c:add_device(2)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);    
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
                 ok = serial_init(port_avail);
                 break;
 
             case DEVICE_NET_STREAM:
                 if (debug_level & 2)
-                    printf("Opening a Network stream\n");
+                    fprintf(stderr,"Opening a Network stream\n");
 
                 clear_port_data(port_avail,0);
 
 //if (begin_critical_section(&port_data_lock, "interface.c:add_device(3)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);    
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
                 port_data[port_avail].device_type = DEVICE_NET_STREAM;
                 strcpy(port_data[port_avail].device_host_name,dev_nm);
@@ -3251,7 +3251,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 port_data[port_avail].reconnect = reconnect;
 
 //if (end_critical_section(&port_data_lock, "interface.c:add_device(4)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 ok = net_init(port_avail);
 
@@ -3297,7 +3297,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             '\n');
                     }
 
-//printf("Sending this string: %s\n", logon_txt);
+//fprintf(stderr,"Sending this string: %s\n", logon_txt);
  
                     port_write_string(port_avail,logon_txt);
                 }
@@ -3305,30 +3305,30 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             case DEVICE_AX25_TNC:
                 if (debug_level & 2)
-                    printf("Opening a network AX25 TNC\n");
+                    fprintf(stderr,"Opening a network AX25 TNC\n");
 
                 clear_port_data(port_avail,0);
 
 //if (begin_critical_section(&port_data_lock, "interface.c:add_device(5)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_AX25_TNC;
                 strcpy(port_data[port_avail].device_name,dev_nm);
 
 //if (end_critical_section(&port_data_lock, "interface.c:add_device(6)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 ok = ax25_init(port_avail);
                 break;
 
             case DEVICE_NET_GPSD:
                 if (debug_level & 2)
-                    printf("Opening a network GPS using gpsd\n");
+                    fprintf(stderr,"Opening a network GPS using gpsd\n");
 
                 clear_port_data(port_avail,0);
 
 //if (begin_critical_section(&port_data_lock, "interface.c:add_device(7)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_NET_GPSD;
                 strcpy(port_data[port_avail].device_host_name,dev_nm);
@@ -3336,7 +3336,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 port_data[port_avail].reconnect = reconnect;
 
 //if (end_critical_section(&port_data_lock, "interface.c:add_device(8)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 ok = net_init(port_avail);
                 if (ok == 1) {
@@ -3345,18 +3345,18 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     my_position_valid = 0;  // Must wait for valid GPS parsing
                     using_gps_position++;
                     statusline(langcode("BBARSTA041"),1);
-//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
                 }
                 break;
 
             case DEVICE_NET_WX:
                 if (debug_level & 2)
-                    printf("Opening a network WX\n");
+                    fprintf(stderr,"Opening a network WX\n");
 
                 clear_port_data(port_avail,0);
 
 //if (begin_critical_section(&port_data_lock, "interface.c:add_device(9)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_NET_WX;
                 strcpy(port_data[port_avail].device_host_name,dev_nm);
@@ -3366,7 +3366,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     port_data[port_avail].data_type = 1;
 
 //if (end_critical_section(&port_data_lock, "interface.c:add_device(10)" ) > 0)
-//    printf("port_data_lock, Port = %d\n", port_avail);
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 ok = net_init(port_avail);
                 if (ok == 1) {
@@ -3383,7 +3383,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
         if (ok == 1) {  // If port is connected...
 
             if (debug_level & 2)
-                printf("*** add_device: ok: %d ***\n",ok);
+                fprintf(stderr,"*** add_device: ok: %d ***\n",ok);
 
             /* if all is ok check and start read write threads */
             (void)start_port_threads(port_avail);
@@ -3449,11 +3449,11 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //***********************************************************
 void port_stats(int port) {
     if (port >= 0) {
-        printf("Port %d %s Status\n\n",port,dtype[port_data[port].device_type].device_name);
-        printf("Errors %d\n",port_data[port].errors);
-        printf("Reconnects %d\n",port_data[port].reconnects);
-        printf("Bytes in: %ld  out: %ld\n",(long)port_data[port].bytes_input,(long)port_data[port].bytes_output);
-        printf("\n");
+        fprintf(stderr,"Port %d %s Status\n\n",port,dtype[port_data[port].device_type].device_name);
+        fprintf(stderr,"Errors %d\n",port_data[port].errors);
+        fprintf(stderr,"Reconnects %d\n",port_data[port].reconnects);
+        fprintf(stderr,"Bytes in: %ld  out: %ld\n",(long)port_data[port].bytes_input,(long)port_data[port].bytes_output);
+        fprintf(stderr,"\n");
     }
 }
 
@@ -3609,7 +3609,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
             }   // End of switch
         }
         else if (debug_level & 2) {
-            printf("Skipping port %d, it's already running\n",i);
+            fprintf(stderr,"Skipping port %d, it's already running\n",i);
         }
 
         if (port != -1) {
@@ -3633,7 +3633,7 @@ void shutdown_all_active_or_defined_port(int port) {
     int start;
 
     if (debug_level & 2)
-        printf("\nshutdown_all_active_or_defined_port: %d\n\n",port);
+        fprintf(stderr,"\nshutdown_all_active_or_defined_port: %d\n\n",port);
 
     if (port == -1)
         start = 0;
@@ -3645,7 +3645,7 @@ void shutdown_all_active_or_defined_port(int port) {
                 && ( (port_data[i].status == DEVICE_UP)
                     || (port_data[i].status == DEVICE_ERROR) ) ) {
             if (debug_level & 2)
-                printf("Shutting down port %d \n",i);
+                fprintf(stderr,"Shutting down port %d \n",i);
 
             (void)del_device(i);
         }
@@ -3687,7 +3687,7 @@ void check_ports(void) {
                         // No activity on a port that's being used.
                         // Cause a reconnect at the next iteration
                         if (debug_level & 2)
-                            printf("check_ports(): Inactivity on port %d, DEVICE_ERROR ***\n",i);
+                            fprintf(stderr,"check_ports(): Inactivity on port %d, DEVICE_ERROR ***\n",i);
                         port_data[i].status = DEVICE_ERROR; // No activity, so force a shutdown
 
                         // If the below statement is enabled, it causes an immediate reconnect
@@ -3711,22 +3711,22 @@ void check_ports(void) {
 
         if (port_data[i].active == DEVICE_IN_USE && port_data[i].status == DEVICE_ERROR) {
             if (debug_level & 2)
-                printf("Found device error on port %d\n",i);
+                fprintf(stderr,"Found device error on port %d\n",i);
 
             if (port_data[i].reconnect == 1) {
                 port_data[i].reconnects++;
                 temp = port_data[i].reconnects;
                 if (temp < 1) {
                     if (debug_level & 2)
-                        printf("Device asks for reconnect count now at %d\n",temp);
+                        fprintf(stderr,"Device asks for reconnect count now at %d\n",temp);
 
                     if (debug_level & 2)
-                        printf("Shutdown device %d\n",i);
+                        fprintf(stderr,"Shutdown device %d\n",i);
 
                     shutdown_all_active_or_defined_port(i);
 
                     if (debug_level & 2)
-                        printf("Starting device %d\n",i);
+                        fprintf(stderr,"Starting device %d\n",i);
 
                     startup_all_or_defined_port(i);
 
@@ -3735,7 +3735,7 @@ void check_ports(void) {
                         port_data[i].reconnects = temp;
                 } else {
                     if (debug_level & 2)
-                        printf("Device has either too many errors, or no activity at all!\n");
+                        fprintf(stderr,"Device has either too many errors, or no activity at all!\n");
 
                     port_data[i].reconnects = temp - 2;
                 }
@@ -3788,13 +3788,13 @@ void output_my_aprs_data(void) {
     strcpy(my_output_lat,my_lat);
     (void)output_lat(my_output_lat,transmit_compressed_posit);
     if (debug_level & 128)
-        printf("OUT LAT <%s>\n",my_output_lat);
+        fprintf(stderr,"OUT LAT <%s>\n",my_output_lat);
 
     // Format longitude string for transmit later
     strcpy(my_output_long,my_long);
     (void)output_long(my_output_long,transmit_compressed_posit);
     if (debug_level & 128)
-        printf("OUT LONG <%s>\n",my_output_long);
+        fprintf(stderr,"OUT LONG <%s>\n",my_output_long);
 
 begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
@@ -4094,7 +4094,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         }
 
 
-        //printf("data_txt_save: %s\n",data_txt_save);
+        //fprintf(stderr,"data_txt_save: %s\n",data_txt_save);
 
 
         if (ok) {
@@ -4127,7 +4127,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 }
 
                 if (debug_level & 2)
-                    printf("TX:%d<%s>\n",port,data_txt);
+                    fprintf(stderr,"TX:%d<%s>\n",port,data_txt);
 
                 /* add new line on network data */
                 if (port_data[port].device_type == DEVICE_NET_STREAM) {
@@ -4202,7 +4202,7 @@ void output_my_data(char *message, int port, int type, int loopback_only, int us
     int bump_up;
 
     if (debug_level & 1)
-        printf("Sending out port: %d, type: %d\n", port, type);
+        fprintf(stderr,"Sending out port: %d, type: %d\n", port, type);
 
     if (message == NULL)
         return;
@@ -4229,7 +4229,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
             switch (port_data[i].device_type) {
                 case DEVICE_NET_STREAM:
                     if (debug_level & 1)
-                        printf("%d Net\n",i);
+                        fprintf(stderr,"%d Net\n",i);
                     xastir_snprintf(output_net,
                         sizeof(output_net),
                         "%s>%s,TCPIP*:",
@@ -4253,7 +4253,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                 case DEVICE_AX25_TNC:
                     if (debug_level & 1)
-                        printf("%d AX25 TNC\n",i);
+                        fprintf(stderr,"%d AX25 TNC\n",i);
                     strcpy(output_net,"");      // clear this for a TNC
 
                     /* Set my call sign */
@@ -4508,11 +4508,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 }
 
                 if (debug_level & 1)
-                    printf("Sending to interface:%d, %s\n",i,data_txt);
+                    fprintf(stderr,"Sending to interface:%d, %s\n",i,data_txt);
             }
 
             if (debug_level & 2)
-                printf("TX:%d<%s>\n",i,data_txt);
+                fprintf(stderr,"TX:%d<%s>\n",i,data_txt);
 
             /* add newline on network data */
             if (port_data[i].device_type == DEVICE_NET_STREAM) {
@@ -4541,7 +4541,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
             VERSIONFRM, message);
     if (debug_level & 2)
-        printf("output_my_data: Transmitting and decoding: %s\n", data_txt);
+        fprintf(stderr,"output_my_data: Transmitting and decoding: %s\n", data_txt);
 
     if (log_net_data)
         log_data(LOGFILE_NET,(char *)data_txt);
@@ -4588,7 +4588,7 @@ void output_waypoint_data(char *message) {
     int ok, start, finish, i;
 
     if (debug_level & 1)
-        printf("Sending to GPS interfaces: %s\n", message);
+        fprintf(stderr,"Sending to GPS interfaces: %s\n", message);
 
     if (message == NULL)
         return;
@@ -4627,11 +4627,11 @@ begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
                 usleep(250000);    // 0.25 secs
  
                 if (debug_level & 1)
-                    printf("Sending to interface:%d, %s\n",i,data_txt);
+                    fprintf(stderr,"Sending to interface:%d, %s\n",i,data_txt);
             }
 
             if (debug_level & 2)
-                printf("TX:%d<%s>\n",i,data_txt);
+                fprintf(stderr,"TX:%d<%s>\n",i,data_txt);
         }
     }
 
@@ -4665,7 +4665,7 @@ void tnc_data_clean(char *buf) {
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
         makePrintable(filtered_data);
-        printf("tnc_data_clean: called to clean %s\n", filtered_data);
+        fprintf(stderr,"tnc_data_clean: called to clean %s\n", filtered_data);
     }
 
     while (buf[0]=='c' && buf[1]=='m' && buf[2]=='d' && buf[3]==':') {
@@ -4685,7 +4685,7 @@ void tnc_data_clean(char *buf) {
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
         makePrintable(filtered_data);
-        printf("tnc_data_clean: clean result %s\n", filtered_data);
+        fprintf(stderr,"tnc_data_clean: clean result %s\n", filtered_data);
     }
 }
 
@@ -4714,7 +4714,7 @@ int tnc_get_data_type(char *buf, int port) {
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
         makePrintable(filtered_data);
-        printf("tnc_get_data_type: parsing %s\n", filtered_data);
+        fprintf(stderr,"tnc_get_data_type: parsing %s\n", filtered_data);
     }
 
     // First, let's look for NMEA-ish things.
@@ -4732,7 +4732,7 @@ int tnc_get_data_type(char *buf, int port) {
                         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
                         makePrintable(filtered_data);
-                        printf("tnc_get_data_type: Not NMEA %s\n",
+                        fprintf(stderr,"tnc_get_data_type: Not NMEA %s\n",
                             filtered_data);
                     }
                 }
@@ -4749,7 +4749,7 @@ int tnc_get_data_type(char *buf, int port) {
                         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
                         makePrintable(filtered_data);
-                        printf("tnc_get_data_type: Not NMEA %s\n",
+                        fprintf(stderr,"tnc_get_data_type: Not NMEA %s\n",
                             filtered_data);
                     }
                 }
@@ -4762,9 +4762,9 @@ int tnc_get_data_type(char *buf, int port) {
 
     if (debug_level & 1) {
         if (type == 0)
-            printf("APRS data\n");
+            fprintf(stderr,"APRS data\n");
         else
-            printf("NMEA data\n");
+            fprintf(stderr,"NMEA data\n");
     }
 
     return(type);

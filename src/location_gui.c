@@ -138,7 +138,7 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
             (void)fclose(f);
         }
         else {
-            printf("Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
         }
         XtFree(location);
     }
@@ -172,7 +172,7 @@ void jump_sort(void) {
         (void)fclose(f);
     }
     else
-        printf("Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
 }
 
 
@@ -231,12 +231,12 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
                 ok=1;
             }
             else
-                printf("Couldn't open file: %s\n", get_user_base_dir("config/locations.sys-tmp") );
+                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys-tmp") );
 
             (void)fclose(f);
         }
         else {
-            printf("Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
         }
         XtFree(location);
     }
@@ -287,7 +287,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
         (void)fclose(f);
     }
     else
-        printf("Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
 
     if (!found) {
         /* delete entire list available */
@@ -304,7 +304,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
                 (void)fclose(fout);
             }
             else
-                printf("Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
         } else
             popup_message(langcode("POPEM00022"),langcode("POPEM00023"));
 

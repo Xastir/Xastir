@@ -66,12 +66,12 @@
 void store_string(FILE * fout, char *option, char *value) {
 
 //    if (debug_level & 1)
-//        printf ("Store String Start\n");
+//        fprintf(stderr,"Store String Start\n");
 
     fprintf (fout, "%s:%s\n", option, value);
 
 //    if (debug_level & 1)
-//        printf ("Store String Stop\n");
+//        fprintf(stderr,"Store String Stop\n");
 
 }
 
@@ -163,7 +163,7 @@ int get_string(char *option, char *value) {
         }
     }
     else
-        printf("Couldn't open file: %s\n", config_file);
+        fprintf(stderr,"Couldn't open file: %s\n", config_file);
 
     return (option_found);
 }
@@ -197,7 +197,7 @@ int get_int(char *option, int *value, int low, int high, int def) {
     if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) )
         *value = atoi (value_o);
     else {
-        printf("Found out-of-range or non-existent value (%d) for %s in config file, changing to %d\n",
+        fprintf(stderr,"Found out-of-range or non-existent value (%d) for %s in config file, changing to %d\n",
             atoi(value_o),
             option,
             def);
@@ -220,7 +220,7 @@ int get_long(char *option, long *value, long low, long high, long def) {
     if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) )
         *value = atol (value_o);
     else {
-        printf("Found out-of-range or non-existent value (%ld) for %s in config file, changing to %ld\n",
+        fprintf(stderr,"Found out-of-range or non-existent value (%ld) for %s in config file, changing to %ld\n",
             atol(value_o),
             option,
             def);
@@ -278,26 +278,26 @@ void save_data(void)  {
     char config_file[MAX_VALUE], config_file_bak[MAX_VALUE];
 
 //    if (debug_level & 1)
-//        printf ("Store String Start\n");
+//        fprintf(stderr,"Store String Start\n");
 
     strcpy (config_file, get_user_base_dir (CONFIG_FILE));
     strcpy (config_file_bak, get_user_base_dir (CONFIG_FILE_BAK));
     if ( unlink (config_file_bak) ) {
         // Problem here.  Couldn't remove the backup config file (might not exist).
-        //printf("Couldn't delete file: %s, cancelling save_data()\n", config_file_bak);
+        //fprintf(stderr,"Couldn't delete file: %s, cancelling save_data()\n", config_file_bak);
         //return;
     }
 
     if ( rename (config_file, config_file_bak) ) {
         // Problem here.  Couldn't rename config file to config.bak.
-        printf("Couldn't create backup of config file: %s, cancelling save_data()\n", config_file);
+        fprintf(stderr,"Couldn't create backup of config file: %s, cancelling save_data()\n", config_file);
         return;
     }
 
     fout = fopen (config_file, "a");
     if (fout != NULL) {
         if (debug_level & 1)
-            printf ("Save Data Start\n");
+            fprintf(stderr,"Save Data Start\n");
 
         /* language */
         store_string (fout, "LANGUAGE", lang_to_use);
@@ -313,7 +313,7 @@ void save_data(void)  {
         store_string (fout, "STATION_POWER", my_phg);
         store_string (fout, "STATION_COMMENTS", my_comment);
         if (debug_level & 1)
-            printf ("Save Data 1\n");
+            fprintf(stderr,"Save Data 1\n");
 
         /* default values */
         store_long (fout, "SCREEN_WIDTH", screen_width);
@@ -676,17 +676,17 @@ void save_data(void)  {
     store_int (fout, "DEAD_RECKONING_TIMEOUT", dead_reckoning_timeout);
 
         if (debug_level & 1)
-            printf ("Save Data Stop\n");
+            fprintf(stderr,"Save Data Stop\n");
 
         (void)fclose (fout);
     } else  {
         // Couldn't create new config (out of filespace?).
-        printf("Couldn't open config file for appending: %s\n", config_file);
+        fprintf(stderr,"Couldn't open config file for appending: %s\n", config_file);
 
         // Continue using original config file.
         if ( rename (config_file_bak, config_file) ) {
             // Problem here, couldn't rename xastir.bak to xastir.cnf
-            printf("Couldn't recover %s from %s file\n", config_file, config_file_bak);
+            fprintf(stderr,"Couldn't recover %s from %s file\n", config_file, config_file_bak);
             return;
         }
     }

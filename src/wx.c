@@ -181,7 +181,7 @@ void compute_rain_hour(float rain_total) {
     rain_minute_total = rain_total - lowest;
 
     if (debug_level & 2)
-        printf("Rain_total:%0.2f  Hourly:%0.2f  (Low:%0.2f)  ", rain_total, rain_minute_total, lowest);
+        fprintf(stderr,"Rain_total:%0.2f  Hourly:%0.2f  (Low:%0.2f)  ", rain_total, rain_minute_total, lowest);
 }
 
 
@@ -258,8 +258,8 @@ void compute_rain(float rain_total) {
 
 
     if (debug_level & 2) {
-        printf("24hrs:%0.2f  ", rain_24);
-        printf("rain_00:%0.2f\n", rain_00);
+        fprintf(stderr,"24hrs:%0.2f  ", rain_24);
+        fprintf(stderr,"rain_00:%0.2f\n", rain_00);
     }
 }
 
@@ -343,10 +343,10 @@ float compute_gust(float wx_speed, float last_speed, time_t *last_speed_time) {
     if (debug_level & 2) {
         j = gust_read_ptr;
         while (j != ((gust_write_ptr + 1) % 60) ) {
-            printf("%0.2f   ", gust[j]);
+            fprintf(stderr,"%0.2f   ", gust[j]);
             j = (j + 1) % 60;
         }
-        printf("gust:%0.2f\n", computed_gust);
+        fprintf(stderr,"gust:%0.2f\n", computed_gust);
     }
 
     *last_speed_time = sec_now();
@@ -373,7 +373,7 @@ void cycle_weather(void) {
 
 
     if (debug_level & 2)
-        printf("%02d:%02d:%02d  ", get_hours(), get_minutes(), get_seconds() );
+        fprintf(stderr,"%02d:%02d:%02d  ", get_hours(), get_minutes(), get_seconds() );
 
     // Fetch the current date/time string
     get_timestamp(timestring);
@@ -507,7 +507,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     format = 0;
 
     if (debug_level & 1)
-        printf("APRS WX3 Peet Bros U-2k (data logging mode): |%s|\n", data);
+        fprintf(stderr,"APRS WX3 Peet Bros U-2k (data logging mode): |%s|\n", data);
 
     weather->wx_type = WX_TYPE;
     strcpy(weather->wx_station,"U2k");
@@ -646,7 +646,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     len = (int)strlen((char *)data);
 
     if (debug_level & 1)
-        printf("APRS WX5 Peet Bros U-2k Packet (Packet mode): |%s|\n",data);
+        fprintf(stderr,"APRS WX5 Peet Bros U-2k Packet (Packet mode): |%s|\n",data);
 
     weather->wx_type = WX_TYPE;
     strcpy(weather->wx_station,"U2k");
@@ -804,7 +804,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     last_speed_time = 0;
 
     if (debug_level & 1)
-        printf("APRS WX4 Peet Bros U-II: |%s|\n",data);
+        fprintf(stderr,"APRS WX4 Peet Bros U-II: |%s|\n",data);
 
     weather->wx_type = WX_TYPE;
     strcpy(weather->wx_station,"UII");
@@ -958,7 +958,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         case (DALLAS_ONE_WIRE):
 
             if (debug_level & 1)
-                printf("APRS WX Dallas One-Wire %s:<%s>\n",fill->call_sign,data);
+                fprintf(stderr,"APRS WX Dallas One-Wire %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
             strcpy(weather->wx_station,"OWW");
@@ -987,7 +987,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // Temperature
             xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
                 (int)(tmp1 * 9.0 / 5.0 + 32.0 + 0.5));
-            //printf("Read: %2.1f C, Storing: %s F\n",tmp1,weather->wx_temp);
+            //fprintf(stderr,"Read: %2.1f C, Storing: %s F\n",tmp1,weather->wx_temp);
 
             // Wind direction.  Each vane increment equals 22.5 degrees.
             xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
@@ -1015,7 +1015,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // any other type is used.
 
             if (debug_level & 1)
-                printf("APRS WX4 Peet Bros U-II %s:<%s>\n",fill->call_sign,data);
+                fprintf(stderr,"APRS WX4 Peet Bros U-II %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
             strcpy(weather->wx_station,"UII");
@@ -1112,7 +1112,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         ///////////////////////////////////////////////////////
         case (APRS_WX3):
             if (debug_level & 1)
-                printf("APRS WX3 Peet Bros U-2k (data logging mode) %s:<%s>\n",fill->call_sign,data+2);
+                fprintf(stderr,"APRS WX3 Peet Bros U-2k (data logging mode) %s:<%s>\n",fill->call_sign,data+2);
 
             weather->wx_type=WX_TYPE;
             strcpy(weather->wx_station,"U2k");
@@ -1246,7 +1246,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         /////////////////////////////////////////////////
         case(APRS_WX5):
             if (debug_level & 1)
-                printf("APRS WX5 Peet Bros U-2k Packet (Packet mode) %s:<%s>\n",fill->call_sign,data);
+                fprintf(stderr,"APRS WX5 Peet Bros U-2k Packet (Packet mode) %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
             strcpy(weather->wx_station,"U2k");
@@ -1403,7 +1403,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         //////////////////////////////////////////////////////////
         case(PEET_COMPLETE):
             if (debug_level & 1)
-                printf("Peet Bros U-2k Packet (Complete Record Mode) %s:<%s>\n",fill->call_sign,data);
+                fprintf(stderr,"Peet Bros U-2k Packet (Complete Record Mode) %s:<%s>\n",fill->call_sign,data);
 
             if (!from) {    // From local station
                 /* decode only for local station */
@@ -1441,12 +1441,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     else {
                         temp3=0;
                     }
-                    // printf("WIND: wind1 %d, wind2 %d, wind3 %d\n", temp1, temp2, temp3);
+                    // fprintf(stderr,"WIND: wind1 %d, wind2 %d, wind3 %d\n", temp1, temp2, temp3);
                     
                     /* Select wind speed and direction based on which wind speed is the highest. */
                     /* Ugh, surely there's a way to make this pretty. A function might be better. */
                     if( temp1 >= temp2 && temp1 >= temp3 ){
-                        // printf("WIND:      ***\n");
+                        // fprintf(stderr,"WIND:      ***\n");
                         /* wind speed */
                         substr(temp_data1,(char *)(data+4),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
@@ -1462,7 +1462,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         }
                     }
                     else if( temp2 >= temp1 && temp2 >= temp3 ){
-                        // printf("WIND:               ***\n");
+                        // fprintf(stderr,"WIND:               ***\n");
                         /* wind speed */
                         substr(temp_data1,(char *)(data+136),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
@@ -1478,7 +1478,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         }
                     }
                     else if( temp3 >= temp2 && temp3 >= temp1 ){
-                        // printf("WIND:                        ***\n");
+                        // fprintf(stderr,"WIND:                        ***\n");
                         /* wind speed */
                         substr(temp_data1,(char *)(data+284),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
@@ -1494,7 +1494,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         }
                     }
                     else{   /* Or default to the first value */
-                        // printf("WIND: DEFAULTING!\n");
+                        // fprintf(stderr,"WIND: DEFAULTING!\n");
                         /* wind speed */
                         substr(temp_data1,(char *)(data+4),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
@@ -1676,7 +1676,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         ////////////////////////
         case(QM_WX):
             if (debug_level & 1)
-                printf("Qualimetrics Q-Net %s:<%s>\n",fill->call_sign,data);
+                fprintf(stderr,"Qualimetrics Q-Net %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
             strcpy(weather->wx_station,"Q-N");
@@ -1732,7 +1732,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             if (!from) {    // From local station
                 if (debug_level & 1)
-                    printf("RSWX200 WX (binary)\n");
+                    fprintf(stderr,"RSWX200 WX (binary)\n");
 
                 weather->wx_type=WX_TYPE;
                 strcpy(weather->wx_station,"RSW");
@@ -1744,23 +1744,23 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                     rswnc(data[20]));
                         else
                             //sprintf(weather->wx_hum,"100");
-                            printf("Humidity out-of-range, ignoring: %03d\n",rswnc(data[20]) );
+                            fprintf(stderr,"Humidity out-of-range, ignoring: %03d\n",rswnc(data[20]) );
                         break;
 
                     case 0x9f: /* temp */
                         /* all data in C ?*/
                         xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%0.1f",
                                 ((data[17]&0x08) ? '-' : '+'),(data[17]&0x7),rswnc(data[16])/10.0);
-                        /*printf("temp data: <%s> %d %d %d\n", temp_data1,((data[17]&0x08)==0x08),(data[17]&0x7),rswnc(data[16]));*/
+                        /*fprintf(stderr,"temp data: <%s> %d %d %d\n", temp_data1,((data[17]&0x08)==0x08),(data[17]&0x7),rswnc(data[16]));*/
                         temp_temp = (float)((atof(temp_data1)*1.8)+32);
                         if ( (temp_temp >= -99.0) && (temp_temp < 200.0) ) {
                             xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
                                     (int)((atof(temp_data1)*1.8)+32));
-                            /*printf("Temp %s C %0.2f %03d\n",temp_data1,atof(temp_data1),(int)atof(temp_data1));
-                            printf("Temp F %0.2f %03d\n",(atof(temp_data1)*1.8)+32,(int)(atof(temp_data1)*1.8)+32);
+                            /*fprintf(stderr,"Temp %s C %0.2f %03d\n",temp_data1,atof(temp_data1),(int)atof(temp_data1));
+                            fprintf(stderr,"Temp F %0.2f %03d\n",(atof(temp_data1)*1.8)+32,(int)(atof(temp_data1)*1.8)+32);
                             */
                         } else {  // We don't want to save this one
-                            printf("Temp out-of-range, ignoring: %0.2f\n", temp_temp);
+                            fprintf(stderr,"Temp out-of-range, ignoring: %0.2f\n", temp_temp);
                         }
                         xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%d.%d",
                             ((data[18]&0x80) ? '-' : '+'),(data[18]&0x70)>>4,(data[18]&0x0f),(data[17] & 0xf0) >> 4);
@@ -1788,7 +1788,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(wx_dew_point, sizeof(wx_dew_point), "%03d",
                                 (int)((rswnc(data[18])*1.8)+32));
                         else
-                            printf("Dew point out-of-range, ignoring: %0.2f\n", temp_temp);
+                            fprintf(stderr,"Dew point out-of-range, ignoring: %0.2f\n", temp_temp);
                         break;
 
                     case 0xbf: /* Rain */
@@ -1817,7 +1817,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
                                 "%0.2f", rain_00);
                         } else {
-                            printf("Total Rain out-of-range, ignoring: %0.2f\n", temp_temp);
+                            fprintf(stderr,"Total Rain out-of-range, ignoring: %0.2f\n", temp_temp);
                         }
                         break;
 
@@ -1867,7 +1867,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(wx_wind_chill, sizeof(wx_wind_chill), "%03d",
                                 (int)((atof(temp_data1)*1.8)+32));
                         else
-                            printf("Wind_chill out-of-range, ignoring: %0.2f\n", temp_temp);
+                            fprintf(stderr,"Wind_chill out-of-range, ignoring: %0.2f\n", temp_temp);
 
                         wx_wind_chill_on = 1;
                         break;
@@ -1933,7 +1933,7 @@ void wx_decode(unsigned char *wx_line, int port) {
     int t7,t8;
 
 
-    //printf("wx_decode: %s\n",wx_line);
+    //fprintf(stderr,"wx_decode: %s\n",wx_line);
 
     find=0;
     len=strlen((char *)wx_line);
@@ -1951,7 +1951,7 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                     /* Found Peet Bros U-2k */
 
-                    /*printf("Found Peet Bros U-2k WX:%s\n",wx_line+2);*/
+                    /*fprintf(stderr,"Found Peet Bros U-2k WX:%s\n",wx_line+2);*/
                     strcpy(wx_station_type,langcode("WXPUPSI011"));
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
@@ -1970,7 +1970,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                     /* Found Peet Bros raw U2 data */
 
                     strcpy(wx_station_type,langcode("WXPUPSI012"));
-                    /*printf("Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
+                    /*fprintf(stderr,"Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
@@ -1988,7 +1988,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                     /* Found Peet Bros raw U2 data */
 
                     strcpy(wx_station_type,langcode("WXPUPSI013"));
-                    /*printf("Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
+                    /*fprintf(stderr,"Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
@@ -2013,7 +2013,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                         /* found Qualimetrics Q-Net station */
 
                         strcpy(wx_station_type,langcode("WXPUPSI016"));
-                        /*printf("Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);*/
+                        /*fprintf(stderr,"Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);*/
                         strcpy(weather->wx_time,get_time(time_data));
                         weather->wx_sec_time=sec_now();
                         //weather->wx_data=1;
@@ -2031,7 +2031,7 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                     // Found Dallas One-Wire Weather Station
                     if (debug_level & 1)
-                        printf("Found OWW ARNE-mode one-wire weather station data\n");
+                        fprintf(stderr,"Found OWW ARNE-mode one-wire weather station data\n");
 
                     weather->wx_sec_time=sec_now();
                     wx_fill_data(0,DALLAS_ONE_WIRE,wx_line,p_station);
@@ -2091,7 +2091,7 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                         if (wx_line[max] == (0xff & check_sum)) {
                             /* good RS WX-200 data */
-                            /*printf("GOOD %0X data\n",wx_line[0]);*/
+                            /*fprintf(stderr,"GOOD %0X data\n",wx_line[0]);*/
                             /* found RS WX-200 */
                             strcpy(wx_station_type,langcode("WXPUPSI025"));
                             strcpy(weather->wx_time,get_time(time_data));
@@ -2104,18 +2104,18 @@ void wx_decode(unsigned char *wx_line, int port) {
                 }
                 else {
                     if (debug_level & 1)
-                        printf("Unknown WX DATA:%s\n",wx_line);
+                        fprintf(stderr,"Unknown WX DATA:%s\n",wx_line);
                 }
                 if (decoded) {
                     /* save data back */
 
 if (begin_critical_section(&port_data_lock, "wx.c:wx_decode(1)" ) > 0)
-    printf("port_data_lock, Port = %d\n", port);
+    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
                     port_data[port].decode_errors=0;
 
 if (end_critical_section(&port_data_lock, "wx.c:wx_decode(2)" ) > 0)
-    printf("port_data_lock, Port = %d\n", port);
+    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
                     statusline(langcode("BBARSTA032"),1);       // Decoded WX Data
                     /* redraw now */
@@ -2128,7 +2128,7 @@ if (end_critical_section(&port_data_lock, "wx.c:wx_decode(2)" ) > 0)
                     memset(raw_wx_string,0,sizeof(raw_wx_string));
 
 if (begin_critical_section(&port_data_lock, "wx.c:wx_decode(3)" ) > 0)
-    printf("port_data_lock, Port = %d\n", port);
+    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
                     port_data[port].decode_errors++;    // We have errors in decoding
                     if (port_data[port].decode_errors>10) {
@@ -2136,12 +2136,12 @@ if (begin_critical_section(&port_data_lock, "wx.c:wx_decode(3)" ) > 0)
                         port_data[port].data_type++;    // Try another data type. 0=ascii, 1=wx binary
                         port_data[port].data_type&=0x01;
                         /*if (debug_level & 1)*/
-                        printf("Data type %d\n",port_data[port].data_type);
+                        fprintf(stderr,"Data type %d\n",port_data[port].data_type);
                         port_data[port].decode_errors=0;
                     }
 
 if (end_critical_section(&port_data_lock, "wx.c:wx_decode(4)" ) > 0)
-    printf("port_data_lock, Port = %d\n", port);
+    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
                 }
             }
@@ -2209,12 +2209,12 @@ time_t wx_tx_data1(char *st) {
                 xastir_snprintf(temp, sizeof(temp), "%s", weather->wx_course);
                 if (strlen(temp) > 3) {
                     if (debug_level & 1)
-                        printf("wx_course too long: %s\n", temp);
+                        fprintf(stderr,"wx_course too long: %s\n", temp);
                     strcpy(temp,"...");
                 }
                 if ( (atoi(weather->wx_course) > 359) || (atoi(weather->wx_course) < 0) ) {
                     if (debug_level & 1)
-                        printf("wx_course out-of-range: %s\n", weather->wx_course);
+                        fprintf(stderr,"wx_course out-of-range: %s\n", weather->wx_course);
                     strcpy(temp,"...");
                 }
                 //sprintf(st,"%s/%s",weather->wx_course,weather->wx_speed);
@@ -2224,12 +2224,12 @@ time_t wx_tx_data1(char *st) {
                 xastir_snprintf(temp, sizeof(temp), "%s", weather->wx_speed);
                 if (strlen(temp) > 3) {
                     if (debug_level & 1)
-                        printf("wx_speed too long: %s\n", temp);
+                        fprintf(stderr,"wx_speed too long: %s\n", temp);
                     strcpy(temp,"...");
                 }
                 if ( (atoi(weather->wx_speed) < 0) || (atoi(weather->wx_speed) > 999) ) {
                     if (debug_level & 1)
-                        printf("wx_speed out-of-range: %s\n", weather->wx_speed);
+                        fprintf(stderr,"wx_speed out-of-range: %s\n", weather->wx_speed);
                     strcpy(temp,"...");
                 }
                 strcat(st,temp);
@@ -2240,8 +2240,8 @@ time_t wx_tx_data1(char *st) {
 
 
             if (debug_level & 1) {
-                printf("\n\nAt least one field was empty: Course: %s\tSpeed: %s\n", weather->wx_course, weather->wx_speed);
-                printf("Will be sending '.../...' instead of real values.\n\n\n");
+                fprintf(stderr,"\n\nAt least one field was empty: Course: %s\tSpeed: %s\n", weather->wx_course, weather->wx_speed);
+                fprintf(stderr,"Will be sending '.../...' instead of real values.\n\n\n");
             }
 
 
@@ -2250,13 +2250,13 @@ time_t wx_tx_data1(char *st) {
                 xastir_snprintf(temp, sizeof(temp), "g%s", weather->wx_gust);
                 if (strlen(temp) > 4) {
                     if (debug_level & 1)
-                        printf("wx_gust too long: %s\n", temp);
+                        fprintf(stderr,"wx_gust too long: %s\n", temp);
 
                     strcpy(temp,"g...");
                 }
                 if (atoi(weather->wx_gust) < 0) {
                     if (debug_level & 1)
-                        printf("wx_gust out-of-range: %s\n", weather->wx_gust);
+                        fprintf(stderr,"wx_gust out-of-range: %s\n", weather->wx_gust);
 
                     strcpy(temp,"g...");
                 }
@@ -2268,13 +2268,13 @@ time_t wx_tx_data1(char *st) {
                 xastir_snprintf(temp, sizeof(temp), "t%s", weather->wx_temp);
                 if (strlen(temp) > 4) {
                     if (debug_level & 1)
-                        printf("wx_temp too long: %s\n", temp);
+                        fprintf(stderr,"wx_temp too long: %s\n", temp);
 
                     strcpy(temp, "t...");
                 }
                 if ( (atoi(weather->wx_temp) > 999) || (atoi(weather->wx_temp) < -99) ) {
                     if (debug_level & 1)
-                        printf("wx_temp out-of-bounds: %s\n", weather->wx_temp);
+                        fprintf(stderr,"wx_temp out-of-bounds: %s\n", weather->wx_temp);
 
                     strcpy(temp, "t...");
                 }
@@ -2287,13 +2287,13 @@ time_t wx_tx_data1(char *st) {
                         (int)(atof(weather->wx_rain) + 0.5) );  // Cheater's way of rounding
                 if (strlen(temp)>4) {
                     if (debug_level & 1)
-                        printf("wx_rain too long: %s\n", temp);
+                        fprintf(stderr,"wx_rain too long: %s\n", temp);
 
                     strcpy(temp,"r   ");  // Don't transmit this field if it's not valid
                 }
                 if ((int)(atof(weather->wx_rain)) < 0) {
                     if (debug_level & 1)
-                        printf("wx_rain out-of-bounds: %s\n", weather->wx_rain);
+                        fprintf(stderr,"wx_rain out-of-bounds: %s\n", weather->wx_rain);
 
                     strcpy(temp, "r..."); // Don't transmit this field if it's not valid
                 }
@@ -2307,13 +2307,13 @@ time_t wx_tx_data1(char *st) {
                         (int)(atof(weather->wx_prec_00) + 0.5) );   // Cheater's way of rounding
                 if (strlen(temp)>4) {
                     if (debug_level & 1)
-                        printf("wx_prec_00 too long: %s\n", temp);
+                        fprintf(stderr,"wx_prec_00 too long: %s\n", temp);
 
                     strcpy(temp,"P   ");    // Don't transmit this field if it's not valid
                 }
                 if ((int)(atof(weather->wx_prec_00)) < 0) {
                     if (debug_level & 1)
-                        printf("wx_prec_00 out-of-bounds: %s\n", weather->wx_prec_00);
+                        fprintf(stderr,"wx_prec_00 out-of-bounds: %s\n", weather->wx_prec_00);
 
                     strcpy(temp, "P...");   // Don't transmit this field if it's not valid
                 }
@@ -2327,13 +2327,13 @@ time_t wx_tx_data1(char *st) {
                         (int)(atof(weather->wx_prec_24) + 0.5) );   // Cheater's way of rounding
                 if (strlen(temp)>4) {
                     if (debug_level & 1)
-                        printf("wx_prec_24 too long: %s\n", temp);
+                        fprintf(stderr,"wx_prec_24 too long: %s\n", temp);
 
                     strcpy(temp,"p   ");    // Don't transmit this field if it's not valid
                 }
                 if ((int)(atof(weather->wx_prec_24)) < 0) {
                     if (debug_level & 1)
-                        printf("wx_prec_24 out-of-bounds: %s\n", weather->wx_prec_24);
+                        fprintf(stderr,"wx_prec_24 out-of-bounds: %s\n", weather->wx_prec_24);
 
                     strcpy(temp, "p...");   // Don't transmit this field if it's not valid
                 }
@@ -2350,12 +2350,12 @@ time_t wx_tx_data1(char *st) {
 
                 if (strlen(temp) > 4) {
                     if (debug_level & 1)
-                        printf("wx_hum too long: %s\n", temp);
+                        fprintf(stderr,"wx_hum too long: %s\n", temp);
                     //strcpy(temp, "h..");    // Don't transmit this field if it's not valid
                 }
                 if (atoi(weather->wx_hum) < 0) {
                     if (debug_level & 1)
-                        printf("wx_hum out-of-bounds: %s\n", weather->wx_hum);
+                        fprintf(stderr,"wx_hum out-of-bounds: %s\n", weather->wx_hum);
                     //strcpy(temp, "h..");    // Don't transmit this field if it's not valid
                 }
                 strcat(st,temp);
@@ -2368,12 +2368,12 @@ time_t wx_tx_data1(char *st) {
                         (int)((atof(weather->wx_baro) * 10.0)) );
                 if (strlen(temp)>6) {
                     if (debug_level & 1)
-                        printf("wx_baro too long: %s\n", temp);
+                        fprintf(stderr,"wx_baro too long: %s\n", temp);
                     //strcpy(temp,"b.....");  // Don't transmit this field if it's not valid
                 }
                 if ((int)((atof(weather->wx_baro) * 10.0) < 0)) {
                     if (debug_level & 1)
-                        printf("wx_baro out-of-bounds: %s\n", weather->wx_baro);
+                        fprintf(stderr,"wx_baro out-of-bounds: %s\n", weather->wx_baro);
                     //strcpy(temp, "b....."); // Don't transmit this field if it's not valid
                 }
                 strcat(st,temp);
@@ -2388,7 +2388,7 @@ time_t wx_tx_data1(char *st) {
 
 
     if (debug_level & 1)
-        printf("Weather String:  %s\n", st);
+        fprintf(stderr,"Weather String:  %s\n", st);
 
 
     return(wx_time);
@@ -2407,7 +2407,7 @@ void tx_raw_wx_data(void) {
     if (strlen(raw_wx_string)>10) {
         output_my_data(raw_wx_string,-1,0,0,0,NULL);
         if (debug_level & 1)
-            printf("Sending Raw WX data <%s>\n",raw_wx_string);
+            fprintf(stderr,"Sending Raw WX data <%s>\n",raw_wx_string);
     }
 }
 

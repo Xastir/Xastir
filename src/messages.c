@@ -125,7 +125,7 @@ void group_build_list(char *filename) {
         f = fopen(filename, "w+");  // No file.  Create it and open it.
 
     if (f == NULL) {
-        printf("Couldn't open file for reading -or- appending: %s\n", filename);
+        fprintf(stderr,"Couldn't open file for reading -or- appending: %s\n", filename);
         return;
     }
 
@@ -186,7 +186,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:look_for_open_grou
         if(mw[i].send_message_dialog != NULL) {
             strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
             (void)to_upper(temp1);
-            /*printf("Looking at call <%s> for <%s>\n",temp1,to);*/
+            /*fprintf(stderr,"Looking at call <%s> for <%s>\n",temp1,to);*/
             if(strcmp(temp1,to)==0) {
                 found=(int)TRUE;
                 break;
@@ -217,7 +217,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window
         /* find station  */
         if (mw[i].send_message_dialog != NULL) {
             strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
-            /*printf("Looking at call <%s> for <%s>\n",temp1,from_call_sign);*/
+            /*fprintf(stderr,"Looking at call <%s> for <%s>\n",temp1,from_call_sign);*/
             if (strcasecmp(temp1, from_call_sign) == 0) {
                 found = i;
                 break;
@@ -253,7 +253,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2"
             update_messages(1);
             ret=i;
         } else
-            printf("No open windows!\n");
+            fprintf(stderr,"No open windows!\n");
     } else
         /* window open! */
         ret=found;
@@ -329,7 +329,7 @@ void output_message(char *from, char *to, char *message, char *path) {
     ok=0;
     error=0;
     if (debug_level & 2)
-        printf("Output Message from <%s>  to <%s>\n",from,to);
+        fprintf(stderr,"Output Message from <%s>  to <%s>\n",from,to);
 
     while (!error && (message_ptr < (int)strlen(message))) {
         ok=0;
@@ -355,7 +355,7 @@ void output_message(char *from, char *to, char *message, char *path) {
             }
         }
         if (debug_level & 2)
-            printf("MESSAGE <%s> %d %d\n",message_out,message_ptr,last_space);
+            fprintf(stderr,"MESSAGE <%s> %d %d\n",message_out,message_ptr,last_space);
 
         message_ptr=last_space;
         /* check for others in the queue */
@@ -456,7 +456,7 @@ void output_message(char *from, char *to, char *message, char *path) {
             }
         }
         if(!ok) {
-            printf("Output message queue is full!\n");
+            fprintf(stderr,"Output message queue is full!\n");
             error=1;
         }
     }
@@ -470,12 +470,12 @@ void transmit_message_data(char *to, char *message, char *path) {
     DataRow *p_station;
 
     if (debug_level & 2)
-        printf("Transmitting data to %s : %s\n",to,message);
+        fprintf(stderr,"Transmitting data to %s : %s\n",to,message);
 
     p_station = NULL;
     if (search_station_name(&p_station,to,1)) {
         if (debug_level & 2)
-            printf("found station %s\n",p_station->call_sign);
+            fprintf(stderr,"found station %s\n",p_station->call_sign);
 
         if (strcmp(to,my_callsign)!=0) {
             /* check to see if it was heard via a TNC otherwise send it to the last port heard */
@@ -497,7 +497,7 @@ void transmit_message_data(char *to, char *message, char *path) {
                 } else {
                     /* Not a TNC or a NET try all possible */
                     if (debug_level & 2)
-                        printf("VIA any way\n");
+                        fprintf(stderr,"VIA any way\n");
 
                     output_my_data(message,-1,0,0,0,path);
                 }
@@ -506,7 +506,7 @@ void transmit_message_data(char *to, char *message, char *path) {
             /* my station message */
             /* try all possible */
             if (debug_level & 2)
-                printf("My call VIA any way\n");
+                fprintf(stderr,"My call VIA any way\n");
 
             output_my_data(message,-1,0,0,0,path);
         }
@@ -514,7 +514,7 @@ void transmit_message_data(char *to, char *message, char *path) {
         /* no data found try every way*/
         /* try all possible */
         if (debug_level & 2)
-            printf("VIA any way\n");
+            fprintf(stderr,"VIA any way\n");
 
         output_my_data(message,-1,0,0,0,path);
     }
@@ -538,10 +538,10 @@ void check_and_transmit_messages(time_t time) {
 
                     /* sending message let the tnc and net transmits check to see if we should */
                     if (debug_level & 2)
-                        printf("Time %ld Active time %ld next time %ld\n",(long)time,(long)message_pool[i].active_time,(long)message_pool[i].next_time);
+                        fprintf(stderr,"Time %ld Active time %ld next time %ld\n",(long)time,(long)message_pool[i].active_time,(long)message_pool[i].next_time);
 
                     if (debug_level & 2)
-                        printf("Send message#%d to <%s> from <%s>:%s-%s\n",
+                        fprintf(stderr,"Send message#%d to <%s> from <%s>:%s-%s\n",
                             message_pool[i].tries,message_pool[i].to_call_sign,message_pool[i].from_call_sign,message_pool[i].message_line,message_pool[i].seq);
 
                     pad_callsign(to_call,message_pool[i].to_call_sign);
@@ -562,13 +562,13 @@ void check_and_transmit_messages(time_t time) {
                             last_ack);
 
                     if (debug_level & 2)
-                        printf("MESSAGE OUT>%s<\n",temp);
+                        fprintf(stderr,"MESSAGE OUT>%s<\n",temp);
 
                     transmit_message_data(message_pool[i].to_call_sign,temp,message_pool[i].path);
 
                     message_pool[i].active_time = time + message_pool[i].next_time;
 
-                    //printf("%d\n",(int)message_pool[i].next_time);
+                    //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
 
                     // Start at 15 seconds for the interval.  Add 5 seconds to the
                     // interval each retry until we hit 90 seconds.  90 second
@@ -635,7 +635,7 @@ void check_and_transmit_messages(time_t time) {
                 }
             } else {
                 if (debug_level & 2)
-                    printf("Message #%s is waiting to have a previous one cleared\n",message_pool[i].seq);
+                    fprintf(stderr,"Message #%s is waiting to have a previous one cleared\n",message_pool[i].seq);
             }
         }
     }
@@ -663,17 +663,17 @@ void clear_acked_message(char *from, char *to, char *seq) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
 
             if (debug_level & 1)
-                printf("TO <%s> <%s> from <%s> <%s> seq <%s> <%s>\n",to,message_pool[i].to_call_sign,from,message_pool[i].from_call_sign,seq,message_pool[i].seq);
+                fprintf(stderr,"TO <%s> <%s> from <%s> <%s> seq <%s> <%s>\n",to,message_pool[i].to_call_sign,from,message_pool[i].from_call_sign,seq,message_pool[i].seq);
 
             if (strcmp(message_pool[i].to_call_sign,from)==0) {
                 if (debug_level & 1)
-                    printf("Matched message to_call_sign\n");
+                    fprintf(stderr,"Matched message to_call_sign\n");
                 if (strcmp(message_pool[i].from_call_sign,to)==0) {
                     if (debug_level & 1)
-                        printf("Matched message from_call_sign\n");
+                        fprintf(stderr,"Matched message from_call_sign\n");
                     if (strcmp(message_pool[i].seq,seq)==0) {
                         if (debug_level & 2)
-                            printf("Found and cleared\n");
+                            fprintf(stderr,"Found and cleared\n");
 
                         clear_outgoing_message(i);
                         // now find and release next message, look for the lowest sequence?
@@ -706,7 +706,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_messag
                                 if (mw[ii].send_message_dialog!=NULL) {
                                     strcpy(temp1,XmTextFieldGetString(mw[ii].send_message_call_data));
                                     (void)to_upper(temp1);
-                                    //printf("%s\t%s\n",temp1,from);
+                                    //fprintf(stderr,"%s\t%s\n",temp1,from);
 //                                    if (strcmp(temp1,from)==0) {
                                         /*clear submit*/
 //                                        XtSetSensitive(mw[ii].button_ok,TRUE);
@@ -720,7 +720,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_message"
                     }
                     else {
                         if (debug_level & 1)
-                            printf("Sequences didn't match: %s %s\n",message_pool[i].seq,seq);
+                            fprintf(stderr,"Sequences didn't match: %s %s\n",message_pool[i].seq,seq);
                     }
                 }
             }
