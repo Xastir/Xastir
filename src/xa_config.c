@@ -1316,7 +1316,7 @@ void load_data_or_default(void) {
     if (!get_int ("LOG_IGATE", &log_igate,0,1,0))
         log_igate = 0;
 
-    if (!get_int ("NETWORK_WAITTIME", &NETWORK_WAITTIME,0,120,10))
+    if (!get_int ("NETWORK_WAITTIME", &NETWORK_WAITTIME,10,120,10))
         NETWORK_WAITTIME = 10;
 
     // LOGGING
@@ -1337,7 +1337,7 @@ void load_data_or_default(void) {
         snapshots_enabled = 0;
 
     /* WX ALERTS */
-    if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME, 1l, 86400l, 60l))
+    if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME, 10l, 86400l, 60l))
         WX_ALERTS_REFRESH_TIME = (time_t)60l;
 
     /* gps */
