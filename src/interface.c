@@ -3260,7 +3260,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     /* if connected now send password */
                     if (strlen(passwd)) {
 
-                        if (strlen(filter_string)) {    // Filter specified
+                        if (filter_string != NULL
+                                && strlen(filter_string) > 0) {    // Filter specified
 
                             // Please note that "filter" must be the 8th
                             // parameter on the line in order to be
