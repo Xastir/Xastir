@@ -1194,7 +1194,8 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             full_zone,
             &latitude,
             &longitude);
-printf("Latitude: %f, Longitude: %f\n",latitude,longitude); 
+        if (debug_level & 1)
+            printf("Latitude: %f, Longitude: %f\n",latitude,longitude); 
         Coordinate_calc_output(full_zone,
             northing,
             easting,
@@ -1212,7 +1213,8 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
             &double_easting,
             full_zone,
             sizeof(full_zone));
-printf("Zone: %s, Easting: %f, Northing: %f\n", full_zone, double_easting, double_northing); 
+        if (debug_level & 1)
+            printf("Zone: %s, Easting: %f, Northing: %f\n", full_zone, double_easting, double_northing); 
         // Round the UTM values as we convert them to longs
         xastir_snprintf(temp_string,sizeof(temp_string),"%7.0f",double_northing);
         northing = (long)(atof(temp_string));
