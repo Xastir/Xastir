@@ -434,6 +434,8 @@ void draw_grid(Widget w) {
         // in the view.
 
 
+// NEED TO ACCOMMODATE THIS:
+// -------------------------
 // UTM Zone 32 has been widened to 9° (at the expense of zone 31)
 // between latitudes 56° and 64° (band V) to accommodate southwest
 // Norway. Thus zone 32 it extends westwards to 3°E in the North
@@ -569,6 +571,20 @@ void draw_grid(Widget w) {
 
         (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
 
+
+// NEED TO ACCOMMODATE THIS:
+// -------------------------
+// UTM Zone 32 has been widened to 9° (at the expense of zone 31)
+// between latitudes 56° and 64° (band V) to accommodate southwest
+// Norway. Thus zone 32 it extends westwards to 3°E in the North
+// Sea.  Similarly, between 72° and 84° (band X), zones 33 and 35
+// have been widened to 12° to accommodate Svalbard. To compensate
+// for these 12° wide zones, zones 31 and 37 are widened to 9° and
+// zones 32, 34, and 36 are eliminated. Thus the W and E boundaries
+// of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33
+// - 42 E.
+
+
         done = 0;
         while (!done) {
             // Check whether we're off the right edge of the screen.  If
@@ -613,14 +629,16 @@ void draw_grid(Widget w) {
                 // coordinate system units.
                 temp_x = temp_x + (360000 * 6);
             }
+        }
 
 // Draw labels for each UTM zone?
 
 // Need to draw a horizontal line at each pole, if in the view.
 
-        }
 
-        
+// Here we'll draw the subzone (lettered) lines, which are
+// horizontal.
+
 
     }
     else { // Not UTM coordinate system, draw some lat/long lines
