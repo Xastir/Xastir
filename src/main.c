@@ -155,21 +155,20 @@ Widget coordinate_calc_zone = (Widget)NULL;
 Widget coordinate_calc_latitude_easting = (Widget)NULL;
 Widget coordinate_calc_longitude_northing = (Widget)NULL;
 Widget coordinate_calc_result_text = (Widget)NULL;
-long coordinate_calc_lon;   // In Xastir coordinates
-long coordinate_calc_lat;   // In Xastir coordinates
-struct {
-    Widget input_lat_deg;   // Pointers to input field widgets
-    Widget input_lat_min;   // (Where to get the data)
+static char coordinate_calc_lat_deg[5];
+static char coordinate_calc_lat_min[15];
+static char coordinate_calc_lat_dir[5];
+static char coordinate_calc_lon_deg[5];
+static char coordinate_calc_lon_min[15];
+static char coordinate_calc_lon_dir[5];
+static struct {
+    Widget calling_dialog;  // NULL if the calling dialog has been closed.
+    Widget input_lat_deg;   // Pointers to calling dialog's widgets
+    Widget input_lat_min;   // (Where to get/put the data)
     Widget input_lat_dir;
     Widget input_lon_deg;
     Widget input_lon_min;
     Widget input_lon_dir;
-    Widget output_lat_deg;  // Pointers to output field widgets
-    Widget output_lat_min;  // (Where to put the results)
-    Widget output_lat_dir;
-    Widget output_lon_deg;
-    Widget output_lon_min;
-    Widget output_lon_dir;
 } coordinate_calc_array;
 
 
@@ -754,6 +753,21 @@ void Coordinate_calc_output(char *full_zone, long northing,
         " Universal Transverse Mercator:  ",
         full_zone, easting, northing);
     XmTextSetString(coordinate_calc_result_text, temp_string);
+
+    // Fill in the global dd mm.mmm values in case we wish to write
+    // the result back to the calling dialog.
+    xastir_snprintf(coordinate_calc_lat_deg, sizeof(coordinate_calc_lat_deg),
+        "%02d", lat_deg_int);
+    xastir_snprintf(coordinate_calc_lat_min, sizeof(coordinate_calc_lat_min),
+        "%06.3f", lat_min);
+    xastir_snprintf(coordinate_calc_lat_dir, sizeof(coordinate_calc_lat_dir),
+        "%c", (south) ? 'S':'N');
+    xastir_snprintf(coordinate_calc_lon_deg, sizeof(coordinate_calc_lon_deg),
+        "%03d", lon_deg_int);
+    xastir_snprintf(coordinate_calc_lon_min, sizeof(coordinate_calc_lon_min),
+        "%06.3f", lon_min);
+    xastir_snprintf(coordinate_calc_lon_dir, sizeof(coordinate_calc_lon_dir),
+        "%c", (west) ? 'W':'E');
 }
 
 
@@ -951,6 +965,9 @@ printf("Bad Northing value\n");
     }
     else if (have_lat_lon) {
 // Process the string to see if it's a longitude value
+
+
+
         have_lat_lon = 0;   // Code not implemented yet.
     }
     // We're done with that variable.  Free the space.
@@ -998,52 +1015,40 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
 // in that case explaining the error.
 //
 void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
-//    char *temp;
-//    char temp_string[10];
-
-/*
-    // Check each of the three alternate formats to see which one
-    // has been entered.
-    temp = XmTextGetString(coordinate_calc_data.input_lat_deg);
-    temp2 = XmTextGetString(coordinate_calc_data.input_lat_min);
-
-
-
-    XtFree(temp);
-    XtFree(temp2);
-
-    // Fill in the current value of coordinate_calc_text
-    xastir_snprintf(temp_string, sizeof(temp_string), "%d", temp);
-    XmTextSetString(coordinate_calc_text, temp_string);
 
     // Write output directly to the XmTextStrings pointed to by our array
-    XmTextSetString(coordinate_calc_data.output_lat_deg, "0");
-    XmTextSetString(coordinate_calc_data.output_lat_min, "0.0");
-    XmTextSetString(coordinate_calc_data.output_lat_dir, "N");
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lat_deg != NULL) )
+        XmTextSetString(coordinate_calc_array.input_lat_deg, coordinate_calc_lat_deg);
+    //printf("%s\n",coordinate_calc_lat_deg);
 
-    XmTextSetString(coordinate_calc_data.output_lon_deg, "0");
-    XmTextSetString(coordinate_calc_data.output_lon_min, "0.0");
-    XmTextSetString(coordinate_calc_data.output_lon_dir, "W");
-*/
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lat_min != NULL) )
+        XmTextSetString(coordinate_calc_array.input_lat_min, coordinate_calc_lat_min);
+    //printf("%s\n",coordinate_calc_lat_min);
+
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lat_dir != NULL) )
+        XmTextSetString(coordinate_calc_array.input_lat_dir, coordinate_calc_lat_dir);
+    //printf("%s\n",coordinate_calc_lat_dir);
+
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lon_deg != NULL) )
+        XmTextSetString(coordinate_calc_array.input_lon_deg, coordinate_calc_lon_deg);
+    //printf("%s\n",coordinate_calc_lon_deg);
+
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lon_min != NULL) )
+        XmTextSetString(coordinate_calc_array.input_lon_min, coordinate_calc_lon_min);
+    //printf("%s\n",coordinate_calc_lon_min);
+
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lon_dir != NULL) )
+        XmTextSetString(coordinate_calc_array.input_lon_dir, coordinate_calc_lon_dir);
+    //printf("%s\n",coordinate_calc_lon_dir);
 
     Coordinate_calc_destroy_shell(widget,clientData,callData);
 }
-/*
-struct {
-    Widget input_lat_deg;   // Pointers to input field widgets
-    Widget input_lat_min;   // (Where to get the data)
-    Widget input_lat_dir;
-    Widget input_lon_deg;
-    Widget input_lon_min;
-    Widget input_lon_dir;
-    Widget output_lat_deg;  // Pointers to output field widgets
-    Widget output_lat_min;  // (Where to put the results)
-    Widget output_lat_dir;
-    Widget output_lon_deg;
-    Widget output_lon_min;
-    Widget output_lon_dir;
-} coordinate_calc_array;
-*/
 
 
 
@@ -1055,15 +1060,9 @@ struct {
 // simultaneously.  Hitting enter or "Calculate" will cause all of
 // the fields to be updated.
 //
-// The fields should be filled in when this is first called,
-// probably by passing a DD MM.MMM value in the
-// coordinate_calc_text1 and coordinate_calc_text2 widgets.
-//
-// When done, this routine will pass back values where?  I suppose
-// we could pass an array of pointers to this function, which
-// specify where to put each piece of the DD MM.MMM output value,
-// and where to get it's input from.  It would need to be a static
-// array.
+// The fields should be filled in when this is first called.
+// When done, this routine will pass back values via a static array
+// of Widget pointers to the calling dialog's fields.
 //
 // We could grey-out the OK button until we have a successful
 // calculation.  This would make sure that an invalid location didn't
@@ -1076,7 +1075,9 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
     Atom delw;
     Arg args[2];                    // Arg List
     register unsigned int n = 0;    // Arg Count
-//    char temp_string[10];
+    char temp_string[50];
+
+printf("Called by: %s\n",(char *)clientData);
 
     if (!coordinate_calc_dialog) {
         coordinate_calc_dialog = XtVaCreatePopupShell(langcode("Coordinate Calculator"),xmDialogShellWidgetClass,Global.top,
@@ -1207,7 +1208,6 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
 
-
         coordinate_calc_longitude_northing = XtVaCreateManagedWidget("Coordinate_calc lon", xmTextWidgetClass, form,
                             XmNeditable,   TRUE,
                             XmNcursorPositionVisible, TRUE,
@@ -1332,10 +1332,64 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
     } else {
         (void)XRaiseWindow(XtDisplay(coordinate_calc_dialog), XtWindow(coordinate_calc_dialog));
     }
+
+    // Fill in the latitude values if they're available
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lat_deg != NULL)
+            && (coordinate_calc_array.input_lat_min != NULL)
+            && (coordinate_calc_array.input_lat_dir != NULL) )
+    {
+        char *str_ptr1;
+        char *str_ptr2;
+        char *str_ptr3;
+
+        str_ptr1 = XmTextGetString(coordinate_calc_array.input_lat_deg);
+        str_ptr2 = XmTextGetString(coordinate_calc_array.input_lat_min);
+        str_ptr3 = XmTextGetString(coordinate_calc_array.input_lat_dir);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%s %s%s",
+            str_ptr1, str_ptr2, str_ptr3);
+        XmTextSetString(coordinate_calc_latitude_easting, temp_string);
+        //printf("String: %s\n", temp_string);
+        // We're done with these variables.  Free the space.
+        XtFree(str_ptr1);
+        XtFree(str_ptr2);
+        XtFree(str_ptr3);
+    }
+
+    // Fill in the longitude values if they're available
+    if ( (coordinate_calc_array.calling_dialog != NULL)
+            && (coordinate_calc_array.input_lon_deg != NULL)
+            && (coordinate_calc_array.input_lon_min != NULL)
+            && (coordinate_calc_array.input_lon_dir != NULL) )
+    {
+        char *str_ptr1;
+        char *str_ptr2;
+        char *str_ptr3;
+
+        str_ptr1 = XmTextGetString(coordinate_calc_array.input_lon_deg);
+        str_ptr2 = XmTextGetString(coordinate_calc_array.input_lon_min);
+        str_ptr3 = XmTextGetString(coordinate_calc_array.input_lon_dir);
+
+        xastir_snprintf(temp_string, sizeof(temp_string), "%s %s%s",
+            str_ptr1, str_ptr2, str_ptr3);
+        XmTextSetString(coordinate_calc_longitude_northing, temp_string);
+        //printf("String: %s\n", temp_string);
+        // We're done with these variables.  Free the space.
+        XtFree(str_ptr1);
+        XtFree(str_ptr2);
+        XtFree(str_ptr3);
+    }
 }
 
 
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 void HandlePendingEvents( XtAppContext app) {
@@ -8994,6 +9048,11 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
     if (select_symbol_dialog) {
         Select_symbol_destroy_shell( widget, select_symbol_dialog, callData);
     }
+
+    // NULL out the dialog field in the global struct used for
+    // Coordinate Calculator.  Prevents segfaults if the calculator is
+    // still up and trying to write to us.
+    coordinate_calc_array.calling_dialog = NULL;
 }
 
 
@@ -10742,7 +10801,18 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                             XmNbackground,              colors[0xff],
                             XmNnavigationType,          XmTAB_GROUP,
                             NULL);
-        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, ob_latlon_form);
+
+        // Fill in the pointers to our input textfields so that the coordinate
+        // calculator can fiddle with them.
+        coordinate_calc_array.calling_dialog = object_dialog;
+        coordinate_calc_array.input_lat_deg = object_lat_data_deg;
+        coordinate_calc_array.input_lat_min = object_lat_data_min;
+        coordinate_calc_array.input_lat_dir = object_lat_data_ns;
+        coordinate_calc_array.input_lon_deg = object_lon_data_deg;
+        coordinate_calc_array.input_lon_min = object_lon_data_min;
+        coordinate_calc_array.input_lon_dir = object_lon_data_ew;
+//        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, ob_latlon_form);
+        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, "Set_Del_Object");
 
 //----- Frame for generic options
         ob_option_frame = XtVaCreateManagedWidget("Set_Del_Object ob_option_frame", xmFrameWidgetClass, ob_form,
@@ -12671,6 +12741,11 @@ void Configure_station_destroy_shell( /*@unused@*/ Widget widget, XtPointer clie
     if (select_symbol_dialog) {
         Select_symbol_destroy_shell( widget, select_symbol_dialog, callData);
     }
+
+    // NULL out the dialog field in the global struct used for
+    // Coordinate Calculator.  Prevents segfaults if the calculator is
+    // still up and trying to write to us.
+    coordinate_calc_array.calling_dialog = NULL;
 }
 
 
@@ -13189,7 +13264,19 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNbackground,              colors[0xff],
                             XmNnavigationType,          XmTAB_GROUP,
                             NULL);
-        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, configure_station_dialog);
+
+        // Fill in the pointers to our input textfields so that the
+        // coordinate calculator can fiddle with them.
+        coordinate_calc_array.calling_dialog = configure_station_dialog;
+        coordinate_calc_array.input_lat_deg = station_config_slat_data_deg;
+        coordinate_calc_array.input_lat_min = station_config_slat_data_min;
+        coordinate_calc_array.input_lat_dir = station_config_slat_data_ns;
+        coordinate_calc_array.input_lon_deg = station_config_slong_data_deg;
+        coordinate_calc_array.input_lon_min = station_config_slong_data_min;
+        coordinate_calc_array.input_lon_dir = station_config_slong_data_ew;
+//        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, configure_station_dialog);
+        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, "Configure_station");
+
 
 
 //----- Frame for table / symbol
