@@ -634,7 +634,7 @@ Weather Alerts
 Displays weather alerts received, including the alert flags, alert source/type,
 alert destination, expiration, message, and effected location. This data
 is used for the alert highlighting. Double-clicking on an alert will request
-further information about it via finder from the online WXserver. This only
+further information about it via finger from the online WXserver. This only
 works if you have internet access; future versions may access this data over
 radio as well.
 
