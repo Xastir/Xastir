@@ -66,45 +66,46 @@
 // 2: WX stations list
 // 3: local stations list
 // 4: last stations
-// 5: Object/Items
+// 5: Objects/Items
+// 6: My Objects/Items
 
-Widget station_list_dialog[6];          // store list definitions
+Widget station_list_dialog[7];          // store list definitions
 static xastir_mutex station_list_dialog_lock;  // Mutex lock for above
 
-Widget SL_list[6][20];
-Widget SL_da[6][20];
-Widget SL_call[6][20];
-Pixmap SL_icon[6][20];                  // icons for different lists and list rows
+Widget SL_list[7][20];
+Widget SL_da[7][20];
+Widget SL_call[7][20];
+Pixmap SL_icon[7][20];                  // icons for different lists and list rows
 Pixmap blank_icon;                      // holds an empty icon
-Widget SL_scroll[6];
-Widget SL_wx_wind_course[6][20];
-Widget SL_wx_wind_speed[6][20];
-Widget SL_wx_wind_gust[6][20];
-Widget SL_wx_temp[6][20];
-Widget SL_wx_hum[6][20];
-Widget SL_wx_baro[6][20];
-Widget SL_wx_rain_h[6][20];
-Widget SL_wx_rain_00[6][20];
-Widget SL_wx_rain_24[6][20];
-Widget SL_course[6][20];
-Widget SL_speed[6][20];
-Widget SL_alt[6][20];
-Widget SL_lat_long[6][20];
-Widget SL_packets[6][20];
-Widget SL_sats[6][20];
-Widget SL_my_course[6][20];
-Widget SL_my_distance[6][20];
-Widget SL_pos_time[6][20];
-Widget SL_node_path[6][20];
-Widget SL_power_gain[6][20];
-Widget SL_comments[6][20];
+Widget SL_scroll[7];
+Widget SL_wx_wind_course[7][20];
+Widget SL_wx_wind_speed[7][20];
+Widget SL_wx_wind_gust[7][20];
+Widget SL_wx_temp[7][20];
+Widget SL_wx_hum[7][20];
+Widget SL_wx_baro[7][20];
+Widget SL_wx_rain_h[7][20];
+Widget SL_wx_rain_00[7][20];
+Widget SL_wx_rain_24[7][20];
+Widget SL_course[7][20];
+Widget SL_speed[7][20];
+Widget SL_alt[7][20];
+Widget SL_lat_long[7][20];
+Widget SL_packets[7][20];
+Widget SL_sats[7][20];
+Widget SL_my_course[7][20];
+Widget SL_my_distance[7][20];
+Widget SL_pos_time[7][20];
+Widget SL_node_path[7][20];
+Widget SL_power_gain[7][20];
+Widget SL_comments[7][20];
 int station_list_first = 1;
-int list_size_h[6];             // height of entire list widget
-int list_size_w[6];             // width  of entire list widget
-int list_size_i[6];             // size initialized, dirty hack, but works...
+int list_size_h[7];             // height of entire list widget
+int list_size_w[7];             // width  of entire list widget
+int list_size_i[7];             // size initialized, dirty hack, but works...
 
-int last_offset[6];
-char top_call[6][MAX_CALLSIGN+1];  // call of first list entry or empty string for always first call
+int last_offset[7];
+char top_call[7][MAX_CALLSIGN+1];  // call of first list entry or empty string for always first call
 time_t top_time;                // time of first list entry or 0 for always newest station
 int top_sn;                     // serial number for unique time index
 time_t last_list_upd;           // time of last list update
@@ -117,6 +118,7 @@ int units_last;
 #define LST_TNC 3
 #define LST_TIM 4
 #define LST_OBJ 5
+#define LST_MYOBJ 6
 
 #define LIST_UPDATE_CYCLE 2     /* Minimum time between list updates in seconds, we want */
                                 /* immediate update, but not in high traffic situations  */
@@ -264,6 +266,33 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
                         (*p_station) = (*p_station)->n_prev;
                 }
             break;
+        case LST_MYOBJ:
+
+// We should really show the active AND inactive objects.  This is
+// so that inactive ones can be resurrected.  Probably should do
+// this for all objects, not just ones we own.
+
+            if (forward == 1)
+                while (!found && (*p_station) != NULL) {
+                    if (((*p_station)->flag & ST_ACTIVE) != 0
+                            && ( (((*p_station)->flag & ST_OBJECT) != 0)
+                                || (((*p_station)->flag & ST_ITEM) != 0) )
+                            && ( is_my_call( (*p_station)->origin,1) ) )
+                        found = (char)TRUE;
+                    else
+                        (*p_station) = (*p_station)->n_next;
+                }
+            else
+                while (!found && (*p_station) != NULL) {
+                    if (((*p_station)->flag & ST_ACTIVE) != 0
+                            && ( (((*p_station)->flag & ST_VIATNC) != 0)
+                                || (((*p_station)->flag & ST_ITEM) != 0) )
+                            && ( is_my_call( (*p_station)->origin,1) ) )
+                        found = (char)TRUE;
+                    else
+                        (*p_station) = (*p_station)->n_prev;
+                }
+            break;
         default:
             break;
     }
@@ -282,7 +311,7 @@ void init_station_lists(void) {
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists" );
 
-    for (type=0;type<6;type++) {
+    for (type=0;type<7;type++) {
         station_list_dialog[type] = NULL;       // set list to undefined
         for (i=0;i<20;i++) {
             SL_icon[type][i] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
@@ -540,6 +569,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                     case LST_TIM:                       // last stations list
                     case LST_ALL:                       // stations list
                     case LST_OBJ:                       // objects/items
+                    case LST_MYOBJ:                     // my objects/items
                         xastir_snprintf(stemp, sizeof(stemp), "%5d",
                                 (int)p_station->num_packets);
                         XmTextFieldSetString(SL_packets[type][row],stemp);
@@ -796,6 +826,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                     case LST_TIM:
                     case LST_ALL:       // stations list
                     case LST_OBJ:       // Objects/Items list
+                    case LST_MYOBJ:     // My objects/Items
                         XmTextFieldSetString(SL_packets[type][row],"");
                         XtManageChild(SL_packets[type][row]);
                         XmTextFieldSetString(SL_pos_time[type][row],"");
@@ -878,7 +909,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
 
     last_h = last_w = 0;
     ok = 0;
-    for (i=0;i<6;i++) {                 // update all active lists
+    for (i=0;i<7;i++) {                 // update all active lists
         if (station_list_dialog[i] != NULL) {
             XtVaGetValues(station_list_dialog[i], XmNheight, &last_h, XmNwidth, &last_w, NULL);
             XtVaGetValues(SL_scroll[i], XmNmaximum,&last,XmNvalue, &pos, NULL);
@@ -1051,6 +1082,10 @@ void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
             strcpy(temp,langcode("LHPUPNI005"));        // Objects/Items
             break;
 
+        case LST_MYOBJ:
+            strcpy(temp,langcode("LHPUPNI006"));        // My Objects/Items
+            break;
+
         default:
             return;
     }
@@ -1129,6 +1164,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
             case LST_TNC:       // Local Stations [via TNC]
             case LST_TIM:       // Last Stations
             case LST_OBJ:       // Objects/Item
+            case LST_MYOBJ:     // My objects/items
 
                 // number of packets heard
                 it1 = XtVaCreateManagedWidget(langcode("LHPUPNI012"), xmTextFieldWidgetClass, form,
@@ -1699,6 +1735,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                 case LST_TNC:   // local station list
                 case LST_TIM:
                 case LST_OBJ:   // Objects/Items
+                case LST_MYOBJ: // My objects/items
                     // number of packets received
                     SL_packets[type][i] = XtVaCreateManagedWidget("Station_List packets", xmTextFieldWidgetClass, win_list,
                                       XmNeditable,              FALSE,

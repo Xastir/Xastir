@@ -564,7 +564,7 @@ void save_data(void)  {
 
 
         /* list attributes */
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 7; i++) {
             sprintf (name_temp, "LIST%0d_", i);
             strcpy (name, name_temp);
             strcat (name, "H");
@@ -1160,7 +1160,7 @@ void load_data_or_default(void) {
 
 
     /* list attributes */
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 7; i++) {
         sprintf (name_temp, "LIST%0d_", i);
         strcpy (name, name_temp);
         strcat (name, "H");
