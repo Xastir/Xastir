@@ -175,9 +175,9 @@ static int find_name(
 	const int mid = begin + size * (count / 2);
 	char test[41];
 	if (count <= 1) return begin;
-	if (io_in(index,mid - size,test,sizeof(test)) < 0) return -1;
-	if (name_len > sizeof(test - 1))
-		name_len = sizeof(test - 1);
+	if (io_in(index,mid - size,test,sizeof test) < 0) return -1;
+	if (name_len > sizeof test - 1)
+		name_len = sizeof test - 1;
 	if (type > test[0]
 	|| (type == test[0] && strncasecmp(name,test + 1,name_len) > 0))
 		return find_name(index,mid,end,type,name,name_len);
@@ -191,9 +191,11 @@ static const char *next_word(struct state *,const char *);
 
 
 
-static int get_name_at(
-    	struct state *s,char type,
-    	int (*f)(struct state *),const char *last) {
+static int get_name_at( struct state *s,
+                        char type,
+                        int (*f)(struct state *),
+                        const char *last) {
+
 	char n[41];
 	const char *next,*save;
 	unsigned int len = last - s->next;
@@ -204,9 +206,9 @@ static int get_name_at(
                 io_in_i4(s->index,0,NULL),&begin),&end) < 0
             || (pos = find_name(s->index,begin,end,type,s->next,len)) < 0
             ||  pos == end
-            || (pos = io_in_i4(s->index,io_in(s->index,pos,n,sizeof(n)),&begin)) < 0
+            || (pos = io_in_i4(s->index,io_in(s->index,pos,n,sizeof n),&begin)) < 0
             ||  pos == end
-            || (pos = io_in_i4(s->index,io_in(s->index,pos,NULL,sizeof(n)),&end)) < 0
+            || (pos = io_in_i4(s->index,io_in(s->index,pos,NULL,sizeof n),&end)) < 0
             ||  n[0] != type
             ||  strncasecmp(n + 1,s->next,len)) {
         D(printf("    '%c' \"%.*s\" not found\n",type,len,s->next));
@@ -219,19 +221,15 @@ static int get_name_at(
 
 		begin = len + 2;
 
-		while (begin < (int)sizeof(n) && ' ' == n[begin])
-            ++begin;
+		while (begin < (int)sizeof n && ' ' == n[begin]) ++begin;
 
-        end = sizeof(n);
+        end = sizeof n;
 
-        while (end > begin && ' ' == n[end - 1])
-            --end;
+        while (end > begin && ' ' == n[end - 1]) --end;
 
-        if (end < (int)sizeof(n))
-            ++end;
+        if (end < (int)sizeof n) ++end;
 
-        if (end - begin > (int)len)
-            end = begin + len;
+        if (end - begin > (int)len) end = begin + len;
 
 D(printf("    Replacing '%.*s' with '%.*s'\n",len,n + 1,end - begin,&n[begin]));
 
@@ -252,10 +250,7 @@ D(printf("    Buffer is now: '%.*s'\n",s->buffer_end - s->buffer,s->buffer));
 
 	pos = len;
 
-	while (++pos < (int)sizeof(n)) {
-        if (' ' != n[pos])
-            return 0;
-    }
+	while (++pos < (int)sizeof n) if (' ' != n[pos]) return 0;
 
 	s->range[s->range_count].begin = begin;
 	s->range[s->range_count].end = end;
@@ -320,7 +315,7 @@ static const char *input_word(struct state *s,const char *pos) {
 	}
 
 	while (s->input_begin != s->input_end
-	   &&  s->buffer_end != &s->buffer[sizeof(s->buffer)]
+	   &&  s->buffer_end != &s->buffer[sizeof s->buffer]
            &&  isalnum(*s->input_begin)) {
 		if (s->buffer == s->buffer_end
 		|| !isdigit(s->buffer_end[-1]) || !isalpha(*s->input_begin))
@@ -329,7 +324,7 @@ static const char *input_word(struct state *s,const char *pos) {
 	}
 
 	if (pos != s->buffer_end 
-	&&  s->buffer_end != &s->buffer[sizeof(s->buffer)])
+	&&  s->buffer_end != &s->buffer[sizeof s->buffer])
 		*s->buffer_end++ = ' ';
 	return s->buffer_end;
 }
@@ -453,57 +448,72 @@ static int get_street(struct state *s) {
 
 
 static int get_address(struct state *s) {
-	const char * const begin = s->next;
-	const char * const next = next_word(s,begin);
+    const char * const begin = s->next;
+    const char * const next = next_word(s,begin);
 
-	if (begin == next) return 0;
-	s->address = io_strntoi(begin,next - s->next);
-	if (0 == s->address) return 0;
-	s->next = next;
-	if (get_street(s)) {
-		s->next = begin;
-		return 1;
-	}
 
-	s->next = next_word(s,s->next);
-	if (get_street(s)) {
-		s->next = begin;
-		return 1;
-	}
+//fprintf(stderr,"get_address\n");
 
-	s->next = next_word(s,s->next);
-	if (get_street(s)) {
-		s->next = begin;
-		return 1;
-	}
+    if (begin == next) {
+        return 0;
+    }
 
-	s->next = begin;
-	return 0;
+    s->address = io_strntoi(begin,next - s->next);
+    if (0 == s->address) {
+        return 0;
+    }
+
+    s->next = next;
+    if (get_street(s)) {
+        s->next = begin;
+        return 1;
+    }
+
+    s->next = next_word(s,s->next);
+    if (get_street(s)) {
+        s->next = begin;
+        return 1;
+    }
+
+    s->next = next_word(s,s->next);
+    if (get_street(s)) {
+        s->next = begin;
+        return 1;
+    }
+
+    s->next = begin;
+
+    return 0;
 }
 
 
 
 
 
-int geo_find(
-    	struct io_file *index,const char *str,int len,
-    	struct geo_location *out) {
-	struct state s;
+int geo_find( struct io_file *index,
+              const char *str,
+              int len,
+    	      struct geo_location *out) {
 
-	if (NULL == index) return 0;
-	s.index = index;
-	s.input_depth = 0;
-	s.input_begin = str;
-	s.input_end = str + len;
-	s.next = s.buffer_end = s.buffer_next = s.buffer;
-	s.address = s.range_count = 0;
-	if (NULL != (s.out = out)) {
-		out->zip_code = 0;
+    struct state s;
+
+
+    if (NULL == index) return 0;
+
+    s.index = index;
+    s.input_depth = 0;
+    s.input_begin = str;
+    s.input_end = str + len;
+    s.next = s.buffer_end = s.buffer_next = s.buffer;
+    s.address = s.range_count = 0;
+
+    if (NULL != (s.out = out)) {
+        out->zip_code = 0;
         out->street_name[0] = '\0';
         out->city_name[0] = '\0';
         out->state_name[0] = '\0';
-	}
-	return get_address(&s);
+    }
+    return get_address(&s);
 }
 
 

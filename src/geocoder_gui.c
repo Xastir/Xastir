@@ -146,6 +146,15 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     (void)remove_trailing_spaces(geocoder_locality_name);
     (void)remove_trailing_spaces(geocoder_address_name);
 
+/*
+fprintf(stderr,"%s\n%s\n%s\n%s\n%s\n",
+    geocoder_zip_name,
+    geocoder_state_name,
+    geocoder_locality_name,
+    geocoder_address_name,
+    geocoder_map_filename);
+*/
+
     index = io_open(geocoder_map_filename);
 
     xastir_snprintf(input,
@@ -157,6 +166,9 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
         geocoder_state_name,
         geocoder_zip_name);
 
+    if (debug_level & 1)
+        fprintf(stderr,"Searching for: %s\n", input);
+
     if (geo_find(index,input,strlen(input),&loc)) {
         long coord_lon, coord_lat;
         char lat_str[20];
@@ -165,6 +177,7 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
         char lond = 'E';
         char latd = 'N';
         double res, tmp;
+
 
         if (loc.at.longitude < 0) {
             loc.at.longitude = -loc.at.longitude;
