@@ -840,20 +840,32 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 //
 void convert_lat_l2s(long lat, char *str, int str_len, int type) {
     char ns;
-    float deg;
-    int ideg;
-    float min;
+    float deg, min, sec;
+    int ideg, imin;
+    long temp;
+
 
     strcpy(str,"");
     deg = (float)(lat - 32400000l) / 360000.0;
-    ns = 'S';
-    if (deg <= 0) {
-        ns = 'N';
-        deg = (float)fabs(deg);
-    }
+ 
+    // Switch to integer arithmetic to avoid floating-point
+    // rounding errors.
+    temp = (long)(deg * 100000);
 
-    ideg = (int)deg;
-    min = (deg - ideg)*60.0;
+    ns = 'S';
+    if (temp <= 0) {
+        ns = 'N';
+        temp = labs(temp);
+    }   
+
+    ideg = (int)temp / 100000;
+    min = (temp % 100000) * 60.0 / 100000.0;
+
+    // Again switch to integer arithmetic to avoid floating-point
+    // rounding errors.
+    temp = (long)(min * 1000);
+    imin = (int)(temp / 1000);
+    sec = (temp % 1000) * 60.0 / 1000.0;
 
     switch (type) {
         case(CONVERT_LP_NOSP): /* do low P w/no space */
@@ -872,8 +884,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
             xastir_snprintf(str, str_len, "%08.5f%c", ideg+min/60.0, ns);
             break;
         case(CONVERT_DMS_NORMAL):
-            xastir_snprintf(str, str_len, "%02d %02d %04.1f%c", ideg, (int)min,
-                            (float)((min-(int)min)*60.0), ns);
+            xastir_snprintf(str, str_len, "%02d %02d %04.1f%c", ideg, imin, sec, ns);
             break;
         case(CONVERT_HP_NORMAL):
 
@@ -899,19 +910,31 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
 //
 void convert_lon_l2s(long lon, char *str, int str_len, int type) {
     char ew;
-    float deg;
-    int ideg;
-    float min;
+    float deg, min, sec;
+    int ideg, imin;
+    long temp;
 
     strcpy(str,"");
     deg = (float)(lon - 64800000l) / 360000.0;
+
+    // Switch to integer arithmetic to avoid floating-point rounding
+    // errors.
+    temp = (long)(deg * 100000);
+
     ew = 'E';
-    if (deg <= 0) {
+    if (temp <= 0) {
         ew = 'W';
-        deg = (float)fabs(deg);
+        temp = labs(temp);
     }
-    ideg = (int)deg;
-    min = (deg - ideg)*60.0;
+
+    ideg = (int)temp / 100000;
+    min = (temp % 100000) * 60.0 / 100000.0;
+
+    // Again switch to integer arithmetic to avoid floating-point
+    // rounding errors.
+    temp = (long)(min * 1000);
+    imin = (int)(temp / 1000);
+    sec = (temp % 1000) * 60.0 / 1000.0;
 
     switch(type) {
         case(CONVERT_LP_NOSP): /* do low P w/nospacel */
@@ -930,8 +953,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
             xastir_snprintf(str, str_len, "%09.5f%c", ideg+min/60.0, ew);
             break;
         case(CONVERT_DMS_NORMAL):
-            xastir_snprintf(str, str_len, "%03d %02d %04.1f%c", ideg, (int)min,
-                            (float)((min-(int)min)*60.0), ew);
+            xastir_snprintf(str, str_len, "%03d %02d %04.1f%c", ideg, imin, sec, ew);
             break;
         case(CONVERT_HP_NORMAL):
 
