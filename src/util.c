@@ -1657,16 +1657,8 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
         substr(n, copy+5, 4);     // fractional minutes
         if ( (!isdigit((int)n[2]))
                 && (n[2] != '\0') )
-            n[2] = '0'; // extend low precision
-
-        // Keep the next digit as well, as it resolves to 0.6 of a
-        // 1/100 sec resolution.  Two counts here make one count in
-        // the Xastir coordinate system.
-        if ( (!isdigit((int)n[3]))
-                && (n[3] != '\0') )
-            n[3] = '0'; // extend low precision
-
-        n[4] = '\0';    // Make sure substring is terminated
+            n[2] = '0';            /* extend low precision */
+        n[3] = '\0';    // Throw this one away
 
         centi_sec += atoi(n)*6;
         if (       (char)toupper((int)copy[7])=='N'
@@ -1708,20 +1700,9 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
         centi_sec += atoi(n)*60*100;
         // 01326.66E  01326.660E
         substr(n,copy+6,4);  // fractional minutes 66E 660E or 6601
-
-        if (!isdigit((int)n[2])
-                && (n[2] != '\0'))
+        if (!isdigit((int)n[2]) && (n[2] != '\0'))
             n[2] = '0';            /* extend low precision */
-
-        // Keep the next digit as well, as it resolves to 0.6 of a
-        // 1/100 sec resolution.  Two counts here make one count in
-        // the Xastir coordinate system.
-        if ( (!isdigit((int)n[3]))
-                && (n[3] != '\0') )
-            n[3] = '0'; // extend low precision
-
-        n[4] = '\0';    // Make sure substring is terminated
-
+        n[3] = '\0';    // Throw this one away
         centi_sec += atoi(n)*6;
         if (       (char)toupper((int)copy[ 8])=='W'
                 || (char)toupper((int)copy[ 9])=='W'
