@@ -2640,6 +2640,10 @@ void port_read(int port) {
                         if (port_data[port].device_type == DEVICE_NET_AGWPE) {
                             int bytes_available = 0;
                             long frame_length = 0;
+
+
+                            skip = 1;   // Keeps next block of code from
+                                        // trying to process this data.
  
                             bytes_available = port_data[port].read_in_pos - port_data[port].read_out_pos;
                             if (bytes_available < 0)
@@ -2679,12 +2683,22 @@ fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
 //                                    char input_string[MAX_DEVICE_BUFFER];
 //                                    char output_string[MAX_DEVICE_BUFFER];
 
-fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame.\n",bytes_available);
+fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame.\n",frame_length + 36);
 fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
 
                                     //strcpy(input_string, port_data[port].device_read_buffer);
                                     //output_string[0] = '\0';
                                     //parse_agwpe_header(input_string, output_length, output_string);
+
+                                    //channel_data(port,
+                                    //    (unsigned char *)port_data[port].device_read_buffer,
+                                    //    length);   // Length of string
+
+                                    // Move pointers so that
+                                    // processed data gets deleted.
+                                    port_data[port].read_out_pos =
+                                        (port_data[port].read_out_pos + frame_length + 36)
+                                        % MAX_DEVICE_BUFFER;
                                 }
                             }
                             else {
