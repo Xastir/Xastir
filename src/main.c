@@ -2803,6 +2803,31 @@ void Tracks_All_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
 /*
+ *  Clear out object/item history log file
+ */
+void Object_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    char *file;
+    FILE *f;
+
+    file = get_user_base_dir("config/object.log");
+
+    f=fopen(file,"w");
+    if (f!=NULL) {
+        (void)fclose(f);
+
+        if (debug_level & 1)
+            printf("Clearing Object/Item history file...\n");
+    }
+    else {
+        printf("Couldn't open file for writing: %s\n", file);
+    }
+}
+
+
+
+
+
+/*
  *  Display text in the status line, text is removed after timeout
  */
 void statusline(char *status_text,int update) {
@@ -3322,7 +3347,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         track_button, download_trail_button,
         symbols_button,
         station_trails_button,
-        station_clear_button, tracks_clear_button, uptime_button,
+        station_clear_button, tracks_clear_button, object_history_clear_button, uptime_button,
         save_button,file_button, open_file_button, exit_button, really_exit_button,
         view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
         localstations_button, laststations_button, objectstations_button, objectmystations_button,
@@ -4617,10 +4642,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
     tracks_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP016"),
             xmPushButtonGadgetClass,
             stationspane,
             XmNmnemonic,langcode_hotkey("PULDNDP016"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    object_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP025"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -4844,6 +4878,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(WX_q_button,          XmNactivateCallback,WX_query,NULL);
     XtAddCallback(station_clear_button, XmNactivateCallback,Stations_Clear,NULL);
     XtAddCallback(tracks_clear_button,  XmNactivateCallback,Tracks_All_Clear,NULL);
+    XtAddCallback(object_history_clear_button, XmNactivateCallback,Object_History_Clear,NULL);
     XtAddCallback(really_exit_button,   XmNactivateCallback,Menu_Quit,NULL);
 
     XtAddCallback(defaults_button,      XmNactivateCallback,Configure_defaults,NULL);

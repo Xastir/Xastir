@@ -153,6 +153,7 @@ PULDNDP024|Display Last Report Time||
 PULDNDP007|Rastros de estaciones|R|
 PULDNDP015|Anular Todas las estns|A|
 PULDNDP016|Limpiar Rastros|n|
+PULDNDP025|Clear Object/Item History||
 #
 # Inglesa/Metrica
 PULDNUT001|Activar Unidades Inglesa||
