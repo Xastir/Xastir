@@ -3569,24 +3569,24 @@ void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     seconds = runtime - (minutes * 60);
 
     if (days == 1)
-        strcpy(Days,"Day");
+        strcpy(Days,langcode("TIME001")); // Day
     else
-        strcpy(Days,"Days");
+        strcpy(Days,langcode("TIME002")); // Days
 
     if (hours == 1)
-        strcpy(Hours,"Hour");
+        strcpy(Hours,langcode("TIME003"));    // Hour
     else
-        strcpy(Hours,"Hours");
+        strcpy(Hours,langcode("TIME004"));    // Hours
 
    if (minutes == 1)
-        strcpy(Minutes,"Minute");
+        strcpy(Minutes,langcode("TIME005"));  // Minute
     else
-        strcpy(Minutes,"Minutes");
+        strcpy(Minutes,langcode("TIME006"));  // Minutes
 
    if (seconds == 1)
-        strcpy(Seconds,"Second");
+        strcpy(Seconds,langcode("TIME007"));  // Seconds
     else
-        strcpy(Seconds,"Seconds");
+        strcpy(Seconds,langcode("TIME008"));  // Seconds
 
 
     if (days != 0) {

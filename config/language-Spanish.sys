@@ -1000,3 +1000,14 @@ MAPP007|No||
 MAPP008|Automaps->||
 #
 #
+# Time Strings
+TIME001|Day||
+TIME002|Days||
+TIME003|Hour||
+TIME004|Hours||
+TIME005|Minute||
+TIME006|Minutes||
+TIME007|Second||
+TIME008|Seconds||
+#
+#
