@@ -337,6 +337,13 @@ fi
 
 
 
+# Check for Berkeley DB.
+XASTIR_BERKELEY_DB_CHK
+
+
+
+
+
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
 use_imagemagick=yes
@@ -349,13 +356,6 @@ fi
 
 
 
-# Check for Berkeley DB.
-XASTIR_BERKELEY_DB_CHK
-
-
-
-
- 
 # Set XASTIR_DATA_BASE in CPPFLAGS due to Gnu coding standard that requires
 # datadir expansion to be deferred until make time.
 if test "x${datadir}" = "x"; then 
