@@ -1804,6 +1804,18 @@ fprintf(stderr,"2 ");
         return;
     }
 
+    // Check whether file has .xpm or .xpm.Z or .xpm.gz at the end.
+    // If not, don't use the XpmReadFileToImage call below.
+
+    if (       !strstr(filenm,"xpm")
+            && !strstr(filenm,"XPM")
+            && !strstr(filenm,"Xpm") ) {
+        fprintf(stderr,
+            "Error: File format not supported by XPM library: %s\n",
+            filenm);
+        return;
+    }
+
     /*  XpmReadFileToImage is the call we wish to avoid if at all
      *  possible.  On large images this can take quite a while.  We
      *  check above to see whether the image is inside our viewport,
@@ -1815,9 +1827,16 @@ fprintf(stderr,"2 ");
             XDestroyImage (xi);
         return;
     }
+
     if (debug_level & 16) {
         fprintf(stderr,"Image size %d %d\n", (int)atb.width, (int)atb.height);
-        fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+        fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
+            map_c_L,
+            map_c_T,
+            map_c_dx,
+            (int) (map_c_dx / scale_x),
+            map_c_dy,
+            (int) (map_c_dy / scale_y));
     }
 
     HandlePendingEvents(app_context);
