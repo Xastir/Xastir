@@ -314,7 +314,7 @@ BBARSTA036|Fermeture port GPS réception donnée TNC..||
 BBARSTA037|GPS météo décodées||
 BBARSTA038|Placez le changement sur ma station||
 BBARSTA039|Indexant %s||
-BBARSTA040|Station d'amateur APRS %s||#'
+BBARSTA040|Station d'amateur APRS(tm) %s||#'
 BBARSTA041|Attendant données GPS..||
 BBARSTA042|Transmission objets/articles||
 BBARSTA043|Journalisation||

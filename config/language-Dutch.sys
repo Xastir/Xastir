@@ -325,7 +325,7 @@ BBARSTA036|HSP vrijmaken, TNC gegevens ophalen..||
 BBARSTA037|GPS tekst gedecodeerd||
 BBARSTA038|Positie verandering bij mijn station||
 BBARSTA039|Bezig met indexeren van: %s||
-BBARSTA040|Amateur APRS station %s||
+BBARSTA040|Amateur APRS(tm) station %s||
 BBARSTA041|Wacht op GPS gegevens..||
 BBARSTA042|Uitzenden van objecten/items||
 BBARSTA043|Log bijwerken||
