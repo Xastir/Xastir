@@ -987,6 +987,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // Temperature
             xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
                 (int)(tmp1 * 9.0 / 5.0 + 32.0 + 0.5));
+            //printf("Read: %2.1f C, Storing: %s F\n",tmp1,weather->wx_temp);
 
             // Wind direction.  Each vane increment equals 22.5 degrees.
             xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
