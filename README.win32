@@ -359,10 +359,10 @@ Extract the files:
     cd ~/src/imagemagick
     tar xzvf filename
 
-Copy the files/directories into the /usr/local tree:
+Copy the files/directories into the /usr tree:
 
     cd ImageMagick-5.5.3
-    cp -R * /usr/local
+    cp -R * /usr
 
 Reconfigure Xastir to use this library:
 
