@@ -1641,7 +1641,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                             xastir_snprintf(temp, sizeof(temp), "%0.2f",
                                 (atof(wx_three_hour_baro)*0.02953));
                             XmTextFieldSetString(WX_three_hour_baro_data,temp);
-			}
+                        }
                     } else
                         XmTextFieldSetString(WX_three_hour_baro_data,"");
 

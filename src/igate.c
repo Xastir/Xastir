@@ -930,7 +930,7 @@ int check_NWS_stations(char *call) {
         return(0);
 
     if (debug_level & 1024)
-	    fprintf(stderr,"igate.c::check_NWS_stations %s\n", call);
+        fprintf(stderr,"igate.c::check_NWS_stations %s\n", call);
 
     // Make sure that the incoming call is longer than three
     // characters.  If not, skip it.
@@ -953,9 +953,9 @@ int check_NWS_stations(char *call) {
             if (strncasecmp(call, NWS_station_data[i].call, length)==0) {
 
                 ok=1; // match found 
-    	        if (debug_level && 1024) {
+                if (debug_level && 1024) {
                     fprintf(stderr,"NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
-    	        }
+                }
             }
         }
         else {

@@ -664,10 +664,10 @@ void save_data(void)  {
             store_int (fout, name, list_size_w[i]);
         }
 
-	store_int (fout, "TRACK_ME", track_me);
-    store_int (fout, "MAP_CHOOSER_EXPAND_DIRS", map_chooser_expand_dirs);
-    store_int (fout, "ST_DIRECT_TIMEOUT", st_direct_timeout);
-    store_int (fout, "DEAD_RECKONING_TIMEOUT", dead_reckoning_timeout);
+        store_int (fout, "TRACK_ME", track_me);
+        store_int (fout, "MAP_CHOOSER_EXPAND_DIRS", map_chooser_expand_dirs);
+        store_int (fout, "ST_DIRECT_TIMEOUT", st_direct_timeout);
+        store_int (fout, "DEAD_RECKONING_TIMEOUT", dead_reckoning_timeout);
 
         if (debug_level & 1)
             fprintf(stderr,"Save Data Stop\n");
@@ -1348,7 +1348,7 @@ void load_data_or_default(void) {
     }
 
     if (!get_int ("TRACK_ME", &track_me,0,1,0))
-        track_me = 0;	// No tracking
+        track_me = 0;    // No tracking
 
     if (!get_int ("MAP_CHOOSER_EXPAND_DIRS", &map_chooser_expand_dirs,0,1,0))
         map_chooser_expand_dirs = 1;

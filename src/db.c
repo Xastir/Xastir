@@ -1963,7 +1963,7 @@ int ok_to_draw_station(DataRow *p_station) {
 
     // Check whether object or item
     if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
-	// Check whether we wish to display objects/items
+        // Check whether we wish to display objects/items
         if (!Select_.objects ||
             (!Select_.weather_objects && !Select_.gauge_objects && !Select_.other_objects))
             return 0;
@@ -5162,13 +5162,13 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     if (ok) {
         p_station->speed_time[0]     = '\0';
 
-	// Note that speed is in knots.  If we were stuffing it into
+        // Note that speed is in knots.  If we were stuffing it into
         // "wx_speed" we'd have to convert it to MPH.
         if (strcmp(speed,"   ") != 0 && strcmp(speed,"...") != 0)
             strcpy(p_station->speed, speed);
         else
             p_station->speed[0] = '\0';
-	
+
         if (strcmp(course,"   ") != 0 && strcmp(course,"...") != 0)
             strcpy(p_station->course, course);
         else
@@ -5182,7 +5182,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
         p2++;   // Skip the description text, "/TS", "/HC", "/TD", "/TY", "/ST", or "/SC"
 
 
-	    // Extract the sustained wind speed in knots
+        // Extract the sustained wind speed in knots
         if(extract_weather_item(p2,'/',3,weather->wx_speed))
             // Convert from knots to MPH
             xastir_snprintf(weather->wx_speed,
@@ -5202,7 +5202,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
 //fprintf(stderr,"%s\n",data);
 
-	// Pressure is already in millibars/hPa.  No conversion
+        // Pressure is already in millibars/hPa.  No conversion
         // needed.
         if (extract_weather_item(p2,'/',4,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
             xastir_snprintf(weather->wx_baro,
