@@ -312,6 +312,11 @@ fprintf(stderr,"%s %s %s\n",
         // Proper for a binary output routine?
         strncpy(path_string, Path, sizeof(path_string));
 
+        // Convert path_string to upper-case
+        to_upper(path_string);
+
+//fprintf(stderr,"path_string: %s\n", path_string);
+
         split_string(path_string, ViaCall, 10);
 
         // Write the type character into the frame
