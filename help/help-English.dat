@@ -65,7 +65,7 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
-HELP-INDEX>What's new in Xastir BETA
+HELP-INDEX>What's new in Xastir 1.4
 Comment fields for interfaces
 split_gnis and ozi2geo scripts, need to add to section on scripts
 serial mkiss interface
@@ -81,7 +81,7 @@ GPS quality info
 RINO waypoints downloading
 label trackpoints
 comment/status timestamps
-listener socket
+listener socket/ability to act like a limited internet server
 
 
 HELP-INDEX>What's new in Xastir 1.3
@@ -303,7 +303,11 @@ You can also select "Activate alternate net?" choose an altnet call from this
 dialog. Altnet allows you to have a private APRS(tm) network among the
 stations that also have altnet configured, and have the same altnet call
 entered.
- 
+
+"Disable Posit Dupe-Checks" disables the check for duplicate copies of a
+position. This should only be used when a station might move somewhere and
+immediately back; this is almost never needed in practice.
+
 HELP-INDEX>Configure Timing
 
                             Configure Timing
@@ -597,7 +601,7 @@ damage, areas to stay out of, buildings that aren't on the map, checker/chess
 boards for gaming on APRS(tm). :-)  Note that area objects are not
 implemented on all versions of APRS(tm) programs, and some of the details of
 how they are displayed may also be different on other programs.
-For the other two, signpost and DF objects, see below.
+For the other three, probability circles, signposts and DF objects, see below.
 
 Objects are retransmitted at the rate specified in File|Configure|Timings.
 "killed" objects are also retransmitted in this manner, until they expire
@@ -637,6 +641,9 @@ Beam report, and allows you to put in the specifics for each.  See:
     http://web.usna.navy.mil/~bruninga/dfing.html
 and the APRSdos documentation for details on these useful techniques.
 (FIXME: Separate section on DFing techniques?)
+
+= Probability Circles =
+FIXME: Write this part
 
 = Name =
 This is the name of the object or item. It may be up to 9 characters long,
@@ -794,6 +801,10 @@ Shows all message traffic while the window is open. It includes the source,
 destination, interface, and message. The range option can limit this display
 to nearby stations, much like the range control on bulletins. A range of 0
 causes all messages to be displayed.
+
+GPS Status
+Shows the status of your GPS unit, including the type of fix and number of
+satellites aquired.
 
 Uptime
 Shows the amount of time elapsed since Xastir was started.
