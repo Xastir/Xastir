@@ -2837,10 +2837,10 @@ int valid_call(char *call) {
     if (len == 0)
         return(0);                              // wrong size
 
-        while (call[0]=='c' && call[1]=='m' && call[2]=='d' && call[3]==':')
-        {       // Erase TNC prompts from beginning of callsign.
-                // This may not be the right place to do this, but it came in
-                // handy here, so that's where I put it. -- KB6MER
+    while (call[0]=='c' && call[1]=='m' && call[2]=='d' && call[3]==':') {
+        // Erase TNC prompts from beginning of callsign.  This may
+        // not be the right place to do this, but it came in handy
+        // here, so that's where I put it. -- KB6MER
 
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE+1];
@@ -2849,23 +2849,27 @@ int valid_call(char *call) {
             fprintf(stderr,"valid_call: Command Prompt removed from: %s",
                 filtered_data);
         }
-                for(i=0; call[i+4]; i++)
-                        call[i]=call[i+4];
-                call[i++]=0;
-                call[i++]=0;
-                call[i++]=0;
-                call[i++]=0;
-                len=strlen(call);
+
+        for(i=0; call[i+4]; i++)
+            call[i]=call[i+4];
+
+        call[i++]=0;
+        call[i++]=0;
+        call[i++]=0;
+        call[i++]=0;
+        len=strlen(call);
+
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE+1];
+
             strcpy(filtered_data, call);
             makePrintable(filtered_data);
             fprintf(stderr," result: %s", filtered_data);
-                }
         }
+    }
 
-        if (len > 9)
-                return(0);      // Too long for valid call (6-2 max e.g. KB6MER-12)
+    if (len > 9)
+        return(0);      // Too long for valid call (6-2 max e.g. KB6MER-12)
 
     del = 0;
     for (i=len-2;ok && i>0 && i>=len-3;i--) {   // search for optional SSID
@@ -2882,10 +2886,13 @@ int valid_call(char *call) {
                 del = 0;
         }
     }
+
     if (del)
         len = del;                              // length of base call
+
     for (i=0;ok && i<len;i++) {                 // check for uppercase alphanumeric
         c = call[i];
+
         if (c >= 'A' && c <= 'Z')
             has_chr = 1;                        // we need at least one char
         else if (c >= '0' && c <= '9')
@@ -2897,11 +2904,13 @@ int valid_call(char *call) {
 //    if (!has_num || !has_chr)                 // with this we also discard NOCALL etc.
     if (!has_chr)                               
         ok = 0;
+
     ok = (ok && strcmp(call,"NOCALL") != 0);    // check for errors
     ok = (ok && strcmp(call,"ERROR!") != 0);
     ok = (ok && strcmp(call,"WIDE")   != 0);
     ok = (ok && strcmp(call,"RELAY")  != 0);
     ok = (ok && strcmp(call,"MAIL")   != 0);
+
     return(ok);
 }
 
