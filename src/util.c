@@ -2325,25 +2325,58 @@ double convert_lon_l2r(long lon) {
 
 
 
-/*
- *  Calculate distance in meters between two locations
- *
- *  What type of calculation is this?  Rhumb-line?  Great-Circle?
- *  Planar Geometry?
- *  Answer:  "Law of Cosines for Spherical Trigonometry"
- *
- */
-double calc_distance(long lat1, long lon1, long lat2, long lon2) {
+// Distance calculation (Great Circle) using the Haversine formula
+// (2-parameter arctan version), which gives better accuracy than
+// the "Law of Cosines" for short distances.  It should be
+// equivalent to the "Law of Cosines for Spherical Trigonometry" for
+// longer distances.  Haversine is a great-circle calculation.
+//
+//
+// Inputs:  lat1/long1/lat2/long2 in radians (double)
+//
+// Outputs: Distance in meters between them (double)
+//
+double calc_distance_haversine_radian(double lat1, double lon1, double lat2, double lon2) {
+    double dlon, dlat;
+    double a, c, d;
+    double R = 6367000.0;   // 6367 km or 3956 mi
+    #define square(x) (x)*(x)
+
+
+    dlon = lon2 - lon1;
+    dlat = lat2 - lat1;
+    a = square((sin(dlat/2.0))) + cos(lat1) * cos(lat2) * square((sin(dlon/2.0)));
+    c = 2.0 * atan2(sqrt(a), sqrt(1.0-a));
+    d = R * c;
+
+    return(d);
+}
+
+
+
+
+
+// Distance calculation (Great Circle) using the Haversine formula
+// (2-parameter arctan version), which gives better accuracy than
+// the "Law of Cosines" for short distances.  It should be
+// equivalent to the "Law of Cosines for Spherical Trigonometry" for
+// longer distances.  Haversine is a great-circle calculation.
+//
+//
+// Inputs:  lat1/long1/lat2/long2 in Xastir coordinate system (long)
+//
+// Outputs: Distance in meters between them (double)
+//
+double calc_distance_haversine(long lat1, long lon1, long lat2, long lon2) {
     double r_lat1,r_lat2;
     double r_lon1,r_lon2;
-    double r_d;
 
     r_lat1 = convert_lat_l2r(lat1);
     r_lon1 = convert_lon_l2r(lon1);
     r_lat2 = convert_lat_l2r(lat2);
     r_lon2 = convert_lon_l2r(lon2);
-    r_d = acos(sin(r_lat1) * sin(r_lat2) + cos(r_lat1) * cos(r_lat2) * cos(r_lon1-r_lon2));
-    return(r_d*180*60/M_PI*1852);
+
+    return(calc_distance_haversine_radian(r_lat1, r_lon1, r_lat2, r_lon2));
 }
 
 
@@ -2351,30 +2384,101 @@ double calc_distance(long lat1, long lon1, long lat2, long lon2) {
 
 
 /*
+ *  Calculate distance in meters between two locations
+ *
+ *  What type of calculation is this, Rhumb Line distance or Great
+ *  Circle distance?
+ *  Answer:  "Law of Cosines for Spherical Trigonometry", which is a
+ *  great-circle calculation.
+ *
+ *
+ * Inputs:  lat1/long1/lat2/long2 in Xastir coordinate system (long)
+ *
+ * Outputs: Distance in meters between them (double)
+ *
+ */
+double calc_distance_law_of_cosines(long lat1, long lon1, long lat2, long lon2) {
+    double r_lat1,r_lat2;
+    double r_lon1,r_lon2;
+    double r_d;
+
+
+    r_lat1 = convert_lat_l2r(lat1);
+    r_lon1 = convert_lon_l2r(lon1);
+    r_lat2 = convert_lat_l2r(lat2);
+    r_lon2 = convert_lon_l2r(lon2);
+    r_d = acos(sin(r_lat1) * sin(r_lat2) + cos(r_lat1) * cos(r_lat2) * cos(r_lon1-r_lon2));
+
+//fprintf(stderr,"Law of Cosines Distance: %f\n",
+//    r_d*180*60/M_PI*1852);
+//fprintf(stderr,"     Haversine Distance: %f\n\n",
+//    calc_distance_haversine(lat1, lon1, lat2, lon2));
+
+    return(r_d*180*60/M_PI*1852);
+}
+
+
+
+
+
+// Here's where we choose which of the above two functions get used.
+//
+double calc_distance(long lat1, long lon1, long lat2, long lon2) {
+//    return(calc_distance_law_of_cosines(lat1, lon1, lat2, lon2));
+    return(calc_distance_haversine(lat1, lon1, lat2, lon2));
+}
+ 
+
+
+
+
+/*
  *  Calculate distance between two locations in nautical miles and course from loc2 to loc1
  *
- *  What type of calculation is this?  Rhumb-line?  Great-Circle?
- *  Planar Geometry?
- *  Answer:  "Law of Cosines for Spherical Trigonometry"
+ *  What type of calculation is this, Rhumb Line distance or Great
+ *  Circle distance?
+ *  Answer:  "Law of Cosines for Spherical Trigonometry", which is a
+ *  great-circle calculation, or Haversine, also a great-circle
+ *  calculation.
+ *
+ *  NOTE:  The angle returned is a separate calculation, so it could
+ *  be a Rhumb Line angle that is returned.  Check this out.
+ *
+ *
+ * Inputs:  lat1/long1/lat2/long2 in Xastir coordinate system (long)
+ *          Length of course_deg string (int)
+ *
+ * Outputs: Distance in nautical miles between them (double).
+ *          course_deg (string)
  *
  */
 double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *course_deg, int course_deg_length) {
-    float ret;
-    double r_lat1,r_lat2;
-    double r_lon1,r_lon2;
-    double r_d,r_c;
+    double ret;
+    double r_lat1, r_lat2;
+    double r_lon1, r_lon2;
+    double r_d, r_c, r_m;
 
     r_lat1 = convert_lat_l2r(lat1);
     r_lon1 = convert_lon_l2r(lon1);
     r_lat2 = convert_lat_l2r(lat2);
     r_lon2 = convert_lon_l2r(lon2);
 
-    // Compute the distance:
-    // Law of Cosines for Spherical Trigonometry.  This is unreliable for small
-    // distances because the inverse cosine is ill-conditioned.  A computer
-    // carrying seven significant digits can't distinguish the cosines of
-    // distances smaller than about one minute of arc.
-    r_d = acos(sin(r_lat1) * sin(r_lat2) + cos(r_lat1) * cos(r_lat2) * cos(r_lon1-r_lon2));
+
+    // Compute the distance.  We have a choice between using Law of
+    // Cosines or Haversine Formula here.
+
+    // 1) Law of Cosines for Spherical Trigonometry.  This is
+    // unreliable for small distances because the inverse cosine is
+    // ill-conditioned.  A computer carrying seven significant
+    // digits can't distinguish the cosines of distances smaller
+    // than about one minute of arc.
+//    r_d = acos(sin(r_lat1) * sin(r_lat2) + cos(r_lat1) * cos(r_lat2) * cos(r_lon1-r_lon2));
+
+
+    // 2) Haversine Formula.  Returns answer in meters.
+    r_m = calc_distance_haversine_radian(r_lat1, r_lon1, r_lat2, r_lon2);
+    r_d = r_m / 6367000.0;  // Back to unit sphere
+
 
     // Compute the course:
     if (cos(r_lat1) < 0.0000000001) {
@@ -2398,6 +2502,17 @@ double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *co
 
     // Return the distance (nautical miles?)
     ret = r_d*180*60/M_PI;
+
+/*
+// Convert from nautical miles to feet
+fprintf(stderr,"Law of Cosines Distance: %fft\t%fmi\n",
+    ret*5280.0*1.15078, ret*1.15078);
+// Convert from meters to feet
+fprintf(stderr,"     Haversine Distance: %fft\t%fmi\n\n",
+    calc_distance_haversine(lat1, lon1, lat2, lon2)*3.28084,
+    calc_distance_haversine(lat1, lon1, lat2, lon2)/1000/1.609344);
+*/
+
     return(ret);
 }
 
