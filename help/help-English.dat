@@ -76,6 +76,9 @@ GPS clock setting
 Dropping setuid root privs
 Tracked proximity alarms
 Tracking self
+Different Coordinate systems
+Different rain guage sizes
+Shapefile weather alerts
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -856,11 +859,8 @@ Dos/WinAPRS maps.  As you zoom in, more labels will appear, assuming you've
 selected the GNIS file as a map and have enabled Map Labels in the Maps menu.
 
 WX County Maps
-All WX County maps should be stored in the /usr/local/xastir/Counties
-directory. There are different formats for the maps, but either way this
-directory will have subdirectories for each state/marine area (2 letter
-abbreviations). The older format uses <ST><COUNTYNAME>.map, while the new
-format uses <ST>Z<NWSZONECODE>.map. Installation is explained in more detail in
+All WX County maps should be stored in the /usr/local/xastir/Counties and
+Xastir only supports the new shapefile standard. Installation is explained in
 the README.1ST section on obtaining maps.
 
 As NWS messages are received, different areas will get tinted to designate

@@ -42,8 +42,8 @@ Short summary of libraries Xastir can use:
 -------------------------------------------------------------------------
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
 pthreads                        Required  Threading capability
+Shapelib                      Recommended ESRI Shapefile maps and wx alerts
 Xpm                             Optional  XPM images
-Shapelib                        Optional  ESRI Shapefile maps
 ImageMagick                     Optional  Many graphics images
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
@@ -52,8 +52,7 @@ wget                            Optional  Internet images as maps
 
 Installing only the required libs gives you these capabilities:
 PocketAPRS/aprsDOS/WinAPRS/MacAPRS maps, GNIS maps (really just lots
-of labels), weather alert maps, serial port and internet gateway
-connectivity.
+of labels), serial port and internet gateway connectivity.
 
 Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
 the "gv" utility gives you printing capability.  Postscript or
@@ -125,9 +124,7 @@ For speech support via the festival speech synthesis software you need:
     festival from sources to make it work properly.
 
 
-For ESRI Shapefile format maps/weather alert maps (Shapefile weather
-   alerts are not implemented yet, but will be soon.  Shapefile regular maps
-   ARE supported):
+For ESRI Shapefile format maps/weather alert maps:
     Shapelib:
         http://gdal.velocet.ca/projects/shapelib/index.html
 
@@ -369,9 +366,9 @@ First Time Install:
        delete "config.status" and "config.cache" files first.
 
 
-   4. OPTIONAL:  Install ESRI Shapefile support.  Allows using many sources
+   4. RECOMMENDED:  Install ESRI Shapefile support.  Allows using many sources
      of online polygon and polyline maps, including ones from NOAA.  This
-     will eventually be the desired (and only?) format for weather alert maps.
+     is now the only format for weather alert maps.
      The instructions aren't clear in this package, but just installing the
      library is sufficient:
        make lib
@@ -1090,39 +1087,33 @@ Getting Data Files for Xastir:
       function.
 
      County Warning maps:
+      All WX County maps should be stored in the /usr/local/xastir/Counties
+
       WinAPRS style:
-       These maps are needed for the highlighting of counties that have weather
-       alerts.
-
-       Here are two places on the Internet you can get these maps:
-
-         ftp://aprs.rutgers.edu/pub/hamradio/APRS/NWSCounties/
-         http://home.earthlink.net/~kg5qd/Maps.html
-
-       All WX County maps should be stored in the /usr/local/xastir/Counties
-       directory. There are different formats for the maps, but either way this
-       directory will have subdirectories (you may need to create these) for
-       each state/marine area (2 letter abbreviations).
-
-               /usr/local/xastir/Counties
-                                         /CO/
-                                         /CO/COPARK.map
-                                         /CO/CODOUGLA.map
-                                         /CO/COZ001.map
-                                         /CO/COZ002.map
-                                         /NJ/
-                                         /NJ/NJOCEAN.map
-                                         /NJ/NJBERGEN.map
-                                         /NJ/NJZ001.map
-                                         /NJ/NJZ002.map
-
-       It is recommended for now to download both formats; these will become
-       obsolete when shapefile weather alerts are functional.
+       Xastir no longer suppports WinAPRS style county maps. Please download
+       and install the shapefile format maps as described below.
 
       Shapefile style:
-       (FIXME: This feature isn't finished)
+       The shapefile format weather maps may be found here:
+       http://isl715.nws.noaa.gov/mapdata/newcat/
 
-     Download audio files at:
+        The files of interest are:
+
+        WSOM Chapter Libraries:
+        -----------------------
+        County Warning Areas
+        Zone Forecast Areas
+        Coastal and Offshore Marine Zones
+        High Seas Marine Zones (perhaps)
+
+        County Libraries:
+        -----------------
+        AWIPS Counties
+
+      Unzip those files in the /usr/local/xastir/Counties/ directory and
+      Xastir should find them and use them for weather alerts. The 
+
+     Download audio files:
 
        To play the wav files you will need a program such as vplay to play the
        audio file through your sound card.

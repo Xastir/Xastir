@@ -36,15 +36,16 @@ The Questions
 
 4.  Running XASTIR
 
-    4.1 I got a segfault using a non-English language file.
-    4.2 Why do I get wrong texts in menus or other places when using a
+    4.1 Why do I get wrong texts in menus or other places when using a
         non-English language file?
-    4.3 I run Xastir under Linux, and I get an error about loading a shared
+    4.2 I run Xastir under Linux, and I get an error about loading a shared
         library.
-    4.4 I run Xastir under Linux, and try to set up an ax25 device, but get a
+    4.3 I run Xastir under Linux, and try to set up an ax25 device, but get a
         "Hard Fail" error on the interface. There is a "permission denied" error
         in the terminal from which I started Xastir.
-    4.5 I run Xastir, and get on the air, but nobody else sees me on their screens.
+    4.4 I run Xastir, and get on the air, but nobody else sees me on their screens.
+    4.5 I run Xastir, and get on the air, but none of the other stations
+        appear on my screen?
     4.6 Who is this APX110 guy who all my stuff is getting sent to? Who are these
         RELAY, WIDE and TRACE people digipeating packets, and why are they putting
         different callsigns in the fields where their names used to be? Why
@@ -239,13 +240,8 @@ The Answers
 
 4. Running XASTIR
 
-    4.1 I got a segfault using a non-English language file.
 
-    Run XASTIR with the English language file, if the problem is gone,
-    the language file you are using needs an update. The reason may
-    be missing or wrong format strings.
-
-    4.2 Why do I get wrong texts in menus or other places when using a
+    4.1 Why do I get wrong texts in menus or other places when using a
         non-English language file?
 
     The development is done mainly with the English language file, so
@@ -256,7 +252,7 @@ The Answers
     in the English language file to your language file. And send it to
     the XASTIR development team...
 
-    4.3 I run Xastir under Linux, and I get an error about loading a shared
+    4.2 I run Xastir under Linux, and I get an error about loading a shared
         library.
 
     Xastir uses many shared libraries, including lesstif, and perhaps libax25,
@@ -280,7 +276,7 @@ The Answers
     libraries built with both versions is bound to cause trouble. This setup
     has caused many people lots of headaches. Just upgrade your distribution.
 
-    4.4  I run Xastir under Linux, and try to set up an ax25 device, but get a
+    4.3  I run Xastir under Linux, and try to set up an ax25 device, but get a
          "Hard Fail" error on the interface. There is a "permission denied"
          error in the terminal from which I started Xastir.
 
@@ -289,7 +285,7 @@ The Answers
     edit its source callsign, and use other advanced options that the Linux
     ax25 stack restricts to root.
 
-    4.5 I run Xastir, and get on the air, but nobody else sees me on their
+    4.4 I run Xastir, and get on the air, but nobody else sees me on their
         screens.
 
     From a software standpoint, check that you have transmitting enabled
@@ -302,7 +298,7 @@ The Answers
     An easy way to determine if your hardware works correctly is to try it on
     conventional packet.
 
-    4.6 Who is this APX110 guy who all my stuff is getting sent to? Who are
+    4.5 Who is this APX112 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are
         they putting different callsigns in the fields where their names used
         to be? Why doesn't anyone answer me when I connect to them? HELP!!!
@@ -335,20 +331,22 @@ The Answers
     countries!) There are also experimental systems for sending messages via
     amateur radio satellites, but that is beyond the scope of this FAQ.
 
-    4.7 When weather alerts come in, the counties on my map don't highlight.
+    4.5 I run Xastir, and get on the air, but none of the other stations
+        appear on my screen?
 
-    First of all, did you download and install the county maps as described in
-    the README.1ST?
+    Did you set up your TNC startup files correctly to remove any extra data
+    from the packet headers? See README.1ST.
 
-    Check View|Weather alerts: Are the alerts listed? Are they in COZ## (zone)
-    format, or are they in the older name format? Do you have the maps of
-    that format installed? It is recommended to install both formats, as
-    sometimes there are alerts in an area with the opposite format of the
-    usual.
+    Second, check that ALTNET support in File|Configure|Defaults isn't enabled.
+
+    4.6 When weather alerts come in, the counties on my map don't highlight.
+
+    First of all, did you download and install the new shaepfile weather maps
+    as described in the README.1ST? Did you compile with shapefile support?
 
     Second, check that Map|Map WX Alert Counties is turned on.
 
-    4.8 I have geoTIFF support compiled and working, but when I select a map,
+    4.7 I have geoTIFF support compiled and working, but when I select a map,
         it gives me a -38 error converting the datum, and it doesn't display in
         the right place.
 
@@ -359,7 +357,7 @@ The Answers
     sure it is one of the ones supported by Xastir. The listgeo program
     included with libgeotiff can tell you the datum of a map.
 
-    4.9 Xastir runs slowly/loads maps slowly.
+    4.8 Xastir runs slowly/loads maps slowly.
 
     There are many things that can effect the speed of your Xastir software,
     including the speed of the computer, the amount of memory available, the
@@ -377,7 +375,7 @@ The Answers
     compiled Xastir or libax25/libtiff/libgeotiff/etc with debugging (-g),
     recompile these software without debugging and with optimization ON (-O2).
 
-    4.10 I installed a new version of lesstif, but the help menu shows the old
+    4.9 I installed a new version of lesstif, but the help menu shows the old
          version.
 
     The help menu shows the version of lesstif that Xastir was compiled with,
