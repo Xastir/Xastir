@@ -751,7 +751,7 @@ else
   #
   AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
   if test "$use_imagemagick" = "yes"; then
-    MAGIC_BIN=`/sw/bin/Magick-config` 
+    MAGIC_BIN="/sw/bin/Magick-config"
   else
     AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
   fi
