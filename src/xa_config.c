@@ -957,7 +957,7 @@ void load_data_or_default(void) {
         strcpy (name, name_temp);
         strcat (name, "TNC_TXTAIL");
         if (!get_string (name, devices[i].txtail))
-            strcpy (devices[i].txtail, "10");
+            strcpy (devices[i].txtail, "30");
 
         strcpy (name, name_temp);
         strcat (name, "TNC_FULLDUPLEX");

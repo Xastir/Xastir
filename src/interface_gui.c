@@ -1197,7 +1197,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                 XmTextFieldSetString(TNC_txdelay,"40");
                 XmTextFieldSetString(TNC_persistence,"63");
                 XmTextFieldSetString(TNC_slottime,"20");
-                XmTextFieldSetString(TNC_txtail,"10");
+                XmTextFieldSetString(TNC_txtail,"30");
             }
             else {
                 XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
