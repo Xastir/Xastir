@@ -22509,7 +22509,7 @@ int main(int argc, char *argv[]) {
 #endif  // USE_LARGE_SYSTEM_FONT
 
 #ifdef USE_SMALL_SYSTEM_FONT
-        "*.fontList: -*-*-*-*-*-*-8-*-*-*-*-*-*-*\n",
+        "*.fontList: -*-*-*-*-*-*-7-*-*-*-*-*-*-*\n",
 #endif  // USE_SMALL_SYSTEM_FONT
 
         "*List.Translations: #override \n\
