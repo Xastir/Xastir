@@ -32,6 +32,7 @@
 // Max number of WIDE digipeaters allowed
 #define MAX_WIDES 3
 
+extern void xastir_debug(int my_debug_level, char *debug_string);
 extern char *remove_leading_spaces(char *data);
 extern char *remove_trailing_spaces(char *data);
 extern char *remove_trailing_asterisk(char *data);
