@@ -966,7 +966,43 @@ Getting Data Files for Xastir:
       but requires free registration.  A example of these types of files can
       be found at "http://wetnet.net/~we7u/xastir/maps/shapefile/USA/WA/".
       You'll need to run "tar xzvf <filename>" on each one of the files
-      from that last site after downloading.
+      from that last site after downloading.  Some layers that may be of
+      interest:
+
+
+        CMSA/MSA Polygons 2000              tgr*msa00.shp
+        PMSA Polygons 2000                  tgr*pms00.shp
+        Consolidated Cities                 tgr*city.shp
+        County - Current                    tgr*cty.shp
+        County 2000                         tgr*cty00.shp
+        Designated Places 2000              tgr*plc00.shp
+        Designated Places Current           tgr*plccu.shp
+        Key Geographic Locations            tgr*kgl.shp
+        Landmark Points                     tgr*lpt.shp
+        Landmark Polygons                   tgr*lpy.shp
+        Line Features - Hydrography         tgr*lkH.shp
+        Line Features - Landmarks           tgr*lkD.shp
+        Line Features - Misc. Transport     tgr*lkC.shp
+        Line Features - Non-visible         tgr*lkF.shp
+        Line Features - Physical            tgr*lkE.shp
+        Line Features - Rails               tgr*lkB.shp
+        Line Features - Roads               tgr*lkA.shp
+        Line Features - Unknown             tgr*lkX.shp
+        School Districts - Elementary       tgr*elm.shp
+        School Districts - Middle           tgr*mid.shp
+        School Districts - Secondary        tgr*sec.shp
+        School Districts - Unified          tgr*uni.shp
+        Traffic Analysis Zones              tgr*taz.shp
+        Urban Areas                         tgr*urb.shp
+        Water Polygons                      tgr*wat.shp
+        Alternate Feature Names             tgr*alt.shp
+        Address Matching Info               tgr*add2.shp
+        ZIP+4 Left and Right Info           tgr*zip.shp
+        Key Geographic Location Addresses   tgr*add.shp
+        Landmark Polygon Names              tgr*lpy2.shp
+        Landmark Polygons Multi-Landmark    tgr*lpy3.shp
+        Water Polygons Multi-Names          tgr*wat2.shp
+
 
       Other shapefiles are available from esri.com, geographynetwork.com
       and gisdatadepot.com (from their "free data" link).  Lot's of useful
@@ -1139,6 +1175,21 @@ Getting Data Files for Xastir:
 
       Unzip those files in the /usr/local/xastir/Counties/ directory and
       Xastir should find them and use them for weather alerts.
+
+      These are what I currently have loaded:
+
+            hz02oc01.shp
+            w_25ap02.shp
+            oz18jn02.shp
+            c_30au02.shp
+            z_30au02.shp
+            mz10se02.shp
+           
+       Note that you can also use the county file as the background polygon
+       filled map for drawing county lands and borders.  Either make a link
+       to these files from your maps directory, or copy the files there so
+       that they show up in the Map Chooser.
+ 
 
      Download audio files:
 
