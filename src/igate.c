@@ -539,6 +539,29 @@ void output_igate_net(char *line, int port, int third_party) {
         return;
     }
 
+    // Check for generic queries, which have a '?' mark as the first
+    // character in the message field.  We don't wish to gate these.
+    if (message[0] == '?') {
+
+        if (log_igate && (debug_level & 1024) ) {
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "IGATE RF->NET(%c):%s\n",
+                third_party ? 'T':'N',
+                line);
+            log_data(LOGFILE_IGATE,temp);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "REJECT: Generic Query\n");
+            log_data(LOGFILE_IGATE,temp);
+
+            fprintf(stderr,temp);
+        }
+        return;
+    }
+
     len = (int)strlen(call_sign);
     for (i=0;i<len;i++) {
 
@@ -687,10 +710,11 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
     if (operate_as_an_igate <= 1)
         return;
 
-    // Check for TCPXX* in string.  If found, we have an
+    // Check for TCPXX in string.  If found, we have an
     // unregistered net user.
-    if (strstr(path,"TCPXX*") != NULL) {
-        // "TCPXX*" was found in the header.  We have an
+    // I removed the trailing asterisk -we7u
+    if (strstr(path,"TCPXX") != NULL) {
+        // "TCPXX" was found in the header.  We have an
         // unregistered user.
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
@@ -709,6 +733,26 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
         return;
     }
 
+    // Don't gate anything with NOGATE in it, in either direction.
+    if ( strstr(path,"NOGATE") != NULL) {
+        // "NOGATE" was found in the header.  Don't gate it.
+        if (log_igate && (debug_level & 1024) ) {
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "IGATE NET->RF(%c):%s\n",
+                third_party ? 'T':'N',
+                line);
+            log_data(LOGFILE_IGATE,temp);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "REJECT: NOGATE found in path!\n");
+            log_data(LOGFILE_IGATE,temp);
+            fprintf(stderr,temp);
+        }
+        return;
+    }
+ 
     // Check whether the source and destination calls have been
     // heard on local RF.
     if (!heard_via_tnc_in_past_hour(call)==1        // Haven't heard destination call in previous hour
@@ -992,10 +1036,11 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
     if (operate_as_an_igate <= 1)
         return;
 
-    // Check for TCPXX* in string!  If found, we have an
+    // Check for TCPXX in string!  If found, we have an
     // unregistered net user.
-    if (strstr(path,"TCPXX*") != NULL) {
-        // "TCPXX*" was found in the header.  We have an
+    // I removed the trailing asterisk --we7u
+    if (strstr(path,"TCPXX") != NULL) {
+        // "TCPXX" was found in the header.  We have an
         // unregistered user.
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
@@ -1014,8 +1059,28 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
         return;
     }
 
-    // no unregistered net user found in string
+    // no unregistered net user found in string.  Look for NOGATE
+    // next.
 
+    if ( strstr(path,"NOGATE") != NULL ) {
+        // "NOGATE" was found in the header.  Don't gate it.
+        if (log_igate && (debug_level & 1024) ) {
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "NWS IGATE NET->RF(%c):%s\n",
+                third_party ? 'T':'N',
+                line);
+            log_data(LOGFILE_IGATE,temp);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "REJECT: NOGATE found in path!\n");
+            log_data(LOGFILE_IGATE,temp);
+            fprintf(stderr,temp);
+        }
+        return;
+    }
+ 
     // see if we can gate NWS messages
     if (!filethere(get_user_base_dir("data/nws-stations.txt"))) {
         if (log_igate && (debug_level & 1024) ) {
