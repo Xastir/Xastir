@@ -738,7 +738,7 @@ POPEM00027|Informazione non completa. Campi vuoti?||
 POPEM00028|Non è possibile aprire il file||
 POPEM00029|Trovato!||
 POPEM00030|Weather Station Symbol||
-POPEM00031|Changed to WX symbol '/_', other option is '\_'||
+POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
 POPEM00032|Warning: Using National Weather Service Symbol!||
 # 
 # Jump Location 

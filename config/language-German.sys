@@ -744,7 +744,7 @@ POPEM00027|Falsche Eingabe.  Einige Felder leer?||
 POPEM00028|Kann Datei nicht öffnen||
 POPEM00029|Gefunden!||
 POPEM00030|Weather Station Symbol||
-POPEM00031|Changed to WX symbol '/_', other option is '\_'||
+POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
 POPEM00032|Warning: Using National Weather Service Symbol!||
 #
 # Karten - Ausschnitt 
