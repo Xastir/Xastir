@@ -28,6 +28,10 @@
    $Id$
 */
 
+#define EARTH_RADIUS_METERS     6378138.0
+#define EARTH_RADIUS_KILOMETERS 6378.138
+#define EARTH_RADIUS_MILES      3963.1836
+
 #define FROM_WGS_84 1
 #define TO_WGS_84   0
 void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, short datumID);

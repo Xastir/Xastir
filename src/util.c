@@ -2339,7 +2339,7 @@ double convert_lon_l2r(long lon) {
 double calc_distance_haversine_radian(double lat1, double lon1, double lat2, double lon2) {
     double dlon, dlat;
     double a, c, d;
-    double R = 6367000.0;   // 6367 km or 3956 mi
+    double R = EARTH_RADIUS_METERS;
     #define square(x) (x)*(x)
 
 
@@ -2482,7 +2482,7 @@ double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *co
     // Conversion from distance in meters back to unit sphere.  This
     // is needed for the course calculation below as well as the
     // later scaling up to feet/meters or miles/km.
-    r_d = r_m / 6367000.0; 
+    r_d = r_m / EARTH_RADIUS_METERS; 
 
 
     // Compute the great-circle bearing

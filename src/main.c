@@ -9442,7 +9442,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 //////////////////////
 
                 if (measuring_distance) {   // Measure distance function
-                    double R = 6367000.0;   // 6367 km or 3956 mi
+                    double R = EARTH_RADIUS_METERS;
 
 
                     // Check whether we already have a box on screen
@@ -9542,13 +9542,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         // Compute correct units
                         switch (english_units) {
                             case 1:     // English
-                                R = 3956.0 * 5280.0;    // feet
+                                R = EARTH_RADIUS_MILES * 5280.0;    // feet
                                 break;
                             case 2:     // Nautical miles and knots
-                                R = 3956.0 * 5280.0;    // feet
+                                R = EARTH_RADIUS_MILES * 5280.0;    // feet
                                 break;
                             default:    // Metric
-                                R = 6367000.0;  // Meters
+                                R = EARTH_RADIUS_METERS; // Meters
                                 break;
                         }
 
@@ -9582,13 +9582,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         // Compute correct units
                         switch (english_units) {
                             case 1:     // English
-                                R = 3956.0; // Statute miles
+                                R = EARTH_RADIUS_MILES; // Statute miles
                                 break;
                             case 2:     // Nautical miles and knots
-                                R = 6367.0/1.852; // Nautical miles
+                                R = EARTH_RADIUS_KILOMETERS/1.852; // Nautical miles
                                 break;
                             default:    // Metric
-                                R = 6367.0;  // kilometers
+                                R = EARTH_RADIUS_KILOMETERS; // kilometers
                                 break;
                         }
 
