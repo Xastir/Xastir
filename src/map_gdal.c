@@ -1047,7 +1047,8 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
     // Draw the polyline
     //
     if (num_points > 0) {
-        int ii;
+        int ii, jj;
+        const char *pjj = NULL;
         double *vectorX;
         double *vectorY;
         double *vectorZ;
@@ -1217,6 +1218,76 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
             free(XI);
         if (YI)
             free(YI);
+
+
+        // Attempt to snag the CFCC field for raw Tiger files.  This
+        // tells us what the feature is and we can get clues from it
+        // as to how to draw the feature.
+        //
+        jj = OGR_F_GetFieldIndex(featureH, "CFCC");
+
+        if (jj != -1) {  // Found one of the fields
+            pjj = OGR_F_GetFieldAsString(featureH, jj);
+//fprintf(stderr,"CFCC: %s\n", pjj);
+        }
+
+        if (pjj) {
+            switch (pjj[0]) {
+
+                case 'A':   // Road
+                case 'P':   // Provisional Road
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                    label_color_guess = 0x08;   // black
+                    break;
+
+                case 'B':   // Railroad
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x44]);  // red
+                    label_color_guess = 0x44;   // red
+                    break;
+
+                case 'C':   // Misc Ground Transportation
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+                    label_color_guess = 0x0e;   // yellow
+                    break;
+
+                case 'D':   // Landmark
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                    label_color_guess = 0x08;   // black
+                    break;
+
+                case 'E':   // Physical Feature
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                    label_color_guess = 0x08;   // black
+                    break;
+
+                case 'F':   // Non-visible Feature
+                    return; // Don't display it!
+                    break;
+    
+                case 'H':   // Hydrography (water)
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
+                    label_color_guess = 0x1a;   // Steel Blue
+                    break;
+
+                case 'X':   // Feature not yet classified
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                    label_color_guess = 0x08;   // black
+                    break;
+
+                default:
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                    label_color_guess = 0x08;   // black
+                    break;
+            }   // End of switch
+        } // End of if
 
 
         // Actually draw the lines
