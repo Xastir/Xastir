@@ -279,6 +279,7 @@
 #include "alert.h"
 #include "xastir.h"
 #include "util.h"
+#include "snprintf.h"
 
 
 alert_entry *alert_list = NULL;
@@ -412,7 +413,7 @@ void alert_print_list(void) {
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
 
         // Schedule a screen update 'cuz we have a new alert
-        alert_redraw_on_update = redraw_on_new_data = 1;
+        alert_redraw_on_update = redraw_on_new_data = 2;
 
         // Scan for an empty entry, fill it in if found
         for (i = 0; i < alert_list_count; i++) {
@@ -625,7 +626,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
             a_ptr->flags[0] = '-';
  
             // Schedule a screen update 'cuz we have an expired alert
-            alert_redraw_on_update = redraw_on_new_data = 1;
+            alert_redraw_on_update = redraw_on_new_data = 2;
         }
     }
     return (level);
@@ -811,7 +812,6 @@ static void alert_build_list(Message *fill) {
     char *ptr;
     DataRow *p_station;
 
-
     if (debug_level & 1)
         printf("alert_build_list\n");
 
@@ -832,6 +832,8 @@ static void alert_build_list(Message *fill) {
         }
 
         entry[0].expiration = time_from_aprsstring(entry[0].activity);
+
+        xastir_snprintf(entry[0].seq,sizeof(entry[0].seq),"%s",fill->seq);
  
         // flags[0] specifies whether it's onscreen or not
         memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
@@ -874,6 +876,7 @@ static void alert_build_list(Message *fill) {
             strcpy(entry[i].alert_tag, entry[0].alert_tag);
             strcpy(entry[i].from, fill->from_call_sign);
             strcpy(entry[i].to, fill->call_sign);
+            strcpy(entry[i].seq, fill->seq);
             entry[i].expiration = entry[0].expiration;
             memcpy(entry[i].flags, entry[0].flags, sizeof(entry[0].flags));
 

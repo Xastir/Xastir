@@ -108,11 +108,23 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
         // Get the previous alert count from the alert list window
         XtVaGetValues(wx_alert_list, XmNitemCount, &item_count, NULL);
 
+//WE7U
         // Step through the alert list.  Create a string for each entry.
         for (n = 0; n < alert_list_count; n++) {
-            xastir_snprintf(temp, sizeof(temp), "%c,%-9s>%-9s:%-9s,%-20s,%s",
-                    alert_list[n].flags[0], alert_list[n].from, alert_list[n].to,
-                    alert_list[n].activity, alert_list[n].alert_tag, alert_list[n].title);
+
+// Y,AFGNPW  >NWS-WARN :191500z  ,WIND         ,WA_Z003
+//            xastir_snprintf(temp, sizeof(temp), "%c,%-9s>%-9s:%-9s,%-20s,%s",
+//                    alert_list[n].flags[0], alert_list[n].from, alert_list[n].to,
+//                    alert_list[n].activity, alert_list[n].alert_tag, alert_list[n].title);
+
+            xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   %-7s   %-7s   %-20s   %s",
+                    alert_list[n].from,
+                    alert_list[n].to,
+                    alert_list[n].activity,
+                    alert_list[n].title,
+                    alert_list[n].alert_tag,
+                    alert_list[n].seq);
+
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
 
@@ -244,6 +256,14 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         (void)XRaiseWindow(XtDisplay(wx_alert_shell), XtWindow(wx_alert_shell));
     }
 } /* Display_Wx_Alert */
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 
 
