@@ -1247,9 +1247,9 @@ WINDOWS/CYGWIN NOTES:
      --- End of note from Charles ---
 
 
-     Install default Cygwin plus these packages via a network install.  Note
-     that clicking on some of these causes others to be selected and
-     downloaded as well:
+     Install default Cygwin (www.cygwin.com) plus these packages via a
+     network install.  Note that clicking on some of these causes others to
+     be selected and downloaded as well, that's ok and necessary:
 
             devel/autoconf
             devel/automake
@@ -1270,28 +1270,27 @@ WINDOWS/CYGWIN NOTES:
             XFree86/lesstif
             XFree86/XFree86-prog
 
-     CVS itself has been tested on Cygwin.  Add these entries to your
-     /home/<user>/.cvsrc file:
+     Add these entries to your /home/<user>/.cvsrc file:
 
             cvs -z3
             update -P -d
             status -v
 
-     Here are the two commands that should bring down the latest CVS Xastir
-     to your Cygwin/Windows session.  Hit <ENTER> when the first command
-     asks you for a password:
+     Here are the two commands to snag the latest CVS Xastir to your
+     Cygwin/Windows session.  Hit <ENTER> when the first command asks you
+     for a password:
 
         cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
         cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
-     If you keep seeing "EOF" at the end of a short error message, it might
+     If you keep seeing "EOF" at the end of a short error message, it could
      be that the anonymous CVS server at SourceForge is overloaded.  Keep
      trying!  Here's the coolest thing about CVS:  Once you've done this
-     initial download, you'll never have to do it again.  You just go into
-     the "xastir" directory and type "cvs update".  That snags down just the
-     _changes_ to the files, not the entire files, and is very fast.
-     Compile and install and you'll be running the latest developer's
-     version!
+     initial source-code download, you'll never have to do the whole thing
+     again.  You just go into the "xastir" directory and type "cvs update".
+     That snags down just the _changes_ to the files, not the entire files,
+     and is very fast.  Compile and install and you'll be running the latest
+     developer's version!
 
         ./bootstrap.sh (This step needed only for those using CVS)
         ./configure
@@ -1308,25 +1307,31 @@ WINDOWS/CYGWIN NOTES:
      around as well in case you mess up while editing.
 
      From the "xterm" window, type "/usr/local/bin/xastir &".  Xastir should
-     start right up.
+     start right up.  You could also type this to make it easier in
+the future to start it up:
 
-     Some map libraries (ImageMagick, Shapelib, libproj, libgeotiff) have
-     been tested (see below) on Cygwin.  Anyone testing more libraries is
-     encouraged to share their findings on the Xastir mailing lists.
+        ln -s /usr/local/bin/xastir /usr/bin/xastir
 
-     As far as what Xastir paths look like from within Windows (in case
-     you're moving maps around with Explorer):  Just prefix them all with
-     "cygwin/".  For instance, maps go into /cygwin/usr/local/xastir/maps
-     instead of /usr/local/xastir/maps.  Xastir will continue to see them
-     as "/usr/local/xastir/maps" though from inside Cygwin.  It kind'a
-     looks like a mini Unix box from inside Cygwin.
+     That will make an xastir link that should be in your path, so just
+     typing "xastir &" should start it from then on.
+
+     The map libraries (ImageMagick, Shapelib, libproj, libgeotiff) have
+     been tested on Cygwin.  Anyone testing other libraries is encouraged to
+     share their findings on the Xastir mailing lists.
+
+     What Xastir paths look like from within Windows (in case you're moving
+     maps around with Explorer):  Just prefix them all with "cygwin/".  For
+     instance, maps go into /cygwin/usr/local/xastir/maps instead of
+     /usr/local/xastir/maps.  Xastir will continue to see them as
+     "/usr/local/xastir/maps" though from inside Cygwin.  It kind'a looks
+     like a mini Unix box from inside Cygwin.
 
      Run Windows in 15-bit color or better (32768 colors or more) or you'll
      get lots of warnings about Xastir not being able to allocate colors
      when it starts up, and the display will be rather stark looking.
 
-     Adding Shapelib to Cygwin (shapelib-1.2.9):
-     -------------------------------------------
+     Adding Shapelib to Cygwin (shapelib-1.2.9 tested):
+     --------------------------------------------------
      1) Edit the Makefile for Shapelib to remove the space after the "-h" on
         the line that starts like this:
 
@@ -1363,8 +1368,8 @@ WINDOWS/CYGWIN NOTES:
          make
          make install (make install-strip can be used after the first time)
 
-     Adding ImageMagick to Cygwin (ImageMagick 5.5.3):
-     -------------------------------------------------
+     Adding ImageMagick to Cygwin (ImageMagick 5.5.3 tested):
+     --------------------------------------------------------
      Download the ImageMagick cygwin binary from www.imagemagick.org or one
      of it's mirrors.  Extract it somewhere, then copy the files/directories
      into the /usr tree (/usr/include and /usr/lib).
@@ -1389,45 +1394,52 @@ WINDOWS/CYGWIN NOTES:
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
-     Adding libproj to Cygwin (proj-4.4.5):
-     --------------------------------------
+     Adding libproj to Cygwin (proj-4.4.5 tested):
+     ---------------------------------------------
  
-     Should be similar to the previous instructions for installing libproj
-     all the way through the "make install" stage, but then you must type
-     these commands when it dies due to an error:
+     Should be similar to the earlier instructions for installing libproj
+     all the way up to and including the "make install" stage, but you must
+     type the following commands when "make install" dies due to an error:
 
-     rm /usr/local/bin/invproj (2nd and later installs only)
-     rm /usr/local/bin/invgeod (2nd and later installs only)
-     ln /usr/local/bin/proj.exe /usr/local/bin/proj
-     ln /usr/local/bin/geod.exe /usr/local/bin/geod
 
-     then again run "make install" to complete the install.
+#       rm /usr/local/bin/invproj (2nd and later installs only)
+#       rm /usr/local/bin/invgeod (2nd and later installs only)
+       ln -s /usr/local/bin/proj.exe /usr/local/bin/proj
+       ln -s /usr/local/bin/geod.exe /usr/local/bin/geod
+
+
+     Run "make install" again to complete the install.
 
      NOTE:  If using proj-4.4.6 or higher, it may install right out of
-     the box with no problems.  Needs further testing.
+     the box with no problems.  Needs further testing to make sure that
+     libgeotiff and Xastir recognize and use this version.
 
-     Adding libgeotiff to Cygwin (libgeotiff-1.1.5):
-     -----------------------------------------------
+     Adding libgeotiff to Cygwin (libgeotiff-1.1.5 tested):
+     ------------------------------------------------------
 
      You may get the "undefined reference impure_ptr" messages (just like
      with Shapelib above).  If so, edit the file /usr/include/sys/reent.h to
      remove the word "extern" from this line:
 
+
         extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
 
 
-     I've had it compile all the way through, and I've had it bomb out at
-     the fine until it gets to the "ld -shared" step.  At that point it
-     bombs out with a hundred or so "undefined reference" messages.  Line
-     at which the compile might fail:
+     I've had it compile all the way through, but I've also had it bomb out
+     when it gets to the "ld -shared" step.  At that point it writes a lot
+     of "undefined reference" messages.  The line at which the compile might
+     fail:
+
 
      ld -shared xtiff.o geo_free.o geo_get.o geo_names.o geo_new.o
      geo_print.o geo_set.o geo_tiffp.o geo_write.o geo_trans.o
      geo_normalize.o geotiff_proj4.o geo_extra.o cpl_serv.o cpl_csv.o -lproj
      -ltiff -ljpeg -lz -lm -L/usr/local/lib -o libgeotiff.so.1.1.5
 
+
      To fix this, edit the Makefile to add "-lc" just before the "-o" on
-     that line and try again.
+     that line and try again (adding it to the end of the LIBS line will
+     have the same effect).
 
      At the "make install" step it may fail to install listgeo and geotifcp
      because they have a .exe extension on Cygwin, which the install script
