@@ -23,6 +23,30 @@ Note that you can start with either of the first two options and add
 only the options you wish in order to come up with your own custom
 configuration of Xastir.
 
+One question you might ask is whether you can just find a binary on
+the 'net somewhere and install it instead of compiling Xastir from
+sources.  Yes, this is possible.  Xastir changes so often (bug fixes
+and of course adding new features) that you're really limiting
+yourself by using pre-compiled binaries.  Binaries are typically not
+updated all that often, if at all, so you'll forever be behind the
+curve.
+
+Another reason to compile from sources is to customize it to use all
+of the features you have available on your system.  As you add more
+libraries that Xastir can use, you can do a quick
+configure/compile/install and Xastir will be able to take advantage
+of them.
+
+For those that really must have the latest-latest:  Download the
+Xastir sources using CVS instead, then issue the command "cvs
+update" periodically in order to snag the latest changes.  If
+anything comes down the pipe, just configure/make/install and then
+use the latest version.  This avoids large file downloads (after the
+initial download) as it just grabs _changes_ to the sources off the
+'net each time you issue the "cvs update" command.  This is the
+power-user's method of keeping Xastir up-to-date.  See README.CVS
+for details.
+
 After the three configuration sections there's a section on
 operating, which simply talks you through the initial configuration
 settings and how things work.  After that you can refer to the Help
