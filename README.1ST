@@ -40,6 +40,9 @@ contribution!
 -- The Xastir Group.
 
 
+WINDOWS USERS:  Please refer to the "WINDOWS/CYGWIN NOTES" section.
+
+
 
 General steps to configure/compiling/installing Xastir (most systems):
 ----------------------------------------------------------------------
@@ -1260,7 +1263,11 @@ WINDOWS/CYGWIN NOTES:
      Ignore the "PACKAGE_* redefined" warnings.  They won't break anything!
 
      Start up X-Windows by running "/usr/X11R6/bin/startxwin.bat".  You
-     might want to create a shortcut to this on your desktop.
+     might want to create a shortcut to this on your desktop.  Actually, if
+     you want to run a better window manager, you can edit the startxwin.bat
+     file to change all instances of "twm" to either "mwm" or "fvwm2".  I
+     prefer the fvwm2 window manager.  Keep a copy of the original script
+     around as well in case you mess up while editing.
 
      From the "xterm" window, type "/usr/local/bin/xastir &".  Xastir should
      start right up.
