@@ -8418,6 +8418,9 @@ static int map_onscreen(long left, long right, long top, long bottom) {
 // little-endian machines.  Same goes for short's, make sure ntohs()
 // is used in all cases.
 //
+// Also Note: It looks like all the values in the data structures are 
+// unsigned, we may have to explicitly define the long's as well.  -KD6ZWR
+//
 void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixmap) {
  
 #pragma pack(1)
@@ -8469,13 +8472,13 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     } record_hdr;
 
     struct {
-        short next_vector;
-        short left_bounds;
-        short right_bounds;
-        short top_bounds;
-        short bottom_bounds;
-        short line_start_x;
-        short line_start_y;
+        unsigned short next_vector;
+        unsigned short left_bounds;
+        unsigned short right_bounds;
+        unsigned short top_bounds;
+        unsigned short bottom_bounds;
+        unsigned short line_start_x;
+        unsigned short line_start_y;
     } vector_hdr;
 
     struct {
@@ -8484,9 +8487,9 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     } vector_point;
 
     struct {
-        short next_label;
-        short start_x;
-        short start_y;
+        unsigned short next_label;
+        unsigned short start_x;
+        unsigned short start_y;
         char symbol_set;
         char symbol_char;
         char color;
@@ -8597,7 +8600,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                     printf("\tType %d, Sub %d, Zoom %d\n",
                         record_hdr.type,
                         record_hdr.sub_type,
-                        ntohs(record_hdr.minimum_zoom));
+                        (unsigned short) ntohs(record_hdr.minimum_zoom));
                 }
 
                 if (record_hdr.type > 0 && record_hdr.type < 16) {
@@ -8606,7 +8609,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
                     while (vector && fread(&vector_hdr, sizeof(vector_hdr), 1, fn)) {
 
-                        count = ntohs(vector_hdr.next_vector);
+                        count = (unsigned short) ntohs(vector_hdr.next_vector);
 
                         if (count && !(count&1)) {
                             line_x = (long)ntohs(vector_hdr.line_start_x);
@@ -8615,10 +8618,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                             if (debug_level & 512) {
                                 printf("\tvector %d, left %d, right %d, top %d, bottom %d, start x %ld, start y %ld\n",
                                     count,
-                                    ntohs(vector_hdr.left_bounds),
-                                    ntohs(vector_hdr.right_bounds),
-                                    ntohs(vector_hdr.top_bounds),
-                                    ntohs(vector_hdr.bottom_bounds),
+                                    (unsigned short) ntohs(vector_hdr.left_bounds),
+                                    (unsigned short) ntohs(vector_hdr.right_bounds),
+                                    (unsigned short) ntohs(vector_hdr.top_bounds),
+                                    (unsigned short) ntohs(vector_hdr.bottom_bounds),
                                     line_x,
                                     line_y);
                             }
