@@ -322,6 +322,7 @@
 #include "xastir.h"
 #include "util.h"
 #include "snprintf.h"
+#include "wx.h"
 
 
 alert_entry *alert_list = NULL;
@@ -729,6 +730,9 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
             a_ptr->title[0] = '\0';                     // so delete it from list by clearing
                                                         // out the title.
+            // Schedule an update 'cuz we need to delete an expired
+            // alert from the list.
+            alert_redraw_on_update = redraw_on_new_data = 2;
         }
         else if (a_ptr->flags[0] == '?') {  // Expired between 1sec and 1hr and found '?'
             a_ptr->flags[0] = '-';
