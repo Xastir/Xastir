@@ -374,7 +374,7 @@ int convert_to_xastir_coordinates ( unsigned long* x,
 /**********************************************************
  * draw_grid()
  *
- * Draws a lat/lon grid on top of the view.
+ * Draws a lat/lon grid or a UTM grid on top of the view.
  **********************************************************/
 void draw_grid(Widget w) {
     int coord;
@@ -390,6 +390,9 @@ void draw_grid(Widget w) {
     if (coordinate_system == USE_UTM) {
 
         // Draw a UTM grid.
+
+// So far we're just drawing the N/S lines for the 60 major zones.
+// More to follow.
 
         // 84 degrees North to 80 degrees South. 60 zones, each
         // covering six (6) degrees of longitude. Each zone extends
@@ -429,6 +432,18 @@ void draw_grid(Widget w) {
         // line.  Do both vertical and horizontal lines for each
         // zone before moving on to the next.  Repeat for each zone
         // in the view.
+
+
+// UTM Zone 32 has been widened to 9° (at the expense of zone 31)
+// between latitudes 56° and 64° (band V) to accommodate southwest
+// Norway. Thus zone 32 it extends westwards to 3°E in the North
+// Sea.  Similarly, between 72° and 84° (band X), zones 33 and 35
+// have been widened to 12° to accommodate Svalbard. To compensate
+// for these 12° wide zones, zones 31 and 37 are widened to 9° and
+// zones 32, 34, and 36 are eliminated. Thus the W and E boundaries
+// of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33
+// - 42 E.
+
 
         unsigned long view_min_x, view_max_x;
         unsigned long view_min_y, view_max_y;
@@ -563,7 +578,6 @@ void draw_grid(Widget w) {
             }
             else {  // Draw a vertical line
                 int x, y1, y2;
-                int ok = 1;
 
 
                 // Convert to screen coordinates.  Careful here!
@@ -580,24 +594,23 @@ void draw_grid(Widget w) {
 
                 // XDrawLines uses 16-bit unsigned integers
                 // (shorts).  Make sure we stay within the limits.
-                if (x >  16000) ok = 0;     // Skip this point
-                if (x < -16000) ok = 0;     // Skip this point
-                if (y1 >  16000) y1 = 10000;
-                if (y1 < -16000) y1 = 10000;
-                if (y2 >  16000) y2 = 10000;
-                if (y2 < -16000) y2 = 10000;
+                if (x >  16000)   x =  10000;
+                if (x < -16000)   x = -10000;
+                if (y1 >  16000) y1 =  10000;
+                if (y1 < -16000) y1 = -10000;
+                if (y2 >  16000) y2 =  10000;
+                if (y2 < -16000) y2 = -10000;
 
-                if (ok) {
-                    (void)XDrawLine(XtDisplay(w),
-                        pixmap_final,
-                        gc,
-                        x,
-                        y1,
-                        x,
-                        y2);
-                }
+                (void)XDrawLine(XtDisplay(w),
+                    pixmap_final,
+                    gc,
+                    x,
+                    y1,
+                    x,
+                    y2);
 
-                // Increment to the next zone boundary
+                // Increment to the next zone boundary in Xastir
+                // coordinate system units.
                 temp_x = temp_x + (360000 * 6);
             }
 
