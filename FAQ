@@ -72,6 +72,7 @@ The Questions
     4.13 Why do I see "Character '\55' not supported in font"?
     4.14 Why do I see strong blue tinting for the maps?
     4.15 My config file got munged.  How do I recover?
+    4.16 Why can't I set my position in Xastir correctly?
 
 5.  Features
 
@@ -582,6 +583,17 @@ The Answers
 
     Older Xastir versions saved only one copy of the config file as
     "xastir.bak".
+
+    4.16 Why can't I set my position in Xastir correctly?
+
+    If you LANG environment variable is set to something other than
+    "en_US", it can cause commas and periods to be swapped when
+    Xastir tries to read/write files.  See question 4.13 above for
+    one solution.  Another solution is to type this when starting
+    Xastir (from a BASH shell.  If you use another type of shell,
+    modify the syntax accordingly):
+
+        export LANG=en_US; xastir &
 
 
 5.  Features
