@@ -197,9 +197,10 @@ void get_path_data(char *callsign, char *path) {
 
         xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
 
-        printf("\nPath from %s: %s\n",
-            callsign,
-            new_path);
+        if(debug_level & 2)
+            printf("\nPath from %s: %s\n",
+                callsign,
+                new_path);
 
 // We need to chop off the first call, remove asterisks and
 // injection ID's, and reverse the order of the callsigns.  We need
@@ -219,7 +220,8 @@ void get_path_data(char *callsign, char *path) {
     }
     else {  // Couldn't find callsign.  It's
             // not in our station database.
-        printf("Path from %s: No Path Known\n",callsign);
+        if(debug_level & 2)
+            printf("Path from %s: No Path Known\n",callsign);
 
         strcpy(path,"");
     }
