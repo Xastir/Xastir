@@ -834,13 +834,15 @@ void draw_grid(Widget w) {
 // lat/long, so they don't line up with the left/right edges of the
 // zones or with the longitude lines.
 
-//WE7U
-// The below code does NOT handle the irregular zones properly
-// (31V/32V/31X/33X/35X/37X). It assumes regular 6 degree zones
-// everywhere.  The irregular zones have sizes of 3/9/12 degrees
-// (width) instead of 6 degrees.  We need to shift the meridian in
-// these zones so that we draw from the central meridian properly
-// for each subzone.
+// According to Peter Dana (Geographer's Craft web pages), even when
+// the major grid boundaries have been shifted, the meridian used
+// for drawing the subgrids is still based on six-degree boundaries
+// (as if the major grid hadn't been shifted at all).  That means we
+// _do_ draw the subgrids correctly as it stands now.
+// The below code handles the irregular zones properly
+// (31V/32V/31X/33X/35X/37X). It assumes regular 6 degree zone
+// meidians.  The irregular zones have sizes of 3/9/12 degrees
+// (width) instead of 6 degrees.
 
 
         // Now setup for drawing zone grid(s)
@@ -906,8 +908,6 @@ void draw_grid(Widget w) {
         while (done < 2) { // 1=done with a zone, 2=completely done
             if (done == 1) {
 
-//WE7U
-// Correct here for the irregularly-sized zones?
                 // Initially, boundary_x = 0 (after we call
                 // utm_grid_clear).
                 xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
@@ -1058,10 +1058,9 @@ void draw_grid(Widget w) {
                     xx1 = screen_width;
                 else {
 
-//WE7U
-// Adjust for irregular zones here?  360,000 Xastir units equals one
-// degree.  This code appears to be adjusting xx1 to a major zone
-// edge.
+                    // 360,000 Xastir units equals one degree.  This
+                    // code appears to be adjusting xx1 to a major
+                    // zone edge.
                     xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
                     xx1 = (xx1 - x_long_offset) / scale_x;
                 }
