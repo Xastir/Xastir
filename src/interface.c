@@ -213,13 +213,13 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
         output_string[0] = (unsigned char)RadioPort;
 
         if (FromCall)   // Write the FromCall string into the frame
-            xastir_snprintf(&output_string[8],
+            xastir_snprintf((char *)&output_string[8],
                 sizeof(output_string) - 8,
                 "%s",
                 FromCall);
 
         if (ToCall) // Write the ToCall string into the frame
-            xastir_snprintf(&output_string[18],
+            xastir_snprintf((char *)&output_string[18],
                 sizeof(output_string) - 18,
                 "%s",
                 ToCall);
@@ -276,13 +276,13 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 // Write login/password out as 255-byte strings each
 
             // Put the login string into the buffer
-            xastir_snprintf(&output_string[header_size],
+            xastir_snprintf((char *)&output_string[header_size],
                 sizeof(output_string) - header_size,
                 "%s",
                 callsign_base);
 
             // Put the password string into the buffer
-            xastir_snprintf(&output_string[header_size+255],
+            xastir_snprintf((char *)&output_string[header_size+255],
                 sizeof(output_string) - header_size - 255,
                 "%s",
                 Data);
@@ -339,11 +339,11 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         strncpy(path_string, Path, sizeof(path_string));
 
         // Convert path_string to upper-case
-        to_upper(path_string);
+        to_upper((char *)path_string);
 
 //fprintf(stderr,"path_string: %s\n", path_string);
 
-        split_string(path_string, ViaCall, 10);
+        split_string((char *)path_string, ViaCall, 10);
 
         // Write the type character into the frame
         output_string[4] = 'V'; // Unproto, via calls present
@@ -796,7 +796,7 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
             //
 //            input_string[data_length+36] = '\0';
 
-            if ( !decode_ax25_header( (char *)&input_string[37], data_length ) ) {
+            if ( !decode_ax25_header( (unsigned char *)&input_string[37], data_length ) ) {
 //                int zz;
 
                 // Had a problem decoding it.  Drop it on the floor.
@@ -813,7 +813,7 @@ special_debug++;
 
             // Good header.  Compute the new length, again skipping
             // the first byte.
-            data_length = strlen(&input_string[37]);
+            data_length = strlen((const char *)&input_string[37]);
  
 // The above strlen() requires it to be printable ascii in the KISS
 // packet, so won't work for OpenTrac protocol or other binary
@@ -843,10 +843,10 @@ special_debug++;
             }
 
             // Compute data_length again.
-            data_length = strlen(&input_string[37]);
+            data_length = strlen((const char *)&input_string[37]);
 
             // Send the processed string back for decoding
-            xastir_snprintf(output_string,
+            xastir_snprintf((char *)output_string,
                 output_string_length,
                 "%s",
                 &input_string[37]);
@@ -918,7 +918,7 @@ special_debug++;
 
     // Search for "]" (0x5d) which is the end of the header string,
     // beginning of the AX.25 information field.
-    info_ptr = strstr(&input_string[36], "]");
+    info_ptr = strstr((const char *)&input_string[36], "]");
 
     // If not found, we can't process anymore
     if (!info_ptr) {
@@ -994,16 +994,16 @@ special_debug++;
     // We end up with 0x0d characters on the end.  Get rid of them.
     // The strtok() function will overwrite the first one found with
     // a '\0' character.
-    (void)strtok(output_string, "\n");
-    (void)strtok(output_string, "\r");
+    (void)strtok((char *)output_string, "\n");
+    (void)strtok((char *)output_string, "\r");
 
-    *new_length = strlen(output_string);
+    *new_length = strlen((const char *)output_string);
 
     if (special_debug) {
         // Print out the resulting string
         fprintf(stderr,"AGWPE RX: %s\n", output_string);
         fprintf(stderr,"new_length: %d\n",*new_length);
-        for (ii = 0; ii < strlen(output_string); ii++) {
+        for (ii = 0; ii < strlen((const char *)output_string); ii++) {
             fprintf(stderr,"%02x ",output_string[ii]);
         }
         fprintf(stderr,"\n");
@@ -1145,7 +1145,7 @@ void channel_data(int port, unsigned char *string, int length) {
     // Save a backup copy of the incoming string.  Used for
     // debugging purposes.  If we get a segfault, we can print out
     // the last message received.
-    xastir_snprintf(incoming_data_copy,
+    xastir_snprintf((char *)incoming_data_copy,
         sizeof(incoming_data_copy),
         "Port%d:%s",
         port,
@@ -1160,7 +1160,7 @@ void channel_data(int port, unsigned char *string, int length) {
         return;
 
     if (length == 0)
-        length = strlen(string);
+        length = strlen((const char *)string);
 
     // Check for excessively long packets.  These might be TCP/IP
     // packets or concatenated APRS packets.  In any case it's some
@@ -1789,7 +1789,7 @@ int OpenTrac_decode_entityid(unsigned char *element,
         *entity_ssid = OpenTrac_extract_ssid(entity_call);
     }
     else {  // Not enough, so use origin_call instead
-        xastir_snprintf(entity_call,
+        xastir_snprintf((char *)entity_call,
             10,
             "%s",
             origin_call);
@@ -2251,7 +2251,7 @@ int OpenTrac_decode_symbol(unsigned char *element,
         // string.  Once we find a match, the last two chars in the
         // string are our symbol table and symbol.  If we don't find
         // a match, we use the default "//" symbol (a dot) instead.
-        if ( strncasecmp(&symbol_translate[ii][2],split,len) == 0 ) {
+        if ( strncasecmp(&symbol_translate[ii][2],(const char *)split,len) == 0 ) {
             // Found a match
 //fprintf(stderr,"Found a match: %s in %d", split, ii);
             len = strlen(&symbol_translate[ii][0]);
@@ -3056,7 +3056,7 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
     comment[0]     = '\0';
 
     // Fill origin with source-call/SSID initially.
-    xastir_snprintf(origin_call,
+    xastir_snprintf((char *)origin_call,
         sizeof(origin_call),
         "%s",
         source_call);
@@ -4827,13 +4827,13 @@ void fix_up_callsign(unsigned char *data, int data_size) {
 
 
     // Check whether we've digipeated through this callsign yet.
-    if (strstr(data,"*") != 0) {
+    if (strstr((const char *)data,"*") != 0) {
          digipeated_flag++;
     }
 
     // Change callsign to upper-case and pad out to six places with
     // space characters.
-    for (i = 0; i < (int)strlen(data); i++) {
+    for (i = 0; i < (int)strlen((const char *)data); i++) {
         toupper(data[i]);
 
         if (data[i] == '-') {   // Stop at '-'
@@ -4851,9 +4851,9 @@ void fix_up_callsign(unsigned char *data, int data_size) {
 
     // Handle SSID.  'i' should now be pointing at a dash or at the
     // terminating zero character.
-    if ( (i < (int)strlen(data)) && (data[i++] == '-') ) {   // We might have an SSID
+    if ( (i < (int)strlen((const char *)data)) && (data[i++] == '-') ) {   // We might have an SSID
         if (data[i] != '\0')
-            ssid = atoi(&data[i]);
+            ssid = atoi((const char *)&data[i]);
 //            ssid = data[i++] - 0x30;    // Convert from ascii to int
 //        if (data[i] != '\0')
 //            ssid = (ssid * 10) + (data[i] - 0x30);
@@ -4882,7 +4882,7 @@ void fix_up_callsign(unsigned char *data, int data_size) {
 
     // Write over the top of the input string with the newly
     // formatted callsign
-    xastir_snprintf(data,
+    xastir_snprintf((char *)data,
         data_size,
         "%s",
         new_call);
@@ -4982,18 +4982,18 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     transmit_txt[0] = '\0';
 
     // Format the destination callsign
-    xastir_snprintf(temp_dest,
+    xastir_snprintf((char *)temp_dest,
         sizeof(temp_dest),
         "%s",
         destination);
     fix_up_callsign(temp_dest, sizeof(temp_dest));
-    xastir_snprintf(transmit_txt,
+    xastir_snprintf((char *)transmit_txt,
         sizeof(transmit_txt),
         "%s",
         temp_dest);
 
     // Format the source callsign
-    xastir_snprintf(temp_source,
+    xastir_snprintf((char *)temp_source,
         sizeof(temp_source),
         "%s",
         source);
@@ -5028,7 +5028,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
     // Set the end-of-address bit on the last callsign in the
     // address field
-    transmit_txt[strlen(transmit_txt) - 1] |= 0x01;
+    transmit_txt[strlen((const char *)transmit_txt) - 1] |= 0x01;
 
     // Add the Control byte
     control[0] = 0x03;
@@ -5059,7 +5059,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     // specified:
     transmit_txt2[j++] = 0x00;
 
-    for (i = 0; i < (int)strlen(transmit_txt); i++) {
+    for (i = 0; i < (int)strlen((const char *)transmit_txt); i++) {
         c = transmit_txt[i];
         if (c == KISS_FEND) {
             transmit_txt2[j++] = KISS_FESC;

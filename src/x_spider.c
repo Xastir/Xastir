@@ -489,7 +489,7 @@ int pipe_check(char *client_address) {
             }
             free(p);    // Free the malloc'd memory.
 
-            (void)wait((int *)NULL);    // Reap the status of the dead process
+            wait(NULL); // Reap the status of the dead process
         }
         else if (n < 0) {
             //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);

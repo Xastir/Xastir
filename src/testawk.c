@@ -47,7 +47,11 @@
 #include "dbfawk.h"
 
 
-
+// Macros that help us avoid warnings on 64-bit CPU's.
+// Borrowed from the freeciv project (also a GPL project) and
+// modified slightly.
+#define INT_TO_POINTER(m_i)  ((void *)((long)(m_i)))
+#define POINTER_TO_INT(m_p)  ((int)((long)(m_p)))
 
 
 /*
@@ -74,7 +78,7 @@ void print_symtbl(awk_symtab *this) {
 
 //    fprintf(stderr,"symtbl 0%0x dump:\n",(u_int)this);
     fprintf(stderr,"symtbl 0%0x dump:\n",
-        XTPOINTER_TO_INT((XtPointer)this) );
+        POINTER_TO_INT((void *)this) );
     for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
       for (s = this->hash[i]; s; s = s->next_sym) {
         *buf = '\0';
