@@ -13,7 +13,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltcon
 
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
-        config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs
+        config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs \
         xastir.spec
 
 countydir=${prefix}/xastir/Counties
