@@ -614,7 +614,7 @@ int sb_current_heading;         // Most recent heading parsed from GPS sentence
 int sb_turn_min = 20;           // Min threshold for corner pegging (degrees)
 int sb_turn_slope = 25;         // Threshold slope for corner pegging (degrees/mph)
 int sb_turn_time = 5;           // Time between other beacon & turn beacon (secs)
-int sb_posit_fast = 60;         // Fast beacon rate (secs)
+int sb_posit_fast = 90;         // Fast beacon rate (secs)
 int sb_posit_slow = 30;         // Slow beacon rate (mins)
 int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing is disabled &
                                 // we'll beacon at the POSIT_slow rate (mph)

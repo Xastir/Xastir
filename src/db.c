@@ -7319,63 +7319,78 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
 
 
-// Code to compute SmartBeaconing rates
+// Code to compute SmartBeaconing rates.
+//
+// Input: Course in degrees
+//        Speed in knots
+//
+// With the defaults compiled into the code, here are the
+// turn_thresholds for a few speeds:
+
+// > 60mph  20 degrees
+//   50mph  25 degrees
+//   40mph  26 degrees
+//   30mph  28 degrees
+//   20mph  33 degrees
+//   10mph  45 degrees
+//    3mph 103 degrees
+//    2mph 145 degrees
+//
+// I added a max threshold of 80 degrees into the code.  145 degrees
+// is unreasonable to expect.
+//
 void compute_smart_beacon(char *current_course, char *current_speed) {
     int course;
     int speed;
     int turn_threshold;
     time_t secs_since_beacon;
     int heading_change_since_beacon;
+    int beacon_now = 0;
 
-//
-// Need to convert everything from knots to mph/kph
-//
+    // Convert from knots to mph/kph (whichever is selected)
+    speed = atoi(current_speed) * cvt_kn2len;
 
     course = atoi(current_course);
-    speed = atoi(current_speed);
-    sb_current_heading = course;    // Save current heading for use later
+ 
     secs_since_beacon = sec_now() - posit_last_time;
-    heading_change_since_beacon = abs(course - sb_last_heading);
-    if (heading_change_since_beacon > 180)
-        heading_change_since_beacon = 360 - heading_change_since_beacon;
-
+ 
     // Check for the low speed threshold, set to slow posit rate if
     // we're going slow.
     if (speed <= sb_low_speed_limit) {
         //printf("Slow speed\n");
 
+
+// EXPERIMENTAL!!!
+///////////////////////////////////////////////////////////////////
         // Check to see if we're just crossing the threshold, if so,
         // beacon.  This keeps dead-reckoning working properly on
         // other people's displays.
-        if (sb_POSIT_rate != (sb_posit_slow * 60) ) { // Previous rate was _not_ the slow rate
-            posit_next_time = 0;    // Force a posit right away
-            //printf("Stopping, POSIT!\n");
-        }
+//        if (sb_POSIT_rate != (sb_posit_slow * 60) ) { // Previous rate was _not_ the slow rate
+//            beacon_now++; // Force a posit right away
+//            //printf("Stopping, POSIT!\n");
+//        }
+///////////////////////////////////////////////////////////////////
+
 
         // Set to slow posit rate
         sb_POSIT_rate = sb_posit_slow * 60; // Convert to seconds
     }
     else {  // We're moving faster than the low speed limit
 
+
+// EXPERIMENTAL!!!
+///////////////////////////////////////////////////////////////////
         // Check to see if we're just starting to move
-        if ( (secs_since_beacon > sb_turn_time)    // Haven't beaconed for a bit
-                && (sb_POSIT_rate == (sb_posit_slow * 60) ) ) { // Last rate was the slow rate
-            posit_next_time = 0;    // Force a posit right away
-            //printf("Starting to move, POSIT!\n");
-        }
+//        if ( (secs_since_beacon > sb_turn_time)    // Haven't beaconed for a bit
+//                && (sb_POSIT_rate == (sb_posit_slow * 60) ) ) { // Last rate was the slow rate
+//            beacon_now++; // Force a posit right away
+//            //printf("Starting to move, POSIT!\n");
+//        }
+///////////////////////////////////////////////////////////////////
 
-        // Adjust turn threshold according to speed
-        turn_threshold = (sb_turn_min + sb_turn_slope) / speed;
 
-        // Corner-pegging
-        if ( (heading_change_since_beacon > turn_threshold)
-                && (secs_since_beacon > sb_turn_time) ) {
-            posit_next_time = 0;    // Force a posit right away
-            //printf("Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\n",
-            //    sb_last_heading,
-            //    course,
-            //    heading_change_since_beacon);
-        }
+        // Start with turn_min degrees as the threshold
+        turn_threshold = sb_turn_min;
 
         // Adjust rate according to speed
         if (speed > sb_high_speed_limit) {  // We're above the high limit
@@ -7385,8 +7400,41 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         else {  // We're between the high/low limits.  Set a between rate
             sb_POSIT_rate = (sb_posit_fast * sb_high_speed_limit) / speed;
             //printf("Setting medium rate\n");
+
+            // Adjust turn threshold according to speed
+            turn_threshold = turn_threshold
+                + ( (sb_turn_slope * 10) / speed);
+        }
+
+// New stuff
+        // Maximum turn threshold of 80 degrees
+        if (turn_threshold > 80)
+            turn_threshold = 80;
+ 
+        // Corner-pegging.  Note that we don't corner-peg if we're
+        // below the low-speed threshold.
+        heading_change_since_beacon = abs(course - sb_last_heading);
+        if (heading_change_since_beacon > 180)
+            heading_change_since_beacon = 360 - heading_change_since_beacon;
+
+        if ( (heading_change_since_beacon > turn_threshold)
+                && (secs_since_beacon > sb_turn_time) ) {
+            beacon_now++;   // Force a posit right away
+            //printf("Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\n",
+            //    sb_last_heading,
+            //    course,
+            //    heading_change_since_beacon);
         }
     }
+    if (beacon_now) {
+        posit_next_time = 0;    // Force a posit right away
+    }
+
+    // Save course for use later.  It gets put into sb_last_heading
+    // in UpdateTime() if a beacon occurs.  We then use it above to
+    // determine the course deviation since the last time we
+    // beaconed.
+    sb_current_heading = course;
 }
 
 
