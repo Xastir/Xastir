@@ -4175,11 +4175,25 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                 (XtPointer)p_station);
         }
 
-        // Add Snag NWS Info button if it is an object or item and
-        // has "WXSVR" in its path somewhere.
+        // Add "Fetch NWS Info" button if it is an object or item
+        // and has "WXSVR" in its path somewhere.
+        //
+        // Note from Dale Huguley:
+        //   "I would say an object with 6 upper alpha chars for the
+        //   "from" call and " {AAAAA" (space curly 5 alphanumerics)
+        //   at the end is almost guaranteed to be from Wxsvr.
+        //   Fingering for the six alphas and the first three
+        //   characters after the curly brace should be a reliable
+        //   finger - as in SEWSVR>APRS::a_bunch_of_info_in_here_
+        //   {H45AA finger SEWSVRH45@wxsvr.net"
+        //
+        // Note from Curt:  I had to remove the space from the
+        // search as well, 'cuz the multipoint objects don't have
+        // the space before the final curly-brace.
+        //
         if ( ( (p_station->flag & ST_OBJECT) || (p_station->flag & ST_ITEM) )
-                && (p_station->node_path_ptr != NULL)
-                && ( strstr(p_station->node_path_ptr, "WXSVR") != NULL ) ) {
+                && (p_station->comment_data != NULL)
+                && ( strstr(p_station->comment_data->text_ptr, "{") != NULL ) ) {
             button_nws = XtVaCreateManagedWidget(langcode("WPUPSTI064"),xmPushButtonGadgetClass, form,
  
                             XmNtopAttachment, XmATTACH_NONE,
@@ -4193,10 +4207,31 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
+
+            // We need to contruct the "special" finger address.
+            // We'll use the FROM callsign and the first three chars
+            // of the curly-brace portion of the comment field.
+            // Callsign in this case is from the "origin" field.
+            // The curly-brace text is at the end of one of the
+            // "comment_data" records, hopefully the first one
+            // checked (most recent).
+            //
+            static char temp[25];
+            char *ptr3;
+
+
+            strncpy(temp,p_station->origin,6);
+            temp[6] = '\0';
+            ptr3 = strstr(p_station->comment_data->text_ptr,"{");
+            ptr3++; // Skip over the '{' character
+            strncat(temp,ptr3,3);
+
+//fprintf(stderr,"New Handle: %s\n", temp);
+
             XtAddCallback(button_nws,
                 XmNactivateCallback,
                 Station_data_wx_alert,
-                (XtPointer)p_station->call_sign);
+                (XtPointer)temp);
         }
 
         // Add FCC button only if probable match
