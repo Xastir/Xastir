@@ -1961,6 +1961,23 @@ int OpenTrac_decode_maidenhead(unsigned char *element,
 
 
 
+// 0x33 - Radio Capabilities
+//
+//WE7U
+// Modifies: Nothing yet
+// 
+int OpenTrac_decode_radio_capabilities(unsigned char *element,
+                                       int           element_len) {
+
+    fprintf(stderr, "Radio Capabilites\n");
+
+    return 0;
+}
+
+
+
+
+
 // 0x34 GPS Data Quality - Fix, Validity, Sats, PDOP, HDOP, VDOP
 //
 // Modifies:
@@ -2519,7 +2536,7 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
             etype = (int)*(data+1);
         }
         data+=2; // Skip to the body
-        fprintf(stderr, "EID 0x%x len %d: ", etype, elen);
+        fprintf(stderr, "EID 0x%04x len %02d: ", etype, elen);
         switch (etype) {
             case (0x00): // Sequence
                 temp_entity_sequence = entity_sequence;
@@ -2664,6 +2681,11 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     elen,
                     maidenhead);
                 break;
+            case (0x33): // Radio Capabilities
+                OpenTrac_decode_radio_capabilities(
+                    data,
+                    elen);
+                break;
             case (0x34): // GPS Data Quality
                 OpenTrac_decode_gpsquality(
                     data,
@@ -2675,10 +2697,22 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     elen,
                     aircraft_id);
                 break;
+            case (0x40): // Surface Observation Report
+                fprintf(stderr, "Surface Observation Report Element\n");
+                break;
+            case (0x41): // Rainfall History
+                fprintf(stderr, "Rainfall History Element\n");
+                break;
             case (0x42): // River Flow Gauge
                 OpenTrac_decode_rivergauge(
                     data,
                     elen);
+                break;
+            case (0x43): // Storm Report
+                fprintf(stderr, "Storm Report Element\n");
+                break;
+            case (0x50): // Shape
+                fprintf(stderr, "Shape Element\n");
                 break;
             case (0x100): // Emergency/distress flag
                 OpenTrac_flag_emergency();
@@ -2693,7 +2727,13 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     &hazmat_id,
                     comment);
                 break;
+            case (0xffff): // Null element
+                fprintf(stderr, "Null element\n");
+                break;
             default: // Everything else
+
+                // Check for Generic Measurement Units (0x500 to
+                // 0x5ff inclusive) 
                 if ((etype & 0xff00) == 0x500) {
                     OpenTrac_decode_units(
                         etype & 0x00ff,
@@ -2702,7 +2742,24 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                         comment);
                 }
                 else {
-                    fprintf(stderr, "Unknown Element Type\n");
+                    // Not a measurement unit.  Print out something
+                    // about what we found.
+                    fprintf(stderr,
+                        "Unknown Element Type, ");
+
+                    // Provide more data if known.
+                    if ((etype & 0xff00) == 0x100) {
+                        fprintf(stderr, "Classification: Reserved for Status Flags\n");
+                    }
+                    else if ((etype & 0xff00) == 0x200) {
+                        fprintf(stderr, "Classification: Incident Command System\n");
+                    }
+                    else if ((etype & 0xff00) == 0xf000) {
+                        fprintf(stderr, "Classification: Experimental\n");
+                    }
+                    else {
+                        fprintf(stderr, "Classification: Unknown\n");
+                    }
                 }
                 break;
         }
