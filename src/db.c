@@ -11329,8 +11329,8 @@ else {
         fprintf(stderr,"5\n");
     //--------------------------------------------------------------------------
     if (!done
-            && ( (strncmp(addr,"NWS-",4) == 0)
-              || (strncmp(addr,"NWS_",4) == 0) ) ) {    // NWS weather alert
+            && ( (strncmp(addr,"NWS-",4) == 0)          // NWS weather alert
+              || (strncmp(addr,"NWS_",4) == 0) ) ) {    // NWS weather alert compressed
 
         //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
 
