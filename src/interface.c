@@ -2282,15 +2282,12 @@ char *process_OpenTrac_packet( unsigned char *data,
 
 
     void process_opentrac_aprs(void) {
-        // Construct a standard APRS-format packet out of the parsed
-        // information.  We may need to construct several APRS packets
-        // out of the OpenTrac packet, as there may be several entity
-        // ID's or other types of info that can't fit into one APRS
-        // packet.
-
-        // Changing this so that it constructs a Base-91 compressed
-        // packet out of the OpenTrac packet, to represent more of
-        // the position resolution that we can obtain with OpenTrac.
+        // Construct a Base-91 compressed APRS-format packet out of
+        // the parsed information (to attempt to represent some of
+        // the better resolution available with OpenTrac).  We may
+        // need to construct several APRS packets out of the
+        // OpenTrac packet, as there may be several entity ID's or
+        // other types of info that can't fit into one APRS packet.
         // Later we'll change this so that we don't create an APRS
         // packet out of the OpenTrac packet at all, but instead
         // decode and use the OpenTrac information directly.
@@ -2343,6 +2340,7 @@ fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
         // If we parsed a position, finish creating an APRS packet.
         if (have_position) {
             // We have latitude/longitude/altitude
+            // lat/lon are doubles, alt is a float
             int ok;
             unsigned long temp_lat, temp_lon;
             char lat_str[20];
@@ -2350,12 +2348,11 @@ fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
             char alt_str[20];
 
 
+fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
+ 
             // Format it first in DDMM.MMMMN/DDDMM.MMMMW format
             // lat/lon are doubles, alt is a float
             //
-
-fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
- 
             // Convert lat/long to Xastir coordinate system first.
             // We pass in floats and get returned longs, which
             // represent 1/100 sec resolution lat/long.
@@ -2370,7 +2367,7 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                 // we can use part of the extra resolution provided
                 // by OpenTrac.
 
-                // Convert to very high precision format, DDMM.MMMME
+                // Convert to very high precision format, DDMM.MMMMN
                 convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_VHP_NOSP);
                 convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_VHP_NOSP);
 
