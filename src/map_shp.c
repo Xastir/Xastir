@@ -1371,39 +1371,6 @@ void draw_shapefile_map (Widget w,
     // Get the extents of the map file
     SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
 
-#ifdef USE_RTREE
-    si=NULL;
-
-    // Don't bother even looking at the hash if this shapefile is completely
-    // contained in the current viewport.  We'll have to read every shape
-    // in it anyway, and all we'd be doing is extra work searching the
-    // RTree
-    if (!map_inside_viewport_lat_lon(adfBndsMin[1],
-                                     adfBndsMax[1],
-                                     adfBndsMin[0],
-                                     adfBndsMax[0])) {
-        si = get_shp_from_hash(file);
-        if (!si) {
-            // we don't have what we need, so generate the index and make
-            // the hashtable entry
-            add_shp_to_hash(file,hSHP); // this will index all the shapes in 
-                                        // an RTree and save the root in a 
-                                        // shpinfo structure
-            si=get_shp_from_hash(file); // now get that structure
-            if (!si) {
-                fprintf(stderr,
-                        "Panic!  added %s, lost it already!\n",file);
-                exit(1);
-            }
-        }
-    }
-    // we need this for the rtree search
-    get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
-    viewportRect.boundary[0] = (RectReal) rXmin;
-    viewportRect.boundary[1] = (RectReal) rYmin;
-    viewportRect.boundary[2] = (RectReal) rXmax;
-    viewportRect.boundary[3] = (RectReal) rYmax;
-#endif // USE_RTREE
 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -1442,7 +1409,43 @@ void draw_shapefile_map (Widget w,
             short_filenm);
         statusline(status_text,0);       // Loading ...
     }
- 
+
+#ifdef USE_RTREE
+    // We put this section AFTER the code that determines whether we're merely
+    // indexing, so we don't bother to generate rtrees unless we're really
+    // drawing the file.
+    si=NULL;
+
+    // Don't bother even looking at the hash if this shapefile is completely
+    // contained in the current viewport.  We'll have to read every shape
+    // in it anyway, and all we'd be doing is extra work searching the
+    // RTree
+    if (!map_inside_viewport_lat_lon(adfBndsMin[1],
+                                     adfBndsMax[1],
+                                     adfBndsMin[0],
+                                     adfBndsMax[0])) {
+        si = get_shp_from_hash(file);
+        if (!si) {
+            // we don't have what we need, so generate the index and make
+            // the hashtable entry
+            add_shp_to_hash(file,hSHP); // this will index all the shapes in 
+                                        // an RTree and save the root in a 
+                                        // shpinfo structure
+            si=get_shp_from_hash(file); // now get that structure
+            if (!si) {
+                fprintf(stderr,
+                        "Panic!  added %s, lost it already!\n",file);
+                exit(1);
+            }
+        }
+    }
+    // we need this for the rtree search
+    get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
+    viewportRect.boundary[0] = (RectReal) rXmin;
+    viewportRect.boundary[1] = (RectReal) rYmin;
+    viewportRect.boundary[2] = (RectReal) rXmax;
+    viewportRect.boundary[3] = (RectReal) rYmax;
+#endif // USE_RTREE
 
     switch ( nShapeType ) {
         case SHPT_POINT:
