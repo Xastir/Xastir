@@ -143,11 +143,11 @@ alert. Further information on an alert is available over the internet from
 the WXserver by simply double-clicking the alert in the weather alerts list.
 Weather alerts now use the newer ESRI Shapefile-format maps.
 
-Xastir's map support has been improved with enhancements to the ESRI Shapefile code
-to handle point-type ESRI Shapefiles. Additionally, speed improvements have been
-made in the ImageMagick graphical map loading, and many color-correction
-features have been added. As mentioned above, the Map Chooser has been greatly
-improved, and weather alerts use ESRI Shapefile-format maps.
+Xastir's map support has been improved with enhancements to the ESRI Shapefile
+code to handle point-type ESRI Shapefiles. Additionally, speed improvements
+have been made in the ImageMagick graphical map loading, and many
+color-correction features have been added. As mentioned above, the Map Chooser
+has been greatly improved, and weather alerts use ESRI Shapefile-format maps.
 
 Under the hood, Xastir has had several major improvements:
 
@@ -155,7 +155,8 @@ The messaging system has been largely rewritten, and the annoying timed updates
 to dialogs no longer occur. The new messaging system allows multiple messages
 to be queued, and implements reply-ack's for speed. Xastir also attempts to
 specify a reasonable path for the message based on received messages. This
-improves speed and congestion control.
+improves speed and congestion control. The messaging GUI has been largly
+untouched, and remains high on the list of future improvements.
 
 The build process has been significantly improved; Xastir is now able to be
 built on numerous operating systems with few manual interventions.
@@ -514,7 +515,7 @@ short time.
 The second box displays the current lat/long or UTM, and Maidenhead grid
 square position of the mouse over the map. If file|configure|Dist/Bearing
 Status is selected, this box will also contain the course and bearing of
-this station relative to yours.
+this position relative to your station.
 
 A third box is used to display how many stations are in the database.
 
@@ -1128,9 +1129,9 @@ you have a sym-link created in your maps directory that points to where you
 mounted your CDROM drive.  That's it!
 
 
-ESRI Shapefile maps are also a combination of several files, a .shp file, a .dbf
-file, and a .shx file. You only need to select the .shp file to load the map,
-but the other(s) must be present for the map to load correctly.
+ESRI Shapefile maps are also a combination of several files, a .shp file, a
+.dbf file, and a .shx file. You only need to select the .shp file to load the
+map, but the other(s) must be present for the map to load correctly.
 
 
 GNIS (Geographic Names Information System) data is a collection of names of
