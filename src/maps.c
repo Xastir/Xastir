@@ -7664,21 +7664,16 @@ void draw_tiger_map (Widget w) {
     atb.width = image->columns;
     atb.height = image->rows;
 
-#if (MagickLibVersion >= 0x0539)
     //  Code to mute the image so it's not as bright.
     if (tigermap_intensity != 100) {
         char tempstr[30];
 
-        if (QuantumDepth == 16)
-            xastir_snprintf(tempstr, sizeof(tempstr), "0, 1, %ld", (long)((65535 * 100)/tigermap_intensity));
-        else
-            xastir_snprintf(tempstr, sizeof(tempstr), "0, 1, %ld", (long)((255 * 100)/tigermap_intensity));
-
         if (debug_level & 512)
             fprintf(stderr,"level=%s\n", tempstr);
-        LevelImage(image, tempstr);
+
+        xastir_snprintf(tempstr, sizeof(tempstr), "%d, 100, 100", tigermap_intensity);
+        ModulateImage(image, tempstr);
     }
-#endif // MagickLib >= 539
 
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
