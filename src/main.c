@@ -220,6 +220,10 @@ uid_t euid;
 gid_t egid;
 
 
+int   my_argc;
+void *my_argv;
+void *my_envp;
+
 
 // Used in segfault handler
 char dangerous_operation[200];
@@ -14677,7 +14681,7 @@ void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         // rules should apply from there.
         //
         enable_server_port = atoi(which);
-        server_pid = Fork_server();
+        server_pid = Fork_server(my_argc, my_argv, my_envp);
     }
     else {
         enable_server_port = 0;
@@ -27570,7 +27574,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 // Third argument is now deprecated
 //int main(int argc, char *argv[], char *envp[]) {
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[], char *envp[]) {
     int ag, ag_error, trap_segfault, deselect_maps_on_startup;
     uid_t user_id;
     struct passwd *user_info;
@@ -27585,6 +27589,12 @@ int main(int argc, char *argv[]) {
     GC_find_leak = 1;
     GC_INIT();
 #endif  // USING_LIBGC
+
+
+    my_argc = argc;
+    my_argv = (void *)&argv[0];
+    my_envp = (void *)&envp[0];
+
 
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
@@ -27974,7 +27984,7 @@ int main(int argc, char *argv[]) {
     // Anything transmitted by the clients will come back to us and
     // standard igating rules should apply from there.
     if (enable_server_port) {
-        server_pid = Fork_server();
+        server_pid = Fork_server(my_argc, my_argv, my_envp);
     }
 
 

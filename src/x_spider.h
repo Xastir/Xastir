@@ -37,7 +37,7 @@ extern int pipe_server_to_xastir;
 
 extern int writen(register int fd, register char *ptr, register int nbytes);
 extern int readline(register int fd, register char *ptr, register int maxlen);
-extern int Fork_server(void);
+extern int Fork_server(int argc, char *argv[], char *envp[]);
 
 #endif /* XASTIR_SERVER_H */
 

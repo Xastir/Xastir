@@ -104,6 +104,7 @@
 //#include "config.h"
 #include "x_spider.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -666,6 +667,86 @@ int pipe_check(void) {
 
 
 
+// The below two functions init_set_proc_title() and
+// set_proc_title() are from:
+// http://lightconsulting.com/~thalakan/process-title-notes.html
+// They seems to work fine on Linux, but they only change the "ps"
+// listings, not the top listings.  I don't know why yet.
+
+/* Globals */
+static char **Argv = ((void *)0);
+extern char *__progname, *__progname_full;
+static char *LastArgv = ((void *)0);
+
+/* Prototypes */
+static void set_proc_title(char *fmt,...);
+static void init_set_proc_title(int argc, char *argv[], char *envp[]);
+
+
+
+static void init_set_proc_title(int argc, char *argv[], char *envp[]) {
+    int i, envpsize;
+    extern char **environ;
+    char **p;
+
+    for(i = envpsize = 0; envp[i] != NULL; i++)
+        envpsize += strlen(envp[i]) + 1;
+  
+    if((p = (char **) malloc((i + 1) * sizeof(char *))) != NULL ) {
+        environ = p;
+
+    for(i = 0; envp[i] != NULL; i++) {
+        if((environ[i] = malloc(strlen(envp[i]) + 1)) != NULL)
+            strcpy(environ[i], envp[i]);
+        }
+    
+        environ[i] = NULL;
+    }
+
+    Argv = argv;
+  
+    for(i = 0; envp[i] != NULL; i++) {
+        if((LastArgv + 1) == envp[i]) // Not sure if this conditional is needed
+        LastArgv = envp[i] + strlen(envp[i]);
+    }
+
+    // Pretty sure you don't need this either
+    __progname = strdup("xastir");
+    __progname_full = strdup(argv[0]);
+}
+
+
+
+
+
+static void set_proc_title(char *fmt,...) {
+    va_list msg;
+    static char statbuf[8192];
+    char *p;
+    int i,maxlen = (LastArgv - Argv[0]) - 2;
+
+    //printf("DEBUG: maxlen: %i\n", maxlen);
+
+    va_start(msg,fmt);
+
+    memset(statbuf, 0, sizeof(statbuf));
+    vsnprintf(statbuf, sizeof(statbuf), fmt, msg);
+
+    va_end(msg);
+
+    i = strlen(statbuf);
+
+    snprintf(Argv[0], maxlen, "%s", statbuf);
+    p = &Argv[0][i];
+  
+    while(p < LastArgv)
+        *p++ = '\0';
+    Argv[1] = ((void *)0) ;
+}
+
+
+
+
 
 // This TCP server provides a listening socket.  When a client
 // connects, the server forks off a separate process to handle it
@@ -694,7 +775,7 @@ int pipe_check(void) {
 // as well?
 //
 //int main(int argc, char *argv[]) {
-void Server(void) {
+void Server(int argc, char *argv[], char *envp[]) {
     int sockfd, newsockfd, clilen, childpid;
     struct sockaddr_in cli_addr, serv_addr;
     pipe_object *p;
@@ -851,6 +932,18 @@ void Server(void) {
             // child process
             //
 
+
+            // Change the name of the new child process.  So far
+            // this only works for "ps" listings, not for "top".
+            // This code only works on Linux.  For BSD use
+            // setproctitle(3), NetBSD can use setprogname(2).
+#ifdef __linux__
+            init_set_proc_title(argc, argv, envp);
+            set_proc_title("%s", "x-spider client (xastir)");
+            //printf("DEBUG: %s\n", Argv[0]);
+#endif  // __linux__
+
+
             // New naming system so that we don't have to remember
             // the longer name:
             //
@@ -914,10 +1007,10 @@ finis:
 // integrated with Xastir, instead of having to have a socket to
 // communicate between Xastir and the server.
 //
-int Fork_server(void) {
+int Fork_server(int argc, char *argv[], char *envp[]) {
     int childpid;
- 
- 
+
+
     // Allocate a pipe before we fork.
     //
     xastir_pipe = (pipe_object *)malloc(sizeof(pipe_object));
@@ -950,6 +1043,19 @@ int Fork_server(void) {
         //
         // Child process
         //
+
+
+        // Change the name of the new child process.  So far this
+        // only works for "ps" listings, not for "top".  This code
+        // only works on Linux.  For BSD use setproctitle(3), NetBSD
+        // can use setprogname(2).
+#ifdef __linux__
+        init_set_proc_title(argc, argv, envp);
+        set_proc_title("%s", "x-spider daemon (xastir)");
+        //printf("DEBUG: %s\n", Argv[0]);
+#endif  // __linux__
+ 
+
         close(xastir_pipe->to_child[1]);  // Close write end of pipe
         close(xastir_pipe->to_parent[0]); // Close read end of pipe
 
@@ -969,7 +1075,7 @@ int Fork_server(void) {
 //        while (1) {
 //            fprintf(stderr,"Starting Server...\n");
 
-            Server();
+            Server(argc, argv, envp);
  
 //            fprintf(stderr,"Server process died.\n");
 //        }
