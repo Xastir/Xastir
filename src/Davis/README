@@ -183,6 +183,11 @@ cc -I. -I<mysql.h path> -L<libmysqlclient path> -lmysqlclient
 
 (all on one line)
 
+This compile line works for SuSE 9.0 linux:
+
+cc -I. -I/usr/include/mysql  -lmysqlclient -o db2APRS db2APRS.c
+
+
 Copy the resulting db2APRS to Your Favorite Location.
 
 
