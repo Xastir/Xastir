@@ -125,7 +125,7 @@ int curl_getfile(char *fileimg, char *local_filename);
 #endif
 
 extern void split_string( char *data, char *cptr[], int max );
-
+extern int check_unproto_path( char *data );
 
 #endif // __XASTIR_UTIL_H
 

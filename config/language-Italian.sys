@@ -460,6 +460,8 @@ WPUPCFT038|Coda Tx (unità di 10 ms)||
 WPUPCFT039|Full Duplex||
 WPUPCFT040|Configura TNC Multi-Port KISS||
 WPUPCFT041|Porta Radio||
+WPUPCFT042|Dubious UNPROTO Path!||
+WPUPCFT043|Please consider a shorter path such as WIDE2-2 or RELAY,WIDE2-2||
 #
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||

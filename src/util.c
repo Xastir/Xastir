@@ -3906,3 +3906,183 @@ void split_string( char *data, char *cptr[], int max ) {
 }
 
 
+
+
+
+// This function checks to make sure an unproto path falls within
+// the socially acceptable values, such as only one RELAY which
+// appears as the first option.  Only one WIDE otherwise you should
+// use WIDEn-n.  Use of WIDE4-4 and higher should be questioned,
+// etc.
+//
+int check_unproto_path ( char *data ) {
+    char *tmpdata;
+    char *ViaCalls[10];
+    int bad_path, i, have_relay, have_wide, have_widen;
+    int have_trace, have_tracen, is_wide;
+
+
+    bad_path = i = have_relay = have_wide = have_widen = have_trace = have_tracen = is_wide = 0;
+
+    // Remember to free() tmpdata before we return
+    tmpdata = (char *)strndup(data, strlen(data));
+    (void)to_upper(tmpdata);
+    split_string(tmpdata, ViaCalls, 10);
+
+    for (i = 0; i < 10; i++) {
+        if (ViaCalls[i] == NULL) {
+            break;
+        }
+        if (!strncmp(ViaCalls[i], "RELAY", 5)) {
+            have_relay = 1;
+            if (i != 0) {
+                // RELAY should not appear after the first item in a
+                // path!
+                bad_path = 1;
+                break;
+            }
+        }
+        else if (strstr(ViaCalls[i], "WIDE") || strstr(ViaCalls[i], "TRACE")) {
+            // This is some variant of WIDE or TRACE, could be just
+            // WIDE or WIDEn-n or TRACE or TRACEn-n
+
+            is_wide = 0;
+            if (strstr(ViaCalls[i], "WIDE")) {
+                is_wide = 1;
+            }
+
+            if (strstr(ViaCalls[i], "-")) {
+                if (have_wide || have_widen || have_trace || have_tracen) {
+                    // Already have a large area via
+                    bad_path = 1;
+                    break;
+                }
+                if (is_wide) {
+                    have_widen = 1;
+                    // We know its a WIDEn-n time to find out what n
+                    // is
+                    if (strlen(ViaCalls[i]) != 7) {
+                        // This should be WIDEn-n and should be
+                        // exactly 7 characters
+                        bad_path = 1;
+                        break;
+                    }
+                    else {
+                        if (ViaCalls[i][4] != ViaCalls[i][6]) {
+                            // Whoa, n != n
+                            bad_path = 1;
+                            break;
+                        }
+
+                        if (atoi(ViaCalls[i]+=6) > 3) {
+                            // Greater than WIDEn-3
+                            bad_path = 1;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    have_tracen = 1;
+                    // We know its a TRACEn-n time to find out what
+                    // n is
+                    if (strlen(ViaCalls[i]) != 8) {
+                        // This should be TRACEn-n and should be
+                        // exactly 8 characters
+                        bad_path = 1;
+                        break;
+                    }
+                    else {
+                        if (ViaCalls[i][5] != ViaCalls[i][7]) {
+                            // Whoa, n != n
+                            bad_path = 1;
+                            break;
+                        }
+
+                        // Valid TRACEn-n, check for > 3
+                        if (atoi(ViaCalls[i]+=7) > 3) {
+                            bad_path = 1;
+                            break;
+                        }
+                    }
+                }
+
+            }
+            else {
+                if (is_wide) {
+                    have_wide = 1;
+                }
+                else {
+                    have_trace = 1;
+                }
+                if (have_relay && (i > 3)) {
+                    // RELAY and more than 3 wides
+                    bad_path = 1;
+                    break;
+                }
+                else if (!have_relay && i > 2) {
+                    // More than WIDE,WIDE,WIDE
+                    bad_path = 1;
+                    break;
+                }
+                else if (have_widen || have_tracen || have_trace) {
+                    // WIDE after something other than RELAY
+                    bad_path = 1;
+                    break;
+                }
+            }
+        }
+        else {
+            // Might as well stub this out, could be anything at
+            // this point, a LINKn-n or LANn-n or a explicit
+            // callsign
+            if (!strstr(ViaCalls[i], "-")) {
+                // We do not have an SSID, treat it as a RELAY
+                if (have_relay) {
+                    bad_path = 1;
+                    break;
+                }
+
+                have_relay = 1;
+            }
+            else {
+                // Could be a LAN or LINK or explicit call, check
+                // for a digit preceding the dash
+                if (atoi(ViaCalls[i]+=(strlen(ViaCalls[i]) - 3)) > 0) {
+                    // We have a n-n */
+                    if (have_wide || have_widen || have_trace || have_tracen) {
+                        // Already have a previous wide path
+                        bad_path = 1;
+                        break;
+                    }
+                    else if (ViaCalls[i][0] != ViaCalls[i][2]) {
+                        // Whoa, n != n
+                        bad_path = 1;
+                        break;
+                    }
+                    else if (atoi(ViaCalls[i]+=strlen(ViaCalls[i]) - 1) > 3) {
+                        // Greater than -3
+                        bad_path = 1;
+                        break;
+                    }
+                    have_widen = 1;
+                }
+                else {
+                    // Must be an explicit callsign, treat as relay
+                    if (have_relay) {
+                       bad_path = 1;
+                        break;
+                    }
+                    have_relay = 1;
+                }
+            }
+        }
+    }
+
+    // Free the memory we allocated with strndup()
+    free(tmpdata);
+    return(bad_path);
+
+}   // End of check_unproto_path
+
+
+

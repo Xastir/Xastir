@@ -396,6 +396,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     (void)remove_trailing_spaces(devices[TNC_port].unproto1);
 
+    if(check_unproto_path(devices[TNC_port].unproto1)) {
+        popup_message_always(langcode("WPUPCFT042"),
+            langcode("WPUPCFT043"));
+    }
+
     temp_ptr = XmTextFieldGetString(TNC_unproto2_data);
     xastir_snprintf(devices[TNC_port].unproto2,
         sizeof(devices[TNC_port].unproto2),
@@ -405,6 +410,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     (void)remove_trailing_spaces(devices[TNC_port].unproto2);
 
+    if(check_unproto_path(devices[TNC_port].unproto2)) {
+        popup_message_always(langcode("WPUPCFT042"),
+            langcode("WPUPCFT043"));
+    }
+
     temp_ptr = XmTextFieldGetString(TNC_unproto3_data);
     xastir_snprintf(devices[TNC_port].unproto3,
         sizeof(devices[TNC_port].unproto3),
@@ -413,6 +423,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(devices[TNC_port].unproto3);
+
+    if(check_unproto_path(devices[TNC_port].unproto3)) {
+        popup_message_always(langcode("WPUPCFT042"),
+            langcode("WPUPCFT043"));
+    }
 
     temp_ptr = XmTextFieldGetString(TNC_igate_data);
     xastir_snprintf(devices[TNC_port].unproto_igate,

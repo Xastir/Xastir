@@ -463,6 +463,8 @@ WPUPCFT038|TxTail (10 ms unidades)||
 WPUPCFT039|Full Duplex||
 WPUPCFT040|Configurar un Multi-Port KISS TNC||
 WPUPCFT041|Radio Port||
+WPUPCFT042|Dubious UNPROTO Path!||
+WPUPCFT043|Please consider a shorter path such as WIDE2-2 or RELAY,WIDE2-2||
 #
 # Configurar el Puerto de la Estación Meteorológica
 WPUPCFWX01|Configurar el Puerto de la Estación Meteorológica||
