@@ -7711,15 +7711,17 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
  *  Extract data for $GPRMC, it fails if there is no position!!
  */
 int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
-    char *temp_ptr;
-    char *temp_ptr2;
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
     char long_s[20];
     int ok;
+    char *Substring[12];  // Pointers to substrings parsed by split_string()
+    char temp_string[MAX_MESSAGE_LENGTH+1];
+    char temp_char;
+
 
     if (debug_level & 256)
-        fprintf(stderr,"extract_RMC start\n");
+        fprintf(stderr,"extract_RMC\n");
 
     // should we copy it before processing? it changes data: ',' gets substituted by '\0' !!
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
@@ -7737,102 +7739,107 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
     /* check aprs type on call sign */
     p_station->aprs_symbol = *id_callsign(call_sign, path);
-    if (strchr(data,',') != NULL) {                         // there is a ',' in string
-        (void)strtok(data,",");                             // extract GPRMC
-        (void)strtok(NULL,",");                             // extract time ?
-        temp_ptr = strtok(NULL,",");                        // extract valid char
-        if (temp_ptr != NULL) {
-            strncpy(temp_data,temp_ptr,2);
-            if (temp_data[0]=='A' || temp_data[0]=='V') {
-                /* V is a warning but we can get good data still ? */   // DK7IN: got no position with 'V' !
 
-                temp_ptr = strtok(NULL,",");                  // extract latitude
-                if (temp_ptr != NULL && temp_ptr[4]=='.') {
-                    temp_ptr2 = strtok(NULL,",");             // Find end of latitude
+    // Make a copy of the incoming data.  The string passed to
+    // split_string() gets destroyed.
+    strncpy(temp_string, data, sizeof(temp_string));
+    split_string(temp_string, Substring, 15);
+
+    // The Substring[] array contains pointers to each substring in
+    // the original data string.
+
+// GPRMC,034728,A,5101.016,N,11359.464,W,000.0,284.9,110701,018.0,E*7D
+//   0     1    2    3     4    5      6   7    8      9     10    11
+
+    if (Substring[0] == NULL)   // No GPRMC string
+        return(ok);
+
+    if (Substring[1] == NULL)   // No time string
+        return(ok);
+
+    if (Substring[2] == NULL)   // No valid fix char
+        return(ok);
+
+    if (Substring[2][0] != 'A' && Substring[2][0] != 'V')
+        return(ok);
+// V is a warning but we can get good data still ?
+// DK7IN: got no position with 'V' !
+
+    if (Substring[3] == NULL)   // No latitude string
+        return(ok);
+
+    if (Substring[4] == NULL)   // No latitude N/S
+        return(ok);
 
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234) or leave one out (4801.12).  Next character after digits should be a ','
 
-// We really should check for a terminating zero at the end of each substring we collect,
-// and not rely on strtok exclusively.  We could have an extra-long field due to packet
-// corruption and therefore our substrings wouldn't have terminating zeroes.
-// We should also check the length of the string we're collecting from to make sure
-// we don't run off the end for a short packet.
+    temp_char = toupper((int)Substring[4][0]);
 
-                    if (temp_ptr2 != NULL) {
-                        int length = temp_ptr2 - temp_ptr - 1;
+    if (temp_char != 'N' && temp_char != 'S')   // Bad N/S
+        return(ok);
 
-                        strncpy(lat_s,temp_ptr,length);
-                        lat_s[length+1] = '\0';             // Terminate it (just in case)
-                        temp_ptr = temp_ptr2;               // Point to N-S character
+    xastir_snprintf(lat_s,
+        sizeof(lat_s),
+        "%s%c",
+        Substring[3],
+        temp_char);
 
-                        strncpy(temp_data,temp_ptr,1);
-                        lat_s[length]=toupper((int)temp_data[0]);
-                        lat_s[length+1] = '\0';
-                        if (lat_s[length] =='N' || lat_s[length] =='S') {
+    if (Substring[5] == NULL)   // No longitude string
+        return(ok);
 
-                            temp_ptr=strtok(NULL,",");            /* get long */
-                            if(temp_ptr!=NULL && temp_ptr[5] == '.') {
-                                temp_ptr2=strtok(NULL,","); // Find end of longitude
+    if (Substring[6] == NULL)   // No longitude E/W
+        return(ok);
 
 // Need to check long_s for validity here.  Should be all digits.  Note that some GPS's put out another
 // digit of precision.  (12201.1234).  Next character after digits should be a ','
 
-                                if (temp_ptr2!=NULL) {
-                                    length = temp_ptr2 - temp_ptr - 1;
+    temp_char = toupper((int)Substring[6][0]);
 
-                                    strncpy(long_s,temp_ptr,length);
-                                    long_s[length+1] = '\0';    // Terminate it, just in case
-                                    temp_ptr = temp_ptr2;       // Point to E-W character
+    if (temp_char != 'E' && temp_char != 'W')   // Bad E/W
+        return(ok);
 
-                                    strncpy(temp_data,temp_ptr,1);
-                                    long_s[length] = toupper((int)temp_data[0]);
-                                    long_s[length+1] = '\0';
-                                    if (long_s[length] =='E' || long_s[length] =='W') {
-                                        p_station->coord_lat = convert_lat_s2l(lat_s);
-                                        p_station->coord_lon = convert_lon_s2l(long_s);
+    xastir_snprintf(long_s,
+        sizeof(long_s),
+        "%s%c",
+        Substring[5],
+        temp_char);
 
-                                        if (debug_level & 256)
-                                            fprintf(stderr,"%s, %s, %ld, %ld\n",
-                                                lat_s,
-                                                long_s,
-                                                p_station->coord_lat,
-                                                p_station->coord_lon);
+    p_station->coord_lat = convert_lat_s2l(lat_s);
+    p_station->coord_lon = convert_lon_s2l(long_s);
 
-                                        ok = 1; // We have enough for a position now
-                                        temp_ptr=strtok(NULL,",");        /* Get speed */
-                                        if(temp_ptr!=0) {
-                                            substr(p_station->speed,temp_ptr,MAX_SPEED);
-                                            p_station->speed[MAX_SPEED - 1] = '\0'; // Terminate just in case
-                                            // is it always knots, otherwise we need a conversion!
-                                            temp_ptr=strtok(NULL,",");    /* Get course */
-                                            if (temp_ptr!=NULL) {
-                                                substr(p_station->course,temp_ptr,MAX_COURSE);
-                                                p_station->course[MAX_COURSE - 1] = '\0'; // Terminate just in case
-                                                (void)strtok(NULL,",");                    /* get date of fix */
-                                            } else { // Short packet, no course available
-                                                strcpy(p_station->course,"000.0");
-                                            }
-                                        } else { // Short packet, no speed available
-                                            strcpy(p_station->speed,"");
-                                        }
-                                    } else { // Not 'E' or 'W' for longitude direction
-                                    }
-                                } else { // Short packet, no longitude direction found
-                                }
-                            } else { // Short packet, no longitude found
-                            }
-                        } else { // Not 'N' or 'S' for latitude direction
-                        }
-                    } else { // Short packet, no latitude direction found
-                    }
-                } else { // Short packet, no latitude found
-                }
-            } else { // Validity character was not 'A' or 'V'
-            }
-        } else { // Short packet, no validity character
-        }
-    } else { // Short packet, character ',' not found in string
+    // If we've made it this far, We have enough for a position now!
+    ok = 1;
+
+    // Now that we have a basic position, let's see what other data
+    // can be parsed from the packet.  The rest of it can still be
+    // corrupt, so we're proceeding carefully under yellow alert on
+    // impulse engines only.
+
+// GPRMC,034728,A,5101.016,N,11359.464,W,000.0,284.9,110701,018.0,E*7D
+//   0     1    2    3     4    5      6   7    8      9     10    11
+
+    if (Substring[7] == NULL) { // No speed string
+        strcpy(p_station->speed,"");    // No speed available
+        return(ok);
+    }
+    else {
+        xastir_snprintf(p_station->speed,
+            MAX_SPEED,
+            "%s",
+            Substring[7]);
+        // Is it always knots, otherwise we need a conversion!
+    }
+
+    if (Substring[8] == NULL) { // No course string
+        strcpy(p_station->course,"000.0");  // No course available
+        return(ok);
+    }
+    else {
+        xastir_snprintf(p_station->course,
+            MAX_COURSE,
+            "%s",
+            Substring[8]);
     }
 
     if (debug_level & 256) {
@@ -7875,7 +7882,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
 
     if (debug_level & 256)
-        fprintf(stderr, "extract_GGA start\n");
+        fprintf(stderr, "extract_GGA\n");
 
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
  
