@@ -1725,6 +1725,7 @@ int net_init(int port) {
                     fprintf(stderr,"Net ok: %d, port %d\n", ok, port);
 
                 switch (ok) {
+
                     case 1: /* connection up */
                         xastir_snprintf(st, sizeof(st), langcode("BBARSTA020"), port_data[port].device_host_name);
                         statusline(st,1);               // Connected to ...
@@ -2469,19 +2470,18 @@ void port_read(int port) {
                                 /* BINARY DATA input (WX data ?) */
                                 /* check RS WX200 */
                                 switch (cin) {
+
                                     case 0x8f:
-
                                     case 0x9f:
-
                                     case 0xaf:
-
                                     case 0xbf:
-
                                     case 0xcf:
+
                                         if (group == 0) {
                                             port_data[port].read_in_pos = 0;
                                             group = (int)cin;
                                             switch (cin) {
+
                                                 case 0x8f:
                                                     max = 35;
                                                     break;
@@ -2623,27 +2623,35 @@ void port_read(int port) {
                                 fprintf(stderr,"error on read with error no %d, or signal interrupted the read, port %d, DEVICE_ERROR ***\n",
                                     errno,port);
                                 switch (errno) {
+
                                     case EINTR:
                                         fprintf(stderr,"EINTR ERROR\n");
                                         break;
+
                                     case EAGAIN:
                                         fprintf(stderr,"EAGAIN ERROR\n");
                                         break;
+
                                     case EIO:
                                         fprintf(stderr,"EIO ERROR\n");
                                         break;
+
                                     case EISDIR:
                                         fprintf(stderr,"EISDIR ERROR\n");
                                         break;
+
                                     case EBADF: // Get this one when we terminate nearby threads
                                         fprintf(stderr,"EBADF ERROR\n");
                                         break;
+
                                     case EINVAL:
                                         fprintf(stderr,"EINVAL ERROR\n");
                                         break;
+
                                     case EFAULT:
                                         fprintf(stderr,"EFAULT ERROR\n");
                                         break;
+
                                     default:
                                         fprintf(stderr,"OTHER ERROR\n");
                                         break;
@@ -2753,10 +2761,12 @@ void port_write(int port) {
                     }
                 }
                 switch (port_data[port].device_type) {
+
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                     case DEVICE_SERIAL_KISS_TNC:
                     case DEVICE_SERIAL_TNC:
+
                         usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                         break;
                     default:
@@ -2991,15 +3001,10 @@ int del_device(int port) {
     switch (port_data[port].device_type) {
 
         case(DEVICE_SERIAL_TNC):
-
         case(DEVICE_SERIAL_KISS_TNC):
-
         case(DEVICE_SERIAL_GPS):
-
         case(DEVICE_SERIAL_WX):
-
         case(DEVICE_SERIAL_TNC_HSP_GPS):
-
         case(DEVICE_SERIAL_TNC_AUX_GPS):
 
             switch (port_data[port].device_type){
@@ -3086,13 +3091,12 @@ end_critical_section(&devices_lock, "interface.c:del_device");
             break;
 
         case(DEVICE_NET_STREAM):
-
         case(DEVICE_AX25_TNC):
-
         case(DEVICE_NET_GPSD):
-
         case(DEVICE_NET_WX):
+
             switch (port_data[port].device_type){
+
                 case DEVICE_NET_STREAM:
                     if (debug_level & 2)
                         fprintf(stderr,"Close a Network stream\n");
@@ -3231,18 +3235,16 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             fprintf(stderr,"Port Available %d\n",port_avail);
 
         switch(dev_type){
+
             case DEVICE_SERIAL_TNC:
-
             case DEVICE_SERIAL_KISS_TNC:
-
             case DEVICE_SERIAL_GPS:
-
             case DEVICE_SERIAL_WX:
-
             case DEVICE_SERIAL_TNC_HSP_GPS:
-
             case DEVICE_SERIAL_TNC_AUX_GPS:
+
                 switch (dev_type) {
+
                     case DEVICE_SERIAL_TNC:
                         if (debug_level & 2)
                             fprintf(stderr,"Opening a Serial TNC device\n");
@@ -3477,11 +3479,11 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             usleep(500);
 
             switch (dev_type) {
+
                 case DEVICE_SERIAL_TNC:
-
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-
                 case DEVICE_SERIAL_TNC_AUX_GPS:
+
                     if (ok == 1) {
 
 // We already have the lock by the time add_device() is called!
@@ -3572,6 +3574,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                 || (port_data[i].status != DEVICE_UP) ) {
 
             switch (devices[i].device_type) {
+
                 case DEVICE_NET_STREAM:
                     if (devices[i].connect_on_startup == 1 || override) {
 
@@ -3658,12 +3661,10 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                     break;
 
                 case DEVICE_SERIAL_TNC:
-
                 case DEVICE_SERIAL_KISS_TNC:
-
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-
                 case DEVICE_SERIAL_TNC_AUX_GPS:
+
                     if (devices[i].connect_on_startup == 1 || override) {
                         (void)add_device(i,
                             devices[i].device_type,
@@ -3905,11 +3906,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 port_dtr(port,0);
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
-
             case DEVICE_SERIAL_KISS_TNC:
-
             case DEVICE_SERIAL_TNC:
-
             case DEVICE_AX25_TNC:
 
                 /* clear this for a TNC */
@@ -3942,6 +3940,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 while (!done && (count < 3)) {
                     temp = (devices[port].unprotonum + count) % 3;
                     switch (temp) {
+
                         case 0:
                             if (strlen(devices[port].unproto1) > 0) {
                                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto1);
@@ -3954,6 +3953,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                                 bump_up++;
                             }
                             break;
+
                         case 1:
                             if (strlen(devices[port].unproto2) > 0) {
                                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto2);
@@ -3966,6 +3966,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                                 bump_up++;
                             }
                             break;
+
                         case 2:
                             if (strlen(devices[port].unproto3) > 0) {
                                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto3);
@@ -4331,6 +4332,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
         ok = 1;
         if (type == 0) {                        // my data
             switch (port_data[i].device_type) {
+
                 case DEVICE_NET_STREAM:
                     if (debug_level & 1)
                         fprintf(stderr,"%d Net\n",i);
@@ -4350,12 +4352,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     }
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
-
                 case DEVICE_SERIAL_KISS_TNC:
-
                 case DEVICE_SERIAL_TNC:
-
                 case DEVICE_AX25_TNC:
+
                     if (debug_level & 1)
                         fprintf(stderr,"%d AX25 TNC\n",i);
                     strcpy(output_net,"");      // clear this for a TNC
@@ -4447,6 +4447,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     while (!done && (count < 3)) {
                         temp = (devices[i].unprotonum + count) % 3;
                         switch (temp) {
+
                             case 0:
                                 if (strlen(devices[i].unproto1) > 0) {
 
@@ -4477,6 +4478,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                     bump_up++;
                                 }
                                 break;
+
                             case 1:
                                 if (strlen(devices[i].unproto2) > 0) {
 
@@ -4507,6 +4509,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                     bump_up++;
                                 }
                                 break;
+
                             case 2:
                                 if (strlen(devices[i].unproto3) > 0) {
 
@@ -4722,6 +4725,7 @@ begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
     for (i = start; i < finish; i++) {
         ok = 1;
         switch (port_data[i].device_type) {
+
             case DEVICE_SERIAL_TNC_HSP_GPS:
                 port_dtr(i,1);   // make DTR active (select GPS)
                 break;
