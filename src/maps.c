@@ -7850,6 +7850,18 @@ Samples Per Pixel: 1
     // part of some lines due to rotation).  Crop all lines/pixels
     // outside these ranges.
 
+//WE7U
+if (top_crop < 0 || top_crop >= height)
+top_crop = 0;
+
+if (bottom_crop < 0 || bottom_crop >= height)
+bottom_crop = height - 1;
+
+if (left_crop < 0 || left_crop >= width)
+left_crop = 0;
+
+if (right_crop < 0 || right_crop >= width)
+right_crop = width - 1;
 
     if (debug_level & 16) {
         printf("Crop points (pixels):\n");
@@ -8077,6 +8089,12 @@ Samples Per Pixel: 1
         if (SW_x < NW_x)
             left_x_increment = -left_x_increment;
 
+//WE7U
+//if (abs(left_x_increment) > (width/10)) {
+//    left_x_increment = 0.0;
+//    xastir_left_x_increment = 0.0;
+//}
+
         if (debug_level & 16)
              printf("xastir_left_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
              xastir_left_x_increment,
@@ -8115,6 +8133,11 @@ Samples Per Pixel: 1
 
         if (SW_y_bounding_wgs84 < NW_y_bounding_wgs84)  // Ain't gonn'a happen
             xastir_left_y_increment = -xastir_left_y_increment;
+
+//WE7U
+//if (abs(left_y_increment) > (width/10)) {
+//    xastir_left_y_increment = 0.0;
+//}
 
         if (debug_level & 16)
              printf("xastir_left_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
@@ -8159,6 +8182,12 @@ Samples Per Pixel: 1
         if (SE_x < NE_x)
             right_x_increment = -right_x_increment;
 
+//WE7U
+//if (abs(right_x_increment) > (width/10)) {
+//    right_x_increment = 0.0;
+//    xastir_right_x_increment = 0.0;
+//}
+
         if (debug_level & 16)
             printf("xastir_right_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
             xastir_right_x_increment,
@@ -8197,6 +8226,11 @@ Samples Per Pixel: 1
 
         if (SE_y_bounding_wgs84 < NE_y_bounding_wgs84)  // Ain't gonn'a happen
             xastir_right_y_increment = -xastir_right_y_increment;
+
+//WE7U
+//if (abs(right_y_increment) > (width/10)) {
+//    xastir_right_y_increment = 0.0;
+//}
 
         if (debug_level & 16)
             printf("xastir_right_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
@@ -8402,7 +8436,6 @@ Samples Per Pixel: 1
     if ( ( bottom_crop + 1) >= (int)height )
         bottom_crop = height - 1;   // Last row of image
 
-
     // Here I pre-compute some of the values I'll need in the
     // loops below in order to save some time.
     NW_line_offset = (int)(NW_y - top_crop);
@@ -8418,20 +8451,16 @@ Samples Per Pixel: 1
     total_avg_y_increment = (float)(xastir_avg_left_right_y_increment * avg_y_increment);
 
 
-
     // (Xastir bottom - Xastir top) / height
     //steph = (double)( (left_y_increment + right_y_increment) / 2); 
     // NOTE:  This one does not take into account current height
     steph = (float)( (SW_y_bounding_wgs84 - NW_y_bounding_wgs84)
                       / (1.0 * (SW_y - NW_y) ) );
 
-
     // Compute scaled pixel size for XFillRectangle
     stephc = (int)( ( (1.50 * steph / scale_x) + 1.0) + 1.5);
 
-
     view_top_minus_pixel_height = (unsigned long)(view_min_y - steph);
-
 
     // Iterate over the rows of interest only.  Using the rectangular
     // top/bottom crop values for these is ok at this point.
@@ -8446,7 +8475,6 @@ Samples Per Pixel: 1
     for ( row = top_crop; (int)row < bottom_crop + 1; row+= SkipRows )
     {
         int skip = 0;
-
 
         // Our offset from the top row of the map neatline
         // (kind of... ignoring rotation anyway).
@@ -8486,6 +8514,13 @@ Samples Per Pixel: 1
                           ( NE_x
                         + ( 1.0 * right_x_increment * row_offset ) + 0.5
                         -   NE_x_offset );
+
+//WE7U
+if (current_left < 0)
+    current_left = 0;
+
+if (current_right >= width)
+    current_right = width - 1;
 
         current_line_width = current_right - current_left + 1;  // Pixels
 
@@ -8542,13 +8577,13 @@ Samples Per Pixel: 1
                 break;  // No more lines to read or we couldn't read the file at all
 
 
-
             // Iterate over the columns of interest, skipping the left/right
             // cropped pixels, looking for pixels that fit within our viewport.
             //
             for ( column = current_left; column < (current_right + 1); column++ )
             {
                 skip = 0;
+
 
                 column_offset = column - current_left;  // Pixels
 
@@ -8588,10 +8623,13 @@ Samples Per Pixel: 1
                             || (xastir_current_x < (SW_x_bounding_wgs84 + 25) )
                             || (xastir_current_x > (SE_x_bounding_wgs84 - 25) ) )
                         {
-                            if (column < bytesPerRow)
+                            if (column < bytesPerRow && column >= 0) {
                                 *(imageMemory + column) = 0x01; // Change to White
-                            else
-                                printf("draw_geotiff_image_map: Bad fgd file for map?: %s\n", filenm);
+                            }
+                            else {
+//WE7U
+//                                printf("draw_geotiff_image_map: Bad fgd file for map?: %s\n", filenm);
+                            }
                         }
                     }
                 }
@@ -8626,7 +8664,6 @@ Samples Per Pixel: 1
             }
         }
     }
-
 
 
     /* Free up any malloc's that we did */
