@@ -93,6 +93,8 @@
 
 FT_Info *info = NULL;
 
+static char last_speech_text[8000];
+static time_t last_speech_time = (time_t)0;
 static time_t festival_connect_attempt_time = (time_t)0;
 
 
@@ -217,10 +219,14 @@ int festivalOpen() {
 
     festival_default_info();
 
+    // Check whether we have a record to work with
+    if (info == NULL) {
+        return(-1);
+    }
+
     // Check whether we already have a socket open (or think we do)
     if (info->server_fd != -1) {    // We have a socket open
         (void)festivalClose();      // Close it, free struct
-//        festival_default_info();    // Re-init struct
     }
 
     info->server_fd = festival_socket_open(info->server_host, info->server_port);
@@ -249,11 +255,16 @@ void festivalStringToSpeech(char *text) {
 
     //fprintf(stderr,"festivalStringToSpeech()\n");
 
+    // If we don't have a struct allocated
     if (info == 0) {
-        if (festivalOpen() == -1) {
+        if (festivalOpen() == -1) { // Allocate struct, open socket
             //fprintf(stderr,"festivalStringToSpeech: Couldn't open socket to Festival\n");
             return;
         }
+    }
+
+    if (info == 0) {    // If socket is still not open
+        return;
     }
 
     if (info->server_fd == -1) {
@@ -394,13 +405,6 @@ void festivalStringToSpeech(char *text) {
 
 
 
-static char last_speech_text[8000];
-static time_t last_speech_time;
-
-
-
-
-
 int SayText(char *text) {
 
     if (debug_level & 2)
@@ -435,8 +439,6 @@ int SayText(char *text) {
 
 
 int SayTextInit() {
-
-//    festival_default_info();
 
     if (festivalOpen() == -1) {
         fprintf(stderr,"SayText: Couldn't open socket to Festival\n");
