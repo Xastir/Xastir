@@ -16,6 +16,7 @@ EXTRA_DIST = \
     tnc-startup.sys \
     tnc-stop.sys \
     xastir.rgb \
+    tgr2shp.dbfawk \
     tgrcty.dbfawk \
     tgrkgl.dbfawk \
     tgrlk.dbfawk \

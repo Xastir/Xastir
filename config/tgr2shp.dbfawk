@@ -1,0 +1,258 @@
+# $Id$
+#
+# Copyright (C) 2003-2004  The Xastir Group
+#
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   pattern - line pattern for road, river, etc. (0 - solid; 1 - dash; 2 - double dash)
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map US Census Tiger/Line  shapefiles which are
+# converted to shapefiles using the command:
+#   ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" out_directory in_directory
+#
+# THis file is identical to the file "tgrlk" except for the "dbfinfo" variable
+# that is used to recognize the signature of the shapefiles.
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+dbfinfo="MODULE:TLID:SIDE1:SOURCE:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC:FRADDL:TOADDL:FRADDR:TOADDR:FRIADDL:TOIADDL:FRIADDR:TOIADDR:ZIPL:ZIPR:AIANHHFPL:AIANHHFPR:AIHHTLIL:AIHHTLIR:CENSUS1:CENSUS2:STATEL:STATER:COUNTYL:COUNTYR:COUSUBL:COUSUBR:SUBMCDL:SUBMCDR:PLACEL:PLACER:TRACTL:TRACTR:BLOCKL:BLOCKR";
+#dbffields is which of the above fields we actually want to look at.
+# No point reading dbffields that are not looked at further.
+dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+# use color 11 to highlight stuff that isn't properly mapped.
+BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0 }
+
+# per-field rules are applied to the dbffields that are read from each record.
+# key: set the search key to be the Tiger/Line ID.  Not currently used.
+/^TLID=(.*)$/ {key=$1; next}
+# name: concatenate FEDIRP (direction prefix), FENAME (name), 
+#   FETYPE (type: Rd, Ln, Pky, etc.) and FEDIRS (direction suffix).
+# also abbreviate United States Highway to US, etc.
+/^FEDIRP=(.+)$/ {name="$1 ";next}
+/^FENAME=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^FENAME=State Highway (.*)$/ {name="$(name)State $1";next}
+/^FENAME=State Route (.*)$/ {name="$(name)SR $1";next}
+/^FENAME=(.*)$/ {name="$(name)$1; next}
+/^FETYPE=(.+)$/ {name="$(name) $1"; next}
+/^FEDIRS=(.+)$/ {name="$(name) $1"; next}
+# Census Feature Class Codes are used to set lanes, color, display_level, etc.
+# CFCC A..: roads
+# A11 - primary limited access road or interstate highway, unseparated
+# A12 - primary limited access road or interstate highway, unseparated in tunnel
+# A13 - primary limited access road or interstate highway, unseparated, underpassing
+# A14 - primary limited access road or interstate highway, unseparated, with rail line in center
+# A15 - primary limited access road or interstate highway, separated
+# A16 - primary limited access road or interstate highway, separated, in tunnel
+# A17 - primary limited access road or interstate highway, separated, underpassing
+# A18 - primary limited access road or interstate highway, separated, with rail line in center
+# A21 - primary road without limit access, US highways, unseparated
+# A22 -primary road without limit access, US highways, unseparated, in tunnel
+# A23 - primary road without limit access, US highways, underpassing
+# A24 - primary road without limit access, US highways, unseparated, with rail line in center
+# A25 - primary road without limit access, US highways, separated
+# A26 - primary road without limit access, US highways, separated, in tunnel
+# A27 - primary road without limit access, US highways, separated, underpassing
+# A28 - primary road without limit access, US highways, separated, with rail line in center
+# A31 - secondary and connection road, state highways, unseperated
+# A32 - " in tunnel
+# A33 - " underpassing
+# A34 - " with rail line in center
+# A35 - secondary and connection road, state highways, seperated
+# A36 - " in tunnel
+# A37 - " underpassing
+# A38 - " with rail line in center
+# A41 - local, neighborhood and rural road, city street, unseparated
+# A42 - " in tunnel
+# A43 - " underpassing
+# A44 - " with rail line in center
+# A45 - local, neighborhood and rural road, city street, separated
+# A46 - " in tunnel
+# A47 - " underpassing
+# A48 - " with rail line in center
+# A51 - vehicular trail, unseparated
+# A52 - " in tunnel
+# A53 - " underpassing
+# A61 - cul-de-sac
+# A62 - traffic circle
+# A63 - access ramp
+# A64 - service drive
+# A65 - ferry crossing
+# A71 - walkway or trail
+# A72 - stairway
+# A73 - alley
+# A74 - driveway
+/^CFCC=A1/ {lanes=4; color=4; label_level=512; font_size=3; next}
+/^CFCC=A2/ {lanes=3; color=8; label_level=256; font_size=2; next}
+/^CFCC=A3/ {lanes=2; color=8; label_level=128; font_size=1; next}
+/^CFCC=A3[1-6]/ {display_level=256; next}
+/^CFCC=A3[7-8]/ {display_level=128; next}
+/^CFCC=A4/ {display_level=96; label_level=16; color=40; lanes=1; next}
+/^CFCC=A5/ {lanes=2; color=40; display_level=64; font_size=1; next}
+/^CFCC=A65/ {lanes=2; color=8; pattern=2; font_size=1; next}
+/^CFCC=A6[^5]/ {color=40; display_level=64; next}
+/^CFCC=A7[12]/ {lanes=1; color=12; pattern=2; display_level=64; next}
+/^CFCC=A7[03-9]/ {lanes=1; color=40; pattern=2; display_level=64; next}
+# need to implement these:
+# B: railroads
+# B01 - railroad track
+# B02 - " in tunnel
+# B03 - " underpassing
+# B11 - railroad main line
+# B12 - " in tunnel
+# B13 - " underpassing
+# B21 - railroad spur
+# B22 - " in tunnel
+# B23 - " underpassing
+# B31 - railroad yard track
+# B32 - " in tunnel
+# B33 - " underpassing
+# B40 - railroad ferry crossing
+# B50 - other rail line
+# B51 - carline (streetcars, etc.)
+# B52 - cog railroad, incline railway or logging tram
+/^CFCC=B/ {lanes=1; color=8; pattern=1; display_level=128; next}
+# C: transmission lines
+# C00 - misc ground transportation
+# C10 - pipeline
+# C20 - power transmission line
+# C30 - other ground transportation
+# C31 - aerial tramway
+/^CFCC=C/ {display_level=0; next}
+# D: landmarks
+# D00 - unknown
+# D10 - military installation
+# D20 - multihousehold or transient quarters
+# D21 - apartment building or complex
+# D22 - rooming or boarding house
+# D23 - trailer cour or mobile home park
+# D24 - marina
+# D25 - crew-of-vessel area
+# D26 - housing facility for workers
+# D27 - hotel, motel, resort, spa, YMCA, YWCA
+# D28 - campground
+# D29 - shelter or mission
+# D30 - custodial facility
+# D31 - hospital
+# D32 - halfway house
+# D33 - nursing home
+# D34 - county home or poor farm
+# D35 - orphanage
+# D36 - jail 
+# D37 - federal penetentiary, state prison, or prison farm
+# D40 - unknown educational or religious
+# D41 - sorority or fraternity
+# D42 - convent or monastery
+# D43 - educational institution
+# D44 - religious institution
+# D50 - transportation terminal
+# D51 - airport
+# D52 - train station
+# D53 - bus terminal
+# D54 - marine terminal
+# D55 - seaplane anchorage
+# D70 - tower
+# D71 - lookout tower
+# D80 - open space
+# D81 - golf course
+# D82 - cemetery
+# D83 - national park
+# D84 - national forest
+# D85 - state or local park or forest
+# D90 - special purpose landmark
+# D91 - post office box-only ZIP Code location
+# D92 - urbanizacion (Puerto Rico)
+# E: physical featuers
+# E00 - unknown physical feature
+# E10 - fence line
+# E20 - topgraphic feature
+# E21 - ridge line
+# E22 - mountain peak
+# E23 - island
+# F: legal boundaries
+# F00 - nonvisible boundary
+# F10 - jurisdictional boundary
+# F11 - offset boundary
+# F12 - corridor boundary
+# F13 - interpolate boundary across water
+# F14 - superseded boundary
+# F15 - superseded boundary, corrected
+# F20 - data base topology
+# F21 - automated feature extension to lenghten physical feature
+# F22 - irregular feature extension, determined manually
+# F23 - closure extension
+# F24 - separation line
+# F25 - centerline
+# F30 - point-to-point line
+# F40 - property line
+# F50 - Zip Code boundary
+# F60 - map edge
+# F70 - statistical boundardy
+# F71 - 1980 "
+# F72 - 1990 "
+# F73 - internal use
+# F74 - 1990 " ...
+# F80 - other tabulation boundary
+# F81 - internal use
+# F82 - internal use
+/^CFCC=F10$/{color=255; fill_color=255; label_level=32; display_level=512; pattern=0; next}
+/^CFCC=F/{display_level=0; next}
+# (G not used by census;  tig2aprs uses for special maps)
+# H: hydrography
+# H00 - water feature
+# H01 - shoreline of perennial water feature
+# H02 - shoreline of intermittent "
+# H10 - stream
+# H11 - perennial stream
+# H12 - intermittent stream
+# H13 - braided stream or river
+# H20 - canal, ditch or aqueduct
+# H21 - perennial "
+# H22 - intermittent "
+# H30 - lake or pond
+# H31 - perennial "
+# H32 - intermittent "
+# H40 - reservoir
+# H41 - perennial "
+# H42 - intermittent "
+# H50 - bay, estuary, gulf, sound, sea, ocean
+# H51 - bay, estuary, gulf or sound
+# H52 - sea or ocean
+# H60 - gravel pit or quarry filled with water
+# H70 - nonvisibile....
+# H80 - special water features
+# H81 - glacier
+# Don't display hydrology unless zoomed all the way in --- adjust to taste,
+# in NM anything more than this  looks absurd coz every intermittent wash 
+# would show up as a blue line, which is just wrong.
+/^CFCC=H/ {lanes=0; color=26; fill_color=26; label_color=26; display_level=1;}
+/^CFCC=H01/ {pattern=0; display_level=512; lanes=1; next}
+/^CFCC=H02/ {pattern=2; display_level=1; next}
+/^CFCC=H[124]2/ {lanes=1; pattern=2; display_level=128; next}
+# These filled patterns don't actually work: the tiger shapefiles produced
+# by ogr2ogr do not have the polygon features readily accessible!
+/^CFCC=H[34][01]/ {lanes=1; pattern=0; filled=1; fill_style=0; display_level=512; next}
+/^CFCC=H32/ {lanes=1; pattern=1; filled=1; fill_style=1; display_level=512; next}
+/^CFCC=H[1-6][013-9]/ {lanes=1; display_level=512; next}
+/^CFCC=H7/ {display_level=0; label_level=0; next}
+/^CFCC=H8/ {lanes=1; display_level=1}
+/^CFCC=H81/ {color=15; fill_color=15; display_level=256; next}
+# X00 - feature not yet classified
+# just a demo of the END_RECORD and END rules:
+#END_RECORD {name="$name ($key)";}
+#END {}
