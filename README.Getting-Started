@@ -461,6 +461,7 @@ has internet access and is hooked up to it currently.
 *) Run "callpass" in another Xterm window in order to generate your
 Pass-code number.  Save that number as you'll need it for each
 Interface dialog where you might need to authenticate your callsign.
+Of course you can always run callpass again if you forget it!
 
 *) Go to Interface->Properties then click on "Add".  Click "Internet
 Server".  Another dialog will come up that allows you to enter the
