@@ -3293,7 +3293,7 @@ struct {
 //  {"rts",tiger,draw_ogr_map},
 //  {"rtt",tiger,draw_ogr_map},
 //  {"rtz",tiger,draw_ogr_map},
-//  {"tab",mapinfo,draw_ogr_map}, // MapInfo
+  {"tab",mapinfo,draw_ogr_map}, // MapInfo
   {"mid",mapinfo,draw_ogr_map}, // MapInfo
   {"mif",mapinfo,draw_ogr_map}, // MapInfo
   {"dgn",dgn,draw_ogr_map},     // DGN
