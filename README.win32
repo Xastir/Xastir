@@ -625,6 +625,16 @@ downloaded file into the ~/src/lcms directory you just created:
     make all
     make install
 
+Another note about the lcms library:
+
+"LittleCMS has reached release 1.12 (and only 1.11 and 1.12 are
+available on their website).  Apparently, after 1.10, the "all"
+target is gone, so you need to go through the ./configure routine.
+However, in my cygwin install, the configure routine fails on the C
+preprocessor sanity check.  Google provided the 1.10 release, so the
+instructions still work...  but follow them "literally.""
+-- Steve Peters, N1TYE
+
 Note that Xastir's "./configure" stage may fail trying to compile in
 ImageMagick support.  If this happens, make sure you have the
 ImageMagick development package installed if using RPM packages, or
