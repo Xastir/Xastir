@@ -1093,7 +1093,9 @@ eg: REFRESH 900
 This tag is used for dynamic URL's such as weather radar, where you
 wish Xastir to auto-redraw the map at a specified interval.  By
 adding this tag to weather radar .geo's, you can watch the weather
-move across your screen.
+move across your screen.  Xastir contains only one interval counter,
+so the last REFRESH interval loaded takes effect for all selected
+maps.
 
 Special/nonstandard .geo files:
 
