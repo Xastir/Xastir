@@ -98,6 +98,7 @@ libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
 wget                            Optional  Internet images as maps
+GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 
 Installing only the required libs gives you these capabilities:
 PocketAPRS/aprsDOS/WinAPRS/MacAPRS maps, GNIS maps (really just lots
@@ -192,6 +193,14 @@ To use online maps or findu.com historical data, you'll need wget installed.
     Wget:
         ftp://ftp.gnu.org/gnu/wget/
 
+To download GPS tracks/waypoints/routes from a Garmin GPS into Xastir,
+converting to Shapefile format maps as it runs, you'll need gpsmanshp and
+GPSMan.  You'll need to wait for GPSMan 6.0 to be released which has
+command-line support built-in (so that Xastir can control it directly):
+    gpsmanshp:
+        http://www.ncc.up.pt/~mig/gpsmanshp/
+    GPSMan:
+        http://www.ncc.up.pt/~mig/gpsman.html
 
 See below for instructions on installing all of these libraries. Once the 
   libraries are installed, ./configure should find the libraries and install
@@ -433,7 +442,12 @@ First Time Install:
      timeouts/retries in Xastir by specifying new defaults in their ~/.wgetrc
      file.
 
-   7. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   7. OPTIONAL:  Install gpsmanshp/GPSMan.  Install Shapelib first (see
+      above).  Install gpsmanshp per instructions.  Install GPSMan per
+      instructions.  Verify that GPSMan will start up and will download
+      information from a Garmin GPS in Garmin-Garmin mode.
+
+   8. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using CVS)
@@ -483,7 +497,7 @@ First Time Install:
      see the notes above about ldconfig.
 
 
-   8. Kernel AX.25 Interfaces
+   9. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -547,7 +561,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   9. Serially-Connected TNC's
+   10. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -666,7 +680,7 @@ First Time Install:
      >    being yet another root exploit-in-waiting.
 
 
-   10. Start up XASTIR and read the help files to configure it. If you have 
+   11. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in
@@ -692,7 +706,7 @@ First Time Install:
      Xastir is run. On new installs Xastir will default to English unless
      you use this command line option.
 
-   11. Automatic Identification:  Xastir can auto-ID via voice if Festival is
+   12. Automatic Identification:  Xastir can auto-ID via voice if Festival is
    compiled in and/or via a message splashed across the screen.  It does this
    identification every 9.5 minutes if enabled.  These identification modes
    were designed for broadcasting Xastir across fast-scan television (for
