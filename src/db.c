@@ -5520,6 +5520,8 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     if (debug_level & 1)
         printf("extract_comp_position: Start\n");
 
+    //printf("extract_comp_position start: %s\n",*info);
+
     // compressed data format  /YYYYXXXX$csT  is a fixed 13-character field
     // used for ! / @ = data IDs
     //   /     Symbol Table ID
@@ -5551,7 +5553,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         y1 = my_data[1] - '!';  y2 = my_data[2] - '!';  y3 = my_data[3] - '!';  y4 = my_data[4] - '!';
         x1 = my_data[5] - '!';  x2 = my_data[6] - '!';  x3 = my_data[7] - '!';  x4 = my_data[8] - '!';
 
-        // Have a 'c' byte?
+        // Have at least a 'c' byte?
         if (len > 10) {
             c = (int)(my_data[10] - '!');
             skip = 11;
@@ -5561,8 +5563,8 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
             skip = 10;
         }
       
-        // Have 's' and 'T' bytes? 
-        if (len >= 13) { 
+        // Have 's' and 'T' bytes?   'c' must not be a space (now -1).
+        if ( (len >= 13) && (c != -1) ) { 
             s = (int)(my_data[11] - '!');
             T = (int)(my_data[12] - '!');
             skip = 13;
@@ -5671,6 +5673,8 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
             printf("*** extract_comp_position: Failed!\n");
         }
     }
+
+    //printf("  extract_comp_position end: %s\n",*info);
 
     return(ok);
 }
