@@ -119,6 +119,8 @@ extern int grid_size;
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);
 
+extern int convert_to_xastir_coordinates ( unsigned long* x, unsigned long* y, float f_longitude, float f_latitude );
+
 
 #endif /* __XASTIR_MAPS_H */
 
