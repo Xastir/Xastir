@@ -256,19 +256,15 @@ AC_SUBST(LIBS)
  
 # Checks for header files. 
 # 
-# Check for Motif include files in the normal spots
-AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",)
-#
-# Check special MacOSX path
-AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes") 
-#
-# Check special Solaris path
-AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes")
-#
-if test "$MOTIF_INC" != "yes"; then
-  AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install one of them. ***)
-fi
-#
+# Check for Motif include files in:
+# 1) Normal paths.
+# 2) Special MacOSX path.
+# 3) Special Solaris path.
+AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",
+  AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes",
+    AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes",
+      AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install one of them. ***))))
+
 AC_FUNC_ALLOCA 
 AC_HEADER_DIRENT 
 AC_HEADER_STDC 
@@ -397,7 +393,7 @@ fi
  
  
  
-# Check for intl library (This is needed for Cygwin) 
+# Check for intl library (Needed for Cygwin) 
 # 
 AC_CHECK_LIB(intl, gettext, XASTIR_INTL_LIB="-lintl") 
 if test "$XASTIR_INTL_LIB" = "-lintl" 
@@ -926,16 +922,15 @@ LIBS=" -lXm -lXt -lX11 $LIBS"
  
 # 
 # Remove duplicate entries.  Thanks to Paul Lutt, ke7xt, for this! 
+#
+# Don't get rid of dupes on the LIBS line.  We may need the same
+# "-Llibdir" called out several times, immediately prior to each
+# "-llibrary" that needs it.
 # 
 changequote(,) 
 CFLAGS=`echo  "$CFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'` 
 CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'` 
 LDFLAGS=`echo "$LDFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'` 
-# 
-# We probably don't want to get rid of dupes on the LIBS line, 'cuz 
-# we may have to have multiple instances of them just before the 
-# libraries that they call out. 
-#LIBS=`echo  "$LIBS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'` 
 changequote([,]) 
   
  
