@@ -184,7 +184,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 /****************************************************************/
 /* output data to tnc interfaces                                */
 /* from: type of port heard from                                */
-/* call: call sign heard fro                                    */
+/* call: call sign heard from                                   */
 /* line: data to gate to rf                                     */
 /* port: port data came from                                    */
 /****************************************************************/

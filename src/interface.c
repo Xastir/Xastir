@@ -3643,6 +3643,11 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // Decode our own transmitted packets.
     // Note that this function call is destructive to the first parameter.
     // This is why we call it _after_ we call the log_data functions.
+    //
+    // This must be the "L" packet we see in the View->Messages
+    // dialog.  We don't see a "T" packet (for TNC) and we only see
+    // "I" packets if we re-receive our own packet from the internet
+    // feeds.
     decode_ax25_line( data_txt, DATA_VIA_LOCAL, port, 1);
 }
 
