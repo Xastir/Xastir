@@ -54,7 +54,7 @@ char *group_data_list = NULL;   // Need this NULL for Solaris!
 int  group_data_count;
 int  group_data_max;
 
-int message_counter;
+char message_counter[5+1];
 
 int auto_reply;
 char auto_reply_message[100];
@@ -374,11 +374,51 @@ void output_message(char *from, char *to, char *message) {
                 // Roll over message_counter if we hit the max.  Now
                 // with Reply/Ack protocol the max is only two
                 // characters worth.  We changed to sending the
-                // sequence number in Base-90 format in order to get
+                // sequence number in Base-?? format in order to get
                 // more range from the 2-character variable.
-                message_counter++;
-                if (message_counter >= 8100) // 90*90
-                    message_counter = 0;
+
+                message_counter[2] = '\0';  // Terminate at 2 chars
+
+                // Check that chars are within the correct ranges
+                if (         (message_counter[0] < '0')
+                        ||   (message_counter[1] < '0')
+                        || ( (message_counter[0] > '9') && (message_counter[0] < 'A') )
+                        || ( (message_counter[1] > '9') && (message_counter[1] < 'A') )
+                        || ( (message_counter[0] > 'Z') && (message_counter[0] < 'a') )
+                        || ( (message_counter[1] > 'Z') && (message_counter[1] < 'a') )
+                        ||   (message_counter[0] > 'z')
+                        ||   (message_counter[1] > 'z') ) {
+                    message_counter[0] = '0';
+                    message_counter[1] = '0';
+                }
+
+                // Increment the least significant digit
+                message_counter[1]++;
+
+                // Span the gaps between the correct ranges
+                if (message_counter[1] == ':')
+                    message_counter[1] = 'A';
+
+                if (message_counter[1] == '[')
+                    message_counter[1] = 'a';
+
+                if (message_counter[1] == '{') {
+                    message_counter[1] = '0';
+                    message_counter[0]++;   // Roll over to next char
+                }
+
+                // Span the gaps between the correct ranges
+                if (message_counter[0] == ':')
+                    message_counter[0] = 'A';
+
+                if (message_counter[0] == '[')
+                    message_counter[0] = 'a';
+
+                if (message_counter[0] == '{') {
+                    message_counter[0] = '0';
+                    message_counter[0]++;
+                }
+
 
 // Note that Xastir's messaging can lock up if we do a rollover and
 // have unacked messages on each side of the rollover.  This is due
@@ -397,13 +437,19 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].from_call_sign,from);
                 strcpy(message_pool[i].message_line,message_out);
 
-                // We compute the base-90 sequence number here
-                // This allows it to range from "!!" to "zz"
+//                // We compute the base-90 sequence number here
+//                // This allows it to range from "!!" to "zz"
+//                xastir_snprintf(message_pool[i].seq,
+//                    sizeof(message_pool[i].seq),
+//                    "%c%c",
+//                    (char)(((message_counter / 90) % 90) + 33),
+//                    (char)((message_counter % 90) + 33));
+
                 xastir_snprintf(message_pool[i].seq,
                     sizeof(message_pool[i].seq),
                     "%c%c",
-                    (char)(((message_counter / 90) % 90) + 33),
-                    (char)((message_counter % 90) + 33));
+                    message_counter[0],
+                    message_counter[1]);
 
                 message_pool[i].active_time=0;
                 message_pool[i].next_time = (time_t)15l;
