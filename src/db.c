@@ -59,7 +59,6 @@
 
 #define STATION_REMOVE_CYCLE 300        /* check station remove in seconds (every 5 minutes) */
 #define MESSAGE_REMOVE_CYCLE 600        /* check message remove in seconds (every 10 minutes) */
-#define MAX_TRAIL_SEG_LEN    60l        /* max length of displayed trail segments in minutes (1 deg) */
 #define IN_VIEW_MIN         600l        /* margin for off-screen stations, with possible trails on screen, in minutes */
 #define TRAIL_POINT_MARGIN   30l        /* margin for off-screen trails points, for segment to be drawn, in minutes */
 #define TRAIL_MAX_SPEED     900         /* max. acceptible speed for drawing trails, in mph */
@@ -5602,19 +5601,26 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
             flag |= TR_LOCAL;           // set "local" flag
 
     if (ptr->prev != NULL) {    // we have at least two points...
-        if (abs(lon - ptr->prev->trail_long_pos) > MAX_TRAIL_SEG_LEN*60*2*100 ||
-                abs(lat - ptr->prev->trail_lat_pos) > MAX_TRAIL_SEG_LEN*60*2*100) {
+        // Check whether distance between points is too far.  We
+        // must convert from degrees to the Xastir coordinate system
+        // units, which are 100th of a second.
+        if (    abs(lon - ptr->prev->trail_long_pos) > (trail_segment_distance * 60*60*100) ||
+                abs(lat - ptr->prev->trail_lat_pos)  > (trail_segment_distance * 60*60*100) ) {
 
-            // Set "new track" flag if there's two degrees or more
-            // distance between points (used to be one degree, may
-            // bump it up a bit more soon).
+            // Set "new track" flag if there's
+            // "trail_segment_distance" degrees or more between
+            // points.  Originally was hard-coded to one degree, now
+            // set by a slider in the timing dialog.
             flag |= TR_NEWTRK;
         }
         else {
-            if (abs(sec - ptr->prev->sec) > 2700) {
+            // Check whether trail went above our maximum time
+            // between points.  If so, don't draw segment.
+            if (abs(sec - ptr->prev->sec) > (trail_segment_time *60)) {
 
-                // Set "new track" flag if long delay (45 minutes or
-                // more) between reception of two points.
+                // Set "new track" flag if long delay between
+                // reception of two points.  Time is set by a slider
+                // in the timing dialog.
                 flag |= TR_NEWTRK;
             }
         }

@@ -362,6 +362,8 @@ WPUPCFTM06|Intervallo controllo GPS (sec)||
 WPUPCFTM07|Tempo eliminazione stazione (giorni)||
 WPUPCFTM08|Fuori tempo Ricalcolo Assoluto (min)||
 WPUPCFTM09|Serial Inter-Char Delay (ms)||
+WPUPCFTM10|New Track Time (min)||
+WPUPCFTM11|New Track Interval (degrees)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||

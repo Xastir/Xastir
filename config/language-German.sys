@@ -368,6 +368,8 @@ WPUPCFTM06|GPS Abfrage alle [Sek]||
 WPUPCFTM07|Station löschen nach [Tage]||
 WPUPCFTM08|Timeout Pos-Voraussage [Min]||
 WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
+WPUPCFTM10|New Track Time (min)||
+WPUPCFTM11|New Track Interval (degrees)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||

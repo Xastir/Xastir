@@ -910,6 +910,9 @@ Widget gps_interval = (Widget)NULL;
 Widget dead_reckoning_time = (Widget)NULL;
 Widget object_item_interval = (Widget)NULL;
 Widget serial_pacing_time = (Widget)NULL;
+Widget trail_segment_timeout = (Widget)NULL;
+Widget trail_segment_distance_max = (Widget)NULL;
+
 
 time_t GPS_time;                /* gps time out */
 time_t last_statusline;         // last update of statusline or 0 if inactive
@@ -917,6 +920,8 @@ time_t last_id_time;            // Time of last ID message to statusline
 time_t sec_old;                 /* station old after */
 time_t sec_clear;               /* station cleared after */
 time_t sec_remove;              /* Station removed after */
+int trail_segment_time;         // Segment missing if above this time (mins)
+int trail_segment_distance;     // Segment missing if greater distance
 time_t sec_next_raw_wx;         /* raw wx transmit data */
 int dead_reckoning_timeout = 60 * 10;   // 10 minutes;
 
@@ -17050,6 +17055,12 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
     // Set the serial port inter-character delay
     XmScaleGetValue(serial_pacing_time, &serial_char_pacing);     // Milliseconds
 
+    XmScaleGetValue(trail_segment_timeout, &value); // Minutes
+    trail_segment_time = (time_t)value;
+
+    XmScaleGetValue(trail_segment_distance_max, &value); // Degrees
+    trail_segment_distance = (time_t)value;
+
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
 }
@@ -17283,6 +17294,8 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        length = strlen(langcode("WPUPCFTM09")) + 1;
+
         // Serial Pacing Time (delay between each serial character)
         serial_pacing_time = XtVaCreateManagedWidget("Serial Pacing Time (ms)",
                 xmScaleWidgetClass,
@@ -17309,11 +17322,69 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        length = strlen(langcode("WPUPCFTM10")) + 1;
+
+        // Time below which track segment will get drawn, in minutes
+        trail_segment_timeout = XtVaCreateManagedWidget("Trail segment timeout",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, dead_reckoning_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 0,     // Zero minutes
+                XmNmaximum, 12*60, // 12 hours
+                XmNshowValue, TRUE,
+                XmNvalue, trail_segment_time,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM10"), length,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        length = strlen(langcode("WPUPCFTM11")) + 1;
+
+        // Interval at track segment will not get drawn, in degrees
+        trail_segment_distance_max = XtVaCreateManagedWidget("Trail segment interval degrees",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, dead_reckoning_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 0,  // Zero degrees
+                XmNmaximum, 45, // 90 degrees
+                XmNshowValue, TRUE,
+                XmNvalue, trail_segment_distance,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM11"), length,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, dead_reckoning_time,
+                XmNtopWidget, trail_segment_timeout,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -17331,7 +17402,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, dead_reckoning_time,
+                XmNtopWidget, trail_segment_timeout,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,

@@ -372,6 +372,8 @@ WPUPCFTM06|GPS Status Controle Interval (sec)||
 WPUPCFTM07|Tijd Tot Wissen Station (dagen)||
 WPUPCFTM08|Timeout Berekening Geschatte Waarden (min)||
 WPUPCFTM09|Serial Inter-Char Delay (ms)||
+WPUPCFTM10|New Track Time (min)||
+WPUPCFTM11|New Track Interval (degrees)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||
