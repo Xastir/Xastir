@@ -429,12 +429,16 @@ Widget tiger_cities,
 	tiger_interstate,
 	tiger_statehwy,
 	tiger_states,
-	tiger_ushwy;
+	tiger_ushwy,
+	tiger_water,
+	tiger_lakes,
+	tiger_misc,
+	tiger_intensity;
 
 int tiger_show_grid = TRUE;
 int tiger_show_counties = TRUE;
 int tiger_show_cities = TRUE;
-int tiger_show_places = FALSE;
+int tiger_show_places = TRUE;
 int tiger_show_majroads = TRUE;
 int tiger_show_streets = FALSE;
 int tiger_show_railroad = TRUE;
@@ -442,6 +446,10 @@ int tiger_show_states = FALSE;
 int tiger_show_interstate = TRUE;
 int tiger_show_ushwy = TRUE;
 int tiger_show_statehwy = TRUE;
+int tiger_show_water = TRUE;
+int tiger_show_lakes = TRUE;
+int tiger_show_misc = TRUE;
+int tigermap_intensity = 100;
 
 #endif
 
@@ -1877,6 +1885,13 @@ void create_image(Widget w) {
         else if (!disable_all_maps)
             load_maps(w);
     }
+#ifdef HAVE_IMAGEMAGICK
+    //
+    //  If tigermaps are enabled, then load them.
+    //
+    if (tiger_flag)
+        draw_tiger_map(w);
+#endif // HAVE_IMAGEMAGICK
 
     if (!wx_alert_style)
         statusline(langcode("BBARSTA034"),1);
@@ -7327,6 +7342,21 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
      	else
 	  	tiger_show_railroad=FALSE;
 
+	if(XmToggleButtonGetState(tiger_water))
+		tiger_show_water=TRUE;
+     	else
+	  	tiger_show_water=FALSE;
+
+	if(XmToggleButtonGetState(tiger_lakes))
+		tiger_show_lakes=TRUE;
+     	else
+	  	tiger_show_lakes=FALSE;
+
+	if(XmToggleButtonGetState(tiger_misc))
+		tiger_show_misc=TRUE;
+     	else
+	  	tiger_show_misc=FALSE;
+
 	if(XmToggleButtonGetState(tiger_states))
 		tiger_show_states=TRUE;
      	else
@@ -7347,14 +7377,18 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
      	else
 	  	tiger_show_statehwy=FALSE;
 
+	XmScaleGetValue(tiger_intensity, &tigermap_intensity);
+
 	Configure_tiger_destroy_shell(widget,clientData,callData);
         create_image(da);
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
-
+////////////////////////////////////////////// Config_tiger//////////////////////////////////////////////////////
+//
+//
 void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-	static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_file, sep;
+    static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_file, sep;
 
     Atom delw;
 
@@ -7402,11 +7436,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_grid  = XtVaCreateManagedWidget(langcode("MPUPTGR001"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_file,
-                                      XmNtopOffset, 10,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7415,11 +7449,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_counties  = XtVaCreateManagedWidget(langcode("MPUPTGR002"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_grid,
-                                      XmNtopOffset, 10,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7428,10 +7462,10 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_cities  = XtVaCreateManagedWidget(langcode("MPUPTGR003"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_counties,
-                                      XmNtopOffset, 10,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7440,11 +7474,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_places  = XtVaCreateManagedWidget(langcode("MPUPTGR004"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_cities,
-                                      XmNtopOffset, 10,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7453,11 +7487,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_majroads  = XtVaCreateManagedWidget(langcode("MPUPTGR005"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_places,
-                                      XmNtopOffset, 10,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7466,11 +7500,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_streets  = XtVaCreateManagedWidget(langcode("MPUPTGR006"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_majroads,
-                                      XmNtopOffset, 12,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7479,11 +7513,50 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_railroad  = XtVaCreateManagedWidget(langcode("MPUPTGR007"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_streets,
-                                      XmNtopOffset, 12,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_water  = XtVaCreateManagedWidget(langcode("MPUPTGR013"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_railroad,
+                                      XmNtopOffset, 6,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_lakes  = XtVaCreateManagedWidget(langcode("MPUPTGR014"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_water,
+                                      XmNtopOffset, 6,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_misc  = XtVaCreateManagedWidget(langcode("MPUPTGR015"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_lakes,
+                                      XmNtopOffset, 6,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7491,12 +7564,12 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
         tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_railroad,
-                                      XmNtopOffset, 12,
+                                      XmNtopWidget, tiger_misc,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7505,11 +7578,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_states,
-                                      XmNtopOffset, 12,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7518,11 +7591,11 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_interstate,
-                                      XmNtopOffset, 12,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
@@ -7531,21 +7604,42 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_ushwy,
-                                      XmNtopOffset, 12,
+                                      XmNtopOffset, 6,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
+                                      XmNleftOffset ,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_intensity  = XtVaCreateManagedWidget("Intensity", xmScaleWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_statehwy,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,5,
+				      XmNwidth, 100,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+				      XmNorientation, XmHORIZONTAL,
+				      XmNborderWidth, 1,
+				      XmNminimum, 50,
+				      XmNmaximum, 100,
+				      XmNshowValue, TRUE,
+				      XmNvalue, tigermap_intensity,
+				      XmNtitleString, (XmString) "Intensity",
                                       NULL);
 
 
         sep = XtVaCreateManagedWidget("Configure_speech sep", xmSeparatorGadgetClass,tiger_form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_statehwy,
+                                      XmNtopWidget, tiger_intensity,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -7630,6 +7724,21 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         else
             XmToggleButtonSetState(tiger_railroad,FALSE,FALSE);
 
+        if(tiger_show_water)
+            XmToggleButtonSetState(tiger_water,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_water,FALSE,FALSE);
+
+        if(tiger_show_lakes)
+            XmToggleButtonSetState(tiger_lakes,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_lakes,FALSE,FALSE);
+
+        if(tiger_show_misc)
+            XmToggleButtonSetState(tiger_misc,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_misc,FALSE,FALSE);
+
         if(tiger_show_states)
             XmToggleButtonSetState(tiger_states,TRUE,FALSE);
         else
@@ -7661,7 +7770,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     } else
         (void)XRaiseWindow(XtDisplay(configure_tiger_dialog), XtWindow(configure_tiger_dialog));
 }
-#endif
+#endif // HAVE_IMAGEMAGICK
 
 //WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
@@ -15424,7 +15533,7 @@ int main(int argc, char *argv[], char *envp[]) {
     posit_last_time = 0l;
     posit_next_time = 0l;
     wait_to_redraw=1;
-    tiger_flag = 0;
+    tiger_flag = FALSE;
 
     last_popup_x = 0;
     last_popup_y = 0;

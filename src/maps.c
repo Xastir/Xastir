@@ -4541,7 +4541,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     FILE *f;                        // Filehandle of image file
     char line[400];                 // One line from GEO file
     char fileimg[400];              // Ascii name of image file, read from GEO file
-    char tigertmp[400];             // Used for putting together the tigermap query
     char remote_callsign[400];      // Ascii callsign, read from GEO file, used for findu lookups only
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
@@ -4625,7 +4624,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     int findu_flag = 0;
     int terraserver_flag = 0;
     char map_it[300];
-    char tmpstr[100];
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
     char geo_datum[8+1];        // WGS-84 etc.
@@ -4678,8 +4676,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             if (strncasecmp (line, "PROJECTION", 10) == 0)
                 (void)sscanf (line + 11, "%8s",geo_projection); // ignores leading and trailing space (nice!)
 
-//            if (strncasecmp (line, "TIGERMAP", 8) == 0)  // No longer required, menu driven now  N0VH
-//                tiger_flag = 1;
             if (strncasecmp (line, "FINDU", 5) == 0)
                 findu_flag = 1;
             else if (strncasecmp (line, "TERRASERVER", 11) == 0)
@@ -4743,8 +4739,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     else
         map_proj = 0;           // Lat/Lon, default
 
+
 #ifdef HAVE_IMAGEMAGICK
-    if (tiger_flag || findu_flag) {  // Must generate our own calibration data for some maps
+    if (findu_flag) {  // Must generate our own calibration data for some maps
 
         // Tiepoint for upper left screen corner
         //
@@ -4786,81 +4783,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         long_center = (left + right)/2.0l;
         lat_center  = (top + bottom)/2.0l;
 
-        if (tiger_flag) {
-//  Example query to the census map server....
-/*		xastir_snprintf(fileimg, sizeof(fileimg), 
-		"\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=CITIES&on=GRID&on=counties&on=majroads&on=places&&on=interstate&on=states&on=ushwy&on=statehwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
-                   lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1); */
-
-		xastir_snprintf(tigertmp, sizeof(tigertmp), "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?");
-
-		if (tiger_show_grid)
-			strcat(tigertmp, "&on=GRID");
-		else
-			strcat(tigertmp, "&off=GRID");
-
-		if (tiger_show_counties)
-			strcat(tigertmp, "&on=counties");
-		else
-			strcat(tigertmp, "&off=counties");
-
-		if (tiger_show_cities)
-			strcat(tigertmp, "&on=CITIES");
-		else
-			strcat(tigertmp, "&off=CITIES");
-
-		if (tiger_show_places)
-			strcat(tigertmp, "&on=places");
-		else
-			strcat(tigertmp, "&off=places");
-
-		if (tiger_show_majroads)
-			strcat(tigertmp, "&on=majroads");
-		else
-			strcat(tigertmp, "&off=majroads");
-
-		if (tiger_show_streets)
-			strcat(tigertmp, "&on=streets");
-		// Don't turn streets off since this will automagically show up as you zoom in.
-
-		if (tiger_show_railroad)
-			strcat(tigertmp, "&on=railroad");
-		else
-			strcat(tigertmp, "&off=railroad");
-
-		if (tiger_show_states)
-			strcat(tigertmp, "&on=states");
-		else
-			strcat(tigertmp, "&off=states");
-
-		if (tiger_show_interstate)
-			strcat(tigertmp, "&on=interstate");
-		else
-			strcat(tigertmp, "&off=interstate");
-
-		if (tiger_show_ushwy)
-			strcat(tigertmp, "&on=ushwy");
-		else
-			strcat(tigertmp, "&off=ushwy");
-
-		if (tiger_show_statehwy)
-			strcat(tigertmp, "&on=statehwy");
-		else
-			strcat(tigertmp, "&off=statehwy");
-
-		//strcat(tigertmp, "&off=water&off=shorelin&off=miscell");  //N0VH - need to add these as configurable later
-
-		xastir_snprintf(tmpstr, sizeof(tigertmp), "&lat=%f\046lon=%f\046", lat_center, long_center);	
-		strcat (tigertmp, tmpstr);
-		xastir_snprintf(tmpstr, sizeof(tigertmp), "wid=%f\046ht=%f\046", map_width, map_height);
-		strcat (tigertmp, tmpstr);
-		xastir_snprintf(tmpstr, sizeof(tigertmp), "iwd=%i\046iht=%i\'", tp[1].img_x + 1, tp[1].img_y + 1);
-		strcat (tigertmp, tmpstr);
-		xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
-
-		//printf(tigertmp,"\n"); //N0VH just for testing
-        } 
-	else if (findu_flag) {   // Set up the URL for 2 weeks worth of raw data.
+	if (findu_flag) {   // Set up the URL for 2 weeks worth of raw data.
             xastir_snprintf(fileimg, sizeof(fileimg),
                 "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=336&length=336\'",
                 remote_callsign);
@@ -4881,7 +4804,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         }
     }
 
-    if (terraserver_flag && !tiger_flag) {
+    if (terraserver_flag) {
 //http://terraservice.net/download.ashx?t=1&s=10&x=2742&y=26372&z=10&w=820&h=480
         if (scale_y <= 4) {
                 t_zoom  = 10; // 1m
@@ -5070,7 +4993,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     // Check to see if we have to use "wget" to go get an internet map
     if ( (strncasecmp ("http", fileimg, 4) == 0)
             || (strncasecmp ("ftp", fileimg, 3) == 0)
-            || (tiger_flag)
             || (findu_flag)
             || (terraserver_flag) ) {
 #ifdef HAVE_IMAGEMAGICK
@@ -5081,8 +5003,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
         if (findu_flag)
             ext = "log";
-        else if (tiger_flag)
-            ext = "gif";
         else if (terraserver_flag)
             ext = "jpg";
         else
@@ -5589,7 +5509,700 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 }
 
 
+/**********************************************************
+ * draw_tiger_map()
+ * N0VH
+ **********************************************************/
+#ifdef HAVE_IMAGEMAGICK
+void draw_tiger_map (Widget w) {
 
+#ifdef NO_GRAPHICS
+    printf("No XPM or ImageMagick support compiled into Xastir!\n");
+    return;
+#else   // NO_GRAPHICS
+
+    uid_t user_id;
+    struct passwd *user_info;
+    char username[20];
+    char file[2000];                // Complete path/name of image file
+    FILE *f;                        // Filehandle of image file
+    char fileimg[400];              // Ascii name of image file, read from GEO file
+    char tigertmp[400];             // Used for putting together the tigermap query
+    XpmAttributes atb;              // Map attributes after map's read into an XImage
+    tiepoint tp[2];                 // Calibration points for map, read in from .geo file
+    register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
+    register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
+// DK7IN--
+    int test;                       // temporary debugging
+
+    unsigned long c_x_min,  c_y_min;// top left coordinates of map inside screen
+    unsigned long c_y_max;          // bottom right coordinates of map inside screen
+    double c_x;                     // Xastir coordinates 1/100 sec, 0 = 180°W
+    double c_y;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+
+    long map_y_0;                   // map pixel pointer prior to TM adjustment
+    register long map_x, map_y;     // map pixel pointers, DNN: this was a float, chg to long
+    long map_x_min, map_x_max;      // map boundaries for in screen part of map
+    long map_y_min, map_y_max;      //
+    long map_x_ctr;                 // half map width in pixel
+    long map_y_ctr;                 // half map height in pixel
+    int map_seen, map_act, map_done;
+
+    long map_c_yc;                  // map center, vert coordinate
+    long map_c_xc;                  // map center, hor  coordinate
+    double map_c_dx, map_c_dy;      // map coordinates increment (pixel width)
+    double c_dx;                    // adjusted map pixel width
+
+    long scr_x,  scr_y;             // screen pixel plot positions
+    long scr_xp, scr_yp;            // previous screen plot positions
+    int  scr_dx, scr_dy;            // increments in screen plot positions
+    long scr_x_mc;                  // map center in screen units
+
+    long scr_c_xr;
+
+    long scale_xa;                  // adjusted for topo maps
+    double scale_x_nm;              // nm per Xastir coordinate unit
+    long scale_x0;                  // at widest map area
+
+    char local_filename[150];
+    ExceptionInfo exception;
+    Image *image;
+    ImageInfo *image_info;
+    PixelPacket *pixel_pack;
+    PixelPacket temp_pack;
+    IndexPacket *index_pack;
+    int l;
+    XColor my_colors[256];
+    char tempfile[2000];
+    char gamma[16];
+    struct {
+        float r_gamma;
+        float g_gamma;
+        float b_gamma;
+        int gamma_flag;
+        int contrast;
+        int negate;
+        int equalize;
+        int normalize;
+        char* level;
+        char* modulate;
+    } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, NULL, NULL };
+    double left, right, top, bottom, map_width, map_height;
+    double lat_center  = 0;
+    double long_center = 0;
+
+    char map_it[300];
+    char tmpstr[100];
+    int geo_image_width;        // Image width  from GEO file
+    int geo_image_height;       // Image height from GEO file
+
+    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), "tigermap");
+    statusline(map_it,0);       // Loading ...
+
+    // Get user info
+    user_id=getuid();
+    user_info=getpwuid(user_id);
+    // Get my login name
+    strcpy(username,user_info->pw_name);
+
+    // Tiepoint for upper left screen corner
+    //
+    tp[0].img_x = 0;                // Pixel Coordinates
+    tp[0].img_y = 0;                // Pixel Coordinates
+    tp[0].x_long = x_long_offset;   // Xastir Coordinates
+    tp[0].y_lat  = y_lat_offset;    // Xastir Coordinates
+
+    // Tiepoint for lower right screen corner
+    //
+    tp[1].img_x =  screen_width - 1; // Pixel Coordinates
+    tp[1].img_y = screen_height - 1; // Pixel Coordinates 
+
+    tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
+    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
+
+    left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
+    top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
+    right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
+    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
+
+    map_width = right - left;   // Lat/long Coordinates
+    map_height = top - bottom;  // Lat/long Coordinates
+
+    geo_image_width  = screen_width;
+    geo_image_height = screen_height;
+
+    if (debug_level & 512) {
+          printf("left side is %f\n", left);
+          printf("right side is %f\n", right);
+          printf("top  is %f\n", top);
+          printf("bottom is %f\n", bottom);
+          printf("screen width is %li\n", screen_width);
+          printf("screen height is %li\n", screen_height);
+          printf("map width is %f\n", map_width);
+          printf("map height is %f\n", map_height);
+    }
+
+    long_center = (left + right)/2.0l;
+    lat_center  = (top + bottom)/2.0l;
+
+//  Example query to the census map server....
+/*		xastir_snprintf(fileimg, sizeof(fileimg), 
+		"\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=CITIES&on=GRID&on=counties&on=majroads&on=places&&on=interstate&on=states&on=ushwy&on=statehwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
+                   lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1); */
+
+    xastir_snprintf(tigertmp, sizeof(tigertmp), "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?");
+
+    if (tiger_show_grid)
+        strcat(tigertmp, "&on=GRID");
+    else
+        strcat(tigertmp, "&off=GRID");
+
+    if (tiger_show_counties)
+        strcat(tigertmp, "&on=counties");
+    else
+        strcat(tigertmp, "&off=counties");
+
+    if (tiger_show_cities)
+        strcat(tigertmp, "&on=CITIES");
+    else
+        strcat(tigertmp, "&off=CITIES");
+
+    if (tiger_show_places)
+        strcat(tigertmp, "&on=places");
+    else
+        strcat(tigertmp, "&off=places");
+
+    if (tiger_show_majroads)
+        strcat(tigertmp, "&on=majroads");
+    else
+        strcat(tigertmp, "&off=majroads");
+
+    if (tiger_show_streets)
+        strcat(tigertmp, "&on=streets");
+    // Don't turn streets off since this will automagically show up as you zoom in.
+
+    if (tiger_show_railroad)
+        strcat(tigertmp, "&on=railroad");
+    else
+        strcat(tigertmp, "&off=railroad");
+
+    if (tiger_show_states)
+        strcat(tigertmp, "&on=states");
+    else
+        strcat(tigertmp, "&off=states");
+
+    if (tiger_show_interstate)
+        strcat(tigertmp, "&on=interstate");
+    else
+        strcat(tigertmp, "&off=interstate");
+
+    if (tiger_show_ushwy)
+        strcat(tigertmp, "&on=ushwy");
+    else
+        strcat(tigertmp, "&off=ushwy");
+
+    if (tiger_show_statehwy)
+        strcat(tigertmp, "&on=statehwy");
+    else
+        strcat(tigertmp, "&off=statehwy");
+
+    if (tiger_show_water)
+        strcat(tigertmp, "&on=water");
+    else
+        strcat(tigertmp, "&off=water");
+
+    if (tiger_show_lakes)
+        strcat(tigertmp, "&on=shorelin");
+    else
+        strcat(tigertmp, "&off=shorelin");
+
+    if (tiger_show_misc)
+        strcat(tigertmp, "&on=miscell");
+    else
+        strcat(tigertmp, "&off=miscell");
+
+    xastir_snprintf(tmpstr, sizeof(tigertmp), "&lat=%f\046lon=%f\046", lat_center, long_center);	
+    strcat (tigertmp, tmpstr);
+    xastir_snprintf(tmpstr, sizeof(tigertmp), "wid=%f\046ht=%f\046", map_width, map_height);
+    strcat (tigertmp, tmpstr);
+    xastir_snprintf(tmpstr, sizeof(tigertmp), "iwd=%i\046iht=%i\'", tp[1].img_x + 1, tp[1].img_y + 1);
+    strcat (tigertmp, tmpstr);
+    xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
+
+    if (debug_level & 512) {
+          printf("left side is %f\n", left);
+          printf("right side is %f\n", right);
+          printf("top  is %f\n", top);
+          printf("bottom is %f\n", bottom);
+          printf("lat center is %f\n", lat_center);
+          printf("long center is %f\n", long_center);
+          printf("screen width is %li\n", screen_width);
+          printf("screen height is %li\n", screen_height);
+          printf("map width is %f\n", map_width);
+          printf("map height is %f\n", map_height);
+          printf("fileimg is %s\n", fileimg);
+    }
+
+
+    //
+    // DK7IN: we should check what we got from the geo file
+    //   we use geo_image_width, but it might not be initialised...
+    //   and it's wrong if the '\n' is missing a the end...
+
+    /*
+    * Here are the corners of our viewport, using the Xastir
+    * coordinate system.  Notice that Y is upside down:
+    *
+    *   left edge of view = x_long_offset
+    *  right edge of view = x_long_offset + (screen_width  * scale_x)
+    *    top edge of view =  y_lat_offset
+    * bottom edge of view =  y_lat_offset + (screen_height * scale_y)
+    *
+    * The corners of our map will soon be (after translating the
+    * tiepoints to the corners if they're not already there):
+    *
+    *   left edge of map = tp[0].x_long   in Xastir format
+    *  right edge of map = tp[1].x_long
+    *    top edge of map = tp[0].y_lat
+    * bottom edge of map = tp[1].y_lat
+    *
+    */
+    map_c_L = tp[0].x_long - x_long_offset;     // map left coordinate
+    map_c_T = tp[0].y_lat  - y_lat_offset;      // map top  coordinate
+
+    tp_c_dx = (long)(tp[1].x_long - tp[0].x_long);//  Width between tiepoints
+    tp_c_dy = (long)(tp[1].y_lat  - tp[0].y_lat); // Height between tiepoints
+
+
+    // Check for tiepoints being in wrong relation to one another
+    if (tp_c_dx < 0) tp_c_dx = -tp_c_dx;       // New  width between tiepoints
+    if (tp_c_dy < 0) tp_c_dy = -tp_c_dy;       // New height between tiepoints
+
+
+    if (debug_level & 512) {
+        printf("X tiepoint width: %ld\n", tp_c_dx);
+        printf("Y tiepoint width: %ld\n", tp_c_dy);
+    }
+
+    // Calculate step size per pixel
+    map_c_dx = ((double) tp_c_dx / abs(tp[1].img_x - tp[0].img_x));
+    map_c_dy = ((double) tp_c_dy / abs(tp[1].img_y - tp[0].img_y));
+
+    // Scaled screen step size for use with XFillRectangle below
+    scr_dx = (int) (map_c_dx / scale_x) + 1;
+    scr_dy = (int) (map_c_dy / scale_y) + 1;
+
+    if (debug_level & 512) {
+        printf ("\nImage: %s\n", file);
+        printf ("Image size %d %d\n", geo_image_width, geo_image_height);
+        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+    }
+
+    // calculate top left map corner from tiepoints
+    if (tp[0].img_x != 0) {
+        tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
+        map_c_L = tp[0].x_long - x_long_offset;     // delta ??
+        tp[0].img_x = 0;
+        if (debug_level & 512)
+            printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
+    }
+    if (tp[0].img_y != 0) {
+        tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
+        map_c_T = tp[0].y_lat - y_lat_offset;
+        tp[0].img_y = 0;
+        if (debug_level & 512)
+            printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
+    }
+
+    // calculate bottom right map corner from tiepoints
+    // map size is geo_image_width / geo_image_height
+    if (tp[1].img_x != (geo_image_width - 1) ) {
+        tp[1].img_x = geo_image_width - 1;
+        tp[1].x_long = tp[0].x_long + (tp[1].img_x * map_c_dx); // right
+        if (debug_level & 512)
+            printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
+    }
+    if (tp[1].img_y != (geo_image_height - 1) ) {
+        tp[1].img_y = geo_image_height - 1;
+        tp[1].y_lat = tp[0].y_lat + (tp[1].img_y * map_c_dy);   // bottom
+        if (debug_level & 512)
+            printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
+    }
+
+    if (debug_level & 512) {
+        printf ("Loading imagemap: %s\n", file);
+        printf ("\nImage: %s\n", file);
+        printf ("Image size %d %d\n", geo_image_width, geo_image_height);
+        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
+	    map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+    } //debug_level & 16
+
+    atb.valuemask = 0;
+
+    if (debug_level & 512)
+            printf("ftp or http file: %s\n", fileimg);
+
+    xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
+
+    xastir_snprintf(tempfile, sizeof(tempfile),
+        "wget -S -N -t 1 -T 30 -O %s %s 2> /dev/null\n", local_filename, fileimg);
+
+    if (debug_level & 512)
+       printf("%s",tempfile);
+
+    if (system(tempfile)) {   // Go get the file
+       printf("Couldn't download the image\n");
+       return;
+    }
+
+    // Set permissions on the file so that any user can overwrite it.
+    chmod(local_filename, 0666);
+
+    strcpy(file,local_filename);  // Tell ImageMagick where to find it
+
+    GetExceptionInfo(&exception);
+    image_info=CloneImageInfo((ImageInfo *) NULL);
+    (void) strcpy(image_info->filename, file);
+    if (debug_level & 512) {
+           printf ("Copied %s into image info.\n", file);
+           printf ("image_info got: %s\n", image_info->filename);
+           printf ("Entered ImageMagick code.\n");
+           printf ("Attempting to open: %s\n", image_info->filename);
+    }
+
+    // We do a test read first to see if the file exists, so we
+    // don't kill Xastir in the ReadImage routine.
+    f = fopen (image_info->filename, "r");
+    if (f == NULL) {
+        if (debug_level & 512)
+            printf("File could not be read\n");
+        return;
+    }
+    (void)fclose (f);
+
+    image = ReadImage(image_info, &exception);
+
+    if (image == (Image *) NULL) {
+        MagickError(exception.severity, exception.reason, exception.description);
+        //printf ("MagickError\n");
+        return;
+    }
+
+    if (debug_level & 512)
+        printf("Color depth is %i \n", (int)image->depth);
+
+    if (image->colorspace != RGBColorspace) {
+        puts("TBD: I don't think we can deal with colorspace != RGB");
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+    atb.width = image->columns;
+    atb.height = image->rows;
+
+
+    // gamma setup
+    if (imagemagick_options.gamma_flag == 0 || imagemagick_options.gamma_flag == 1) {
+        if (imagemagick_options.gamma_flag == 0) // if not set in file, set to 1.0
+            imagemagick_options.r_gamma = 1.0;
+
+        imagemagick_options.gamma_flag = 1; // set flag to do gamma
+
+        imagemagick_options.r_gamma += imagemagick_gamma_adjust;
+
+        if (imagemagick_options.r_gamma > 0.95 && imagemagick_options.r_gamma < 1.05)
+            imagemagick_options.gamma_flag = 0; // don't bother if near 1.0
+        else if (imagemagick_options.r_gamma < 0.1)
+            imagemagick_options.r_gamma = 0.1; // 0.0 is black and negative is really wacky
+
+        xastir_snprintf(gamma, sizeof(gamma), "%.1f", imagemagick_options.r_gamma);
+    }
+    else if (imagemagick_options.gamma_flag == 3) {
+        // No checking if you specify 3 channel gamma correction, so you can try negative
+        // numbers, etc. if you wish.
+        imagemagick_options.gamma_flag = 1; // set flag to do gamma
+        imagemagick_options.r_gamma += imagemagick_gamma_adjust;
+        imagemagick_options.g_gamma += imagemagick_gamma_adjust;
+        imagemagick_options.b_gamma += imagemagick_gamma_adjust;
+        xastir_snprintf(gamma, sizeof(gamma), "%.1f,%.1f,%.1f",
+                        imagemagick_options.r_gamma,
+                        imagemagick_options.g_gamma,
+                        imagemagick_options.b_gamma);
+    }
+    else
+        imagemagick_options.gamma_flag = 0;
+
+    if (imagemagick_options.gamma_flag) {
+        if (debug_level & 512)
+            printf("gamma=%s\n", gamma);
+        GammaImage(image, gamma);
+    }
+
+    if (imagemagick_options.contrast != 0) {
+        if (debug_level & 512)
+            printf("contrast=%d\n", imagemagick_options.contrast);
+        ContrastImage(image, imagemagick_options.contrast);
+    }
+
+    if (imagemagick_options.negate != -1) {
+        if (debug_level & 512)
+            printf("negate=%d\n", imagemagick_options.negate);
+        NegateImage(image, imagemagick_options.negate);
+    }
+
+    if (imagemagick_options.equalize) {
+        if (debug_level & 512)
+            puts("equalize");
+        EqualizeImage(image);
+    }
+
+    if (imagemagick_options.normalize) {
+        if (debug_level & 512)
+            puts("normalize");
+        NormalizeImage(image);
+    }
+
+#if (MagickLibVersion >= 0x0539)
+    if (imagemagick_options.level) {
+        if (debug_level & 512)
+            printf("level=%s\n", imagemagick_options.level);
+        LevelImage(image, imagemagick_options.level);
+    }
+#endif // MagickLib > 539
+
+    if (imagemagick_options.modulate) {
+        if (debug_level & 512)
+            printf("modulate=%s\n", imagemagick_options.modulate);
+        ModulateImage(image, imagemagick_options.modulate);
+    }
+    //  Code to mute the image so it's not as bright.
+    if (tigermap_intensity != 100) {
+	char tempstr[30];
+        
+	if (QuantumDepth == 16)
+	    xastir_snprintf(tempstr, sizeof(tempstr), "0, 1, %ld", (long)((65535 * 100)/tigermap_intensity));
+	else
+	    xastir_snprintf(tempstr, sizeof(tempstr), "0, 1, %ld", (long)((255 * 100)/tigermap_intensity));
+	LevelImage(image, tempstr);
+    }
+
+    // If were are drawing to a low bpp display (typically < 8bpp)
+    // try to reduce the number of colors in an image.
+    // This may take some time, so it would be best to do ahead of
+    // time if it is a static image.
+#if (MagickLibVersion < 0x0540)
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
+#else // MagickLib < 540
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
+#endif // MagickLib < 540
+        if (IsPseudoClass(image))
+            CompressColormap(image); // Remove duplicate colors
+
+        // Quantize down to 128 will go here...
+    }
+
+    pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+    if (!pixel_pack) {
+        puts("pixel_pack == NULL!!!");
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+    index_pack = GetIndexes(image);
+    if (IsPseudoClass(image) && !index_pack) {
+        puts("IsPseudoClass && index_pack == NULL!!!");
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+    if (IsPseudoClass(image) && image->colors <= 256) {
+        for (l = 0; l < image->colors; l++) {
+            // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
+            // of image files
+            temp_pack = image->colormap[l];
+            if (debug_level & 512)
+                printf("Colormap color is %i  %i  %i \n",
+                       temp_pack.red, temp_pack.green, temp_pack.blue);
+
+            // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
+            // is defined in /usr/include/magick/image.h as either an unsigned short or an
+            // unsigned char, depending on what "configure" decided when ImageMagick was installed.
+            // We can determine which by looking at MaxRGB or QuantumDepth.
+            //
+            if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
+                if (debug_level & 512)
+                    printf("Color quantum is [0..65535]\n");
+                my_colors[l].red   = temp_pack.red;
+                my_colors[l].green = temp_pack.green;
+                my_colors[l].blue  = temp_pack.blue;
+            }
+            else {  // QuantumDepth = 8
+                if (debug_level & 512)
+                    printf("Color quantum is [0..255]\n");
+                my_colors[l].red   = temp_pack.red   << 8;
+                my_colors[l].green = temp_pack.green << 8;
+                my_colors[l].blue  = temp_pack.blue  << 8;
+            }
+
+            // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
+            if (visual_type == NOT_TRUE_NOR_DIRECT)
+                XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+            else
+                pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                &my_colors[l].pixel);
+
+            if (debug_level & 512)
+                printf("Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
+                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
+        }
+    }
+
+    if (debug_level & 512) {
+       printf ("Image size %d %d\n", atb.width, atb.height);
+#if (MagickLibVersion < 0x0540)
+       printf ("Unique colors = %d\n", GetNumberColors(image, NULL));
+#else // MagickLib < 540
+       printf ("Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
+#endif // MagickLib < 540
+       printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
+       map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+
+#if (MagickLibVersion < 0x0540)
+       printf ("is Gray Image = %i\n", IsGrayImage(image));
+       printf ("is Monochrome Image = %i\n", IsMonochromeImage(image));
+       //printf ("is Opaque Image = %i\n", IsOpaqueImage(image));
+       //printf ("is PseudoClass = %i\n", IsPseudoClass(image));
+#else // MagickLib < 540
+       printf ("is Gray Image = %i\n", IsGrayImage( image, &exception ));
+       printf ("is Monochrome Image = %i\n", IsMonochromeImage( image, &exception ));
+       //printf ("is Opaque Image = %i\n", IsOpaqueImage( image, &exception ));
+       //printf ("is PseudoClass = %i\n", IsPseudoClass( image, &exception ));
+#endif // MagickLib < 540
+
+       printf ("image matte is %i\n", image->matte);
+       printf ("Colorspace = %i\n", image->colorspace);
+       if (image->colorspace == UndefinedColorspace)
+            printf("Class Type = Undefined\n");
+       else if (image->colorspace == RGBColorspace)
+            printf("Class Type = RGBColorspace\n");
+       else if (image->colorspace == GRAYColorspace)
+            printf("Class Type = GRAYColorspace\n");
+       else if (image->colorspace == sRGBColorspace)
+            printf("Class Type = sRGBColorspace\n");
+    } // debug_level & 512
+
+    // draw the image from the file out to the map screen
+
+    // Get the border values for the X and Y for loops used
+    // for the XFillRectangle call later.
+
+    map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
+    map_y_ctr = (long)(atb.height / 2 +0.499);
+    scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
+
+    map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
+    map_x_ctr = (long)(atb.width  / 2 +0.499);
+    scr_x_mc  = (map_c_xc - x_long_offset) / scale_x; // screen coordinates of map center
+
+    // calculate map pixel range in y direction that falls into screen area
+    c_y_max = 0ul;
+    map_y_min = map_y_max = 0l;
+    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)atb.height; map_y_0++, c_y += map_c_dy) {
+        scr_y = (c_y - y_lat_offset) / scale_y;   // current screen position
+        if (scr_y > 0) {
+            if (scr_y < screen_height) {
+                map_y_max = map_y_0;          // update last map pixel in y
+                c_y_max = (unsigned long)c_y;// bottom map inside screen coordinate
+            } else
+                break;                      // done, reached bottom screen border
+        } else {                            // pixel is above screen
+            map_y_min = map_y_0;              // update first map pixel in y
+        }
+    }
+    c_y_min = (unsigned long)(tp[0].y_lat + map_y_min * map_c_dy);   // top map inside screen coordinate
+
+        map_x_min = map_x_max = 0l;
+        for (map_x = 0, c_x = tp[0].x_long; map_x < (long)atb.width; map_x++, c_x += map_c_dx) {
+            scr_x = (c_x - x_long_offset)/ scale_x;  // current screen position
+            if (scr_x > 0) {
+                if (scr_x < screen_width)
+                    map_x_max = map_x;          // update last map pixel in x
+                else
+                    break;                      // done, reached right screen border
+            } else {                            // pixel is left from screen
+                map_x_min = map_x;              // update first map pixel in x
+            }
+        }
+        c_x_min = (unsigned long)(tp[0].x_long + map_x_min * map_c_dx);   // left map inside screen coordinate
+
+    test = 1;           // DK7IN: debuging
+    scr_yp = -1;
+    scr_c_xr = x_long_offset + screen_width * scale_x;
+    c_dx = map_c_dx;                            // map pixel width
+    scale_xa = scale_x0;                        // the compiler likes it ;-)
+
+    map_done = 0;
+    map_act  = 0;
+    map_seen = 0;
+    scr_y = screen_height - 1;
+
+    // loop over map pixel rows
+    for (map_y_0 = map_y_min, c_y = (double)c_y_min; (map_y_0 <= map_y_max); map_y_0++, c_y += map_c_dy) {
+        scr_y = (c_y - y_lat_offset) / scale_y;
+        if (scr_y != scr_yp) {                  // don't do a row twice
+            scr_yp = scr_y;                     // remember as previous y
+            scr_xp = -1;
+            // loop over map pixel columns
+            map_act = 0;
+            scale_x_nm = calc_dscale_x(0,(long)c_y) / 1852.0;  // nm per Xastir coordinate
+            for (map_x = map_x_min, c_x = (double)c_x_min; map_x <= map_x_max; map_x++, c_x += c_dx) {
+                scr_x = (c_x - x_long_offset) / scale_x;
+                if (scr_x != scr_xp) {      // don't do a pixel twice
+                    scr_xp = scr_x;         // remember as previous x
+                    map_y = map_y_0;
+
+                    if (map_y >= 0 && map_y <= tp[1].img_y) { // check map boundaries in y direction
+                        map_seen = 1;
+                        map_act = 1;    // detects blank screen rows (end of map)
+
+                        // now copy a pixel from the map image to the screen
+                        l = map_x + map_y * image->columns;
+                        if (IsPseudoClass(image)) {
+                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                        }
+                        else {
+                            pack_pixel_bits(pixel_pack[l].red,
+                                            pixel_pack[l].green,
+                                            pixel_pack[l].blue,
+                                            &my_colors[0].pixel);
+                            XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                        }
+                        (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
+                    } // check map boundaries in y direction
+                }
+            } // loop over map pixel columns
+            if (map_seen && !map_act)
+                map_done = 1;
+        }
+    } // loop over map pixel rows
+
+    if (image)
+       DestroyImage(image);
+    if (image_info)
+       DestroyImageInfo(image_info);
+
+#endif // NO_GRAPHICS
+}
+#endif //HAVE_IMAGEMAGICK
 
 
 #ifdef HAVE_GEOTIFF
@@ -8131,12 +8744,10 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
     ext = get_map_ext (filenm);
 
-
     // If alert is non-NULL, then we have a weather alert and we need
     // to call draw_shapefile_map() to light up that area.  If alert
     // is NULL, then we decide here what method to use to draw the
     // map.
-
 
     // Check for WX alert/ESRI Shapefile maps first
     if ( (alert != NULL)    // We have an alert!

@@ -120,6 +120,10 @@ extern int tiger_show_states;
 extern int tiger_show_interstate;
 extern int tiger_show_ushwy;
 extern int tiger_show_statehwy;
+extern int tiger_show_water;
+extern int tiger_show_lakes;
+extern int tiger_show_misc;
+extern int tigermap_intensity;
 #endif
 
 extern void sort_list(char *filename,int size, Widget list, int *item);

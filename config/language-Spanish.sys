@@ -90,6 +90,10 @@ MPUPTGR009|Interstate Labels||
 MPUPTGR010|US Hwy Labels||
 MPUPTGR011|State Hwy Labels||
 MPUPTGR012|Select items to be displayed:||
+MPUPTGR013|Rivers||
+MPUPTGR014|Lakes||
+MPUPTGR015|Airports, Parks, etc||
+MPUPTGR016|Map Intensity||
 #
 #
 # Seleccion de Mapas
