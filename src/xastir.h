@@ -145,7 +145,7 @@ extern int redraw_on_new_data;
 extern int tiger_flag;
 extern int index_maps_on_startup;
 #define MAX_LABEL_FONTNAME 256
-extern char rotated_label_fontname[];
+extern char rotated_label_fontname[MAX_LABEL_FONTNAME];
 
 #ifdef HAVE_IMAGEMAGICK  //N0VH
 extern int tiger_show_grid;
