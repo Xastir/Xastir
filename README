@@ -117,7 +117,7 @@ README
 
      (6) OS SPECIFIC NOTES
       ----------------------------------------------------------------------
-      MAC OS X NOTES:
+      MAC OSX NOTES:
 
      No changes necessary now for Mac OS X!
 
@@ -155,7 +155,12 @@ README
      Ports have been contributed to DarwinPorts. This will be updated with
      instructions when those are committed.
 
-       END OF MAC OS X NOTES.
+     Here's a web page which has specific instructions for installing on OSX,
+     including a binary version of Xastir (no compiling necessary):
+
+          http://n1ofz.connares.org/software/Xastir
+
+       END OF MAC OSX NOTES.
      -----------------------------------------------------------------------
 
      -----------------------------------------------------------------------
