@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "datum.h"
 
+
 //  ellipsoid: index into the gEllipsoid[] array, in which
 //             a is the ellipsoid semimajor axis
 //             invf is the inverse of the ellipsoid flattening f
@@ -43,6 +44,7 @@
    I've loaded the numbers from that second, newer web page.
    N7TAP
 */
+
 
 /* Keep the enum in datum.h up to date with the order of this array */
 const Ellipsoid gEllipsoid[] = {
@@ -76,6 +78,7 @@ const Ellipsoid gEllipsoid[] = {
     {  "WGS 72",                     6378135.0,   298.26        },
     {  "WGS 84",                     6378137.0,   298.257223563 }
 };
+
 
 /* Keep correct indices to commonly used datums in the enum in datum.h */
 /* Feel free to add mnemonic indices for datums that you use */
@@ -303,7 +306,12 @@ const Datum gDatum[] = {
 };
 
 
+
 static const double PI = 3.14159265358979323846;
+
+
+
+
 
 /* As you can see this little function is just a 2 step datum shift, going through WGS84. */
 void datum_shift(double *latitude, double *longitude, short fromDatumID, short toDatumID)
@@ -311,6 +319,10 @@ void datum_shift(double *latitude, double *longitude, short fromDatumID, short t
     wgs84_datum_shift(TO_WGS_84,   latitude, longitude, fromDatumID);
     wgs84_datum_shift(FROM_WGS_84, latitude, longitude, toDatumID);
 }
+
+
+
+
 
 /*
         Function to convert latitude and longitude in decimal degrees from WGS84 to
@@ -407,6 +419,8 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 
 
 
+
+
 /*
   Source
   Defense Mapping Agency. 1987b. DMA Technical Report: Supplement to Department of Defense World Geodetic System
@@ -462,7 +476,11 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
     LongOriginRad = LongOrigin * deg2rad;
 
     //compute the UTM Zone from the latitude and longitude
-    xastir_snprintf(utmZone, utmZoneLength, "%d%c", ZoneNumber, utm_letter_designator(lat));
+    xastir_snprintf(utmZone,
+        utmZoneLength,
+        "%d%c",
+        ZoneNumber,
+        utm_letter_designator(lat, lon));
     eccPrimeSquared = (eccSquared)/(1-eccSquared);
 
     N = a/sqrt(1-eccSquared*sin(LatRad)*sin(LatRad));
@@ -492,16 +510,19 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
         *utmNorthing += 10000000.0; //10000000 meter offset for southern hemisphere
 }
 
-char utm_letter_designator(double lat)
+
+
+
+
+char utm_letter_designator(double lat, double lon)
 {
-    //This routine determines the correct UTM letter designator for the given latitude
-    //returns 'Z' if latitude is outside the UTM limits of 84N to 80S
-    //Written by Chuck Gantz- chuck.gantz@globalstar.com
-    //Modified to return 'A' if below 80S, 'Z' if above 84N. --we7u
+    // This routine determines the correct UTM/UPS letter designator
+    // for the given latitude.  Originally written by Chuck Gantz-
+    // chuck.gantz@globalstar.com
+    // Modified to handle UPS zones as well.  --we7u
     char LetterDesignator;
 
-    if      ((90 >= lat) && (lat >=  84)) LetterDesignator = 'Z'; // Could be Y or Z, UPS coordinates
-    else if ((84 >= lat) && (lat >=  72)) LetterDesignator = 'X';
+    if ((84 >= lat) && (lat >=  72)) LetterDesignator = 'X';
     else if ((72  > lat) && (lat >=  64)) LetterDesignator = 'W';
     else if ((64  > lat) && (lat >=  56)) LetterDesignator = 'V';
     else if ((56  > lat) && (lat >=  48)) LetterDesignator = 'U';
@@ -521,10 +542,28 @@ char utm_letter_designator(double lat)
     else if ((-56 > lat) && (lat >= -64)) LetterDesignator = 'E';
     else if ((-64 > lat) && (lat >= -72)) LetterDesignator = 'D';
     else if ((-72 > lat) && (lat >= -80)) LetterDesignator = 'C';
-    else LetterDesignator = 'A'; // Could be A or B, UPS coordinates
-
+    else {
+        //
+        // We're dealing with UPS (N/S Pole) coordinates, not UTM
+        //
+        if (lat > 84) { // North Pole, Y/Z zones
+            if ((0 <= lon) && (lon <= 180))
+                LetterDesignator = 'Z';     // E or + longitude
+            else
+                LetterDesignator = 'Y';     // W or - longitude
+        }
+        else {  // South Pole below 80S, A/B zones
+            if ((0 <= lon) && (lon <= 180))
+                LetterDesignator = 'B';     // E or + longitude
+            else
+                LetterDesignator = 'A';     // W or - longitude
+        }
+    }
     return LetterDesignator;
 }
+
+
+
 
 
 void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
@@ -587,3 +626,5 @@ void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEast
             *D*D*D*D*D/120)/cos(phi1Rad);
     *lon = LongOrigin + (*lon) * rad2deg;
 }
+
+
