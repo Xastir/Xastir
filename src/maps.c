@@ -1048,6 +1048,20 @@ void draw_grid(Widget w) {
                 }
             }
 
+            // Here we check to see whether we are inserting points
+            // that are greater than about +/- 15000.  If so,
+            // truncate at that.  This prevents XDrawLines() from
+            // going nuts and drawing hundreds of extra lines.
+            //
+            if (xx < -15000)
+                xx = -15000;
+            if (xx >  15000)
+                xx =  15000;
+            if (yy < -15000)
+                yy = -15000;
+            if (yy >  15000)
+                yy = 15000;
+
             utm_grid.zone[zone].col[col].point[col_point].x = xx;
             utm_grid.zone[zone].col[col].point[col_point].y = yy;
             utm_grid.zone[zone].col[col].npoints++;
@@ -1332,6 +1346,13 @@ utm_grid_draw:
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
             for (i=0; i < utm_grid.zone[zone].ncols; i++) {
                 if (utm_grid.zone[zone].col[i].npoints > 1) {
+
+                    // We need to check for points that are more
+                    // than +/- 16383.  If we have any, it can cause
+                    // X11 to lock up for a while drawing lots of
+                    // extra lines, due to bugs in X11.  We do that
+                    // checking above with xx and yy.
+                    //
                     (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
                                      utm_grid.zone[zone].col[i].point,
                                      utm_grid.zone[zone].col[i].npoints,
@@ -1341,6 +1362,13 @@ utm_grid_draw:
 
             for (i=0; i < utm_grid.zone[zone].nrows; i++) {
                 if (utm_grid.zone[zone].row[i].npoints > 1) {
+
+                    // We need to check for points that are more
+                    // than +/- 16383.  If we have any, it can cause
+                    // X11 to lock up for a while drawing lots of
+                    // extra lines, due to bugs in X11.  We do that
+                    // checking above with xx and yy.
+                    //
                     (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
                                      utm_grid.zone[zone].row[i].point,
                                      utm_grid.zone[zone].row[i].npoints,
