@@ -6542,8 +6542,9 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     // should we copy it before processing? it changes data: ',' gets substituted by '\0' !!
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
 
-    if ( (data == NULL) || (strlen(data) < 37) ) {  // Not enough data to parse position from.
-        printf("Invalid RMC string: Too short\n");
+    if ( (data == NULL) || (strlen(data) < 34) ) {  // Not enough data to parse position from.
+        if (debug_level & 256)
+            printf("Invalid RMC string: Too short\n");
         return(ok);
     }
 
@@ -6689,7 +6690,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
  
-    if ( (data == NULL) || (strlen(data) < 35) )  // Not enough data to parse position from.
+    if ( (data == NULL) || (strlen(data) < 32) )  // Not enough data to parse position from.
         return(ok);
 
     p_station->record_type = NORMAL_GPS_GGA;
