@@ -679,8 +679,8 @@ WPUPSTI056|Automatische Aktualisierung||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Bearing:||
 WPUPSTI059|Status: %s||
-WPUPSTI060|Brennstofftemp: %02.1f°C  ||
-WPUPSTI061|Brennstofftemp: %s°F   ||
+WPUPSTI060|Brennstofftemp.: %02.1f°C  ||
+WPUPSTI061|Brennstofftemp.: %s°F   ||
 WPUPSTI062|Brennstofffeuchte: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 #
