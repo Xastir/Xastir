@@ -554,6 +554,10 @@ int alert_expire(void) {
 //fprintf(stderr, "        Max Alert Array: %d\n", alert_max_count);
 
         }
+        else {
+            fprintf(stderr,"Couldn't realloc alert_list\n");
+        }
+
         if (debug_level & 2) {
             fprintf(stderr,"Allocated 25 more slots for alerts, Max=%d\n",
                 alert_max_count);

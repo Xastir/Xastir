@@ -525,10 +525,10 @@ void msg_input_database(Message *m_fill) {
 //fprintf(stderr, "Max Message Array: %ld\n", msg_index_max);
 
             } else {
-                XtWarning("Unable to allocate message index.\n");
+                XtWarning("Unable to allocate more space for message index.\n");
             }
         } else {
-            XtWarning("Unable to allocate message database.\n");
+            XtWarning("Unable to allocate more space for message database.\n");
         }
     }
     if (msg_index_end < msg_index_max) {

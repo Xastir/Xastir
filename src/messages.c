@@ -127,6 +127,10 @@ void group_build_list(char *filename) {
 //fprintf(stderr,                "group_data_max: %d\n", group_data_max);
 
         }
+        else {
+            fprintf(stderr,
+                "Unable to allocate more memory for group_data_list (1)\n");
+        }
     }
 
 
@@ -161,6 +165,10 @@ void group_build_list(char *filename) {
 
 //fprintf(stderr,                "group_data_max(2): %d\n", group_data_max);
 
+            }
+            else {
+                fprintf(stderr,
+                    "Unable to allocate more memory for group_data_list (2)\n");
             }
         }
         if (group_data_count < group_data_max) {

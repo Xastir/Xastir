@@ -937,6 +937,9 @@ void add_NWS_stations(void) {
             NWS_station_data = tmp_ptr;
             max_NWS_stations += 10;
         }
+        else {
+            fprintf(stderr,"Unable to allocate more space for NWS_station_data\n");
+        }
     }
 }
 
