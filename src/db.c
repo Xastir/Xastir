@@ -731,6 +731,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     char time_data[MAX_TIME];
     int do_update = 0;
     time_t last_ack_sent;
+    int bring_up_bulletins = 0;
 
     if (debug_level & 1)
         printf("msg_data_add start\n");
@@ -804,6 +805,20 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         do_update++;    // Always do an update to the message window
                         // for new messages
         //printf("New msg: Setting last_ack_sent to 0\n");
+
+        if (type == MESSAGE_BULLETIN) {
+            char temp[10];
+            int distance;
+
+            distance = (int)distance_from_my_station(call_sign,temp);
+            if ((distance <= bulletin_range) || (bulletin_range == 0))
+            {
+                // We have a _new_ bulletin that's within our
+                // current range setting.  Pop up the Bulletins
+                // dialog.
+                bring_up_bulletins++;
+            }
+        }
     }
 
     /* FROM */
@@ -862,6 +877,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if (debug_level & 1)
         printf("msg_data_add end\n");
 
+    // Bring up the bulletins dialog if new bulletin and within our
+    // range.
+    if (bring_up_bulletins)
+        popup_bulletins();
+ 
     // Return the important variables we'll need
     *record_out = record;
     return(last_ack_sent);
@@ -2146,6 +2166,10 @@ void display_file(Widget w) {
 
     if(debug_level & 1)
         printf("Display File Start\n");
+
+//WE7U
+// Draw probability of detection circle, if enabled
+//draw_pod_circle(64000000l, 32400000l, 10, pixmap_final);
 
     t_old = sec_now() - sec_old;        // precalc compare times
     t_clr = sec_now() - sec_clear;

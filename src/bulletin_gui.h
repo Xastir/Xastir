@@ -31,6 +31,7 @@ extern int bulletin_range;
 extern void bulletin_message(char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard);
 
 // From bulletin_gui.c
+extern void popup_bulletins(void);
 extern void bulletin_gui_init(void);
 
 #endif

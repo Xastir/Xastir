@@ -83,6 +83,18 @@ void bulletin_gui_init(void)
 
 
 
+void popup_bulletins(void) {
+    if ((Display_bulletins_dialog == NULL)) {   // Dialog not up
+
+        // Bring up the dialog
+        Bulletins( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
+    }
+}
+ 
+
+
+
+
 void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
     char temp[200];
     char temp_my_course[10];
@@ -114,21 +126,7 @@ void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char 
 
 begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 
-        // Display a popup of the bulletin if it's in range.
-        // Actually this gets way too annoying!  Instead have
-        // decided to bring up the View->Bulletins dialog if it's
-        // within range.
-        //popup(langcode("BULMW00001"),temp);
-
         if ((Display_bulletins_dialog == NULL)) {   // Dialog not up
-
-end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
-
-            // Bring up the dialog
-            Bulletins( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
-
-begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
-
         }
  
         if ((Display_bulletins_dialog != NULL)) {
