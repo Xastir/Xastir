@@ -9588,15 +9588,17 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     }
 
     if (third_party)
-        ok_igate_net = 0;               // don't put third party traffic on internet
+        ok_igate_net = 0;   // don't put third party traffic on internet
+
     if (is_my_call(call,1))
-        ok_igate_net = 0;               // don't put my data on internet     ???
+        ok_igate_net = 0;   // don't put my data on internet     ???
 
     if (ok_igate_net) {
         if (debug_level & 1)
             printf("decode_info_field: ok_igate_net start\n");
 
-        if (from == DATA_VIA_TNC && strlen(my_data) > 0) {
+        if ( (from == DATA_VIA_TNC)             // Came in via a TNC port
+                && (strlen(my_data) > 0) ) {    // Not empty
 //WE7U8
             // Here's where we inject our own callsign like this: "WE7U-15,I"
             // in order to provide injection ID for our igate.  Should we also
@@ -9731,6 +9733,8 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
 
 
 
+
+
 /*
  *  Extract text inserted by TNC X-1J4 from start of info line
  */
@@ -9772,9 +9776,9 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char origin[MAX_CALL+1];
     int ok;
     int third_party;
-        char backup[MAX_LINE_SIZE+1];
+    char backup[MAX_LINE_SIZE+1];
 
-        strcpy(backup, line);
+    strcpy(backup, line);
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
