@@ -313,7 +313,29 @@ pipe_object *pipe_head = NULL;
 // return value, which will shut down the server.  Otherwise send a
 // "0" return value.
 //
+// Incoming registration data:  Record only the master socket.  All
+// others should be handled by the child processes, and they should
+// not pass the registration info down to us.  Same for control
+// packets.  Actually, the child process handling the master socket
+// could skip notifying us as well, and just pass down the control
+// packets if the master sent any (like the shutdown packet).  If we
+// lost the connection between Xastir and x_spider, we might not
+// have a clean way of shutting down the server in that case though.
+// Might be better to record it down here, and if the pipes ever
+// closed, we shut down x_spider and all the child processes.
+//
 int pipe_check(void) {
+
+    // Need a select here with a timeout.  Also need a method of
+    // revising the read bits we send to select.  Should we revise
+    // them every time through the loop, or set a variable in the
+    // main() routine whenever a new connect comes in.  What about
+    // connects that go away?  We need a way to free up the pipes
+    // and sockets in that case, and revise the select bits again.
+
+//    select();
+
+fprintf(stderr,"pipe_check()\n");
     return(0);
 }
 
@@ -363,8 +385,8 @@ int main(int argc, char *argv[]) {
 
     // Set the new socket to be non-blocking.
     //
-    sendbuff = 1;
-    if (ioctl(sockfd, FIONBIO, sendbuff) < 0) {
+    //if (fcntl(sockfd, F_SETFL, FNDELAY) < 0) {
+    if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
         fprintf(stderr,"x_spider: Couldn't set socket non-blocking\n");
     }
 
@@ -420,27 +442,29 @@ int main(int argc, char *argv[]) {
                         (struct sockaddr *)&cli_addr,
                         &clilen);
 
-        if (newsockfd == EAGAIN) {
+        if (newsockfd == -1) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
 
-            // We returned from the non-blocking accept but with no
-            // incoming socket connection.  Check the pipe queues
-            // for incoming data.
-            //
-            if (pipe_check() == -1) {
+                // We returned from the non-blocking accept but with
+                // no incoming socket connection.  Check the pipe
+                // queues for incoming data.
+                //
+                if (pipe_check() == -1) {
 
-                // We received a shutdown command from the master
-                // socket connection.
-                exit(0);
+                    // We received a shutdown command from the
+                    // master socket connection.
+                    exit(0);
+                }
+                goto finis;
             }
-            goto finis;
-        }
-        else if (newsockfd < 0) {
+            else if (newsockfd < 0) {
 
-            // Some error happened in accept().  Skip the rest of
-            // the loop.
-            //
-            fprintf(stderr,"x_spider: Accept error.");
-            goto finis;
+                // Some error happened in accept().  Skip the rest
+                // of the loop.
+                //
+                fprintf(stderr,"x_spider: Accept error: %d\n", errno);
+                goto finis;
+            }
         }
 
         // Else we returned from the accept with an incoming
@@ -517,7 +541,7 @@ finis:
         // pipe_check() function once we get to that stage of
         // coding.
         //
-        usleep(10);
+        usleep(1000000);    // One second
     }
 }
 
