@@ -160,6 +160,11 @@ Retry the compile.  If this works for you, every time you update
 Cygwin you'll have to check the Perl version to make sure that it
 doesn't update you to 5.8.
 
+Note regarding KDE:  One user reported that the KDE package on
+Cygwin messes up XmStrings in Lesstif.  It caused a bunch of
+headaches.  You've been warned.  Note that KDE is not one of the
+packages listed above (I didn't load it).
+
 
 [ ] Step 1d)  Click Next and the packages will get downloaded and
 installed.  Repeat the above if you have network difficulties, until
