@@ -100,9 +100,8 @@ MPUPTGR016|Map Intensity||
 #
 # Finestra di dialogo mappe
 WPUPMCP001|Scegli mappa||
-WPUPMCP002|Seleziona Mappe||
-PULDNMMC01|Nessuna|N|
-PULDNMMC02|Mappe vettoriali|V|
+PULDNMMC01|Clear|N|
+PULDNMMC02|Vettoriali|V|
 PULDNMMC03|Topografiche 250k|2|
 PULDNMMC04|Topografiche 100k|1|
 PULDNMMC05|Topografiche 24k|4|

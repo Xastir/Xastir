@@ -9186,7 +9186,7 @@ void help_index_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,
 
 void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, my_form, button_close,help_text;
-    int i,x,y;
+    int i, x, y;
     unsigned int n;
     char *temp;
     char title[200];
@@ -9493,6 +9493,101 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 /************************* Map Chooser ***********************************/
 /*************************************************************************/
 
+// Update the "selected" field in the in-memory map_index based on
+// the "selected" input parameter.
+void map_index_update_selected(char *filename, int selected) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->selected = selected;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+/*
+//WE7U
+// Get the map_layer and draw_filled parameters from the in-memory
+// map index based.
+void map_index_fetch_parameters(char *filename, int selected) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->selected = selected;
+            return;
+        }
+        current = current->next;
+    }
+}
+*/
+
+
+
+
+
+//WE7U
+// Allows setting map layer and filled polygon properties for maps
+// selected in the map chooser.  Show a warning or bring up a
+// confirmation dialog if more than one map is selected when this
+// function is entered.  This is the callback function for the
+// Properties button in the Map Chooser.
+//
+void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    int i, x;
+    char *temp;
+    XmString *list;
+
+
+    popup_message("TBD","Not Implemented Yet!");
+
+    // We need to run through the map_list widget, getting the map
+    // layer and filled/unfilled (if appropriate) for each selected
+    // map.  Display these in a dialog which allows the user to
+    // change them.
+
+    // Get the list and the list count from the dialog
+    XtVaGetValues(map_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the list, updating the equivalent entries in the
+    // in-memory map index.  If we're in "directory" mode we'll only
+    // update the directory entries.  Same for "file" mode, we'll
+    // only tweak the file entries.
+    // The end result is that both directories and files may be
+    // selected, not either/or as the code was written earlier.
+    for(x=1; x<=i;x++) {
+        if (XmListPosSelected(map_list,x)) {
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                // Update this file or directory in the in-memory map
+                // index, setting/resetting the "selected" field as
+                // appropriate.
+//                map_index_update_selected(temp,
+//                    XmListPosSelected(map_list,x));
+printf("%s\n",temp);
+                XtFree(temp);
+            }
+        }
+    }
+
+//map_layer
+//draw_filled
+}
+
+
+
+
+
 // Destroys the Map Chooser dialog
 void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
@@ -9505,82 +9600,67 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
-//WE7U
 // Gets the list of selected maps out of the dialog, writes them to
 // the selected maps disk file, destroys the dialog, then calls
 // create_image() with the newly selected map set in place.  This
 // should be the _only_ routine in this set of functions that
 // actually changes the selected maps disk file.  The others should
 // merely manipulate the list in the map chooser dialog.  This
-// function is attached to the "OK" button in the dialog.
+// function is attached to the "OK" button in the Map Chooser dialog.
+//
+// What we'll do here is set/reset the "selected" field in the
+// in-memory map_index list, then write the info out to the
+// selected_maps.sys file.  Only set the file entries if in file
+// mode, dir entries if in dir mode.  When writing out to file,
+// write them both out.
 void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    int i,x;
+    int i, x;
     char *temp;
     XmString *list;
     FILE *f;
-//    char selected_dir[MAX_FILENAME];
+    map_index_record *ptr = map_index_head;
+   
+
+// It'd be nice to turn off auto-maps here, or better perhaps would
+// be if any button were chosen other than "Cancel".
 
 
-    // Make sure the string is empty before we start
-//    selected_dir[0] = '\0';
-
-    // It'd be nice to turn off auto-maps here, or better perhaps would
-    // be if any button were chosen other than "Cancel".
-
+    // Get the list and the list count from the dialog
     XtVaGetValues(map_list,
                XmNitemCount,&i,
                XmNitems,&list,
                NULL);
 
+    // Run through the list, updating the equivalent entries in the
+    // in-memory map index.  If we're in "directory" mode we'll only
+    // update the directory entries.  Same for "file" mode, we'll
+    // only tweak the file entries.
+    // The end result is that both directories and files may be
+    // selected, not either/or as the code was written earlier.
+    for(x=1; x<=i;x++) {
+        if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            // Update this file or directory in the in-memory map
+            // index, setting/resetting the "selected" field as
+            // appropriate.
+            map_index_update_selected(temp,
+                XmListPosSelected(map_list,x));
+            XtFree(temp);
+        }
+    }
+
+    // Now we have all of the updates done to the in-memory map
+    // index.  Write out the selected maps to disk, overwriting
+    // whatever was there before.
     f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
-        for(x=1; x<=i;x++) {
-            // Check whether the current list item is "selected"
-            if (XmListPosSelected(map_list,x)) {
-                if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                    // Yes it is, write it to the selected maps
-                    // file.
-                    fprintf(f,"%s\n",temp);
 
-/*
-// Check whether the user selected an entire directory.  If so, save
-// it in a special variable and use that to match all the files
-// inside the directory.  Note that with the way we have things
-// ordered in the list, the directories appear before their member
-// files.
-if (temp[strlen(temp)-1] == '/') {
-    xastir_snprintf(selected_dir,
-        sizeof(selected_dir),
-        "%s",
-        temp);
-//printf("Selected %s directory\n",selected_dir);
-}
-*/
-                    XtFree(temp);
-                }
+        while (ptr != NULL) {
+            // Write only selected files/directories out to the disk
+            // file.
+            if (ptr->selected) {
+                fprintf(f,"%s\n",ptr->filename);
             }
-/*
-            else if (selected_dir[0] != '\0') {
-                // We have two choices here, we can either save all
-                // of the selected files in the disk file, or just
-                // save the directory and fix another area of the
-                // program to load all of the maps underneath any
-                // selected directories.  I'm choosing the latter
-                // method.
-
-                // If the first part of the filepath matches the
-                // last selected directory, refuse to save it to the
-                // selected maps file.
-                if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                    if (strstr(temp,selected_dir) == temp) {
-//printf("Also matched: %s\n",temp);
-                        fprintf(f,"%s\n",temp);
-                    }
-                    XtFree(temp);
-                }
-            }
-*/
- 
+            ptr = ptr->next;
         }
         (void)fclose(f);
     }
@@ -9591,7 +9671,7 @@ if (temp[strlen(temp)-1] == '/') {
     create_image(da);
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
-
+ 
 
 
 
@@ -9662,7 +9742,7 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
 
 
 void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    int i,x,length;
+    int i, x, length;
     char *temp;
     char *ext;
     XmString *list;
@@ -9694,7 +9774,7 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
 
 
 void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    int i,x,length;
+    int i, x, length;
     char *temp;
     char *ext;
     XmString *list;
@@ -9727,6 +9807,8 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 
 
 //WE7U
+// This function isn't used yet.
+//
 // Function written by Chris Bell for a July 2002 version of Xastir.
 // This function allows selecting/deselecting directories of map
 // files at a time.  This needs to be tweaked to fit into the new
@@ -9797,6 +9879,8 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
 
 
 //WE7U
+// This function isn't used yet.
+//
 // Function written by Chris Bell for a July 2002 version of Xastir.
 // This function allows selecting/deselecting directories of map
 // files at a time.  This needs to be tweaked to fit into the new
@@ -9883,9 +9967,23 @@ f=NULL;
  
  
 
+// Removes the highlighting for maps in the current view of the map
+// chooser.  In order to de-select all maps, must flip through both
+// map chooser views and hit the "none" button each time, then hit
+// the "ok" button.
+//
+// Changed the code to clear all of the "selected" bits in the
+// in-memory map index as well.  The "None" and "OK" buttons take
+// immediate effect, all others do not (until the "OK" button is
+// pressed).  Decided that this was too inconsistent, so changed it
+// back and changed "None" to "Clear", which means to clear the
+// currently seen selections, but not the selections in the other
+// mode.
+//
 void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    int i,x;
+    int i, x;
     XmString *list;
+//    map_index_record *current = map_index_head;
 
     // Get the list and the count from the dialog
     XtVaGetValues(map_list,
@@ -9893,11 +9991,19 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
                XmNitems,&list,
                NULL);
 
-    // Run through the list, deselecting every line
+    // Run through the widget's list, deselecting every line
     for(x=1; x<=i;x++)
     {
         XmListDeselectPos(map_list,x);
     }
+
+/*
+    // Run through the in-memory map list, deselecting every line
+    while (current != NULL) {
+        current->selected = 0;	// Not Selected
+        current = current->next;
+    }
+*/
 }
 
 
@@ -10010,10 +10116,56 @@ void sort_list(char *filename,int size, Widget list, int *item) {
 
 
 
-void map_chooser_fill_in (void) {
-    int n,i;
+// Mark the "selected" field in the in-memory map index based on the
+// contents of the selected_maps.sys file.  Called from main() right
+// after map_indexer() is called on startup.
+void map_chooser_init (void) {
     FILE *f;
     char temp[600];
+    map_index_record *current;
+
+
+    busy_cursor(appshell);
+
+    (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
+
+    f=fopen(SELECTED_MAP_DATA,"r");
+    if (f!=NULL) {
+        while(!feof(f)) {
+            int done;
+
+            (void)get_line(f,temp,600);
+
+            // We have a line from the file.  Find the matching line
+            // in the in-memory map index.
+            current = map_index_head;
+            done = 0;
+            while (current != NULL && !done) {
+                //printf("%s\n",current->filename);
+
+                if (strcmp(temp,current->filename) == 0) {
+                    current->selected = 1;
+                    done++;
+                }
+                current = current->next;
+            }
+        }
+        (void)fclose(f);
+    }
+    else {
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
+    }
+}
+
+
+
+
+
+// Fills in the map chooser file/directory entries based on the
+// current view and whether the "selected" field in the in-memory
+// map_index is set for each file/directory.
+void map_chooser_fill_in (void) {
+    int n,i;
     XmString str_ptr;
     map_index_record *current = map_index_head;
 
@@ -10035,7 +10187,7 @@ void map_chooser_fill_in (void) {
 
             //printf("%s\n",current->filename);
 
-            // Check whether we're supposed show dirs and files or
+            // Check whether we're supposed to show dirs and files or
             // just dirs.  First we check for dirs, which are always
             // shown.
             if (current->filename[strlen(current->filename)-1] == '/') {
@@ -10051,36 +10203,16 @@ void map_chooser_fill_in (void) {
                     str_ptr = XmStringCreateLtoR(current->filename,
                                  XmFONTLIST_DEFAULT_TAG),
                                  n);
+
+                // If a selected map, hilight it in the list
+                if (current->selected) {
+                    XmListSelectPos(map_list,i,TRUE);
+                }
+ 
                 n++;
                 XmStringFree(str_ptr);
             }
             current = current->next;
-        }
-
-        (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
-
-        // Compare the maps in the list to those we've already selected
-        // and highlight those that match.
-
-//WE7U
-// Later we could check for directories here.  If a directory is
-// selected, don't expand it into the individual files, or create
-// another method of expanding/compressing the directory list
-// independent of this.
-
-        f=fopen(SELECTED_MAP_DATA,"r");
-        if (f!=NULL) {
-            while(!feof(f)) {
-                (void)get_line(f,temp,600);
-                i=XmListItemPos(map_list, str_ptr = XmStringCreateLtoR(temp,XmFONTLIST_DEFAULT_TAG));
-                XmStringFree(str_ptr);
-                if (i!=0)
-                    XmListSelectPos(map_list,i,TRUE);
-            }
-            (void)fclose(f);
-        }
-        else {
-            printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
         }
     }
 }
@@ -10710,10 +10842,11 @@ void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
 
 
 
+//WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    static Widget  pane, my_form, button_none, button_V, button_ok,
-            button_cancel, mess, button_C, button_F, button_O,
-            rowcol, expand_dirs_button;
+    static Widget  pane, my_form, button_clear, button_V, button_ok,
+            button_cancel, button_C, button_F, button_O,
+            rowcol, expand_dirs_button, button_properties;
     Atom delw;
     int i;
     Arg al[10];                    /* Arg List */
@@ -10776,6 +10909,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNleftOffset ,10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
+                XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -10785,41 +10919,29 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         else
             XmToggleButtonSetState(expand_dirs_button,FALSE,FALSE);
 
-        // This is the "Select Maps" label
-        mess = XtVaCreateManagedWidget(langcode("WPUPMCP002"),
-                xmLabelWidgetClass, 
+        // Button for configuring properties
+        button_properties = XtVaCreateManagedWidget(langcode("UNIOP00009"),
+                xmPushButtonGadgetClass, 
                 my_form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, expand_dirs_button,
+                XmNtopAttachment, XmATTACH_FORM,
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 5,
+                XmNleftAttachment, XmATTACH_NONE,
                 XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 5,
+                XmNrightOffset, 10,
+                XmNsensitive, TRUE,
+                XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        XtVaSetValues(XtParent(map_list),
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget,mess,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 5,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 5,
-                NULL);
-
-
+        XtAddCallback(button_properties, XmNactivateCallback, map_properties, map_chooser_dialog);
+ 
         // Attach a rowcolumn manager widget to my_form to handle all of the buttons
         rowcol = XtVaCreateManagedWidget("Map Chooser rowcol", 
                 xmRowColumnWidgetClass, 
                 my_form,
                 XmNorientation, XmHORIZONTAL,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, XtParent(map_list),
+                XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment, XmATTACH_FORM,
@@ -10828,10 +10950,21 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-
+        XtVaSetValues(XtParent(map_list),
+                XmNtopAttachment, XmATTACH_WIDGET,
+		XmNtopWidget, expand_dirs_button,
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+		XmNbottomWidget, rowcol,
+		XmNbottomOffset, 2,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                NULL);
 
 // "None"
-        button_none = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
+        button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -10905,7 +11038,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
         XtAddCallback(button_cancel, XmNactivateCallback, map_chooser_destroy_shell, map_chooser_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, map_chooser_select_maps, map_chooser_dialog);
-        XtAddCallback(button_none, XmNactivateCallback, map_chooser_deselect_maps, map_chooser_dialog);
+        XtAddCallback(button_clear, XmNactivateCallback, map_chooser_deselect_maps, map_chooser_dialog);
         XtAddCallback(button_V, XmNactivateCallback, map_chooser_select_vector_maps, map_chooser_dialog);
 #ifdef HAVE_GEOTIFF
         XtAddCallback(button_C, XmNactivateCallback, map_chooser_select_250k_maps, map_chooser_dialog);
@@ -10927,7 +11060,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         XtPopup(map_chooser_dialog,XtGrabNone);
 
         // Fix the dialog height only, allow the width to vary.
-        fix_dialog_vsize(map_chooser_dialog);
+//        fix_dialog_vsize(map_chooser_dialog);
 
         // Move focus to the OK button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
@@ -19960,6 +20093,10 @@ int main(int argc, char *argv[], char *envp[]) {
 
             // Find the extents of every map we have
             map_indexer();
+
+            // Mark the "selected" field in the in-memory map index
+            // to correspond to the selected_maps.sys file.
+            map_chooser_init();
 
             // Start UpdateTime().  It schedules itself to be run
             // again each time.  This is also the process that

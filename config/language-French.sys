@@ -99,9 +99,8 @@ MPUPTGR016|Map Intensity||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Choix de cartes||
-WPUPMCP002|Sélection de cartes||
-PULDNMMC01|Aucune|A|
-PULDNMMC02|Cartes vectorielles|V|
+PULDNMMC01|Clear|A|
+PULDNMMC02|vectorielles|V|
 PULDNMMC03|Topogr. 250k|2|
 PULDNMMC04|Topogr. 100k|1|
 PULDNMMC05|Topogr. 24k|4|

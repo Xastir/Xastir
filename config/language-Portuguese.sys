@@ -98,12 +98,11 @@ MPUPTGR016|Intensidade do mapa||
 #
 # Seleção de mapas
 WPUPMCP001|Escolher mapa||
-WPUPMCP002|Selecção de mapas||
-PULDNMMC01|Nada|N|
-PULDNMMC02|Vectores dos mapas|V|
-PULDNMMC03|250k Topos|2|
-PULDNMMC04|100k Topos|1|
-PULDNMMC05|24k Topos|4|
+PULDNMMC01|Clear|N|
+PULDNMMC02|Vectores|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
 PULDNMMC06|Expand Directories||
 #
 # Cores de fundo do mapa

@@ -104,9 +104,8 @@ MPUPTGR016|Kaart Intensiteit||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Kaart Kiezer||
-WPUPMCP002|Kies Kaarten||
-PULDNMMC01|Geen|N|
-PULDNMMC02|Vector Kaarten|V|
+PULDNMMC01|Clear|N|
+PULDNMMC02|Vector|V|
 PULDNMMC03|250k Topogr.|2|
 PULDNMMC04|100k Topogr.|1|
 PULDNMMC05|24k Topogr.|4|

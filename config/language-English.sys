@@ -99,12 +99,11 @@ MPUPTGR016|Map Intensity||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Map Chooser||
-WPUPMCP002|Select Maps||
-PULDNMMC01|None|N|
-PULDNMMC02|Vector Maps|V|
-PULDNMMC03|250k Topos|2|
-PULDNMMC04|100k Topos|1|
-PULDNMMC05|24k Topos|4|
+PULDNMMC01|Clear|N|
+PULDNMMC02|Vector|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
 PULDNMMC06|Expand Directories||
 #
 # PullDown "Map Background Color"

@@ -105,12 +105,11 @@ MPUPTGR016|Map Intensity||
 #
 # PopUp "Kartenauswahl"
 WPUPMCP001|Kartenauswahl||
-WPUPMCP002|Wähle Karten||
-PULDNMMC01|Keine|K|
-PULDNMMC02|Vektor Karten|V|
-PULDNMMC03|250k Topos|2|
-PULDNMMC04|100k Topos|1|
-PULDNMMC05|24k Topos|4|
+PULDNMMC01|Clear|K|
+PULDNMMC02|Vektor|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
 PULDNMMC06|Expand Directories||
 #
 # Karten - Hintergrundfarbe

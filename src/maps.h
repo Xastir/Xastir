@@ -72,6 +72,9 @@ typedef struct _map_index_record{
     unsigned long left;
     unsigned long right;
     int accessed;
+    int map_layer;      // For future expansion.  Specify which layer to draw the map on.
+    int draw_filled;    // For future expansion.  Specify whether to fill polygons when drawing.
+    int selected;       // Specifies if map is currently selected
     struct _map_index_record *next;
 } map_index_record;
 extern map_index_record *map_index_head;
