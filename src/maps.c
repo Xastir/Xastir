@@ -11956,54 +11956,46 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
 
     alert_count = MAX_ALERT - 1;
 
-    // Check for message alerts.  Creates new entries for any new
-    // alerts that we might need to fill in the details for.
-    if (alert_message_scan ()) {
-        // Returns number of wx alerts * 3.  Scans through complete
-        // message list looking for alerts and adds them to our
-        // alert_list.  What about really old alerts?
+    // Set up our path to the wx alert maps
+    memset (alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
+    strncpy (alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
+    strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
+    dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
-        // Set up our path to the wx alert maps
-        memset (alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
-        strncpy (alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
-        strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
-        dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
+    // Iterate through the weather alerts we currently have on
+    // our list.  It looks like we wish to just fill in the
+    // alert struct and to determine whether the alert is within
+    // our viewport here.  We don't really wish to draw the
+    // alerts at this stage, that comes just a bit later in this
+    // routine.
+    for (ii = 0; ii < alert_max_count; ii++) {
 
-        // Iterate through the weather alerts we currently have on
-        // our list.  It looks like we wish to just fill in the
-        // alert struct and to determine whether the alert is within
-        // our viewport here.  We don't really wish to draw the
-        // alerts at this stage, that comes just a bit later in this
-        // routine.
-        for (ii = 0; ii < alert_max_count; ii++) {
+        // Check whether alert slot is empty/filled
+        if (alert_list[ii].title[0] == '\0') {  // It's empty,
+            // skip this iteration of the loop and advance to
+            // the next slot.
+            continue;
+        }
+        else if (!alert_list[ii].filename[0]) { // Filename is
+            // empty, we need to fill it in.
 
-            // Check whether alert slot is empty/filled
-            if (alert_list[ii].title[0] == '\0') {  // It's empty,
-                // skip this iteration of the loop and advance to
-                // the next slot.
-                continue;
-            }
-            else if (!alert_list[ii].filename[0]) { // Filename is
-                // empty, we need to fill it in.
+            //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
 
-                //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
+            // The last parameter denotes loading into
+            // pixmap_alerts instead of pixmap or pixmap_final.
+            // Note that just calling map_search does not get
+            // the alert areas drawn on the screen.  The
+            // draw_map() function called by map_search just
+            // fills in the filename field in the struct and
+            // exits.
+            map_search (w,
+                alert_scan,
+                &alert_list[ii],
+                &alert_count,
+                (int)(alert_status[ii + 2] == DATA_VIA_TNC || alert_status[ii + 2] == DATA_VIA_LOCAL),
+                DRAW_TO_PIXMAP_ALERTS);
 
-                // The last parameter denotes loading into
-                // pixmap_alerts instead of pixmap or pixmap_final.
-                // Note that just calling map_search does not get
-                // the alert areas drawn on the screen.  The
-                // draw_map() function called by map_search just
-                // fills in the filename field in the struct and
-                // exits.
-                map_search (w,
-                    alert_scan,
-                    &alert_list[ii],
-                    &alert_count,
-                    (int)(alert_status[ii + 2] == DATA_VIA_TNC || alert_status[ii + 2] == DATA_VIA_LOCAL),
-                    DRAW_TO_PIXMAP_ALERTS);
-
-                //fprintf(stderr,"Title1:%s\n",alert_list[ii].title);
-            }
+            //fprintf(stderr,"Title1:%s\n",alert_list[ii].title);
         }
     }
 }
