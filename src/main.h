@@ -293,6 +293,7 @@ extern Widget Display_data_dialog;
 extern Widget Display_data_text;
 extern Widget text3;
 extern Widget text4;
+extern Widget log_indicator;
 extern void display_zoom_status(void);
 extern void statusline(char *status_text,int update);
 extern int SayTextInit();

@@ -126,6 +126,7 @@ Widget text;
 Widget text2;
 Widget text3;
 Widget text4;
+Widget log_indicator;
 Widget iface_da;
 Widget menubar;
 Widget toolbar;
@@ -3672,7 +3673,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 #ifdef ARROWS
         pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
-        zoom_in_menu, zoom_out_menu,
+        zoom_in_menu, zoom_out_menu, 
 #endif // ARROWS
 
         help_button, help_about, help_help;
@@ -3856,7 +3857,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(tnc_logging,XmNvalueChangedCallback,TNC_Logging_toggle,"1");
-    if (log_tnc_data)
+    if (log_tnc_data) 
         XmToggleButtonSetState(tnc_logging,TRUE,FALSE);
 
 
@@ -5955,12 +5956,32 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNcursorPositionVisible, FALSE,
             XmNsensitive,           STIPPLE,
             XmNshadowThickness,     1,
-            XmNcolumns,             12,
-            XmNwidth,               ((10*FONT_WIDTH)+2),
+            XmNcolumns,             10,
+            XmNwidth,               ((8*FONT_WIDTH)+2),
             XmNtopAttachment,       XmATTACH_NONE,
             XmNbottomAttachment,    XmATTACH_FORM,
             XmNleftAttachment,      XmATTACH_WIDGET,
             XmNleftWidget,          text3,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    log_indicator = XtVaCreateWidget("Logging",
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             8,
+            XmNwidth,               ((8*FONT_WIDTH)),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text4,
             XmNrightAttachment,     XmATTACH_NONE,
             XmNnavigationType,      XmTAB_GROUP,
             XmNtraversalOn,         FALSE,
@@ -5978,7 +5999,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment,    XmATTACH_FORM,
             XmNbottomOffset,        5,
             XmNleftAttachment,      XmATTACH_WIDGET,
-            XmNleftWidget,          text4,
+            XmNleftWidget,          log_indicator,
             XmNrightAttachment,     XmATTACH_NONE,
             XmNnavigationType,      XmTAB_GROUP,
             XmNtraversalOn,         FALSE,
@@ -6420,6 +6441,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     children[ac++] = text2;
     children[ac++] = text3;
     children[ac++] = text4;
+    children[ac++] = log_indicator;
     children[ac++] = iface_da;
     children[ac++] = menubar;
     children[ac++] = toolbar;
@@ -8443,7 +8465,12 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     transmit_now = 1;              /* toggle transmission of station now*/
 }
 
-
+void Set_Log_Indicator(){
+	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate))
+	    XmTextFieldSetString(log_indicator, "Logging");
+	else 
+	    XmTextFieldSetString(log_indicator, NULL);
+}
 
 
 
@@ -8451,13 +8478,12 @@ void  TNC_Logging_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if(state->set)
+    if(state->set) 
         log_tnc_data = atoi(which);
-    else
+    else 
         log_tnc_data = 0;
+    Set_Log_Indicator();
 }
-
-
 
 
 
@@ -8469,6 +8495,7 @@ void Net_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
         log_net_data = atoi(which);
     else
         log_net_data = 0;
+    Set_Log_Indicator();
 }
 
 
@@ -8483,6 +8510,7 @@ void IGate_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointe
         log_igate = atoi(which);
     else
         log_igate = 0;
+    Set_Log_Indicator();
 }
 
 
@@ -8497,6 +8525,7 @@ void WX_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
         log_wx = atoi(which);
     else
         log_wx = 0;
+    Set_Log_Indicator();
 }
 
 
@@ -21111,6 +21140,9 @@ int main(int argc, char *argv[], char *envp[]) {
             // Reload saved objects and items from previous runs.
             // This implements persistent objects.
             reload_object_item();
+
+            // Update the logging indicator 
+	    Set_Log_Indicator();
 
             XtAppMainLoop(app_context);
 
