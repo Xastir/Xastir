@@ -195,7 +195,7 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
                     if (strlen(my_rac_data.club_name) > 1) {
                         xastir_snprintf(temp2,
                             sizeof(temp2),
-                            "%s\n%s\n%s\n%s, %s\n%s\n",
+                            "%s\n%s\n%s, %s\n%s\n",
                             my_rac_data.club_name,
                             my_rac_data.club_address,
                             my_rac_data.club_city,
