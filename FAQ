@@ -12,9 +12,9 @@ The Questions
 
 1.  Background
 
-    1.1 What is XASTIR?
-    1.2 How and why was XASTIR created?
-    1.3 Why the name "XASTIR"?
+    1.1 What is Xastir?
+    1.2 How and why was Xastir created?
+    1.3 Why the name "Xastir"?
     1.4 OK, so how does Xastir compare to other APRS clients?
     1.5 How thoroughly tested is Xastir?
     1.6 What are the future plans for Xastir?
@@ -29,12 +29,12 @@ The Questions
     3.3 What's the best hardware/operating system/...
     4.4 Why isn't there a binary for my platform?
 
-3.  Building XASTIR
+3.  Building Xastir
 
     3.1 Why won't Xastir compile with my system's cc?
     3.2 I'm using gcc and I get some compilation errors, what is wrong?
 
-4.  Running XASTIR
+4.  Running Xastir
 
     4.1 Why do I get wrong texts in menus or other places when using a
         non-English language file?
@@ -68,38 +68,38 @@ The Answers
 
 1. Background
 
-    1.1 What is XASTIR?
+    1.1 What is Xastir?
 
 
-    XASTIR is an APRS client program that uses amateur radio and internet
+    Xastir is an APRS client program that uses amateur radio and internet
     services to convey GPS mapping, weather, and positional data in a graphical
-    application.  It has been developed by and for amateur radio enthusiast to
+    application.  It has been developed by and for amateur radio enthusiasts to
     provide real-time data in an easy to use package.
 
-    1.2 How and why was XASTIR created?
+    1.2 How and why was Xastir created?
 
     There were already several APRS client programs available to the
     Mac/DOS world when Frank Giannandrea, KC2GJS decided to develop
     a Unix client using X Window's and the Motif/LessTiff widget set.
-    From its meager beginings, XASTIR is now a very robust client that
+    From its meager beginings, Xastir is now a very robust client that
     meets the needs of the Ham community.
 
-    1.3  Why the name XASTIR?
+    1.3  Why the name Xastir?
 
-    XASTIR is an acronym for X Amateur Station Tracking and Information
+    Xastir is an acronym for X Amateur Station Tracking and Information
     Reporting.  Besides it sounds much cooler that those other names ;)
 
-    1.4 Ok, so how does XASTIR compare to other APRS clients?
+    1.4 Ok, so how does Xastir compare to other APRS clients?
 
-    Being actively developed by and for Hams, XASTIR is constantly being
-    improved upon to reflect the changing state of APRS.  XASTIR has all
+    Being actively developed by and for Hams, Xastir is constantly being
+    improved upon to reflect the changing state of APRS.  Xastir has all
     the functionality you would find in any other APRS client, from any
     OS, and quite possibly some unique features.
 
-    1.5 How thoroughly tested is XASTIR?
+    1.5 How thoroughly tested is Xastir?
 
-    XASTIR is currently in use by hundreds of Hams from around the world.
-    The XASTIR Group maintains rigours standards before releasing new
+    Xastir is currently in use by hundreds of Hams from around the world.
+    The Xastir Group maintains rigours standards before releasing new
     versions of our client.  When bugs do show up, we release patches and
     new versions as soon as they are available.
 
@@ -108,18 +108,18 @@ The Answers
     This FAQ may answer many of users frequent questions.  However, there
     are two active mailing lists that users could use to help answer any
     other questions.  Both mailing list are by subscription only and can
-    be accessed through the XASTIR website.  See the top of this document
+    be accessed through the Xastir website.  See the top of this document
     for the addresses.
 
-    1.7 Is there any more information on XASTIR?
+    1.7 Is there any more information on Xastir?
 
-    See the main XASTIR website for more information.  See the top of
+    See the main Xastir website for more information.  See the top of
     this document for the addresses.
 
-    1.8 Where can I get XASTIR?
+    1.8 Where can I get Xastir?
 
     Source code and binaries for several popular Linux distributions is
-    available through the XASTIR website or via anonymous FTP at
+    available through the Xastir website or via anonymous FTP at
     argon.hscs.virginia.edu
 
 
@@ -128,24 +128,24 @@ The Answers
     2.1 "Why can't I...? Why won't... work?" What to do in case of
         problems.
 
-    If are having trouble running the XASTIR software:
+    If are having trouble running the Xastir software:
 
         1.  Check the FAQ!
 
-            The latest version of the XASTIR FAQ can be found on the
-            XASTIR website.  See the top of this document for the
+            The latest version of the Xastir FAQ can be found on the
+            Xastir website.  See the top of this document for the
             addresses.
 
         2.  Ask in the xastir@krypton.hscs.virginia.edu mailing list.
 
-            Many XASTIR users and developers can be found roaming its
+            Many Xastir users and developers can be found roaming its
             virtual halls, so it is suggested that you seek wisdom there.
             The chances are good that you'll get your question answered
             there.
 
-    2.2 How do I submit a patch to the XASTIR Development Group?
+    2.2 How do I submit a patch to the Xastir Development Group?
 
-    The XASTIR Development Group encourages patches from outside developers.
+    The Xastir Development Group encourages patches from outside developers.
     There are two main "types" of patches: small bug fixes and general
     improvements.  Improvements, modifications, and additions should
     follow the instructions below:
@@ -174,16 +174,16 @@ The Answers
 
     The developers make sure that the software builds and works correctly on
     the platforms available to them; this does not necessarily mean that
-    your platform is one of them. In addition, the XASTIR Project is primarily
+    your platform is one of them. In addition, the Xastir Project is primarily
     source oriented, meaning that the distributing valid and buildable source
     code is the purpose of a release, not making sure that there is a binary
     package for all of the supported platforms.
 
-3. Building XASTIR
+3. Building Xastir
 
-    3.1. Why won't XASTIR compile with my system's cc?
+    3.1. Why won't Xastir compile with my system's cc?
 
-    If XASTIR won't compile on your system, it is probably due to
+    If Xastir won't compile on your system, it is probably due to
     one of the following causes:
 
     - The configure script doesn't recognize your system environment.
@@ -233,12 +233,12 @@ The Answers
     to 2.6. Sometimes you can type "gcc -v" and it will tell you the version
     of the operating system it was built against.
 
-    If you fail to do this, then it is very likely that XASTIR will fail to
+    If you fail to do this, then it is very likely that Xastir will fail to
     build. One of the most common errors is with readv, writev, or uio.h.
-    This is not a bug with XASTIR. You will need to re-install GCC.
+    This is not a bug with Xastir. You will need to re-install GCC.
 
 
-4. Running XASTIR
+4. Running Xastir
 
 
     4.1 Why do I get wrong texts in menus or other places when using a
@@ -250,7 +250,7 @@ The Answers
     Those texts like IC>PULDNMBC02 are placeholders for missing entries
     in the language file. You can add the local meaning of that string
     in the English language file to your language file. And send it to
-    the XASTIR development team...
+    the Xastir development team...
 
     4.2 I run Xastir under Linux, and I get an error about loading a shared
         library.
@@ -392,7 +392,7 @@ The Answers
 
     Probably because someone hasn't taken the time to write the feature or
     enough people have complained loud enough that it wasn't there.  The
-    feature set of XASTIR is user/developer driven. So get busy!
+    feature set of Xastir is user/developer driven. So get busy!
 
     5.2  Why doesn't Xastir digipeat packets sent to the RELAY alias?
 
