@@ -95,6 +95,7 @@ extern void send_queued(char *to);
 /* from messages_gui.c */
 extern xastir_mutex send_message_dialog_lock;
 extern void messages_gui_init(void);
+extern void get_send_message_path(char *callsign, char *path, int path_size);
 extern void Send_message(Widget w, XtPointer clientData, XtPointer callData);
 extern void Clear_messages(Widget w, XtPointer clientData, XtPointer callData);
 extern void clear_outgoing_messages_to(char *callsign);

@@ -244,7 +244,76 @@ void get_path_data(char *callsign, char *path, int max_length) {
 
 }
 
+
  
+
+
+// Find a custom path set in a Send Message dialog, using the remote
+// callsign as the key.  If no custom path set sets path to '\0'.
+//
+void get_send_message_path(char *callsign, char *path, int path_size) {
+    int ii;
+    int found = -1;
+    char *temp_ptr;
+    char temp1[MAX_LINE_SIZE+1];
+    
+
+//fprintf(stderr,"Looking for %s\n", callsign);
+    for(ii = 0; ii < MAX_MESSAGE_WINDOWS; ii++) {
+
+        // find matching callsign
+        if(mw[ii].send_message_dialog != NULL) {
+
+            temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
+            xastir_snprintf(temp1,
+                sizeof(temp1),
+                "%s",
+                temp_ptr);
+            XtFree(temp_ptr);
+
+            (void)to_upper(temp1);
+            if(strcmp(temp1,callsign)==0) {
+                found = ii;
+                break;
+            }
+        }
+    }
+
+    if (found == -1) {
+//fprintf(stderr,"Didn't find dialog\n");
+        path[0] = '\0';
+        return;
+    }
+
+    // We have the correct Send Message dialog.  Snag the path.
+    //
+    temp_ptr = XmTextFieldGetString(mw[ii].send_message_path);
+    xastir_snprintf(temp1,
+        sizeof(temp1),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    (void)to_upper(temp1);
+    (void)remove_leading_spaces(temp1);
+    (void)remove_trailing_spaces(temp1);
+
+    // Path empty?
+    if (temp1[0] == '\0') {
+//fprintf(stderr,"Didn't find custom path\n");
+        path[0] = '\0';
+        return;
+    }
+
+    // We have a real path!  Stuff it into the path variable.
+    xastir_snprintf(path,
+        path_size,
+        "%s",
+        temp1);
+fprintf(stderr,"Found custom path: %s\n", path);
+}
+
+
 
 
 

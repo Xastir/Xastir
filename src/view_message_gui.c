@@ -69,7 +69,7 @@ Widget vm_dist_data = NULL;
 static xastir_mutex All_messages_dialog_lock;
 
 int vm_range;
-int view_message_limit;
+int view_message_limit = 10000;
 
 
 

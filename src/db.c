@@ -13375,7 +13375,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 && !satellite_ack_mode // Disable separate ack's for satellite work
                 && port != -1 ) {   // Not from a log file
 
-            
+            char path[MAX_LINE_SIZE+1];
+
 
             //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
@@ -13383,6 +13384,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             msg_update_ack_stamp(record);
 
             pad_callsign(from_call,call);         /* ack the message */
+
+
+            // Attempt to snag a custom path out of the Send Message
+            // dialog, if set.  If not set, path will contain '\0';
+            get_send_message_path(call, path, MAX_LINE_SIZE+1);
+//fprintf(stderr,"Path: %s\n", path);
+
 
             // In this case we want to send orig_msg_id back, not
             // the (possibly) truncated msg_id.  This is per Bob B's
@@ -13401,11 +13409,18 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 // then we can snag the user-entered path from there.  If the struct
 // has already been destroyed then we have nowhere to snag the
 // custom path from and have to rely on the default paths in each
-// interface properties dialog instead.
+// interface properties dialog instead.  Then again, we _could_ snag
+// the path out of the last received message in the message database
+// for that case.  Might be better to disable the Close button, or
+// warn the user that the custom path will be lost if they close the
+// Send Message dialog.
 
 
             // Send out the immediate ACK
-            transmit_message_data(call,ack,NULL);
+            if (path[0] == '\0')
+                transmit_message_data(call,ack,NULL);
+            else
+                transmit_message_data(call,ack,path);
 
 
             if (record != -1l) { // Msg we've received before
@@ -13420,9 +13435,16 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 //                fprintf(stderr,
 //                    "Sending a couple of delayed ack's.\n");
 
-                transmit_message_data_delayed(call,ack,NULL,sec_now()+30);
-                transmit_message_data_delayed(call,ack,NULL,sec_now()+60);
-                transmit_message_data_delayed(call,ack,NULL,sec_now()+120);
+                if (path[0] == '\0') {
+                    transmit_message_data_delayed(call,ack,NULL,sec_now()+30);
+                    transmit_message_data_delayed(call,ack,NULL,sec_now()+60);
+                    transmit_message_data_delayed(call,ack,NULL,sec_now()+120);
+                }
+                else {
+                    transmit_message_data_delayed(call,ack,path,sec_now()+30);
+                    transmit_message_data_delayed(call,ack,path,sec_now()+60);
+                    transmit_message_data_delayed(call,ack,path,sec_now()+120);
+                }
             }
 
 
