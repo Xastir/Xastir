@@ -1447,37 +1447,27 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
 // Find the extents of every map we have.  This is the callback for
 // the "Re-Index Maps" button.
+//
+// If passed a NULL in the callback, we do a smart reindexing:  Only
+// reindex the files that are new or have changed.
+// If passed a "1" in the callback, we do a full reindexing:  Delete
+// the in-memory index and start indexing from scratch.
 // 
 void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
-/*
-    map_index_record *current;
-    map_index_record *temp;
+    int parameter = 0;  // Default:  Smart timestamp-checking indexing
 
 
-    // Point to the list
-    current = map_index_head;
+    if (clientData != NULL) {
 
-    // Empty the global list pointer
-    map_index_head = NULL;
+        parameter = atoi((char *)clientData);
 
-    // Delete the map_index linked list
-    while (current != NULL) {
-        temp = current;
-        current = temp->next;
-        free(temp);
+        if (parameter != 1) {   // Our only option
+            parameter = 0;
+        }
     }
-*/
-    // We don't wish to do the above because it throws away the
-    // hand-tweaked map_layer and draw_filled numbers that may be in
-    // the index.
-
-    // The original reason for throwing away the list and starting
-    // from scratch was to get rid of deleted maps.  They go away
-    // after two restarts of Xastir anyway, so the above code isn't
-    // really needed.
 
     // Update the list and write it to file.
-    map_indexer();
+    map_indexer(parameter);
 }
 
 
@@ -3744,7 +3734,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         tnc_logging, transmit_disable_toggle, net_logging,
         igate_logging, wx_logging, enable_snapshots, print_button,
         test_button, debug_level_button, aa_button, speech_button,
-        smart_beacon_button, map_indexer_button, auto_msg_set_button,
+        smart_beacon_button, map_indexer_button,
+        map_all_indexer_button, auto_msg_set_button,
         message_button, send_message_to_button,
         open_messages_group_button, clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
@@ -4412,6 +4403,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (!wx_alert_style)
         XmToggleButtonSetState(map_wx_alerts_button,TRUE,FALSE);
 
+
     //Index Maps on startup
     index_maps_on_startup_button = XtVaCreateManagedWidget(langcode("PULDNMP022"),
             xmToggleButtonGadgetClass,
@@ -4430,6 +4422,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
           xmPushButtonGadgetClass,
           mappane,
           XmNmnemonic,langcode_hotkey("PULDNMP023"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+
+        map_all_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP024"),
+          xmPushButtonGadgetClass,
+          mappane,
+          XmNmnemonic,langcode_hotkey("PULDNMP024"),
           MY_FOREGROUND_COLOR,
           MY_BACKGROUND_COLOR,
           NULL);
@@ -5746,6 +5746,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(speech_button,        XmNactivateCallback,Configure_speech,NULL);
     XtAddCallback(smart_beacon_button,  XmNactivateCallback,Smart_Beacon,NULL);
     XtAddCallback(map_indexer_button,   XmNactivateCallback,Index_Maps_Now,NULL);
+    XtAddCallback(map_all_indexer_button,XmNactivateCallback,Index_Maps_Now,"1");
     XtAddCallback(station_button,       XmNactivateCallback,Configure_station,NULL);
 
     XtAddCallback(help_about,           XmNactivateCallback,Help_About,NULL);
@@ -9214,8 +9215,8 @@ void check_for_new_gps_map(void) {
             fprintf(f,"GPS/%s\n",gps_map_filename);
             (void)fclose(f);
 
-            // Reindex maps
-            map_indexer();      // Have to have the new map in the index first before we can select it
+            // Reindex maps.  Use the smart timestamp-checking indexing.
+            map_indexer(0);     // Have to have the new map in the index first before we can select it
             map_chooser_init(); // Re-read the selected_maps.sys file
             re_sort_maps = 1;   // Creates a new sorted list from the selected maps
 
@@ -22211,9 +22212,10 @@ int main(int argc, char *argv[]) {
             (void)check_fcc_data();
             (void)check_rac_data();
 
-            // Find the extents of every map we have
+            // Find the extents of every map we have.  Use the smart
+            // timestamp-checking reindexing (quicker).
             if ( index_maps_on_startup ) {
-              map_indexer();
+              map_indexer(0);
             }
 
             // Mark the "selected" field in the in-memory map index

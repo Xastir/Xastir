@@ -94,7 +94,7 @@ int index_retrieve(char *filename, unsigned long *bottom,
     int *map_layer, int *draw_filled, int *automaps);
 void index_restore_from_file(void);
 void index_save_to_file(void);
-void map_indexer(void);
+void map_indexer(int parameter);
 void index_sort(void);
 
 extern int print_rotated;

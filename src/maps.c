@@ -200,13 +200,14 @@ float geotiff_map_intensity = 0.65;    // Geotiff map color intensity, set from 
 float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma correction, set from Maps->Adjust Gamma
 
 // Storage for the index file timestamp
-const time_t *map_index_timestamp;
+time_t map_index_timestamp;
 extern int index_retrieve(char *filename, unsigned long *bottom,
     unsigned long *top, unsigned long *left, unsigned long *right,
     int *map_layer, int *draw_filled, int *auto_maps);
 static int map_onscreen_index(char *filename);
 extern void index_update_directory(char *directory);
-
+extern void index_update_accessed(char *filename);
+ 
 
 
 int grid_size = 0;
@@ -11723,6 +11724,11 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 // via local RF, then the answer is yes.  The severe weather may be
 // nearby.
 //
+// We have the timestamp of the map_index.sys file stored away in
+// the global:  time_t map_index_timestamp;
+// Use that timestamp to compare the map file or GEO file timestamps
+// to.  Re-index the map if map_index_timestamp is older.
+//
 /////////////////////////////////////////////////////////////////////
 void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int warn, int destination_pixmap) {
     struct dirent *dl = NULL;
@@ -11980,7 +11986,14 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
         }
     }
+
+
+// MAPS, not alerts
+
     else {  // We're doing regular maps, not weather alerts
+        time_t map_timestamp;
+
+
         dm = opendir (dir);
         if (!dm) {  // Couldn't open directory
             xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
@@ -12056,9 +12069,55 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                         case (S_IFREG):     // It's a file, draw the map
                             /*fprintf(stderr,"FILE %s\n",dl->d_name); */
 
+                            // Get the last-modified timestamp for the map file
+                            map_timestamp = (time_t)nfile.st_mtime;
+
+                            // Check whether we're doing indexing or
+                            // map drawing.  If indexing, we only
+                            // want to index if the map timestamp is
+                            // newer than the index timestamp.
+                            if (destination_pixmap == INDEX_CHECK_TIMESTAMPS
+                                    || destination_pixmap == INDEX_NO_TIMESTAMPS) {
+                                // We're doing indexing, not map drawing
+                                char temp_dir[MAX_FILENAME];
+
+                                // Drop off the base part of the
+                                // path for the indexing, usually
+                                // "/usr/local/xastir/maps".
+                                xastir_snprintf(temp_dir,
+                                    sizeof(temp_dir),
+                                    "%s",
+                                    &fullpath[map_dir_length+1]);
+
+                                // Update the "accessed"
+                                // variable in the record
+                                index_update_accessed(temp_dir);
+
+// Note:  This is not as efficient as it should be, as we're looking
+// through the in-memory map index here just to update the
+// "accessed" variable, then in some cases looking through it again
+// in the next section for updated maps, or if we're ignoring
+// timestamps while indexing.  Looking through a linear linked list
+// too many times overall.
+
+                                if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                                        && (map_timestamp < map_index_timestamp) ) {
+                                    // Map is older than index _and_
+                                    // we're supposed to check
+                                    // timestamps.
+                                    count++;
+                                    break;  // Skip indexing this file
+                                }
+                                else {  // Map is newer or we're ignoring timestamps.
+                                    // We'll index the map
+                                    if (debug_level & 16) {
+                                        fprintf(stderr,"Indexing map: %s\n",fullpath);
+                                    }
+                                }
+                            }
+
                             // Check whether the file is in a subdirectory
                             if (strncmp (fullpath, map_dir, (size_t)map_dir_length) != 0) {
-//WE7U
                                 draw_map (w,
                                     dir,
                                     dl->d_name,
@@ -12073,7 +12132,6 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 // File is in the main map directory
                                 // Find the '/' character
                                 for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
-//WE7U
                                 draw_map (w,
                                     map_dir,
                                     ptr,
@@ -12112,6 +12170,29 @@ map_index_record *map_index_head = NULL;
 // to prune old entries out of the index if a full indexing didn't
 // touch a file entry.  Could also delete an entry from the index
 // if/when a file can't be opened?
+
+
+
+
+
+// Function to dissect and free all of the records in the map index
+// linked list, leaving it totally empty.
+//
+void free_map_index(void) {
+    map_index_record *current;
+    map_index_record *temp;
+
+
+    current = map_index_head;
+
+    while (current != NULL) {
+        temp = current;
+        current = current->next;
+        free(temp);
+    }
+
+    map_index_head = NULL;
+}
 
 
 
@@ -12610,6 +12691,74 @@ void index_update_ll(char *filename,
 
 
 
+// Function which will update the "accessed" variable on either a
+// directory or a filename in the map index.
+void index_update_accessed(char *filename) {
+    map_index_record *current = map_index_head;
+    int done = 0;
+    int i;
+
+
+    // Check for initial bad input
+    if ( (filename == NULL) || (filename[0] == '\0') ) {
+        fprintf(stderr,"index_update_accessed: Bad input: %s\n",filename);
+        return;
+    }
+
+    // Make sure there aren't any weird characters in the filename
+    // that might cause problems later.  Look for control characters
+    // and convert them to string-end characters.
+    for ( i = 0; i < (int)strlen(filename); i++ ) {
+        // Change any control characters to '\0' chars
+        if (filename[i] < 0x20) {
+
+            fprintf(stderr,"\nindex_update_accessed: Found control char 0x%02x in map file/map directory name:\n%s\n",
+                filename[i],
+                filename);
+
+            filename[i] = '\0';    // Terminate it here
+        }
+    }
+    // Check if the string is _now_ bogus
+    if (filename[0] == '\0') {
+        fprintf(stderr,"index_update_accessed: Bad input: %s\n",filename);
+        return;
+    }
+
+    // Skip dbf and shx map extensions.  Really should make this
+    // case-independent...
+    if (       strstr(filename,"shx")
+            || strstr(filename,"dbf")
+            || strstr(filename,"SHX")
+            || strstr(filename,"DBF") ) {
+        return;
+    }
+
+    // Search for a matching filename in the linked list
+    while ((current != NULL) && !done) {
+        int test;
+
+//fprintf(stderr,"Comparing %s to\n          %s\n",current->filename,filename);
+
+        test = strcmp(current->filename,filename);
+
+        if (test == 0) {
+            // Found a match!
+//fprintf(stderr,"Found: Updating entry for %s\n\n",filename);
+            current->accessed = 1;
+            done++; // Exit the while loop
+        }
+
+        else {  // Haven't gotten to the correct insertion point yet
+            current = current->next;
+        }
+    }
+}
+
+
+
+
+
 // Function called by map_onscreen_index()
 //
 // This function returns:
@@ -12659,10 +12808,6 @@ int index_retrieve(char *filename,
             *map_layer = current->map_layer;
             *draw_filled = current->draw_filled;
             *auto_maps = current->auto_maps;
-
-            // Mark that we've accessed this record
-            current->accessed = 1;
-
             break;  // Exit the while loop
         }
         else {
@@ -12677,15 +12822,18 @@ int index_retrieve(char *filename,
 
 
 // Saves the linked list pointed to by map_index_head to a file.
-// Keeps the same order as the memory linked list.
+// Keeps the same order as the memory linked list.  Delete records
+// in the in-memory linked list for which the "accessed" variable is
+// 0 or filename is empty.
 //
 void index_save_to_file() {
     FILE *f;
     map_index_record *current;
+    map_index_record *last;
     char out_string[MAX_FILENAME*2];
 
 
-    //fprintf(stderr,"Saving map index to file\n");
+//fprintf(stderr,"Saving map index to file\n");
 
     f = fopen(MAP_INDEX_DATA,"w");
 
@@ -12696,6 +12844,7 @@ void index_save_to_file() {
     }
 
     current = map_index_head;
+    last = current;
 
     while (current != NULL) {
         int i;
@@ -12716,8 +12865,8 @@ void index_save_to_file() {
             }
         }
  
-        // Save to file if we have something in the filename
-        // and the record has been accessed at least once.
+        // Save to file if filename non-blank and record has the
+        // accessed field set.
         if ( (current->filename[0] != '\0')
                 && (current->accessed != 0) ) {
 
@@ -12741,8 +12890,42 @@ void index_save_to_file() {
                     MAP_INDEX_DATA);
                 current = NULL; // All done
             }
+            // Set up pointers for next loop iteration
+            last = current;
+            current = current->next;
         }
-        current = current->next;
+
+
+        else {
+            last = current;
+            current = current->next;
+        }
+/*
+//WE7U
+        else {  // Delete this record from our list!  It's a record
+                // for a map file that doesn't exist in the
+                // filesystem anymore.
+            if (last == current) {   // We're at the head of the list
+                map_index_head = current->next;
+                free(current);
+
+                // Set up pointers for next loop iteration
+                current = map_index_head;
+                last = current;
+            }
+            else {  // Not the first record in the list
+                map_index_record *gone;
+
+                gone = current; // Save ptr to record we wish to delete 
+                last->next = current->next; // Unlink from list
+                free(gone);
+
+                // Set up pointers for next loop iteration
+                // "last" is still ok
+                current = last->next;
+            }
+        }
+*/
     }
     (void)fclose(f);
 }
@@ -13104,13 +13287,13 @@ void index_restore_from_file(void) {
                 }
 
 
-                // Mark the record as non-accessed at this point.
+                // Mark the record as accessed at this point.
                 // At the stage where we're writing this list off to
                 // disk, if the record hasn't been accessed by the
-                // re-indexing, it doesn't get written.  This
-                // flushes out deleted files after a couple of
-                // Xastir reboots.
-                temp_record->accessed = 0;
+                // re-indexing, it doesn't get written.  This has
+                // the effect of flushes deleted files from the
+                // index quickly.
+                temp_record->accessed = 1;
 
                 // Default is not-selected.  Later we read in the
                 // selected_maps.sys file and tweak some of these
@@ -13172,19 +13355,29 @@ void index_restore_from_file(void) {
 // so that an earlier copy of the index is restored before the map
 // display is created.
 //
-// It'd also be nice to check all the map file timestamps, and if
-// none of them are newer than the map index file, refuse to
-// re-index.  Only update when map file modification times are
-// changed.  check_times below has something to do with this, but
-// still causes the indexer to run through all files in the
-// directory.
+// If we set the "accessed" variable in the in-memory index to 0 for
+// each record and then run the indexer, the save-to-file function
+// will delete those with a value of 0 when writing to disk.  Those
+// maps no longer exist in the filesystem and should be deleted.  We
+// could either wipe them from the in-memory database at that time
+// as well, or wipe the whole list and re-read it from disk to get
+// the current list.
 //
-void map_indexer(void) {
+// If parameter is 0, we'll do the smart timestamp-checking
+// indexing.
+// If 1, we'll erase the in-memory index and do full indexing.
+//
+void map_indexer(int parameter) {
     struct stat nfile;
     int check_times = 1;
     FILE *f;
+    map_index_record *current;
 
- 
+
+    if (debug_level & 16)
+        fprintf(stderr,"map_indexer() start\n");
+
+
     // Find the timestamp on the index file first.  Save it away so
     // that the timestamp for each map file can be compared to it.
     if (stat (MAP_INDEX_DATA, &nfile) != 0) {
@@ -13199,17 +13392,44 @@ void map_indexer(void) {
         check_times = 0; // Don't check the timestamps.  Do them all. 
     }
     else {  // File exists
-        map_index_timestamp = (time_t *)&nfile.st_ctime;
+        map_index_timestamp = (time_t)nfile.st_mtime;
         check_times = 1;
     }
+
+
+    if (parameter == 1) {   // Full indexing instead of timestamp-check indexing
+        // Delete the in-memory map index
+        free_map_index();
+
+//        // Set the timestamp to 0 so that everything gets indexed
+//        map_index_timestamp = (time_t)0l;
+
+        check_times = 0;
+    }
+
+
+    // Set the "accessed" field to zero for every record in the
+    // index.  Note that the list could be empty at this point.
+    current = map_index_head;
+    while (current != NULL) {
+        current->accessed = 0;
+        current = current->next;
+    }
+
 
     if (check_times)
         map_search (NULL, AUTO_MAP_DIR, NULL, NULL, (int)FALSE, INDEX_CHECK_TIMESTAMPS);
     else
         map_search (NULL, AUTO_MAP_DIR, NULL, NULL, (int)FALSE, INDEX_NO_TIMESTAMPS);
 
+    if (debug_level & 16)
+        fprintf(stderr,"map_indexer() middle\n");
+ 
     // Save the updated index to the file
     index_save_to_file();
+
+    if (debug_level & 16)
+        fprintf(stderr,"map_indexer() end\n");
 }
 
 
@@ -13488,7 +13708,7 @@ void insert_map_sorted(char *filename){
         temp_record->draw_filled = draw_filled;
         temp_record->auto_maps = auto_maps;
         temp_record->selected = 1;  // Always, we already know this!
-        temp_record->accessed = 1;  // Always, we already know this!
+        temp_record->accessed = 0;
         temp_record->next = NULL;
 
         // Now find the proper place for it and insert it in
