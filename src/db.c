@@ -9909,10 +9909,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE+80];
             sprintf(filtered_data,
-                "Registering data %s %s %s %s %c %d %d\n",
+                "Registering data %s %s %s %s %c %d %d",
                 call, path, info, origin, from, port, third_party);
             makePrintable(filtered_data);
-            printf("c/p/i/o fr pt tp: %s", filtered_data);
+            printf("c/p/i/o fr pt tp: %s\n", filtered_data);
         }
         decode_info_field(call,path,info,origin,from,port,third_party);
     }
