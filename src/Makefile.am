@@ -28,6 +28,7 @@ xastir_SOURCES = \
     maps.c maps.h \
     map_dos.c \
     map_geo.c \
+    map_gdal.c \
     map_gnis.c \
     map_pdb.c \
     map_shp.c \
