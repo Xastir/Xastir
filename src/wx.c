@@ -50,6 +50,7 @@
 #include "interface.h"
 #include "lang.h"
 #include "db.h"
+#include "util.h"
 
 
 char wx_station_type[100];
@@ -91,42 +92,6 @@ char wx_low_temp[10];
 char wx_low_temp_on;
 char wx_heat_index[10];
 char wx_heat_index_on;
-
-
-
-
-
-/***********************************************************/
-/* returns the hour (0..23)                                */
-/***********************************************************/
-int hour(void) {
-    struct tm *time_now;
-    time_t secs_now;
-    char shour[5];
-
-    secs_now=sec_now();
-    time_now = localtime(&secs_now);
-    (void)strftime(shour,4,"%H",time_now);
-    return(atoi(shour));
-}
-
-
-
-
-
-/***********************************************************/
-/* returns the minute (0..59)                                */
-/***********************************************************/
-int minute(void) {
-    struct tm *time_now;
-    time_t secs_now;
-    char sminute[5];
-
-    secs_now=sec_now();
-    time_now = localtime(&secs_now);
-    (void)strftime(sminute,4,"%M",time_now);
-    return(atoi(sminute));
-}
 
 
 
@@ -176,7 +141,7 @@ void compute_rain_hour(float rain_total) {
     // for the last hour.
 
 
-    current = minute(); // Fetch the current minute value.  Use this as an index
+    current = get_minutes(); // Fetch the current minute value.  Use this as an index
                         // into our minute "buckets" where we store the data.
 
 
@@ -223,7 +188,7 @@ void compute_rain(float rain_total) {
 
     compute_rain_hour(rain_total);
 
-    current = hour();
+    current = get_hours();
 
     // Set rain_base:  The first rain_total for each hour.
     if (rain_base[current] == 0.0) {       // If we don't have a start value yet for this hour,
@@ -298,7 +263,7 @@ float compute_gust(float wx_speed, float last_speed, time_t *last_speed_time) {
     // Check all buckets for max gust within the last five minutes
     // (Really 4 minutes plus whatever portion of a minute we've completed).
 
-    current = minute(); // Fetch the current minute value.  We use this as an index
+    current = get_minutes(); // Fetch the current minute value.  We use this as an index
                         // into our minute "buckets" where we store the data.
 
     // If we haven't started collecting yet, set up to do so
@@ -385,10 +350,31 @@ void cycle_weather(void) {
     WeatherRow *weather;
     float last_speed, computed_gust;
     time_t last_speed_time;
+    char temp[20];
 
 
     if (debug_level & 2)
-        printf("%02d:%02d  ", hour(), minute() );
+        printf("%02d:%02d:%02d  ", get_hours(), get_minutes(), get_seconds() );
+
+    // Timestamp the log files at a 30 second rate
+    if (log_tnc_data) {
+        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+        log_data(LOGFILE_TNC,(char *)temp);
+    }
+    if (log_net_data) {
+        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+        log_data(LOGFILE_NET,(char *)temp);
+    }
+    if (log_igate) {
+        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+        log_data(LOGFILE_IGATE,(char *)temp);
+    }
+    if (log_wx) {
+        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+        log_data(LOGFILE_WX,(char *)temp);
+    }
+
+
 
     // Find my own local weather data
     if (search_station_name(&p_station,my_callsign,1)) {

@@ -65,6 +65,61 @@ char echo_digis[6][9+1];
 
 
 
+/***********************************************************/
+/* returns the hour (00..23), localtime                    */
+/***********************************************************/
+int get_hours(void) {
+    struct tm *time_now;
+    time_t secs_now;
+    char shour[5];
+
+    secs_now=sec_now();
+    time_now = localtime(&secs_now);
+    (void)strftime(shour,4,"%H",time_now);
+    return(atoi(shour));
+}
+
+
+
+
+
+/***********************************************************/
+/* returns the minute (00..59), localtime                  */
+/***********************************************************/
+int get_minutes(void) {
+    struct tm *time_now;
+    time_t secs_now;
+    char sminute[5];
+
+    secs_now=sec_now();
+    time_now = localtime(&secs_now);
+    (void)strftime(sminute,4,"%M",time_now);
+    return(atoi(sminute));
+}
+
+
+
+
+
+/***********************************************************/
+/* returns the second (00..61), localtime                  */
+/***********************************************************/
+int get_seconds(void) {
+    struct tm *time_now;
+    time_t secs_now;
+    char sminute[5];
+
+    secs_now=sec_now();
+    time_now = localtime(&secs_now);
+    (void)strftime(sminute,4,"%S",time_now);
+    return(atoi(sminute));
+}
+
+
+
+
+
+
 /*************************************************************************/
 /* output_lat - format position with position_amb_chars for transmission */
 /*************************************************************************/

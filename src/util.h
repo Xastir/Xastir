@@ -30,6 +30,9 @@
 #include <pthread.h>
 
 extern int  position_amb_chars;
+extern int get_hours(void);
+extern int get_minutes(void);
+extern int get_seconds(void);
 extern char *output_lat(char *in_lat, int comp_pos);
 extern char *output_long(char *in_long, int comp_pos);
 extern double phg_range(char p, char h, char g);
