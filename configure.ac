@@ -234,6 +234,10 @@ AC_CHECK_LIB(compat, main,
     AC_SUBST(LIBCOMPAT)])
 AC_CHECK_LIB([pthread],[pthread_create]) 
  
+# Check for sched_yield in librt (needed for Solaris)
+AC_CHECK_LIB(rt,sched_yield,LIB_RT='-lrt',,)
+LIBS="$LIB_RT $LIBS"
+ 
 # Check for endian 
 AC_C_BIGENDIAN 
  
