@@ -4807,9 +4807,6 @@ void output_my_aprs_data(void) {
     char output_brk[3];
     int ok;
     int port;
-    int count;
-    int temp;
-    int bump_up;
 
 
     header_txt_save[0] = '\0';
@@ -5154,9 +5151,6 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     port_write_string(port, data_txt2);
                 }
             } else {
-                /* port transmitting off message, Shut off for now -FG */
-                /*sprintf(temp,langcode("POPEM00019"),port);
-                popup_message(langcode("POPEM00004"),temp);*/
             }
         } // End of posit transmit: "if (ok)"
     } // End of big loop
@@ -5215,11 +5209,8 @@ void output_my_data(char *message, int port, int type, int loopback_only, int us
     char *unproto_path;
     char output_net[100];
     int ok, start, finish, i;
-    /*char temp[150]; for port message -FG */
-    int count;
     int done;
-    int temp;
-    int bump_up;
+
 
     if (debug_level & 1)
         fprintf(stderr,"Sending out port: %d, type: %d\n", port, type);
@@ -5299,9 +5290,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         usleep(100000);  // 100ms
                     }
  
-                    count = 0;
                     done = 0;
-                    bump_up = 0;
  
                     // Set unproto path.  First check whether we're
                     // to use the igate path.  If so and the path
@@ -5493,9 +5482,6 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     port_write_string(i,data_txt);
                 }
             } else {
-                /* port transmitting off message, Shut off for now -FG */
-                /*sprintf(temp,langcode("POPEM00019"),port);
-                popup_message(langcode("POPEM00004"),temp);*/
             }
         }
 //        if (port != -1)
