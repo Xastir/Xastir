@@ -74,23 +74,26 @@ selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
 be selected as well, that's ok and necessary:
 
-    archive/unzip
-    archive/zip
-    devel/autoconf
-    devel/automake
-    devel/binutils
-    devel/cvs
-    devel/gcc
-    devel/make
-    devel/rcs
-    editors/vim
-    graphics/tiff (install sources for this one too? TBD)
-    interpreters/m4
-    interpreters/perl (install 5.6.1 instead of 5.8.0)
-    text/less
-    utils/diff
-    utils/patch
-    web/wget (or can use libcurl instead)
+    Archive/unzip
+    Archive/zip
+    Devel/autoconf
+    Devel/automake
+    Devel/binutils
+    Devel/cvs
+    Devel/gcc
+    Devel/make
+    Devel/rcs
+    Editors/vim
+    Graphics/tiff (install sources for this one too? TBD)
+    Interpreters/m4
+    Interpreters/perl (install 5.6.1 instead of 5.8.0)
+    Libs/curl
+    Libs/curl-devel
+    Libs/tcltk
+    Text/less
+    Utils/diff
+    Utils/patch
+    Web/wget (or can use libcurl instead)
     XFree86/fvwm
     XFree86/lesstif
     XFree86/XFree86-prog
