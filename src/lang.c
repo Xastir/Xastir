@@ -57,14 +57,32 @@ char invalid_code[50];
 
 char *langcode(char *code) {
     int i;
-    xastir_snprintf(invalid_code, sizeof(invalid_code), "IC>%s", code);
+
+    // Create an invalid code string to return in case we can't find the proper string
+    if (strlen(code) <= MAX_LANG_CODE) {    // Code is ok
+        xastir_snprintf(invalid_code, sizeof(invalid_code), "IC>%s", code);
+    }
+    else {  // Code is too long
+        xastir_snprintf(invalid_code, sizeof(invalid_code), "IC>TOO LONG");
+        return(invalid_code);
+    }
+
     if(lang_code_number>0) {
         for(i=0;i<lang_code_number;i++) {
-            if(strcmp(code,lang_code[i])==0)
-                return(lang_code_ptr[i]);
+            if(strcmp(code,lang_code[i])==0) {  // Found a match
+                if (strlen(lang_code[i]) < MAX_LANG_LINE_SIZE) {
+                    return(lang_code_ptr[i]);   // Found it, length ok
+                }
+                else {
+                    printf("String size: %d,  Max size: %d\n", strlen(lang_code[i]), MAX_LANG_LINE_SIZE);
+                    return(invalid_code);       // Found it, but string too long
+                }
+            }
         }
     }
-    return(invalid_code);
+
+    printf("No language strings loaded\n");
+    return(invalid_code);   // No strings loaded in language file
 }
 
 
@@ -76,11 +94,13 @@ char langcode_hotkey(char *code) {
 
     if(lang_code_number>0) {
         for(i=0;i<lang_code_number;i++) {
-            if(strcmp(code,lang_code[i])==0)
-                return(lang_hotkey[i]);
+            if(strcmp(code,lang_code[i])==0) {
+                return(lang_hotkey[i]); // Found it
+            }
         }
     }
-    return(' ');
+
+    return(' ');    // No strings loaded in language file
 }
 
 
