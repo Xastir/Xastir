@@ -171,6 +171,7 @@ static int festival_socket_open(const char *host, int port) {
 
     if (connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
         fprintf(stderr,"festival_client: connect to server failed\n");
+        (void)close(fd);    // Close the socket
         return(-1);
     }
     return(fd);
