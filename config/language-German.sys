@@ -261,9 +261,9 @@ POPUPMA021|Bewegen||
 POPUPMA022|Verfolge mich||
 POPUPMA023|Modifikationstasten aktiv!||
 POPUPMA024|Bitte Umschalt/Num/Rollen/andere Modifikationstasten ausschalten||
-POPUPMA026|Center & Zoom||
-POPUPMA027|  Latitude||
-POPUPMA028| Longitude||
+POPUPMA026|Zentrieren & Zoom||
+POPUPMA027|    Breite||
+POPUPMA028|     Länge||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -359,7 +359,7 @@ WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
 WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
 WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
-WPUPCFD030|Disable Posit Dupe-Checks||
+WPUPCFD030|Position Dubletten-Prüfung aus||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||
@@ -371,8 +371,8 @@ WPUPCFTM06|GPS Abfrage alle [Sek]||
 WPUPCFTM07|Station löschen nach [Tage]||
 WPUPCFTM08|Timeout Pos-Voraussage [Min]||
 WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
-WPUPCFTM10|New Track Time (min)||
-WPUPCFTM11|New Track Interval (degrees)||
+WPUPCFTM10|Neue Spur Zeit (Min)||
+WPUPCFTM11|Neue Spur Intervall (Grad)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||
@@ -450,7 +450,7 @@ WPUPCFT037|SlotTime (in 10 ms Einheiten)||
 WPUPCFT038|TxTail (in 10 ms Einheiten)||
 WPUPCFT039|Voll-Duplex||
 WPUPCFT040|Multi-Port KISS TNC konfigurieren||
-WPUPCFT041|Radio Port||
+WPUPCFT041|Funkgerät Port||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
@@ -546,7 +546,7 @@ WPUPCFI005|Host1||
 WPUPCFI006|Port1||
 WPUPCFI007|Host2||
 WPUPCFI008|Port2||
-WPUPCFI009|Zugangs-Kode||
+WPUPCFI009|Zugangs-Code||
 WPUPCFI010|(freilassen falls keiner)||
 WPUPCFI011|Wiederverbinden bei NET Fehler?||
 WPUPCFI012|Als I-Gate verwenden?||
@@ -563,7 +563,7 @@ WPUPCFID05|Host1||
 WPUPCFID06|Port1||
 WPUPCFID07|Host2||
 WPUPCFID08|Port2||
-WPUPCFID09|Zugangs-Kode||
+WPUPCFID09|Zugangs-Code||
 WPUPCFID10|(Freilassen falls keines)||
 WPUPCFID11|Wiederverbinden bei NET Fehler?||
 WPUPCFID12|Als I-Gate verwenden?||
@@ -580,13 +580,13 @@ WPUPCFIA05|Host1||
 WPUPCFIA06|Port1||
 WPUPCFIA07|Host2||
 WPUPCFIA08|Port2||
-WPUPCFIA09|Zugangs-Kode||
+WPUPCFIA09|Zugangs-Code||
 WPUPCFIA10|Freilassen falls keines)||
 WPUPCFIA11|Wiederverbinden bei NET Fehler?||
 WPUPCFIA12|Als I-Gate verwenden?||
 WPUPCFIA13|Nachrichten aus Internet via TNC aussenden wenn I-Gate?||
 WPUPCFIA14|I-Gate Transaktionen protokollieren?|||
-WPUPCFIA15|RadioPort Senden||
+WPUPCFIA15|FunkPort Senden||
 #
 # PopUp "Einstellungen für Audio Alarm"
 WPUPCFA001|Einstellungen für Audio Alarm||
@@ -708,7 +708,7 @@ WPUPSTI060|Brennstofftemp.: %02.1f°C  ||
 WPUPSTI061|Brennstofftemp.: %s°F   ||
 WPUPSTI062|Brennstofffeuchte: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
-WPUPSTI064|Fetch NWS Alert||
+WPUPSTI064|NWS Wetterwarnung holen||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Datenbank Abfrage||
@@ -882,8 +882,8 @@ LHPUPNI208|Rn24||
 LHPUPNI209|Breite/Länge oder UTM||
 #
 # Stil der Wetterwarnungskarten
-PULDNMAT01|Zeige Warnungen über anderen Karten||
-PULDNMAT02|Zeige Warnungen unter anderen Karten||
+PULDNMAT01|Zeige Warnungen über Karten||
+PULDNMAT02|Zeige Warnungen unter Karten||
 #
 # Fehlermeldungen
 POPEM00001|Suchfehler!||
