@@ -3084,10 +3084,10 @@ static void* snapshot_thread(void *arg) {
 //
 void Snapshot(void) {
 #ifndef NO_XPM
+    pthread_t snapshot_thread_id;
     char xpm_filename[MAX_FILENAME];
     char geo_filename[MAX_FILENAME];
     FILE *f;
-    pthread_t snapshot_thread_id;
 #endif  // NO_XPM
 
 
@@ -3119,7 +3119,6 @@ void Snapshot(void) {
         get_user_base_dir("tmp"));
 
 
-/*
     // Create a .geo file to match the new png image
     //
     f = fopen(geo_filename,"w");    // Overwrite whatever file
@@ -3128,32 +3127,28 @@ void Snapshot(void) {
         fprintf(stderr,"Couldn't open %s\n",geo_filename);
     }
     else {
-        long lat_offset_temp;
-        long long_offset_temp;
+        long nw_lat, se_lat;
+        long nw_lon, se_lon;
         float lat1, long1, lat2, long2;
 
 
         // Compute NW corner
-        x_long_offset = mid_x_long_offset - (screen_width  * scale_x / 2);
-        y_lat_offset  = mid_y_lat_offset  - (screen_height * scale_y / 2);
-        long_offset_temp = x_long_offset;
-        lat_offset_temp  = y_lat_offset;
+        nw_lon = mid_x_long_offset - (screen_width  * scale_x / 2);
+        nw_lat = mid_y_lat_offset  - (screen_height * scale_y / 2);
 
         convert_from_xastir_coordinates(&long1,
             &lat1,
-            long_offset_temp,
-            lat_offset_temp);
+            nw_lon,
+            nw_lat);
 
         // Compute SE corner
-        x_long_offset = mid_x_long_offset + (screen_width  * scale_x / 2);
-        y_lat_offset  = mid_y_lat_offset  + (screen_height * scale_y / 2);
-        long_offset_temp = x_long_offset;
-        lat_offset_temp  = y_lat_offset;
+        se_lon = mid_x_long_offset + (screen_width  * scale_x / 2);
+        se_lat = mid_y_lat_offset  + (screen_height * scale_y / 2);
 
         convert_from_xastir_coordinates(&long2,
             &lat2,
-            long_offset_temp,
-            lat_offset_temp);
+            se_lon,
+            se_lat);
 
         // FILENAME   world1.xpm
         // #          x          y        lon         lat
@@ -3168,6 +3163,7 @@ void Snapshot(void) {
             long1, lat1);
         fprintf(f,"TIEPOINT     %-4d    %-4d    %8.5f     %8.5f\n",
             (int)screen_width-1, (int)screen_height-1, long2, lat2);
+ 
         fprintf(f,"IMAGESIZE    %-4d    %-4d\n",
             (int)screen_width, (int)screen_height);
         fprintf(f,"REFRESH      250\n");
@@ -3175,8 +3171,6 @@ void Snapshot(void) {
 
         chmod( geo_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
     }
-*/
-
 
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
