@@ -198,9 +198,9 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                                     CoordModeOrigin);
                             }
                             else {
-                                fprintf(stderr,
-                                    "map_plot:Too few points:%d, Skipping XFillPolygon()",
-                                    npoints);
+//                                fprintf(stderr,
+//                                    "map_plot:Too few points:%d, Skipping XFillPolygon()",
+//                                    npoints);
                             }
                         }
                         break;
@@ -222,9 +222,9 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                                 CoordModeOrigin);
                         }
                         else {
-                            fprintf(stderr,
-                                "map_plot:Too few points:%d, Skipping XFillPolygon()",
-                                npoints);
+//                            fprintf(stderr,
+//                                "map_plot:Too few points:%d, Skipping XFillPolygon()",
+//                                npoints);
                         }
                         break;
                     }
