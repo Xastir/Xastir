@@ -273,7 +273,10 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
     if (get_device_status(TNC_port) == DEVICE_IN_USE) {
         /* if active shutdown before changes are made */
         /*fprintf(stderr,"Device is up, shutting down\n");*/
+
+//WE7U:  Modify for MKISS?
         (void)del_device(TNC_port);
+
         was_up=1;
         usleep(1000000); // Wait for one second
     }
@@ -289,6 +292,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     (void)remove_trailing_spaces(devices[TNC_port].device_name);
 
     if (devices[TNC_port].device_type == DEVICE_SERIAL_MKISS_TNC) {
+
         // If MKISS, fetch "radio_port".  If empty, store a zero.
         strcpy(devices[TNC_port].radio_port,XmTextFieldGetString(TNC_radio_port_data));
         (void)remove_trailing_spaces(devices[TNC_port].radio_port);
@@ -351,7 +355,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
             break;
     }
 
+//WE7U:  Modify for MKISS?
     set_port_speed(TNC_port);
+
     devices[TNC_port].style=device_style;
     devices[TNC_port].igate_options=device_igate_options;
 
@@ -376,6 +382,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
 // We really should do some validation of these strings
 
+//WE7U:  Modify for MKISS:  Must send to the proper Radio Port.
         strcpy(devices[TNC_port].txdelay,XmTextFieldGetString(TNC_txdelay));
         send_kiss_config(TNC_port,0,0x01,atoi(devices[TNC_port].txdelay));
 
@@ -393,13 +400,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         else
             devices[TNC_port].fullduplex=0;
         send_kiss_config(TNC_port,0,0x05,devices[TNC_port].fullduplex);
-
-        if (type == DEVICE_SERIAL_MKISS_TNC) {
-//WE7U
-// Get and store the TNC port value (which radio port of the
-// Multi-port TNC we'll be using for this interface).
-        }
-
     }
     else {
         strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
@@ -408,6 +408,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         (void)remove_trailing_spaces(devices[TNC_port].tnc_down_file);
     }
 
+//WE7U:  Modify for MKISS?
     /* reopen or open port*/
     if (devices[TNC_port].connect_on_startup==1 || was_up) {
         (void)add_device(TNC_port,
@@ -624,8 +625,6 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
-
-//WE7U
         if (device_type ==  DEVICE_SERIAL_MKISS_TNC) {
             // Add a "Radio Port" field for Multi-Port KISS TNC's.
 
