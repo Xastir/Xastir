@@ -148,6 +148,7 @@ typedef struct _selections {
     int direct;
     int via_digi;
     int net;
+    int tactical;
     int old_data;
 
     int stations;

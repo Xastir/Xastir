@@ -377,6 +377,7 @@ Selections Select_ = { 0, // none
                        1, // direct
                        1, // via_digi
                        1, // net
+                       0, // tactical only 
                        1, // old_data
 
                        1, // stations
@@ -425,6 +426,7 @@ Widget select_tnc_button;
 Widget select_direct_button;
 Widget select_via_digi_button;
 Widget select_net_button;
+Widget select_tactical_button;
 Widget select_old_data_button;
 
 Widget select_stations_button;
@@ -473,6 +475,7 @@ static void Select_tnc_toggle(Widget w, XtPointer clientData, XtPointer calldata
 static void Select_direct_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_via_digi_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_net_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_tactical_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_old_data_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
 static void Select_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -5805,6 +5808,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(select_net_button, TRUE, FALSE);
     if (Select_.none)
         XtSetSensitive(select_net_button, FALSE);
+
+
+//    select_tactical_button = XtVaCreateManagedWidget(langcode("PULDNDP034"),
+    select_tactical_button = XtVaCreateManagedWidget("Select Tactical Calls Only",
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_tactical_button, XmNvalueChangedCallback, Select_tactical_toggle, "1");
+    if (Select_.tactical)
+        XmToggleButtonSetState(select_tactical_button, TRUE, FALSE);
+    if (Select_.none)
+        XtSetSensitive(select_tactical_button, FALSE);
 
 
     select_old_data_button = XtVaCreateManagedWidget(langcode("PULDNDP019"),
@@ -12833,6 +12852,31 @@ void Select_net_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
     }
     else {
         Select_.net = 0;
+        if (no_data_selected()) {
+            XtSetSensitive(select_old_data_button, FALSE);
+            set_sensitive_select_types(FALSE);
+            set_sensitive_display(FALSE);
+        }
+    }
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Select_tactical_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set) {
+        Select_.tactical = atoi(which);
+        XtSetSensitive(select_old_data_button, TRUE);
+        set_sensitive_select_types(TRUE);
+        set_sensitive_display(TRUE);
+    }
+    else {
+        Select_.tactical = 0;
         if (no_data_selected()) {
             XtSetSensitive(select_old_data_button, FALSE);
             set_sensitive_select_types(FALSE);

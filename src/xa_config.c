@@ -492,6 +492,7 @@ void save_data(void)  {
         store_int (fout, "DISPLAY_TNC_DIRECT_STATIONS",   Select_.direct);
         store_int (fout, "DISPLAY_TNC_VIADIGI_STATIONS",  Select_.via_digi);
         store_int (fout, "DISPLAY_NET_STATIONS",          Select_.net);
+        store_int (fout, "DISPLAY_TACTICAL_STATIONS",     Select_.tactical);
         store_int (fout, "DISPLAY_OLD_STATION_DATA",      Select_.old_data);
         store_int (fout, "DISPLAY_STATIONS",              Select_.stations);
         store_int (fout, "DISPLAY_FIXED_STATIONS",        Select_.fixed_stations);
@@ -1072,6 +1073,8 @@ void load_data_or_default(void) {
         Select_.via_digi = 1;
     if (!get_int ("DISPLAY_NET_STATIONS", &Select_.net, 0, 1, 1))
         Select_.net = 1;
+    if (!get_int ("DISPLAY_TACTICAL_STATIONS", &Select_.tactical, 0, 1, 0))
+        Select_.tactical = 0;
     if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 0))
         Select_.old_data = 0;
     if (!get_int ("DISPLAY_STATIONS", &Select_.stations, 0, 1, 1))

@@ -1857,6 +1857,11 @@ int ok_to_draw_station(DataRow *p_station) {
     if (Select_.none)
         return 0;
 
+    // Check tactical flag
+    if (Select_.tactical
+            && p_station->tactical_call_sign[0] == '\0')
+        return 0;
+
     // Check for my station and my objects/items
     if (strcmp(p_station->call_sign, my_callsign) == 0
         || (is_my_call(p_station->origin, 1)        // If station is owned by me
