@@ -7488,32 +7488,9 @@ static int alert_count;
  * alerts that are received.  Called from create_image()
  * and refresh_image().  This version of the function is
  * designed to use ESRI Shapefile map files.
+ * The base directory where the Shapefiles are located is
+ * passed to us in the "dir" variable.
  **********************************************************/
-void load_alert_maps (Widget w, char *dir) {
-    int i, level;
-    char alert_scan[400], *dir_ptr;
-
-    /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
-    unsigned char fill_color[] = { (unsigned char)0x69, (unsigned char)0x4a, (unsigned char)0x63, (unsigned char)0x66, (unsigned char)0x61, (unsigned char)0x64, (unsigned char)0x62 };
-
-    alert_count = MAX_ALERT - 1;
-
-    // Look for new message alerts, draw the map if a new alert has shown up.
-    if (alert_message_scan ()) {    // If we've found another wx alert in recent messages...
-        memset (alert_scan, 0, sizeof (alert_scan));
-        strncpy (alert_scan, dir, 390);
-        strcat (alert_scan, "/");   // Alert directory is now set up in the string
-        dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of dir string
-        for (i = 0; i < (int)strlen (alert_tag); i += 3) {  // Add pieces of alert_tag to the end
-            *dir_ptr = alert_tag[i];
-            *(dir_ptr + 1) = alert_tag[i + 1];
-
-printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_tag);
-//      Weather Alerts, alert_scan: /usr/local/xastir/Counties/MS    alert_tag: CO?MS?
-// From this it appears that alert_tag is a short-hand way of figuring out which
-// state directories to look in, and the '?' is telling whether or not the map might
-// be viewable currently.
-//
 // draw_map() fills in these fields in the alert structure:
 //   alert->filename
 //   alert->title
@@ -7540,6 +7517,37 @@ printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_ta
 //    char flags[16];
 //    char filename[64];
 //} alert_entry;
+
+
+void load_alert_maps (Widget w, char *dir) {
+    int i, level;
+    char alert_scan[400], *dir_ptr;
+
+    /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
+    unsigned char fill_color[] = { (unsigned char)0x69, (unsigned char)0x4a, (unsigned char)0x63, (unsigned char)0x66, (unsigned char)0x61, (unsigned char)0x64, (unsigned char)0x62 };
+
+    alert_count = MAX_ALERT - 1;
+
+    // Check for message alerts, draw the map if it hasn't expired yet
+    // and it's in our view.
+    if (alert_message_scan ()) {    // If we have _any_ weather alerts right now...
+        memset (alert_scan, 0, sizeof (alert_scan));    // Zero our string
+        strncpy (alert_scan, dir, 390); // Fetch the base directory
+        strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
+        dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of dir string
+
+        // Now run through the global alert_tag variable (3 chars per
+        // alert) and add the 2-character state abbreviation to the
+        // directory one by one to get the directory the alerts are in.
+        for (i = 0; i < (int)strlen (alert_tag); i += 3) {  // Add pieces of alert_tag to the end
+            *dir_ptr = alert_tag[i];
+            *(dir_ptr + 1) = alert_tag[i + 1];
+
+printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_tag);
+//      Weather Alerts, alert_scan: /usr/local/xastir/Counties/MS    alert_tag: CO?MS?
+// From this it appears that alert_tag is a short-hand way of figuring out which
+// state directories to look in, and the '?' is telling whether or not the map might
+// be viewable currently.
 
             // Need to figure out which type of alert it is, select the corresponding shapefile,
             // then store the shapefile AND the alert_tag in the alert_list[i].filename list?
@@ -7568,6 +7576,11 @@ printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_ta
         }
     }
 
+// Just for a test
+//draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
+draw_shapefile_map (w, dir, "c_16my01.shp", NULL, '\0', DRAW_TO_PIXMAP_ALERTS);
+
+ 
     if (!alert_count)
         XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
 
