@@ -369,8 +369,8 @@ lines):
   AC_DEFUN([XASTIR_DETECT_DEVICES],
   [
   AC_MSG_CHECKING([for devices])
-  ac_tnc_port=com1
-  ac_gps_port=com2
+  ac_tnc_port=/dev/ttyS0
+  ac_gps_port=/dev/ttyS1
   AC_DEFINE_UNQUOTED([TNC_PORT], "$ac_tnc_port", [Default TNC port.])
   AC_DEFINE_UNQUOTED([GPS_PORT], "$ac_gps_port", [Default GPS port.])
   AC_MSG_RESULT(found $ac_tnc_port and $ac_gps_port)

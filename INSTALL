@@ -792,10 +792,10 @@ First Time Install:
      crw-rw----    1 root     uucp       4,  64 Oct 19 08:15 ttyS0
      crw-rw----    1 root     uucp       4,  65 Apr 14  2001 ttyS1
 
-     (NOTE:  For a Windows/Cygwin installation, the ports of interest are
-     of the form "com1" and "com2" instead of "/dev/ttyS0" and "/dev/ttyS1".
-     Verify that the permissions of these ports are set appropriately for
-     a normal user to read and write to these devices.)
+     (NOTE:  For a Windows/Cygwin installation, a few details are different,
+     but the ttyS0 and ttyS1 keywords are the same.  Verify that the
+     permissions of these ports are set appropriately for a normal user to read
+     and write to these devices.)
 
      Solution #1:  The root user would run the commands necessary to add
      the Xastir user to the "uucp" group, which would then give the user
