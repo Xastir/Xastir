@@ -51,6 +51,7 @@ festival                        Optional  Speaking alerts
 libcurl or wget                 Optional  Internet images as maps
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 GDAL/OGR                        Optional  Many formats (coming soon)
+libdb (4.0 or newer)            Optional  Tigermap map caching (fast!)
 
 Installing only the required libs gives you these capabilities:
 
