@@ -4210,7 +4210,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
 
     if (devices[Database_port].connect_on_startup==1 || was_up) {
         (void)add_device(Database_port,
-            DEVICE_NET_STREAM,
+            DEVICE_NET_DATABASE,
             devices[Database_port].device_host_name,
             devices[Database_port].device_host_pswd,
             devices[Database_port].sp,
@@ -4224,7 +4224,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
     modify_device_list(0,0);
 
     /* add device type */
-    devices[Database_port].device_type=DEVICE_NET_STREAM;
+    devices[Database_port].device_type=DEVICE_NET_DATABASE;
 
     /* rebuild list */
     modify_device_list(2,0);
@@ -4519,6 +4519,390 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_Database" );
 
 
 
+//WE7U-AGWPE
+/*****************************************************/
+/* Configure AGWPE Server GUI                        */
+/*****************************************************/
+
+/**** AGWPE CONFIGURE ******/
+Widget config_AGWPE_dialog = (Widget)NULL;
+Widget AGWPE_active_on_startup;
+Widget AGWPE_host_data;
+Widget AGWPE_port_data;
+Widget AGWPE_password_data;
+Widget AGWPE_filter_data;
+Widget AGWPE_transmit_data;
+Widget AGWPE_reconnect_data;
+int    AGWPE_port;
+
+
+
+
+
+void AGWPE_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    config_AGWPE_dialog = (Widget)NULL;
+    if (choose_interface_dialog != NULL)
+        Choose_interface_destroy_shell(choose_interface_dialog,choose_interface_dialog,NULL);
+
+    choose_interface_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void AGWPE_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    int was_up;
+
+    busy_cursor(appshell);
+    was_up=0;
+    if (get_device_status(AGWPE_port) == DEVICE_IN_USE) {
+        /* if active shutdown before changes are made */
+        /*fprintf(stderr,"Device is up, shutting down\n");*/
+        (void)del_device(AGWPE_port);
+        was_up=1;
+    }
+
+begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
+
+    strcpy(devices[AGWPE_port].device_host_name,XmTextFieldGetString(AGWPE_host_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].device_host_name);
+    strcpy(devices[AGWPE_port].device_host_pswd,XmTextFieldGetString(AGWPE_password_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].device_host_pswd);
+    strcpy(devices[AGWPE_port].device_host_filter_string,XmTextFieldGetString(AGWPE_filter_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].device_host_filter_string);
+
+    devices[AGWPE_port].sp=atoi(XmTextFieldGetString(AGWPE_port_data));
+
+    if(XmToggleButtonGetState(AGWPE_active_on_startup))
+        devices[AGWPE_port].connect_on_startup=1;
+    else
+        devices[AGWPE_port].connect_on_startup=0;
+
+    if(XmToggleButtonGetState(AGWPE_transmit_data))
+        devices[AGWPE_port].transmit_data=1;
+    else
+        devices[AGWPE_port].transmit_data=0;
+
+    if(XmToggleButtonGetState(AGWPE_reconnect_data))
+        devices[AGWPE_port].reconnect=1;
+    else
+        devices[AGWPE_port].reconnect=0;
+
+    if (devices[AGWPE_port].connect_on_startup==1 || was_up) {
+        (void)add_device(AGWPE_port,
+            DEVICE_NET_AGWPE,
+            devices[AGWPE_port].device_host_name,
+            devices[AGWPE_port].device_host_pswd,
+            devices[AGWPE_port].sp,
+            0,
+            0,
+            devices[AGWPE_port].reconnect,
+            devices[AGWPE_port].device_host_filter_string);
+    }
+
+    /* delete list */
+    modify_device_list(0,0);
+
+    /* add device type */
+    devices[AGWPE_port].device_type=DEVICE_NET_AGWPE;
+
+    /* rebuild list */
+    modify_device_list(2,0);
+
+end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
+
+    AGWPE_destroy_shell(widget,clientData,callData);
+}
+
+
+
+
+
+void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
+    static Widget  pane, form, button_ok, button_cancel,
+                ihost, iport, password, password_fl, filter, sep;
+
+    Atom delw;
+    char temp[40];
+
+    if(!config_AGWPE_dialog) {
+        AGWPE_port=port;
+        config_AGWPE_dialog = XtVaCreatePopupShell(langcode("WPUPCFIA01"),xmDialogShellWidgetClass,Global.top,
+                                  XmNdeleteResponse,XmDESTROY,
+                                  XmNdefaultPosition, FALSE,
+                                  NULL);
+
+        pane = XtVaCreateWidget("Config_AGWPE pane",xmPanedWindowWidgetClass, config_AGWPE_dialog,
+                          XmNbackground, colors[0xff],
+                          NULL);
+
+        form =  XtVaCreateWidget("Config_AGWPE form",xmFormWidgetClass, pane,
+                            XmNfractionBase, 5,
+                            XmNbackground, colors[0xff],
+                            XmNautoUnmanage, FALSE,
+                            XmNshadowThickness, 1,
+                            NULL);
+
+        AGWPE_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_active_on_startup,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        ihost = XtVaCreateManagedWidget(langcode("WPUPCFIA02"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_transmit_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_host_data = XtVaCreateManagedWidget("Config_AGWPE host_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 30,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_transmit_data,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, ihost,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        iport = XtVaCreateManagedWidget(langcode("WPUPCFIA03"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget,AGWPE_transmit_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget,AGWPE_host_data,
+                                      XmNleftOffset, 20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_port_data = XtVaCreateManagedWidget("Config_AGWPE port_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 5,
+                                      XmNmaxLength, 6,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_transmit_data,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, iport,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset,10,
+                                      NULL);
+
+        password = XtVaCreateManagedWidget(langcode("WPUPCFIA09"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, ihost,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_password_data = XtVaCreateManagedWidget("Config_AGWPE password_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, FALSE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 5,
+                                      XmNmaxLength, 5,
+                                      XmNbackground, colors[0x0f],
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, password,
+                                      XmNleftOffset, 10,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, ihost,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        password_fl = XtVaCreateManagedWidget(langcode("WPUPCFIA10"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, ihost,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget,AGWPE_password_data,
+                                      XmNleftOffset,20,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        filter = XtVaCreateManagedWidget(langcode("WPUPCFIA15"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_filter_data = XtVaCreateManagedWidget("Config_AGWPE filter_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, FALSE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 30,
+                                      XmNmaxLength, 190,
+                                      XmNbackground, colors[0x0f],
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, filter,
+                                      XmNleftOffset, 10,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        AGWPE_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFIA11"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, filter,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        sep = XtVaCreateManagedWidget("Config_AGWPE sep", xmSeparatorGadgetClass,form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_reconnect_data,
+                                      XmNtopOffset, 14,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 1,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 2,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 3,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 4,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        XtAddCallback(button_ok, XmNactivateCallback, AGWPE_change_data, config_AGWPE_dialog);
+        XtAddCallback(button_cancel, XmNactivateCallback, AGWPE_destroy_shell, config_AGWPE_dialog);
+
+        pos_dialog(config_AGWPE_dialog);
+
+        delw = XmInternAtom(XtDisplay(config_AGWPE_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(config_AGWPE_dialog, delw, AGWPE_destroy_shell, (XtPointer)config_AGWPE_dialog);
+
+        if (config_type==0) {
+            /* first time port */
+            XmToggleButtonSetState(AGWPE_active_on_startup,TRUE,FALSE);
+            XmToggleButtonSetState(AGWPE_transmit_data,TRUE,FALSE);
+            //XmTextFieldSetString(AGWPE_host_data,"first.aprs.net");
+            XmTextFieldSetString(AGWPE_host_data,"localhost");
+            XmTextFieldSetString(AGWPE_port_data,"8000");
+
+            XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
+        } else {
+            /* reconfig */
+
+begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
+
+           if (devices[AGWPE_port].connect_on_startup)
+                XmToggleButtonSetState(AGWPE_active_on_startup,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(AGWPE_active_on_startup,FALSE,FALSE);
+
+            if (devices[AGWPE_port].transmit_data)
+                XmToggleButtonSetState(AGWPE_transmit_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(AGWPE_transmit_data,FALSE,FALSE);
+
+            XmTextFieldSetString(AGWPE_host_data,devices[AGWPE_port].device_host_name);
+            xastir_snprintf(temp, sizeof(temp), "%d", devices[AGWPE_port].sp);
+            XmTextFieldSetString(AGWPE_port_data,temp);
+            XmTextFieldSetString(AGWPE_password_data,devices[AGWPE_port].device_host_pswd);
+            XmTextFieldSetString(AGWPE_filter_data,devices[AGWPE_port].device_host_filter_string);
+
+            if (devices[AGWPE_port].reconnect)
+                XmToggleButtonSetState(AGWPE_reconnect_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
+
+end_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
+
+        }
+        XtManageChild(form);
+        XtManageChild(pane);
+
+        XtPopup(config_AGWPE_dialog,XtGrabNone);
+        fix_dialog_size(config_AGWPE_dialog);
+    } else {
+        (void)XRaiseWindow(XtDisplay(config_AGWPE_dialog), XtWindow(config_AGWPE_dialog));
+    }
+}
+
+
+
+
+
 /*****************************************************/
 /* Configure Interface GUI                           */
 /*****************************************************/
@@ -4550,7 +4934,11 @@ int are_shells_up(void) {
                             } else {
                                 if (config_Database_dialog) {
                                     (void)XRaiseWindow(XtDisplay(config_Database_dialog), XtWindow(config_Database_dialog));
-                                } else up=0;
+                                } else {
+                                    if (config_AGWPE_dialog) {
+                                        (void)XRaiseWindow(XtDisplay(config_AGWPE_dialog), XtWindow(config_AGWPE_dialog));
+                                    } else up=0;
+                                }
                             }
                         }
                     }
@@ -4621,15 +5009,10 @@ void modify_device_list(int option, int port) {
                     /* format list for device modify*/
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
-
                         case DEVICE_SERIAL_TNC_HSP_GPS:
-
                         case DEVICE_SERIAL_TNC_AUX_GPS:
-
                         case DEVICE_SERIAL_KISS_TNC:
-
                         case DEVICE_SERIAL_GPS:
-
                         case DEVICE_SERIAL_WX:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00000"), langcode("UNIOP00006"),
@@ -4639,12 +5022,10 @@ void modify_device_list(int option, int port) {
                             break;
 
                         case DEVICE_NET_DATABASE:
-
                         case DEVICE_NET_STREAM:
-
                         case DEVICE_NET_GPSD:
-
                         case DEVICE_NET_WX:
+                        case DEVICE_NET_AGWPE:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00001"), langcode("UNIOP00006"),
                                 i, dtype[devices[i].device_type].device_name,
@@ -4699,15 +5080,10 @@ void modify_device_list(int option, int port) {
                     }
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
-
                         case DEVICE_SERIAL_KISS_TNC:
-
                         case DEVICE_SERIAL_TNC_HSP_GPS:
-
                         case DEVICE_SERIAL_TNC_AUX_GPS:
-
                         case DEVICE_SERIAL_GPS:
-
                         case DEVICE_SERIAL_WX:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00003"), langcode("UNIOP00006"),
@@ -4717,12 +5093,10 @@ void modify_device_list(int option, int port) {
                             break;
 
                         case DEVICE_NET_DATABASE:
-
                         case DEVICE_NET_STREAM:
-
                         case DEVICE_NET_GPSD:
-
                         case DEVICE_NET_WX:
+                        case DEVICE_NET_AGWPE:
                             xastir_snprintf(temp, sizeof(temp),
                                 langcode("IFDIN00004"), langcode("UNIOP00006"),
                                 i, dtype[devices[i].device_type].device_name,
@@ -4890,6 +5264,13 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                         if (debug_level & 1)
                             fprintf(stderr,"ADD NET DATABASE\n");
                         Config_Database(w, 0, port);
+                        break;
+
+                    case DEVICE_NET_AGWPE:
+                        /* configure this port */
+                        if (debug_level & 1)
+                            fprintf(stderr,"ADD NET AGWPE\n");
+                        Config_AGWPE(w, 0, port);
                         break;
 
                     default:
@@ -5216,6 +5597,16 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                             if (debug_level & 1)
                                 fprintf(stderr,"Modify NET DATABASE\n");
                             Config_Database(w, 1, port);
+                            break;
+
+                        case DEVICE_NET_AGWPE:
+ 
+end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
+
+                            /* configure this port */
+                            if (debug_level & 1)
+                                fprintf(stderr,"Modify NET AGWPE\n");
+                            Config_AGWPE(w, 1, port);
                             break;
 
                         default:
@@ -5701,6 +6092,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
 
                 case DEVICE_NET_DATABASE:
                 case DEVICE_NET_STREAM:
+                case DEVICE_NET_AGWPE:
                     s='4';  // Select icon for status bar
                     break;
 

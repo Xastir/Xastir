@@ -523,6 +523,23 @@ WPUPCFID13|Diffusion de messages par le TNC lorsqu'en IGate?||
 WPUPCFID14|Archivage des transactions IGate?|||
 WPUPCFID15|Filter Parameters||
 #
+# PopUp "Configure AGWPE"
+WPUPCFIA01|Configure AGWPE (TBD)||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Port ||
+WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Leave Blank if None)||
+WPUPCFIA11|Reconnect on NET failure?||
+WPUPCFIA12|Run as an I-Gate?||
+WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
+WPUPCFIA14|Log I-Gate Transactions?||
+WPUPCFIA15|Filter Parameters||
+#
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Configurer alarmes sonores||
 WPUPCFA002|Commande audio à utiliser||
@@ -718,6 +735,7 @@ IFDNL00008|Météo par réseau||
 IFDNL00009|TNC série + GPS sur câble AUX||
 IFDNL00010|Serial KISS TNC||
 IFDNL00011|Networked Database (Not Implemented Yet)||
+IFDNL00012|Networked AGWPE (Not Implemented Yet)||
 #
 # Interface device info 
 IFDIN00000|%s %d %s sur port série %s||

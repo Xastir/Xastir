@@ -528,6 +528,23 @@ WPUPCFID13|Bij I-Gate Berichten verspreiden via TNC?||
 WPUPCFID14|I-Gate Transacties Loggen?|||
 WPUPCFID15|Filter Parameters||
 #
+# PopUp "Configure AGWPE"
+WPUPCFIA01|Configure AGWPE (TBD)||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Port ||
+WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Leave Blank if None)||
+WPUPCFIA11|Reconnect on NET failure?||
+WPUPCFIA12|Run as an I-Gate?||
+WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
+WPUPCFIA14|Log I-Gate Transactions?||
+WPUPCFIA15|Filter Parameters||
+#
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Audio Alarm Instellen||
 WPUPCFA002|Audio Afspeel Commando||
@@ -723,6 +740,7 @@ IFDNL00008|Netwerk WX||
 IFDNL00009|Serieele TNC met GPS op een AUX kabel||
 IFDNL00010|Serieele KISS TNC||
 IFDNL00011|Networked Database (Not Implemented Yet)||
+IFDNL00012|Networked AGWPE (Not Implemented Yet)||
 #
 # Interface device info
 IFDIN00000|%s %d %s via serieel device %s||
