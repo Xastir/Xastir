@@ -1639,7 +1639,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             if (data[36]!='-') {
                 substr(temp_data1,(char *)(data+36),4);
                 xastir_snprintf(wx_three_hour_baro, sizeof(wx_three_hour_baro), "%0.2f",
-                        (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/100.0/3.38639);
+//                        (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/100.0/3.38639);
+// Fix by Matt Werner, kb0kqa.  Testing it.
+                          (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0);
+ 
                 wx_three_hour_baro_on = 1;
             }
 
