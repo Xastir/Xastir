@@ -307,6 +307,10 @@ Getting Maps and other Data Files for Xastir:
       For more detailed documentation, see the shpproj.txt file in the
       "<shapelib source directory>/contrib/doc" directory.
 
+      There's a resource for looking up the FIPS codes for a particular
+      area:
+
+            http://www.aprs.net/fips/
 
       An important note about shpproj from Tom Russo, KM5VY:
 
