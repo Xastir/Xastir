@@ -245,7 +245,7 @@ and GNIS maps by default.  For additional types of maps, you'll need
 to install some libraries, then recompile Xastir so that it knows to
 use them.  See the instructions below.
 
-The README.1ST file has instructions for where to get maps and where
+The README.MAPS file has instructions for where to get maps and where
 to put them under the Xastir heirarchy. 
 
 What Xastir paths look like from within Windows (in case you're
@@ -281,7 +281,7 @@ Note that one user running Cygwin on XP had it crash every time his
 screensaver kicked in.  Disabling the screenserver fixed that
 problem.
 
-Please see the README.1ST file and the Help menu in Xastir itself
+Please see the INSTALL file and the Help menu in Xastir itself
 for additional information not mentioned in this document.
 
 
@@ -370,7 +370,7 @@ The installed copy of Xastir should now have Shapelib support.  You
 can download NOAA weather alert maps and many other sorts of maps,
 and Xastir will recognize and use them.  Note that weather alert
 shapefiles must go into the /usr/local/xastir/Counties directory.
-See the README.1ST file for where to get the maps.
+See the README.MAPS file for where to get the maps.
 
 
 

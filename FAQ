@@ -297,7 +297,7 @@ The Answers
     Xastir uses many shared libraries, including lesstif, and perhaps libax25,
     libproj, libtiff, libgeotiff, libz, libjpeg, etc. These errors indicate
     ld.so, the Linux dynamic linker, can't find the shared libraries.
-    * First, check that all the libraries are installed. Check the README.1ST
+    * First, check that all the libraries are installed. Check the INSTALL
     file for the locations to get these libraries if you've accidently removed
     one of them.
     * Check that the locations of the libraries are in /etc/ld.so.conf. This
@@ -319,10 +319,10 @@ The Answers
          "Hard Fail" error on the interface. There is a "permission denied"
          error in the terminal from which I started Xastir.
 
-    As mentioned in the README.1ST and helpfile, Xastir must be setuid root
-    to use Linux ax25. This is required because Xastir needs the ability to
-    edit its source callsign, and use other advanced options that the Linux
-    ax25 stack restricts to root.
+    As mentioned in INSTALL and helpfile, Xastir must be setuid root to use
+    Linux ax25. This is required because Xastir needs the ability to edit its
+    source callsign, and use other advanced options that the Linux ax25 stack
+    restricts to root.
 
     4.4 I run Xastir, and get on the air, but nobody else sees me on their
         screens.
@@ -346,7 +346,7 @@ The Answers
 
     Did you set up your TNC startup files correctly to remove any extra data
     from the packet headers? Are you using the correct startup file?  See
-    README.1ST.
+    INSTALL.
 
     Check that the Display Incoming Data windows is actually showing
     data coming in.  If not, check your radio's volume/squelch
@@ -399,7 +399,7 @@ The Answers
     4.7 When weather alerts come in, the counties on my map don't highlight.
 
     First of all, did you download and install the new shapefile weather maps
-    as described in the README.1ST? Did you compile with shapefile support?
+    as described in the INSTALL file? Did you compile with shapefile support?
 
     Second, check that Map|Map WX Alert Counties is turned on.
 
@@ -408,7 +408,7 @@ The Answers
         the right place.
 
     Did you install libgeotiff before libproj? This error you'll see if you
-    ignored the note in the README.1ST about this. Recompile libgeotiff and
+    ignored the note in the INSTALL file about this. Recompile libgeotiff and
     the problem should vanish.
     If this is not the case, check the datum of the geoTIFF file, and make
     sure it is one of the ones supported by Xastir. The listgeo program
@@ -424,7 +424,7 @@ The Answers
     performance problems; generally these are limitations of your computer.
     Xastir, when using only basic maps, runs reasonably on a Pentium 60. If
     you use higher detail maps, such as the tiger line maps suggested in
-    README.1ST, you'll need a faster computer to be able to load the maps
+    README.MAPS, you'll need a faster computer to be able to load the maps
     quickly. Also be sure you have a few Megabytes of memory available for
     Xastir, because paging to disk decreases speed rapidly. If you have the
     Internet interface, as well as TNCs and weather stations all active
