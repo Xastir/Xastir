@@ -734,36 +734,44 @@ void draw_grid(Widget w) {
         // Vertical lines:
 
         // Draw the vertical vectors (except for the irregular
-        // regions and the prime meridian)
+        // regions and the prime meridian).  The polar areas only
+        // have two zones each, so we don't want to draw through
+        // those areas.
         for (i = -180; i < 0; i += 6) {
-            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
         for (i = 42; i <= 180; i += 6) {
-            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
  
-        // Draw the partial vectors from 90S to the irregular region
-        draw_vector_ll(w, -90.0,  6.0, 56.0,  6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0, 12.0, 72.0, 12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0, 18.0, 72.0, 18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0, 24.0, 72.0, 24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0, 30.0, 72.0, 30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0, 36.0, 72.0, 36.0, gc_tint, pixmap_final);
+        // Draw the partial vectors from 80S to the irregular region
+        draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final);
 
         // Draw the short vertical vectors in the irregular region 
-        draw_vector_ll(w,  56.0,  3.0, 64.0,  3.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  64.0,  6.0, 72.0,  6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,  9.0, 84.0,  9.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0, 21.0, 84.0, 21.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0, 33.0, 84.0, 33.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final);
 
         // Draw the short vertical vectors above the irregular region 
-        draw_vector_ll(w,  84.0,  6.0, 90.0,  6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, 12.0, 90.0, 12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, 18.0, 90.0, 18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, 24.0, 90.0, 24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, 30.0, 90.0, 30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, 36.0, 90.0, 36.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
+
+        // Now draw the short vertical vectors in the polar regions
+        draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
 
 
         // Horizontal lines:
