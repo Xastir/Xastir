@@ -128,6 +128,8 @@ struct FtpFile {
 #include "color.h"
 #include "xa_config.h"
 
+#define GRID_MORE 5000
+
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 
@@ -172,14 +174,117 @@ int npoints;    /* number of points in a line */
 float geotiff_map_intensity = 0.65;    // Geotiff map color intensity, set from Maps->Geotiff Map Intensity
 float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma correction, set from Maps->Adjust Gamma
 
+
 // Storage for the index file timestamp
 time_t map_index_timestamp;
 
 int grid_size = 0;
 
+
+
+// UTM Grid stuff
+inline int  max_i(int  a, int  b) { return (a > b ? a : b); }
+#define UTM_GRID_EQUATOR 10000000
+#define UTM_GRID_MAX_ZONES      4
+#define UTM_GRID_MAX_COLS_ROWS 64
+#define UTM_GRID_DEF_NALLOCED   8
+#define UTM_GRID_RC_EMPTY  0xffff
+
+typedef struct {
+    long ul_x;
+    long ul_y;
+    long lr_x;
+    long lr_y;
+} hash_t;
+
+typedef struct {
+    unsigned int firstpoint;
+    unsigned int npoints;
+    unsigned int nalloced;
+    XPoint *point;
+} col_or_row_t;
+
+typedef struct {
+    unsigned int ncols;
+    col_or_row_t col[UTM_GRID_MAX_COLS_ROWS];
+    unsigned int nrows;
+    col_or_row_t row[UTM_GRID_MAX_COLS_ROWS];
+    int          boundary_x;
+} zone_t;
+
+typedef struct {
+    hash_t       hash;
+    unsigned int nzones;
+    zone_t       zone[UTM_GRID_MAX_ZONES];
+} utm_grid_t;
+
+utm_grid_t utm_grid;
+
+unsigned int utm_grid_spacing_m;
+// ^ the above is extern'ed in maps.h for use by draw_ruler_text in
+// db.c
+
+
+
+
+
+int utm_grid_clear(int do_alloc)
+{
+    int i, j;
+
+    utm_grid.hash.ul_x = 0;
+    utm_grid.hash.ul_y = 0;
+    utm_grid.hash.lr_x = 0;
+    utm_grid.hash.lr_y = 0;
+    utm_grid.nzones    = 0;
+    for (i=0; i < UTM_GRID_MAX_ZONES; i++) {
+        utm_grid.zone[i].ncols = utm_grid.zone[i].nrows = 0;
+        utm_grid.zone[i].boundary_x = 0;
+        for (j=0; j < UTM_GRID_MAX_COLS_ROWS; j++) {
+            utm_grid.zone[i].col[j].firstpoint = UTM_GRID_RC_EMPTY;
+            utm_grid.zone[i].col[j].npoints    = 0;
+            utm_grid.zone[i].col[j].nalloced   = 0;
+            free(utm_grid.zone[i].col[j].point);
+            utm_grid.zone[i].col[j].point = NULL;
+            if (do_alloc) {
+                utm_grid.zone[i].col[j].point = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
+                if (!utm_grid.zone[i].col[j].point) {
+                    fprintf(stderr,"calloc(%d, %d) for z=%d col=%d FAILED!\n",
+                           UTM_GRID_DEF_NALLOCED, sizeof(XPoint), i, j);
+//                    abort();  // Causes a segfault
+                    return(1);
+                }
+                utm_grid.zone[i].col[j].nalloced = UTM_GRID_DEF_NALLOCED;
+            }
+
+            utm_grid.zone[i].row[j].firstpoint = UTM_GRID_RC_EMPTY;
+            utm_grid.zone[i].row[j].npoints    = 0;
+            utm_grid.zone[i].row[j].nalloced   = 0;
+            free(utm_grid.zone[i].row[j].point);
+            utm_grid.zone[i].row[j].point = NULL;
+            if (do_alloc) {
+                utm_grid.zone[i].row[j].point = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
+                if (!utm_grid.zone[i].row[j].point) {
+                    fprintf(stderr,"calloc(%d, %d) for z=%d row=%d FAILED!\n",
+                           UTM_GRID_DEF_NALLOCED, sizeof(XPoint), i, j);
+//                    abort();  // Causes a segfault
+                    return(1);
+                }
+                utm_grid.zone[i].row[j].nalloced = UTM_GRID_DEF_NALLOCED;
+            }
+        }
+    }
+    return(0);
+}
+
+
+
+
+
 void maps_init(void)
 {
     init_critical_section( &print_properties_dialog_lock );
+    (void)utm_grid_clear(0);
 }
 
 
@@ -212,6 +317,9 @@ double calc_dscale_x(long x, long y) {
     // we should find a better formula...
     return(calc_distance(y, x-3000, y, x+3000)/6000.0);
 }
+
+
+
 
 
 /*
@@ -425,6 +533,7 @@ void draw_vector(Widget w,
 // We should truncate the line along the line, instead of changing
 // the endpoint.  The way we're doing it here is easier/faster, but
 // it changes the slope of the line.  Not accurate.
+// This method does keep us from exercising an X11 bug though.
 
     if (x1i >  16000) x1i =  10000;
     if (x1i < -16000) x1i = -10000;
@@ -486,12 +595,646 @@ void draw_vector_ll(Widget w,
 
 
 
-/**********************************************************
- * draw_grid()
+//#define UT_DEBUG
+//#define UT_DEBUG_VERB
+//#define UT_DEBUG_ALLOC
+//*****************************************************************
+// draw_grid()
+//
+// Draws a lat/lon or UTM grid on top of the view.
+//
+// This routine appears to draw most of the UTM grid ok, with the
+// exceptions of:
+//
+// 1) Doesn't handle the irregular zones near/above Norway for the
+// smaller grid.
+// 2) Sometimes fails to draw lines near zone boundaries.
+// 3) Lines connect across zone boundaries in an incorrect manner.
+//
+//
+// UTM NOTES:  84 degrees North to 80 degrees South. 60 zones, each
+// covering six (6) degrees of longitude. Each zone extends three
+// degrees eastward and three degrees westward from its central
+// meridian.  Zones are numbered consecutively west to east from the
+// 180 degree meridian. From 84 degrees North and 80 degrees South
+// to the respective poles, the Universal Polar Stereographic (UPS)
+// is used.
+//
+// NEED TO ACCOMMODATE THIS:
+// -------------------------
+// UTM Zone 32 has been widened to 9° (at the expense of zone 31)
+// between latitudes 56° and 64° (band V) to accommodate southwest
+// Norway. Thus zone 32 extends westwards to 3°E in the North Sea.
+// Similarly, between 72° and 84° (band X), zones 33 and 35 have
+// been widened to 12° to accommodate Svalbard. To compensate for
+// these 12° wide zones, zones 31 and 37 are widened to 9° and zones
+// 32, 34, and 36 are eliminated. Thus the W and E boundaries of
+// zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33 -
+// 42 E.
+//
+// Draw labels for each UTM zone?
+//
+// Horizontal lines corresponding to the lettered NATO UTM subzones:
+// Zones go from A (south pole) to Z (north pole).  South of -80 are
+// zones A/B, north of +84 are zones Y/Z.  "I" and "O" are not used.
+// Zones from C to W are 8 degrees high.  Zone X is 12 degrees high.
+// UPS system is used at the poles instead of UTM.  An arbitrary
+// false northing of 10,000,000 at the equator is used for southern
+// latitudes only.  Northern latitudes assume the equator northing
+// is at zero.  An arbitrary false easting of 500,000 is along the
+// meridian of each zone (3 degrees from each side).  The lettered
+// grid lines are necessary due to some coordinates being valid in
+// both the northern and the southern hemisphere.
+//
+// Y/Z  84N to 90N (UPS System)
+// X    72N to 84N (12 degrees latitude, equator=0)
+// W    64N to 72N ( 8 degrees latitude, equator=0)
+// V    56N to 64N ( 8 degrees latitude, equator=0)
+// U    48N to 56N ( 8 degrees latitude, equator=0)
+// T    40N to 48N ( 8 degrees latitude, equator=0)
+// S    32N to 40N ( 8 degrees latitude, equator=0)
+// R    24N to 32N ( 8 degrees latitude, equator=0)
+// Q    16N to 24N ( 8 degrees latitude, equator=0)
+// P     8N to 16N ( 8 degrees latitude, equator=0)
+// N     0N to  8N ( 8 degrees latitude, equator=0)
+// M     0S to  8S ( 8 degrees latitude, equator=10,000,000)
+// L     8S to 16S ( 8 degrees latitude, equator=10,000,000)
+// K    16S to 24S ( 8 degrees latitude, equator=10,000,000)
+// J    24S to 32S ( 8 degrees latitude, equator=10,000,000)
+// H    32S to 40S ( 8 degrees latitude, equator=10,000,000)
+// G    40S to 48S ( 8 degrees latitude, equator=10,000,000)
+// F    48S to 56S ( 8 degrees latitude, equator=10,000,000)
+// E    56S to 64S ( 8 degrees latitude, equator=10,000,000)
+// D    64S to 72S ( 8 degrees latitude, equator=10,000,000)
+// C    72S to 80S ( 8 degrees latitude, equator=10,000,000)
+// A/B  80S to 90S (UPS System)
+// 
+//*****************************************************************
+void draw_grid(Widget w) {
+    int coord;
+    unsigned char dash[2];
+    int i, j;
+    char place_str[10], zone_str[10];
+    long xx, yy, xx1, yy1;
+    int done, zone_changed, z1, z2, zone, col, col_point, row, row_point, row_point_start;
+    double e[4], n[4];
+    float slope;
+
+    if (!long_lat_grid)
+        return;
+
+    i=j=done=zone_changed=z1=z2=zone=col=col_point=row=row_point=row_point_start = 0;
+
+    /* Set the line width in the GC */
+    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+    (void)XSetForeground (XtDisplay (w), gc, colors[0x08]); // Black
+
+    if (coordinate_system == USE_UTM) {
+
+        // This part of the code handles the irregular zones
+        // near/above Norway just fine.
+
+        // Vertical lines:
+
+        // Draw the vertical vectors (except for the irregular regions)
+        for (i = -180; i <= 0; i += 6) {
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc, pixmap_final);
+        }
+        for (i = 42; i <= 180; i += 6) {
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc, pixmap_final);
+        }
+
+        // Draw the partial vectors from 80S to the irregular region
+        draw_vector_ll(w, -80.0,  6.0, 56.0,  6.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 12.0, 72.0, 12.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 18.0, 72.0, 18.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 24.0, 72.0, 24.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 30.0, 72.0, 30.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 36.0, 72.0, 36.0, gc, pixmap_final);
+
+        // Draw the short vertical vectors in the irregular region 
+        draw_vector_ll(w,  56.0,  3.0, 64.0,  3.0, gc, pixmap_final);
+        draw_vector_ll(w,  64.0,  6.0, 72.0,  6.0, gc, pixmap_final);
+        draw_vector_ll(w,  72.0,  9.0, 84.0,  9.0, gc, pixmap_final);
+        draw_vector_ll(w,  72.0, 21.0, 84.0, 21.0, gc, pixmap_final);
+        draw_vector_ll(w,  72.0, 33.0, 84.0, 33.0, gc, pixmap_final);
+
+
+        // Horizontal lines:
+
+        // Draw the 8 degree spaced lines 
+        for (i = -80; i <= 72; i += 8) {
+            draw_vector_ll(w, (float)i,  -180.0, (float)i,  180.0, gc, pixmap_final);
+        }
+
+        // Draw the one 12 degree spaced line
+        draw_vector_ll(w,  84.0, -180.0, 84.0, 180.0, gc, pixmap_final);
+
+
+
+
+//WE7U
+// The below code does NOT handle the irregular zones properly.  It
+// assumes regular 6 degree zones everywhere.  The irregular zones
+// have sizes of 3/9/12 degrees (width) instead of 6 degrees.
+
+
+        // Now setup for drawing zone grid(s)
+        if (scale_x < 15)
+            utm_grid_spacing_m =    100;
+        else if (scale_x < 150)
+            utm_grid_spacing_m =   1000;
+        else if (scale_x < 1500)
+            utm_grid_spacing_m =  10000;
+        else if (scale_x < 5000)
+            utm_grid_spacing_m = 100000;
+        else {
+            utm_grid_spacing_m = 0;
+            goto utm_grid_dont_draw;
+        }
+
+        // Check hash to see if utm_grid is already set up
+        if (utm_grid.hash.ul_x == x_long_offset &&
+            utm_grid.hash.ul_y == y_lat_offset &&
+            utm_grid.hash.lr_x == x_long_offset + (screen_width  * scale_x) &&
+            utm_grid.hash.lr_y == y_lat_offset  + (screen_height * scale_y)) {
+            goto utm_grid_draw; // XPoint arrays already set up
+        }
+
+        if (utm_grid_clear(1))  // Had a problem
+            return;
+
+        // Go find top left point
+        xx = x_long_offset;
+        yy = y_lat_offset;
+        convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
+        n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
+
+        e[0] /= utm_grid_spacing_m;
+        e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
+        n[0] /= utm_grid_spacing_m;
+        n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
+        n[0] += utm_grid_spacing_m;
+
+        e[1] = e[0];
+        n[1] = n[0];
+
+        while (done < 2) { // 1=done with a zone, 2=completely done
+            if (done == 1) {
+                xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
+                yy = y_lat_offset;
+                convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
+                n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
+
+                e[0] /= utm_grid_spacing_m;
+                e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
+                e[0] += utm_grid_spacing_m;
+                n[0] /= utm_grid_spacing_m;
+                n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
+                n[0] += utm_grid_spacing_m;
+
+                e[1] = e[0];
+                n[1] = n[0];
+
+                zone++;
+
+#ifdef UT_DEBUG
+                fprintf(stderr,"\nstarting zone=%d, row_point_start=1\n", zone);
+#endif
+
+                row_point = row_point_start = 1;
+                col = row = col_point = 0;
+                done = 0;
+
+                if (zone >= UTM_GRID_MAX_ZONES) {
+                    fprintf(stderr,"zone=%d: out of zones!\n", zone);
+                    zone = 0;
+                    done = 2;
+                    continue;
+                }
+
+#ifdef UT_DEBUG
+                fprintf(stderr,"\nstarting zone=%d z=%s\n", zone, place_str);
+#endif
+            }
+
+            convert_UTM_to_xastir(e[1], n[1]-UTM_GRID_EQUATOR, place_str, &xx, &yy);
+            xx1 = xx; // Save
+            yy1 = yy; // Save
+            convert_xastir_to_UTM(&e[2], &n[2], zone_str, sizeof(zone_str), xx, yy);
+            n[2] += UTM_GRID_EQUATOR;
+            xx = (xx - x_long_offset) / scale_x;
+            yy = (yy - y_lat_offset)  / scale_y;
+
+            // Not all columns (and maybe rows) will start at point
+            // 0
+            if (utm_grid.zone[zone].col[col].firstpoint == UTM_GRID_RC_EMPTY) {
+                utm_grid.zone[zone].col[col].firstpoint = col_point;
+#ifdef UT_DEBUG
+                fprintf(stderr,"col[%d] started at point %d\n", col, col_point);
+#endif
+            }
+            if (utm_grid.zone[zone].row[row].firstpoint == UTM_GRID_RC_EMPTY) {
+                utm_grid.zone[zone].row[row].firstpoint = row_point;
+#ifdef UT_DEBUG
+                fprintf(stderr,"row[%d] started at point %d\n", row, row_point);
+#endif
+            }
+
+            // Check to see if we need to alloc more space for
+            // column points
+            i = utm_grid.zone[zone].col[col].npoints +
+                utm_grid.zone[zone].col[col].firstpoint + 1;
+            if (i > utm_grid.zone[zone].col[col].nalloced) {
+#ifdef UT_DEBUG_ALLOC
+                fprintf(stderr,"i=%d n=%d realloc(utm_grid.zone[%d].col[%d].point, ",
+                       i, utm_grid.zone[zone].col[col].nalloced, zone, col);
+#endif
+                i = ((i / UTM_GRID_DEF_NALLOCED) + 1) * UTM_GRID_DEF_NALLOCED;
+#ifdef UT_DEBUG_ALLOC
+                fprintf(stderr,"%d)\n", i);
+#endif
+                utm_grid.zone[zone].col[col].point = realloc(utm_grid.zone[zone].col[col].point,
+                                                             i * sizeof(XPoint));
+                utm_grid.zone[zone].col[col].nalloced = i;
+                if (!utm_grid.zone[zone].col[col].point) {
+                    puts("realloc FAILED!");
+                    (void)utm_grid_clear(0);
+                    return;
+                }
+            }
+
+            // Check to see if we need to alloc more space for row
+            // points
+            i = utm_grid.zone[zone].row[row].npoints +
+                utm_grid.zone[zone].row[row].firstpoint + 1;
+            if (i > utm_grid.zone[zone].row[row].nalloced) {
+#ifdef UT_DEBUG_ALLOC
+                fprintf(stderr,"i=%d n=%d realloc(utm_grid.zone[%d].row[%d].point, ",
+                       i, utm_grid.zone[zone].row[row].nalloced, zone, row);
+#endif
+                i = ((i / UTM_GRID_DEF_NALLOCED) + 1) * UTM_GRID_DEF_NALLOCED;
+#ifdef UT_DEBUG_ALLOC
+                fprintf(stderr,"%d)\n", i);
+#endif
+                utm_grid.zone[zone].row[row].point = realloc(utm_grid.zone[zone].row[row].point,
+                                                             i * sizeof(XPoint));
+                utm_grid.zone[zone].row[row].nalloced = i;
+                if (!utm_grid.zone[zone].row[row].point) {
+                    puts("realloc FAILED!");
+                    (void)utm_grid_clear(0);
+                    return;
+                }
+            }
+
+            utm_grid.zone[zone].col[col].point[col_point].x = xx;
+            utm_grid.zone[zone].col[col].point[col_point].y = yy;
+            utm_grid.zone[zone].col[col].npoints++;
+            utm_grid.zone[zone].row[row].point[row_point].x = xx;
+            utm_grid.zone[zone].row[row].point[row_point].y = yy;
+            utm_grid.zone[zone].row[row].npoints++;
+
+#ifdef UT_DEBUG
+            fprintf(stderr,"utm_grid.zone[%d].col[%d].point[%d] = [ %ld,%ld ] npoints=%d\n",
+                   zone, col, col_point, xx, yy, utm_grid.zone[zone].col[col].npoints);
+            fprintf(stderr,"utm_grid.zone[%d].row[%d].point[%d] = [ %ld,%ld ]\n",
+                   zone, row, row_point, xx, yy);
+#endif
+            col++;
+            row_point++;
+            if (col >= UTM_GRID_MAX_COLS_ROWS)
+                done = 1;
+
+            z1 = atoi(place_str);
+            z2 = atoi(zone_str);
+            if (z1 != z2 || xx > screen_width) { // We hit a boundary
+#ifdef UT_DEBUG_VERB
+                if (z1 != z2)
+                    fprintf(stderr,"Zone boundary! %s -> %s\n", place_str, zone_str);
+                else
+                    puts("Screen boundary!");
+#endif
+#warning 'I suspect that I should not use just col for the following'
+                if (col-2 >= 0)
+                    slope = (float)(yy - utm_grid.zone[zone].col[col-2].point[col_point].y) /
+                        (float)(xx - utm_grid.zone[zone].col[col-2].point[col_point].x + 0.001);
+                else
+                    slope = 0.0;
+
+                if (xx > screen_width)
+                    xx1 = screen_width;
+                else {
+                    xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
+                    xx1 = (xx1 - x_long_offset) / scale_x;
+                }
+                utm_grid.zone[zone].boundary_x = xx1;
+                yy1 = yy - (xx - xx1) * slope;
+#ifdef UT_DEBUG
+                fprintf(stderr,"_tm_grid.zone[%d].col[%d].point[%d] =  [ %ld,%ld ]\n",
+                       zone, col-1, col_point, xx1, yy1);
+                fprintf(stderr,"_tm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
+                       zone, row, row_point-1, xx1, yy1);
+#endif
+                if (col-1 >= 0 && row_point-1 >= 0) {
+                    utm_grid.zone[zone].col[col-1].point[col_point].x = xx1;
+                    utm_grid.zone[zone].col[col-1].point[col_point].y = yy1;
+                    utm_grid.zone[zone].row[row].point[row_point-1].x = xx1;
+                    utm_grid.zone[zone].row[row].point[row_point-1].y = yy1;
+                    if (z1 != z2 && zone+1 < UTM_GRID_MAX_ZONES) {
+                        // copy over last points to start off new
+                        // zone
+
+#ifdef UT_DEBUG
+                        fprintf(stderr,"ztm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
+                               zone+1, row, 0, xx1, yy1);
+#endif
+
+                        utm_grid.zone[zone+1].row[row].point[0].x = xx1;
+                        utm_grid.zone[zone+1].row[row].point[0].y = yy1;
+                        utm_grid.zone[zone+1].row[row].firstpoint = 0;
+                        utm_grid.zone[zone+1].row[row].npoints    = 1;
+                    }
+                }
+
+                // Check last built row to see if it is all off
+                // screen
+                done = 1;
+                for (i=0; i < utm_grid.zone[zone].row[row].npoints; i++) {
+                    if (utm_grid.zone[zone].row[row].point[i].y <= screen_height)
+                        done = 0;
+                }
+
+                e[1]  = e[0];               // carriage return
+                n[1] -= utm_grid_spacing_m; // line feed
+                row++;
+                if (row >= UTM_GRID_MAX_COLS_ROWS)
+                    done = 1;
+
+                utm_grid.zone[zone].ncols = max_i(col, utm_grid.zone[zone].ncols);
+                utm_grid.zone[zone].nrows = max_i(row, utm_grid.zone[zone].nrows);
+                col = 0;
+                row_point = row_point_start;
+                col_point++;
+
+                if (n[1] < 0) {
+                    fprintf(stderr,"n[1] < 0\n");
+                    done = 1;
+                }
+
+                if (done == 1 && xx > screen_width)
+                    done = 2;
+
+                continue; // skip the next statement
+            }
+            e[1] += utm_grid_spacing_m;
+        }
+
+//#define UT_DEBUG_VERB
+        for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
+#ifdef UT_DEBUG_VERB
+            fprintf(stderr,"\nutm_grid.zone[%d].ncols=%d\nutm_grid.zone[%d].nrows=%d\n",
+                   zone, utm_grid.zone[zone].ncols, zone, utm_grid.zone[zone].nrows);
+#endif
+
+            // Cleanup columns
+            for (i=0; i < utm_grid.zone[zone].ncols; i++) {
+                int np = utm_grid.zone[zone].col[i].npoints;
+                int fp = utm_grid.zone[zone].col[i].firstpoint;
+                int nbp = 0;
+#ifdef UT_DEBUG_VERB
+                fprintf(stderr,"utm_grid.zone[%d].col[%d].npoints=%d .firstpoint=%d",
+                       zone, i, np, fp);
+                if (np < 2)
+                    puts(" Not enough points!");
+                else
+                    puts("");
+
+                for (j=fp; j < fp+np; j++) {
+                    fprintf(stderr,"         col[%d].point[%d] = [ %d, %d ]", i, j,
+                           utm_grid.zone[zone].col[i].point[j].x,
+                           utm_grid.zone[zone].col[i].point[j].y);
+                    if (utm_grid.zone[zone].col[i].point[j].x ==
+                        utm_grid.zone[zone].boundary_x)
+                        puts(" Boundary");
+                    else
+                        puts("");
+                }
+#endif
+                for (j=fp; j < fp+np; j++) {
+                    if (utm_grid.zone[zone].col[i].point[j].x ==
+                        utm_grid.zone[zone].boundary_x)
+                        nbp++;
+                    else if (nbp > 0) { // We had a boundary point, but not anymore
+                        fp = utm_grid.zone[zone].col[i].firstpoint = j - 1;
+                        np = utm_grid.zone[zone].col[i].npoints    = np - j + 1;
+                        break;
+                    }
+                    if (nbp == np) { // All points are boundary points
+                        fp = utm_grid.zone[zone].col[i].firstpoint = 0;
+                        np = utm_grid.zone[zone].col[i].npoints    = 0;
+                    }
+                }
+
+                if (fp > 0) {
+                    memmove(&utm_grid.zone[zone].col[i].point[0],
+                            &utm_grid.zone[zone].col[i].point[fp], np * sizeof(XPoint));
+                    fp = utm_grid.zone[zone].col[i].firstpoint = 0;
+                }
+#ifdef UT_DEBUG_VERB
+                fprintf(stderr,"_tm_grid.zone[%d].col[%d].npoints=%d.firstpoint=%d\n",
+                       zone, i, np, fp);
+                for (j=fp; j < fp+np; j++) {
+                    fprintf(stderr,"         col[%d].point[%d] = [ %d, %d ]", i, j,
+                           utm_grid.zone[zone].col[i].point[j].x,
+                           utm_grid.zone[zone].col[i].point[j].y);
+                    if (utm_grid.zone[zone].col[i].point[j].x ==
+                        utm_grid.zone[zone].boundary_x)
+                        puts(" Boundary");
+                    else
+                        puts("");
+                }
+                puts("");
+#endif
+            }
+
+            // Cleanup rows
+            for (i=0; i < utm_grid.zone[zone].nrows; i++) {
+                int np = utm_grid.zone[zone].row[i].npoints;
+                int fp = utm_grid.zone[zone].row[i].firstpoint;
+#ifdef UT_DEBUG_VERB
+                fprintf(stderr,"utm_grid.zone[%d].row[%d].npoints=%d.firstpoint=%d",
+                       zone, i, np, fp);
+                if (np < 2)
+                    puts(" Not enough points!");
+                else
+                    puts("");
+#endif
+                if (fp > 0) {
+                    memmove(&utm_grid.zone[zone].row[i].point[0],
+                            &utm_grid.zone[zone].row[i].point[fp], np * sizeof(XPoint));
+                    fp = utm_grid.zone[zone].row[i].firstpoint = 0;
+                }
+#ifdef UT_DEBUG_VERB
+                for (j=fp; j < fp+np; j++) {
+                    fprintf(stderr,"         row[%d].point[%d] = [ %d, %d ]\n", i, j,
+                           utm_grid.zone[zone].row[i].point[j].x,
+                           utm_grid.zone[zone].row[i].point[j].y);
+                }
+#endif
+            }
+        }
+
+        // Rows and columns ready to go so setup hash
+        utm_grid.hash.ul_x = x_long_offset;
+        utm_grid.hash.ul_y = y_lat_offset;
+        utm_grid.hash.lr_x = x_long_offset + (screen_width  * scale_x);
+        utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
+
+utm_grid_draw:
+//        // Draw grid in dashed dark gray lines
+//        (void)XSetForeground(XtDisplay (w), gc, colors[0x50]);
+        (void)XSetForeground(XtDisplay(w), gc, colors[0x22]); // Blue
+
+
+
+        for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
+            for (i=0; i < utm_grid.zone[zone].ncols; i++) {
+                if (utm_grid.zone[zone].col[i].npoints > 1)
+                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc,
+                                     utm_grid.zone[zone].col[i].point,
+                                     utm_grid.zone[zone].col[i].npoints,
+                                     CoordModeOrigin);
+            }
+            for (i=0; i < utm_grid.zone[zone].nrows; i++) {
+                if (utm_grid.zone[zone].row[i].npoints > 1)
+                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc,
+                                     utm_grid.zone[zone].row[i].point,
+                                     utm_grid.zone[zone].row[i].npoints,
+                                     CoordModeOrigin);
+            }
+        }
+utm_grid_dont_draw:
+    }   // End of UTM grid section
+
+    else { // Lat/Long coordinate system, draw lat/long lines
+        unsigned int x,x1,x2;
+        unsigned int y,y1,y2;
+        unsigned int stepsx[3];
+        unsigned int stepsy[3];
+        int step;
+
+        stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
+        stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
+        stepsx[2] =   300*100;    stepsy[2] =   150*100;
+
+        //fprintf(stderr,"scale_x: %ld\n",scale_x);
+        step = 0;
+        if (scale_x <= 6000) step = 1;
+        if (scale_x <= 300)  step = 2;
+
+        step += grid_size;
+        if (step < 0) {
+            grid_size -= step;
+            step = 0;
+        }
+        else if (step > 2) {
+            grid_size -= (step - 2);
+            step = 2;
+        }
+
+        /* draw vertical lines */
+        if (y_lat_offset >= 0)
+            y1 = 0;
+        else
+            y1 = -y_lat_offset/scale_y;
+
+        y2 = (180*60*60*100-y_lat_offset)/scale_y;
+
+        if (y2 > (unsigned int)screen_height)
+            y2 = screen_height-1;
+
+        coord = x_long_offset+stepsx[step]-(x_long_offset%stepsx[step]);
+        if (coord < 0)
+            coord = 0;
+
+        for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx[step]) {
+
+            x = (coord-x_long_offset)/scale_x;
+
+            if ((coord%(648000*100)) == 0) {
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                continue;
+            }
+            else if ((coord%(72000*100)) == 0) {
+                dash[0] = dash[1] = 8;
+                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+            } else if ((coord%(7200*100)) == 0) {
+                dash[0] = dash[1] = 4;
+                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+            } else if ((coord%(300*100)) == 0) {
+                dash[0] = dash[1] = 2;
+                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+            }
+
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
+        }
+
+        /* draw horizontal lines */
+        if (x_long_offset >= 0)
+            x1 = 0;
+        else
+            x1 = -x_long_offset/scale_x;
+
+        x2 = (360*60*60*100-x_long_offset)/scale_x;
+        if (x2 > (unsigned int)screen_width)
+            x2 = screen_width-1;
+
+        coord = y_lat_offset+stepsy[step]-(y_lat_offset%stepsy[step]);
+        if (coord < 0)
+            coord = 0;
+
+        for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy[step]) {
+
+            y = (coord-y_lat_offset)/scale_y;
+
+            if ((coord%(324000*100)) == 0) {
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x1, y, x2, y);
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                continue;
+            } else if ((coord%(36000*100)) == 0) {
+                dash[0] = dash[1] = 8;
+                (void)XSetDashes (XtDisplay (w), gc, 4, dash, 2);
+            } else if ((coord%(3600*100)) == 0) {
+                dash[0] = dash[1] = 4;
+                (void)XSetDashes (XtDisplay (w), gc, 2, dash, 2);
+            } else if ((coord%(150*100)) == 0) {
+                dash[0] = dash[1] = 2;
+                (void)XSetDashes (XtDisplay (w), gc, 1, dash, 2);
+            }
+
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x1, y, x2, y);
+        }
+    }
+}
+
+
+
+
+
+//WE7U
+/****************************************************************
+ * draw_grid2()
  *
  * Draws a lat/lon grid or a UTM grid on top of the view.
- **********************************************************/
-void draw_grid(Widget w) {
+ *
+ * This function is here only long enough to pull
+ * code/comments/ideas out of for implementing in the draw_grid()
+ * function above.
+ ****************************************************************/
+void draw_grid2(Widget w) {
     int coord;
     unsigned char dash[2];
 
@@ -503,11 +1246,21 @@ void draw_grid(Widget w) {
     (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
 
     if (coordinate_system == USE_UTM) {
+        int i;
+        double double_northing, double_easting;
+        char full_zone[5];
+        int done;
+        int skip = 0;
+        double temp_latitude, temp_longitude;
+        long xx, yy;
+ 
 
         // Draw a UTM grid.
 
-// So far we're just drawing the major grids.
-// More to follow.
+
+// So far we're just drawing the major grids and the horizontal
+// subgrids.  More to follow.
+
 
         // 84 degrees North to 80 degrees South. 60 zones, each
         // covering six (6) degrees of longitude. Each zone extends
@@ -516,29 +1269,6 @@ void draw_grid(Widget w) {
         // west to east from the 180 degree meridian. From 84
         // degrees North and 80 degrees South to the respective
         // poles, the Universal Polar Stereographic (UPS) is used.
-
-        // Draw:
-        //   UTM Zones if at zoom level XX or higher
-        //   1km rectangles between zooms XX and YY
-        //   100m rectangles below zoom YY
-        //   Centerlines also???  Probably not.
-
-        // Get the corner points of our current map view in UTM.
-        // Iterate along each line, drawing short line segments to
-        // draw the portion of the UTM that is within the view.
-        // Must be careful and draw each UTM zone separately, as the
-        // numbers start over for each area.  Could also just
-        // iterate along each pixel and draw a point there if the
-        // UTM numbers fit regular patterns (like near every 100m or
-        // 1km, depending on zoom level).
-
-        // Figure out which zone(s) we are viewing by checking the
-        // four corner points of the view.  For each zone, iterate
-        // over the subzone boundaries that are appropriate for the
-        // zoom level, drawing a dot at each interval.  The
-        // iteration intervals should be appropriate for the zoom
-        // level (mathematically related) in order to draw the
-        // curved lines properly.
 
         // Zone boundaries are curves.  We'll need to start
         // somewhere outside our view and draw across the view,
@@ -561,233 +1291,10 @@ void draw_grid(Widget w) {
         // boundaries of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21
         // - 33 E and 37: 33 - 42 E.
 
-
-        unsigned long view_min_x, view_max_x;
-        unsigned long view_min_y, view_max_y;
-        unsigned long temp_x;
-        double easting1, northing1;
-        double easting2, northing2;
-        double easting3, northing3;
-        double easting4, northing4;
-        char zone1[5];
-        char zone2[5];
-        char zone3[5];
-        char zone4[5];
-        int min_zone, max_zone, temp;
-        int done;
-        int i;
-
-
-        // Left edge of view, Xastir coordinate system
-        view_min_x = (unsigned long)x_long_offset;
-        if (view_min_x > 129600000ul)
-            view_min_x = 0;
-
-        // Top edge of view, Xastir coordinate system
-        view_min_y = (unsigned long)y_lat_offset;
-        if (view_min_y > 64800000ul)
-            view_min_y = 0;
-
-        // Right edge of view, Xastir coordinate system
-        view_max_x = (unsigned long)(x_long_offset + (screen_width * scale_x));
-        if (view_max_x > 129600000ul)
-            view_max_x = 129599999ul;
-
-        // Bottom edge of view, Xastir coordinate system
-        view_max_y = (unsigned long)(y_lat_offset + (screen_height * scale_y));
-        if (view_max_y > 64800000ul)
-            view_max_y = 64799999ul;
-
-        // NW corner
-        convert_xastir_to_UTM(&easting1,
-            &northing1,
-            zone1,
-            sizeof(zone1),
-            (long)view_min_x,
-            (long)view_min_y);
-
-        // NE corner
-        convert_xastir_to_UTM(&easting2,
-            &northing2,
-            zone2,
-            sizeof(zone2),
-            (long)view_max_x,
-            (long)view_min_y);
-
-        // SE corner
-        convert_xastir_to_UTM(&easting3,
-            &northing3,
-            zone3,
-            sizeof(zone3),
-            (long)view_max_x,
-            (long)view_max_y);
-
-        // SW corner
-        convert_xastir_to_UTM(&easting4,
-            &northing4,
-            zone4,
-            sizeof(zone4),
-            (long)view_min_x,
-            (long)view_max_y);
-
-
-        // At this stage we have a letter after the zone number,
-        // which we don't need.
-
-//fprintf(stderr,"zones %s, %s, %s, %s\n", zone1, zone2, zone3, zone4);
-
-        // Compute the list of zones we need to iterate across.
-        min_zone = max_zone = atoi(zone1);
-
-        temp = atoi(zone2);
-        if (temp < min_zone)
-            min_zone = temp;
-        if (temp > max_zone)
-            max_zone = temp;
-
-        temp = atoi(zone3);
-        if (temp < min_zone)
-            min_zone = temp;
-        if (temp > max_zone)
-            max_zone = temp;
-        
-          temp = atoi(zone4);
-        if (temp < min_zone)
-            min_zone = temp;
-        if (temp > max_zone)
-            max_zone = temp;
-
-//fprintf(stderr,"min: %d, max: %d\n", min_zone, max_zone);
-
-        // To start with, draw a vertical line for every six degrees
-        // of longitude.  These are the major UTM zones.  On our
-        // map, they are straight lines, aligned with the left/right
-        // edges of our view.
-        // In the Xastir coordinate system, this would mean taking
-        // the left edge of the map, checking whether it was
-        // exactly on a grid line.  If so, draw a vertical line
-        // there, then add 360,000 * 6 (360,000/degree) to it and
-        // draw a vertical line again, repeating until we pass the
-        // right edge of the view.
-
-        // Left edge of screen = view_min_x.  Convert to whole
-        // degrees, then divide into 6 degree zone.
-        temp_x = (view_min_x / 360000) / 6;
-
-        // Now multiply it back up to the Xastir coordinate system.
-        // We now have a zone boundary.
-        temp_x = temp_x * 6 * 360000;
-
-        // Check whether we're off the left edge of the screen.  If
-        // so, add six degrees and try again.
-        if (temp_x < view_min_x)
-            temp_x = temp_x + (360000 * 6);
-
-//        XSetLineAttributes(XtDisplay (w), gc, 1, LineSolid, CapButt, JoinMiter);
-
-        (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
-
-        done = 0;
-        while (!done) {
-            // Check whether we're off the right edge of the screen.  If
-            // so, we're done drawing the vertical zone boundaries.
-            if (temp_x > (view_max_x + 1)) {
-                done++;
-            }
-            else {  // Draw a vertical line
-                int x, y1, y2;
-                int zone_num;
-                int irregular_zone = 0;
-
-
-                // Check what UTM zone we're doing.  If we're in
-                // zones 31 through 37 and drawing lines north of
-                // 56°, we may need to draw some irregular areas.
-                zone_num = ((temp_x / 360000) / 6) + 1;
-                if ((zone_num >= 32) && (zone_num <= 37)) {
-                    float y_temp2;
-
-                    // Check top border of view.  We could also
-                    // check the bottom border of the view.
-                    y_temp2 = y_lat_offset / 360000;
-                    if ( y_temp2 <= (90 - 57) ) {
-//fprintf(stderr,"Drawing irregular zone area %d\n",zone_num);
-                        irregular_zone++;
-
-
-                        // Check whether we have the zone 31/32
-                        // boundary between 56N and 64N ("V" zone).
-                        // If so, draw that boundary 3 degrees left
-                        // of normal.
-
-
-                        // Check whether we have the "X" zone in
-                        // view.  If so, draw those special borders
-                        // a bit wider than normal.
-
-
-                        // The "W" stripe should be drawn normally.
-                    }
-                }
-
-                if (!irregular_zone) {
-
-                    // Convert to screen coordinates.  Careful here!
-                    // The format conversions you'll need if you try
-                    // to compress this into two lines will get you
-                    // into trouble.
-                    x = temp_x - x_long_offset;
-                    y1 = 0 - y_lat_offset;
-                    x = x / scale_x;
-                    y1 = y1 / scale_y;
-
-                    y2 = 64800000 - y_lat_offset;
-                    y2 = y2 / scale_y;
-
-                    // XDrawLines uses 16-bit unsigned integers
-                    // (shorts).  Make sure we stay within the limits.
-                    if (x >  16000)   x =  10000;
-                    if (x < -16000)   x = -10000;
-                    if (y1 >  16000) y1 =  10000;
-                    if (y1 < -16000) y1 = -10000;
-                    if (y2 >  16000) y2 =  10000;
-                    if (y2 < -16000) y2 = -10000;
-
-//                    (void)XDrawLine(XtDisplay(w),
-//                        pixmap_final,
-//                        gc,
-//                        x,
-//                        y1,
-//                        x,
-//                        y2);
-                }
-
-                // Increment to the next zone boundary in Xastir
-                // coordinate system units.
-                temp_x = temp_x + (360000 * 6);
-            }
-        }
-
 // Draw labels for each UTM zone?
 
-// Need to draw a horizontal line at each pole, if in the view.
-
-
-// Here we'll draw the subzone (lettered) lines, which are
-// horizontal.
-
-
-// We need a function that checks which part of a line fits the
-// screen, given endpoints in Xastir coordinates (or lat/long),
-// converts it to screen coordinates, then calls XDrawLine.  The
-// function would assume that the GC has already been set up.  We
-// could then feed it a bunch of vectors and let it do all the work.
-// The major UTM grid lines could be reduced to a bunch of
-// hard-coded vectors.
-
-        // We're done drawing the major UTM zone vertical lines.
-        // Now we need to draw the horizontal lines corresponding to
-        // the lettered NATO UTM subzones.  Zones go from A (south
+        // Horizontal lines corresponding to
+        // the lettered NATO UTM subzones:  Zones go from A (south
         // pole) to Z (north pole).  South of -80 are zones A/B,
         // north of +84 are zones Y/Z.  "I" and "O" are not used.
         // Zones from C to W are 8 degrees high.  Zone X is 12
@@ -824,66 +1331,35 @@ void draw_grid(Widget w) {
         // A/B  80S to 90S (UPS System)
 
 
-// Test vectors
-//draw_vector(w, 0l, 0l, 129600000l, 64800000l, gc, pixmap_final);
-//draw_vector_ll(w, -90.0, -180.0, 90.0, 180.0, gc, pixmap_final);
-
-
-// Draw the irregular zones:
-// -------------------------
-// UTM Zone 32 has been widened to 9° (at the expense of zone 31)
-// between latitudes 56° and 64° (band V) to accommodate southwest
-// Norway. Thus zone 32 extends westwards to 3°E in the North
-// Sea.  Similarly, between 72° and 84° (band X), zones 33 and 35
-// have been widened to 12° to accommodate Svalbard. To compensate
-// for these 12° wide zones, zones 31 and 37 are widened to 9° and
-// zones 32, 34, and 36 are eliminated. Thus the W and E boundaries
-// of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33
-// - 42 E.
-
-
         // Vertical lines:
 
-        // Draw the vertical lines except for the irregular regions
+        // Draw the vertical vectors (except for the irregular regions)
         for (i = -180; i <= 0; i += 6) {
-            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc, pixmap_final);
         }
         for (i = 42; i <= 180; i += 6) {
-            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc, pixmap_final);
         }
 
-        // Draw the partial lines from 90S to the irregular region
-        draw_vector_ll(w, -90.0,  6.0, 56.0,  6.0, gc, pixmap_final);
-        draw_vector_ll(w, -90.0, 12.0, 72.0, 12.0, gc, pixmap_final);
-        draw_vector_ll(w, -90.0, 18.0, 72.0, 18.0, gc, pixmap_final);
-        draw_vector_ll(w, -90.0, 24.0, 72.0, 24.0, gc, pixmap_final);
-        draw_vector_ll(w, -90.0, 30.0, 72.0, 30.0, gc, pixmap_final);
-        draw_vector_ll(w, -90.0, 36.0, 72.0, 36.0, gc, pixmap_final);
+        // Draw the partial vectors from 80S to the irregular region
+        draw_vector_ll(w, -80.0,  6.0, 56.0,  6.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 12.0, 72.0, 12.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 18.0, 72.0, 18.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 24.0, 72.0, 24.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 30.0, 72.0, 30.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0, 36.0, 72.0, 36.0, gc, pixmap_final);
 
-        // Draw the short vectors in the irregular region 
+        // Draw the short vertical vectors in the irregular region 
         draw_vector_ll(w,  56.0,  3.0, 64.0,  3.0, gc, pixmap_final);
         draw_vector_ll(w,  64.0,  6.0, 72.0,  6.0, gc, pixmap_final);
         draw_vector_ll(w,  72.0,  9.0, 84.0,  9.0, gc, pixmap_final);
         draw_vector_ll(w,  72.0, 21.0, 84.0, 21.0, gc, pixmap_final);
         draw_vector_ll(w,  72.0, 33.0, 84.0, 33.0, gc, pixmap_final);
-        draw_vector_ll(w,  72.0, 42.0, 84.0, 42.0, gc, pixmap_final);
-
-        // Finish from the irregular region to 90N
-        draw_vector_ll(w,  84.0,  6.0, 90.0,  6.0, gc, pixmap_final);
-        draw_vector_ll(w,  84.0, 12.0, 90.0, 12.0, gc, pixmap_final);
-        draw_vector_ll(w,  84.0, 18.0, 90.0, 18.0, gc, pixmap_final);
-        draw_vector_ll(w,  84.0, 24.0, 90.0, 24.0, gc, pixmap_final);
-        draw_vector_ll(w,  84.0, 30.0, 90.0, 30.0, gc, pixmap_final);
-        draw_vector_ll(w,  84.0, 36.0, 90.0, 36.0, gc, pixmap_final);
 
 
         // Horizontal lines:
 
-        // Draw lines at 90S and 90N.  These are the poles.
-        draw_vector_ll(w,  90.0, -180.0, 90.0, 180.0, gc, pixmap_final);
-        draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc, pixmap_final);
-
-        // Draw the 8 degree-spaced lines 
+        // Draw the 8 degree spaced lines 
         for (i = -80; i <= 72; i += 8) {
             draw_vector_ll(w, (float)i,  -180.0, (float)i,  180.0, gc, pixmap_final);
         }
@@ -892,9 +1368,198 @@ void draw_grid(Widget w) {
         draw_vector_ll(w,  84.0, -180.0, 84.0, 180.0, gc, pixmap_final);
 
 
+        // Now, depending on zoom level, we need to draw 1km grid
+        // squares or 100m grid squares.  We'll need to draw them
+        // from the median line (N/S centerline) of each major grid
+        // in order to draw them accurately.  These occur starting
+        // at -3 longitude and proceed each 6 degrees after that,
+        // except for the irregular areas.
 
 
+        // Set up the grid size based on zoom level (in meters)
+        if      (scale_x < 10)
+            utm_grid_spacing_m =    100;
+        else if (scale_x < 200)
+            utm_grid_spacing_m =   1000;
+        else if (scale_x < 2000)
+            utm_grid_spacing_m =  10000;
+        else if (scale_x < 10000)
+            utm_grid_spacing_m = 100000;
+        else {
+            utm_grid_spacing_m = 100000;
+            skip++;
+        }
 
+
+        // Iterate along the zone median lines except for the
+        // irregular regions.  We start at the equator as that is
+        // the defined zero point.  We should be able to mirror
+        // about the equator, reducing the number of calculations
+        // required by a factor of two.  Mirror about the median
+        // line for each zone and we again reduce them by a factor
+        // of two.
+        //
+        // Should be able to reference off the equator, create a UTM
+        // point that is XX meters above the equator on the median
+        // line, convert that point to lat/long, then draw a line
+        // from there to the zone line on each side.  The two lines
+        // will be of equal lengths.  Draw the equivalent line south
+        // of the equator.  Remember to stop at 84N/80S and to watch
+        // out for the irregular areas which require special
+        // processing.
+
+
+        // Draw the horizontal lines at varying distances from the
+        // equator based on our current offset.  Convert an equator
+        // point to UTM, then add the offset into the UTM northing
+        // value to get a point to start drawing from.
+        ll_to_utm(E_WGS_84,
+            (double)0.0,    // lat  (on the equator)
+            (double)3.0,    // long (on a meridian of a zone)
+            &double_northing,
+            &double_easting,
+            full_zone,
+            sizeof(full_zone));
+
+//fprintf(stderr,"zone:%s\n",full_zone);  // Shows "31N"
+
+        // Make line width narrower
+        (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+
+        // Make the lines blue.
+        (void)XSetForeground(XtDisplay(w), gc, colors[0x22]);
+
+        double_northing = 0.0;  // Should start at the equator, right?
+
+        done = 0; 
+        while (!done && !skip) {
+
+            // Compute/draw the northern lines, starting near the
+            // equator.  We stop at 84N.
+
+            // Add the offset in meters to the northing value.
+            double_northing = double_northing + utm_grid_spacing_m;
+
+//fprintf(stderr,"%f\n", double_northing);
+
+/*
+            // Convert the new point to lat/long coordinates
+            utm_to_ll(E_WGS_84,
+                double_northing,
+                double_easting,
+                full_zone,
+                &temp_latitude,
+                &temp_longitude);
+
+            if (temp_latitude < 84.0) {
+                draw_vector_ll(w,
+                    (float)temp_latitude,
+                    -180.0,
+                    (float)temp_latitude,
+                    180.0,
+                    gc,
+                    pixmap_final);
+*/
+            // Convert the new point to Xastir coordinates
+
+//fprintf(stderr,"%s %f %f\t\t", full_zone, 500000.0, double_northing);
+
+            convert_UTM_to_xastir((double)500000.0,
+                double_northing,
+                full_zone,
+                &xx,
+                &yy);
+
+//fprintf(stderr,"%ld %ld\n", xx, yy);
+
+            if (yy > 2160000ul) {    // 84N
+                draw_vector(w,
+                    0ul,
+                    (unsigned long)yy,
+                    129600000ul,
+                    (unsigned long)yy,
+                    gc,
+                    pixmap_final);
+
+            }
+            else {
+                done++;
+            }
+        }
+
+
+        // Now draw the corresponding southern lines, starting near
+        // the equator.  We stop at 80S.
+
+        // Starting at the equator again, but with the offset for
+        // the southern hemisphere added in (10,000,000 meters).
+        double_northing = 10000000;
+        done = 0;
+        while (!done && !skip) {
+
+            double_northing = double_northing - utm_grid_spacing_m;
+
+            // Convert the new point to lat/long coordinates.  We
+            // probably need to mess with full_zone as well, since
+            // it contains a northern zone right now.
+            utm_to_ll(E_WGS_84,
+                double_northing,
+                double_easting,
+//                full_zone,
+                "31M",
+                &temp_latitude,
+                &temp_longitude);
+
+            if (temp_latitude > -80.0) {
+                draw_vector_ll(w,
+                    (float)temp_latitude,
+                    -180.0,
+                    (float)temp_latitude,
+                    180.0,
+                    gc,
+                    pixmap_final);
+            }
+            else {
+                done++;
+            }
+        }
+
+
+        // Draw the vertical lines on either side of the zone's
+        // meridian line.  Mirror these lines around the meridian.
+        // We should be able to do the same trick, where we figure
+        // out what a point on the meridian line is in lat/long
+        // coordinates, convert it to UTM, add to the easting
+        // offset, and convert it back to lat/long and draw the
+        // line.  Draw the corresponding line on the other side of
+        // the meridian.  The trick here is knowing when to stop.
+        // We have to stop drawing when we hit the zone boundaries,
+        // which are +/- 3 degrees either side of the meridian
+        // (except for the irregular zones, which must be specially
+        // handled).
+        // 
+
+        // Process once for each zone's median line
+        for (i = -177; i <= 177; i += 6) {  // Median longitude (degrees)
+            int j;
+           
+ 
+            for (j = -80; j <= 84; j++) {
+                if (j >= 56
+                        && j <= 64
+                        && (i == 3 || i == 9) ) {   // Irregular area
+                    // Draw grids
+                }
+                else if (j >= 72
+                        && i > 0
+                        && i < 42) {  // Irregular area
+                    // Draw grids
+                }
+                else {  // Regular zone
+                    // Draw grids
+                }
+            }
+        }
     }   // End of UTM grid section
 
     else { // Not UTM coordinate system, draw some lat/long lines
