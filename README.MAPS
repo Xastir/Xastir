@@ -396,13 +396,15 @@ Getting Maps and other Data Files for Xastir:
        current:
          http://wetnet.net/~we7u/xastir/Counties/
 
+        --------------------------
         The files of interest are:
+        --------------------------
 
         NWSI Libraries:
         ---------------
         County Warning Areas
         Zone Forecast Areas
-        Coastal and Offshore Marine Zones
+        Coastal and Offshore Marine Zones (3 files)
 
         County Libraries:
         -----------------
