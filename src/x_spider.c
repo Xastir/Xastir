@@ -157,15 +157,23 @@
 #define _(x)        (x)
 #endif  // HAVE_LIBINTL_H
 
-//#include <Xm/XmAll.h>
-//#include <X11/cursorfont.h>
-
 //#include "xastir.h"
 
 #ifndef SIGRET
 #define SIGRET  void
 #endif  // SIGRET
 
+
+typedef struct _pipe_object {
+    int to_child[2];
+    int to_parent[2];
+    struct _pipe_object *next;
+} pipe_object;
+
+
+pipe_object *pipe_head = NULL;
+//int master_fd = -1; // Start with an invalid value
+ 
 
 
 
@@ -267,6 +275,7 @@ int readline(register int fd, register char *ptr, register int maxlen) {
 // to the sender.  Return when the connection is terminated.  This
 // routine is from "Unix Network Programming".
 //
+/*
 void str_echo(int sockfd) {
     int n;  
     char line[MAXLINE];
@@ -276,30 +285,102 @@ void str_echo(int sockfd) {
         if (n == 0) {
             return; // Connection terminated
         }
-        else if (n < 0) {
-            fprintf(stderr,"str_echo: Readline error");
+        if (n < 0) {
+            fprintf(stderr,"str_echo: No data to read\n");
         }
 
         if (writen(sockfd, line, n) != n) {
-            fprintf(stderr,"str_echo: Writen error");
+            fprintf(stderr,"str_echo: Writen error\n");
         }
     }
 }
+*/
 
 
 
 
 
-typedef struct _pipe_object {
-    int to_child[2];
-    int to_parent[2];
-    struct _pipe_object *next;
-} pipe_object;
+// Read a stream socket one line at a time, and write each line back
+// to the sender.  Return when the connection is terminated.  This
+// routine is from "Unix Network Programming".
+//
+void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
+    int n;  
+    char line[MAXLINE];
 
 
-pipe_object *pipe_head = NULL;
-//int master_fd = -1; // Start with an invalid value
+    // Set socket to be non-blocking.
+    //
+    if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"str_echo2: Couldn't set socket non-blocking\n");
+    }
+
+    // Set pipe to be non-blocking.
+    //
+    if (fcntl(pipe_from_parent, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"str_echo2: Couldn't set pipe_from_parent non-blocking\n");
+    }
+
+
+    // Infinite loop
+    for ( ; ; ) {
+
+        //
+        // Read data from socket, write to pipe (parent)
+        //
  
+        n = readline(sockfd, line, MAXLINE);
+//        if (n == 0) {
+//            return; // Connection terminated
+//        }
+        if (n < 0) {
+            //fprintf(stderr,"str_echo2: Readline error: %d\n",errno);
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                // This is normal if we have no data to read
+                //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+            }
+            else {  // Non-normal error.  Report it.
+                fprintf(stderr,"str_echo2: Readline error: %d\n",errno);
+            }
+        }
+        else {  // We received some data.  Send it down the pipe.
+            fprintf(stderr,"str_echo2: %s\n",line);
+            if (writen(pipe_to_parent, line, n) != n) {
+                fprintf(stderr,"str_echo2: Writen error: %d\n",errno);
+            }
+        }
+
+
+        //
+        // Read data from pipe (parent), write to socket
+        //
+ 
+        n = readline(pipe_from_parent, line, MAXLINE);
+//        if (n == 0) {
+//            return; // Connection terminated
+//        }
+        if (n < 0) {
+            //fprintf(stderr,"str_echo2: Readline error: %d\n",errno);
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                // This is normal if we have no data to read
+                //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+            }
+            else {  // Non-normal error.  Report it.
+                fprintf(stderr,"str_echo2: Readline error: %d\n",errno);
+            }
+        }
+        else {  // We received some data.  Send it down the socket.
+//            fprintf(stderr,"str_echo2: %s\n",line);
+            if (writen(sockfd, line, n) != n) {
+                fprintf(stderr,"str_echo2: Writen error: %d\n",errno);
+            }
+        }
+
+        // Slow the loop down to prevent excessive CPU.
+        usleep(250000); // 250ms
+    }
+}
+
 
 
 
@@ -325,8 +406,12 @@ pipe_object *pipe_head = NULL;
 // closed, we shut down x_spider and all the child processes.
 //
 int pipe_check(void) {
+    pipe_object *p = pipe_head;
+    int n;  
+    char line[MAXLINE];
 
-    // Need a select here with a timeout.  Also need a method of
+
+    // Need a select here with a timeout?  Also need a method of
     // revising the read bits we send to select.  Should we revise
     // them every time through the loop, or set a variable in the
     // main() routine whenever a new connect comes in.  What about
@@ -335,7 +420,56 @@ int pipe_check(void) {
 
 //    select();
 
-fprintf(stderr,"pipe_check()\n");
+//fprintf(stderr,"pipe_check()\n");
+
+    // All of the read ends of the pipes have been set non-blocking
+    // by this point.
+
+    // Check all the pipes in the linked list looking for something
+    // to read.
+    while (p != NULL) {
+//        fprintf(stderr,"Running through pipes\n");
+
+        //
+        // Read data from pipe, write to all pipes except the one
+        // who sent it.
+        //
+ 
+        n = readline(p->to_parent[0], line, MAXLINE);
+//        if (n == 0) {
+//            return; // Connection terminated
+//        }
+        if (n < 0) {
+            //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                // This is normal if we have no data to read
+                //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+            }
+            else {  // Non-normal error.  Report it.
+                fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
+            }
+        }
+        else {  // We received some data.  Send it down all of the
+                // pipes except the one that sent it.
+// Also send it down the socket.
+            pipe_object *q = pipe_head;
+
+            while (q != NULL) {
+//                fprintf(stderr,"pipe_check: %s\n",line);
+
+                if (q != p) {
+                    if (writen(q->to_child[1], line, n) != n) {
+                        fprintf(stderr,"pipe_check: Writen error: %d\n",errno);
+                    }
+                }
+                q = q->next;
+            }
+        }
+
+        p = p->next;
+    }
+
+
     return(0);
 }
 
@@ -379,13 +513,12 @@ int main(int argc, char *argv[]) {
     // Open a TCP listening socket
     //
     if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        fprintf(stderr,"x_spider: Can't open socket for listening.");
+        fprintf(stderr,"x_spider: Can't open socket for listening\n");
         exit(1);
     }
 
     // Set the new socket to be non-blocking.
     //
-    //if (fcntl(sockfd, F_SETFL, FNDELAY) < 0) {
     if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
         fprintf(stderr,"x_spider: Couldn't set socket non-blocking\n");
     }
@@ -412,7 +545,7 @@ int main(int argc, char *argv[]) {
     if (bind(sockfd,
             (struct sockaddr *)&serv_addr,
             sizeof(serv_addr)) < 0) {
-        fprintf(stderr,"x_spider: Can't bind local address.");
+        fprintf(stderr,"x_spider: Can't bind local address\n");
         exit(1);
     }
 
@@ -492,7 +625,11 @@ int main(int argc, char *argv[]) {
         }
         
         if ( (childpid = fork()) < 0) {
-            fprintf(stderr,"x_spider: Fork error.");
+            //
+            // Problem forking.  Clean up and continue loop.
+            //
+
+            fprintf(stderr,"x_spider: Fork error\n");
             // Close pipes
             close(p->to_child[0]);
             close(p->to_child[1]);
@@ -519,7 +656,11 @@ int main(int argc, char *argv[]) {
             close(p->to_child[1]);  // Close write end of pipe
             close(p->to_parent[0]); // Close read end of pipe
 
-str_echo(newsockfd);    // Process the request
+//            str_echo(newsockfd);    // Process the request
+            str_echo2(newsockfd,
+                pipe_from_parent,
+                pipe_to_parent);
+ 
 
             // Clean up and exit
             //
@@ -535,13 +676,20 @@ str_echo(newsockfd);    // Process the request
         close(newsockfd);
         close(p->to_parent[1]); // Close write end of pipe
         close(p->to_child[0]);  // Close read end of pipe
+
+        // Set pipe to be non-blocking.
+        //
+        if (fcntl(p->to_parent[0], F_SETFL, O_NONBLOCK) < 0) {
+            fprintf(stderr,"x_spider: Couldn't set pipe_to_parent non-blocking\n");
+        }
+
 finis:
         // Need a delay so that we don't use too much CPU, at least
         // for debug.  Put the delay into the select() call in the
         // pipe_check() function once we get to that stage of
         // coding.
         //
-        usleep(1000000);    // One second
+        usleep(250000); // 250ms
     }
 }
 
@@ -565,7 +713,7 @@ void Fork_server(void) {
 
  
     if ( (childpid = fork()) < 0) {
-        fprintf(stderr,"Fork_server: Fork error.");
+        fprintf(stderr,"Fork_server: Fork error\n");
     }
     else if (childpid == 0) {
         //
