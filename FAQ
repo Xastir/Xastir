@@ -67,6 +67,7 @@ The Questions
          geoTIFF images?
     4.12 Why doesn't Xastir run on RedHat 9.0 properly?
     4.13 Why do I see "Character '\55' not supported in font"?
+    4.14 Why do I see strong blue tinting for the maps?
 
 5.  Features
 
@@ -509,6 +510,14 @@ The Answers
     With the original setting you get some weird character mappings.  For
     example, running "man ls", all of the dashes (-) disappeared from my
     screen until I changed the LANG setting.
+
+    4.14 Why do I see strong blue tinting for the maps?
+
+    Strong blue (or perhaps other color) tinting of the image may be
+    due to running the display over a Hummingbird eXceed session.
+    Try running it locally and you should see the proper colors.
+    Try changing the eXceed session to use more bits of color.
+
 
 5.  Features
 
