@@ -118,7 +118,8 @@ void map_gdal_init() {
 
 #ifdef HAVE_LIBGDAL
 
-    GDALDriverH hDriver;
+    GDALDriverH  gDriver;   // GDAL driver
+    OGRSFDriverH oDriver;   // OGR driver
     int ii, jj;
 
 
@@ -134,12 +135,27 @@ void map_gdal_init() {
 
     fprintf(stderr,"\nGDAL Registered Drivers:\n");
     for (jj = 0; jj < ii; jj++) {
-        hDriver = GDALGetDriver(jj);
-        printf("%12s   %s\n",
-            GDALGetDriverShortName(hDriver),
-            GDALGetDriverLongName(hDriver) );
+        gDriver = GDALGetDriver(jj);
+        printf("%20s   %s\n",
+            GDALGetDriverShortName(gDriver),
+            GDALGetDriverLongName(gDriver) );
     }
     fprintf(stderr,"\n");
+
+
+    // Print out each supported OGR driver
+    //
+    ii = OGRGetDriverCount();
+
+    fprintf(stderr,"OGR Registered Drivers:\n");
+    for  (jj = 0; jj < ii; jj++) {
+        oDriver = OGRGetDriver(jj);
+        printf("%20s   %s\n",
+            "",
+            OGR_Dr_GetName(oDriver) );
+    }
+    fprintf(stderr,"\n");
+
 
 #endif  // HAVE_LIBGDAL
 
@@ -174,13 +190,13 @@ int gdal_main() {
 /*
 // Getting Dataset Information, example code:
 
-    GDALDriverH   hDriver;
+    GDALDriverH   gDriver;
     double adfGeoTransform[6];
 
-    hDriver = GDALGetDatasetDriver( hDataset );
+    gDriver = GDALGetDatasetDriver( hDataset );
     printf( "Driver: %s/%s\n",
-        GDALGetDriverShortName( hDriver ),
-        GDALGetDriverLongName( hDriver ) );
+        GDALGetDriverShortName( gDriver ),
+        GDALGetDriverLongName( gDriver ) );
 
     printf( "Size is %dx%dx%d\n",
         GDALGetRasterXSize( hDataset ), 
