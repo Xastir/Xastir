@@ -55,3 +55,63 @@ xa_config.c &1 &2
 
 Copyright (C) 2002-2004 The Xastir Group
 
+
+------------------------------------------------------------------
+
+How to Use the Debug Levels
+
+Xastir debugging is turned on at run time by using the "-v" command line
+option and/or the File -> Configure -> Change Debug Level pulldown. 
+ 
+As laid out above, in the source code, debugging output is turned on by a
+bitwise "and" (&) of the currently set DEBUG_LEVEL against a number
+appropriate to the module currently being executed. 
+
+For example, in the "maps.c" the following lines appear: 
+
+    if ( debug_level & 512 )
+        fprintf(stderr,"Creating %s\n", xpm_filename );
+
+The highest debug level for Xastir is 2047, and debug levels are additive. 
+If you want to have "general basic debugging" and "GPS interface Detail"
+and "Map Debugging" you'd use:
+
+1 + 128 + 512 = 641
+
+xastir -v 641 
+
+Debug information typically is sent to "standard error" - which is normally
+File Descriptor #2 in Unix parlance.  Using common unix shells, such as
+Bash, you can "redirect" the output to be intermingled with the "standard
+output" (file descriptor #1).  This allows you to get all of the normal
+output, plus all of the debug output in one stream, which can be "piped" to
+another command, such as grep.  This can used to search for specific items
+in the debug output. 
+
+For example, to check debug information to see whether or not map caching
+is working, you can turn on debug level 512, redirect stderr to stdout and
+the grep for map cache specific output:
+
+xastir -v 512 2>&1 |grep map_cache
+
+Another little trick, to be used when you're running programs that
+call other programs, or scripts that call other scripts/programs:
+
+    (xastir -v 512 2>&1) | grep map_cache
+
+The parenthesis cause that portion to be run in a subshell, and then
+that subshell's STDERR is piped to STDOUT by the "2>&1" portion, so
+you get ANYTHING that went to STDERR or STDOUT from that command or
+anything that it calls.  This is how you can get a "make" command to
+spit everything into one file.
+
+Of course you can also do:
+
+    (xastir -v 512 2>&1) | tee xastir.log
+
+Which will pipe everything to your screen and to the xastir.log
+file.  You could then type "tail -f xastir.log | grep map_cache" in
+another window and watch that subset of the error messages there.
+That way you won't miss anything.
+
+
