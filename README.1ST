@@ -39,7 +39,7 @@ SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
 Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
 other authors as long as proper credit is given and the term
 SmartBeaconing(tm) is used.  Thanks to Tony and Steve for that
-contribution.
+contribution!
 
 -- The Xastir Group.
 
@@ -50,7 +50,7 @@ Motif or OpenMotif or LessTiff  Required  The GUI widget set
 pthreads                        Required  Threading capability
 Shapelib                      Recommended ESRI Shapefile maps and wx alerts
 Xpm                             Optional  XPM images
-ImageMagick                     Optional  Many graphics images
+ImageMagick                     Optional  MANY graphics images
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
@@ -66,6 +66,10 @@ emulated postscript printing capability is required for this as well.
 XPM or ImageMagick libs and "convert" also give the capability to
 create automatic PNG images on disk from the map screen (useful for
 web pages!).
+
+Shapelib support also gives you the capability to use Tiger 2000
+maps which were converted to Shapefile format by ESRI.  This allows
+you to use free detailed street maps for any point in the U.S.
 
 Adding other optional libraries listed gives you the additional
 capabilities listed above.
