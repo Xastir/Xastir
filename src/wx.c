@@ -992,6 +992,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
                     (int)(tmp7 * 22.5 + 0.5));
 
+            // Wind speed.  We get it in meters per second, store it
+            // in mph.
+            tmp4 = tmp4 * 3600.0 / 1000.0; // kph
+            tmp4 = tmp4 * 0.62137;         // mph
+            xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                (int)(tmp4 + 0.5));
 
             break;
 
