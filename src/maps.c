@@ -1093,6 +1093,10 @@ void draw_grid(Widget w) {
                     if (z1 != z2 && zone+1 < UTM_GRID_MAX_ZONES) {
                         // copy over last points to start off new
                         // zone
+#ifdef UT_DEBUG
+                        fprintf(stderr,"ztm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
+                               zone+1, row, 0, xx1, yy1);
+#endif
 
 //WE7U
 // This is where we can end up linking up/down one grid width
@@ -1101,12 +1105,15 @@ void draw_grid(Widget w) {
 // this here, but when we get the next points calculated, we could
 // check to see if we're off by about one grid width in the vertical
 // direction.  If so, shift the initial point by that amount?
-
-#ifdef UT_DEBUG
-                        fprintf(stderr,"ztm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
-                               zone+1, row, 0, xx1, yy1);
-#endif
-
+//
+// Another possibility might be to draw bottom-to-top if in northern
+// hemisphere, and top-to-bottom if in southern hemisphere.  That
+// way we'd have the max amount of lines present when we start, and
+// some might peter out as we draw along N/S.  Looking at the
+// southern hemisphere right now though, that method doesn't appear
+// to work.  We get the same problems there even though we're
+// drawing top to bottom.
+//
                         utm_grid.zone[zone+1].row[row].point[0].x = xx1;
                         utm_grid.zone[zone+1].row[row].point[0].y = yy1;
                         utm_grid.zone[zone+1].row[row].firstpoint = 0;
