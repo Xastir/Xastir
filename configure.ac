@@ -80,7 +80,7 @@ then
     freebsd*) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
-        CFLAGS="-g -O2 -pipe -pthread" 
+        CFLAGS="-g -O2 -pipe -pthread $CFLAGS" 
 		AC_MSG_RESULT(FreeBSD - added -g -02 -pipe -pthread) 
 		AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
 		;; 
@@ -96,7 +96,7 @@ then
 	linux*) 
         ac_tnc_port='"/dev/ttyS0"' 
         ac_gps_port='"/dev/ttyS1"' 
-        CFLAGS="-g -O2 -pipe -pthread" 
+        CFLAGS="-g -O2 -pipe -pthread $CFLAGS" 
 		AC_MSG_RESULT(LINUX - added -g -O2 -pipe -pthread) 
 		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS) 
 		;; 
@@ -138,7 +138,7 @@ else
         AC_DEFINE(XASTIR_SYSTEM, "FreeBSD", [Define system type]) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
-        CFLAGS="-g -O2 -Wall -pipe -pthread" 
+        CFLAGS="-g -O2 -Wall -pipe -pthread $CFLAGS" 
         AC_MSG_RESULT(FreeBSD gcc - added -g -O2 -Wall -pipe -pthread) 
         AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
         ;; 
@@ -148,7 +148,8 @@ else
         AC_DEFINE(XASTIR_SYSTEM, "Linux", [Define system type]) 
         ac_tnc_port='"/dev/ttyS0"' 
         ac_gps_port='"/dev/ttyS1"' 
-        CFLAGS="-g -O2 -Wall -pipe -pthread" 
+        CFLAGS="-g -O2 -Wall -pipe -pthread $CFLAGS" 
+        X_CFLAGS="-I/usr/X11R6/include $X_CFLAGS"
 		AC_MSG_RESULT(LINUX - added -g -O2 -Wall -pipe -pthread) 
 		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS) 
 		;; 
@@ -156,7 +157,7 @@ else
         AC_DEFINE(XASTIR_SYSTEM, "OpenBSD", [Define system type]) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
-        CFLAGS="-g -O2 -Wall -pipe -pthread" 
+        CFLAGS="-g -O2 -Wall -pipe -pthread $CFLAGS" 
         AC_MSG_RESULT(OpenBSD gcc - added -g -O2 -Wall -pipe -pthread) 
         AC_DEFINE(SYS_OPENBSD, 1, Compiling for OpenBSD) 
         ;;
