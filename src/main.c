@@ -9319,10 +9319,10 @@ void check_for_new_gps_map(void) {
         // map.
         xastir_snprintf(temp,
             sizeof(temp),
-            "mv %s/GPS/%s %s/GPS/%s",
-            get_data_base_dir("maps"),
+            "mv %s/%s %s/%s",
+            get_user_base_dir("gps"),
             gps_temp_map_filename,
-            get_data_base_dir("maps"),
+            get_user_base_dir("gps"),
             gps_map_filename);
 
         if ( system(temp) ) {
@@ -9336,10 +9336,10 @@ void check_for_new_gps_map(void) {
         // ".dbf" files.
         xastir_snprintf(temp,
             sizeof(temp),
-            "mv %s/GPS/%s.shx %s/GPS/%s.shx",
-            get_data_base_dir("maps"),
+            "mv %s/%s.shx %s/%s.shx",
+            get_user_base_dir("gps"),
             gps_temp_map_filename_base,
-            get_data_base_dir("maps"),
+            get_user_base_dir("gps"),
             gps_map_filename_base);
 
         if ( system(temp) ) {
@@ -9351,10 +9351,10 @@ void check_for_new_gps_map(void) {
         }
         xastir_snprintf(temp,
             sizeof(temp),
-            "mv %s/GPS/%s.dbf %s/GPS/%s.dbf",
-            get_data_base_dir("maps"),
+            "mv %s/%s.dbf %s/%s.dbf",
+            get_user_base_dir("gps"),
             gps_temp_map_filename_base,
-            get_data_base_dir("maps"),
+            get_user_base_dir("gps"),
             gps_map_filename_base);
 
         if ( system(temp) ) {
@@ -9369,7 +9369,10 @@ void check_for_new_gps_map(void) {
         // Add the new gps map to the list of selected maps
         f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
         if (f!=NULL) {
+
+//WE7U:  Change this:
             fprintf(f,"GPS/%s\n",gps_map_filename);
+
             (void)fclose(f);
 
             // Reindex maps.  Use the smart timestamp-checking indexing.
@@ -9419,10 +9422,10 @@ static void* gps_transfer_thread(void *arg) {
         GPSMAN_PATH);
 
     // Set up the postfix string.  The files will be created in the
-    // "SELECTED_MAP_DIR/GPS/" directory.
+    // "~/.xastir/gps/" directory.
     xastir_snprintf(postfix, sizeof(postfix),
-        "Shapefile_2D %s/GPS/",
-        SELECTED_MAP_DIR);
+        "Shapefile_2D %s/",
+        get_user_base_dir("gps"));
 
     input_param = atoi((char *)arg);
 
@@ -9581,7 +9584,7 @@ static void* gps_transfer_thread(void *arg) {
 // GPSMan can't handle multiple '.'s in the filename.  It chops at
 // the first one.
 //
-// Note that the permissions on the "maps/GPS" directory have to be
+// Note that the permissions on the "~/.xastir/gps/" directory have to be
 // set so that this user (or the root user?) can create files in
 // that directory.  The permissions on the resulting files may need
 // to be tweaked.
@@ -22164,6 +22167,10 @@ int main(int argc, char *argv[]) {
         (void)mkdir(get_user_base_dir("tmp"),S_IRWXU);
     }
 
+    if (filethere(get_user_base_dir("gps")) != 1) {
+        fprintf(stderr,"Making user gps dir\n");
+        (void)mkdir(get_user_base_dir("gps"),S_IRWXU);
+    }
 
 
     /* done checking user dirs */
