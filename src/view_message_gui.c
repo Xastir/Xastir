@@ -347,6 +347,8 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset, 5); n++;
+
+// These two cause segfaults:
 //        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
 //        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
  
