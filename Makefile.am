@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 D=      `date +%G%m%d.%H%M%S`
 
-SUBDIRS = src m4 config help symbols callpass 
+SUBDIRS = src m4 config help scripts symbols callpass 
 
 # Remove this file here (it is created via configure), not from within intl.
 # DISTCLEANFILES = intl/libintl.h
