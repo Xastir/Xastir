@@ -13901,10 +13901,21 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 
 /*
  *  Decode APRS Information Field and dispatch it depending on the Data Type ID
+ *
+ *         call = Callsign or object/item name string
+ *         path = Path string
+ *      message = Info field (corrupted already if object/item packet)
+ *       origin = Originating callsign if object/item, otherwise NULL
+ *         from = DATA_VIA_LOCAL/DATA_VIA_TNC/DATA_VIA_NET/DATA_VIA_FILE
+ *         port = Port number
+ *  third_party = Set to one if third-party packet
+ * orig_message = Unmodified info field
+ *
  */
-void decode_info_field(char *call, char *path, char *message, char *origin, char from, int port, int third_party) {
+void decode_info_field(char *call, char *path, char *message, char *origin,
+        char from, int port, int third_party, char *orig_message) {
+
     char line[MAX_TNC_LINE_SIZE+1];
-    char my_data[MAX_TNC_LINE_SIZE+1];
     int  ok_igate_net;
     int  ok_igate_rf;
     int  done, ignore;
@@ -13912,7 +13923,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
     /* remember fixed format starts with ! and can be up to 24 chars in the message */ // ???
     if (debug_level & 1)
-        fprintf(stderr,"decode_info_field: c:%s p:%s m:%s f:%c\n",call,path,message,from);
+        fprintf(stderr,"decode_info_field: c:%s p:%s m:%s f:%c o:%s\n",call,path,message,from,origin);
     if (debug_level & 1)
         fprintf(stderr,"decode_info_field: Past check\n");
 
@@ -13920,7 +13931,6 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     ignore       = 0;       // if 1, don't treat undecoded packets as status text
     ok_igate_net = 0;       // if 1, send packet to internet
     ok_igate_rf  = 0;       // if 1, igate packet to RF if "from" is in nws-stations.txt
-    my_data[0]   = '\0';    // not really needed...
 
     if ( (message != NULL) && (strlen(message) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.
         if (debug_level & 1)
@@ -13930,42 +13940,51 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     else if (message == NULL || strlen(message) == 0) {      // we could have an empty message
         (void)data_add(STATION_CALL_DATA,call,path,NULL,from,port,origin,third_party);
         done = 1;                                       // don't report it to internet
-    } else
-        xastir_snprintf(my_data,
-            sizeof(my_data),
-            "%s",
-            message);                        // copy message for later internet transmit
+    }
 
-    // special treatment for objects
-    if (!done && strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) { // special treatment for object or item
-        if (message[0] == '*') {                        // set object
+    // special treatment for objects/items.
+    if (!done) {
+
+        if (message[0] == '*') {    // set object
             (void)data_add(APRS_OBJECT,call,path,message+1,from,port,origin,third_party);
-            ok_igate_net = 1;                           // report it to internet
-        } else if (message[0] == '!') {                 // set item
-            (void)data_add(APRS_ITEM,call,path,message+1,from,port,origin,third_party);
-            ok_igate_net = 1;                           // report it to internet
-        } else
-            if (message[0] == '_') {                    // delete object/item
-                DataRow *p_station;
-
-                delete_object(call);                    // ?? does not vanish from map immediately !!???
-
-                // If object was owned by me but another station is
-                // transmitting it now, write entries into the
-                // object.log file showing that we don't own this
-                // object anymore.
-                p_station = NULL;
-                if (search_station_name(&p_station,call,1)) {
-                    if ( (is_my_call(p_station->origin,1))  // If station was owned by me
-                            && (!is_my_call(origin,1)) ) {  // But isn't now
-                        disown_object_item(call,origin);
-                    }
-                }
-
-                ok_igate_net = 1;                       // report it to internet
+            if (strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) {
+                ok_igate_net = 1;   // report it to internet
             }
-        done = 1;
-        ok_igate_rf = done;
+            ok_igate_rf = 1;
+            done = 1;
+        }
+
+        else if (message[0] == '!') {   // set item
+            (void)data_add(APRS_ITEM,call,path,message+1,from,port,origin,third_party);
+            if (strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) {
+                ok_igate_net = 1;   // report it to internet
+            }
+            ok_igate_rf = 1;
+            done = 1;
+        }
+
+        else if (message[0] == '_') {   // delete object/item
+            DataRow *p_station;
+
+            delete_object(call);    // ?? does not vanish from map immediately !!???
+
+            // If object was owned by me but another station is
+            // transmitting it now, write entries into the
+            // object.log file showing that we don't own this object
+            // anymore.
+            p_station = NULL;
+            if (search_station_name(&p_station,call,1)) {
+                if ( (is_my_call(p_station->origin,1))  // If station was owned by me
+                        && (!is_my_call(origin,1)) ) {  // But isn't now
+                    disown_object_item(call,origin);
+                }
+            }
+            if (strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) {
+                ok_igate_net = 1;   // report it to internet
+            }
+            ok_igate_rf = 1;
+            done = 1;
+        }
     }
 
     if (!done) {
@@ -14157,7 +14176,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             fprintf(stderr,"decode_info_field: ok_igate_net start\n");
 
         if ( (from == DATA_VIA_TNC) // Came in via a TNC
-                && (strlen(my_data) > 0) ) { // Not empty
+                && (strlen(orig_message) > 0) ) { // Not empty
 
             // Here's where we inject our own callsign like this:
             // "WE7U-15*,I" in order to provide injection ID for our
@@ -14168,10 +14187,10 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             xastir_snprintf(line,
                 sizeof(line),
                 "%s>%s,%s*,I:%s",
-                call,
+                (strlen(origin)) ? origin : call,
                 path,
                 my_callsign,
-                my_data);
+                orig_message);
 
 //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
             output_igate_net(line, port, third_party);
@@ -14183,6 +14202,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     //
     //   *) ok_igate_rf flag is set.
     //   *) Not my exact callsign.
+    //   *) Packet was from the INET, not local RF
     //   *) The "from" call matches a line in data/nws-stations.txt,
     //      verified by igate.c:check_NWS_stations().
     //
@@ -14190,7 +14210,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     // the packet before allowing it to be igated, including a
     // dupe-check.
     //
-    if (ok_igate_rf && !is_my_call(call,1)) {
+    if (ok_igate_rf && !is_my_call(call,1) && from == DATA_VIA_NET) {
+
         char ipacket_message[300];
         char short_path[100];
 
@@ -14199,19 +14220,19 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
         xastir_snprintf(ipacket_message,
             sizeof(ipacket_message),
             "}%s>%s,TCPIP,%s*:%s",
-            call,
+            (strlen(origin)) ? origin : call,
             short_path,
             my_callsign,
-            message);
+            orig_message);
 
-        output_igate_rf(call,
-            call,
+        output_igate_rf((strlen(origin)) ? origin : call,
+            (strlen(origin)) ? origin : call,
             path,
             ipacket_message,
             port,
             third_party);
 
-//fprintf(stderr,"decode_info_field: IGATE>RF %s\n",line);
+//fprintf(stderr,"decode_info_field: IGATE>RF %s\n",ipacket_message);
     }
 
     if (debug_level & 1)
@@ -15118,7 +15139,14 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             makePrintable(filtered_data);
             fprintf(stderr,"c/p/i/o fr pt tp: %s\n", filtered_data);
         }
-        decode_info_field(call,path,info,origin,from,port,third_party);
+        decode_info_field(call,
+            path,
+            info,
+            origin,
+            from,
+            port,
+            third_party,
+            info_copy);
     }
 
 
