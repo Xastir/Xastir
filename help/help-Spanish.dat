@@ -2,7 +2,7 @@ HELP-INDEX>LÉAME PRIMERO - Licencia
 
            LÉAME PRIMERO - Licencia
 
-!!! NOTA: ¡Este Documento se actualizó en Fecha 11/24/01 !!
+!!! NOTA: ¡Este Documento se actualizó en Fecha 04/09/02 !!
 
 Para la información más actualizada por favor
 lea el archivo README.1ST en el directorio de Xastir.
@@ -190,7 +190,8 @@ de la izquierda. Si usted tienes un GPS usted puedes saltar esta opción.
 
 Los símbol/grupo de la estación pueden configurarse aquí. Pulse seleccionar gráficamente y  
 escoja un símbolo, o manualmente rellene los campos. Una descripción de texto de cada uno  
-de los símbolos pueden encontrarse en la "Tabla de símbolo" tema de ayuda. Las cubiertas son cumplidas seleccionando un símbolo de la tabla alternada, y poniendo el campo de la tabla a  
+de los símbolos pueden encontrarse en la "Tabla de símbolo" tema de ayuda. Las cubiertas son cumplidas seleccionando un símbolo
+ de la tabla alternada, y poniendo el campo de la tabla a  
 el carácter que usted desea recubrir encima del símbolo. Letras mayúsculas y  
 los números pueden ser recubierto. El APRS(tm) especificación sólo permite cubiertas sobre  
 símbolos específicos; Xastir no forza esto, pero algunos otros programas pueden.  
@@ -407,7 +408,9 @@ en tres áreas, tipo de dispositivo cima, datos de centro fluyendo, y interface d
 estado operacional. El tipo de dispositivo mostrará qué interfaces se configuraron.  
 El color mostrará qué tipo de dispositivo de la interface se configuró. Azul  
 es para los varios dispositivos TNC; Verde mostrará los dispositivos de GPS; Amarillo para los   
-Servidores de Internet; Naranja para las interfaces de WX. El centro mostrará que los datos fluyen en rx (flecha que apunta a la izquierda) o los datos fluyen fuera tx (flecha que apunta a la derecha) para eso interface. Una caja verde al fondo mostrará si esa interface es activa.  
+Servidores de Internet; Naranja para las interfaces de WX. El centro mostrará que los datos fluyen en rx (flecha que apunta a l
+a izquierda) o los datos fluyen fuera tx (flecha que apunta a la derecha) para eso interface. Una caja verde al fondo mostrará 
+si esa interface es activa.  
 Una caja roja mostrará si la interface es activa pero en una condición de error.  
 Por otra parte nada mostrará si la interface no está activa.  
 
@@ -424,10 +427,13 @@ Movimiento en el mapa es muy simple, la facilidad y rapidez de movimiento son de
 la velocidad de su procesador y la cantidad de detalle que usted carga.  
   
 Subiendo verticalmente:  
-Subiendo verticalmente puede ser logrado por pulsar el botón derecho de ratón sobre el mapa (y sosteniendo el botón abajo). Esto planteará un menú de opciones, con opciones para hacer subir verticalmente o fuera a un solo nivel, o para cambiar a uno de los niveles del enfoque prefijado.  
+Subiendo verticalmente puede ser logrado por pulsar el botón derecho de ratón sobre el mapa (y sosteniendo el botón abajo). Est
+o planteará un menú de opciones, con opciones para hacer subir verticalmente o fuera a un solo nivel, o para cambiar a uno de l
+os niveles del enfoque prefijado.  
   
 Todas las funciones de enfoque desde el menú de opciones harán acercarse o alejarse al punto  
-en el mapa donde usted pulsó el botón del ratón correcto. El  nivel de enfoque tiene una menú en  cascada. Niveles 1-64 son para las áreas muy locales y niveles 256 y superior es para  
+en el mapa donde usted pulsó el botón del ratón correcto. El  nivel de enfoque tiene una menú en  cascada. Niveles 1-64 son par
+a las áreas muy locales y niveles 256 y superior es para  
 áreas grandes. El número más bajo del nivel, la área más local.  
   
 Una función de enfoque más rápida es empujar y sostener el botón del ratón izquierdo, arrástrelo  
@@ -456,11 +462,13 @@ Más Sobre el Menú de Opciones:
 La selección de "Estación Info" en el menú de opciones buscará la estación  
 cerca a donde usted pulsó el botón derecho del ratón. Si más de una estación está  
 cerca de esa posición un "escogedor de Estación" de lista aparecerá, entonces usted puede  
-escoger los datos de qué estación que usted quiere ver. Si sólo una estación es vista entonces el indicador del ratón es cerrado y los datos de esa estación se desplegarán inmediatamente. Note  
+escoger los datos de qué estación que usted quiere ver. Si sólo una estación es vista entonces el indicador del ratón es cerrad
+o y los datos de esa estación se desplegarán inmediatamente. Note  
 que expiradas estaciones todavía tienen sus datos guardados en el banco de datos de Xastir, y  
 si uno sabe la situación anterior de una estación, uno todavía puede ver su info de esta  
 manera. También es posible desplegar estaciones viejas encendiendo el "el Despliegue  
-de Datos Expirados" opción en el menú de las estaciones. CORRIGEME: Si no es completamente verdad.  Esto sólo despliega algunos de los datos que desaparecen como estaciones fantasma,   
+de Datos Expirados" opción en el menú de las estaciones. CORRIGEME: Si no es completamente verdad.  Esto sólo despliega algunos
+ de los datos que desaparecen como estaciones fantasma,   
 Velocidad/altitud, etc.,  
   
 Para información de Objeto y Artículo, por favor vea el tema de ayuda "Objetos y Artículos"  
@@ -477,7 +485,8 @@ La opción de modificar Objeto/Artículo le traerá un diálogo de modificación de o
 Es similar al diálogo de creación de objeto, excepto por la actual información de objeto que  
 ya están publicada, y el nombre del objeto y unas de las pocas otras opciones que no pueden ser cambiada.  
   
-Los objetos son retransmitido dentro de la proporción de posición de la estación reportada, configurada en Archivo|Configurar|Predefinidos, y cesará la retransmisión después doblar el  
+Los objetos son retransmitido dentro de la proporción de posición de la estación reportada, configurada en Archivo|Configurar|P
+redefinidos, y cesará la retransmisión después doblar el  
 tiempo de despliegue de la estación, también configurada allí. "muerta" los objetos también son  
 retransmitido de esta manera, hasta que ellos expiren desde la cola.  
   
@@ -488,7 +497,10 @@ barra de botones se habilita.  Note que los artículos no pueden ser descifrados 
   
 Las área de objetos son útiles para una variedad de funcionamientos en lo que usted quiere dibujar  
 o resaltar una área de interés en el mapa. Ellos también pueden ser personalizados para dibujar  
-rastros/caminos/fronteras, sitios de vijilancia para mal el tiempo, las pistas de aterrizaje, perímetros, de una área de búsqueda o de un evento de servicio público, áreas de daño, áreas para quedarse fuera de, edificios que no están en el mapa, la tabla checker/chess para juego por dinero en APRS(tm).: -) Note que las área de objetos no son llevada a cabo en todas las versiones de programas APRS(tm), y algunos de los detalles de cómo ellos se despliegan también pueden  
+rastros/caminos/fronteras, sitios de vijilancia para mal el tiempo, las pistas de aterrizaje, perímetros, de una área de búsque
+da o de un evento de servicio público, áreas de daño, áreas para quedarse fuera de, edificios que no están en el mapa, la tabla
+ checker/chess para juego por dinero en APRS(tm).: -) Note que las área de objetos no son llevada a cabo en todas las versiones
+ de programas APRS(tm), y algunos de los detalles de cómo ellos se despliegan también pueden  
 ser diferente en otros programas.  
   
 Nombre  
@@ -500,7 +512,8 @@ Entre en el nombre DESPUÉS que usted ha seleccionado el tipo de objeto que volve
   
 Poste indicador  
 Este hace al objeto un poste indicador de objeto. Estas señales pueden ser 3 carácteres,  
-visible en un poste indicador a la locación cuando el enfoque es acercado. (CORRIGEME: Nosotros no hacemos el despliegue de los postes indicadores todavía de esta manera).  
+visible en un poste indicador a la locación cuando el enfoque es acercado. (CORRIGEME: Nosotros no hacemos el despliegue de los
+ postes indicadores todavía de esta manera).  
   
 Objeto del área  
 Esto hace un objeto del área al objeto, y habilita los mandos de objeto de área  
@@ -517,12 +530,14 @@ Símbolo Estación
 Usted puede seleccionar un símbolo para el objeto. Pulse seleccionar para escoger gráficamente,  
 o ver la sección tabla de ayuda de símbolo para las descripciones de cada símbolo. Note  
 que no todos los símbolos se han llevado a cabo todavía en el escogedor de gráficos,  
-y algunos no están por el APRS(tm) especificación. También note esa área de objeto, poste indicador de objetos, y los objetos de DF tienen símbolos fijos especiales y por consiguiente no pueden ser seleccionado aquí.  
+y algunos no están por el APRS(tm) especificación. También note esa área de objeto, poste indicador de objetos, y los objetos d
+e DF tienen símbolos fijos especiales y por consiguiente no pueden ser seleccionado aquí.  
   
 Localización  
 La localización del objeto se especifica aquí. Si usted seleccionara "Crear   
 Objeto/Artículo" pulsando el botón derecho del menú, la locación que usted pulsado se llenará  
-. Si usted moviera un objeto con el ratón, la nueva posición estará en esos campos.  Usted también puede teclear en una posición, por ejemplo usted puede estar poniendo un  
+. Si usted moviera un objeto con el ratón, la nueva posición estará en esos campos.  Usted también puede teclear en una posició
+n, por ejemplo usted puede estar poniendo un  
 objeto de un informe de voz sobre el aire.  
   
 Opciones genéricas  
@@ -536,7 +551,8 @@ de mensaje que aparece en la señal aquí.  Note que Xastir no despliega los objet
 de poste indicador a propiamente todavía.  
   
 Objeto área  
-Se usan Objetos de área para resaltar partes específicas del mapas, o para dibujar excepcionalmente detalle dentro de los mapas.  
+Se usan Objetos de área para resaltar partes específicas del mapas, o para dibujar excepcionalmente detalle dentro de los mapas
+.  
   Color luminoso.  
     Use la versión más luminosa de los colores permitidos.  
   Colorido  
@@ -607,7 +623,8 @@ y el comentario de la estación.
   
 Estación WX  
 Esta opción despliega una tabla de todo el APRS(tm) estaciones del tiempo y sus datos.  
-El datos incluyen curso del viento, velocidad del viento, velocidad de ráfaga dle viento, temperatura, humedad, presión barométrica, lluvia en la última hora, lluvia medianoche subsecuentemente, y lluvia en las últimas 24 horas.  
+El datos incluyen curso del viento, velocidad del viento, velocidad de ráfaga dle viento, temperatura, humedad, presión baromét
+rica, lluvia en la última hora, lluvia medianoche subsecuentemente, y lluvia en las últimas 24 horas.  
   
 Estación Meteorológica Propia  
 Despliega sus datos del tiempo si usted tiene una estación del tiempo y la ha configurado  
@@ -850,6 +867,7 @@ Conexión a un Servidor en Internet
 TNC vía la Uilidades del AX.25
 GPS Enlazado vía el Servidor gpsd
 Estación Meteorológica Enlazada a una RED
+TNC vía un Puerto Serial con (GPS más AUX puerto)
   
 Para agregar un dispositivo, pulse el botón de agregar. 
 Un diálogo "Elegir Tipo de Interfaz" aparecerá. 
@@ -933,6 +951,15 @@ Transmitir Ahora!
 en esta selección. No transmitirá si la opción "Serial TNC" no está seleccionada
 (en la sección Configurar/Interfaces/Agregar/Serial TNC/Adregar/Puerto TNC)
 o si la opción arriba mencionada permitir transmisión está fijada en off.
+
+HELP-INDEX>Configurar TNC via Serial c/GPS en HSP cable o AUX puerto
+
+            Configurar TNC via Serial c/GPS en HSP cable o AUX puerto
+
+Esos tipos de interfaces híbridos implementan las opciones de ambos serial TNCs
+y GPSs. Por favor consulte la configuración de ayuda para ambos serial TNCs y
+serial GPSs para más detalles de información sobre la configuración
+de esos dispositivos.
 
 HELP-INDEX>Configurando el AX.25 TNC
 
