@@ -7,12 +7,12 @@ client.  Most sources, documentation, and binaries are available under
 the GPL license, with a few modules available under other open-source or
 public domain licenses.
 
-Xastir currently runs under several flavors of Linux and BSD Unix.  A
-few people are running Xastir on Solaris Unix, FreeBSD, and Mac OS X,
-but there may be small changes necessary in order to get Xastir to
-configure/compile on some systems.  There are a few notes below which
-may help in this task.  Most of the developers use Linux which makes
-it the best supported platform at the moment.
+Xastir currently runs under several flavors of Linux and BSD Unix.
+A few people are running Xastir on Solaris Unix, FreeBSD, Lindows
+and Mac OS X, but there may be small changes necessary in order to
+get Xastir to configure/compile on some systems.  There are a few
+notes below which may help in this task.  Most of the developers use
+Linux which makes it the best supported platform at the moment.
 
 More information on Xastir can be found at:
 
