@@ -571,6 +571,9 @@ WPUPSTI056|Activar actualização automática||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF dirigido:||
 WPUPSTI059|Status: %s||
+WPUPSTI060|Fuel Temp: %02.1f°C  ||
+WPUPSTI061|Fuel Temp: %s°F   ||
+WPUPSTI062|Fuel Moisture: %s%%   ||
 #
 # FCC-RAC procurar indicativo
 STIFCC0001|Procurar FCC banco de datos||

@@ -3497,10 +3497,29 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
         }
+
+//WE7U
+        // Fuel temp/moisture for RAWS weather stations
+        if (strlen(weather->wx_fuel_temp) > 0) {
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI061"),weather->wx_fuel_temp);
+            else {
+                temp_out_C =(((atof(weather->wx_fuel_temp)-32)*5.0)/9.0);
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI060"),temp_out_C);
+            }
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_fuel_moisture) > 0) {
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI062"),weather->wx_fuel_moisture);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
         xastir_snprintf(temp, sizeof(temp), "\n\n");
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
-
     }
 
     if (fcc_lookup_pushed) {
@@ -4354,6 +4373,10 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
 // positionless weather report   in information field
 // complete weather report       with lat/lon
 //  see APRS Reference page 62ff
+//
+// WE7U:  Added 'F' for Fuel Temp and 'f' for Fuel Moisture in
+// order to decode these two new parameters used for RAWS weather
+// station objects.
 
 int extract_weather(DataRow *p_station, char *data, int compr) {
     char time_data[MAX_TIME];
@@ -4432,6 +4455,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
         (void)extract_weather_item(data,'l',3,temp);                  // luminosity (in watts per square meter) 1000 and above
 
         (void)extract_weather_item(data,'#',3,temp);                  // raw rain counter
+
+        (void)extract_weather_item(data,'F',3,weather->wx_fuel_temp); // Fuel Temperature in °F (RAWS)
+
+        (void)extract_weather_item(data,'f',2,weather->wx_fuel_moisture); // Fuel Moisture in % (RAWS)
 
 //    extract_weather_item(data,'w',3,temp);                          // ?? text wUII
 
@@ -4634,22 +4661,24 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
 
 void init_weather(WeatherRow *weather) {    // clear weather data
 
-    weather->wx_sec_time      = 0; // ?? is 0 ok ??
-    weather->wx_time[0]       = '\0';
-    weather->wx_course[0]     = '\0';
-    weather->wx_speed[0]      = '\0';
-    weather->wx_speed_sec_time = 0; // ??
-    weather->wx_gust[0]       = '\0';
-    weather->wx_temp[0]       = '\0';
-    weather->wx_rain[0]       = '\0';
-    weather->wx_rain_total[0] = '\0';
-    weather->wx_snow[0]       = '\0';
-    weather->wx_prec_24[0]    = '\0';
-    weather->wx_prec_00[0]    = '\0';
-    weather->wx_hum[0]        = '\0';
-    weather->wx_baro[0]       = '\0';
-    weather->wx_type          = '\0';
-    weather->wx_station[0]    = '\0';
+    weather->wx_sec_time         = 0; // ?? is 0 ok ??
+    weather->wx_time[0]          = '\0';
+    weather->wx_course[0]        = '\0';
+    weather->wx_speed[0]         = '\0';
+    weather->wx_speed_sec_time   = 0; // ??
+    weather->wx_gust[0]          = '\0';
+    weather->wx_temp[0]          = '\0';
+    weather->wx_rain[0]          = '\0';
+    weather->wx_rain_total[0]    = '\0';
+    weather->wx_snow[0]          = '\0';
+    weather->wx_prec_24[0]       = '\0';
+    weather->wx_prec_00[0]       = '\0';
+    weather->wx_hum[0]           = '\0';
+    weather->wx_baro[0]          = '\0';
+    weather->wx_fuel_temp[0]     = '\0';
+    weather->wx_fuel_moisture[0] = '\0';
+    weather->wx_type             = '\0';
+    weather->wx_station[0]       = '\0';
 }
 
 

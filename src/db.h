@@ -234,6 +234,8 @@ typedef struct {                //                      strlen
     char    wx_prec_00[10];     // in hundredths inch       3
     char    wx_hum[5];          // in %                     3
     char    wx_baro[10];        // in hPa                   6
+    char    wx_fuel_temp[5];    // in °F                    3
+    char    wx_fuel_moisture[5];// in %                     2
     char    wx_type;
     char    wx_station[MAX_WXSTATION];
 } WeatherRow;
