@@ -157,6 +157,7 @@ gid_t egid;
 FILE *file_wx_test;
 
 int dtr_on = 1;
+time_t sec_last_dtr = (time_t)0;
 
 /* language in use */
 char lang_to_use[30];
@@ -7809,8 +7810,41 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             }
             delay_time++;
 
+
+            // If active HSP ports, check whether we've been sitting
+            // for longer than XX seconds waiting for GPS data.  If
+            // so, the GPS is powered-down, lost lock, or become
+            // disconnected.  Go back to listening on the TNC port.
+            //
+            if (sec_now() > (sec_last_dtr + 2)) {   // 2-3 secs
+
+                if (!gps_stop_now) {    // No GPS strings parsed
+
+                    // GPS listen timeout!  Pop us out of GPS listen
+                    // mode on all HSP ports.  Listen to the TNC for
+                    // a while.
+                    dtr_all_set(0);
+                }
+            }
+
+
+            // If we parsed valid GPS data, bring all DTR lines back
+            // to normal for all HSP interfaces (set to receive from
+            // TNC now).
+            if (gps_stop_now) {
+                dtr_all_set(0); // Go back to TNC listen mode
+            }
+
+
+            // Start the GPS listening process again
+
             /* check gps start up, GPS on GPSPORT */
             if(sec_now() > sec_next_gps) {
+
+                // Reset the gps good-data flag
+                if (gps_stop_now) {
+                    gps_stop_now = 0;
+                }
 
                 //fprintf(stderr,"Check GPS\n");
 
@@ -7821,9 +7855,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // get reset for each line as valid GPS data gets
                 // parsed on that interface.
                 dtr_all_set(1);
-
-                if(gps_stop_now)
-                    gps_stop_now = 0;
+                sec_last_dtr = sec_now();   // GPS listen timeout
 
                 for(i=0; i<MAX_IFACE_DEVICES; i++) {
                     if (port_data[i].status) {
