@@ -231,6 +231,7 @@ Widget TNC_active_on_startup;
 Widget TNC_transmit_data;
 Widget TNC_device_name_data;
 Widget TNC_radio_port_data; // Used only for Multi-Port TNC's
+Widget TNC_comment;
 Widget TNC_unproto1_data;
 Widget TNC_unproto2_data;
 Widget TNC_unproto3_data;
@@ -290,6 +291,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     strcpy(devices[TNC_port].device_name,XmTextFieldGetString(TNC_device_name_data));
     (void)remove_trailing_spaces(devices[TNC_port].device_name);
+
+    strcpy(devices[TNC_port].comment,XmTextFieldGetString(TNC_comment));
+    (void)remove_trailing_spaces(devices[TNC_port].comment);
 
     if (devices[TNC_port].device_type == DEVICE_SERIAL_MKISS_TNC) {
 
@@ -355,7 +359,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
             break;
     }
 
-//WE7U:  Modify for MKISS?
     set_port_speed(TNC_port);
 
     devices[TNC_port].style=device_style;
@@ -444,7 +447,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
                 setup, setup1, setup2, setup3, setup4,
-                device, speed, speed_box,
+                device, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
                 style, style_box,
@@ -611,8 +614,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
                                       XmNmaxLength, 40,
                                       XmNbackground, colors[0x0f],
                                       XmNtopAttachment,XmATTACH_WIDGET,
@@ -625,8 +628,41 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_active_on_startup,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_device_name_data,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        TNC_comment = XtVaCreateManagedWidget("Config_TNC comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_active_on_startup,
+                                      XmNtopOffset, 2,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNleftOffset, 12,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
         if (device_type ==  DEVICE_SERIAL_MKISS_TNC) {
-            // Add a "Radio Port" field for Multi-Port KISS TNC's.
+            // "Radio Port" field for Multi-Port KISS TNC's.
 
             radio_port_label = XtVaCreateManagedWidget(langcode("WPUPCFT041"),
                                       xmLabelWidgetClass, form,
@@ -635,8 +671,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, TNC_device_name_data,
-                                      XmNleftOffset, 35,
+                                      XmNleftWidget, TNC_comment,
+                                      XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -1291,9 +1327,11 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 
             XmTextFieldSetString(TNC_device_name_data,TNC_PORT);
 
+            XmTextFieldSetString(TNC_comment,"");
+
             if (device_type == DEVICE_SERIAL_MKISS_TNC) {
                 XmTextFieldSetString(TNC_radio_port_data,"0");
-//fprintf(stderr,"Assigning '0' to radio port\n");
+//fprintf(stderr,"Assigning default '0' to radio port\n");
             }
 
             XmToggleButtonSetState(TNC_active_on_startup,TRUE,FALSE);
@@ -1356,6 +1394,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
             XmTextFieldSetString(TNC_device_name_data,devices[TNC_port].device_name);
+
+            XmTextFieldSetString(TNC_comment,devices[TNC_port].comment);
 
             if (device_type == DEVICE_SERIAL_MKISS_TNC) {
                 XmTextFieldSetString(TNC_radio_port_data, devices[TNC_port].radio_port);
@@ -1578,6 +1618,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 int GPS_port;
 Widget config_GPS_dialog = (Widget)NULL;
 Widget GPS_device_name_data;
+Widget GPS_comment;
 Widget GPS_active_on_startup;
 Widget GPS_set_time;
 
@@ -1616,6 +1657,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
 
     strcpy(devices[GPS_port].device_name,XmTextFieldGetString(GPS_device_name_data));
     (void)remove_trailing_spaces(devices[GPS_port].device_name);
+
+    strcpy(devices[GPS_port].comment,XmTextFieldGetString(GPS_comment));
+    (void)remove_trailing_spaces(devices[GPS_port].comment);
 
     if(XmToggleButtonGetState(GPS_active_on_startup))
         devices[GPS_port].connect_on_startup=1;
@@ -1663,7 +1707,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
 void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 frame, frame2,
-                device, speed, speed_box,
+                device, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
                 style, style_box,
@@ -1722,12 +1766,45 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightOffset, 5,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, device,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 15,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        GPS_comment = XtVaCreateManagedWidget("Config_GPS comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, device,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      NULL);
+
         GPS_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, device,
-                                      XmNtopOffset, 7,
+                                      XmNtopWidget, comment,
+                                      XmNtopOffset, 10,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNleftOffset ,10,
@@ -1932,6 +2009,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         if (config_type==0) {
             /* first time port */
             XmTextFieldSetString(GPS_device_name_data,GPS_PORT);
+            XmTextFieldSetString(GPS_comment,"");
             XmToggleButtonSetState(GPS_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(GPS_set_time, FALSE, FALSE);
             XmToggleButtonSetState(speed_4800,TRUE,FALSE);
@@ -1944,6 +2022,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
 begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
 
             XmTextFieldSetString(GPS_device_name_data,devices[GPS_port].device_name);
+            XmTextFieldSetString(GPS_comment,devices[GPS_port].comment);
+ 
             if (devices[GPS_port].connect_on_startup)
                 XmToggleButtonSetState(GPS_active_on_startup,TRUE,FALSE);
             else
@@ -2062,6 +2142,7 @@ int WX_rain_gauge_type;
 Widget config_WX_dialog = (Widget)NULL;
 Widget WX_transmit_data;
 Widget WX_device_name_data;
+Widget WX_comment;
 Widget WX_active_on_startup;
 Widget WX_tenths, WX_hundredths, WX_millimeters;
  
@@ -2101,6 +2182,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 
     strcpy(devices[WX_port].device_name,XmTextFieldGetString(WX_device_name_data));
     (void)remove_trailing_spaces(devices[WX_port].device_name);
+
+    strcpy(devices[WX_port].comment,XmTextFieldGetString(WX_comment));
+    (void)remove_trailing_spaces(devices[WX_port].comment);
 
     if(XmToggleButtonGetState(WX_active_on_startup))
         devices[WX_port].connect_on_startup=1;
@@ -2147,7 +2231,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 frame, frame2, frame3, frame4, WX_none,
-                device, speed, speed_box,
+                device, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
                 style, style_box,
@@ -2195,8 +2279,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
                                       XmNmaxLength, 40,
                                       XmNbackground, colors[0x0f],
                                       XmNtopAttachment,XmATTACH_FORM,
@@ -2209,12 +2293,45 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightOffset, 5,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, device,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        WX_comment = XtVaCreateManagedWidget("Config_WX comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, device,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      NULL);
+
         WX_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, device,
-                                      XmNtopOffset, 7,
+                                      XmNtopWidget, comment,
+                                      XmNtopOffset, 10,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNleftOffset ,10,
@@ -2492,6 +2609,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
         if (config_type==0) {
             /* first time port */
             XmTextFieldSetString(WX_device_name_data,GPS_PORT);
+            XmTextFieldSetString(WX_comment,"");
             XmToggleButtonSetState(WX_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(speed_2400,TRUE,FALSE);
             device_speed=3;
@@ -2502,6 +2620,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
         } else {
             /* reconfig */
             XmTextFieldSetString(WX_device_name_data,devices[WX_port].device_name);
+            XmTextFieldSetString(WX_comment,devices[WX_port].comment);
+ 
             if (devices[WX_port].connect_on_startup)
                 XmToggleButtonSetState(WX_active_on_startup,TRUE,FALSE);
             else
@@ -2652,6 +2772,7 @@ int NWX_port;
 Widget config_NWX_dialog = (Widget)NULL;
 Widget NWX_host_name_data;
 Widget NWX_host_port_data;
+Widget NWX_comment;
 Widget NWX_active_on_startup;
 Widget NWX_host_reconnect_data;
 
@@ -2694,6 +2815,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" )
     strcpy(devices[NWX_port].device_host_name,XmTextFieldGetString(NWX_host_name_data));
     (void)remove_trailing_spaces(devices[NWX_port].device_host_name);
     devices[NWX_port].sp=atoi(XmTextFieldGetString(NWX_host_port_data));
+
+    strcpy(devices[NWX_port].comment,XmTextFieldGetString(NWX_comment));
+    (void)remove_trailing_spaces(devices[NWX_port].comment);
+
     if (XmToggleButtonGetState(NWX_active_on_startup))
         devices[NWX_port].connect_on_startup=1;
     else
@@ -2742,7 +2867,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
 void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, frame3, frame4, WX_none,
                 button_ok, button_cancel,
-                hostn, portn,
+                hostn, portn, comment,
                 data_type, data_box,
                 data_auto, data_bin, data_ascii,
                 gauge_type, gauge_box,
@@ -2834,11 +2959,44 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightOffset, 5,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, portn,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        NWX_comment = XtVaCreateManagedWidget("Config_NWX comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, portn,
+                                      XmNtopOffset, 8,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      NULL);
+
         NWX_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, portn,
+                                      XmNtopWidget, comment,
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -3008,6 +3166,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX" );
             /* first time port */
             XmTextFieldSetString(NWX_host_name_data,"localhost");
             XmTextFieldSetString(NWX_host_port_data,"1234");
+            XmTextFieldSetString(NWX_comment,"");
             XmToggleButtonSetState(NWX_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(NWX_host_reconnect_data,TRUE,FALSE);
             device_data_type=0;
@@ -3018,6 +3177,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX" );
             XmTextFieldSetString(NWX_host_name_data,devices[NWX_port].device_host_name);
             xastir_snprintf(temp, sizeof(temp), "%d", devices[NWX_port].sp); /* port number */
             XmTextFieldSetString(NWX_host_port_data,temp);
+
+            XmTextFieldSetString(NWX_comment,devices[NWX_port].comment);
+ 
             if (devices[NWX_port].connect_on_startup)
                 XmToggleButtonSetState(NWX_active_on_startup,TRUE,FALSE);
             else
@@ -3097,6 +3259,7 @@ int NGPS_port;
 Widget config_NGPS_dialog = (Widget)NULL;
 Widget NGPS_host_name_data;
 Widget NGPS_host_port_data;
+Widget NGPS_comment;
 Widget NGPS_active_on_startup;
 Widget NGPS_host_reconnect_data;
 Widget NGPS_set_time;
@@ -3139,6 +3302,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
     strcpy(devices[NGPS_port].device_host_name,XmTextFieldGetString(NGPS_host_name_data));
     (void)remove_trailing_spaces(devices[NGPS_port].device_host_name);
     devices[NGPS_port].sp=atoi(XmTextFieldGetString(NGPS_host_port_data));
+
+    strcpy(devices[NGPS_port].comment,XmTextFieldGetString(NGPS_comment));
+    (void)remove_trailing_spaces(devices[NGPS_port].comment);
+
     if(XmToggleButtonGetState(NGPS_active_on_startup))
         devices[NGPS_port].connect_on_startup=1;
     else
@@ -3188,7 +3355,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" );
 
 void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                hostn, portn,
+                hostn, portn, comment,
                 sep;
     char temp[20];
     Atom delw;
@@ -3275,11 +3442,44 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightOffset, 5,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, portn,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        NGPS_comment = XtVaCreateManagedWidget("Config_NGPS comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, portn,
+                                      XmNtopOffset, 8,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      NULL);
+
         NGPS_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, portn,
+                                      XmNtopWidget, comment,
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -3372,6 +3572,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
             /* first time port */
             XmTextFieldSetString(NGPS_host_name_data,"localhost");
             XmTextFieldSetString(NGPS_host_port_data,"1234");
+            XmTextFieldSetString(NGPS_comment,"");
             XmToggleButtonSetState(NGPS_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(NGPS_host_reconnect_data,TRUE,FALSE);
             XmToggleButtonSetState(NGPS_set_time, FALSE, FALSE);
@@ -3383,6 +3584,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS" );
             XmTextFieldSetString(NGPS_host_name_data,devices[NGPS_port].device_host_name);
             xastir_snprintf(temp, sizeof(temp), "%d", devices[NGPS_port].sp); /* port number */
             XmTextFieldSetString(NGPS_host_port_data,temp);
+            XmTextFieldSetString(NGPS_comment,devices[NGPS_port].comment);
+
             if (devices[NGPS_port].connect_on_startup)
                 XmToggleButtonSetState(NGPS_active_on_startup,TRUE,FALSE);
             else
@@ -3422,6 +3625,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_NGPS" );
 int AX25_port;
 Widget config_AX25_dialog = (Widget)NULL;
 Widget AX25_device_name_data;
+Widget AX25_comment;
 Widget AX25_unproto1_data;
 Widget AX25_unproto2_data;
 Widget AX25_unproto3_data;
@@ -3467,6 +3671,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
     strcpy(devices[AX25_port].device_name,XmTextFieldGetString(AX25_device_name_data));
     (void)remove_trailing_spaces(devices[AX25_port].device_name);
+
+    strcpy(devices[AX25_port].comment,XmTextFieldGetString(AX25_comment));
+    (void)remove_trailing_spaces(devices[AX25_port].comment);
 
     if(XmToggleButtonGetState(AX25_active_on_startup))
         devices[AX25_port].connect_on_startup=1;
@@ -3535,7 +3742,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" );
 
 void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel, frame,
-                devn,
+                devn, comment,
                 proto, proto1, proto2, proto3,
                 igate, igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
@@ -3609,7 +3816,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 80,
+                                      XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -3621,8 +3828,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
                                       XmNmaxLength, 40,
                                       XmNbackground, colors[0x0f],
                                       XmNtopAttachment,XmATTACH_WIDGET,
@@ -3631,6 +3838,39 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, devn,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, AX25_active_on_startup,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, AX25_device_name_data,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AX25_comment = XtVaCreateManagedWidget("Config_AX25 comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AX25_active_on_startup,
+                                      XmNtopOffset, 2,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
@@ -3894,6 +4134,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
             XmToggleButtonSetState(AX25_transmit_data,TRUE,FALSE);
             XmToggleButtonSetState(AX25_relay_digipeat,TRUE,FALSE);
             XmTextFieldSetString(AX25_device_name_data,"");
+            XmTextFieldSetString(AX25_comment,"");
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
             XmTextFieldSetString(AX25_unproto1_data,"WIDE");
@@ -3942,6 +4183,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25" );
                 XmToggleButtonSetState(AX25_relay_digipeat,FALSE,FALSE);
 
             XmTextFieldSetString(AX25_device_name_data,devices[AX25_port].device_name);
+            XmTextFieldSetString(AX25_comment,devices[AX25_port].comment);
             XmTextFieldSetString(AX25_unproto1_data,devices[AX25_port].unproto1);
             XmTextFieldSetString(AX25_unproto2_data,devices[AX25_port].unproto2);
             XmTextFieldSetString(AX25_unproto3_data,devices[AX25_port].unproto3);
@@ -3974,6 +4216,7 @@ Widget config_Inet_dialog = (Widget)NULL;
 Widget Inet_active_on_startup;
 Widget Inet_host_data;
 Widget Inet_port_data;
+Widget Inet_comment;
 Widget Inet_password_data;
 Widget Inet_filter_data;
 Widget Inet_transmit_data;
@@ -4020,6 +4263,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
     (void)remove_trailing_spaces(devices[Inet_port].device_host_pswd);
     strcpy(devices[Inet_port].device_host_filter_string,XmTextFieldGetString(Inet_filter_data));
     (void)remove_trailing_spaces(devices[Inet_port].device_host_filter_string);
+    strcpy(devices[Inet_port].comment,XmTextFieldGetString(Inet_comment));
+    (void)remove_trailing_spaces(devices[Inet_port].comment);
 
     devices[Inet_port].sp=atoi(XmTextFieldGetString(Inet_port_data));
 
@@ -4070,7 +4315,8 @@ end_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
 
 void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl, filter, sep;
+                ihost, iport, password, password_fl,
+                filter, comment, sep;
 
     Atom delw;
     char temp[40];
@@ -4253,11 +4499,41 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, Inet_filter_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Inet_comment = XtVaCreateManagedWidget("Config_Inet comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, Inet_filter_data,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
         Inet_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFI011"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, filter,
+                                      XmNtopWidget, comment,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -4322,7 +4598,8 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
             //XmTextFieldSetString(Inet_host_data,"first.aprs.net");
             XmTextFieldSetString(Inet_host_data,"");
             XmTextFieldSetString(Inet_port_data,"10151");
-
+            XmTextFieldSetString(Inet_filter_data,"");
+            XmTextFieldSetString(Inet_comment,"");
             XmToggleButtonSetState(Inet_reconnect_data,FALSE,FALSE);
         } else {
             /* reconfig */
@@ -4344,6 +4621,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_Inet" );
             XmTextFieldSetString(Inet_port_data,temp);
             XmTextFieldSetString(Inet_password_data,devices[Inet_port].device_host_pswd);
             XmTextFieldSetString(Inet_filter_data,devices[Inet_port].device_host_filter_string);
+            XmTextFieldSetString(Inet_comment,devices[Inet_port].comment);
 
             if (devices[Inet_port].reconnect)
                 XmToggleButtonSetState(Inet_reconnect_data,TRUE,FALSE);
@@ -4377,6 +4655,7 @@ Widget config_Database_dialog = (Widget)NULL;
 Widget Database_active_on_startup;
 Widget Database_host_data;
 Widget Database_port_data;
+Widget Database_comment;
 Widget Database_password_data;
 Widget Database_filter_data;
 Widget Database_transmit_data;
@@ -4423,6 +4702,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
     (void)remove_trailing_spaces(devices[Database_port].device_host_pswd);
     strcpy(devices[Database_port].device_host_filter_string,XmTextFieldGetString(Database_filter_data));
     (void)remove_trailing_spaces(devices[Database_port].device_host_filter_string);
+    strcpy(devices[Database_port].comment,XmTextFieldGetString(Database_comment));
+    (void)remove_trailing_spaces(devices[Database_port].comment);
 
     devices[Database_port].sp=atoi(XmTextFieldGetString(Database_port_data));
 
@@ -4473,7 +4754,8 @@ end_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
 
 void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl, filter, sep;
+                ihost, iport, password, password_fl,
+                filter, sep, comment;
 
     Atom delw;
     char temp[40];
@@ -4656,11 +4938,42 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, filter,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Database_comment = XtVaCreateManagedWidget("Config_Database comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, filter,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
         Database_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFID11"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, filter,
+                                      XmNtopWidget, comment,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -4725,7 +5038,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
             //XmTextFieldSetString(Database_host_data,"first.aprs.net");
             XmTextFieldSetString(Database_host_data,"");
             XmTextFieldSetString(Database_port_data,"10151");
-
+            XmTextFieldSetString(Database_filter_data,"");
+            XmTextFieldSetString(Database_comment,"");
             XmToggleButtonSetState(Database_reconnect_data,FALSE,FALSE);
         } else {
             /* reconfig */
@@ -4747,6 +5061,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_Database" );
             XmTextFieldSetString(Database_port_data,temp);
             XmTextFieldSetString(Database_password_data,devices[Database_port].device_host_pswd);
             XmTextFieldSetString(Database_filter_data,devices[Database_port].device_host_filter_string);
+            XmTextFieldSetString(Database_comment,devices[Database_port].comment);
 
             if (devices[Database_port].reconnect)
                 XmToggleButtonSetState(Database_reconnect_data,TRUE,FALSE);
@@ -4779,6 +5094,7 @@ Widget config_AGWPE_dialog = (Widget)NULL;
 Widget AGWPE_active_on_startup;
 Widget AGWPE_host_data;
 Widget AGWPE_port_data;
+Widget AGWPE_comment;
 Widget AGWPE_password_data;
 Widget AGWPE_transmit_data;
 Widget AGWPE_igate_data;
@@ -4830,6 +5146,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_name);
     strcpy(devices[AGWPE_port].device_host_pswd,XmTextFieldGetString(AGWPE_password_data));
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_pswd);
+    strcpy(devices[AGWPE_port].comment,XmTextFieldGetString(AGWPE_comment));
+    (void)remove_trailing_spaces(devices[AGWPE_port].comment);
 
     devices[AGWPE_port].sp=atoi(XmTextFieldGetString(AGWPE_port_data));
 
@@ -4902,7 +5220,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                 ihost, iport, password, password_fl, sep,
                 igate, igate_box, igate_o_0, igate_o_1, igate_o_2,
                 igate_label, frame, proto, proto1, proto2, proto3,
-                radioport_label;
+                radioport_label, comment;
     Atom delw;
     char temp[40];
     Arg al[2];                      // Arg list
@@ -5001,7 +5319,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget,AGWPE_host_data,
-                                      XmNleftOffset, 20,
+                                      XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -5014,6 +5332,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 5,
+                                      XmNwidth, ((5*7)+2),
                                       XmNmaxLength, 6,
                                       XmNbackground, colors[0x0f],
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -5021,8 +5340,38 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, iport,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNrightOffset,10,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_transmit_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, AGWPE_port_data,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_comment = XtVaCreateManagedWidget("Config_AGWPE comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_transmit_data,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, comment,
+                                      XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
         password = XtVaCreateManagedWidget(langcode("WPUPCFIA09"),xmLabelWidgetClass, form,
@@ -5368,6 +5717,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             //XmTextFieldSetString(AGWPE_host_data,"first.aprs.net");
             XmTextFieldSetString(AGWPE_host_data,"localhost");
             XmTextFieldSetString(AGWPE_port_data,"8000");
+            XmTextFieldSetString(AGWPE_comment,"");
             XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
             XmToggleButtonSetState(AGWPE_relay_digipeat, TRUE, FALSE);
             device_igate_options=0;
@@ -5414,6 +5764,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             xastir_snprintf(temp, sizeof(temp), "%d", devices[AGWPE_port].sp);
             XmTextFieldSetString(AGWPE_port_data,temp);
             XmTextFieldSetString(AGWPE_password_data,devices[AGWPE_port].device_host_pswd);
+            XmTextFieldSetString(AGWPE_comment,devices[AGWPE_port].comment);
 
             if (devices[AGWPE_port].reconnect)
                 XmToggleButtonSetState(AGWPE_reconnect_data,TRUE,FALSE);
