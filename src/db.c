@@ -6616,6 +6616,11 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
     int hash_key;
 
 
+/*
+// Commenting out this speedup code for now until it can be examined
+// more closely to see if it is correct.
+
+
 // I just changed the function so that we can pass in the hash_key
 // that we wish to update:  We should be able to speed things up by
 // updating one hash key instead of all 16384 pointers.
@@ -6628,9 +6633,10 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
         station_shortcuts[hash_key_in] = p_rem;
 //fprintf(stderr,"%i ",hash_key_in);
     }
-    else {
-        // We're removing a hash key entry.  Clear and rebuild the
-        // entire hash table.
+    else {  // We're removing a hash key entry.
+*/
+
+        // Clear and rebuild the entire hash table.
 
 //??????????????????????????????????????????????????
     // Clear all of the pointers before we begin????
@@ -6668,7 +6674,11 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
             ptr = ptr->n_next;
         }
 //fprintf(stderr,"\n");
+
+/*
     }
+*/
+
 }
 
 
