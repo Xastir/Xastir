@@ -10099,6 +10099,7 @@ void check_pointer_position(void) {
 // Used to determine when to update the station number on the status
 // line:
 int stations_old = 0;
+time_t stations_status_time = 0;
 
 
 // This is the periodic process that updates the maps/symbols/tracks.
@@ -10998,8 +10999,10 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
             // END- READ FILE IF OPENED
         }
 
-        // If number of stations has changed
-        if (stations != stations_old) {
+        // If number of stations has changed, update the status
+        // line, but only once per second max.
+        if (stations != stations_old
+                && stations_status_time != sec_now()) {
             // show number of stations in status line
             xastir_snprintf(station_num,
                 sizeof(station_num),
@@ -11009,6 +11012,7 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
 
             // Set up for next time
             stations_old = stations;
+            stations_status_time = sec_now();
         }
 
         check_pointer_position();
@@ -13258,12 +13262,21 @@ void GPS_transfer_select( void ) {
 
 
 
+time_t check_gps_map_time = (time_t)0;
+
 
 // Function called by UpdateTime periodically.  Checks whether
 // we've just completed a GPS transfer and need to redraw maps as a
 // result.
 //
 void check_for_new_gps_map(void) {
+
+    // Only check once per second
+    if (check_gps_map_time == sec_now()) {
+        return; // Skip it, we already checked once this second.
+    }
+    check_gps_map_time = sec_now();
+
 
     if ( (gps_operation_pending || gps_got_data_from)
             && !gps_details_selected) {
@@ -13281,7 +13294,6 @@ void check_for_new_gps_map(void) {
 
 
 //fprintf(stderr,"check_for_new_gps_map()\n");
-
 
 
         // We have new data from a GPS!  Add the file to the
