@@ -1751,8 +1751,20 @@ void port_write_string(int port, char *data) {
         printf("write_lock, Port = %d\n", port);
 
     write_in_pos_hold = port_data[port].write_in_pos;
-    if (port_data[port].device_type != DEVICE_AX25_TNC) {
-        /* normal serial/net output */
+
+    // Serial KISS TNC?
+    if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+
+// WE7U
+// Need code here to create the AX.25 frame and send it to the KISS
+// TNC.  These will all be UI frames.  Use my own callsign and the
+// path that was computed in output_my_aprs_data() and
+// output_my_data() functions.
+
+    }
+
+    // Normal Serial/Net output?
+    else if (port_data[port].device_type != DEVICE_AX25_TNC) {
         for (i = 0; i < (int)strlen(data) && !erd; i++) {
             port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[i];
             if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
@@ -1768,7 +1780,10 @@ void port_write_string(int port, char *data) {
                 erd = 1;
             }
         }
-    } else {    /* AX.25 port output */
+    }
+
+    // AX.25 port output
+    else {
         port_data[port].bytes_output += strlen(data);
         data_out_ax25(port,(unsigned char *)data);
         /* do for interface indicators */
@@ -1885,7 +1900,6 @@ void port_read(int port) {
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
 
 
-//WE7U
                         // Do special KISS packet processing here.  We save
                         // the last character in port_data[port].channel2,
                         // as it is otherwise only used for AX.25 ports.
@@ -1930,7 +1944,6 @@ void port_read(int port) {
                         }   // End of first special KISS processing
 
 
-//WE7U
                         // Check for AX.25 flag character inside KISS
                         // packet
                         if ( (!skip)
@@ -3238,14 +3251,21 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
                 break;
 
+            case DEVICE_SERIAL_KISS_TNC:
+
+// WE7U:  Need code here for KISS TNC.  It'd be better to merge this
+// section in with the next section having to do with TNC's, but we
+// need to set the callsign and path in a different manner than
+// sending a string to the interface.
+
+                break;
+
             case DEVICE_SERIAL_TNC_HSP_GPS:
 
                 /* make dtr normal */
                 port_dtr(port,0);
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
-
-            case DEVICE_SERIAL_KISS_TNC:
 
             case DEVICE_SERIAL_TNC:
 
@@ -3629,12 +3649,19 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         VERSIONFRM);
                     break;
 
+                case DEVICE_SERIAL_KISS_TNC:
+
+// WE7U:  Need code here for KISS TNC.  It'd be better to merge this
+// section in with the next section having to do with TNC's, but we
+// need to set the callsign and path in a different manner than
+// sending a string to the interface.
+
+                    break;
+
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     port_dtr(port,0);           // make DTR normal
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
-
-                case DEVICE_SERIAL_KISS_TNC:
 
                 case DEVICE_SERIAL_TNC:
 
@@ -3667,6 +3694,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // to use the igate path.  If so and the path
                     // isn't empty, skip the rest of the path selection:
                     if ( (use_igate_path)
+                            && (devices[i].unproto_igate != NULL)
                             && (strlen(devices[i].unproto_igate) > 0) ) {
 
                         xastir_snprintf(data_txt,
@@ -3686,7 +3714,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                         done++;
                     }
-//WE7U
+
                     // Check whether a path was passed to us as a
                     // parameter:
                     if ( (path != NULL) && (strlen(path) != 0) ) {
