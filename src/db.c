@@ -5014,7 +5014,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
         (void)extract_weather_item(data,'P',3,weather->wx_prec_00);   // rainfall (1/100 inch) since midnight
 
-        if (extract_weather_item(data,'h',2,weather->wx_hum))         // humidity (in %, 00 = 100%)
+        if (extract_weather_item(data,'h',2,weather->wx_hum)) {       // humidity (in %, 00 = 100%)
             if (weather->wx_hum[0] != '.'
                     && weather->wx_hum[0] != ' ') {
                 xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",(atoi(weather->wx_hum)+99)%100+1);
@@ -5022,6 +5022,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             else {  // Truncate it
                 weather->wx_hum[0] = '\0';
             }
+        }
 
         if (extract_weather_item(data,'b',5,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
             xastir_snprintf(weather->wx_baro,
