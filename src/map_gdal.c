@@ -587,10 +587,10 @@ void guess_vector_attributes( Widget w,
                               OGRLayerH layerH,
                               OGRFeatureH featureH,
                               int geometry_type ) {
-
-    label_color_guess = -1; // Default = don't draw the feature
     int ii;
     const char *pii = NULL;
+
+    label_color_guess = -1; // Default = don't draw the feature
 
 
 //fprintf(stderr,"guess: %s\n", full_filename);
