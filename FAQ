@@ -302,12 +302,18 @@ The Answers
         appear on my screen?
 
     Did you set up your TNC startup files correctly to remove any extra data
-    from the packet headers? See README.1ST.
+    from the packet headers? Are you using the correct startup file?  See
+    README.1ST.
 
-    Second, check that ALTNET support in File|Configure|Defaults isn't enabled.
+    Check that ALTNET support in File|Configure|Defaults isn't enabled.
 
-    Third, the "Display Symbols" button in the Stations menu must be
+    The "Display Symbols" button in the Stations menu must be
     checked in order to see stations on the map screen.
+
+    Check that the Display Incoming Data windows is actually showing
+    data coming in.  If not, check your radio's volume/squelch
+    levels and your cabling, both between the radio/TNC and between
+    the TNC/Computer.
 
     4.6 Who is this APX112 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are
