@@ -1,3 +1,9 @@
+2003-02-02 23:16  jtwilley
+
+        * COPYING: made example Y2K-compliant
+	* acinclude.m4, config.guess, config.sub, missing, 
+	  mkinstalldirs: updated to work with autoconf 2.53
+
 2003-02-01 20:30  jtwilley
 
 	* db.c: added support for direct stations
