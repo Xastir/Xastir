@@ -302,9 +302,6 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
         // Get the previous alert count from the alert list window
         XtVaGetValues(wx_alert_list, XmNitemCount, &max_item_count, NULL);
 
-        // Expire old alerts (zero the title string)
-        alert_expire();
-
         ii = 0; // Current dialog count
 
         // Step through the alert list.  Create a string for each

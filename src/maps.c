@@ -11951,22 +11951,11 @@ void load_alert_maps (Widget w, char *dir) {
                                     (unsigned char)0x62 };
 
 
-// NOTES:
-// Have alert_expire() schedule a map redraw if anything has
-// expired?  We might not want that in all cases, like inside this
-// routine (load_alert_maps).
-//
 // Figure out how to pass a quantity of zones off to the map drawing
 // routines, then we can draw them all with one pass through each
 // map file.  Alphanumerically sort the zones to make it easier for
 // the map drawing functions.
 
-
-    // Expire old alerts (zero the title string).
-    // alert_active_count() returns the number of active alerts.
-    // alert_expire() returns the number of alerts that were just
-    // expired.
-    (void)alert_expire();
 
     alert_count = MAX_ALERT - 1;
 

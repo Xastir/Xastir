@@ -442,6 +442,11 @@ int alert_active_count(void) {
 
 
 
+// Needed by alert_expire() below
+static time_t last_alert_expire = 0;
+
+
+
 //
 // alert_expire()
 //
@@ -455,6 +460,15 @@ int alert_active_count(void) {
 int alert_expire(void) {
     int ii;
     int expire_count = 0;
+
+    // Check only every 60 seconds
+    if ( (last_alert_expire + 60) > sec_now() ) {
+        return(0);
+    }
+    last_alert_expire = sec_now();
+
+    if (debug_level & 2)
+        fprintf(stderr,"Checking for expired alerts...\n");
 
     // Delete stored alerts that have expired (zero the title string)
     for (ii = 0; ii < alert_max_count; ii++) {
@@ -472,6 +486,12 @@ int alert_expire(void) {
             expire_count++;
         }
     }
+
+    // Cause a screen redraw if we expired some alerts
+    if (expire_count && !redraw_on_new_data) {
+        redraw_on_new_data = 1;
+    }
+
     return(expire_count);
 }
 
@@ -482,8 +502,7 @@ int alert_expire(void) {
 //
 // alert_add_entry()
 //
-// This function adds a new alert to our alert list.  It also
-// deletes expires alerts from the list by zero'ing their title.
+// This function adds a new alert to our alert list.
 //
 // Returns address of entry in alert_list or NULL.
 // Called from alert_build_list() function.
@@ -520,9 +539,6 @@ int alert_expire(void) {
         }
         return(NULL);
     }
-
-    // Zero out expired alerts
-    alert_expire();
 
     // Allocate more space if we're at our maximum already.
     // Allocate space for 100 more alerts.
