@@ -294,6 +294,18 @@ AC_HEADER_TIME
 AC_STRUCT_TM 
 AC_TYPE_SIGNAL 
 
+# Check for tm_gmtoff in tm (borrowed from the KAME project)
+echo -n "Checking for tm_gmtoff..."
+AC_TRY_COMPILE([#include <sys/types.h>
+  #include <$ac_cv_struct_tm>], [struct tm tm; tm.tm_gmtoff;],
+  ac_cv_struct_tm_gmtoff=yes, ac_cv_struct_tm_gmtoff=no)
+if test "$ac_cv_struct_tm_gmtoff" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_GMTOFF, 1, [Define if you have tm->tm_gmtoff]) 
+  echo "yes"
+else
+  echo "no"
+fi 
+
 
  
 # Checks for library functions. 

@@ -745,7 +745,7 @@ time_t time_from_aprsstring(char *aprs_time) {
 
     (void)time(&timenw);
     time_now = localtime(&timenw);
-#ifdef __FreeBSD__
+#ifdef HAVE_GMTOFF
     zone = (time_now->tm_gmtoff) - 3600 * (int)(time_now->tm_isdst);
 #else
     zone = (int)timezone - 3600 * (int)(time_now->tm_isdst > 0);
