@@ -407,12 +407,8 @@ First Time Install:
      file.
 
    7. Building XASTIR
-        "./configure" or "./configure --with-ax25"
+        "./configure"
         "make" ("gmake" for Solaris or *BSD)
-
-     Note that with the current setup, the "--with-ax25" flag sometimes
-     hurts more than it helps.  Try without it first to see if configure
-     can find your ax.25 libraries.
 
      This builds XASTIR, You should not get any error or warning messages.
 
@@ -1007,6 +1003,26 @@ Getting Data Files for Xastir:
        all, assuming that you only choose one type of map for the first layer.
        Some people prefer "raster" and "vector" instead.  This will also work.
 
+       Map types available by extension:
+
+       Vector Format:
+       .shp/.shx/.dbf  Shapefile vector map (need all three files)
+       .pdb            pocketAPRS vector map
+       .map            APRSdos/WinAPRS/MacAPRS vector map
+       .gnis           GNIS labels file (actually points instead of vectors)
+       .geo            Vector map or internet vector map
+
+       Raster Format:
+       .tif/.fgd       geoTIFF raster image map
+       .geo            Raster image map or internet raster image map
+
+      Note:  .geo is listed twice because it can fit in both categories,
+      depending on the base format of the map file that the .geo file
+      points to.  .geo files are handled by the XPM library or by
+      ImageMagick, so most anything that can be handled by those installed
+      libraries can by handled by Xastir.
+
+
      Dos/Win/MacAPRS style vector/fill maps:
 
       ftp://aprs.rutgers.edu/pub/hamradio/APRS/maps02/
@@ -1037,6 +1053,13 @@ Getting Data Files for Xastir:
 
       Some shapefile format maps are available at: 
       http://isl715.nws.noaa.gov/mapdata/newcat/ 
+
+      Tiger97 maps converted to shapefile downloadable from:
+      http://www.mapshots.com
+
+      Newer Tiger/Line 2000 map data is avaiable from:
+      http://www.geographynetwork.com/data/tiger2000/ but requires free
+      registration.
 
     .geo files/online maps & graphics:
 
@@ -1111,7 +1134,7 @@ Getting Data Files for Xastir:
         AWIPS Counties
 
       Unzip those files in the /usr/local/xastir/Counties/ directory and
-      Xastir should find them and use them for weather alerts. The 
+      Xastir should find them and use them for weather alerts.
 
      Download audio files:
 
