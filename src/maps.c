@@ -11959,19 +11959,36 @@ void load_alert_maps (Widget w, char *dir) {
 
     // Check for message alerts, draw alerts if they haven't expired yet
     // and they're in our view.
-    if (alert_message_scan ()) {    // Returns number of wx alerts * 3
-        memset (alert_scan, 0, sizeof (alert_scan));    // Zero our string
+    if (alert_message_scan ()) {
+        // Returns number of wx alerts * 3.  Scans through messages
+        // looking for alerts and adds them to our alert_list.
+
+        // Set up our path to the wx alert maps
+        memset (alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
         strncpy (alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
         strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
         dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
         //fprintf(stderr,"Weather Alerts, alert_scan: %s\t\talert_status: %s\n", alert_scan, alert_status);
 
-        // Iterate through the weather alerts we currently have.
+        // Iterate through the weather alerts we currently have on
+        // our list.  It looks like we wish to just fill in the
+        // alert struct and to determine whether the alert is within
+        // our viewport here.  We don't really wish to draw the
+        // alerts at this stage, that comes just a bit later in this
+        // routine.
+//
+// NOTE:  This first loop would be better served by a separate
+// function that is called only when a new alert arrives,
+// automatically filling in the map filename at that point.  More
+// efficient anyway.  It wouldn't have to process the entire list.
+//
         for (ii = 0; ii < alert_max_count; ii++) {
 
             // Check whether alert slot is empty/filled
-            if (alert_list[ii].title[0] == '\0') // It's empty
+            if (alert_list[ii].title[0] == '\0') // It's empty, skip
+                // this iteration of the loop and advance to the
+                // next slot.
                 continue;
 
             // The last parameter denotes loading into pixmap_alerts instead
@@ -11980,10 +11997,6 @@ void load_alert_maps (Widget w, char *dir) {
             // function.
             //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
 
-// It looks like we want to do this section just to fill in the
-// alert struct and to determine whether the alert is within our
-// viewport.  We don't really wish to draw the alerts at this stage.
-// That comes just a bit later in this routine.
             if ( (alert_list[ii].title[0] != '\0')       // Alert in the slot
                     && (!alert_list[ii].filename[0]) ) { // but filename is empty
                 map_search (w,
@@ -11996,6 +12009,7 @@ void load_alert_maps (Widget w, char *dir) {
             }
         }
     }
+
 
 // Just for a test
 //draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
@@ -12056,14 +12070,6 @@ void load_alert_maps (Widget w, char *dir) {
             }
         }
     }
-
-
-//    for (ii = 0; ii < alert_max_count; ii++) {
-//        if (alert_list[ii].title[0] == '\0')
-//            continue;
-//        fprintf(stderr,"Title5:%s\n",alert_list[ii].title);
-//    }
-
 
     //fprintf(stderr,"Done drawing all active alerts\n");
 
