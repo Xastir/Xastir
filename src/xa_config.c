@@ -1334,7 +1334,7 @@ void load_data_or_default(void) {
         snapshots_enabled = 0;
 
     /* WX ALERTS */
-    if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME, 1l, 86400l, 30l))
+    if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME, 1l, 86400l, 60l))
         WX_ALERTS_REFRESH_TIME = (time_t)60l;
 
     /* gps */
