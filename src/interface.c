@@ -3211,11 +3211,6 @@ int command_file_to_tnc_port(int port, char *filename) {
                                     line);
                             }
                         }
-                        else if (strstr(line, "META")) {
-                            fprintf(stderr,
-                                "Unrecognized ##META command: %s\n",
-                                line);
-                        }
                     }
                 }
             }
