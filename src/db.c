@@ -10045,9 +10045,17 @@ void extract_TNC_text(char *info) {
 
 //WE7U
 // We feed a raw 7-byte string into this routine.  It decodes the
-// callsign-SSID from it and tells us whether there are more callsigns
-// after this.  If the asterisk is nonzero it'll add an asterisk to the
-// callsign if it has been digipeated.
+// callsign-SSID and tells us whether there are more callsigns after
+// this.  If "asterisk" is nonzero it'll add an asterisk to the
+// callsign if it has been digipeated.  This function is called by
+// the decode_ax25_header() function.
+//
+// Inputs:  string          Raw input string
+//          asterisk        1 = add "digipeated" asterisk
+//
+// Outputs: callsign        Processed string
+//          returned int    1 = more callsigns to follow
+//
 int decode_ax25_address(char *string, char *callsign, int asterisk) {
     int i,j;
     char ssid;
@@ -10068,10 +10076,13 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
         digipeated++;   // Has been digipeated
 
     if ( !(ssid & 0x01) )
-        more++; // More callsigns after this one
+        more++; // More callsigns to come after this one
 
+    // Snag just the SSID bits out of the character
     ssid = (ssid >> 1) & 0x0f;
 
+    // Construct the SSID number and add it to the end of the
+    // callsign if non-zero
     if (ssid) {
         callsign[j++] = '-';
         if (ssid > 9)
@@ -10080,9 +10091,11 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
         callsign[j++] = '0' + ssid;
     }
 
+    // Add an asterisk if it has been digipeated
     if (digipeated)
         callsign[j++] = '*';
 
+    // Terminate the string
     callsign[j] = '\0';
 
     return(more);
@@ -10096,10 +10109,16 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 // Function which receives raw AX.25 packets from a KISS interface and
 // converts them to a printable TAPR-2 style line.  We receive the
 // packet with perhaps more than one flag character at the beginning,
-// and a "\0" character at the end.
+// and a "\0" character at the end.  We actually end up with
+// multiple asterisks, one for each callsign that the packet was
+// digipeated through.  A few other TNC's put out this same sort of
+// format.
 //
-// We return:  0 if it is a bad packet
-//             1 if it is good
+// Inputs:  incoming_data       Raw string
+//
+// Outputs: int                 0 if it is a bad packet,
+//                              1 if it is good
+//          incoming_data       Processed string
 //
 int decode_ax25_header(char *incoming_data) {
     char temp[20];
@@ -10156,6 +10175,10 @@ int decode_ax25_header(char *incoming_data) {
     }
 
     strcat(result,":");
+
+//WE7U:  We should probably check these bytes and toss packets that
+// are AX.25 connect/disconnect or information packets.  We only
+// want to process UI packets in Xastir.
 
     ptr += 2;   // Skip control and PID bytes
     strcat(result,&incoming_data[ptr]);
