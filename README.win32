@@ -520,19 +520,18 @@ These additional Xastir libraries have been tested on Cygwin:
     libtiff
     libproj
     libgeotiff
+    Festival
 
 Anyone testing additional libraries is encouraged to share their
 findings on the Xastir mailing lists.  The libraries which have
 _not_ been made to work yet on Cygwin are:
 
     AX25
-    Festival
     GPSMan
 
 The AX25 libraries will probably never work, as they are for Linux
-only.  Festival and GPSMan may work on Cygwin at some point if
-enough work is done to figure out and document the process.
-
+only.  GPSMan may work on Cygwin at some point if enough work is
+done to figure out and document the process.
 
 
 RECOMMENDED:  Adding Shapelib (tested with shapelib-1.2.10):
@@ -908,6 +907,91 @@ It should find libtiff/libproj/libgeotiff at the configure stage and
 compile in support for geotiff maps.  You should now be able to use
 USGS geoTIFF topo maps, and see them tiled together in the map
 window into a continuous map.
+
+
+
+OPTIONAL:  Install Festival support:
+------------------------------------
+Allows using a synthesized voice from within Xastir for alerts,
+reading messages to you, and other cool things.  Tom Russo did the
+initial work on this.  Perhaps others will optimize this procedure
+at a later date:
+
+I found this site:
+http://www.cstr.ed.ac.uk/cgi-bin/lists.cgi?config=festival_faq&entry=installing_festival
+
+It didn't work, exactly, but after some playing around I managed to
+get the latest beta release (1.95) of festival running under cygwin,
+and built xastir to use it.
+
+It wasn't all that difficult, and after doing it I'm not sure how
+many of the steps were absolutely essential, but here's what I did,
+based on hints from the cstr web site above.
+
+1) Create "c:\festival" and "c:\tmp"
+
+2) Download festival components from festvox.org, put into
+   "c:\festival":
+
+    speech_tools-1.2.95-beta.tar.gz
+    festival-1.95-beta.tar.gz
+    festlex-CMU.tar.gz
+    festlex-POSLEX.tar.gz
+    festvox-kallpc16k.tar.gz
+
+3) Start cygwin and mount "tmp" and "festival":
+
+   mount -f -s -b "C:/festival" "/festival"
+   mount -f -s -b "C:/tmp" "/tmp" 
+
+   According to the cstr site this is important to getting the
+   server to work right.  The mount commands should go in your
+   startup shell rc file so that they happen automatically each time
+   you start up Cygwin.
+
+4) Build festival and company:
+
+   cd /festival
+   tar xzf speech_tools-1.2.95-beta.tar.gz 
+   tar xzf festival-1.95-beta.tar.gz
+   tar xzf festlex-CMU.tar.gz
+   tar xzf festlex-POSLEX.tar.gz
+   tar xzf festvox-kallpc16k.tar.gz
+
+   cd speech_tools
+   ./configure && make
+   cd ../festival
+   ./configure && make
+
+   These packages don't have proper "make install" targets, so if
+   you do "make install" it won't put the proper stuff into
+   /usr/local like it should.
+
+5) In my case, I had to change the festival.scm file in
+   /festival/festival/lib because my machine doesn't call itself
+   "localhost" when I telnet out, and doing "telnet localhost 1314"
+   got me rejected from the server.  I just added my system's name
+   to the "server_access_list" variable.
+
+6) Add /festival/festival/bin to PATH
+
+   export PATH=/festival/festival/bin
+
+7) Configure and build xastir.  Configure should report that
+   festival is found.
+
+8) Start the festival server:
+
+   festival --server &
+
+9) Run xastir, do File->Configure->Speech, add things to say, and
+   listen.
+
+If anyone else wants to play and streamline the process, have at it.
+It might be possible that the bit about mounting "C:\tmp" and
+"C:\festival" are only important if you're running festival from
+outside Cygwin or something.
+
 
 
 How to make Sound Alerts work under Cygwin
