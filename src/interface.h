@@ -150,8 +150,12 @@ typedef struct {
     int    transmit_data;                         /* Data transmit out of this port          */
     int    reconnect;                             /* reconnect on net failure                */
     int    connect_on_startup;                    /* connect to this device on startup       */
-        int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
-        int    set_time;                                                          /* Set System Time from GPS on this port   */
+    int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
+    int    set_time;                              /* Set System Time from GPS on this port   */
+    char   txdelay[4];                            /* KISS parameter */
+    char   persistence[4];                        /* KISS parameter */
+    char   slottime[4];                           /* KISS parameter */
+    char   fullduplex[2];                         /* KISS parameter */
 } ioparam;
 
 
@@ -199,6 +203,7 @@ extern void check_ports(void);
 extern void clear_all_port_data(void);
 extern char aprs_station_message_type;
 extern void port_dtr(int port, int dtr);
+extern void send_kiss_config(int port, int device, int command, int value);
 void port_write_string(int port, char *data);
 extern void init_device_names(void);
 extern void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path, char *path);

@@ -235,6 +235,10 @@ Widget TNC_unproto3_data;
 Widget TNC_igate_data;
 Widget TNC_up_file_data;
 Widget TNC_down_file_data;
+Widget TNC_txdelay;
+Widget TNC_persistence;
+Widget TNC_slottime;
+Widget TNC_fullduplex;
 Widget TNC_GPS_set_time;
 
 
@@ -319,10 +323,26 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     strcpy(devices[TNC_port].unproto_igate,XmTextFieldGetString(TNC_igate_data));
     (void)remove_trailing_spaces(devices[TNC_port].unproto_igate);
 
-    if (type != DEVICE_SERIAL_KISS_TNC) {
+    if (type == DEVICE_SERIAL_KISS_TNC) {
         // KISS TNC, no up/down files for this one!
         strcpy(devices[TNC_port].tnc_up_file,"");
         strcpy(devices[TNC_port].tnc_down_file,"");
+
+        // Instead we have KISS parameters to set
+
+// We really should do some validation of these strings
+
+        strcpy(devices[TNC_port].txdelay,XmTextFieldGetString(TNC_txdelay));
+        send_kiss_config(TNC_port,0,0x01,atoi(devices[TNC_port].txdelay));
+
+        strcpy(devices[TNC_port].persistence,XmTextFieldGetString(TNC_persistence));
+        send_kiss_config(TNC_port,0,0x02,atoi(devices[TNC_port].persistence));
+
+        strcpy(devices[TNC_port].slottime,XmTextFieldGetString(TNC_slottime));
+        send_kiss_config(TNC_port,0,0x03,atoi(devices[TNC_port].slottime));
+
+        strcpy(devices[TNC_port].fullduplex,XmTextFieldGetString(TNC_fullduplex));
+        send_kiss_config(TNC_port,0,0x05,atoi(devices[TNC_port].fullduplex));
     }
     else {
         strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
@@ -356,7 +376,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int port) {
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
-                setup, setup1, setup2,
+                setup, setup1, setup2, setup3, setup4,
                 device, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
@@ -812,9 +832,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
 //WE7U
-// If KISS TNC, don't draw frame3 or its contents
-
-        frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
+// Draw a different frame3 for Serial KISS TNC interfaces
+        switch(device_type) {
+            case DEVICE_SERIAL_KISS_TNC:
+                frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopOffset,10,
                                     XmNtopWidget, TNC_igate_data,
@@ -826,69 +847,209 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-        setup = XtVaCreateManagedWidget("Config_TNC TNC Setup/Shutdown files",xmLabelWidgetClass, frame3,
+                setup = XtVaCreateManagedWidget("KISS Parameters",xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-        form2 =  XtVaCreateWidget("Config_TNC form2",xmFormWidgetClass, frame3,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            NULL);
+                form2 =  XtVaCreateWidget("Config_TNC form2",xmFormWidgetClass, frame3,
+                                    XmNfractionBase, 5,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
 
-        setup1 = XtVaCreateManagedWidget("Config_TNC Setup File Name", xmLabelWidgetClass, form2,
-                                      XmNtopAttachment,XmATTACH_FORM,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+                setup1 = XtVaCreateManagedWidget("TXDelay", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_FORM,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
 
-        TNC_up_file_data = XtVaCreateManagedWidget("Config_TNC up_file", xmTextFieldWidgetClass, form2,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment,XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+                TNC_txdelay = XtVaCreateManagedWidget("Config_TNC up_file", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 3,
+                                    XmNwidth, ((6*7)+2),
+                                    XmNmaxLength, 3,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_FORM,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 2,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
 
-        setup2 = XtVaCreateManagedWidget("Config_TNC Shutdown File Name", xmLabelWidgetClass, form2,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, setup1,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+                setup2 = XtVaCreateManagedWidget("Persistence", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup1,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
 
-        TNC_down_file_data = XtVaCreateManagedWidget("Config_TNC down_file", xmTextFieldWidgetClass, form2,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, setup1,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment,XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+                TNC_persistence = XtVaCreateManagedWidget("Config_TNC persistenc", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 3,
+                                    XmNwidth, ((6*7)+2),
+                                    XmNmaxLength, 3,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup1,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 2,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
+
+                setup3 = XtVaCreateManagedWidget("SlotTime", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup2,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                TNC_slottime = XtVaCreateManagedWidget("Config_TNC slottime", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 3,
+                                    XmNwidth, ((6*7)+2),
+                                    XmNmaxLength, 3,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup2,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 2,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
+
+                setup4 = XtVaCreateManagedWidget("FullDuplex", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup3,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                TNC_fullduplex = XtVaCreateManagedWidget("Config_TNC FullDuplex", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 3,
+                                    XmNwidth, ((6*7)+2),
+                                    XmNmaxLength, 3,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup3,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 2,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
+
+                break;
+            default:
+                frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopOffset,10,
+                                    XmNtopWidget, TNC_igate_data,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftOffset, 10,
+                                    XmNrightAttachment,XmATTACH_FORM,
+                                    XmNrightOffset, 10,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                setup = XtVaCreateManagedWidget("Config_TNC TNC Setup/Shutdown files",xmLabelWidgetClass, frame3,
+                                    XmNchildType, XmFRAME_TITLE_CHILD,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                form2 =  XtVaCreateWidget("Config_TNC form2",xmFormWidgetClass, frame3,
+                                    XmNfractionBase, 5,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                setup1 = XtVaCreateManagedWidget("Config_TNC Setup File Name", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_FORM,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                TNC_up_file_data = XtVaCreateManagedWidget("Config_TNC up_file", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 25,
+                                    XmNwidth, ((25*7)+2),
+                                    XmNmaxLength, 80,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_FORM,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 2,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
+
+                setup2 = XtVaCreateManagedWidget("Config_TNC Shutdown File Name", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup1,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                TNC_down_file_data = XtVaCreateManagedWidget("Config_TNC down_file", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 25,
+                                    XmNwidth, ((25*7)+2),
+                                    XmNmaxLength, 80,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup1,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 2,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
+
+                break;
+        }
+
+
+//------------------------------------------------------------
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -925,8 +1086,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         XmAddWMProtocolCallback(config_TNC_dialog, delw, Config_TNC_destroy_shell, (XtPointer)config_TNC_dialog);
 
 //WE7U
-        if (device_type == DEVICE_SERIAL_KISS_TNC)
-            XtSetSensitive(frame3,FALSE);
+//        if (device_type == DEVICE_SERIAL_KISS_TNC)
+//            XtSetSensitive(frame3,FALSE);
 
         if (config_type==0) {
             /* first time port */
@@ -963,8 +1124,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
 //WE7U
             if (device_type == DEVICE_SERIAL_KISS_TNC) {
-                XmTextFieldSetString(TNC_up_file_data,"");
-                XmTextFieldSetString(TNC_down_file_data,"");
+//                XmTextFieldSetString(TNC_up_file_data,"");
+//                XmTextFieldSetString(TNC_down_file_data,"");
             }
             else {
                 XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
@@ -1109,14 +1270,26 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
             XmTextFieldSetString(TNC_unproto3_data,devices[TNC_port].unproto3);
             XmTextFieldSetString(TNC_igate_data,devices[TNC_port].unproto_igate);
 
-            XmTextFieldSetString(TNC_up_file_data,devices[TNC_port].tnc_up_file);
-            XmTextFieldSetString(TNC_down_file_data,devices[TNC_port].tnc_down_file);
+            if (device_type == DEVICE_SERIAL_KISS_TNC) {
+                XmTextFieldSetString(TNC_txdelay,devices[TNC_port].txdelay);
+                XmTextFieldSetString(TNC_persistence,devices[TNC_port].persistence);
+                XmTextFieldSetString(TNC_slottime,devices[TNC_port].slottime);
+                XmTextFieldSetString(TNC_fullduplex,devices[TNC_port].fullduplex);
+            }
+            else {
+                XmTextFieldSetString(TNC_up_file_data,devices[TNC_port].tnc_up_file);
+                XmTextFieldSetString(TNC_down_file_data,devices[TNC_port].tnc_down_file);
+            }
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
         }
+
         XtManageChild(form);
-        XtManageChild(form2);
+
+//        if (device_type != DEVICE_SERIAL_KISS_TNC)
+            XtManageChild(form2);
+
         XtManageChild(speed_box);
         XtManageChild(style_box);
         XtManageChild(igate_box);
@@ -1124,8 +1297,10 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
         XtPopup(config_TNC_dialog,XtGrabNone);
         fix_dialog_size(config_TNC_dialog);
-    } else
+    }
+    else {
         (void)XRaiseWindow(XtDisplay(config_TNC_dialog), XtWindow(config_TNC_dialog));
+    }
 }
 
 

@@ -1920,6 +1920,91 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
 
 
+// WE7U
+// Send a KISS configuration command to the selected port.
+// The KISS spec allows up to 16 devices to be configured.  We
+// support that here with the "device" input, which should be
+// between 0 and 15.  The commands accepted are integer values:
+//
+// 0x01 TXDELAY
+// 0x02 P-Persistence
+// 0x03 SlotTime
+// 0x05 FullDuplex
+// 0x06 SetHardware
+// 0xff Exit from KISS mode (not implemented yet)
+//
+void send_kiss_config(int port, int device, int command, int value) {
+    unsigned char transmit_txt[MAX_LINE_SIZE+1];
+    int i, j;
+    int erd;
+    int write_in_pos_hold;
+
+
+    if (device < 0 || device > 15) {
+        printf("send_kiss_config: out-of-range value for device\n");
+        return;
+    }
+
+    if (command < 1 || command > 6 || command == 4) {
+        printf("send_kiss_config: out-of-range value for command\n");
+        return;
+    }
+
+    if (value < 0 || value > 255) {
+        printf("send_kiss_config: out-of-range value for value\n");
+        return;
+    }
+ 
+    // Add the KISS framing characters and do the proper escapes.
+    j = 0;
+    transmit_txt[j++] = KISS_FEND;
+
+    transmit_txt[j++] = (device << 4) | (command & 0x0f);
+
+    transmit_txt[j++] = value & 0xff;
+
+    transmit_txt[j++] = KISS_FEND;
+    transmit_txt[j++] = '\0';  // Terminate the string
+
+
+//-------------------------------------------------------------------
+// Had to snag code from port_write_string() below because our string
+// needs to have 0x00 chars inside it.  port_write_string() can't
+// handle that case.  It's a good thing the transmit queue stuff
+// could handle it.
+//-------------------------------------------------------------------
+
+    erd = 0;
+
+    if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(1)" ) > 0)
+        printf("write_lock, Port = %d\n", port);
+
+    write_in_pos_hold = port_data[port].write_in_pos;
+
+    for (i = 0; i < j && !erd; i++) {
+        port_data[port].device_write_buffer[port_data[port].write_in_pos++] = transmit_txt[i];
+        if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
+            port_data[port].write_in_pos = 0;
+
+        if (port_data[port].write_in_pos == port_data[port].write_out_pos) {
+            if (debug_level & 2)
+                printf("Port %d Buffer overrun\n",port);
+
+            /* clear this restore original write_in pos and dump this string */
+            port_data[port].write_in_pos = write_in_pos_hold;
+            port_data[port].errors++;
+            erd = 1;
+        }
+    }
+
+    if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
+        printf("write_lock, Port = %d\n", port);
+}
+
+
+
+
+
 //***********************************************************
 // port_write_string()
 //

@@ -438,6 +438,22 @@ void save_data(void)  {
             store_string (fout, name, devices[i].tnc_down_file);
 
             strcpy (name, name_temp);
+            strcat (name, "TNC_TXDELAY");
+            store_string (fout, name, devices[i].txdelay);
+
+            strcpy (name, name_temp);
+            strcat (name, "TNC_PERSISTENCE");
+            store_string (fout, name, devices[i].persistence);
+
+            strcpy (name, name_temp);
+            strcat (name, "TNC_SLOTTIME");
+            store_string (fout, name, devices[i].slottime);
+
+            strcpy (name, name_temp);
+            strcat (name, "TNC_FULLDUPLEX");
+            store_string (fout, name, devices[i].fullduplex);
+
+            strcpy (name, name_temp);
             strcat (name, "SPEED");
             store_int (fout, name, devices[i].sp);
 
@@ -914,6 +930,26 @@ void load_data_or_default(void) {
         strcat (name, "TNC_DOWN_FILE");
         if (!get_string (name, devices[i].tnc_down_file))
             strcpy (devices[i].tnc_down_file, "");
+
+        strcpy (name, name_temp);
+        strcat (name, "TNC_TXDELAY");
+        if (!get_string (name, devices[i].txdelay))
+            strcpy (devices[i].txdelay, "40");
+
+        strcpy (name, name_temp);
+        strcat (name, "TNC_PERSISTENCE");
+        if (!get_string (name, devices[i].persistence))
+            strcpy (devices[i].persistence, "63");
+
+        strcpy (name, name_temp);
+        strcat (name, "TNC_SLOTTIME");
+        if (!get_string (name, devices[i].slottime))
+            strcpy (devices[i].slottime, "10");
+
+        strcpy (name, name_temp);
+        strcat (name, "TNC_FULLDUPLEX");
+        if (!get_string (name, devices[i].fullduplex))
+            strcpy (devices[i].fullduplex, "0");
 
         strcpy (name, name_temp);
         strcat (name, "SPEED");
