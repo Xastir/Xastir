@@ -1705,51 +1705,88 @@ char symbol_orient(char *course) {
 
 
 
+// Storage for an index into the symbol table that we may need
+// later.
+int nosym_index = -1;
+
+
+// Look through our symbol table for a match.
+//
 void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_overlay, Pixmap where,
             int mask, long x_offset, long y_offset, char orient) {
     int i;
     int found;
-    int nosym;
-    int alphanum;
+    int alphanum_index = -1;
 
 
     /* DK7IN: orient  is ' ','l','r','u','d'  for left/right/up/down symbol orientation */
     // if symbol could be rotated, normal symbol orientation in symbols.dat is to the left
-    found = nosym = alphanum = -1;
 
-    if (symbol_overlay == '\0' || symbol_overlay == ' ')
-        alphanum = 0;          // we don't want an overlay
 
-    for (i=0;(i<symbols_loaded);i++) {
-        if (symbol_data[i].active==SYMBOL_ACTIVE) {
-            if (symbol_data[i].table == symbol_table && symbol_data[i].symbol == symbol_id)
-                if (found==-1) {found=i;}       // index of symbol
+    // Find the nosymbol index if we haven't filled it in by now.
+    // This "for" loop should get run only once during Xastir's
+    // entire runtime, so it shouldn't contribute much to CPU
+    // loading.
+    if (nosym_index == -1) {
+        for ( i = 0; i < symbols_loaded; i++ ) {
+            if (symbol_data[i].active == SYMBOL_ACTIVE) {
+                if (symbol_data[i].table == '!'
+                        && symbol_data[i].symbol == '#') {
+                    nosym_index = i;       // index of special symbol (if none available)
+                    break;
+                }
+            }
+        }
+    }
 
-            if (symbol_data[i].table=='!' && symbol_data[i].symbol=='#')
-                nosym=i;       // index of special symbol (if none available)
 
-            if (symbol_data[i].table=='#' && symbol_data[i].symbol==symbol_overlay)
-                alphanum=i;    // index of symbol for character overlay
+    // Handle the overlay character.  The "for" loop below gets run
+    // once every time we encounter an overlay character, which
+    // isn't all that often.
+    if (symbol_overlay == '\0' || symbol_overlay == ' ') {
+        alphanum_index = 0; // we don't want an overlay
+    }
+    else {  // Find the overlay character index
+        for ( i = 0; i < symbols_loaded; i++ ) {
+            if (symbol_data[i].active == SYMBOL_ACTIVE) {
+                if (symbol_data[i].table == '#'
+                        && symbol_data[i].symbol == symbol_overlay) {
+                    alphanum_index = i; // index of symbol for character overlay
+                    break;
+                }
+            }
+        }
+    }
 
-            if (alphanum != -1 && nosym != -1 && found != -1)
+
+    found = -1;
+
+    for ( i = 0; i < symbols_loaded; i++ ) {
+        if (symbol_data[i].active == SYMBOL_ACTIVE) {
+            if (symbol_data[i].table == symbol_table
+                    && symbol_data[i].symbol == symbol_id) {
+                // We found the matching symbol
+                found = i;  // index of symbol
                 break;
+            }
 
         }
     }
 
-    if (found == -1) {
-        found=nosym;
+    if (found == -1) {  // Didn't find a matching symbol
+        found = nosym_index;
         if (symbol_table && symbol_id && debug_level & 128)
             fprintf(stderr,"No Symbol Yet! %2x:%2x\n", (unsigned int)symbol_table, (unsigned int)symbol_id);
     } else {                    // maybe we want a rotated symbol
+
 
 // It looks like we originally did not want to rotate the symbol if
 // it was ghosted?  Why?  For dead-reckoning we do want it to be
 // rotated when ghosted.
 //      if (!(orient == ' ' || orient == 'l' || symbol_data[found].orient == ' ' || ghost)) {
         if (!(orient == ' ' || orient == 'l' || symbol_data[found].orient == ' ')) {
-            for (i=found;(i<symbols_loaded);i++) {
-                if (symbol_data[i].active==SYMBOL_ACTIVE) {
+            for (i = found; i < symbols_loaded; i++) {
+                if (symbol_data[i].active == SYMBOL_ACTIVE) {
                     if (symbol_data[i].table == symbol_table && symbol_data[i].symbol == symbol_id
                              && symbol_data[i].orient == orient) {
                         found=i;  // index of rotated symbol
@@ -1769,14 +1806,14 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
     (void)XSetClipOrigin(XtDisplay(w),gc,x_offset,y_offset);
     (void)XCopyArea(XtDisplay(w),symbol_data[found].pix,where,gc,0,0,20,20,x_offset,y_offset);
 
-    if(alphanum>0) {
+    if(alphanum_index > 0) {
         if (ghost)
-            (void)XSetClipMask(XtDisplay(w),gc,symbol_data[alphanum].pix_mask_old);
+            (void)XSetClipMask(XtDisplay(w),gc,symbol_data[alphanum_index].pix_mask_old);
         else
-            (void)XSetClipMask(XtDisplay(w),gc,symbol_data[alphanum].pix_mask);
+            (void)XSetClipMask(XtDisplay(w),gc,symbol_data[alphanum_index].pix_mask);
 
         (void)XSetClipOrigin(XtDisplay(w),gc,x_offset,y_offset);
-        (void)XCopyArea(XtDisplay(w),symbol_data[alphanum].pix,where,gc,0,0,20,20,x_offset,y_offset); // rot
+        (void)XCopyArea(XtDisplay(w),symbol_data[alphanum_index].pix,where,gc,0,0,20,20,x_offset,y_offset); // rot
     }
 
     (void)XSetClipMask(XtDisplay(w),gc,None);
