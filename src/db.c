@@ -2013,10 +2013,12 @@ void display_station(Widget w, DataRow *p_station, int single) {
         strcpy(temp_my_course,"");
     }
 
-    // Check whether it's a weather objects, and whether we wish
-    // to display it
-    if (!wx_obj_display_enable) {   // We _don't_ want to display WX objects
-        if ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
+    // Check whether it's a weather object and whether we wish to
+    // display it
+    if (!wx_obj_display_enable && p_station->weather_data != NULL) {
+        // It contains weather data and we have wx_obj_display
+        // disabled
+        if ( ((p_station->flag & ST_OBJECT) != 0)       // It's an object
                 || ((p_station->flag & ST_ITEM  ) != 0) ) { // or an item
             return;
         }
