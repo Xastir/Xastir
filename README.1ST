@@ -1094,6 +1094,32 @@ Getting Data Files for Xastir:
         1.5.1.3  North_Bounding_Coordinate:  48.000000 
         1.5.1.4  South_Bounding_Coordinate:  47.000000 
 
+     Notes about DRG-Enhanced (DRG-E) files:
+     ---------------------------------------
+     From: J. Lance Cotton:
+
+     "I have posted a summary of my tests at:
+
+     http://www.lightningflash.net/~jlc7944/xastir-shots/
+
+     The upshot is :
+
+     * The DRG-E files will draw over the correct spots if you remove
+     the .fgd file, but will overflow their boundaries and
+
+     * The DRG-E files will draw over the correct spots with decent
+     boundary trimming (as far as I can tell, which isn't very far:
+     correct me!) if you use a .fgd file taken from 'real' DRG files
+     from USGS.
+
+     Basically: get rid of the .fgd file from the DRG-E!!
+
+     The reason I couldn't get the maps to display was that I wasn't
+     deleting the map_index.sys file from my ~/.xastir/conf/ directory
+     and so my changes to the .fgd weren't being taken into account.
+     After I started removing the index file between restarts during
+     the testing, it was working as Curt had described."
+
 
      Shapefile format maps:
 
