@@ -9352,7 +9352,6 @@ void add_status(DataRow *p_station, char *status_string) {
 // having to click on an icon, 'cuz the symbol won't be on our map
 // until we have a posit.
 
-
         //fprintf(stderr,"Station:%s\tStatus:%s\n",p_station->call_sign,status_string);
 
         // Check whether we have any data stored for this station
@@ -9366,27 +9365,57 @@ void add_status(DataRow *p_station, char *status_string) {
             int ii = 0;
  
             ptr = p_station->status_data;
+            ptr2 = ptr;
             while (ptr != NULL) {
                 if (strcmp(ptr->text_ptr, status_string) == 0) {
                     // Found a matching string
                     //fprintf(stderr,"Found match:
                     //%s:%s\n",p_station->call_sign,status_string);
 
-                    // Update the timestamp 'cuz we just heard that
-                    // status string again.
-                    ptr->sec_heard = sec_now();
+// Instead of updating the timestamp, we'll delete the record from
+// the list and add it to the top in the code below.  Make sure to
+// tweak the "ii" pointer so that we don't end up shortening the
+// list unnecessarily.
+                    if (ptr == p_station->status_data) {
 
-//WE7U2:  We should probably move it up to the top of the list in
-//order to keep the times in order...
+                        // Only update the timestamp: We're at the
+                        // beginning of the list already.
+                        ptr->sec_heard = sec_now();
 
-                    return; // No need to add the new string
+                        return; // No need to add a new record
+                    }
+                    else {  // Delete the record
+                        CommentRow *ptr3;
+
+                        // Keep a pointer to the record
+                        ptr3 = ptr;
+
+                        // Close the chain, skipping this record
+                        ptr2->next = ptr3->next;
+
+                        // Skip "ptr" over the record we wish to
+                        // delete
+                        ptr = ptr3->next;
+
+                        // Free the record
+                        free(ptr3->text_ptr);
+                        free(ptr3);
+
+                        // Muck with the counter 'cuz we just
+                        // deleted one record
+                        ii--;
+                    }
                 }
-                ptr = ptr->next;
+                ptr2 = ptr; // Back one record
+                if (ptr != NULL) {
+                    ptr = ptr->next;
+                }
                 ii++;
             }
 
 
-            // No matching string found, so add it
+            // No matching string found, or new timestamp found for
+            // old record.  Add it to the top of the list.
             add_it++;
             //fprintf(stderr,"No match:
             //%s:%s\n",p_station->call_sign,status_string);
@@ -9417,7 +9446,9 @@ void add_status(DataRow *p_station, char *status_string) {
         }
 
         if (add_it) {   // We add to the beginning so we don't have
-                        // to traverse the linked list
+                        // to traverse the linked list.  This also
+                        // puts new records at the beginning of the
+                        // list to keep them in sorted order.
 
             ptr = p_station->status_data;  // Save old pointer to records
             p_station->status_data = (CommentRow *)malloc(sizeof(CommentRow));
@@ -9486,24 +9517,56 @@ void add_comment(DataRow *p_station, char *comment_string) {
             int ii = 0;
  
             ptr = p_station->comment_data;
+            ptr2 = ptr;
             while (ptr != NULL) {
                 if (strcmp(ptr->text_ptr, comment_string) == 0) {
                     // Found a matching string
                     //fprintf(stderr,"Found match: %s:%s\n",p_station->call_sign,comment_string);
 
-                    // Update the timestamp 'cuz we just heard that
-                    // comment string again.
-                    ptr->sec_heard = sec_now();
+// Instead of updating the timestamp, we'll delete the record from
+// the list and add it to the top in the code below.  Make sure to
+// tweak the "ii" pointer so that we don't end up shortening the
+// list unnecessarily.
+                    if (ptr == p_station->comment_data) {
+                        // Only update the timestamp:  We're at the
+                        // beginning of the list already.
+                        ptr->sec_heard = sec_now();
 
-//WE7U2:  We should probably move it up to the top of the list in
-//order to keep the times in order...
+                        return; // No need to add a new record
+                    }
+                    else {  // Delete the record
+                        CommentRow *ptr3;
 
-                    return; // No need to add the new string
+                        // Keep a pointer to the record
+                        ptr3 = ptr;
+
+                        // Close the chain, skipping this record
+                        ptr2->next = ptr3->next;
+
+                        // Skip "ptr" over the record we with to
+                        // delete
+                        ptr = ptr3->next;
+
+                        // Free the record
+                        free(ptr3->text_ptr);
+                        free(ptr3);
+
+                        // Muck with the counter 'cuz we just
+                        // deleted one record
+                        ii--;
+                    }
                 }
-                ptr = ptr->next;
+                ptr2 = ptr; // Keep this pointer one record back as
+                            // we progress.
+
+                if (ptr != NULL) {
+                    ptr = ptr->next;
+                }
+
                 ii++;
             }
-            // No matching string found, so add it
+            // No matching string found, or new timestamp found for
+            // old record.  Add it to the top of the list.
             add_it++;
             //fprintf(stderr,"No match: %s:%s\n",p_station->call_sign,comment_string);
 
@@ -9514,6 +9577,7 @@ void add_comment(DataRow *p_station, char *comment_string) {
             // active stations, limiting the total space used.
             //
             if (ii >= MAX_COMMENT_LINES) {
+
                 // We know we didn't get a match, and that our list
                 // is full (as we want it to be).  Traverse the list
                 // again, looking for ptr2->next->next == NULL.  If
@@ -9533,7 +9597,9 @@ void add_comment(DataRow *p_station, char *comment_string) {
         }
 
         if (add_it) {   // We add to the beginning so we don't have
-                        // to traverse the linked list
+                        // to traverse the linked list.  This also
+                        // puts new records at the beginning of the
+                        // list to keep them in sorted order.
 
             ptr = p_station->comment_data;  // Save old pointer to records
             p_station->comment_data = (CommentRow *)malloc(sizeof(CommentRow));
