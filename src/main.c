@@ -707,6 +707,7 @@ char aprs_station_message_type; /* aprs station message type message capable or 
 
 int transmit_now;               /* set to transmit now (push on moment) */
 int my_position_valid = 1;      /* Don't send posits if this is zero */
+int using_gps_position = 0;     /* Set to one if a GPS port is active */
 int operate_as_an_igate;        /* toggle igate operations for net connections */
 unsigned igate_msgs_tx;         /* current total of igate messages transmitted */
 
@@ -6799,7 +6800,6 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 }
             }
 
-//WE7U
             // Time to spit out a posit?
             if ( my_position_valid
                     && (transmit_now || (sec_now() > posit_next_time) ) ) {
@@ -6826,7 +6826,24 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 transmit_now = 0;
                 // Output to ALL net/tnc ports that are enabled & have tx enabled
+//printf("Sending posit\n");
                 output_my_aprs_data();
+
+                // Decrement the my_position_valid variable if we're
+                // using GPS.  This will make sure that positions
+                // are valid, as we'll only get four positions out
+                // maximum per valid GPS position.  If the GPS
+                // position goes stale, we'll stop sending posits.
+                if (using_gps_position && my_position_valid) {
+                    my_position_valid--;
+//printf("my_position_valid:%d\n",my_position_valid);
+
+                    if (!my_position_valid) { // We just went to zero!
+                        // Waiting for GPS data..
+                        statusline(langcode("BBARSTA041"),1);
+//printf("my_position_valid just went to zero!\n");
+                    }
+                }
             }
 //          if (do_time || transmit_now) {
 //              transmit_now = 0;

@@ -2947,6 +2947,9 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                 case DEVICE_SERIAL_GPS:
                     if (debug_level & 2)
                         printf("Close a Serial GPS device\n");
+                        if (using_gps_position) {
+                            using_gps_position--;
+                        }
                         break;
 
                 case DEVICE_SERIAL_WX:
@@ -2958,6 +2961,9 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     if (debug_level & 2)
                         printf("Close a Serial TNC w/HSP GPS\n");
+                        if (using_gps_position) {
+                            using_gps_position--;
+                        }
 
 begin_critical_section(&devices_lock, "interface.c:del_device" );
 
@@ -2973,6 +2979,9 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (debug_level & 2)
                         printf("Close a Serial TNC w/AUX GPS\n");
+                        if (using_gps_position) {
+                            using_gps_position--;
+                        }
 
 begin_critical_section(&devices_lock, "interface.c:del_device");
 
@@ -3019,6 +3028,9 @@ end_critical_section(&devices_lock, "interface.c:del_device");
                 case DEVICE_NET_GPSD:
                     if (debug_level & 2)
                         printf("Close a Network GPSd device\n");
+                        if (using_gps_position) {
+                            using_gps_position--;
+                        }
 
                     break;
 
@@ -3154,6 +3166,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         if (debug_level & 2)
                             printf("Opening a Serial GPS device\n");
                         my_position_valid = 0;  // Must wait for valid GPS parsing
+                        using_gps_position++;
+                        statusline(langcode("BBARSTA041"),1);
+//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
@@ -3167,6 +3182,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         if (debug_level & 2)
                             printf("Opening a Serial TNC w/HSP GPS device\n");
                         my_position_valid = 0;  // Must wait for valid GPS parsing
+                        using_gps_position++;
+                        statusline(langcode("BBARSTA041"),1);
+//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
@@ -3174,6 +3192,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         if (debug_level & 2)
                             printf("Opening a Serial TNC w/AUX GPS device\n");
                         my_position_valid = 0;  // Must wait for valid GPS parsing
+                        using_gps_position++;
+                        statusline(langcode("BBARSTA041"),1);
+//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
@@ -3272,6 +3293,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     xastir_snprintf(logon_txt, sizeof(logon_txt), "R\r\n");
                     port_write_string(port_avail,logon_txt);
                     my_position_valid = 0;  // Must wait for valid GPS parsing
+                    using_gps_position++;
+                    statusline(langcode("BBARSTA041"),1);
+//printf("my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
                 }
                 break;
 

@@ -2239,17 +2239,17 @@ void display_station(Widget w, DataRow *p_station, int single) {
 //WE7U
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
-                0.0035 * scale_y,
+                0.0020 * scale_y,
                 colors[0x0e],   // Yellow
                 pixmap_final);
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
-                0.0040 * scale_y,
+                0.0023 * scale_y,
                 colors[0x44],   // Red
                 pixmap_final);
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
-                0.0045 * scale_y,
+                0.0026 * scale_y,
                 colors[0x61],   // Blue
                 pixmap_final);
         }
@@ -2405,17 +2405,17 @@ void display_station(Widget w, DataRow *p_station, int single) {
 //WE7U
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
-                0.0035 * scale_y,
+                0.0020 * scale_y,
                 colors[0x0e],   // Yellow
                 pixmap_final);
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
-                0.0040 * scale_y,
+                0.0023 * scale_y,
                 colors[0x44],   // Red
                 pixmap_final);
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
-                0.0045 * scale_y,
+                0.0026 * scale_y,
                 colors[0x61],   // Blue
                 pixmap_final);
         }
@@ -9276,8 +9276,9 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
         track_station(da,tracking_station_call,p_station);
 
     // We parsed a good GPS string, so allow beaconing to proceed
-    // normally
-    my_position_valid = 1;
+    // normally for a while.
+    my_position_valid = 3;
+    //printf("Valid GPS input: my_position_valid = 3\n");
  
     //redraw_on_new_data = 1;   // redraw next chance
     redraw_on_new_data = 2;     // Immediate update of symbols/tracks
