@@ -42,6 +42,7 @@ TC 0
 ##META <delay>
 ##META <delay>
 HID off
+CWID off
 AWlen 8
 BBSMsgs ON
 B E 0

@@ -45,6 +45,7 @@ TC 0
 #--------------------------------------------------
 #
 HID off
+CWID off
 AWlen 8
 BBSMsgs ON
 B E 0

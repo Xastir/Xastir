@@ -9,6 +9,7 @@ int terminal
 
 ECHO off
 HID off
+CWID off
 MYAlias RELAY
 B E 0
 DIGI on
