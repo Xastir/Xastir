@@ -5787,7 +5787,8 @@ void pos_dialog(Widget w) {
         ht = 480;
 
     max_x = x + wd - (wd / 5);
-    max_y = y + ht - (ht / 5);
+//    max_y = y + ht - (ht / 5);
+    max_y = y + ht/3;
 
     // Check for proper values for last stored position
     if (   (last_popup_x < x)
