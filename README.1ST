@@ -1394,25 +1394,10 @@ the future to start it up:
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
-     Adding libproj to Cygwin (proj-4.4.5 tested):
+     Adding libproj to Cygwin (proj-4.4.6 tested):
      ---------------------------------------------
  
-     Should be similar to the earlier instructions for installing libproj
-     all the way up to and including the "make install" stage, but you must
-     type the following commands when "make install" dies due to an error:
-
-
-#       rm /usr/local/bin/invproj (2nd and later installs only)
-#       rm /usr/local/bin/invgeod (2nd and later installs only)
-       ln -s /usr/local/bin/proj.exe /usr/local/bin/proj
-       ln -s /usr/local/bin/geod.exe /usr/local/bin/geod
-
-
-     Run "make install" again to complete the install.
-
-     NOTE:  If using proj-4.4.6 or higher, it may install right out of
-     the box with no problems.  Needs further testing to make sure that
-     libgeotiff and Xastir recognize and use this version.
+     The same as the earlier instructions for installing libproj.
 
      Adding libgeotiff to Cygwin (libgeotiff-1.1.5 tested):
      ------------------------------------------------------
@@ -1437,14 +1422,8 @@ the future to start it up:
      -ltiff -ljpeg -lz -lm -L/usr/local/lib -o libgeotiff.so.1.1.5
 
 
-     To fix this, edit the Makefile to add "-lc" just before the "-o" on
-     that line and try again (adding it to the end of the LIBS line will
-     have the same effect).
-
-     At the "make install" step it may fail to install listgeo and geotifcp
-     because they have a .exe extension on Cygwin, which the install script
-     doesn't know about.  Edit the Makefile to add a ".exe" after those two
-     names and try again.  It should complete ok.
+     To fix this, edit the Makefile to add "-lc" to the end of the LIBS line
+     and run "make" again, then "make install".
 
      Go to the Xastir source directory, run "configure", "make", and
      "make install" again.  It should find libtiff/libproj/libgeotiff at the
