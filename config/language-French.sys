@@ -52,7 +52,7 @@ PULDNVI014|Durée de fonctionnement du logiciel||
 PULDNCF004|Station|S|
 PULDNCF001|Défauts|D|
 PULDNCF003|Timing|T|
-PULDNCF002|Coordinate System|C|
+PULDNCF002|Système des coordonnées|C|
 PULDNCF006|Alertes sonores|A|
 PULDNCF007|Parole|P|
 PULDNCF008|Sauver configuration maintenant!|a|
@@ -73,43 +73,42 @@ PULDNMP005|Couleur de fond|f|
 PULDNMP006|Style du texte de station|S|
 PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|
-PULDNMP020|Enable/Configure Tigermap||
-PULDNMP021|Auto Map - Disable Raster Maps||
-PULDNMP022|Index Maps on Startup||
-PULDNMP023|Re-Index Maps|R|
-PULDNMP024|Map Re-Index: ALL Maps|A|
+PULDNMP020|Activer/configurer Tigermap||
+PULDNMP021|Cartographie automatique - désactiver cartes tramées||
+PULDNMP022|Indexer nouvelles cartes au démarrage||
+PULDNMP023|Re-indexage des cartes: nouvelles cartes|R|
+PULDNMP024|Re-indexage des cartes: toutes cartes|A|
 #
 #
 # PopUp "Configure Tigermap"
-MPUPTGR001|Grid||
-MPUPTGR002|Counties||
-MPUPTGR003|City Labels||
-MPUPTGR004|Urban Areas||
-MPUPTGR005|Major Roads||
-MPUPTGR006|Streets||
-MPUPTGR007|Railroads||
-MPUPTGR008|State Labels||
-MPUPTGR009|Interstate Labels||
-MPUPTGR010|US Hwy Labels||
-MPUPTGR011|State Hwy Labels||
-MPUPTGR012|Select items to be displayed:||
-MPUPTGR013|Rivers||
-MPUPTGR014|Lakes||
-MPUPTGR015|Airports, Parks, etc||
-MPUPTGR016|Map Intensity||
-MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
-#
+MPUPTGR001|Quadrillage||
+MPUPTGR002|Comtés||
+MPUPTGR003|Noms des villes||
+MPUPTGR004|Regions urbaines||
+MPUPTGR005|Routes majeures||
+MPUPTGR006|Rues||
+MPUPTGR007|Voies ferrées||
+MPUPTGR008|Noms des états||
+MPUPTGR009|Noms des autoroutes||
+MPUPTGR010|Noms des routes US||
+MPUPTGR011|Noms des routes des états||
+MPUPTGR012|Choisir les articles à afficher:||
+MPUPTGR013|Rivières||
+MPUPTGR014|Lacs||
+MPUPTGR015|Aéroports, parcs, etc||
+MPUPTGR016|Intensité de la carte||
+MPUPTGR017|Dépassement de temps (sec)||
+MPUPTGR018|Activer cartes Tiger||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Choix de cartes||
-PULDNMMC01|Clear|A|
-PULDNMMC02|vectorielles|V|
+PULDNMMC01|Effacer|A|
+PULDNMMC02|Vectorielles|V|
 PULDNMMC03|Topogr. 250k|2|
 PULDNMMC04|Topogr. 100k|1|
 PULDNMMC05|Topogr. 24k|4|
-PULDNMMC06|Expand Dirs|||
-PULDNMMC07|Dirs/Maps Selected:||
+PULDNMMC06|Agrandir répertoires|||
+PULDNMMC07|Réps/cartes choisies:||
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Gris||
@@ -139,7 +138,6 @@ PULDNOT003|Court||
 PULDNDP014|Localiser une station|L|
 PULDNDP001|Suivre une station|S|
 PULDNDP022|Télécharger piste Findu||
-# SubMenu "Filter Data"
 PULDNDP032|Filtrer données||
 PULDNDP040|Choisir rien||
 PULDNDP041|Choisir à moi||
@@ -156,7 +154,6 @@ PULDNDP045|Choisir objets/articles||
 PULDNDP026|- Choisir objets/articles météo||
 PULDNDP039|- Choisir objets/articles indicateurs d'eau||
 PULDNDP031|- Choisir autres objets/articles||
-# SubMenu "Filter Display"
 PULDNDP033|Filtrer affichage||
 PULDNDP010|Afficher indicatif|n|
 PULDNDP012|Afficher symbole|c|
@@ -181,11 +178,10 @@ PULDNDP037|- Afficher cap||
 PULDNDP038|- Afficher symbole||
 PULDNDP005|Afficher distance/relèvement|d|
 PULDNDP024|Afficher âge du dernier rapport||
-#
 PULDNDP015|Effacer toutes stations!!!|E|
 PULDNDP016|Effacer toutes pistes!!!|f|
 PULDNDP025|Effacer histoire des objets/articles||
-PULDNDP048|Reload Object/Item History||
+PULDNDP048|Recharger histoire des objets/articles||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||
@@ -200,7 +196,7 @@ PULDQUS002|Info stations IGate|n|
 PULDQUS003|Info stations météo|m|
 PULDNMG004|Configurer réponse automatique|o|
 PULDNMG005|Activer réponse automatique|R|
-PULDNMG006|Satellite Ack Mode|M|
+PULDNMG006|Mode "Satellite Ack"|M|
 #
 # Menu "Interfaces"
 PULDNTNT04|Départ/arrêt|C|
@@ -209,9 +205,9 @@ PULDNTNT03|Désactiver transmission: Tout||
 PULDNTNT05|Désactiver transmission: Ma position||
 PULDNTNT06|Désactiver transmission: Objets/Articles||
 PULDNTNT01|Transmettre maintenant!|T|
-PULDNTNT07|Fetch GPS Track|F|
-PULDNTNT08|Fetch GPS Routes|R|
-PULDNTNT09|Fetch GPS Waypoints|W|
+PULDNTNT07|Extraire piste GPS|F|
+PULDNTNT08|Extraire routes GPS|R|
+PULDNTNT09|Extraire points de cheminement GPS|W|
 #
 # Menu "Help"
 PULDNHEL01|Information|I|
@@ -234,16 +230,16 @@ POPUPMA017|Monde entier|M|
 POPUPMA016|Pos/zoom précédent||
 POPUPMA018|Objet/Article->Créer||
 POPUPMA019|Objet/Article->Modifier||
-POPUPMA025|Move My Station Here|H|
+POPUPMA025|Déplacer ma station ici|H|
 POPUPMA011|Nord||
 POPUPMA012|Sud||
 POPUPMA013|Ouest||
 POPUPMA014|Est||
 POPUPMA020|Mesurer||
 POPUPMA021|Déplacer||
-POPUPMA022|TrackMe||
-POPUPMA023|Modifiers Found!||
-POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
+POPUPMA022|SuivreMoi||
+POPUPMA023|Modificateurs trouvés!||
+POPUPMA024|SVP désactiver CapsLock/NumLock/ScrollLock/autres modificateurs||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -288,10 +284,10 @@ BBARSTA035|Attente de donées du GPS par AUX||
 BBARSTA036|Fermeture port GPS réception donnée TNC..||
 BBARSTA037|GPS météo décodées||
 BBARSTA038|Placez le changement sur ma station||
-BBARSTA039|Indexing %s||
-BBARSTA040|Amateur APRS Station %s||
-BBARSTA041|Waiting for GPS data..||
-BBARSTA042|Transmitting objects/items||
+BBARSTA039|Indexant %s||
+BBARSTA040|Station d'amateur APRS %s||
+BBARSTA041|Attendant données GPS..||
+BBARSTA042|Transmission objets/articles||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
@@ -307,7 +303,7 @@ WPUPLSP002|Localiser l'indicatif||
 WPUPLSP003|Casse exacte|C|
 WPUPLSP004|Correspondance exacte|E|
 WPUPLSP005|Localiser maintenant!|L|
-WPUPLSP006|Emergency Locate!||
+WPUPLSP006|Localiser détresse!||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configurer défauts||
@@ -332,26 +328,26 @@ WPUPCFD019|Station mobile + heure/secondes Zulu||
 WPUPCFD021|Position de station + météo||
 WPUPCFD022|Position de station + date/heure Zulu + météo||
 WPUPCFD023|Données météo non traités?||
-WPUPCFD024|Compress object/item data when transmitting?||
+WPUPCFD024|Compresser données objet/article à la transmission?||
 WPUPCFD025|Activer réseau alterne?|A|
 WPUPCFD026|Transmettre position à quel intervalle?||
-WPUPCFD027|Pop up new bulletins||
-WPUPCFD028|Warn if Modifier Keys||
-WPUPCFD029|View zero-distance bulletins||
+WPUPCFD027|Afficher bulletins nouveaus||
+WPUPCFD028|Alerter si il y a des clés modificatrices||
+WPUPCFD029|Voir bulletins avec distance zero||
 #
 # PopUp "Configure - Timing"
-WPUPCFTM01|Configure Timing|||
-WPUPCFTM02|Posit TX Interval (min)||
-WPUPCFTM03|Station Ghosting Time (min)||
-WPUPCFTM04|Object/Item TX Interval (min)||
-WPUPCFTM05|Station Clear Time (hours)||
-WPUPCFTM06|GPS Check Interval (sec)||
-WPUPCFTM07|Station Delete Time (days)||
-WPUPCFTM08|Dead-Reckoning Timeout (min)||
+WPUPCFTM01|Configurer temporisation||
+WPUPCFTM02|Intervalle TX position (min)||
+WPUPCFTM03|Délai d'affichage faible d'une station (min)||
+WPUPCFTM04|Intervalle TX d'objets/articles (min)||
+WPUPCFTM05|Délai de suppression d'affichage d'une station (heures)||
+WPUPCFTM06|Intervalle de lecture GPS (sec)||
+WPUPCFTM07|Délai de suppression d'une station (jours)||
+WPUPCFTM08|Expiration de point estimé (min)||
 #
 # PopUp "Configure Coordinate System"
-WPUPCFC001|Configure Coordinate System||
-WPUPCFC002|Select Coordinate System||
+WPUPCFC001|Configurer système des coordonnées||
+WPUPCFC002|Choisir système des coordonnées||
 WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
@@ -417,11 +413,11 @@ WPUPCFT030|Configure KISS TNC||
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||
 WPUPCFWX02|Port météo||
-WPUPCFWX03|Rain Gauge Correction (Global Setting)||
-WPUPCFWX04|.1 inch/2.5mm||
-WPUPCFWX05|.01 inch/.25mm||
+WPUPCFWX03|Correction globale de pluviomètre||
+WPUPCFWX04|.1 pouce/2.5mm||
+WPUPCFWX05|.01 pouce/.25mm||
 WPUPCFWX06|.1mm||
-WPUPCFWX07|No Correction||
+WPUPCFWX07|Pas de correction||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Configurer la station||
@@ -452,7 +448,7 @@ WPUPCFS024|.18 kilomètres||
 WPUPCFS025|1.85 kilomètres||
 WPUPCFS026|18.53 kilomètres||
 WPUPCFS027|111.19 kilomètres||
-WPUPCFS029|Send compressed posits|C|
+WPUPCFS029|Transmettre positions compressées|C|
 #
 # PopUp "Object/Item"
 POPUPOB001|Objet/Article||
@@ -513,10 +509,10 @@ WPUPCFI011|Reconnexion sur erreur réseau?||
 WPUPCFI012|Fonction IGate?||
 WPUPCFI013|Diffusion de messages par le TNC lorsqu'en IGate?||
 WPUPCFI014|Archivage des transactions IGate?|||
-WPUPCFI015|Filter Parameters||
+WPUPCFI015|Paramètres du filtre||
 #
 # PopUp "Configure Database"
-WPUPCFID01|Configurer Database (TBD)||
+WPUPCFID01|Configurer base de données (TBD)||
 WPUPCFID02|Hôte ||
 WPUPCFID03|Port ||
 WPUPCFID04|(Hôte secondaire)||
@@ -530,24 +526,24 @@ WPUPCFID11|Reconnexion sur erreur réseau?||
 WPUPCFID12|Fonction IGate?||
 WPUPCFID13|Diffusion de messages par le TNC lorsqu'en IGate?||
 WPUPCFID14|Archivage des transactions IGate?|||
-WPUPCFID15|Filter Parameters||
+WPUPCFID15|Paramètres du filtre||
 #
 # PopUp "Configure AGWPE"
 WPUPCFIA01|Configure AGWPE||
-WPUPCFIA02|Host ||
+WPUPCFIA02|Hôte ||
 WPUPCFIA03|Port ||
-WPUPCFIA04|(Secondary hosts)||
-WPUPCFIA05|Host1||
+WPUPCFIA04|(Hôte secondaire)||
+WPUPCFIA05|Hôte1||
 WPUPCFIA06|Port1||
-WPUPCFIA07|Host2||
+WPUPCFIA07|Hôte2||
 WPUPCFIA08|Port2||
-WPUPCFIA09|Pass-code||
-WPUPCFIA10|(Leave Blank if None)||
-WPUPCFIA11|Reconnect on NET failure?||
-WPUPCFIA12|Run as an I-Gate?||
-WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
-WPUPCFIA14|Log I-Gate Transactions?||
-WPUPCFIA15|Transmit RadioPort||
+WPUPCFIA09|Code d'accès||
+WPUPCFIA10|(Laisser vide si nul)||
+WPUPCFIA11|Reconnexion sur erreur réseau?||
+WPUPCFIA12|Fonction IGate?||
+WPUPCFIA13|Diffusion de messages par le TNC lorsqu'en IGate?||
+WPUPCFIA14|Archivage des transactions IGate?|||
+WPUPCFIA15|RadioPort de transmission||
 #
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Configurer alarmes sonores||
@@ -571,7 +567,7 @@ WPUPCFSP05|Texte nouveau message||
 WPUPCFSP06|Proximité||
 WPUPCFSP07|Ouverture de bande||
 WPUPCFSP08|Alerte météo||
-WPUPCFSP09|Tracked Station Proximity Alert||
+WPUPCFSP09|Proximité d'une station en suite||
 #
 # PopUp "Track Station"
 WPUPTSP001|Suivre station||
@@ -593,7 +589,7 @@ WPUPMSB006|Nouveau groupe||
 WPUPMSB007|Effacer tous les messages||
 WPUPMSB008|Message:||
 WPUPMSB009|Transmettre maintenant!||
-WPUPMSB010|Path:||
+WPUPMSB010|Voie:||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
@@ -662,10 +658,10 @@ WPUPSTI055|Echo de:||
 WPUPSTI056|Activer actualisation automatique||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Relèvement DF:||
-WPUPSTI059|Status: %s||
-WPUPSTI060|Fuel Temp: %02.1f°C  ||
-WPUPSTI061|Fuel Temp: %s°F   ||
-WPUPSTI062|Fuel Moisture: %s%%   ||
+WPUPSTI059|Etat: %s||
+WPUPSTI060|Temp combustible: %02.1f°C  ||
+WPUPSTI061|Temp combustible: %s°F   ||
+WPUPSTI062|Humidité combustible: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 #
 # FCC-RAC Call Look up
@@ -742,9 +738,9 @@ IFDNL00006|TNC AX25||
 IFDNL00007|GPS réseau (par gpsd)||
 IFDNL00008|Météo par réseau||
 IFDNL00009|TNC série + GPS sur câble AUX||
-IFDNL00010|Serial KISS TNC||
-IFDNL00011|Networked Database (Not Implemented Yet)||
-IFDNL00012|Networked AGWPE||
+IFDNL00010|TNC KISS série||
+IFDNL00011|Base de données par réseau (pas encore implémenté)||
+IFDNL00012|AGWPE par réseau||
 #
 # Interface device info 
 IFDIN00000|%s %d %s sur port série %s||
@@ -770,7 +766,7 @@ IGPUPCF000|Options IGate||
 IGPUPCF001|Arrêter traffic Internet||
 IGPUPCF002|Autoriser RF vers Internet seulement||
 IGPUPCF003|Autoriser RF->Inet et Inet->RF||
-IGPUPCF004|Igate -> RF Path   ||
+IGPUPCF004|Voie Igate -> RF   ||
 #
 # WX Station
 WXPUPSI000|Station météo||
@@ -833,7 +829,7 @@ LHPUPNI205|Baro||
 LHPUPNI206|RN-H||
 LHPUPNI207|RNSM||
 LHPUPNI208|RN24||
-LHPUPNI209|Lat/Lon or UTM||
+LHPUPNI209|Lat/Lon ou UTM||
 #
 # Maps WX Alert styles
 PULDNMAT01|Voir cartes alertes sur autres cartes||
@@ -869,11 +865,11 @@ POPEM00026|Suivi commencera quand elle apparaîtra||
 POPEM00027|Mauvaise info.  Certains champs vides?||
 POPEM00028|Ne peut ouvrier fichier||
 POPEM00029|Trouvé!||
-POPEM00030|Weather Station Symbol||
-POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
-POPEM00032|Warning: Using National Weather Service Symbol!||
-POPEM00033|No GPS Data!||
-POPEM00034|Disabling My Position TX Until Valid GPS Data!||
+POPEM00030|Symbole de station météo||
+POPEM00031|Changé au symbole météo '/_', autres alternatives:  '\_'  '/W'  et  '\W'||
+POPEM00032|Attention: utilise symbole du "National Weather Service"!||
+POPEM00033|Pas de données GPS!||
+POPEM00034|TX de ma position désactivé jusqu'a réception de bonnes données GPS!||
 #
 # Jump Location 
 JMLPO00001|Lieu de la carte||
@@ -898,18 +894,18 @@ SPCHSTR005|%s, distance est %d %s.||
 SPCHSTR006|%s, distance est %.1f %s.||
 SPCHSTR007|%s, distance is %d %s %s %s.||
 SPCHSTR008|%s, distance is %.1f %s %s %s.||
-SPCHSTR009|New Weather Alert||
-SPCHSTR010|New Call||
-SPCHSTR011|Heard, D X, %s, at distance of %.1f %s||
+SPCHSTR009|Nouvelle alerte météo||
+SPCHSTR010|Nouvel indicatif||
+SPCHSTR011|Reçu, D X, %s, a une distance de %.1f %s||
 #
-SPCHDIRN00|north of||
-SPCHDIRS00|south of||
-SPCHDIRE00|east of||
-SPCHDIRW00|west of||
-SPCHDIRNE0|northeast of||
-SPCHDIRNW0|northwest of||
-SPCHDIRSE0|southeast of||
-SPCHDIRSW0|southwest of||
+SPCHDIRN00|au nord de||
+SPCHDIRS00|au sud de||
+SPCHDIRE00|à l'est de||
+SPCHDIRW00|à l'ouest de||
+SPCHDIRNE0|au nord-est de||
+SPCHDIRNW0|au nord-ouest de||
+SPCHDIRSE0|au sud-est de||
+SPCHDIRSW0|au sud-ouest de||
 #
 # Symbol Selection Dialog
 SYMSEL0001|Choisir symbole||
@@ -943,54 +939,54 @@ FEATURE005|Type:||
 FEATURE006|Fichier GNIS:||
 #
 # Coordinate Calculator Dialog
-COORD001|Coordinate Calc||
+COORD001|Calculatrice de coordonées||
 COORD002|Calc||
-COORD003|Calculate||
-COORD004|Clear||
+COORD003|Calculer||
+COORD004|Effacer||
 COORD005|UTM||
-COORD006|Latitude or||
-COORD007|Longitude or||
+COORD006|Latitude ou||
+COORD007|Longitude ou||
 COORD008|Zone||
-COORD009|UTM Easting||
-COORD010|UTM Northing||
+COORD009|UTM vers l'est||
+COORD010|UTM vers le nord||
 #
 #
 # Smart Beaconing Dialog
-SMARTB001|Smart Beaconing||
-SMARTB002|High Rate (secs):||
-SMARTB003|High Speed (mph):||
-SMARTB004|High Speed (kph):||
-SMARTB005|Low Rate (mins):||
-SMARTB006|Low Speed (mph):||
-SMARTB007|Low Speed (kph):||
-SMARTB008|Minimum Turn (deg):||
-SMARTB009|Turn Slope:||
-SMARTB010|Wait Time (secs):||
-SMARTB011|Enable SmartBeaconing(tm)||
+SMARTB001|Balise intelligente||
+SMARTB002|Intervalle maximal (secs):||
+SMARTB003|Vitesse haute (mph):||
+SMARTB004|Vitesse haute (kph):||
+SMARTB005|Intervalle minimal (mins):||
+SMARTB006|Vitesse basse (mph):||
+SMARTB007|Vitesse basse (kph):||
+SMARTB008|Virage minimum (deg):||
+SMARTB009|Pente de virage:||
+SMARTB010|Temps d'attente (secs):||
+SMARTB011|Activer SmartBeaconing(tm)||
 #
 #
 #
 # Gamma Adjust Dialog
-GAMMA001|Adjust Gamma Correction||
-GAMMA002|Gamma Correction||
+GAMMA001|Ajuster correction de gamma||
+GAMMA002|Correction de gamma||
 #
 #
 #
 # Distance/Bearing on status line
-PULDNDB001|Dist/Bearing Status||
+PULDNDB001|Etat dist/relèvement||
 #
 #
 # GPS Transfer Operations
-GPS001|GPS Transfer||
-GPS002|Filename||
-GPS003|Select Color||
-GPS004|Red||
-GPS005|Green||
-GPS006|Black||
-GPS007|White||
+GPS001|Transfer GPS||
+GPS002|Nom de fichier||
+GPS003|Choisir couleur||
+GPS004|Rouge||
+GPS005|Vert||
+GPS006|Noir||
+GPS007|Blanc||
 GPS008|Orange||
-GPS009|Blue||
-GPS010|Yellow||
+GPS009|Bleu||
+GPS010|Jaune||
 GPS011|Violet||
 #
 #
