@@ -2424,9 +2424,13 @@ _do_the_drawing:
     }
 
 
-    // Draw wind barb if selected and we have wind
-    if (Display_.weather && Display_.wind_barb &&
-        weather != NULL && atoi(weather->wx_speed) >= 5) {
+    // Draw wind barb if selected and we have wind, but not a severe
+    // storm (wind barbs just confuse the matter).
+    if (Display_.weather && Display_.wind_barb
+            && weather != NULL && atoi(weather->wx_speed) >= 5
+            && weather->wx_hurricane_radius[0] == '\0'
+            && weather->wx_trop_storm_radius[0] == '\0'
+            && weather->wx_whole_gale_radius[0] == '\0') {
         draw_wind_barb(p_station->coord_lon,
                        p_station->coord_lat,
                        weather->wx_speed,
