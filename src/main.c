@@ -498,12 +498,8 @@ Pixmap  pixmap;
 Pixmap  pixmap_alerts;
 Pixmap  pixmap_final;
 
-Pixmap  pixmap_stipple;            // These are for setting up a simple 1 on, 1 off 
-static  char Stipple[] = { 2, 1 }; // stipple to approximate real transparency
-#define STIPPLE_WIDTH  2
-#define STIPPLE_HEIGHT 2
-
-Pixmap  pixmap_wx_stipple;      // Used for weather alerts
+Pixmap  pixmap_2x2_stipple; // 50% pixels used for position ambiguity, DF circle, etc.
+Pixmap  pixmap_wx_stipple;  // Used for weather alerts
 
 XastirGlobal Global;
 
@@ -3941,8 +3937,9 @@ void create_gc(Widget w) {
                         screen_width,screen_height,
                         DefaultDepthOfScreen(XtScreen(w)));
 
-    pixmap_stipple=XCreateBitmapFromData(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
-                                         Stipple, STIPPLE_WIDTH, STIPPLE_HEIGHT);
+    xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "2x2.xbm");
+    XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+                    xbm_path, &_w, &_h, &pixmap_2x2_stipple, &_xh, &_yh);
 
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
     XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),

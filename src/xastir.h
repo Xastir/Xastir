@@ -52,7 +52,7 @@ extern GC gc;
 extern Pixmap  pixmap;
 extern Pixmap  pixmap_final;
 extern Pixmap  pixmap_alerts;
-extern Pixmap  pixmap_stipple;
+extern Pixmap  pixmap_2x2_stipple;
 extern Pixmap  pixmap_wx_stipple;
 
 

@@ -392,7 +392,7 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                                 (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 8, LineSolid, CapButt,JoinMiter);                            }
 
                             // Stipple the area instead of obscuring the map underneath
-                            (void)XSetStipple(XtDisplay(da), gc_stipple, pixmap_stipple);
+                            (void)XSetStipple(XtDisplay(da), gc_stipple, pixmap_2x2_stipple);
                             (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillStippled);
 
                             // Choose the color for the DF'ing circle
@@ -688,7 +688,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
 
 
                         // Stipple the area instead of obscuring the map underneath
-//                        (void)XSetStipple(XtDisplay(da), gc_tint, pixmap_stipple);
+//                        (void)XSetStipple(XtDisplay(da), gc_tint, pixmap_2x2_stipple);
 //                        (void)XSetFillStyle(XtDisplay(da), gc_tint, FillStippled);
 
                         if ((sec_old+sec_heard)>sec_now())  // New
@@ -774,7 +774,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                 if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
                     if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
                         (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);
-                        (void)XSetStipple(XtDisplay(da), gc, pixmap_stipple);
+                        (void)XSetStipple(XtDisplay(da), gc, pixmap_2x2_stipple);
                         (void)XSetFillStyle(XtDisplay(da), gc, FillStippled);
                         (void)XFillRectangle(XtDisplay(da), where, gc,
                                              left, top,
@@ -841,7 +841,7 @@ void draw_area(long x_long, long y_lat, char type, char color,
     else
         (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
     (void)XSetFillStyle(XtDisplay(da), gc, FillSolid); // just in case
-    (void)XSetStipple(XtDisplay(da), gc, pixmap_stipple);
+    (void)XSetStipple(XtDisplay(da), gc, pixmap_2x2_stipple);
 
     switch (type) {
     case AREA_OPEN_BOX:
