@@ -3000,11 +3000,13 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 // Create png image (for use in web browsers??).  Requires that "convert"
 // from the ImageMagick package be installed on the system.  At the
 // point this thread is started, the XPM file has already been
-// created.
+// created.  We now create a .geo file to go with the .png file.
 //
 static void* snapshot_thread(void *arg) {
     char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
+    char geo_filename[MAX_FILENAME];
+    FILE *f;
 #ifdef HAVE_CONVERT
     char command[MAX_FILENAME*2];
 #endif  // HAVE_CONVERT
@@ -3024,6 +3026,67 @@ static void* snapshot_thread(void *arg) {
         sizeof(png_filename),
         "%s/snapshot.png",
         get_user_base_dir("tmp"));
+
+    // Same for the .geo filename
+    xastir_snprintf(geo_filename,
+        sizeof(geo_filename),
+        "%s/snapshot.geo",
+        get_user_base_dir("tmp"));
+
+
+    // Create a .geo file to match the new png image
+    //
+    f = fopen(geo_filename,"w");    // Overwrite whatever file
+                                        // is there.
+    if (f == NULL) {
+        fprintf(stderr,"Couldn't open %s\n",geo_filename);
+    }
+    else {
+        long nw_lat, se_lat;
+        long nw_lon, se_lon;
+        float lat1, long1, lat2, long2;
+
+
+        // Compute NW corner
+        nw_lon = mid_x_long_offset - (screen_width  * scale_x / 2);
+        nw_lat = mid_y_lat_offset  - (screen_height * scale_y / 2);
+
+        convert_from_xastir_coordinates(&long1,
+            &lat1,
+            nw_lon,
+            nw_lat);
+
+        // Compute SE corner
+        se_lon = mid_x_long_offset + (screen_width  * scale_x / 2);
+        se_lat = mid_y_lat_offset  + (screen_height * scale_y / 2);
+
+        convert_from_xastir_coordinates(&long2,
+            &lat2,
+            se_lon,
+            se_lat);
+
+        // FILENAME   world1.xpm
+        // #          x          y        lon         lat
+        // TIEPOINT   0          0        -180        90
+        // TIEPOINT   639        319      180         -90
+        // IMAGESIZE  640        320
+        // REFRESH    250
+
+        fprintf(f,"FILENAME     snapshot.png\n");
+        fprintf(f,"#            x       y        lon           lat\n");
+        fprintf(f,"TIEPOINT     0       0       %8.5f     %8.5f\n",
+            long1, lat1);
+        fprintf(f,"TIEPOINT     %-4d    %-4d    %8.5f     %8.5f\n",
+            (int)screen_width-1, (int)screen_height-1, long2, lat2);
+ 
+        fprintf(f,"IMAGESIZE    %-4d    %-4d\n",
+            (int)screen_width, (int)screen_height);
+        fprintf(f,"REFRESH      250\n");
+        fclose(f); 
+
+        chmod( geo_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+    }
+
 
     if ( debug_level & 512 )
         fprintf(stderr,"Convert %s ==> %s\n", xpm_filename, png_filename );
@@ -3086,8 +3149,6 @@ void Snapshot(void) {
 #ifndef NO_XPM
     pthread_t snapshot_thread_id;
     char xpm_filename[MAX_FILENAME];
-    char geo_filename[MAX_FILENAME];
-    FILE *f;
 #endif  // NO_XPM
 
 
@@ -3112,65 +3173,6 @@ void Snapshot(void) {
         "%s/snapshot.xpm",
         get_user_base_dir("tmp"));
 
-    // Same for the .geo filename
-    xastir_snprintf(geo_filename,
-        sizeof(geo_filename),
-        "%s/snapshot.geo",
-        get_user_base_dir("tmp"));
-
-
-    // Create a .geo file to match the new png image
-    //
-    f = fopen(geo_filename,"w");    // Overwrite whatever file
-                                        // is there.
-    if (f == NULL) {
-        fprintf(stderr,"Couldn't open %s\n",geo_filename);
-    }
-    else {
-        long nw_lat, se_lat;
-        long nw_lon, se_lon;
-        float lat1, long1, lat2, long2;
-
-
-        // Compute NW corner
-        nw_lon = mid_x_long_offset - (screen_width  * scale_x / 2);
-        nw_lat = mid_y_lat_offset  - (screen_height * scale_y / 2);
-
-        convert_from_xastir_coordinates(&long1,
-            &lat1,
-            nw_lon,
-            nw_lat);
-
-        // Compute SE corner
-        se_lon = mid_x_long_offset + (screen_width  * scale_x / 2);
-        se_lat = mid_y_lat_offset  + (screen_height * scale_y / 2);
-
-        convert_from_xastir_coordinates(&long2,
-            &lat2,
-            se_lon,
-            se_lat);
-
-        // FILENAME   world1.xpm
-        // #          x          y        lon         lat
-        // TIEPOINT   0          0        -180        90
-        // TIEPOINT   639        319      180         -90
-        // IMAGESIZE  640        320
-        // REFRESH    250
-
-        fprintf(f,"FILENAME     snapshot.png\n");
-        fprintf(f,"#            x       y        lon           lat\n");
-        fprintf(f,"TIEPOINT     0       0       %8.5f     %8.5f\n",
-            long1, lat1);
-        fprintf(f,"TIEPOINT     %-4d    %-4d    %8.5f     %8.5f\n",
-            (int)screen_width-1, (int)screen_height-1, long2, lat2);
- 
-        fprintf(f,"IMAGESIZE    %-4d    %-4d\n",
-            (int)screen_width, (int)screen_height);
-        fprintf(f,"REFRESH      250\n");
-        fclose(f); 
-
-        chmod( geo_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-    }
 
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
