@@ -682,7 +682,7 @@ void draw_grid(Widget w) {
         if (temp_x < view_min_x)
             temp_x = temp_x + (360000 * 6);
 
-        XSetLineAttributes(XtDisplay (w), gc, 1, LineSolid, CapButt, JoinMiter);
+//        XSetLineAttributes(XtDisplay (w), gc, 1, LineSolid, CapButt, JoinMiter);
 
         (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
 
