@@ -744,7 +744,9 @@ time_t time_from_aprsstring(char *aprs_time) {
     long zone;
 
 #ifndef HAVE_TM_GMTOFF
+#ifndef __CYGWIN__
     extern time_t timezone;
+#endif  // __CYGWIN__
 #endif  // HAVE_TM_GMTOFF
 
 
