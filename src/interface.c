@@ -1508,6 +1508,108 @@ int OpenTrac_decode_waypoint(unsigned char *element,
 
 
 
+char symbol_translate[9,100] = {
+    "11100000","/S",    // space shuttle
+    "12100000","\\S",   // satellite
+    "10000000","\\S",   // *** other space
+    "21000000","/O",    // balloon
+    "22120000","/g",    // glider
+    "22100000","/'",    // small plane
+    "22200000","/^",    // large aircraft
+    "22300000","/^",    // large aircraft
+    "23000000","/X",    // helicopter
+    "20000000","/'",    // *** other air
+    "31310000","/h",    // hospital
+    "31340000","/A",    // aid station
+    "31350000","\\X",   // pharmacy
+    "31410000","/d",    // fire station
+    "31440000","/o",    // EOC
+    "31460000","/+",    // red cross
+    "31620000","\\h",   // ham store
+    "31700000","/-",    // house
+    "31800000","\\+",   // church
+    "31910000","/H",    // hotel
+    "31920000","\\9",   // gas station
+    "31930000","\\R",   // restaurant
+    "31940000","\\?",   // information
+    "31950000","\\P",   // parking
+    "31960000","/t",    // truck stop
+    "31970000","\\r",   // restrooms
+    "31980000","\\$",   // bank/atm
+    "31a00000","/K",    // school
+    "31c10000","/,",    // boy scouts
+    "31c20000","\\,",   // girl scouts
+    "31d10000","\\;",   // park/picnic area
+    "31d20000","\\;",   // park/picnic area
+    "31d30000","/;",    // campground
+    "31e13000","\\V",   // VORTAC
+    "31f12000","/$",    // phone
+    "32111000","/>",    // car
+    "32112000","/v",    // van
+    "32113000","/k",    // truck
+    "32114000","/j",    // jeep
+    "32115000","/R",    // rv
+    "32116000","/<",    // motorcycle
+    "32117000","/b",    // bicycle
+    "32121000","/u",    // 18-wheeler
+    "32122000","/U",    // bus
+    "32131000","/=",    // railroad engine
+    "32141000","/*",    // snowmobile
+    "32161000","/!",    // police
+    "32162000","/a",    // ambulance
+    "32163000","/f",    // fire truck
+    "33100000","/(",    // sat station
+    "30000000","//",    // *** other ground
+    "41200000","/s",    // ship
+    "41510000","/C",    // canoe
+    "41520000","/C",    // canoe (kayak)
+    "41540000","/Y",    // yacht
+    "41620000","\\C",   // coastguard
+    "43100000","\\N",   // nav bouy
+    "40000000","\\s",   // *** other sea
+    "50000000","//",    // A dot
+    "62110000","/[",    // jogger
+    "64200000","/:",    // fire
+    "65500000","\\'",   // crash site
+    "66100000","\\Q",   // earthquake
+    "66300000","\\w",   // flooding
+    "60000000","/.",    // *** other activities
+    "71610000","\\U",   // sunny
+    "71620000","\\U",   // sunny
+    "71630000","\\(",   // cloudy
+    "71640000","\\(",   // cloudy
+    "71650000","\\(",   // cloudy
+    "71660000","\\(",   // cloudy
+    "71711000","\\I",   // rain shower
+    "71712000","\\F",   // freezing rain
+    "71713000","\\D",   // drizzle
+    "71710000","\\'",   // rain
+    "71721000","\\G",   // snow shower
+    "71720000","\\*",   // snow
+    "71730000","\\:",   // hail
+    "71812000","\\f",   // funnel cloud
+    "71813000","\\J",   // lightning
+    "71810000","\\T",   // thunderstorm
+    "71822000","/@",    // hurricane
+    "71820000","\\@",   // storm
+    "71920000","\\{",   // fog
+    "71950000","\\E",   // smoke
+    "71960000","\\H",   // haze
+    "71970000","\\b",   // blowing dust/sand
+    "70000000","\\o",   // *** other weather
+    "80000000","//",    // A dot
+    "90000000","//",    // A dot
+    "A0000000","//",    // A dot
+    "B0000000","//",    // A dot
+    "C0000000","//",    // A dot
+    "D0000000","//",    // A dot
+    "E0000000","//",    // A dot
+    "F0000000","//"};   // A dot
+
+
+
+
+
 // 0x18 Map Symbol - Packed 4-bit integers
 //
 // Modifies: symbol (leaves it in 4-bit packed format)
