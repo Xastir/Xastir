@@ -272,9 +272,14 @@ forget the leading period in the filename as it's important.  For
 instance, I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The
 file should contain the following lines:
 
-    cvs -z3
+    ##cvs -z3
     update -P -d
     status -v
+    diff -u
+
+The '#' marks comment out the first line.  "cvs -z3" invokes
+compression, and the SourceForge site isn't performing compression
+currently.
 
 PLEASE NOTE:  this file must be created in Unix format, not DOS
 format.  DO NOT USE Notepad or other Windows tools to create the
@@ -305,7 +310,7 @@ Hit <ENTER> when asked for a password after typing line four (the
   mkdir src
   cd src
   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
-  cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
+  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
 NOTE:  The "login" command must complete without errors in order to
 create a dummy blank password in your .cvspass file.  Without this

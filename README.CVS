@@ -13,7 +13,7 @@ CVS Instructions:
         following lines.  Use whatever Unix-type editor you're
         comfortable with.  Choices might be pico, vi, emacs, others:
 
-         cvs -z3
+         ##cvs -z3
          update -P -d
          status -v
          diff -u
@@ -22,7 +22,9 @@ CVS Instructions:
         things easier.  They are not required.
 
         The "cvs -z3" option isn't accepted by SourceForge currently.  Comment
-        it out by adding a couple of '#' marks in front of the line.
+        it out by adding a couple of '#' marks in front of the line.  You can
+        test it at a later date by removing the '#' marks and trying a cvs
+        command.
 
      2) Start up a shell window of some type, perhaps an xterm or an rxvt.
         Type the following commands into this one shell.  You'll be setting
@@ -47,7 +49,7 @@ CVS Instructions:
         a ".cvspass" file in your home directory with the anonymous login
         information inside it.
 
-          cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
+          cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
 
         That creates a subdirectory called "xastir" that has all the latest
         sources in it.
@@ -55,12 +57,12 @@ CVS Instructions:
      You may want to use this instead, to get the sources corresponding to the
      latest release:
 
-       cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r RELEASE xastir
+       cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r RELEASE xastir
 
      or use this line to get the latest version deemed "stable" by the developers
      (generally newer than the RELEASE version):
 
-       cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r STABLE xastir
+       cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r STABLE xastir
 
      All done!  You now have the latest development sources on your computer.
      Now you can forget about all of the previous instructions unless you

@@ -582,8 +582,8 @@ First Time Install:
 
       Also note that as of Dec 11, 2003, a major memory leak bug in the OGR
       code was fixed, having to do with Shapefiles.  Please run a version of
-      GDAL/OGR that is newer than that date (or the CVS version as shown
-      above).
+      GDAL/OGR that is newer than that date (or use the CVS version as
+      described above).
 
    10. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
