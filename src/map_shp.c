@@ -1378,7 +1378,14 @@ void draw_shapefile_map (Widget w,
 
         if (ret_val != 0) {
             fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);
-            exit(1);
+
+            // We shouldn't exit on this one, as it's not so severe
+            // that we should kill Xastir.  I've seen this happen
+            // after very long runtimes though, so perhaps there's a
+            // problem somewhere in the X11 server and/or it's
+            // caching?
+            //
+            //exit(1);
         }
 
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
