@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -69,7 +69,7 @@ void normal_title(char *incoming_title, char *outgoing_title) {
         c_ptr = &outgoing_title[strlen("County Warning Area ")];
         strcpy(outgoing_title, "CWA");
         strncat(outgoing_title, c_ptr, 32-3); // total max length - strlen("CWA")
-	outgoing_title[32] = '\0';
+        outgoing_title[32] = '\0';
     }
     while ((c_ptr = strstr(outgoing_title, ". ")))
         memmove(c_ptr, c_ptr+2, strlen(c_ptr)+1);
@@ -92,7 +92,7 @@ void alert_print_list(void) {
     printf("Alert counts: %d/%d\n", alert_list_count, alert_max_count);
     for (i = 0; i < alert_list_count; i++) {
         strncpy(title, alert_list[i].title, 99);
-	title[99] = '\0';
+        title[99] = '\0';
         for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
             *c_ptr = '\0';
 
@@ -160,7 +160,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     for (i = 0; i < alert_list_count; i++) {
         normal_title(alert_list[i].title, title_m);
         strncpy(alert_f, alert_list[i].filename, 32);
-	alert_f[32] = '\0';
+        alert_f[32] = '\0';
         if ((ptr = strpbrk(alert_f, ".")))
             *ptr = '\0';
 
@@ -215,7 +215,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
                         alert_list[i].bottom_boundary = alert->bottom_boundary;
                         alert_list[i].right_boundary = alert->right_boundary;
                         strncpy(alert_list[i].title, alert->title, 32);
-			alert_list[i].title[32] = '\0';
+                        alert_list[i].title[32] = '\0';
                     }
                     alert_list[i].flags[0] = alert->flags[0];
                 }
