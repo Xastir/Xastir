@@ -179,8 +179,8 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
         ftp://ftp.remotesensing.org/pub/proj/
         http://wetnet.net/~we7u/xastir/
 
-    libgeotiff (libgeotiff-1.1.5):
-    ------------------------------
+    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.0):
+    --------------------------------------------------
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
         http://wetnet.net/~we7u/xastir/
@@ -376,25 +376,19 @@ First Time Install:
        3d. Install libgeotiff:
        -----------------------
 
-     NOTE: There's at least one memory leak in this library, versions
-       1.1.3 through 1.1.4, which can be patched in the geo_trans.c
-       file.  A patched version of the geo_trans.c file for
-       libgeotiff-1.1.3 is available here:
+     NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
+       libgeotiff-1.2.0 may compile properly.  libgeotiff is so intimately
+       tied with libtiff that you may need to try both versions of
+       libgeotiff to find out which one will work with your libtiff.
 
-       http://wetnet.net/~we7u/xastir/libgeotiff/geo_trans.diff
-
-       Apply the patch to geo_trans.c BEFORE compiling libgeotiff.
-       The patch might not apply to anything later than 1.1.3.
-       Contact archer@eskimo.com if you have troubles with this patch.
-       So far libgeotiff-1.1.5 release candidate appears to be
-       better in this regard.  Use it if available.
-
-        tar xzvf libgeotiff-1.1.4.tar.gz (or newer)
-        cd libgeotiff-1.1.4
-        ./configure
      NOTE: You may need to snag one file from the libtiff source distribution
-       and place it into libgeotiff-1.1.4/libtiff_private directory before
-       libgeotiff will compile:  "tiffconf.h".
+       and place it into libgeotiff-1.1.5/libtiff_private directory before
+       libgeotiff will compile:  "tiffconf.h".  With libgeotiff-1.2.0 you
+       shouldn't need to do this.
+
+        tar xzvf libgeotiff-1.1.5.tar.gz (or newer)
+        cd libgeotiff-1.1.5
+        ./configure
         make
         su (root)
         make install (as root)
