@@ -587,6 +587,11 @@ void guess_vector_attributes( Widget w,
             if (strcasecmp(driver_type,"SDTS") == 0) {
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
+//
+// Consider trying GXxor function with gc_tint someday to see what
+// the contour lines look like with that method:  Should make them
+// quite readable no matter what the underlying map colors.
+//
                 // Set color for SDTS hypsography layer (contours)
 //                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
@@ -613,6 +618,11 @@ void guess_vector_attributes( Widget w,
             if (strcasecmp(driver_type,"SDTS") == 0) {
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
+//
+// Consider trying GXxor function with gc_tint someday to see what
+// the contour lines look like with that method:  Should make them
+// quite readable no matter what the underlying map colors.
+//
                 // Set color for SDTS hypsography layer (contours)
 //                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
