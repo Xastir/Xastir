@@ -29,6 +29,7 @@ CT APRS Network no connected messages supported!
 ECHO OFF
 FLOW OFF
 HID OFF/OFF
+CWID OFF/OFF
 MSTAMP OFF
 PASSALL OFF
 #
