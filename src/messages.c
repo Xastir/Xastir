@@ -456,7 +456,7 @@ void output_message(char *from, char *to, char *message, char *path) {
                     message_counter[1]);
 
                 message_pool[i].active_time=0;
-                message_pool[i].next_time = (time_t)15l;
+                message_pool[i].next_time = (time_t)7l;
 
                 if (strcmp(from,"***")!= 0)
                     message_pool[i].tries = 0;
@@ -588,12 +588,12 @@ void check_and_transmit_messages(time_t time) {
 
                     //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
 
-                    // Start at 15 seconds for the interval.  Add 5 seconds to the
+                    // Start at 7 seconds for the interval.  Add 5 seconds to the
                     // interval each retry until we hit 90 seconds.  90 second
                     // intervals until retry 30, then start adding 30 seconds to
                     // the interval each time until we get to a 10 minute interval
                     // rate.  Keep transmitting at 10 minute intervals until we
-                    // hit MAX_RETRIES.
+                    // hit MAX_TRIES.
 
                     // Increase interval by 5 seconds each time
                     // until we hit 90 seconds
