@@ -358,14 +358,16 @@ NOTE:  The "make" step can be extremely memory hungry.  If you don't
 have much free memory, that step might take a long time to run.  One
 Win2k machine with only 20MB of free RAM (128MB total RAM) couldn't
 complete this step, but adding another 128MB of RAM to that machine
-caused it to succeed.  Another machine running Win2k with 128MB
-total RAM took six hours.  Free up memory if you're having trouble
-completing that step.  This behavior is only seen on Windows/Cygwin,
-not on the Unix-based systems.  On a typical Linux box that step
-takes under two seconds.  Hopefully Cygwin linking will improve over
-time to alleviate this issue.  We've added a new link-stage
-parameter to reduce the memory usage here, but it doesn't totally
-resolve the problem.
+caused it to succeed.  Another machine running Win2k with 64MB free
+(128MB total RAM) took six hours (but keep reading!).  Free up
+memory if you're having trouble completing that step.  This behavior
+is only seen on Windows/Cygwin, not on the Unix-based systems.  On a
+typical Linux box that step takes under two seconds.  Hopefully
+Cygwin linking will improve over time to alleviate this issue.
+We've added a new link-stage parameter to reduce the memory usage
+for that step, but it doesn't totally resolve the problem.  The
+machine that took six hours originally now takes 60 seconds to
+complete that step.
 
 Ignore the "PACKAGE_* redefined" warnings.  They won't break
 anything and are just an annoyance.
