@@ -608,9 +608,9 @@ time_t POSIT_rate;              // Posit & object/item rate timer
 // objects & items, sb_POSIT_rate computed via SmartBeaconing will
 // be used for posits.
 int smart_beaconing;            // Master enable/disable for SmartBeaconing mode
-int sb_POSIT_rate;              // Computed SmartBeaconing posit rate (secs)
-int sb_last_heading;            // Heading at time of last posit
-int sb_current_heading;         // Most recent heading parsed from GPS sentence
+int sb_POSIT_rate = 30 * 60;    // Computed SmartBeaconing posit rate (secs)
+int sb_last_heading = -1;       // Heading at time of last posit
+int sb_current_heading = -1;    // Most recent heading parsed from GPS sentence
 int sb_turn_min = 20;           // Min threshold for corner pegging (degrees)
 int sb_turn_slope = 25;         // Threshold slope for corner pegging (degrees/mph)
 int sb_turn_time = 5;           // Time between other beacon & turn beacon (secs)
@@ -4918,6 +4918,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     // speed/turns, etc.
                     posit_next_time = posit_last_time + sb_POSIT_rate;
                     sb_last_heading = sb_current_heading;
+printf("Sending Posit\n");
                 }
                 else {
                     // Schedule next fixed posit time, set in

@@ -7347,8 +7347,14 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
     int heading_change_since_beacon;
     int beacon_now = 0;
 
+
+    // Don't compute SmartBeaconing parameters or force any beacons
+    // if we're not in that mode!
+    if (!smart_beaconing)
+        return;
+
     // Convert from knots to mph/kph (whichever is selected)
-    speed = atoi(current_speed) * cvt_kn2len;
+    speed = (int)(atof(current_speed) * cvt_kn2len + 0.5); // Poor man's rounding
 
     course = atoi(current_course);
  
@@ -7411,6 +7417,11 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         if (turn_threshold > 80)
             turn_threshold = 80;
  
+        // Check to see if we've written anything into
+        // sb_last_heading variable yet
+        if (sb_last_heading == -1)
+            sb_last_heading = course;
+
         // Corner-pegging.  Note that we don't corner-peg if we're
         // below the low-speed threshold.
         heading_change_since_beacon = abs(course - sb_last_heading);
@@ -7420,10 +7431,13 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         if ( (heading_change_since_beacon > turn_threshold)
                 && (secs_since_beacon > sb_turn_time) ) {
             beacon_now++;   // Force a posit right away
-            //printf("Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\n",
+
+            //printf("Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\tSpeed: %d\tTurn Threshold:%d\n",
             //    sb_last_heading,
             //    course,
-            //    heading_change_since_beacon);
+            //    heading_change_since_beacon,
+            //    speed,
+            //    turn_threshold);
         }
     }
     if (beacon_now) {
