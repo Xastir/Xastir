@@ -1135,9 +1135,9 @@ void draw_shapefile_map (Widget w,
     long            x,y;
     int             ok, index;
     int             road_flag = 0;
-    int             water_flag = 0;
-    int             weather_alert_flag = 0;
     int             lake_flag = 0;
+    int             river_flag = 0;
+    int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
     char            search_param1[10];
     int             search_field1 = 0;
@@ -1196,14 +1196,6 @@ void draw_shapefile_map (Widget w,
         printf ("%d Columns,  %d Records in file\n", fieldcount, recordcount);
 
     panWidth = (int *) malloc( fieldcount * sizeof(int) );
-
-    if (strncasecmp (filename, "lk", 2) == 0) {
-        lake_flag++;
-        water_flag++;
-
-        if (debug_level & 16)
-            printf("*** Found some lakes ***\n");
-    }
 
     // If we're doing weather alerts and index is not filled in yet
     if (weather_alert_flag && (alert->index == -1) ) {
@@ -1298,47 +1290,101 @@ void draw_shapefile_map (Widget w,
         //printf("Search_param2: %s\n",search_param2);
     }
 
-    for( i = 0; i < fieldcount; i++ ) {
-        char            szTitle[12];
+    for (i=0; i < fieldcount; i++) {
+        char szTitle[12];
 
-        switch ( DBFGetFieldInfo( hDBF, i, szTitle, &nWidth, &nDecimals )) {
-              case FTString:
-                strcpy (ftype, "string");;
-                break;
+        switch (DBFGetFieldInfo(hDBF, i, szTitle, &nWidth, &nDecimals)) {
+        case FTString:
+            strcpy(ftype, "string");;
+            break;
 
-              case FTInteger:
-                strcpy (ftype, "integer");
-                break;
+        case FTInteger:
+            strcpy(ftype, "integer");
+            break;
 
-              case FTDouble:
-                strcpy (ftype, "float");
-                break;
+        case FTDouble:
+            strcpy(ftype, "float");
+            break;
 
-              case FTInvalid:
-                strcpy (ftype, "invalid/unsupported");
-                break;
+        case FTInvalid:
+            strcpy(ftype, "invalid/unsupported");
+            break;
 
-              default:
-                strcpy (ftype, "unknown");
-                break;
+        default:
+            strcpy(ftype, "unknown");
+            break;
         }
 
+        // If debug is on, we want to print out every field, otherwise
+        // break once we've made our guess on the type of shapefile.
         if (debug_level & 16)
-            printf ("%15.15s\t%15s  (%d,%d)\n",szTitle, ftype, nWidth, nDecimals);
+            printf("%15.15s\t%15s  (%d,%d)\n", szTitle, ftype, nWidth, nDecimals);
 
-        if (strncasecmp (szTitle, "SPEEDLIM", 8) == 0) {
+        if (strncasecmp(szTitle, "SPEEDLIM", 8) == 0) {
+            // sewroads shapefile?
             road_flag++;
-
             if (debug_level & 16)
-                printf("*** Found some roads ***\n");
+                printf("*** Found some roads (SPEEDLIM*) ***\n");
+            else
+                break;
         }
-        if (strncasecmp (szTitle, "US_RIVS_ID", 10) == 0)
-        {
-
-            water_flag++;
-
+        else if (strncasecmp(szTitle, "US_RIVS_ID", 10) == 0) {
+            // which shapefile?
+            river_flag++;
             if (debug_level & 16)
-                printf("*** Found some water ***\n");
+                printf("*** Found some rivers (US_RIVS_ID*) ***\n");
+            else
+                break;
+        }
+        else if (strcasecmp(szTitle, "FEATURE") == 0) {
+            char *attr_str;
+            int j;
+            for (j=0; j < recordcount; j++) {
+                attr_str = (char*)DBFReadStringAttribute(hDBF, j, i);
+                if (strncasecmp(attr_str, "LAKE", 4) == 0) {
+                    // NOAA Lakes and Water Bodies (lk17de98) shapefile
+                    lake_flag++;
+                    if (debug_level & 16)
+                        printf("*** Found some lakes (FEATURE == LAKE*) ***\n");
+                    break;
+                }
+                else if (strstr(attr_str, "Highway") != NULL ||
+                         strstr(attr_str, "highway") != NULL ||
+                         strstr(attr_str, "HIGHWAY") != NULL) {
+                    // NOAA Interstate Highways of the US (in011502) shapefile
+                    // NOAA Major Roads of the US (rd011802) shapefile
+                    road_flag++;
+                    if (debug_level & 16)
+                        printf("*** Found some roads (FEATURE == *HIGHWAY*) ***\n");
+                    break;
+                }
+            }
+            if (!(debug_level & 16) && (lake_flag || road_flag))
+                break;
+        }
+        else if (strcasecmp(szTitle, "LENGTH") == 0 ||
+                 strcasecmp(szTitle, "RR")     == 0 ||
+                 strcasecmp(szTitle, "HUC")    == 0 ||
+                 strcasecmp(szTitle, "TYPE")   == 0 ||
+                 strcasecmp(szTitle, "SEGL")   == 0 ||
+                 strcasecmp(szTitle, "PMILE")  == 0 ||
+                 strcasecmp(szTitle, "ARBSUM") == 0 ||
+                 strcasecmp(szTitle, "PNAME")  == 0 ||
+                 strcasecmp(szTitle, "OWNAME") == 0 ||
+                 strcasecmp(szTitle, "PNMCD")  == 0 ||
+                 strcasecmp(szTitle, "OWNMCD") == 0 ||
+                 strcasecmp(szTitle, "DSRR")   == 0 ||
+                 strcasecmp(szTitle, "DSHUC")  == 0 ||
+                 strcasecmp(szTitle, "USDIR")  == 0) {
+            // NOAA Rivers of the US (rv14fe02) shapefile
+            // NOAA Rivers of the US Subset (rt14fe02) shapefile
+            river_flag++;
+            if (river_flag >= 14) {
+                if (debug_level & 16)
+                    printf("*** Found some rivers (NOAA Rivers of the US or Subset) ***\n");
+                else
+                    break;
+            }
         }
     }
 
@@ -1468,12 +1514,12 @@ void draw_shapefile_map (Widget w,
         return;     // The file contains no shapes in our viewport
     }
 
-    (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x00]);
- 
+    // NOTE: Setting the color here and in the "else" may not stick if we do more
+    //       complex drawing further down like a SteelBlue lake with a black boundary.
     if (weather_alert_flag) {
         char xbm_path[500];
         int _w, _h, _xh, _yh;
-        // This GC is used only for pixmap_alerts
+        // This GC is used only for pixmap_alerts (LIAR)
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
         // N7TAP: No more tinting as that would change the color of the alert, losing that information.
@@ -1519,12 +1565,10 @@ void draw_shapefile_map (Widget w,
                         xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
     } else {
-        if (water_flag)
-            (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x09]);
-
-//        if (road_flag)
+        if (lake_flag || river_flag)
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
         else
-            (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x08]);
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
     }
 
 
@@ -1615,7 +1659,7 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
                             
                         }
-                    } else if (water_flag) {
+                    } else if (lake_flag || river_flag) {
                         temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
                     }
 
@@ -1676,9 +1720,6 @@ void draw_shapefile_map (Widget w,
                         if (lanes != (int)NULL) {
                             (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
                         }
-                    }
-                    else if (water_flag) {
-                        (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
                     else {  // Set default line width
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -1766,24 +1807,34 @@ void draw_shapefile_map (Widget w,
                             i++;    // Number of points to draw
                         }
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
-                            //(void)XSetForeground(XtDisplay (w), gc, colors[(int)0x64]);
-                            if (map_color_fill || water_flag || weather_alert_flag) {
-                                if (weather_alert_flag) {
-                                    (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
-                                    (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
-                                    (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
-                                    (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
+                            if (lake_flag) {
+                                if (map_color_fill) {
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+                                    (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // reset to SteelBlue for next shape
                                 }
                                 else
-                                    (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
-                            } else {
-                                int temp;
-
-                                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                                temp = XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
-                                if (temp != 0) {
-                                    //printf("*** BAD XDrawLines return value: %d ***\n", temp);
-                                }
+                                    (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                            }
+                            else if (river_flag) {
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                            }
+                            else if (weather_alert_flag) {
+                                (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
+                                (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
+                                (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
+                                (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
+                            }
+                            else if (map_color_fill) {
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x07]); // darkgray fill
+                                (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                            }
+                            else {
+                                (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                         }
 
