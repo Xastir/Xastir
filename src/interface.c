@@ -2241,7 +2241,7 @@ char *process_OpenTrac_packet( unsigned char *data,
     int           i;
     int           elen;
     int           etype;
-    int           decoded         = 0;
+    unsigned int  decoded         = 0;
     unsigned char origin_call[7];       // Where the packet originated
     unsigned char origin_ssid     = 0;
     unsigned char entity_call[7];       // What the packet is talking about
