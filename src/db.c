@@ -12743,6 +12743,9 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
 /*
  *  Extract object or item data from information field before processing
+ *
+ *  Returns 1 if valid object found, else returns 0.
+ *
  */
 int extract_object(char *call, char **info, char *origin) {
     int ok, i;
@@ -13403,12 +13406,19 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char backup[MAX_LINE_SIZE+1];
     char tmp_line[MAX_LINE_SIZE+1];
 
-    strcpy(backup, line);
+
+    xastir_snprintf(backup,
+        sizeof(backup),
+        "%s",
+        line);
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
 
-        strncpy(filtered_data, line, MAX_LINE_SIZE);
+        xastir_snprintf(filtered_data,
+            sizeof(filtered_data),
+            "%s",
+            line);
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
         makePrintable(filtered_data);
@@ -13457,15 +13467,27 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     }
 
     if (ok) {
-        strcpy(path,path0);
-        strcpy(info_copy,info);
+
+        xastir_snprintf(path,
+            sizeof(path),
+            "%s",
+            path0);
+
+        xastir_snprintf(info_copy,
+            sizeof(info_copy),
+            "%s",
+            info);
 
         ok = valid_path(path);                  // check the path and convert it to TAPR format
         // Note that valid_path() also removes igate injection identifiers
 
         if ((debug_level & 1) && !ok) {
             char filtered_data[MAX_LINE_SIZE + 1];
-            strcpy(filtered_data,path);
+
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                path);
             makePrintable(filtered_data);
             fprintf(stderr,"decode_ax25_line: invalid path: %s\n",filtered_data);
         }
@@ -13484,7 +13506,11 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             ok = 0;                             // drop packets too long
         if ((debug_level & 1) && !ok) {
             char filtered_data[MAX_LINE_SIZE + 1];
-            strcpy(filtered_data,info);
+
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                info);
             makePrintable(filtered_data);
             fprintf(stderr,"decode_ax25_line: info field too long: %s\n",filtered_data);
         }
@@ -13493,14 +13519,24 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     if (ok) {                                                   // check callsign
         (void)remove_trailing_asterisk(call_sign);              // is an asterisk valid here ???
         if (valid_inet_name(call_sign,info,origin)) {           // accept some of the names used in internet
-            strcpy(call,call_sign);                             // treat is as object with special origin
+            xastir_snprintf(call,
+                sizeof(call),
+                "%s",
+                call_sign);
         } else if (valid_call(call_sign)) {                     // accept real AX.25 calls
-            strcpy(call,call_sign);
+            xastir_snprintf(call,
+                sizeof(call),
+                "%s",
+                call_sign);
         } else {
             ok = 0;
             if (debug_level & 1) {
                 char filtered_data[MAX_LINE_SIZE + 1];
-                strcpy(filtered_data,call_sign);
+
+                xastir_snprintf(filtered_data,
+                    sizeof(filtered_data),
+                    "%s",
+                    call_sign);
                 makePrintable(filtered_data);
                 fprintf(stderr,"decode_ax25_line: invalid call: %s\n",filtered_data);
             }
@@ -13526,7 +13562,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     }
 
     if (ok && (info[0] == ';' || info[0] == ')')) {             // look for objects or items
-        strcpy(origin,call);
+        xastir_snprintf(origin,
+            sizeof(origin),
+            "%s",
+            call);
         ok = extract_object(call,&info,origin);                 // extract object data
     }
 
