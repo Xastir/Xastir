@@ -8150,7 +8150,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Allow up to 1000 packets to be processed inside this
             // loop.
             while (max < 1000 && !XtAppPending(app_context)) {
-                struct timeval tmv;
+//                struct timeval tmv;
 
 
 if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
@@ -8262,9 +8262,10 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
                 // Do a usleep() here to give the interface threads
                 // time to set data_avail if they still have data to
                 // process.
-                tmv.tv_sec = 0;
-                tmv.tv_usec = 20000; // Delay 20ms
-                (void)select(0,NULL,NULL,NULL,&tmv);
+                sched_yield();  // Yield to the other threads
+//                tmv.tv_sec = 0;
+//                tmv.tv_usec = 1; // Delay 1ms
+//                (void)select(0,NULL,NULL,NULL,&tmv);
 
             }
             /* END- get data from interface */
