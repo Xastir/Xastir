@@ -240,7 +240,7 @@ PULDNTNT01|Zend nu!|Z|
 PULDNTNT07|Volg GPS spoor|F|
 PULDNTNT08|Volg GPS routes|R|
 PULDNTNT09|Volg GPS routepunten|W|
-PULDNTNT10|Volg Garmin RINO routepunten|G|
+PULDNTNT10|Laad Garmin RINO routepunten|G|
 #
 # Menu "Help"
 PULDNHEL01|Informatie|A|
