@@ -2563,7 +2563,21 @@ extern void draw_shapefile_map (Widget w,
 
 
 
-
+// For TIGER, we must create polygons from the vector lines.  Use
+// this function in the C API to do that:
+//
+//     OGRGeometryH CPL_DLL OGRBuildPolygonFromEdges(
+//        OGRGeometryH hLinesAsCollection,
+//        int bBestEffort,
+//        int bAutoClose,
+//        double dfTolerance,
+//        OGRErr * peErr );
+//
+// We may need to create some as "hole" polygons and some as "fill"
+// polygons, then order the vectors properly to pass off to the
+// Draw_OGR_Polygon() function.
+//
+//
 // The GDAL docs say to use these flags to compile:
 // `gdal-config --libs` `gdal-config * --cflags`
 // but so far they return: "-L/usr/local/lib -lgdal" and
