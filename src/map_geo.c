@@ -655,8 +655,11 @@ void draw_geo_image_map (Widget w,
     }
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
     // Check whether map is inside our current view
     //                bottom        top    left        right
@@ -693,8 +696,11 @@ void draw_geo_image_map (Widget w,
 #endif  // NO_XPM
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
 // Best here would be to add the process ID or user ID to the filename
 // (to keep the filename distinct for different users), and to check
@@ -807,8 +813,11 @@ void draw_geo_image_map (Widget w,
     //fprintf(stderr,"File = %s\n",file);
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
 // The status line is not updated yet, probably 'cuz we're too busy
 // getting the map in this thread and aren't redrawing?
@@ -835,8 +844,11 @@ void draw_geo_image_map (Widget w,
     (void)fclose (f);
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
     image = ReadImage(image_info, &exception);
 
@@ -867,6 +879,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -908,6 +922,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -923,6 +939,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -938,6 +956,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -953,6 +973,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -968,6 +990,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -983,6 +1007,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1000,6 +1026,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1015,6 +1043,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1045,6 +1075,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1064,6 +1096,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1083,6 +1117,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1134,6 +1170,8 @@ void draw_geo_image_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1181,8 +1219,11 @@ void draw_geo_image_map (Widget w,
     // XPM library instead.
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
     /*  XpmReadFileToImage is the call we wish to avoid if at all
      *  possible.  On large images this can take quite a while.  We
@@ -1204,6 +1245,8 @@ void draw_geo_image_map (Widget w,
     if (interrupt_drawing_now) {
         if (xi)
             XDestroyImage (xi);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1302,6 +1345,8 @@ void draw_geo_image_map (Widget w,
         if (xi)
             XDestroyImage (xi);
 #endif  // HAVE_IMAGEMAGICK
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 

@@ -4326,8 +4326,9 @@ void load_auto_maps (Widget w, char *dir) {
 
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
         return;
+    }
 
     // Skip the sorting of the maps if we don't need to do it
     if (re_sort_maps) {
@@ -4379,11 +4380,17 @@ void load_auto_maps (Widget w, char *dir) {
     while  (current != NULL) {
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
-    if (disable_all_maps)
+    if (disable_all_maps) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
         // Debug
 //        fprintf(stderr,"Drawing level:%05d, file:%s\n",
@@ -4433,8 +4440,11 @@ void load_maps (Widget w) {
         fprintf(stderr,"Load maps start\n");
 
     HandlePendingEvents(app_context);
-    if (interrupt_drawing_now)
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
 
     // Skip the sorting of the maps if we don't need to do it
     if (re_sort_maps) {
@@ -4579,11 +4589,16 @@ void load_maps (Widget w) {
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             statusline(" ",1);      // delete status line
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
             return;
         }
 
-        if (disable_all_maps)
+        if (disable_all_maps) {
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
             return;
+        }
  
         // Debug
 //        fprintf(stderr,"Drawing level:%05d, file:%s\n",

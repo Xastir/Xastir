@@ -1070,6 +1070,8 @@ void draw_geotiff_image_map (Widget w,
     if (interrupt_drawing_now) {
         GTIFFree (gtif);
         XTIFFClose (tif);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1204,6 +1206,8 @@ Samples Per Pixel: 1
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
             return;
         }
 
@@ -1273,6 +1277,8 @@ Samples Per Pixel: 1
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
             return;
         }
 
@@ -1342,6 +1348,8 @@ Samples Per Pixel: 1
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
             return;
         }
 
@@ -1411,6 +1419,8 @@ Samples Per Pixel: 1
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
             return;
         }
 
@@ -1499,6 +1509,8 @@ Samples Per Pixel: 1
     if (interrupt_drawing_now) {
         GTIFFree (gtif);
         XTIFFClose (tif);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -1649,6 +1661,8 @@ right_crop = width - 1;
     if (interrupt_drawing_now) {
         GTIFFree (gtif);
         XTIFFClose (tif);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -2182,6 +2196,8 @@ right_crop = width - 1;
             free(imageMemory);
         GTIFFree (gtif);
         XTIFFClose (tif);
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 

@@ -342,6 +342,8 @@ void draw_tiger_map (Widget w) {
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
     }
 
@@ -409,12 +411,6 @@ void draw_tiger_map (Widget w) {
 #endif  // HAVE_LIBCURL
 
 
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        return;
-//    }
-
-
     // For debugging the MagickError/MagickWarning segfaults.
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
 
@@ -447,14 +443,6 @@ void draw_tiger_map (Widget w) {
     (void)fclose (f);
 
 
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
-
-
     image = ReadImage(image_info, &exception);
 
     if (image == (Image *) NULL) {
@@ -462,16 +450,6 @@ void draw_tiger_map (Widget w) {
         //fprintf(stderr,"MagickWarning\n");
         return;
     }
-
-
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
 
 
     if (debug_level & 512)
@@ -501,16 +479,6 @@ void draw_tiger_map (Widget w) {
     }
 
 
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
-
-
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
     // This may take some time, so it would be best to do ahead of
@@ -533,16 +501,6 @@ void draw_tiger_map (Widget w) {
     }
 
 
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
-
-
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
@@ -554,16 +512,6 @@ void draw_tiger_map (Widget w) {
     }
 
 
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
-
-
     index_pack = GetIndexes(image);
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
@@ -573,16 +521,6 @@ void draw_tiger_map (Widget w) {
             DestroyImageInfo(image_info);
         return;
     }
-
-
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
 
 
     if (image->storage_class == PseudoClass && image->colors <= 256) {
@@ -627,15 +565,6 @@ void draw_tiger_map (Widget w) {
         }
     }
 
-
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
 
 
     /*
@@ -780,16 +709,6 @@ void draw_tiger_map (Widget w) {
     map_act  = 0;
     map_seen = 0;
     scr_y = screen_height - 1;
-
-
-//    HandlePendingEvents(app_context);
-//    if (interrupt_drawing_now) {
-//        if (image)
-//            DestroyImage(image);
-//        if (image_info)
-//            DestroyImageInfo(image_info);
-//        return;
-//    }
 
 
     // loop over map pixel rows
