@@ -9,7 +9,8 @@ $Id$
 
     Lintronix:  WinXastir CD available for a nominal fee.
     Everything needed to install Cygwin/Xastir off-line.  Walks you
-    through an automated install:
+    through an automated install.  Internet install of Xastir is
+    also now available:
 
         http://www.lintronix.com/winxastir/
         winxastir@lintronix.com
@@ -17,7 +18,9 @@ $Id$
 
     Inuit Nunaani Wireless Inc:  CD available for a nominal fee.
     Everything needed to install Cygwin/Xastir off-line.  Walks you
-    through an automated install:
+    through an automated install.  This install is verified to work
+    on WinXP and Win98 (known _not_ to work on Win95/WinME).
+    Contact:
 
         Tom Tessier <ttessier@trtdigital.ca>
 
