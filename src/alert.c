@@ -324,35 +324,30 @@ int alert_redraw_on_update = 0;
 
 
 
-// normal_title()
+// normal_title_CWA()
 //
-// Function to convert "County Warning Area" to "CWA" in a string.
+// Function to convert "County Warning Area " to "CWA" in a string.
 // Called from alert_match() and alert_update_list() functions.
 //
-void normal_title(char *incoming_title, char *outgoing_title, int outgoing_title_size) {
+void normal_title_CWA(char *incoming_title, char *outgoing_title, int outgoing_title_size) {
     char *c_ptr;
 
 
     if (debug_level & 2)
-        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
+        fprintf(stderr,"normal_title_CWA: Incoming: %s\n",incoming_title);
 
     xastir_snprintf(outgoing_title,
         outgoing_title_size,
         "%s",
         incoming_title);
 
-    outgoing_title[32] = '\0';
-
-    // Check whether this string is something we need to convert.
-    // If not, return.  We do two compares here instead of one
-    // strncmp for speed reasons.  This normal_title function gets
-    // called a lot!
-    if (outgoing_title[0] != 'C'
-            || outgoing_title[1] != 'o') {
+    // Check whether string we're interested in.  If not, skip the rest.
+    if (outgoing_title[0] != 'C' || outgoing_title[1] != 'o') {
         return;
     }
 
     if ((c_ptr = strstr(outgoing_title, "County Warning Area ")) && c_ptr == outgoing_title) {
+
         c_ptr = &outgoing_title[strlen("County Warning Area ")]; // Find end of text
         // Add "CWA" to output string instead
         xastir_snprintf(outgoing_title,
@@ -379,7 +374,7 @@ void normal_title(char *incoming_title, char *outgoing_title, int outgoing_title
     outgoing_title[8] = '\0';
 
 //    if (debug_level & 2)
-//        fprintf(stderr,"normal_title: Outgoing: %s\n",outgoing_title);
+//        fprintf(stderr,"normal_title_CWA: Outgoing: %s\n",outgoing_title);
 }
 
 
@@ -652,8 +647,8 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     if (debug_level & 2)
         fprintf(stderr, "alert_match:%s\n", alert->title);
 
-    // Shorten the title
-    normal_title(alert->title, title_e, sizeof(title_e));
+    // Shorten the title while copying into title_e
+    normal_title_CWA(alert->title, title_e, sizeof(title_e));
 
     xastir_snprintf(filename,
         sizeof(filename),
@@ -682,8 +677,15 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
             continue;
         }
 
-        // Shorten the title
-        normal_title(alert_list[i].title, title_m, sizeof(title_m));
+// We shouldn't need to call normal_title_CWA here, as this one
+// should already have the short title.  Just copy it directly to
+// the title_m variable instead.
+        // Shorten the title while copying into title_m
+//        normal_title_CWA(alert_list[i].title, title_m, sizeof(title_m));
+        xastir_snprintf(title_m,
+            sizeof(title_m),
+            "%s",
+            alert_list[i].title);
 
         xastir_snprintf(alert_f,
             sizeof(alert_f),
@@ -810,8 +812,8 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
         }
         ptr->flags[on_screen] = alert->flags[on_screen];
 
-        // Shorten title
-        normal_title(alert->title, title_e, sizeof(title_e));
+        // Shorten the title while copying into title_e
+        normal_title_CWA(alert->title, title_e, sizeof(title_e));
 
         // Force the string to be terminated
         title_e[sizeof(title_e)-1] = title_m[sizeof(title_m)-1] = '\0';
@@ -822,9 +824,15 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
             // If flag was '?' or has changed, update the alert
             if ((alert_list[i].flags[on_screen] == '?' || alert_list[i].flags[on_screen] != ptr->flags[on_screen])) {
 
-                // Shorten the title.  Title_m will be the shortened
-                // title.
-                normal_title(alert_list[i].title, title_m, sizeof(title_m));
+// We shouldn't need to call normal_title_CWA here, as this one
+// should already have the short title.  Just copy it directly to
+// the title_m variable instead.
+                // Shorten the title while copying into title_m
+//                normal_title_CWA(alert_list[i].title, title_m, sizeof(title_m));
+                xastir_snprintf(title_m,
+                    sizeof(title_m),
+                    "%s",
+                    alert_list[i].title);
 
                 if (strcmp(title_e, title_m) == 0) {
 
