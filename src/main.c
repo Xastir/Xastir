@@ -18254,6 +18254,23 @@ void updateObjectPictureCallback(/*@unused@*/ Widget w, /*@unused@*/ XtPointer c
 void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
+    char comment[43+1];     // max 43 characters of comment
+    char signpost_name[10];
+
+
+    // Save name and comment fields temporarily
+    xastir_snprintf(signpost_name,
+        sizeof(signpost_name),
+        "%s",
+        XmTextFieldGetString(object_name_data));
+    (void)remove_trailing_spaces(signpost_name);
+ 
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        XmTextFieldGetString(object_comment_data));
+    (void)remove_trailing_spaces(comment);
+
  
     if(state->set) {
         Signpost_object_enabled = 1;
@@ -18306,7 +18323,11 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
         // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
-  }
+    }
+
+    // Restore name and comment fields
+    XmTextFieldSetString(object_name_data,signpost_name);
+    XmTextFieldSetString(object_comment_data,comment);
 }
 
 
@@ -18317,6 +18338,23 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
+    char comment[43+1];     // max 43 characters of comment
+    char signpost_name[10];
+
+
+    // Save name and comment fields temporarily
+    xastir_snprintf(signpost_name,
+        sizeof(signpost_name),
+        "%s",
+        XmTextFieldGetString(object_name_data));
+    (void)remove_trailing_spaces(signpost_name);
+ 
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        XmTextFieldGetString(object_comment_data));
+    (void)remove_trailing_spaces(comment);
+
  
     if(state->set) {
         Signpost_object_enabled = 0;
@@ -18346,7 +18384,7 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
         // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
-   }
+    }
     else {
         Probability_circles_enabled = 0;
 
@@ -18369,7 +18407,11 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
         // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
-  }
+    }
+
+    // Restore name and comment fields
+    XmTextFieldSetString(object_name_data,signpost_name);
+    XmTextFieldSetString(object_comment_data,comment);
 }
 
 
@@ -18380,6 +18422,23 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
+    char comment[43+1];     // max 43 characters of comment
+    char signpost_name[10];
+
+
+    // Save name and comment fields temporarily
+    xastir_snprintf(signpost_name,
+        sizeof(signpost_name),
+        "%s",
+        XmTextFieldGetString(object_name_data));
+    (void)remove_trailing_spaces(signpost_name);
+ 
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        XmTextFieldGetString(object_comment_data));
+    (void)remove_trailing_spaces(comment);
+
  
     if(state->set) {
         Area_object_enabled = 1;
@@ -18444,6 +18503,10 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
     }
+
+    // Restore name and comment fields
+    XmTextFieldSetString(object_name_data,signpost_name);
+    XmTextFieldSetString(object_comment_data,comment);
 }
 
 
@@ -18454,6 +18517,23 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
+    char comment[43+1];     // max 43 characters of comment
+    char signpost_name[10];
+
+
+    // Save name and comment fields temporarily
+    xastir_snprintf(signpost_name,
+        sizeof(signpost_name),
+        "%s",
+        XmTextFieldGetString(object_name_data));
+    (void)remove_trailing_spaces(signpost_name);
+ 
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        XmTextFieldGetString(object_comment_data));
+    (void)remove_trailing_spaces(comment);
+
  
     if(state->set) {
         Area_object_enabled = 0;
@@ -18517,6 +18597,10 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
     }
+
+    // Restore name and comment fields
+    XmTextFieldSetString(object_name_data,signpost_name);
+    XmTextFieldSetString(object_comment_data,comment);
 }
 
 
