@@ -3282,6 +3282,8 @@ clear_dangerous();
 
 
 
+//#define TIGER_POLYGONS
+#ifdef TIGER_POLYGONS
     // Special handling for TIGER files so that we can extract/draw
     // polygons.
     //
@@ -3306,7 +3308,6 @@ clear_dangerous();
     //    AreaLandmarks and Landmarks were present for that polygon).
     // *) Draw non-polygon vectors.
     //
-/*
     if (strcasecmp(driver_type,"TIGER") == 0) {
         OGRLayerH layerH;
         OGRFeatureH featureH;
@@ -3330,6 +3331,11 @@ clear_dangerous();
 
         // Head pointer for our linked list
         polyinfo *polyhead = NULL;
+
+
+fprintf(stderr,"Starting polygon reassembly\n");
+fprintf(stderr,"      Polygon Layer ");
+start_timer();
 
 
         layerH = OGR_DS_GetLayerByName(datasourceH, "Polygon");
@@ -3374,6 +3380,10 @@ clear_dangerous();
                     OGR_F_Destroy( featureH );
             }   // End of while
         }   // End of if (layerH)
+
+
+stop_timer(); print_timer_results(); start_timer();
+fprintf(stderr,"          PIP Layer ");
 
 
         layerH = OGR_DS_GetLayerByName(datasourceH, "PIP");
@@ -3443,6 +3453,10 @@ clear_dangerous();
         }   // End of if (layerH)
 
 
+stop_timer(); print_timer_results(); start_timer();
+fprintf(stderr,"AreaLandmarks Layer ");
+
+
         layerH = OGR_DS_GetLayerByName(datasourceH, "AreaLandmarks");
         if (layerH) {
             // Loop through all of the "AreaLandmarks" layer records,
@@ -3490,6 +3504,10 @@ clear_dangerous();
                     OGR_F_Destroy( featureH );
             }   // End of while
         }   // End of if (layerH)
+
+
+stop_timer(); print_timer_results(); start_timer();
+fprintf(stderr,"    Landmarks Layer ");
 
 
         layerH = OGR_DS_GetLayerByName(datasourceH, "Landmarks");
@@ -3569,6 +3587,12 @@ clear_dangerous();
 // OGRBuildPolygonFromEdges() to construct a real polygon that we
 // can draw.
 //
+
+
+stop_timer(); print_timer_results(); start_timer();
+fprintf(stderr,"PolyChainLink Layer ");
+
+ 
         layerH = OGR_DS_GetLayerByName(datasourceH, "PolyChainLink");
         if (layerH) {
             // Match "POLYID" from above to either "POLYIDL" or
@@ -3601,7 +3625,7 @@ clear_dangerous();
                         tlid_struct *tlid_temp;
                         // Found a match!
 
-fprintf(stderr,"Found a match for POLYIDL or POLYIDR in PolyChainLink layer!\n");
+//fprintf(stderr,"Found a match for POLYIDL or POLYIDR in PolyChainLink layer!\n");
 
                         // Allocate a new record and link it in at
                         // the top of the list.  Fill it in with the
@@ -3629,7 +3653,11 @@ fprintf(stderr,"Found a match for POLYIDL or POLYIDR in PolyChainLink layer!\n")
         if (layerH) {
         }
     }
-*/
+
+
+stop_timer(); print_timer_results();
+fprintf(stderr,"Done with Polygon data reassembly\n");
+#endif  // TIGER_POLYGONS
  
 
 
