@@ -2907,7 +2907,7 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
     temp = XmTextGetString(debug_level_text);
 
     debug_level = atoi(temp);
-    if ( (debug_level < 0) || (debug_level > 2047) )
+    if ( (debug_level < 0) || (debug_level > 32767) )
         debug_level = 0;
 
     XtFree(temp);
