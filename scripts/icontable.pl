@@ -28,8 +28,8 @@
 
 #--------------------------------------------------------------------------
                                             
-# symbols file from XASTIR V1.1, change the path for your environment
-$SYMBFILE = "/usr/local/xastir/symbols/symbols.dat";
+# symbols file from XASTIR V2.1, change the path for your environment
+$SYMBFILE = "/usr/local/share/xastir/symbols/symbols.dat";
 
 #--------------------------------------------------------------------------
 %sympix = ();
