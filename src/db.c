@@ -2768,7 +2768,7 @@ void display_file(Widget w) {
     Draw_All_CAD_Objects(w);        // Draw all CAD objects, duh.
 
     // Check if we should mark where we found an address
-    if (mark_destination) {
+    if (mark_destination && show_destination_mark) {
         draw_pod_circle(destination_coord_lon,
                         destination_coord_lat,
                         0.0020 * scale_y,

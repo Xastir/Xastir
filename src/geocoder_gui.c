@@ -55,6 +55,7 @@ static xastir_mutex geocoder_place_dialog_lock;
 long destination_coord_lat = 0;
 long destination_coord_lon = 0;
 int mark_destination = 0;
+int show_destination_mark = 0;
 
 
 
@@ -171,9 +172,25 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+void  Show_dest_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set) {
+        show_destination_mark = atoi(which);
+    }
+    else {
+        show_destination_mark = 0;
+    }
+}
+
+
+
+
+
 void Geocoder_place(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget pane, form, button_ok, button_cancel, sep,
-        zip, state, locality, address, map_file;
+        zip, state, locality, address, map_file, show_dest_toggle;
     Atom delw;
 
     if (!geocoder_place_dialog) {
@@ -296,6 +313,28 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
                 NULL);
+
+//        show_dest_toggle = XtVaCreateManagedWidget(langcode("FEATURE002"),xmToggleButtonGadgetClass, form,
+        show_dest_toggle = XtVaCreateManagedWidget("Mark Destination",xmToggleButtonGadgetClass, form,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, locality,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, geocoder_state_data,
+                XmNleftOffset, 20,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNbackground, colors[0xff],
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(show_dest_toggle,XmNvalueChangedCallback,Show_dest_toggle,"1");
+        if (show_destination_mark)
+            XmToggleButtonSetState(show_dest_toggle,TRUE,FALSE);
+
 
 //        zip = XtVaCreateManagedWidget(langcode("FEATURE001"),xmLabelWidgetClass, form,
         zip = XtVaCreateManagedWidget("Zip Code:",xmLabelWidgetClass, form,

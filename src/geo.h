@@ -16,6 +16,7 @@
 extern long destination_coord_lat;
 extern long destination_coord_lon;
 extern int mark_destination;
+extern int show_destination_mark;
 
 extern char geocoder_map_filename[200];
 
