@@ -2086,38 +2086,54 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(temp_wx_wind,"");
     if (symbol_weather_display && p_station->weather_data != NULL) {
         weather = p_station->weather_data;
-        if (strlen(weather->wx_temp) > 0) {
+        if ( (strlen(weather->wx_temp) > 0)
+                && (weather->wx_temp[0] != ' ')
+                && (weather->wx_temp[0] != '.') ) {
             strcpy(tmp,"T:");
             if (symbol_weather_display != 2)
                 tmp[0] = '\0';
 
             if (units_english_metric)
                 xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°F ",
-                        tmp, atof(weather->wx_temp));
+                    tmp, atof(weather->wx_temp));
             else
                 xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°C ",
-                        tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
+                    tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
         }
         if (symbol_weather_display == 2) {
-            if (strlen(weather->wx_hum) > 0) {
+
+            if ( (strlen(weather->wx_hum) > 0)
+                    && (weather->wx_hum[0] != ' ')
+                    && (weather->wx_hum[0] != '.') ) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "H:%.0f%%", atof(weather->wx_hum));
                 strcat(temp_wx_temp,wx_tm);
             }
-            if (strlen(weather->wx_speed) > 0)
+
+            if ( (strlen(weather->wx_speed) > 0)
+                    && (weather->wx_speed[0] != ' ')
+                    && (weather->wx_speed[0] != '.') ) {
                 xastir_snprintf(temp_wx_wind, sizeof(temp_wx_wind), "S:%.0f%s ",
                         atof(weather->wx_speed)*cvt_mi2len,un_spd);
+            }
 
-            if (strlen(weather->wx_gust) > 0) {
+            if ( (strlen(weather->wx_gust) > 0)
+                    && (weather->wx_gust[0] != ' ')
+                    && (weather->wx_gust[0] != '.') ) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "G:%.0f%s ",
                         atof(weather->wx_gust)*cvt_mi2len,un_spd);
                 strcat(temp_wx_wind,wx_tm);
             }
-            if (strlen(weather->wx_course) > 0) {
+
+            if ( (strlen(weather->wx_course) > 0)
+                    && (weather->wx_course[0] != ' ')
+                    && (weather->wx_course[0] != '.') ) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0f°", atof(weather->wx_course));
                 strcat(temp_wx_wind,wx_tm);
             }
-            if (temp_wx_wind[strlen(temp_wx_wind)-1] == ' ')
+
+            if (temp_wx_wind[strlen(temp_wx_wind)-1] == ' ') {
                 temp_wx_wind[strlen(temp_wx_wind)-1] = '\0';  // delete blank at EOL
+            }
         }
         if (temp_wx_temp[strlen(temp_wx_temp)-1] == ' ')
             temp_wx_temp[strlen(temp_wx_temp)-1] = '\0';  // delete blank at EOL

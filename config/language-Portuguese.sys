@@ -260,6 +260,7 @@ BBARSTA036|Limpando AUX para obter dados do TNC..||
 BBARSTA037|Dados do GPS completos||
 BBARSTA038|Posição alterada na minha estação||
 BBARSTA039|Indexando %s||
+BBARSTA040|This is Amateur Radio Station %s||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||

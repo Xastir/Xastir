@@ -663,6 +663,7 @@ Widget sb_wait_time_data = (Widget)NULL;
 
 time_t GPS_time;                /* gps time out */
 time_t last_statusline;         // last update of statusline or 0 if inactive
+time_t last_id_time;            // Time of last ID message to statusline
 time_t sec_old;                 /* station old after */
 time_t sec_clear;               /* station cleared after */
 time_t sec_remove;              /* Station removed after */
@@ -2875,16 +2876,47 @@ void statusline(char *status_text,int update) {
 
 
 
-/*
- *  Check for statusline timeout and remove statusline text
- */
+//
+// Check for statusline timeout and replace statusline text with a
+// station identification message.
+//
+// ID was requested so that Xastir could be used for a live fast-scan
+// TV display over amateur radio without having to identify the
+// station in some other manner.  As long as we guarantee that we'll
+// see this line for a few seconds each 10 minutes (30 minutes for
+// Canada), we should be within the ID rules.
+//
 void check_statusline_timeout(void) {
-    char status_text;
+    char status_text[100];
 
-    if (last_statusline != 0 && (last_statusline < sec_now() - STATUSLINE_ACTIVE)) {
-        status_text = '\0';
-        XmTextFieldSetString(text, &status_text);       // clear statusline
-        last_statusline = 0;                            // now inactive
+    if ( (last_statusline != 0
+            && (last_statusline < sec_now() - STATUSLINE_ACTIVE))
+        || (last_id_time < sec_now() - (9 * 60)) ) {
+
+
+        // We save last_id_time and identify for a few seconds if
+        // we haven't identified for the last nine minutes or so.
+
+        xastir_snprintf(status_text,
+            sizeof(status_text),
+            langcode ("BBARSTA040"),
+            my_callsign);
+
+        XmTextFieldSetString(text, status_text);
+        last_statusline = 0;	// now inactive
+
+        // Guarantee that the ID text will be viewable for a few
+        // seconds if we haven't identified recently.  Note that the
+        // sleep statement puts the entire main thread to sleep for
+        // that amount of time.  The application will be unresponsive
+        // during that time.
+
+        if (last_id_time < (sec_now() - (9 * 60))) {
+            //printf("Identifying at nine minutes\n");
+            sleep(1);
+        }
+
+        last_id_time = sec_now();
     }
 }
 
@@ -17409,8 +17441,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 XmNcursorPositionVisible,   TRUE,
                 XmNsensitive,               TRUE,
                 XmNshadowThickness,         1,
-                XmNcolumns,                 9,
-                XmNwidth,                   ((9*7)+2),
+                XmNcolumns,                 10,
+                XmNwidth,                   ((10*7)+2),
                 XmNmaxLength,               9,
                 XmNbackground,              colors[0x0f],
                 XmNtopAttachment,           XmATTACH_FORM,
