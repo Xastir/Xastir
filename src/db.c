@@ -5323,6 +5323,36 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                             XmNshadowThickness, 1,
                             NULL);
 
+                // Attach buttons first to the bottom of the form,
+                // so that we'll be able to stretch this thing
+                // vertically to see all the callsigns.
+                //
+                button_ok = XtVaCreateManagedWidget("Info",xmPushButtonGadgetClass, form,
+                                XmNtopAttachment, XmATTACH_NONE,
+                                XmNbottomAttachment, XmATTACH_FORM,
+                                XmNbottomOffset, 5,
+                                XmNleftAttachment, XmATTACH_POSITION,
+                                XmNleftPosition, 1,
+                                XmNrightAttachment, XmATTACH_POSITION,
+                                XmNrightPosition, 2,
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+                button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                                    XmNtopAttachment, XmATTACH_NONE,
+                                    XmNbottomAttachment, XmATTACH_FORM,
+                                    XmNbottomOffset, 5,
+                                    XmNleftAttachment, XmATTACH_POSITION,
+                                    XmNleftPosition, 3,
+                                    XmNrightAttachment, XmATTACH_POSITION,
+                                    XmNrightPosition, 4,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    NULL);
+
+                XtAddCallback(button_cancel, XmNactivateCallback, Station_info_destroy_shell, db_station_popup);
+                XtAddCallback(button_ok, XmNactivateCallback, Station_info_select_destroy_shell, db_station_popup);
+
+
                 /*set args for color */
                 ac = 0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
@@ -5333,7 +5363,9 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                 XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
                 XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
                 XtSetArg(al[ac], XmNtopOffset, 5); ac++;
-                XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
+                XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_WIDGET); ac++;
+                XtSetArg(al[ac], XmNbottomWidget, button_ok); ac++;
+                XtSetArg(al[ac], XmNbottomOffset, 5); ac++;
                 XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
                 XtSetArg(al[ac], XmNrightOffset, 5); ac++;
                 XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
@@ -5377,34 +5409,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                     }
                     p_station = p_station->n_next;
                 }
-                button_ok = XtVaCreateManagedWidget("Info",xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,XtParent(station_list),
-                                XmNtopOffset,5,
-                                XmNbottomAttachment, XmATTACH_FORM,
-                                XmNbottomOffset, 5,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 1,
-                                XmNrightAttachment, XmATTACH_POSITION,
-                                XmNrightPosition, 2,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
 
-                button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                                    XmNtopAttachment, XmATTACH_WIDGET,
-                                    XmNtopWidget,XtParent(station_list),
-                                    XmNtopOffset,5,
-                                    XmNbottomAttachment, XmATTACH_FORM,
-                                    XmNbottomOffset, 5,
-                                    XmNleftAttachment, XmATTACH_POSITION,
-                                    XmNleftPosition, 3,
-                                    XmNrightAttachment, XmATTACH_POSITION,
-                                    XmNrightPosition, 4,
-                                    XmNnavigationType, XmTAB_GROUP,
-                                    NULL);
-
-                XtAddCallback(button_cancel, XmNactivateCallback, Station_info_destroy_shell, db_station_popup);
-                XtAddCallback(button_ok, XmNactivateCallback, Station_info_select_destroy_shell, db_station_popup);
 
                 pos_dialog(db_station_popup);
 
