@@ -9826,7 +9826,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if ( (line != NULL) && (strlen(line) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.  We're done.
         if (debug_level & 1)
-            printf("decode_ax25_line: LONG packet.  Dumping it.\n");
+            printf("\ndecode_ax25_line: LONG packet.  Dumping it:\n%s\n",line);
         return(FALSE);
     }
 
