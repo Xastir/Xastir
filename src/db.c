@@ -8431,6 +8431,8 @@ void check_station_remove(void) {
 void delete_object(char *name) {
     DataRow *p_station;
 
+//fprintf(stderr,"delete_object\n");
+
     p_station = NULL;
     if (search_station_name(&p_station,name,1)) {       // find object name
         p_station->flag &= (~ST_ACTIVE);                // clear flag
@@ -10641,6 +10643,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // this object anymore.
                     if ( (is_my_call(p_station->origin,1))  // If station was owned by me
                             && (!is_my_call(origin,1)) ) {  // But isn't now
+
                         disown_object_item(call_sign,origin);
                     }
 
@@ -10683,7 +10686,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     p_station->record_type = NORMAL_APRS;
                     p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
                 }
-
                 break;
 
             case (APRS_ITEM):
@@ -13941,7 +13943,22 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             ok_igate_net = 1;                           // report it to internet
         } else
             if (message[0] == '_') {                    // delete object/item
+                DataRow *p_station;
+
                 delete_object(call);                    // ?? does not vanish from map immediately !!???
+
+                // If object was owned by me but another station is
+                // transmitting it now, write entries into the
+                // object.log file showing that we don't own this
+                // object anymore.
+                p_station = NULL;
+                if (search_station_name(&p_station,call,1)) {
+                    if ( (is_my_call(p_station->origin,1))  // If station was owned by me
+                            && (!is_my_call(origin,1)) ) {  // But isn't now
+                        disown_object_item(call,origin);
+                    }
+                }
+
                 ok_igate_net = 1;                       // report it to internet
             }
         done = 1;
