@@ -33,11 +33,17 @@ Previous Install Notes:
      problems. Fix these files by "chmod 644 filename" where filename is the
      problem file.
 
-  Xastir 1.2.1 CVS:
+  Xastir 1.2.1 or later CVS:
 
      On or about July 3rd, 2003, the locations of the Xastir system directories
      were changed.  Existing users must go through this procedure in order to
-     convert to the new directory structure:
+     convert to the new directory structure.  Note that if you've installed
+     Xastir from RPM's or other packages, the migration scripts
+     (xastir-migrate.sh and xastir-fixcfg.sh) may not work properly for you.
+     These scripts are designed to move Xastir's system directories only from
+     /usr/local/xastir to the new locations.  If your Xastir files are
+     installed elsewhere (/usr/share/xastir, /usr/lib/xastir, /usr/bin), you
+     may need to perform the alternate procedure listed below under ALTERNATE.
 
         cd src/xastir
         cvs update
@@ -52,11 +58,35 @@ Previous Install Notes:
         chmod 4555 /usr/local/bin/xastir
         exit (from root)
         ./xastir-fixcfg.sh (run this for each user that has ever run Xastir)
+
+
+     ALTERNATE PROCEDURE (see note above):
+
+        Remove the installed Xastir using the system tools for doing so (apt,
+        rpm, etc).  You'll probably wish to keep your maps directories and
+        your ~/.xastir/config/xastir.cnf files.  Make sure to delete any
+        "callpass" or "xastir" binaries as well.
+
+        Remove your ~/.xastir directory, subdirectories, and all contents
+        (remember to save your xastir.cnf file if some of the settings are
+        important to you).
+
+        Move your maps directory to "/usr/local/share/xastir/maps"
+
+        Configure/compile/install the new Xastir.
+
+        When you start up the new Xastir, it will create a new xastir.cnf file
+        with the proper directory paths defined in order to find the maps.
         
-        
-     After you start the new Xastir, you'll need to reindex all maps.  Xastir
-     binary is still installed to the old location.  Other files are now
-     installed in /usr/local/share/xastir/*.
+     After you start the new Xastir, you'll need to reindex all maps.  The
+     Xastir binary should be in /usr/local/bin/xastir if you installed from
+     sources.  Xastir files are now installed in:
+
+        /usr/local/bin/
+        /usr/local/lib/xastir/
+        /usr/local/man/
+        /usr/local/share/xastir/*
+ 
         
  
   ------------------------------------------------------------------------
