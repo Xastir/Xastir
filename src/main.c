@@ -192,6 +192,10 @@ void map_chooser_fill_in (void);
 Widget map_chooser_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
 
+#ifdef HAVE_IMAGEMAGICK
+static void Config_tiger(Widget w, XtPointer clientData, XtPointer callData);
+#endif
+
 Widget grid_on, grid_off;
 static void Grid_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int long_lat_grid;              // Switch for Map Lat and Long grid display
@@ -218,6 +222,7 @@ Widget map_bgcolor[12];
 static void Map_background(Widget w, XtPointer clientData, XtPointer calldata);
 int map_background_color;       /* Background color for maps */
 
+int tiger_flag;
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_GEOTIFF)
 Widget geotiff_intensity[11];
@@ -410,6 +415,36 @@ int festival_speak_new_message_alert;
 int festival_speak_new_message_body;
 int festival_speak_new_weather_alert;
 //#endif
+
+#ifdef HAVE_IMAGEMAGICK //N0VH
+Widget configure_tiger_dialog = (Widget) NULL;
+Widget tiger_enable_widget;
+Widget tiger_cities,
+	tiger_grid,
+	tiger_counties,
+	tiger_majroads,
+	tiger_places,
+	tiger_railroad,
+	tiger_streets,
+	tiger_interstate,
+	tiger_statehwy,
+	tiger_states,
+	tiger_ushwy;
+
+int tiger_show_grid = TRUE;
+int tiger_show_counties = TRUE;
+int tiger_show_cities = TRUE;
+int tiger_show_places = FALSE;
+int tiger_show_majroads = TRUE;
+int tiger_show_streets = FALSE;
+int tiger_show_railroad = TRUE;
+int tiger_show_states = FALSE;
+int tiger_show_interstate = TRUE;
+int tiger_show_ushwy = TRUE;
+int tiger_show_statehwy = TRUE;
+
+#endif
+
 
 // -------------------------------------------------------------------
 
@@ -2624,7 +2659,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        Geotiff_intensity_Pane, geotiff_intensity_button,
 #endif
 #if defined(HAVE_IMAGEMAGICK)
-       gamma_adjust_button,
+       gamma_adjust_button, tiger_config_button,
 #endif
 #endif
        Map_station_label_Pane, map_station_label_button,
@@ -2919,6 +2954,12 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     map_chooser_button = XtVaCreateManagedWidget(langcode("PULDNMP001"),xmPushButtonGadgetClass,mappane,
                             XmNmnemonic,langcode_hotkey("PULDNMP001"),XmNbackground,colors[0xff],NULL);
     XtAddCallback(map_chooser_button,   XmNactivateCallback,Map_chooser,NULL);
+
+#if defined(HAVE_IMAGEMAGICK)
+    tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),xmPushButtonGadgetClass,mappane,
+                            XmNmnemonic,langcode_hotkey("PULDNMP020"),XmNbackground,colors[0xff],NULL);
+    XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
+#endif
 
 
     jump_button = XtVaCreateManagedWidget(langcode("PULDNMP012"),xmPushButtonGadgetClass,mappane,
@@ -7233,9 +7274,394 @@ void map_chooser_fill_in (void) {
     }
 }
 
+///////////////////////////////////////  Configure Tigermaps Dialog //////////////////////////////////////////////
+//N0VH
+#if defined(HAVE_IMAGEMAGICK)
+
+void Configure_tiger_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+	Widget shell = (Widget) clientData;
+	XtPopdown(shell);
+	XtDestroyWidget(shell);
+	configure_tiger_dialog = (Widget)NULL;
+}
+
+void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+
+	if(XmToggleButtonGetState(tiger_enable_widget))
+		tiger_flag=TRUE;
+     	else
+	  	tiger_flag=FALSE;
+
+	if(XmToggleButtonGetState(tiger_grid))
+		tiger_show_grid=TRUE;
+     	else
+	  	tiger_show_grid=FALSE;
+
+	if(XmToggleButtonGetState(tiger_counties))
+		tiger_show_counties=TRUE;
+     	else
+	  	tiger_show_counties=FALSE;
+
+	if(XmToggleButtonGetState(tiger_cities))
+		tiger_show_cities=TRUE;
+     	else
+	  	tiger_show_cities=FALSE;
+
+	if(XmToggleButtonGetState(tiger_places))
+		tiger_show_places=TRUE;
+     	else
+	  	tiger_show_places=FALSE;
+
+	if(XmToggleButtonGetState(tiger_majroads))
+		tiger_show_majroads=TRUE;
+     	else
+	  	tiger_show_majroads=FALSE;
+
+	if(XmToggleButtonGetState(tiger_streets))
+		tiger_show_streets=TRUE;
+     	else
+	  	tiger_show_streets=FALSE;
+
+	if(XmToggleButtonGetState(tiger_railroad))
+		tiger_show_railroad=TRUE;
+     	else
+	  	tiger_show_railroad=FALSE;
+
+	if(XmToggleButtonGetState(tiger_states))
+		tiger_show_states=TRUE;
+     	else
+	  	tiger_show_states=FALSE;
+
+	if(XmToggleButtonGetState(tiger_interstate))
+		tiger_show_interstate=TRUE;
+     	else
+	  	tiger_show_interstate=FALSE;
+
+	if(XmToggleButtonGetState(tiger_ushwy))
+		tiger_show_ushwy=TRUE;
+     	else
+	  	tiger_show_ushwy=FALSE;
+
+	if(XmToggleButtonGetState(tiger_statehwy))
+		tiger_show_statehwy=TRUE;
+     	else
+	  	tiger_show_statehwy=FALSE;
+
+	Configure_tiger_destroy_shell(widget,clientData,callData);
+        create_image(da);
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+}
 
 
+void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+	static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_file, sep;
 
+    Atom delw;
+
+    if (!configure_tiger_dialog) {
+        configure_tiger_dialog = XtVaCreatePopupShell(langcode("PULDNMP020"),xmDialogShellWidgetClass,Global.top,
+                                  XmNdeleteResponse,XmDESTROY,
+                                  XmNdefaultPosition, FALSE,
+                                  NULL);
+
+        tiger_pane = XtVaCreateWidget("Configure_tiger pane",xmPanedWindowWidgetClass, configure_tiger_dialog,
+                          XmNbackground, colors[0xff],
+                          NULL);
+
+        tiger_form =  XtVaCreateWidget("Configure_tiger tiger_form",xmFormWidgetClass, tiger_pane,
+                            XmNfractionBase, 5,
+                            XmNbackground, colors[0xff],
+                            XmNautoUnmanage, FALSE,
+                            XmNshadowThickness, 1,
+                            NULL);
+// Need to add langcode stuff here
+        tiger_enable_widget = XtVaCreateManagedWidget("Enable Tiger Maps",xmToggleButtonWidgetClass, tiger_form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+
+        tiger_file  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),xmLabelWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_enable_widget,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_grid  = XtVaCreateManagedWidget(langcode("MPUPTGR001"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_file,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_counties  = XtVaCreateManagedWidget(langcode("MPUPTGR002"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_grid,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_cities  = XtVaCreateManagedWidget(langcode("MPUPTGR003"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_counties,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_places  = XtVaCreateManagedWidget(langcode("MPUPTGR004"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_cities,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_majroads  = XtVaCreateManagedWidget(langcode("MPUPTGR005"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_places,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_streets  = XtVaCreateManagedWidget(langcode("MPUPTGR006"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_majroads,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_railroad  = XtVaCreateManagedWidget(langcode("MPUPTGR007"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_streets,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_railroad,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_states,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_interstate,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+        tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),xmToggleButtonWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_ushwy,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      NULL);
+
+
+        sep = XtVaCreateManagedWidget("Configure_speech sep", xmSeparatorGadgetClass,tiger_form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_statehwy,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 1,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 2,
+                                      XmNbackground, colors[0xff],
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 3,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 4,
+                                      XmNbackground, colors[0xff],
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      NULL);
+
+        XtAddCallback(button_ok, XmNactivateCallback, Configure_tiger_change_data, configure_tiger_dialog);
+        XtAddCallback(button_cancel, XmNactivateCallback, Configure_tiger_destroy_shell, configure_tiger_dialog);
+
+        pos_dialog(configure_tiger_dialog);
+
+        delw = XmInternAtom(XtDisplay(configure_tiger_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(configure_tiger_dialog, delw, Configure_tiger_destroy_shell,
+                (XtPointer)configure_tiger_dialog);
+
+        if(tiger_flag)
+            XmToggleButtonSetState(tiger_enable_widget,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_enable_widget,FALSE,FALSE);
+
+        if(tiger_show_grid)
+            XmToggleButtonSetState(tiger_grid,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_grid,FALSE,FALSE);
+
+        if(tiger_show_counties)
+            XmToggleButtonSetState(tiger_counties,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_counties,FALSE,FALSE);
+
+        if(tiger_show_cities)
+            XmToggleButtonSetState(tiger_cities,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_cities,FALSE,FALSE);
+
+        if(tiger_show_places)
+            XmToggleButtonSetState(tiger_places,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_places,FALSE,FALSE);
+
+        if(tiger_show_majroads)
+            XmToggleButtonSetState(tiger_majroads,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_majroads,FALSE,FALSE);
+
+        if(tiger_show_streets)
+            XmToggleButtonSetState(tiger_streets,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_streets,FALSE,FALSE);
+
+        if(tiger_show_railroad)
+            XmToggleButtonSetState(tiger_railroad,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_railroad,FALSE,FALSE);
+
+        if(tiger_show_states)
+            XmToggleButtonSetState(tiger_states,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_states,FALSE,FALSE);
+
+        if(tiger_show_interstate)
+            XmToggleButtonSetState(tiger_interstate,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_interstate,FALSE,FALSE);
+
+        if(tiger_show_ushwy)
+            XmToggleButtonSetState(tiger_ushwy,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_ushwy,FALSE,FALSE);
+
+        if(tiger_show_statehwy)
+            XmToggleButtonSetState(tiger_statehwy,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(tiger_statehwy,FALSE,FALSE);
+
+        XtManageChild(tiger_form);
+        XtManageChild(tiger_pane);
+
+        XtPopup(configure_tiger_dialog,XtGrabNone);
+        fix_dialog_size(configure_tiger_dialog);
+
+        XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
+
+    } else
+        (void)XRaiseWindow(XtDisplay(configure_tiger_dialog), XtWindow(configure_tiger_dialog));
+}
+#endif
 
 //WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
@@ -14998,6 +15424,7 @@ int main(int argc, char *argv[], char *envp[]) {
     posit_last_time = 0l;
     posit_next_time = 0l;
     wait_to_redraw=1;
+    tiger_flag = 0;
 
     last_popup_x = 0;
     last_popup_y = 0;

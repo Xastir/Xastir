@@ -1978,12 +1978,12 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
                                 case '1':   // A1? = Primary road or interstate highway
-                                    lanes = 4;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
+                                    lanes = 2;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // purple
                                     break;
                                 case '2':   // A2? = Primary road w/o limited access, US highways
-                                    lanes = 3;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
+                                    lanes = 2;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
                                     break;
                                 case '3':   // A3? = Secondary road & connecting road, state highways
                                     if (map_color_levels && scale_y > 256)
@@ -2008,7 +2008,7 @@ void draw_shapefile_map (Widget w,
                                     break;
                                 case '4':   // A4? = Local, neighborhood & rural roads, city streets
                                     // Skip the road if we're above this zoom level
-                                    if (map_color_levels && scale_y > 64)
+                                    if (map_color_levels && scale_y > 96)
                                         skip_it++;
                                     // Skip labels above this zoom level to keep things uncluttered
                                     if (map_color_levels && scale_y > 16)
@@ -2030,7 +2030,7 @@ void draw_shapefile_map (Widget w,
                                             // service drive, ferry crossing
                                     switch (temp[2]) {
                                         case '5':   // Ferry crossing
-                                            lanes = 3;
+                                            lanes = 2;
                                             dashed_line++;
                                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
                                            break;
@@ -2673,7 +2673,7 @@ void draw_shapefile_map (Widget w,
                                 if (city_flag)
                                     (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                 else
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x0e]); // grey
 
                                 (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
@@ -4541,6 +4541,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     FILE *f;                        // Filehandle of image file
     char line[400];                 // One line from GEO file
     char fileimg[400];              // Ascii name of image file, read from GEO file
+    char tigertmp[400];             // Used for putting together the tigermap query
     char remote_callsign[400];      // Ascii callsign, read from GEO file, used for findu lookups only
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
@@ -4621,10 +4622,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     XImage *xi;                 // Temp XImage used for reading in current image
 #endif // HAVE_IMAGEMAGICK
 
-    int tiger_flag = 0;
     int findu_flag = 0;
     int terraserver_flag = 0;
     char map_it[300];
+    char tmpstr[100];
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
     char geo_datum[8+1];        // WGS-84 etc.
@@ -4677,9 +4678,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             if (strncasecmp (line, "PROJECTION", 10) == 0)
                 (void)sscanf (line + 11, "%8s",geo_projection); // ignores leading and trailing space (nice!)
 
-            if (strncasecmp (line, "TIGERMAP", 8) == 0)
-                tiger_flag = 1;
-            else if (strncasecmp (line, "FINDU", 5) == 0)
+//            if (strncasecmp (line, "TIGERMAP", 8) == 0)  // No longer required, menu driven now  N0VH
+//                tiger_flag = 1;
+            if (strncasecmp (line, "FINDU", 5) == 0)
                 findu_flag = 1;
             else if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
@@ -4755,12 +4756,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         // Tiepoint for lower right screen corner
         //
         tp[1].img_x =  screen_width - 1; // Pixel Coordinates
-        //
-        // Here's one way to fix the map scaling problem, but it distorts the pixels
-        // making the map ugly and making labels difficult to read.
-        tp[1].img_y = screen_height - 1; // Pixel Coordinates (Original)
-//        tp[1].img_y = screen_height * 1.5; // Pixel Coordinates (Fix)
-        //
+        tp[1].img_y = screen_height - 1; // Pixel Coordinates 
+
         tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
         tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
 
@@ -4789,26 +4786,85 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         long_center = (left + right)/2.0l;
         lat_center  = (top + bottom)/2.0l;
 
-/*
-        sprintf(fileimg,"\'http://tiger.census.gov/cgi-bin/mapgen?lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%li\046iht=%li\'",\
-            lat_center, long_center, map_width, map_height, screen_width, screen_height);
-        sprintf(fileimg,"\'http://tiger.census.gov/cgi-bin/mapgen?lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
-            lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_x + 1);
-*/
-
         if (tiger_flag) {
-        if (debug_level & 512)   // Draw some calibration dots
-                xastir_snprintf(fileimg, sizeof(fileimg), "\'http://tiger.census.gov/cgi-bin/mapgen?lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%imark=-122,48;-122,47;-121,48;-121,47;-123,47;-123,48;-123,47.5;-122,47.5;-121,47.5\'",\
-                        lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1);
-            else {
-                // N0VH turned the grids and other data on for the census tiger maps
-                xastir_snprintf(fileimg, sizeof(fileimg), "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=GRID&on=places&&on=interstate&on=states&on=ushwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
-                        lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1);
-            }
-        } else if (findu_flag)   // Set up the URL for 2 weeks worth of raw data.
+//  Example query to the census map server....
+/*		xastir_snprintf(fileimg, sizeof(fileimg), 
+		"\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=CITIES&on=GRID&on=counties&on=majroads&on=places&&on=interstate&on=states&on=ushwy&on=statehwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
+                   lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1); */
+
+		xastir_snprintf(tigertmp, sizeof(tigertmp), "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?");
+
+		if (tiger_show_grid)
+			strcat(tigertmp, "&on=GRID");
+		else
+			strcat(tigertmp, "&off=GRID");
+
+		if (tiger_show_counties)
+			strcat(tigertmp, "&on=counties");
+		else
+			strcat(tigertmp, "&off=counties");
+
+		if (tiger_show_cities)
+			strcat(tigertmp, "&on=CITIES");
+		else
+			strcat(tigertmp, "&off=CITIES");
+
+		if (tiger_show_places)
+			strcat(tigertmp, "&on=places");
+		else
+			strcat(tigertmp, "&off=places");
+
+		if (tiger_show_majroads)
+			strcat(tigertmp, "&on=majroads");
+		else
+			strcat(tigertmp, "&off=majroads");
+
+		if (tiger_show_streets)
+			strcat(tigertmp, "&on=streets");
+		// Don't turn streets off since this will automagically show up as you zoom in.
+
+		if (tiger_show_railroad)
+			strcat(tigertmp, "&on=railroad");
+		else
+			strcat(tigertmp, "&off=railroad");
+
+		if (tiger_show_states)
+			strcat(tigertmp, "&on=states");
+		else
+			strcat(tigertmp, "&off=states");
+
+		if (tiger_show_interstate)
+			strcat(tigertmp, "&on=interstate");
+		else
+			strcat(tigertmp, "&off=interstate");
+
+		if (tiger_show_ushwy)
+			strcat(tigertmp, "&on=ushwy");
+		else
+			strcat(tigertmp, "&off=ushwy");
+
+		if (tiger_show_statehwy)
+			strcat(tigertmp, "&on=statehwy");
+		else
+			strcat(tigertmp, "&off=statehwy");
+
+		//strcat(tigertmp, "&off=water&off=shorelin&off=miscell");  //N0VH - need to add these as configurable later
+
+		xastir_snprintf(tmpstr, sizeof(tigertmp), "&lat=%f\046lon=%f\046", lat_center, long_center);	
+		strcat (tigertmp, tmpstr);
+		xastir_snprintf(tmpstr, sizeof(tigertmp), "wid=%f\046ht=%f\046", map_width, map_height);
+		strcat (tigertmp, tmpstr);
+		xastir_snprintf(tmpstr, sizeof(tigertmp), "iwd=%i\046iht=%i\'", tp[1].img_x + 1, tp[1].img_y + 1);
+		strcat (tigertmp, tmpstr);
+		xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
+
+		//printf(tigertmp,"\n"); //N0VH just for testing
+        } 
+	else if (findu_flag) {   // Set up the URL for 2 weeks worth of raw data.
             xastir_snprintf(fileimg, sizeof(fileimg),
                 "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=336&length=336\'",
                 remote_callsign);
+	}
 
         if (debug_level & 512) {
           printf("left side is %f\n", left);
