@@ -625,7 +625,8 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 //
 // NOTE: This routine will not work for binary files.  It works only
 // for ASCII-format files, and terminates each line at the first
-// control-character found.
+// control-character found (unless it's a tab).  Converts tab
+// character to 1 space character.
 //
 //********************************************************************/
 char *get_line(FILE *f, char *linedata, int maxline) {
@@ -644,7 +645,19 @@ char *get_line(FILE *f, char *linedata, int maxline) {
     for (i = 0; i < strlen(temp_line); i++) {
         // Change any control characters to '\0';
         if (temp_line[i] < 0x20) {
-            temp_line[i] = '\0';    // Terminate the string
+            if (temp_line[i] == '\t') { // Found a tab char
+                temp_line[i] = ' '; // Convert to a space char
+            }
+            else {  // Not a tab
+                if (temp_line[i] != '\n') {                         // LF
+                    if ( (i != (strlen(temp_line) - 2) )            // CRLF
+                            && (i != (strlen(temp_line) - 1) ) ) {  // CR
+                        printf("get_line: found control chars in: %s\n",
+                            temp_line);
+                    }
+                }
+                temp_line[i] = '\0';    // Terminate the string
+            }
         }
     }
 
