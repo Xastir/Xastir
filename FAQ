@@ -800,6 +800,36 @@ The Answers
             http_proxy = http://proxy.yoyodyne.com:18023/
             ftp_proxy = http://proxy.yoyodyne.com:18023/
 
+    4.24 Can I run multiple copies of Xastir at once?
+
+    Yes.  But not as the same user.  Do this to allow more than one
+    user to access your X display and to create additional users,
+    each capable of running one Xastir session:
+
+        xhost localhost
+
+    This lets other users on your machine use the X11 display.
+
+    Create another user (or two or three) using whatever facilities
+    your system uses to do this.
+
+        xterm &     # Start up an xterm window in the background
+        su 2nduser. # su to one of your new usernames
+        xastir &    # Start up Xastir as that user, in the background
+
+    Optional:
+    Set up your 1st Xastir instance with the server port enabled.
+    Connect the 2nd instance to localhost:2023.  This way one Xastir
+    will get its feed from the other.
+
+    You can start up a third Xastir in the same manner, starting
+    with the "xterm &" command and then doing "su 3rduser" instead,
+    then "xastir &" as that third username.
+
+    Many Xastir sessions can all get their feed from one Xastir
+    session, or they can be connected to different TNC's or server
+    ports.
+
 
 5.  Features
 
