@@ -701,22 +701,34 @@ void load_data_or_default(void) {
     if (!get_string ("LANGUAGE", lang_to_use))
         strcpy (lang_to_use, "English");
 
+
     /* my data */
     if (!get_string ("STATION_CALLSIGN", my_callsign))
         strcpy (my_callsign, "NOCALL");
 
     if (!get_string ("STATION_LAT", my_lat))
         strcpy (my_lat, "0000.000N");
-    /* convert old data to high prec */
-
+    if ( (my_lat[4] != '.')
+            || (my_lat[8] != 'N' && my_lat[8] != 'S') ) {
+        strcpy (my_lat, "0000.000N");
+        fprintf(stderr,"Invalid Latitude, changing it to 0000.000N\n");
+    }
+    // convert old data to high prec
     temp = convert_lat_s2l (my_lat);
     convert_lat_l2s (temp, my_lat, sizeof(my_lat), CONVERT_HP_NOSP);
 
+
     if (!get_string ("STATION_LONG", my_long))
         strcpy (my_long, "00000.000W");
-    /* convert old data to high prec */
+    if ( (my_long[5] != '.')
+            || (my_long[9] != 'W' && my_long[9] != 'E') ) {
+        strcpy (my_long, "00000.000W");
+        fprintf(stderr,"Invalid Longitude, changing it to 00000.000W\n");
+    }
+    // convert old data to high prec
     temp = convert_lon_s2l (my_long);
     convert_lon_l2s (temp, my_long, sizeof(my_long), CONVERT_HP_NOSP);
+
 
     if (!get_int ("STATION_TRANSMIT_AMB", &position_amb_chars, 0, 4, 0))
         position_amb_chars = 0;
