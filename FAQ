@@ -31,17 +31,19 @@ The Questions
 
 3.  Building Xastir
 
-    3.1 Why won't Xastir compile with my system's cc?
-    3.2 I'm using gcc and I get some compilation errors, what is wrong?
-    3.3 The linking stage is failing because it isn't linking in the
+    3.1  Why do I get error messages when running "bootsrap.sh"?
+    3.1a  Why do I get strange warnings when I run bootstrap.sh?
+    3.2 Why won't Xastir compile with my system's cc?
+    3.3 I'm using gcc and I get some compilation errors, what is wrong?
+    3.4 The linking stage is failing because it isn't linking in the
         freetype library.  What to do?
-    3.4 During the linking stage, it's giving me "undefined reference to
+    3.5 During the linking stage, it's giving me "undefined reference to
         `CompressImageColormap'".  What to do?
-    3.5 Some of the text looks strange, writes over itself and other
+    3.6 Some of the text looks strange, writes over itself and other
         user interface weirdness occurs.  Why?
-    3.6 Why isn't ImageMagick recognized and used during Xastir's
+    3.7 Why isn't ImageMagick recognized and used during Xastir's
         "configure" stage?
-    3.7 Why do I get an error now when trying to do a "cvs update"?
+    3.8 Why do I get an error now when trying to do a "cvs update"?
 
 4.  Running Xastir
 
@@ -207,7 +209,54 @@ The Answers
 
 3. Building Xastir
 
-    3.1. Why won't Xastir compile with my system's cc?
+    3.1  Why do I get error messages when running "bootsrap.sh"?
+
+    The xastir build procedure requires automake 1.6.3 or later and 
+    autoconf 2.53 or later.  Using anything older than those will 
+    not work.  
+
+    To be very sure of what version of autoconf and automake you're using
+    please examine the output of "automake --version" and "autoconf --version"
+    Do not trust your system's package management software to tell you what
+    version is installed.  Some systems install more than one different 
+    version of autoconf/automake and you can't be sure which one you're using
+    unless you look at the actual version number reported by the tools
+    themselves.
+
+    Worse still, some systems install multiple versions of autoconf
+    and automake and name them in ways that confuses everything 
+    (e.g. "automake19" or "autoconf253").  If that's the case on your system,
+    you could either edit bootstrap.sh by hand to force it to find the right
+    ones (adding paths or suffixes or whatever it takes), or you could just
+    end-run the process and download the source code for a suitable version
+    of automake and autoconf from www.gnu.org, use "--prefix=" options when 
+    configuring both of them, build them, and install them into
+    someplace your system won't care about.  For example, assuming you've 
+    untarred, say automake-1.6.3 and autoconf-2.57 into the current
+    directory, and that xastir lives in your directory as /home/me/src/xastir:
+       cd automake-1.6.3
+       ./configure --prefix=/home/me/src/xastir
+       make install
+       cd ../autoconf-2.57        
+       ./configure --prefix=/home/me/src/xastir
+       make install
+       cd /home/me/src/xastir
+       export PATH=/home/me/src/xastir/bin:$PATH
+       ./bootstrap.sh
+
+    This will completely bypass any odd version of automake and autoconf that
+    your system might use, and will insulate you from incompatible changes
+    in those installed tools if you upgrade your OS.
+
+    3.1a  Why do I get strange warnings when I run bootstrap.sh
+
+    The various configure.ac, acinclude.m4, and Makefile.am files that are used
+    by xastir's autoconf'd build process were designed for automake 1.6.3
+    and autoconf 2.53.  Using a much more recent version than those could 
+    result in warning messages because the tools aren't strictly backward 
+    compatible.  Most of these warnings are harmless.
+
+    3.2. Why won't Xastir compile with my system's cc?
 
     If Xastir won't compile on your system, it is probably due to
     one of the following causes:
@@ -265,7 +314,7 @@ The Answers
       discovered. Try upgrading your compiler and/or your operating
       system.
 
-    3.2 I'm using gcc and I get some compilation errors, what is wrong?
+    3.3 I'm using gcc and I get some compilation errors, what is wrong?
 
     GCC parses your system header files and produces a modified subset which
     it uses for compiling. This behavior ties GCC tightly to the version of
@@ -279,7 +328,7 @@ The Answers
     build. One of the most common errors is with readv, writev, or uio.h.
     This is not a bug with Xastir. You will need to re-install GCC.
 
-    3.3 The linking stage is failing because it isn't linking in the
+    3.4 The linking stage is failing because it isn't linking in the
         freetype library.  What to do?
 
     This is, yet again, an ImageMagick problem.  ImageMagick as
@@ -289,7 +338,7 @@ The Answers
     To get around this problem, you can add "-lfreetype" to the link
     line to get the compile to complete.
 
-    3.4 During the linking stage, it's giving me "undefined reference to
+    3.5 During the linking stage, it's giving me "undefined reference to
         `CompressImageColormap'".  What to do?
 
     This is, yet again, an ImageMagick problem.  ImageMagic decided to change
@@ -297,7 +346,7 @@ The Answers
     by checking the version of ImageMagick you have and changing the function
     call to match.
 
-    3.5 Some of the text looks strange, writes over itself and other
+    3.6 Some of the text looks strange, writes over itself and other
         user interface weirdness occurs.  Why?
 
     This has been seen to occur due to bugs in some versions of LessTif.
@@ -306,7 +355,7 @@ The Answers
     to delete all the text in the /usr/X11R6/lib/X11/config/host.def file
     otherwise it still refers to the LessTif installation.
 
-    3.6 Why isn't ImageMagick recognized and used during Xastir's
+    3.7 Why isn't ImageMagick recognized and used during Xastir's
         "configure" stage?
 
     You might have forgotten to install both ImageMagick and the
@@ -322,7 +371,7 @@ The Answers
     ImageMagick RPM's.  Encourage your vendor to fix the "spec" files for those
     RPM's to include all dependencies.
 
-    3.7 Why do I get an error now when trying to do a "cvs update"?
+    3.8 Why do I get an error now when trying to do a "cvs update"?
 
     SourceForge changed things around a bit on Apr 29th, 2004.  The changes
     they made broke CVS for everyone.  The error message you get may look like
