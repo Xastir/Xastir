@@ -1059,7 +1059,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
             log_data(LOGFILE_IGATE,temp);
             fprintf(stderr,temp);
         }
-        return;
+        return; // Match for station not found in file
     }
 
     //fprintf(stderr,"SENDING NWS VIA TNC!!!!\n");
