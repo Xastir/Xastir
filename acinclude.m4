@@ -146,6 +146,7 @@ if test "$wget" != "no"; then
 fi
 
 AC_PATH_PROG(convert, [convert --version], no, $BINPATH)
+AC_CHECK_FILE(/usr/bin/convert.exe, convert="/usr/bin/convert")
 if test "$convert" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
   AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}", [Path to convert]) 
