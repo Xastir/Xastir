@@ -959,24 +959,21 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 void draw_bearing(long x_long, long y_lat, char *course,
         char *bearing, char *NRQ, int color,
         time_t sec_heard, Pixmap where) {
-    int range = 0;
-    double screen_miles;
-    float bearing_radians_min = 0.0;
-    float bearing_radians_max = 0.0;
-    long offx_min, offx_max, offy_min, offy_max;
-    double offx_miles_min, offx_miles_max, offy_miles_min, offy_miles_max;
+    double range = 0;
     long max_x, max_y;
-    int real_bearing = 0;
-    int real_bearing_min = 0;
-    int real_bearing_max = 0;
+    double real_bearing = 0.0;
+    double real_bearing_min = 0.0;
+    double real_bearing_max = 0.0;
     int width = 0;
+    long x_long2, x_long3, y_lat2, y_lat3;
+    long x1, y1, x2, y2, x3, y3;
 
 
     // Check for a zero value for N.  If found, the NRQ value is meaningless
     // and we need to assume some working default values.
     if (NRQ[0] != '0') {
 
-        range = (int)( pow(2.0,NRQ[1] - '0') );
+        range = (double)( pow(2.0,NRQ[1] - '0') );
 
         switch (NRQ[2]) {
             case('1'):
@@ -1006,77 +1003,72 @@ void draw_bearing(long x_long, long y_lat, char *course,
             case('9'):
                 width = 1;  // Degrees of beam width.  Very Nice!
                 break;
+            case('0'):  // "Useless" beam width according to spec
             default:
-                width = 8;  // Degrees of beam width
+                return; // Exit routine without drawing vectors
                 break;
         }
     }
     else {  // Assume some default values.
-        range = 512;  // Assume max range of 512 miles
+        range = 512.0;  // Assume max range of 512 miles
         width = 8;      // Assume 8 degrees for beam width
     }
 
-    // We have the course of the vehicle and the bearing from the vehicle.
-    // Now we need the real bearing.
+    // We have the course of the vehicle and the bearing from the
+    // vehicle.  Now we need the real bearing.
+    //
     if (atoi(course) != 0) {
-        real_bearing = (atoi(course) + atoi(bearing) + 270) % 360;
-        real_bearing_min = (int)(real_bearing + 360 - (width/2.0)) % 360;
-        real_bearing_max = (int)(real_bearing + (width/2.0)) % 360;
+        real_bearing = atoi(course) + atoi(bearing);
+        real_bearing_min = real_bearing + 360.0 - (width/2.0);
+        real_bearing_max = real_bearing + (width/2.0);
     }
     else {
-        real_bearing = (atoi(bearing) + 270) % 360;
-        real_bearing_min = (int)(real_bearing + 360 - (width/2.0)) % 360;
-        real_bearing_max = (int)(real_bearing + (width/2.0)) % 360;
+        real_bearing = atoi(bearing);
+        real_bearing_min = real_bearing + 360.0 - (width/2.0);
+        real_bearing_max = real_bearing + (width/2.0);
     }
 
-    bearing_radians_min = (real_bearing_min/360.0) * 2.0 * M_PI;
-    bearing_radians_max = (real_bearing_max/360.0) * 2.0 * M_PI;
+    while (real_bearing > 360.0)
+        real_bearing -= 360.0;
 
-    //fprintf(stderr,"Bearing: %i degrees, Range: %i miles, Width: %i degree(s), Radians: %f, ",
-    //        real_bearing, range, width, bearing_radians); 
+    while (real_bearing_min > 360.0)
+        real_bearing_min -= 360.0;
 
-    // Range is in miles.  Bottom term is in meters before the 0.0006214
-    // multiplication factor which converts it to miles.
-    // Equation is:  x-distance across window(mi)
-    screen_miles = scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * .6214;
-
-    // Shorten range to more closely fit the screen
-    if ( range > (3.0 * screen_miles) )
-        range = 3.0 * screen_miles;
-
-    offy_miles_min = sin(bearing_radians_min) * range;
-    offy_miles_max = sin(bearing_radians_max) * range;
-
-    offx_miles_min = cos(bearing_radians_min) * range;
-    offx_miles_max = cos(bearing_radians_max) * range;
+    while (real_bearing_max > 360.0)
+        real_bearing_max -= 360.0;
 
 
-    // TODO:  Needs to be a calc_dscale_y for below:
-    offy_min = (long)(offy_miles_min / (scale_y * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214) );
-    offy_max = (long)(offy_miles_max / (scale_y * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214) );
+    // We now have a distance and a bearing for each vector.
+    // Compute the end points via dead-reckoning here.  It will give
+    // us points between which we can draw a vector and makes the
+    // rest of the code much easier.  Need to skip adding 270
+    // degrees if we use that method.
+    //
+    compute_DR_position(x_long, // input (long)
+        y_lat,                  // input (long)
+        range,                  // input in nautical miles (double)
+        real_bearing_min,       // input in ° true (double)
+        &x_long2,               // output (*long)
+        &y_lat2);               // output (*long)
 
-    offx_min = (long)(offx_miles_min / (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214) );
-    offx_max = (long)(offx_miles_max / (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214) );
+    compute_DR_position(x_long, // input (long)
+        y_lat,                  // input (long)
+        range,                  // input in nautical miles (double)
+        real_bearing_max,       // input in ° true (double)
+        &x_long3,               // output (*long)
+        &y_lat3);               // output (*long)
 
 
-    /*
-    if (offx > 10000)
-        offx = 10000;
-    if (offx < -10000)
-        offx = -10000;
-    if (offy > 10000)
-        offy = 10000;
-    if (offy < -10000)
-        offy = -10000;
-    */
+    // Compute the screen locations
+    x1 = (x_long - x_long_offset)/scale_x;
+    y1 = (y_lat - y_lat_offset)/scale_y;
 
+    x2 = (x_long2 - x_long_offset)/scale_x;
+    y2 = (y_lat2 - y_lat_offset)/scale_y;
 
-    //fprintf(stderr,"offx_min: %li, offx_max: %li, offy_min: %li, offy_max: %li\n", offx_min, offx_max, offy_min, offy_max);
-
-    //fprintf(stderr,"X miles: %f, Y miles: %f, screen_miles: %f\n",
-    //    offx_miles,
-    //    offy_miles,
-    //    screen_miles);
+    x3 = (x_long3 - x_long_offset)/scale_x;
+    y3 = (y_lat3 - y_lat_offset)/scale_y;
+ 
 
     /* max off screen values */
     max_x = screen_width+800l;
@@ -1139,17 +1131,17 @@ void draw_bearing(long x_long, long y_lat, char *course,
 
 //                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
                         (void)XDrawLine(XtDisplay(da),where,gc,
-                                (x_long-x_long_offset)/scale_x,
-                                (y_lat-y_lat_offset)/scale_y,
-                                ((x_long-x_long_offset)/scale_x + offx_min),
-                                ((y_lat-y_lat_offset)/scale_y) + offy_min);
+                                x1,
+                                y1,
+                                x2,
+                                y2);
 
 //                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
                         (void)XDrawLine(XtDisplay(da),where,gc,
-                                (x_long-x_long_offset)/scale_x,
-                                (y_lat-y_lat_offset)/scale_y,
-                                ((x_long-x_long_offset)/scale_x + offx_max),
-                                ((y_lat-y_lat_offset)/scale_y) + offy_max);
+                                x1,
+                                y1,
+                                x3,
+                                y3);
 /*
                     }
                 }

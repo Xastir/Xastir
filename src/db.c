@@ -8847,12 +8847,14 @@ int extract_bearing_NRQ(char *info, char *bearing, char *nrq) {
         substr(bearing,info+1,3);
         substr(nrq,info+5,3);
 
-        //fprintf(stderr,"Bearing: %s\tNRQ: %s\n", bearing, nrq);
+//fprintf(stderr,"Bearing: %s\tNRQ: %s\n", bearing, nrq);
 
         for (i=0;i<=len-8;i++)        // delete bearing/nrq from info field
             info[i] = info[i+8];
     }
-    if (!found || nrq[2] == '0') {   // Q of 0 means useless bearing
+
+//    if (!found || nrq[2] == '0') {   // Q of 0 means useless bearing
+    if (!found) {
         bearing[0] ='\0';
         nrq[0]='\0';
     }
@@ -15550,6 +15552,112 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
         }
         search_tracked_station(&p_station);
     }
+}
+
+
+
+
+
+// Calculate new position based on distance and angle.
+//
+// Input:   lat/long in Xastir coordinate system (100ths of seconds)
+//          distance in nautical miles
+//          angle in ° true
+//
+// Outputs: *x_long, *y_lat in Xastir coordinate system (100ths of
+//           seconds)
+//
+//
+// From http://home.t-online.de/home/h.umland/Chapter12.pdf
+//
+// Dead-reckoning using distance in km, course C:
+// Lat_B° = Lat_A° + ( (360/40031.6) * distance * cos C )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lat_B° = Lat_A° + ( (distance/60) * cos C )
+//
+// Average of two latitudes (required for next two equations)
+// Lat_M° = (Lat_A° + Lat_B°) / 2
+//
+// Dead-reckoning using distance in km, course C:
+// Lon_B° = Lon_A° + ( (360/40031.6) * distance * (sin C / cos Lat_M) )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lon_B° = Lon_A° + ( (distance/60) * (sin C / cos Lat_M) )
+//
+// If resulting longitude exceeds +/- 180°, subtract/add 360°.
+// 
+void compute_DR_position(long x_long,   // input
+        long y_lat,     // input
+        double range,   // input in nautical miles
+        double course,  // input in ° true
+        long *x_long2,  // output
+        long *y_lat2) { // output
+    double bearing_radians, lat_M_radians;
+    float lat_A, lat_B, lon_A, lon_B, lat_M;
+    int ret;
+    unsigned long x_u_long, y_u_lat;
+
+
+//fprintf(stderr,"Distance:%fnm, Course:%f,  Time:%d\n",
+//    range,
+//    course,
+//    (int)(sec_now() - p_station->sec_heard));
+
+    // Bearing in radians
+    bearing_radians = (double)((course/360.0) * 2.0 * M_PI);
+
+    // Convert lat/long to floats
+    ret = convert_from_xastir_coordinates( &lon_A,
+        &lat_A,
+        x_long,
+        y_lat);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long2 = x_long;
+        *y_lat2 = y_lat;
+        return;
+    }
+
+    // Compute new latitude
+    lat_B = (float)((double)(lat_A) + (range/60.0) * cos(bearing_radians));
+
+    // Compute mid-range latitude
+    lat_M = (lat_A + lat_B) / 2.0;
+
+    // Convert lat_M to radians
+    lat_M_radians = (double)((lat_M/360.0) * 2.0 * M_PI);
+
+    // Compute new longitude
+    lon_B = (float)((double)(lon_A)
+        + (range/60.0) * ( sin(bearing_radians) / cos(lat_M_radians) ) );
+
+    // Test for out-of-bounds longitude, correct if so.
+    if (lon_B < -360.0)
+        lon_B = lon_B + 360.0;
+    if (lon_B >  360.0)
+        lon_B = lon_B - 360.0;
+
+//fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
+
+    ret = convert_to_xastir_coordinates(&x_u_long,
+        &y_u_lat,
+        lon_B,
+        lat_B);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long2 = x_long;
+        *y_lat2 = y_lat;
+        return;
+    }
+
+    // Convert from unsigned long to long
+    *x_long2 = (long)x_u_long;
+    *y_lat2  = (long)y_u_lat;
 }
 
 
