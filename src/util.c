@@ -1547,7 +1547,9 @@ int valid_path(char *path) {
                 ast++;                  // count asterisks in call
                 allast++;               // count asterisks in path
             } else
-                if ((ch <'A' || ch > 'Z') && (ch <'0' || ch > '9') && ch != '-')
+                if ((ch <'A' || ch > 'Z') && (ch <'0' || ch > '9')
+                        && ch != '-'
+                        && ch != 'q')   // New anti-loop stuff from aprsd
                     return(0);          // wrong character in path
         }
     }
