@@ -644,12 +644,10 @@ void draw_vector_ll(Widget w,
 // This routine appears to draw most of the UTM/UPS grid ok, with
 // the exceptions of:
 //
-// 1) Doesn't handle the irregular zones near/above Norway for the
-// smaller grid, the major grid is drawn correctly though.  Need to
-// use the proper meridian values as the base for our smaller grids
-// in these irregular zone areas.
-// 2) Sometimes fails to draw lines near zone boundaries.
-// 3) Lines connect across zone boundaries in an incorrect manner.
+// 1) Sometimes fails to draw vertical lines nearest zone
+// boundaries.
+// 2) Lines connect across zone boundaries in an incorrect manner,
+// jumping up one grid interval across the boundary.
 //
 //
 // UTM NOTES:  84 degrees North to 80 degrees South. 60 zones, each
@@ -828,20 +826,21 @@ void draw_grid(Widget w) {
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
 
 // Draw the minor UTM grids.  These are based off the central
-// meridian running up the middle of each zone (typically 3 degrees
-// from either side of the zone, with the exception of the irregular
-// zones).  These grids are defined in terms of meters instead of
-// lat/long, so they don't line up with the left/right edges of the
-// zones or with the longitude lines.
+// meridian running up the middle of each zone (3 degrees from
+// either side of the standard six-degree zones).  Even the
+// irregular zones go off the same medians.  UTM grids are defined
+// in terms of meters instead of lat/long, so they don't line up
+// with the left/right edges of the zones or with the longitude
+// lines.
 
 // According to Peter Dana (Geographer's Craft web pages), even when
 // the major grid boundaries have been shifted, the meridian used
 // for drawing the subgrids is still based on six-degree boundaries
 // (as if the major grid hadn't been shifted at all).  That means we
-// _do_ draw the subgrids correctly as it stands now.
-// The below code handles the irregular zones properly
+// are drawing the subgrids correctly as it stands now.  The below
+// code handles the irregular zones properly
 // (31V/32V/31X/33X/35X/37X). It assumes regular 6 degree zone
-// meidians.  The irregular zones have sizes of 3/9/12 degrees
+// medians.  The irregular zones have sizes of 3/9/12 degrees
 // (width) instead of 6 degrees.
 
 
