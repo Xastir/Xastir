@@ -241,7 +241,7 @@ Getting Maps and other Data Files for Xastir:
 
       Fortunately, the shapelib-1.2.10 distribution (which you probably
       compiled and installed to enable shapefile maps in Xastir) includes a
-      tool for performing this reprojection. 
+      tool for performing this reprojection.
 
       First make the shpproj utility by:
 
@@ -283,6 +283,31 @@ Getting Maps and other Data Files for Xastir:
 
       For more detailed documentation, see the shpproj.txt file in the
       "<shapelib source directory>/contrib/doc" directory.
+
+
+      An important note about shpproj from Tom Russo, KM5VY:
+
+      "I have been looking over shpproj's source code and it's very
+      clear that it is doing datum conversions wrong.
+
+      It is apparently written to be built against the very old
+      proj-4.4.3 from USGS that didn't do direct transforms from one
+      projection to another, and could only do proj->"geographic"
+      conversions.
+
+      It is completely incorrect to do "projection in one
+      datum"->"geographic"->"projection in another datum", but
+      that's precisely what shpproj does.  It is not possible
+      to use this tool to convert a shapefile in NAD27 UTM
+      cooordinates into WGS84 Lat/Lons for use in Xastir!.
+      It does WGS 84 UTM->WGS84 Lat/Lon just fine.
+
+      I have hacked up a variant of "cs2cs" that works directly on
+      shapefiles and does datum conversion correctly (unlike
+      shpproj):
+
+          <http://www.swcp.com/~russo/shape_web/>"
+
       -----
 
       Using "dbfawk" to interpret shapefile DBF data:  Each shapefile
