@@ -30,6 +30,7 @@
 #include <pthread.h>
 
 extern int  position_amb_chars;
+extern void get_timestamp(char *timestring);
 extern int get_hours(void);
 extern int get_minutes(void);
 extern int get_seconds(void);

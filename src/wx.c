@@ -358,39 +358,40 @@ float compute_gust(float wx_speed, float last_speed, time_t *last_speed_time) {
 
 
 
-/***********************************************************/
-/* cycle_weather - keep the weather queues moving even if  */
-/* data from weather station is scarce.  This is called    */
-/* from main.c:UpdateTime() on a periodic basis.           */
-/***********************************************************/
+//
+// cycle_weather - keep the weather queues moving even if data from
+// weather station is scarce.  This is called from main.c:UpdateTime()
+// on a periodic basis.  This routine also does the 30 second timestamp
+// for the log files.
+//
 void cycle_weather(void) {
     DataRow *p_station;
     WeatherRow *weather;
     float last_speed, computed_gust;
     time_t last_speed_time;
-    char temp[20];
+    char temp[200];
+    char timestring[100+1];
 
 
     if (debug_level & 2)
         printf("%02d:%02d:%02d  ", get_hours(), get_minutes(), get_seconds() );
 
+    // Fetch the current date/time string
+    get_timestamp(timestring);
+    xastir_snprintf(temp, sizeof(temp), "# %s", timestring);
+
     // Timestamp the log files at a 30 second rate
-    if (log_tnc_data) {
-        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+    if (log_tnc_data)
         log_data(LOGFILE_TNC,(char *)temp);
-    }
-    if (log_net_data) {
-        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+
+    if (log_net_data)
         log_data(LOGFILE_NET,(char *)temp);
-    }
-    if (log_igate) {
-        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+
+    if (log_igate)
         log_data(LOGFILE_IGATE,(char *)temp);
-    }
-    if (log_wx) {
-        xastir_snprintf(temp, sizeof(temp), "# %02d%02d%02d", get_hours(), get_minutes(), get_seconds() );
+
+    if (log_wx)
         log_data(LOGFILE_WX,(char *)temp);
-    }
 
 
 

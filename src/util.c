@@ -66,6 +66,24 @@ char echo_digis[6][9+1];
 
 
 
+//
+// Inserts localtime date/time in "timestring".  Timestring
+// Should be at least 101 characters long.
+//
+void get_timestamp(char *timestring) {
+    struct tm *time_now;
+    time_t secs_now;
+
+
+    secs_now=sec_now();
+    time_now = localtime(&secs_now);
+    (void)strftime(timestring,100,"%a %b %e %T %Z %Y",time_now);
+}
+
+
+
+
+
 /***********************************************************/
 /* returns the hour (00..23), localtime                    */
 /***********************************************************/
