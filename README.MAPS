@@ -415,6 +415,103 @@ Getting Maps and other Data Files for Xastir:
       segment.
       -----
 
+    Rolling your own shapefile maps:
+
+    It is relatively easy to create your own shapefile maps (for example,
+    if you want to highligt a walkathon course).  There are several
+    methods available with Xastir:
+    1. Use GPSMan to download a GPS track to a shapefile.
+    2. Save a station tracklog of an actual station or an object that
+       you manually move along the course.  When you select Station Info,
+       you are presented with the option to save the track, which gets
+       put in 
+       .xastir/tracklogs/<datestamp>_<callsign>_APRS_Trail_<color>.*
+       You can move the .shp, .shx, and .dbf files to your maps directory.
+       Use DBFAWK to make a map-specific .dbfawk file.  For example:
+	BEGIN {dbfinfo="Credits:DateTime";dbffields="Credits:"}
+	BEGIN_RECORD {key=""; lanes=4; color=12; name=""; filled=0; 
+           pattern=1; display_level=8192; label_level=32; symbol=""}
+       This makes the track width 4 and red (12).
+    3. You can also use the shapelib tools (shpproj was presented earlier)
+       to manually create a shapefile.  For example, the following 
+       marks out the mileposts for a marathon, using tgrlpt.dbfawk
+       (US Census Tiger/Line landmark points) for the metadata:
+       #!/bin/sh
+       # turn mileposts into a Tiger landmark shapefile
+
+       rm -f posts.shp posts.dbf
+       shpcreate posts point
+       dbfcreate posts -n ID 8 0 -s CFCC 3 -s NAME 30
+       shpadd posts -74.0570 40.6025
+       dbfadd posts 1 D00 Start
+       shpadd posts -74.0443 40.6065
+       dbfadd posts 2 D00 1M
+       shpadd posts -74.0353 40.6093
+       dbfadd posts 3 D00 2M
+       shpadd posts -74.0268 40.6260
+       dbfadd posts 4 D00 3R
+       shpadd posts -74.0200 40.6277
+       dbfadd posts 5 D00 3G
+       shpadd posts -74.0270 40.6252
+       dbfadd posts 6 D00 3B
+       shpadd posts -74.0197 40.6395
+       dbfadd posts 7 D00 4R
+       shpadd posts -74.0203 40.6388
+       dbfadd posts 8 D00 4BG
+       shpadd posts -74.0077 40.6508
+       dbfadd posts 9 D00 5R
+       shpadd posts -74.0083 40.6503
+       dbfadd posts 10 D00 5BG
+       shpadd posts -73.9957 40.6623
+       dbfadd posts 11 D00 6R
+       shpadd posts -73.9962 40.6617
+       dbfadd posts 12 D00 6BG
+       shpadd posts -73.9850 40.6743
+       dbfadd posts 13 D00 7R
+       shpadd posts -73.9858 40.6738
+       dbfadd posts 14 D00 7BG
+       shpadd posts -73.9782 40.6865
+       dbfadd posts 15 D00 8M
+       shpadd posts -73.9597 40.6890
+       dbfadd posts 16 D00 9M
+       shpadd posts -73.9573 40.7007
+       dbfadd posts 17 D00 10M
+       shpadd posts -73.9622 40.7122
+       dbfadd posts 18 D00 11M
+       shpadd posts -73.9515 40.7230
+       dbfadd posts 19 D00 12M
+       shpadd posts -73.9520 40.7345
+       dbfadd posts 20 D00 13M
+       shpadd posts -73.9525 40.7465
+       dbfadd posts 22 D00 14M
+       shpadd posts -73.9403 40.7503
+       dbfadd posts 23 D00 15M
+       shpadd posts -73.9578 40.7587
+       dbfadd posts 24 D00 16M
+       shpadd posts -73.9556 40.7675
+       dbfadd posts 25 D00 17M
+       shpadd posts -73.9465 40.7808
+       dbfadd posts 26 D00 18M
+       shpadd posts -73.9372 40.7935
+       dbfadd posts 27 D00 19M
+       shpadd posts -73.9272 40.8047
+       dbfadd posts 28 D00 20M
+       shpadd posts -73.9343 40.8142
+       dbfadd posts 29 D00 21M
+       shpadd posts -73.9453 40.8050
+       dbfadd posts 30 D00 22M
+       shpadd posts -73.9525 40.7923
+       dbfadd posts 31 D00 23M
+       shpadd posts -73.9630 40.7810
+       dbfadd posts 32 D00 24M
+       shpadd posts -73.9720 40.7696
+       dbfadd posts 33 D00 25M
+       shpadd posts -73.9811 40.7683
+       dbfadd posts 34 D00 26M
+       shpadd posts -73.9763 40.7720
+       dbfadd posts 35 D00 Finish
+
+    ---------
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget or libcurl installed, .geo files
