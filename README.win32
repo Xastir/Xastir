@@ -557,7 +557,8 @@ can download NOAA weather alert maps and many other sorts of maps,
 and Xastir will recognize and use them.  Note that weather alert
 shapefiles must go into the /usr/local/share/xastir/Counties
 directory.  All other shapefiles must go into the
-/cygwin/user/local/share/xastir/maps directory.
+/cygwin/user/local/share/xastir/maps directory (and subdirectories
+below that of your choosing).
 
 See the README.MAPS file for where to get the maps.
 
