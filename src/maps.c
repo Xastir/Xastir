@@ -5171,6 +5171,10 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 static void* snapshot_thread(void *arg) {
 
 #ifndef NO_GRAPHICS
+
+// Temporary
+#ifdef HAVE_IMAGEMAGICK
+
     char png_filename[MAX_FILENAME];
     Image *snapshot_image;
     ImageInfo *snapshot_info;
@@ -5213,6 +5217,10 @@ static void* snapshot_thread(void *arg) {
     }
     DestroyImageInfo(snapshot_info);
     DestroyExceptionInfo(&exception);
+
+// Temporary
+#endif  // HAVE_IMAGEMAGICK
+
 #endif // NO_GRAPHICS
   
     // Signify that we're all done and that another snapshot can
