@@ -1,0 +1,5 @@
+/* Created with The GIMP */
+#define 2x2_width 2
+#define 2x2_height 2
+static unsigned char 2x2_bits[] = {
+   0x01, 0x02 };
