@@ -6091,12 +6091,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                     /* Clear device */
                     devices[port].device_type=DEVICE_NONE;
                     strcpy(devices[port].device_name,"");
+                    strcpy(devices[port].radio_port,"");
                     strcpy(devices[port].device_host_name,"");
                     strcpy(devices[port].device_host_pswd,"");
                     strcpy(devices[port].device_host_filter_string,"");
+                    strcpy(devices[port].comment,"");
                     strcpy(devices[port].unproto1,"");
-                    strcpy(devices[port].unproto1,"");
-                    strcpy(devices[port].unproto1,"");
+                    strcpy(devices[port].unproto2,"");
+                    strcpy(devices[port].unproto3,"");
+                    strcpy(devices[port].unproto_igate,"");
                     devices[port].style=0;
                     devices[port].igate_options=0;
                     devices[port].transmit_data=0;
