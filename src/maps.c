@@ -893,6 +893,8 @@ void draw_grid(Widget w) {
 // It appears that the horizontal grid lines get messed up in cases
 // where the top horizontal line doesn't make it all the way across
 // the screen before it goes out of view.  That's a major clue!
+// Looks like the left end of it being above the current view is
+// what causes it.
 //
         n[0] += utm_grid_spacing_m;
 
