@@ -2631,7 +2631,17 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     (void)XtCreateManagedWidget("MAIN",xmMainWindowWidgetClass,appshell,NULL,0);
 
     XtRealizeWidget (appshell);
-    XtVaSetValues(appshell,XmNx,1,XmNy,1,NULL);
+
+    // Set to the proper size before we make the window visible on the screen
+    XtVaSetValues(appshell,
+                XmNx,           1,
+                XmNy,           1,
+                XmNwidth,       screen_width,
+//              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
+                XmNheight,      (screen_height + 60),   // WE7U:  Above statement makes mine grow by 2 each time
+                NULL);
+
+    // Show the window
     XtPopup(appshell,XtGrabNone);
 
     create_gc(da);
@@ -2639,12 +2649,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     (void)XSetBackground(XtDisplay(da),gc,colors[0xff]);
 
     (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
-
-    XtVaSetValues(appshell,
-                XmNwidth,       screen_width,
-//              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
-                XmNheight,      (screen_height + 60),   // WE7U:  Above statement makes mine grow by 2 each time
-                NULL);
 
     XtAddCallback (da, XmNinputCallback,  da_input,NULL);
     XtAddCallback (da, XmNresizeCallback, da_resize,NULL);
