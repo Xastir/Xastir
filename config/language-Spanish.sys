@@ -234,7 +234,7 @@ POPUPMA017|El Mundo Entero|E|
 POPUPMA016|Ultima Pos/Enfoque del Mapa|P|
 POPUPMA018|Crear Objeto/Artículo|C|
 POPUPMA019|Modificar Objeto/Artículo|M|
-POPUPMA025|Move My Station Here|H|
+POPUPMA025||Mover Mi  Estación Aquí|A|
 POPUPMA011|Paneo arriba|u|
 POPUPMA012|Paneo abajo|d|
 POPUPMA013|Paneo izquierda|l|
@@ -507,7 +507,7 @@ POPUPOB039|Señal - Altura(HAAT) - Ganancia - Dirección||
 POPUPOB040|Dirigiendo - Ancho de la orientación||
 POPUPOB041|Antena Omni-direccional||
 POPUPOB042|Antena Direccional||
-POPUPOB043|Useless||
+POPUPOB043|Inútil||
 #
 # Configurar Internet
 WPUPCFI001|Configurar Internet||
