@@ -1018,6 +1018,40 @@ First Time Install:
 You probably want to download some maps and additional data files. The
 instructions for this are in the README.MAPS.
 
+-----------------------------------------------------------------------
+
+NOTES FOR DEVELOPERS:
+---------------------
+
+Profiling:
+
+1) Add "-pg" to the CFLAGS section of xastir/src/Makefile.  Mine
+looks like this:
+
+    CFLAGS = -g -O2 -pipe -Wall -pthread -pg
+
+2) make clean
+
+3) make install
+
+4) xastir &
+
+5) Let Xastir run for some period of time.
+
+6) Close Xastir
+
+7) gprof /usr/local/bin/xastir | tee profile.txt
+
+Gprof will use the Xastir binary and the gmon.out file created from
+running Xastir to give you the profile listing.
+
+Add the "-l" flag to the gprof line to give you a line-by-line
+profile listing, but be prepared for a long run-time and a lot of
+CPU to be used by gprof to generate it:
+
+    gprof -l /usr/local/bin/xastir | tee profile.txt
+
+
   ------------------------------------------------------------------------
 Copyright (C) 1999 Frank Giannandrea
 Copyright (C) 2000-2004 The Xastir Group
