@@ -58,14 +58,14 @@
 #endif  // WITH_DMALLOC
 
 
-#define STATION_REMOVE_CYCLE 300        /* check station remove in seconds (every 5 minutes) */
-#define MESSAGE_REMOVE_CYCLE 600        /* check message remove in seconds (every 10 minutes) */
-#define IN_VIEW_MIN         600l        /* margin for off-screen stations, with possible trails on screen, in minutes */
-#define TRAIL_POINT_MARGIN   30l        /* margin for off-screen trails points, for segment to be drawn, in minutes */
-#define TRAIL_MAX_SPEED     900         /* max. acceptible speed for drawing trails, in mph */
-#define MY_TRAIL_COLOR      0x16        /* trail color index reserved for my station */
-#define MY_TRAIL_DIFF_COLOR   0         /* all my calls (SSIDs) use different colors (0/1) */
-#define TRAIL_ECHO_TIME      30         /* check for delayed echos during last 30 minutes */
+#define STATION_REMOVE_CYCLE 300    /* check station remove in seconds (every 5 minutes) */
+#define MESSAGE_REMOVE_CYCLE 600    /* check message remove in seconds (every 10 minutes) */
+#define IN_VIEW_MIN         600l    /* margin for off-screen stations, with possible trails on screen, in minutes */
+#define TRAIL_POINT_MARGIN   30l    /* margin for off-screen trails points, for segment to be drawn, in minutes */
+#define TRAIL_MAX_SPEED      900    /* max. acceptible speed for drawing trails, in mph */
+#define MY_TRAIL_COLOR      0x16    /* trail color index reserved for my station */
+#define MY_TRAIL_DIFF_COLOR    0    /* If 0, all my calls (SSIDs) will use one special color (0/1) */
+#define TRAIL_ECHO_TIME       30    /* check for delayed echos during last 30 minutes */
 
 // Station Info
 Widget  db_station_popup = (Widget)NULL;
@@ -6009,6 +6009,11 @@ int trail_color_active(int color_index) {
 int new_trail_color(char *call) {
     int color, found, i;
 
+    // If MY_TRAIL_DIFF_COLOR is defined to be a 0, then we'll
+    // assign one special color to every SSID from our callsign.  If
+    // 1, they get the next color available (round-robin style) just
+    // like all the other stations.
+    //
     if (is_my_call(call,MY_TRAIL_DIFF_COLOR)) {
         color = MY_TRAIL_COLOR;    // It's my call, so use special color
     } else {
