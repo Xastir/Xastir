@@ -471,6 +471,37 @@ scr_s_x_min = 0;
 
 
 
+//WE7U
+//
+// Possible Optimizations:
+// -----------------------
+//
+// For Tiger and/or SDTS:  If we can figure out what type of map we
+// have, only load those layers that make sense.  Skip the rest.
+//
+// Only change the drawing style/color if it is different than the
+// last specified one.  Have the drawing routines actually make the
+// X11 calls instead of the "guess" function, in order to eliminate
+// extra calls.
+//
+// Compute the spatial transforms for a layer only if it has a
+// different spatial reference from the last layer.
+//
+// Break the "guess" function into one for files, one for layers,
+// and perhaps one for features.  Call the "features" one sparingly
+// if it exists, so that we can skip that code most of the time.
+//
+// Re-write the "guess" function so that it turns into a general map
+// preferences feature.  Make sure to use hash tables to keep it
+// fast.
+//
+// Tie the Tigermap config buttons into the TIGER/Line layers as
+// well, skip those layers that we don't have selected.  Perhaps tie
+// Tiger/Shapefiles into the same scheme as those have specific
+// filenames we can key off of.
+
+
+
 int label_color_guess;
 int sdts_elevation_in_meters = 1;   // Default meters
 int hypsography_layer = 0;          // Topo contours
@@ -499,12 +530,11 @@ int misc_transportation_layer = 0;
 // plus.  If it only needs to be set once per file, we could save a
 // lot of time.
 //
-// Note that draw_polygon_with_mask() still has some hard-coded
-// attributes, because it creates gc_temp in order to do the
-// regions.  We need to incorporate that somehow into this "guess"
-// routine as well, perhaps by having it call this routine directly?
-// By creating gc_temp ahead-of-time and keeping it around
-// throughout the draw, passing the GC to this routine also?
+// Note that draw_polygon_with_mask() uses gc_temp instead of gc.
+// This means we have to pass colors down to it so that it can set
+// the color itself.  We currently just use the label_color variable
+// to do this, but we really should use a different variable, as
+// label color and object color can be different.
 //
 // Depending on what needs to be done for different file
 // types/layers/geometries, we might want to break this function up
@@ -512,6 +542,10 @@ int misc_transportation_layer = 0;
 // only needs to be set once per file, or once per layer, do so.
 // Don't set it over and over again (Don't set it once per object
 // drawn).
+//
+// Consider trying GXxor function with gc_tint someday to see what
+// the contour lines look like with that method:  Should make them
+// quite readable no matter what the underlying map colors.
 //
 // Set attributes based on what sort of file/layer/shape we're
 // dealing with.  driver_type may be any of:
@@ -538,14 +572,14 @@ int misc_transportation_layer = 0;
 // coloring and line widths based on the filename and the associated
 // field contents.
 //
-// SDTS:  Guess the coloring/line widths based on the filename and
-// the layer.
+// SDTS:  Guess the coloring/line widths based on the ENTITY_LABEL.
 //
-// TIGER:  Guess coloring/line widths based on filename/layer.
+// TIGER:  Guess coloring/line widths based on the CFCC field.
 //
 // MapInfo:  Guess based on layer?
 //
 // DGN: ??
+//
 //
 void guess_vector_attributes( Widget w,
                               const char *driver_type,
@@ -753,10 +787,6 @@ void guess_vector_attributes( Widget w,
 
 
 
-// If we enable this section of code we end up with railroads that
-// get drawn in red, then drawn over again in black with SDTS
-// transportation layers.
-
     switch (geometry_type) {
 
 
@@ -778,10 +808,6 @@ void guess_vector_attributes( Widget w,
 
             if (hypsography_layer || hydrography_layer) {
 
-// Consider trying GXxor function with gc_tint someday to see what
-// the contour lines look like with that method:  Should make them
-// quite readable no matter what the underlying map colors.
-//
                 // Set color for SDTS hypsography layer (contours)
 //                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
@@ -825,10 +851,6 @@ void guess_vector_attributes( Widget w,
 
             if (hypsography_layer || hydrography_layer) {
 
-// Consider trying GXxor function with gc_tint someday to see what
-// the contour lines look like with that method:  Should make them
-// quite readable no matter what the underlying map colors.
-//
                 // Set color for SDTS hypsography layer (contours)
 //                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
@@ -2587,12 +2609,10 @@ extern void draw_shapefile_map (Widget w,
 //    anyway (we currently do the latter).
 
 
-// Consider changing over to the spatial filter scheme instead:  Set
-// a spatial filter based on our current view, draw only those
-// objects that OGR_L_GetNextFeature() passes back to us.  That
-// should save a lot of coordinate conversion code and speed things
-// up dramatically:  We currently check each object to see whether
-// it is in the current view.
+// We've changed over to the spatial filter scheme:  Set a spatial
+// filter based on our current view, draw only those objects that
+// OGR_L_GetNextFeature() passes back to us.  That saves a lot of
+// coordinate conversion code and speeds things up dramatically.
 
 
 // *) Figure out why SDTS hypsography (contour lines) on top of
@@ -2607,6 +2627,9 @@ extern void draw_shapefile_map (Widget w,
 //    dropping or concatenating lines.  This can cause missing line
 //    segments that cross the edge of our view, or incorrect slopes
 //    for lines that cross the edge.
+//    NOTE:  Have switched to chopping at +/- 15000 pixels, which
+//    seems to fix this nicely.  Chopping at much less causes
+//    problems, while X11 has problems at +/- 16384 or higher.
 // *) Speed things up in any way possible.
 //
 // 
