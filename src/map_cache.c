@@ -30,7 +30,7 @@
 #include "config.h"
 
 #ifdef  USE_MAP_CACHE
-#warning USE_MAP_CACHE Defined (and there was much rejoicing) 
+//#warning USE_MAP_CACHE Defined
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -52,21 +52,38 @@
 
 int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
-    char mc_database_filename[MAX_FILENAME]; 
-    int mc_ret, mc_t_ret;
-    DBT putkey, putdata ; 
-    DB *dbp; 
+// Puts an entry into the url->filename database
+// Tracks space used in "CACHE_SPACE_USED" 
 
+    char mc_database_filename[MAX_FILENAME]; 
+    int mc_ret, mc_t_ret, mc_file_stat, mc_space_used ;
+    DBT mc_key, mc_data ; 
+    DB *dbp; 
+    struct stat file_status;
+    char mc_buf[128];
+
+
+    mc_space_used=0; 
 
     xastir_snprintf(mc_database_filename,
     sizeof(mc_database_filename),
     "%s/map_cache.db", 
     get_user_base_dir("map_cache"));
 
-// Create handle 
+
+// stat the file to see if we even need to bother 
+
+    if ((mc_file_stat=stat(map_cache_file, &file_status)) !=0) {
+        return (mc_file_stat); 
+    }
+
+    debug_level && printf ("map_cache_put: file_status.st_size %d\n",
+                        (int) file_status.st_size);        
+
+// Create handle to db
 
     if ((mc_ret = db_create(&dbp, NULL, 0)) != 0) {
-        fprintf(stderr, "map_cache db_create:%s\n", db_strerror(mc_ret)); 
+        fprintf(stderr, "map_cache_put db_create:%s\n", db_strerror(mc_ret)); 
         return(1);
     }
 
@@ -97,36 +114,120 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 // Before we put something in we need to see if we got space
 
 // if mc_cache_size_limit
-// db get stat 
-// check number of records (which means space on disk) 
-// if over limit
-// delete oldest (warning feeped creature )
 
+// Setup for get 
 
+    memset(&mc_key, 0, sizeof(mc_key));
+    memset(&mc_data, 0, sizeof(mc_data));
 
+    mc_key.data = "CACHE_SPACE_USED";
+    mc_key.size = sizeof("CACHE_SPACE_USED"); 
 
-// Setup 
+// check "CACHE_SPACE_USED" record in db
+	
+    if (((mc_ret = dbp->get(dbp, NULL, &mc_key, &mc_data, 0)) == 0) &&  ( mc_data.data != NULL ) ) {
+        debug_level && printf("map_cache_put: %s: key retrieved: data was %s.\n",
+                            (char *)mc_key.data,
+                            (char *)mc_data.data);
 
-    memset(&putkey, 0, sizeof(putkey));
-    memset(&putdata, 0, sizeof(putdata));
+// this pukes if mc_data.data is null
+
+        mc_space_used=atoi( (char *)mc_data.data);
+
+        debug_level && fprintf (stderr, "map_cache_put: CACHE_SPACE_USED = %.2f mb\n",
+                            (mc_space_used/1024/1024.0));        
+    } else {
+
+        if (mc_data.data == NULL) {
+            debug_level && printf ("map_cache_put: CACHE_SPACE_USED get returned null \n"); 
+        } else { 
+            debug_level && printf ("map_cache_put: Unable to check CACHE_SPACE_USED: %s\n",
+                            db_strerror(mc_ret)); 
+	}
+
+        // for now let us assume this is the first map entry and  we
+        // just flag an error. Better procedure for later might be to
+        // return(mc_ret) indicating a database error of some sort
+         
+    }
+      
+//      xastir_snprintf(map_cache_file, MAX_FILENAME, "%s",(char *)mc_data.data);
+
+    debug_level && fprintf (stderr, "map_cache_put: mc_space_used before = %d bytes file_status.st_size %d\n",
+                        mc_space_used,
+                        (int) file_status.st_size);        
+
+    mc_space_used += (int) file_status.st_size;
+
+    debug_level && fprintf (stderr, "map_cache_put: mc_space_used after = %d bytes \n",
+                        mc_space_used);        
+
+    if ( mc_space_used > MAP_CACHE_SPACE_LIMIT) { 
+        debug_level && fprintf (stderr, "map_cache_put: Warning cache space used: %.2f mb NOW OVER LIMIT: %.2f mb\n",
+                            (mc_space_used/1024/1024.0),
+                            (MAP_CACHE_SPACE_LIMIT/1024/1024.0));
+
+// Cache Cleanup
+// The warning is nice, but we should do something here
+// Needs LRU and or FIFO db structures
+
+    } else {
+
+// else put cache_space_used
+
+// setup 
+
+        memset(&mc_key, 0, sizeof(mc_key));
+        memset(&mc_data, 0, sizeof(mc_data));
+
+// data
+
+        mc_key.data = "CACHE_SPACE_USED";
+        mc_key.size = sizeof("CACHE_SPACE_USED"); 
+
+        xastir_snprintf(mc_buf, sizeof(mc_buf), "%d", mc_space_used);
+
+        debug_level && fprintf (stderr, "map_cache_put: mc_buf: %s len %d\n",
+                        mc_buf,sizeof(mc_buf));
+
+        mc_data.data = mc_buf ; 
+        mc_data.size = sizeof(mc_buf);
+
+// put 
+
+        if ((mc_ret = dbp->put(dbp, NULL, &mc_key, &mc_data, 0)) == 0) {
+            debug_level && fprintf(stderr, "map_cache_put: %s: key stored.\n", (char *)mc_key.data);
+
+        } else {
+            
+            dbp->err(dbp, mc_ret, "DB->put");
+            db_strerror(mc_ret); 
+        } 
+
+    } 
+
+// Setup for put of data
+
+    memset(&mc_key, 0, sizeof(mc_key));
+    memset(&mc_data, 0, sizeof(mc_data));
 
 // Real data at last 
 
-    putkey.data = map_cache_url;
-    putkey.size = strlen(map_cache_url); 
-    putdata.data = map_cache_file;
-    
-    debug_level && printf ("len map_cache_file = %d\n",strlen(map_cache_file));
-    putdata.size = strlen(map_cache_file)+1; /* +1 includes  \0 */ 
+    mc_key.data = map_cache_url;
+    mc_key.size = strlen(map_cache_url); 
+    mc_data.data = map_cache_file;
+    mc_data.size = strlen(map_cache_file)+1; /* +1 includes  \0 */ 
 
 // do the actual put 
 
-    if ((mc_ret = dbp->put(dbp, NULL, &putkey, &putdata, 0)) == 0) {
-        debug_level && printf("db: %s: key stored.\n", (char *)putkey.data);
+    if ((mc_ret = dbp->put(dbp, NULL, &mc_key, &mc_data, 0)) == 0) {
+        debug_level && fprintf(stderr, "map_cache_put: %s: key stored.\n", (char *)mc_key.data);
     } else {
         dbp->err(dbp, mc_ret, "DB->put");
         db_strerror(mc_ret); 
     } 
+
+// close the db 
 
     if ((mc_t_ret = dbp->close(dbp, 0)) != 0 && mc_ret == 0) {
         mc_ret = mc_t_ret;
@@ -144,6 +245,9 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
 int map_cache_get( char * map_cache_url, char * map_cache_file ){
 
+// Queries URL->Filename db 
+// Calls map_cache_del to cleanup expired maps 
+
     DBT mc_key, mc_data ; 
     DB *dbp;
     int mc_ret, mc_t_ret, mc_file_stat ;
@@ -157,7 +261,7 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
         get_user_base_dir("map_cache"));
     
     if ((mc_ret = db_create(&dbp, NULL, 0)) != 0) {
-        fprintf(stderr, "map_cache db_create:%s\n", db_strerror(mc_ret)); 
+        fprintf(stderr, "map_cache_get db_create:%s\n", db_strerror(mc_ret)); 
         return(1);
     }
 
@@ -189,16 +293,15 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
     mc_key.size=strlen(map_cache_url); 
 	
     if ((mc_ret = dbp->get(dbp, NULL, &mc_key, &mc_data, 0)) == 0) {
-        debug_level && printf("map_cache_get: %s: key retrieved: data was %s.\n",
+        debug_level && fprintf(stderr, "map_cache_get: %s: key retrieved: data was %s.\n",
                             (char *)mc_key.data, (char *)mc_data.data);
         xastir_snprintf(map_cache_file, MAX_FILENAME, "%s",(char *)mc_data.data);
 
-    // check age of file delete if too old
+    // check age of file - based on name - delete if too old
         
         if ( (mc_ret=map_cache_expired(map_cache_file, (MC_MAX_FILE_AGE)))){
-            debug_level && printf("map_cache_get: deleting expired key: %s.\n\tDeleting File: %s",
-                                (char *)mc_key.data,
-                                (char *)mc_data.data); 
+            debug_level && fprintf(stderr, "map_cache_get: deleting expired key: %s.\n",
+                                (char *)mc_key.data); 
             map_cache_del(map_cache_url);
             return (mc_ret);
         } 
@@ -243,8 +346,12 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
         }
 		
     } else {
+        debug_level && fprintf(stderr, "map_cache_get: Get failed. Key was: %s.\n",
+                (char *)mc_key.data);
+
         dbp->err(dbp, mc_ret, "DB->get");
         db_strerror(mc_ret);
+
         // there was some problem getting things from the db
         // return the return from the get 
         
@@ -260,12 +367,18 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
 int map_cache_del( char * map_cache_url ){
 
     // Delete entry from the cache 
-   
-    DBT mc_key, mc_data ; 
-    DB *dbp;
-    int mc_ret, mc_t_ret;
-    char mc_database_filename[MAX_FILENAME]; 
+    // and unlink associated file from disk
 
+    DBT mc_key, mc_data, mc_size_key, mc_size_data ; 
+    DB *dbp;
+    int mc_ret, mc_t_ret, mc_file_stat, mc_space_used;
+    char mc_database_filename[MAX_FILENAME]; 
+    char mc_delete_file[MAX_FILENAME]; 
+    struct stat file_status;
+
+    char mc_buf[128];
+    
+    mc_space_used = 0 ; 
 
     xastir_snprintf(mc_database_filename,
         MAX_FILENAME,
@@ -306,15 +419,121 @@ int map_cache_del( char * map_cache_url ){
     // Try to get the key from the cache
 	
     if ((mc_ret = dbp->get(dbp, NULL, &mc_key, &mc_data, 0)) == 0) {
-        debug_level && printf("map_cache_del: %s: key retrieved: data was %s.\n",
+        debug_level && fprintf(stderr, "map_cache_del: %s: key retrieved: data was %s.\n",
                             (char *)mc_key.data,
                             (char *)mc_data.data);
 
-    // cleanup file on disk
+    // stat the file 
+
+    xastir_snprintf(mc_delete_file,
+        MAX_FILENAME,
+        "%s",
+        (char *) mc_data.data);
+
+        mc_file_stat=stat(mc_delete_file, &file_status);
+        
+        debug_level && fprintf(stderr,"map_cache_del: file %s stat returned:%d.\n",
+                            (char *) mc_data.data,
+                            mc_file_stat);
+        if (mc_file_stat == 0 ){
+
+
+// Setup for get CACHE_SPACE_USED
+
+            memset(&mc_size_key, 0, sizeof(mc_size_key));
+            memset(&mc_size_data, 0, sizeof(mc_size_data));
+
+            mc_size_key.data = "CACHE_SPACE_USED";
+            mc_size_key.size = sizeof("CACHE_SPACE_USED"); 
+
+// check "CACHE_SPACE_USED" record in db
 	
-        unlink( mc_data.data  );        
+            if (((mc_ret = dbp->get(dbp, NULL, &mc_size_key, &mc_size_data, 0)) == 0) &&  ( mc_size_data.data != NULL ) ) {
+                    debug_level && fprintf(stderr, "map_cache_del: %s: key retrieved: data was %s.\n",
+                                (char *)mc_size_key.data,
+                                (char *)mc_size_data.data);
+
+// this pukes if mc_size_data.data is null
+
+                mc_space_used=atoi( (char *)mc_size_data.data);
+
+                debug_level && fprintf (stderr, "map_cache_del: CACHE_SPACE_USED = %.2f mb\n",
+                                (mc_space_used/1024/1024.0));        
+            } else {
+
+                if (mc_size_data.data == NULL) {
+                    debug_level && fprintf (stderr, "map_cache_del: CACHE_SPACE_USED get returned null \n"); 
+                } else { 
+                    debug_level && fprintf (stderr, "map_cache_del: Unable to check CACHE_SPACE_USED: %s\n",
+                            db_strerror(mc_ret)); 
+                }
+            }
+
+            debug_level && fprintf (stderr, "map_cache_del: mc_space_used before = %d bytes file_status.st_size %d\n",
+                                mc_space_used,
+                                (int) file_status.st_size);        
+
+             mc_ret = unlink( mc_delete_file );
+        
+            debug_level && fprintf(stderr,"map_cache_del: file %s unlink returned:%d.\n",
+                            mc_delete_file,
+                            mc_ret);
+
+            if (mc_ret == 0 ){
+
+// Update cache_space_used
+
+// setup 
+
+                mc_space_used -= (int) file_status.st_size;
+
+                if (mc_space_used < 0) {
+                    mc_space_used = 0;
+                }
+
+                debug_level && fprintf (stderr, "map_cache_del: unlink succeeded mc_space_used = %d bytes \n",
+                            mc_space_used);        
+
+                memset(&mc_size_key, 0, sizeof(mc_size_key));
+                memset(&mc_size_data, 0, sizeof(mc_size_data));
+
+// data
+                mc_size_key.data = "CACHE_SPACE_USED";
+                mc_size_key.size = sizeof("CACHE_SPACE_USED"); 
+
+                xastir_snprintf(mc_buf, sizeof(mc_buf), "%d", mc_space_used);
+
+                debug_level && fprintf (stderr, "map_cache_del: mc_buf: %s len %d\n",
+                                mc_buf,sizeof(mc_buf));
+
+                mc_size_data.data = mc_buf ; 
+                mc_size_data.size = sizeof(mc_buf);
+
+// put 
+                
+                if ((mc_ret = dbp->put(dbp, NULL, &mc_size_key, &mc_size_data, 0)) == 0) {
+                    debug_level && printf("map_cache_del: %s: key stored.\n",
+                                    (char *)mc_size_key.data);
+                } else {
+                    dbp->err(dbp, mc_ret, "DB->put");
+                    db_strerror(mc_ret); 
+                } 
+
+    } else  {
+
+        debug_level && printf ("map_cache_del: unlink failed mc_space_used = %d bytes \n",
+                       mc_space_used);        
+        return(mc_ret) ; 
+    }
+
+        } else {
+
+            // file stat was not good - do something
+
+        }
+
 	
-    // remove entry from cache
+    // remove entry from cache url->filename database 
 	
         if ((mc_ret = dbp->del(dbp, NULL, &mc_key, 0)) == 0){
             debug_level && fprintf(stderr, "map_cache_del: %s: key was deleted.\n",
@@ -418,6 +637,19 @@ int map_cache_expired( char * mc_filename, time_t mc_max_age ){
     return (0);
 }
 
-#endif  // USE_MAP_CACHE
 
 
+// Functions that need writing 
+
+int mc_check_space_used () {
+    
+   return(0); 
+}
+
+int mc_update_space_used () {
+    
+   return(0); 
+}
+
+
+#endif // USE_MAP_CACHE
