@@ -4660,8 +4660,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
                 imagemagick_options.equalize = 1;
             if (strncasecmp(line, "NORMALIZE", 9) == 0)
                 imagemagick_options.normalize = 1;
+#if (MagickLibVersion >= 0x0539)
             if (strncasecmp(line, "LEVEL", 5) == 0)
                 imagemagick_options.level = line + 6;
+#endif
             if (strncasecmp(line, "MODULATE", 8) == 0)
                 imagemagick_options.modulate = line + 9;
 #endif
@@ -5150,11 +5152,13 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         NormalizeImage(image);
     }
 
+#if (MagickLibVersion >= 0x0539)
     if (imagemagick_options.level) {
         if (debug_level & 16)
             printf("level=%s\n", imagemagick_options.level);
         LevelImage(image, imagemagick_options.level);
     }
+#endif
 
     if (imagemagick_options.modulate) {
         if (debug_level & 16)
@@ -5188,9 +5192,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         return;
     }
 
+#if (MagickLibVersion < 0x0540)
+    if (IsPseudoClass(image) && (GetNumberColors(image, NULL) != image->colors))
+        printf("colors mismatch!!! %d != %d\n", GetNumberColors(image, NULL),
+               image->colors);
+#else
     if (IsPseudoClass(image) && (GetNumberColors(image, NULL, &exception) != image->colors))
         printf("colors mismatch!!! %ld != %ld\n", GetNumberColors(image, NULL, &exception),
                image->colors);
+#endif
 
     if (IsPseudoClass(image) && image->colors <= 256) {
         for (l = 0; l < image->colors; l++) {
@@ -5231,7 +5241,11 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
     if (debug_level & 16) {
        printf ("Image size %d %d\n", atb.width, atb.height);
+#if (MagickLibVersion < 0x0540)
+       printf ("Total colors = %d\n", GetNumberColors(image, NULL));
+#else
        printf ("Total colors = %ld\n", GetNumberColors(image, NULL, &exception));
+#endif
        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
                map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
 
