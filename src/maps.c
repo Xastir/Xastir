@@ -4541,7 +4541,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     FILE *f;                        // Filehandle of image file
     char line[400];                 // One line from GEO file
     char fileimg[400];              // Ascii name of image file, read from GEO file
-    char remote_callsign[400];      // Ascii callsign, read from GEO file, used for findu lookups only
+    //N0VH
+//    char remote_callsign[400];      // Ascii callsign, read from GEO file, used for findu lookups only
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -4611,8 +4612,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         char modulate[32];
     } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, "", "" };
     double left, right, top, bottom, map_width, map_height;
-    double lat_center  = 0;
-    double long_center = 0;
+    //N0VH
+//    double lat_center  = 0;
+//    double long_center = 0;
     // Terraserver variables
     double top_n=0, left_e=0, bottom_n=0, right_e=0, map_top_n=0, map_left_e=0;
     int z, url_n=0, url_e=0, t_zoom=16, t_scale=12800;
@@ -4621,7 +4623,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     XImage *xi;                 // Temp XImage used for reading in current image
 #endif // HAVE_IMAGEMAGICK
 
-    int findu_flag = 0;
+//    int findu_flag = 0;
+    //    //N0VH
     int terraserver_flag = 0;
     char map_it[300];
     int geo_image_width;        // Image width  from GEO file
@@ -4676,13 +4679,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             if (strncasecmp (line, "PROJECTION", 10) == 0)
                 (void)sscanf (line + 11, "%8s",geo_projection); // ignores leading and trailing space (nice!)
 
-            if (strncasecmp (line, "FINDU", 5) == 0)
-                findu_flag = 1;
-            else if (strncasecmp (line, "TERRASERVER", 11) == 0)
+	    //N0VH
+//            if (strncasecmp (line, "FINDU", 5) == 0)
+//                findu_flag = 1;
+//            else if (strncasecmp (line, "TERRASERVER", 11) == 0)
+            if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
 
-            if (strncasecmp (line, "CALL", 4) == 0)
-                (void)sscanf (line + 5, "%s", remote_callsign);
+//            if (strncasecmp (line, "CALL", 4) == 0)
+//                (void)sscanf (line + 5, "%s", remote_callsign);
 
 #ifdef HAVE_IMAGEMAGICK
             if (strncasecmp(line, "GAMMA", 5) == 0)
@@ -4745,7 +4750,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
 
 #ifdef HAVE_IMAGEMAGICK
-    if (findu_flag) {  // Must generate our own calibration data for some maps
+    //N0VH
+/*    if (findu_flag) {  // Must generate our own calibration data for some maps
 
         // Tiepoint for upper left screen corner
         //
@@ -4807,7 +4813,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
           printf("fileimg is %s\n", fileimg);
         }
     }
-
+*/
     if (terraserver_flag) {
 //http://terraservice.net/download.ashx?t=1&s=10&x=2742&y=26372&z=10&w=820&h=480
         if (scale_y <= 4) {
@@ -4997,7 +5003,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     // Check to see if we have to use "wget" to go get an internet map
     if ( (strncasecmp ("http", fileimg, 4) == 0)
             || (strncasecmp ("ftp", fileimg, 3) == 0)
-            || (findu_flag)
+	    //N0VH
+//            || (findu_flag)
             || (terraserver_flag) ) {
 #ifdef HAVE_IMAGEMAGICK
         char *ext;
@@ -5005,9 +5012,11 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         if (debug_level & 16)
             printf("ftp or http file: %s\n", fileimg);
 
-        if (findu_flag)
-            ext = "log";
-        else if (terraserver_flag)
+	//N0VH
+//        if (findu_flag)
+//            ext = "log";
+//        else if (terraserver_flag)
+        if (terraserver_flag)
             ext = "jpg";
         else
             ext = get_map_ext(fileimg); // Use extension to determine image type
@@ -5051,8 +5060,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 // getting the map in this thread and aren't redrawing?
 
 
+    //N0VH
     // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
-    if (findu_flag) {
+/*    if (findu_flag) {
         // We have the log data we're interested in within the /var/tmp/xastir_<username>_map.log file.
         // Cause that file to be read by the "File->Open Log File" routine.  HTML
         // tags will be ignored just fine.
@@ -5064,7 +5074,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
         return;
     }
-
+*/
 
 #ifdef HAVE_IMAGEMAGICK
     GetExceptionInfo(&exception);
