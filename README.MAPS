@@ -616,6 +616,10 @@ Getting Maps and other Data Files for Xastir:
 
         http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
 
+      2003 map data can be found here:
+
+        http://www.census.gov/geo/www/tiger/tiger2003/tgr2003.html
+
 
     .geo files/online maps & graphics:
 
@@ -680,6 +684,13 @@ Getting Maps and other Data Files for Xastir:
 
       Also try:  
        ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
+
+     "Find Address" feature (US only):
+
+      The "Find Address" feature is based on the open source geocoder by
+      Dan Egnor and as such uses the same format for the data. You can
+      download preprocessed data based on Census Tiger 2003 data at:
+      http://www.dementia.org/geocoder/tgr2003/
 
      Geographic Names Information System Labels:
 
