@@ -643,3 +643,130 @@ fi
 ])
 ])
 
+# From Cyrus imap distribution (KB3EGH)
+dnl $Id$
+
+dnl These are the Cyrus Berkeley DB macros.  In an ideal world these would be
+dnl identical to the above.
+
+dnl They are here so that they can be shared between Cyrus IMAPd
+dnl and Cyrus SASL with relative ease.
+
+dnl The big difference between this and the ones above is that we don't assume
+dnl that we know the name of the library, and we try a lot of permutations
+dnl instead.  We also assume that DB4 is acceptable.
+
+dnl When we're done, there will be a BDB_LIBADD and a BDB_INCADD which should
+dnl be used when necessary.  We should probably be smarter about our RPATH
+dnl handling.
+
+dnl Call these with XASTIR_BERKELEY_DB_CHK.
+
+dnl We will also set $dblib to "berkeley" if we are successful, "no" otherwise.
+
+dnl this is unbelievably painful due to confusion over what db-3 should be
+dnl named and where the db-3 header file is located.  arg.
+AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
+[
+	BDB_SAVE_LDFLAGS=$LDFLAGS
+
+	if test -d $with_bdb_lib; then
+	    XASTIR_ADD_LIBPATH_TO($with_bdb_lib, LDFLAGS)
+	    XASTIR_ADD_LIBPATH_TO($with_bdb_lib, BDB_LIBADD)
+	else
+	    BDB_LIBADD=""
+	fi
+
+	saved_LIBS=$LIBS
+        for dbname in db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+          do
+	    LIBS="$saved_LIBS -l$dbname"
+	    AC_TRY_LINK([#include <db.h>],
+	    [db_create(NULL, NULL, 0);],
+	    BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; dbname=db,
+            dblib="no")
+          done
+        if test "$dblib" = "no"; then
+	    LIBS="$saved_LIBS -ldb"
+	    AC_TRY_LINK([#include <db.h>],
+	    [db_open(NULL, 0, 0, 0, NULL, NULL, NULL);],
+	    BDB_LIBADD="$BDB_LIBADD -ldb"; dblib="berkeley"; dbname=db,
+            dblib="no")
+        fi
+	LIBS=$saved_LIBS
+
+	LDFLAGS=$BDB_SAVE_LDFLAGS
+])
+
+AC_DEFUN([XASTIR_BERKELEY_DB_OPTS],
+[
+AC_ARG_WITH(bdb-libdir,
+	[  --with-bdb-libdir=DIR   Berkeley DB lib files are in DIR],
+	with_bdb_lib=$withval,
+	[ test "${with_bdb_lib+set}" = set || with_bdb_lib=none])
+AC_ARG_WITH(bdb-incdir,
+	[  --with-bdb-incdir=DIR   Berkeley DB include files are in DIR],
+	with_bdb_inc=$withval,
+	[ test "${with_bdb_inc+set}" = set || with_bdb_inc=none ])
+])
+
+AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
+[
+	AC_REQUIRE([XASTIR_BERKELEY_DB_OPTS])
+
+	xastir_save_CPPFLAGS=$CPPFLAGS
+
+	if test -d $with_bdb_inc; then
+	    CPPFLAGS="$CPPFLAGS -I$with_bdb_inc"
+	    BDB_INCADD="-I$with_bdb_inc"
+	else
+	    BDB_INCADD=""
+	fi
+
+	dnl Note that FreeBSD puts it in a wierd place
+        dnl (but they should use with-bdb-incdir)
+        AC_CHECK_HEADER(db.h,
+                        [XASTIR_BERKELEY_DB_CHK_LIB()],
+                        dblib="no")
+
+	CPPFLAGS=$xastir_save_CPPFLAGS
+])
+
+dnl add -L(arg), and possibly (runpath switch)(arg), to LDFLAGS
+dnl (so the runpath for shared libraries is set).
+AC_DEFUN([XASTIR_ADD_LIBPATH], [
+  AC_REQUIRE([XASTIR_GUESS_RUNPATH_SWITCH])
+  # this is XASTIR ADD LIBPATH
+  if test "$xastir_runpath_switch" = "none" ; then
+        LDFLAGS="-L$1 ${LDFLAGS}"
+  else
+        LDFLAGS="-L$1 $xastir_runpath_switch$1 ${LDFLAGS}"
+  fi
+])
+
+dnl add -L(1st arg), and possibly (runpath switch)(1st arg), to (2nd arg)
+dnl (so the runpath for shared libraries is set).
+AC_DEFUN([XASTIR_ADD_LIBPATH_TO], [
+  AC_REQUIRE([XASTIR_GUESS_RUNPATH_SWITCH])
+  # this is XASTIR ADD LIBPATH TO
+  if test "$xastir_runpath_switch" = "none" ; then
+        $2="-L$1 ${$2}"
+  else
+        $2="-L$1 ${$2} $xastir_runpath_switch$1"
+  fi
+])
+
+dnl runpath initialization
+AC_DEFUN([XASTIR_GUESS_RUNPATH_SWITCH], [
+   # XASTIR GUESS RUNPATH SWITCH
+  AC_CACHE_CHECK(for runpath switch, xastir_runpath_switch, [
+    # first, try -R
+    SAVE_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="-R /usr/lib"
+    AC_TRY_LINK([],[],[xastir_runpath_switch="-R"], [
+        LDFLAGS="-Wl,-rpath,/usr/lib"
+    AC_TRY_LINK([],[],[xastir_runpath_switch="-Wl,-rpath,"],
+    [xastir_runpath_switch="none"])
+    ])
+  LDFLAGS="${SAVE_LDFLAGS}"
+  ])])
