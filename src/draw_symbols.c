@@ -1759,7 +1759,8 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_long,long y_lat,
         char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance,
         char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard,
-        Pixmap where, char orient, char area_type) {
+        Pixmap where, char orient, char area_type, char *signpost) {
+
     long x_offset,y_offset;
     int length;
     int ghost;
@@ -1789,6 +1790,8 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         posyr -= 6;
                     if (area_type == AREA_LINE_RIGHT)
                         posyr += 8;
+                    if (signpost[0] != '\0')    // Signpost data?
+                        posyr -=6;
                     // we may eventually have more adjustments for different types of areas
 
                     length=(int)strlen(alt_text);
@@ -1822,7 +1825,15 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
                         posyr += 12;
                     }
-
+ 
+                    length=(int)strlen(signpost);   // Make it white like callsign?
+                    if ( (!ghost || Select_.old_data) && length>0) {
+                        x_offset=((x_long-x_long_offset)/scale_x)+12;
+                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                        draw_nice_string(w,where,letter_style,x_offset,y_offset,signpost,0x08,0x0f,length);
+                        posyr += 12;
+                    }
+ 
                     posyl = 10; // distance and direction goes to the left.
                                 // Also minutes last heard.
                     if ( (!ghost || Select_.old_data) && strlen(my_distance)>0)
@@ -2527,7 +2538,8 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             0,
             where,
             symbol_orient(p_station->course),
-            p_station->aprs_symbol.area_object.type);
+            p_station->aprs_symbol.area_object.type,
+            p_station->signpost);
     }
 }
 

@@ -51,11 +51,7 @@ extern void insert_symbol(char table, char symbol, char *pixel, int deg, char or
 extern char symbol_orient(char *course);
 extern void symbol(Widget w, int ghost,char symbol_table, char symbol_id, char symbol_overlay, Pixmap where, int mask, long x_offset, long y_offset, char rotate);
 
-extern void draw_symbol(Widget w, char symbol_table, char symbol_id,
-char symbol_overlay, long x_lon, long y_lat,char *callsign_text,
-char *alt_text, char *course_text, char *speed_text, char
-*my_distance, char *my_course, char *wx_temp, char* wx_wind, time_t
-sec_heard, int temp_show_last_heard, Pixmap where, char rotate, char area_type);
+extern void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_lon, long y_lat,char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance, char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard, Pixmap where, char rotate, char area_type, char *signpost );
 
 extern void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where);
 extern void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap where);

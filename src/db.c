@@ -2344,7 +2344,8 @@ _do_the_drawing:
                 temp_show_last_heard,
                 drawing_target,
                 orient,
-                p_station->aprs_symbol.area_object.type);
+                p_station->aprs_symbol.area_object.type,
+                p_station->signpost);
 
     // Draw additional stuff if this is the tracked station
     if (is_tracked_station(p_station->call_sign)) {
@@ -7430,7 +7431,7 @@ int extract_omnidf(char *info, char *phgd) {
 
 /*
  *  Extract signpost data from APRS info field: "{123}", an APRS data extension
- *  Format can be {1}, {12}, or {123}.
+ *  Format can be {1}, {12}, or {123}.  Letters or digits are ok.
  */
 int extract_signpost(char *info, char *signpost) {
     int i,found,len,done;
@@ -7449,18 +7450,16 @@ int extract_signpost(char *info, char *signpost) {
         i = 1;
         done = 0;
         while (!done) {                 // Snag up to three digits
-            if (isdigit((int)info[i])) {
-                signpost[i-1] = info[i];
-            }
-            else if (info[i] == '}') {  // We're done
+            if (info[i] == '}') {       // We're done
                 found = i;              // found = position of '}' character
                 done++;
             }
-            else {                      // Not a signpost object
-                signpost[0] = '\0';
-                return(0);
+            else {
+                signpost[i-1] = info[i];
             }
+
             i++;
+
             if ( (i > 4) && !done) {    // Something is wrong, we should be done by now
                 done++;
                 signpost[0] = '\0';
