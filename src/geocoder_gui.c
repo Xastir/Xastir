@@ -52,6 +52,10 @@ char geocoder_address_name[200];
 char geocoder_map_filename[200];
 static xastir_mutex geocoder_place_dialog_lock;
 
+long destination_coord_lat = 0;
+long destination_coord_lon = 0;
+int mark_destination = 0;
+
 
 
 
@@ -110,52 +114,57 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
 
     index = io_open(geocoder_map_filename);
     xastir_snprintf(input, 255, "%s %s%s%s %s", geocoder_address_name, geocoder_locality_name, (strlen(geocoder_state_name) != 0)?",":"", geocoder_state_name, geocoder_zip_name);
-    if (geo_find(index,input,strlen(input),&loc))
-      {
-	  long coord_lon, coord_lat;
-	  char lat_str[20];
-	  char long_str[20];
-	  int lon, lat, lons, lats, tmp1;
-	  char lond = 'E';
-	  char latd = 'N';
-	  double res, tmp;
+    if (geo_find(index,input,strlen(input),&loc)) {
+        long coord_lon, coord_lat;
+        char lat_str[20];
+        char long_str[20];
+        int lon, lat, lons, lats, tmp1;
+        char lond = 'E';
+        char latd = 'N';
+        double res, tmp;
 
-	  if (loc.at.longitude < 0) {
-	    loc.at.longitude = -loc.at.longitude;
-	    lond = 'W';
-	  }
-	  if (loc.at.latitude < 0) {
-	    loc.at.latitude = -loc.at.latitude;
-	    latd = 'S';
-	  }
+        if (loc.at.longitude < 0) {
+            loc.at.longitude = -loc.at.longitude;
+            lond = 'W';
+        }
+        if (loc.at.latitude < 0) {
+            loc.at.latitude = -loc.at.latitude;
+            latd = 'S';
+        }
 
-	  lon = loc.at.longitude;
-	  lat = loc.at.latitude;
+        lon = loc.at.longitude;
+        lat = loc.at.latitude;
 
-	  res = loc.at.longitude - lon;
-	  tmp = (res * 100); 
-	  tmp = tmp * 60 / 100;
-	  tmp1 = tmp;
-	  lon = (lon * 100) + tmp1;
-	  lons = (tmp - tmp1) * 100;
+        res = loc.at.longitude - lon;
+        tmp = (res * 100); 
+        tmp = tmp * 60 / 100;
+        tmp1 = tmp;
+        lon = (lon * 100) + tmp1;
+        lons = (tmp - tmp1) * 100;
 
-	  res = loc.at.latitude - lat;
-	  tmp = (res * 100); 
-	  tmp = tmp * 60 / 100;
-	  tmp1 = tmp;
-	  lat = (lat * 100) + tmp1;
-	  lats = (tmp - tmp1) * 100;
+        res = loc.at.latitude - lat;
+        tmp = (res * 100); 
+        tmp = tmp * 60 / 100;
+        tmp1 = tmp;
+        lat = (lat * 100) + tmp1;
+        lats = (tmp - tmp1) * 100;
 
-	  xastir_snprintf(lat_str, sizeof(lat_str), "%d.%02d%c", lat, lats, latd);
-	  coord_lat = convert_lat_s2l(lat_str);
-	  xastir_snprintf(long_str, sizeof(long_str), "%s%d.%02d%c", (lon < 10000)?"0":"", lon, lons, lond);
-	  coord_lon = convert_lon_s2l(long_str);
-	  popup_message( langcode("POPEM00029"), geocoder_address_name );
-	  set_map_position(w, coord_lat, coord_lon);
-      } else {
-          popup_message(langcode("POPEM00025"),geocoder_address_name);
-      }
-      Geocoder_place_destroy_shell(w, clientData, callData);
+        xastir_snprintf(lat_str, sizeof(lat_str), "%d.%02d%c", lat, lats, latd);
+        coord_lat = convert_lat_s2l(lat_str);
+        xastir_snprintf(long_str, sizeof(long_str), "%s%d.%02d%c", (lon < 10000)?"0":"", lon, lons, lond);
+        coord_lon = convert_lon_s2l(long_str);
+
+        destination_coord_lat = coord_lat;
+        destination_coord_lon = coord_lon;
+        mark_destination = 1;
+
+        popup_message( langcode("POPEM00029"), geocoder_address_name );
+        set_map_position(w, coord_lat, coord_lon);
+    }
+    else {
+        popup_message(langcode("POPEM00025"),geocoder_address_name);
+    }
+    Geocoder_place_destroy_shell(w, clientData, callData);
 }
 
 

@@ -13,6 +13,10 @@
 
 #include "io.h"
 
+extern long destination_coord_lat;
+extern long destination_coord_lon;
+extern int mark_destination;
+
 extern char geocoder_map_filename[200];
 
 
