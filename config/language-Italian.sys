@@ -719,7 +719,7 @@ WPUPSTI054|Registra Tracciato||
 WPUPSTI055|Ripetuto da:||
 WPUPSTI056|Abilita Aggiornamento Automatico||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|Puntamento DF:||
+WPUPSTI058|Puntamento DF: %s||
 WPUPSTI059|Stato %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Temp Carburante: %02.1f°C  ||
 WPUPSTI061|Temp Carburante: %s°F   ||

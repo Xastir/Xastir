@@ -720,7 +720,7 @@ WPUPSTI054|Store Track||
 WPUPSTI055|Echoed from:||
 WPUPSTI056|Enable Automatic Updates||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|DF Bearing:||
+WPUPSTI058|DF Bearing: %s||
 WPUPSTI059|Status  %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Fuel Temp: %02.1f°C  ||
 WPUPSTI061|Fuel Temp: %s°F   ||

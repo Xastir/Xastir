@@ -722,7 +722,7 @@ WPUPSTI054|Almacenar Rastro||
 WPUPSTI055|Repetido desde:||
 WPUPSTI056|Activar Actualizaciones Automática||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|Orientando DF:||
+WPUPSTI058|Orientando DF: %s||
 WPUPSTI059|Estados %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Incendio Temp: %02.1f°C  ||
 WPUPSTI061|Incendio Temp: %s°F   ||

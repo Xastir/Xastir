@@ -723,7 +723,7 @@ WPUPSTI054|Armazenar rastro||
 WPUPSTI055|Repetido desde:||
 WPUPSTI056|Activar actualizacao automatica||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|DF dirigido:||
+WPUPSTI058|DF dirigido: %s||
 WPUPSTI059|Estados %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Temp do combustivel: %02.1f°C  ||
 WPUPSTI061|Temp do combustivel: %s°F   ||

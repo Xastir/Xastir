@@ -718,7 +718,7 @@ WPUPSTI054|Sauver piste||
 WPUPSTI055|Echo de:||
 WPUPSTI056|Activer actualisation automatique||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|Relèvement DF:||
+WPUPSTI058|Relèvement DF: %s||
 WPUPSTI059|Etat %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Temp combustible: %02.1f°C  ||
 WPUPSTI061|Temp combustible: %s°F   ||

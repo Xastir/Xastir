@@ -730,7 +730,7 @@ WPUPSTI054|Sla spoor op||
 WPUPSTI055|Echo vanaf:||
 WPUPSTI056|Zet automatisch bijwerken aan||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|DF richting:||
+WPUPSTI058|DF richting: %s||
 WPUPSTI059|Status %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Ontbrandings temp: %02.1føC  ||
 WPUPSTI061|Ontbrandings temp: %søF   ||

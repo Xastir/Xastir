@@ -8595,7 +8595,9 @@ int extract_position(DataRow *p_station, char **info, int type) {
  *  Extract Compressed Position Report Data Formats from begin of line
  *    [APRS Reference, chapter 9]
  *
- * If a position is found, it is deleted from the data.
+ * If a position is found, it is deleted from the data.  If a
+ * compressed position is found, delete the three csT bytes as well,
+ * even if all spaces.
  */
 int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type) {
     int ok;
@@ -9393,21 +9395,23 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
             /* This check needs to come first because the area object extension can look
                exactly like what extract_speed_course will attempt to decode. */
             extract_area(p_station, data);
-    } else {
-            clear_area(p_station); // we got a packet with a non area symbol, so clear the data
+    }
+    else {
+        clear_area(p_station); // we got a packet with a non area symbol, so clear the data
 
-            if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
-            //fprintf(stderr,"extracted speed/course\n");
-                if (atof(temp2) > 0) {
-                //fprintf(stderr,"course is non-zero\n");
-                xastir_snprintf(p_station->speed,
-                    sizeof(p_station->speed),
-                    "%06.2f",
-                    atof(temp1));
-                xastir_snprintf(p_station->course,  // in degrees
-                    sizeof(p_station->course),
-                    "%s",
-                    temp2);
+        if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
+        //fprintf(stderr,"extracted speed/course\n");
+
+            if (atof(temp2) > 0) {
+            //fprintf(stderr,"course is non-zero\n");
+            xastir_snprintf(p_station->speed,
+                sizeof(p_station->speed),
+                "%06.2f",
+                atof(temp1));
+            xastir_snprintf(p_station->course,  // in degrees
+                sizeof(p_station->course),
+                "%s",
+                temp2);
             }
 
             if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
@@ -9421,17 +9425,33 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     "%s",
                     nrq);
                 p_station->signal_gain[0] = '\0';   // And blank out the shgd values
-                }
             }
-            else {
-                if (extract_powergain_range(data,temp1)) {
+        }
+        // Don't try to extract speed & course if a compressed
+        // object.  Test for beam headings for compressed packets
+        // here
+        else if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
+
+            //fprintf(stderr,"extracted bearing and NRQ\n");
+            xastir_snprintf(p_station->bearing,
+                    sizeof(p_station->bearing),
+                    "%s",
+                    bearing);
+            xastir_snprintf(p_station->NRQ,
+                    sizeof(p_station->NRQ),
+                    "%s",
+                    nrq);
+            p_station->signal_gain[0] = '\0';   // And blank out the shgd values
+        }
+        else {
+            if (extract_powergain_range(data,temp1)) {
 
 //fprintf(stderr,"Found power_gain: %s\n", temp1);
 
-                    xastir_snprintf(p_station->power_gain,
-                        sizeof(p_station->power_gain),
-                        "%s",
-                        temp1);
+                xastir_snprintf(p_station->power_gain,
+                    sizeof(p_station->power_gain),
+                    "%s",
+                    temp1);
 
                 if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
                     //fprintf(stderr,"extracted bearing and NRQ\n");
@@ -9445,9 +9465,9 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                         nrq);
                     p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                 }
-                }
+            }
             else {
-                        if (extract_omnidf(data,temp1)) {
+                if (extract_omnidf(data,temp1)) {
                     xastir_snprintf(p_station->signal_gain,
                         sizeof(p_station->signal_gain),
                         "%s",
@@ -9458,9 +9478,9 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     // The spec shows speed/course before DFS, but example packets that
                     // come with DOSaprs show DFSxxxx/speed/course.  We'll take care of
                     // that possibility by trying to decode speed/course again.
-                        if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
-                        //fprintf(stderr,"extracted speed/course\n");
-                            if (atof(temp2) > 0) {
+                    if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
+                    //fprintf(stderr,"extracted speed/course\n");
+                        if (atof(temp2) > 0) {
                             //fprintf(stderr,"course is non-zero\n");
                             xastir_snprintf(p_station->speed,
                                 sizeof(p_station->speed),
@@ -9489,8 +9509,9 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                         //p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                     }
                 }
-                }
             }
+        }
+
         if (extract_signpost(data, temp2)) {
             //fprintf(stderr,"extracted signpost data\n");
             xastir_snprintf(p_station->signpost,

@@ -996,7 +996,9 @@ void bearing_decode(const char *langstr, const char *bearing_str,
     char temp[64];
     int len;
 
-    //fprintf(stderr,"bearing_decode incoming: bearing is %s, NRQ is %s\n", bearing_str, NRQ);
+
+//fprintf(stderr,"bearing_decode incoming: bearing is %s, NRQ is %s\n", bearing_str, NRQ);
+
     len = strlen(bearing_decoded);
 
     if (strlen(bearing_str) != 3) {
@@ -1025,7 +1027,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 
     if (N != 0) {
 
-        //fprintf(stderr,"N != 0\n");
+//fprintf(stderr,"N != 0\n");
 
         range = (int)( pow(2.0,R - '0') );
 
@@ -1062,7 +1064,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
                 break;
         }
 
-        //fprintf(stderr,"Width = %d\n",width);
+//fprintf(stderr,"Width = %d\n",width);
 
         if (english_units) {
             xastir_snprintf(temp,
@@ -1084,12 +1086,15 @@ void bearing_decode(const char *langstr, const char *bearing_str,
             sizeof(temp),
             "%s",
             "Not Valid");
-        //fprintf(stderr,"N was 0\n");
+//fprintf(stderr,"N was 0\n");
     }
     xastir_snprintf(bearing_decoded,
         bearing_decoded_length,
         langstr,
         temp);
+
+//fprintf(stderr,"bearing_decoded:%s\n", bearing_decoded);
+//fprintf(stderr,"temp:%s\n", temp);
 }
 
 

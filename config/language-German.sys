@@ -725,7 +725,7 @@ WPUPSTI054|Spur speichern||
 WPUPSTI055|Echo gehört von:||
 WPUPSTI056|Automatische Aktualisierung||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|Peil-Richtung:||
+WPUPSTI058|Peil-Richtung: %s||
 WPUPSTI059|Status %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Brennstofftemp.: %02.1f°C  ||
 WPUPSTI061|Brennstofftemp.: %s°F   ||
