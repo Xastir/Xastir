@@ -82,7 +82,7 @@ PULDNMP021|Cartographie automatique - désactiver cartes tramées||
 PULDNMP022|Indexer nouvelles cartes au démarrage||
 PULDNMP023|Index: Ajouter nouvelles cartes|R|
 PULDNMP024|Index: Re-indexer toutes cartes|A|
-PULDNMP025|Map labels font||
+PULDNMP025|Police d'annotation des cartes||
 PULDNMP015|Xfontsel||
 #
 #
@@ -115,8 +115,8 @@ PULDNMMC04|Topogr. 100k|1|
 PULDNMMC05|Topogr. 24k|4|
 PULDNMMC06|Agrandir répertoires|||
 PULDNMMC07|Réps/cartes choisies:||
-PULDNMMC08|Clear Dirs|C|
-PULDNMMC09|Select All|S|
+PULDNMMC08|Déselct. réps|C|
+PULDNMMC09|Choisir tout|S|
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Gris||
@@ -138,10 +138,10 @@ PULDNMSL02|Ombré avec toile de fond|O|
 PULDNMSL03|Blanc sur noir|B|
 #
 # PullDown "Icon Outline Style"
-PULDNMIO01|No Outline|N|
-PULDNMIO02|Black Outline|B|
-PULDNMIO03|Grey Outline|G|
-PULDNMIO04|White Outline|W|
+PULDNMIO01|Pas de contour|N|
+PULDNMIO02|Contour noir|B|
+PULDNMIO03|Contour gris|G|
+PULDNMIO04|Contour blanc|W|
 #
 # Switches
 PULDNOT001|Ouvrir||
@@ -254,7 +254,7 @@ POPUPMA021|Déplacer||
 POPUPMA022|SuivreMoi||
 POPUPMA023|Modificateurs trouvés!||
 POPUPMA024|SVP désactiver CapsLock/NumLock/ScrollLock/autres modificateurs||
-POPUPMA026|Center & Zoom||
+POPUPMA026|Centre & zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
 #
@@ -352,7 +352,7 @@ WPUPCFD026|Transmettre position à quel intervalle?||
 WPUPCFD027|Afficher bulletins nouveaus||
 WPUPCFD028|Alerter si il y a des clés modificatrices||
 WPUPCFD029|Voir bulletins avec distance zero||
-WPUPCFD030|Disable Posit Dupe-Checks||
+WPUPCFD030|Désactiver identif. de duplic. posit.||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configurer temporisation||
@@ -363,9 +363,9 @@ WPUPCFTM05|Délai de suppression d'affichage d'une station (heures)||
 WPUPCFTM06|Intervalle de lecture GPS (sec)||
 WPUPCFTM07|Délai de suppression d'une station (jours)||#'
 WPUPCFTM08|Expiration de point estimé (min)||
-WPUPCFTM09|Serial Inter-Char Delay (ms)||
-WPUPCFTM10|New Track Time (min)||
-WPUPCFTM11|New Track Interval (degrees)||
+WPUPCFTM09|Délai inter-char port série (ms)||
+WPUPCFTM10|Délai nouvelle piste (min)||
+WPUPCFTM11|Espace nouvelle piste (degrés)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configurer système des coordonnées||
@@ -375,7 +375,7 @@ WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
 WPUPCFC007|MGRS||
-WPUPCFC008|UTM w/special zones||
+WPUPCFC008|UTM avec zones spéciales||
 #
 # PopUp "Configure GPS"
 WPUPCFG001|Configurer GPS||
@@ -441,9 +441,9 @@ WPUPCFT035|TXDelay (unités de 10 ms)||
 WPUPCFT036|Persistance (0 à 255)||
 WPUPCFT037|SlotTime (unités de 10 ms)||
 WPUPCFT038|TxTail (unités de 10 ms)||
-WPUPCFT039|Full Duplex||
+WPUPCFT039|Full duplex||
 WPUPCFT040|Configurer TNC Multi-Port KISS||
-WPUPCFT041|Radio Port||
+WPUPCFT041|Port radio||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||
@@ -701,7 +701,7 @@ WPUPSTI060|Temp combustible: %02.1f°C  ||
 WPUPSTI061|Temp combustible: %s°F   ||
 WPUPSTI062|Humidité combustible: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
-WPUPSTI064|Fetch NWS Alert||
+WPUPSTI064|Charger alerte NWS||
 #
 # FCC-RAC Call Look up
 STIFCC0001|Chercher le fichier FCC||
@@ -751,7 +751,7 @@ UNIOP00028|mm Hg||
 UNIOP00029|Placez le temps de système du GPS||
 UNIOP00030|RELAY Digipeat?||
 UNIOP00031|m||
-UNIOP00032|Apply||
+UNIOP00032|Appliquer||
 #
 # PopUp "Station Chooser"
 STCHO00001|Choix de station||
@@ -914,8 +914,8 @@ POPEM00032|Attention: utilise symbole du "National Weather Service"!||
 POPEM00033|Pas de données GPS!||
 POPEM00034|TX de ma position désactivé jusqu'a réception de bonnes données GPS!||#'
 POPEM00035|Warning||
-POPEM00036|Notice||
-POPEM00037|HSP interface present: GPS timing has been increased||
+POPEM00036|Avis||
+POPEM00037|Interface HSP présente: temporisation GPS augmentée||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||
@@ -1018,13 +1018,13 @@ GAMMA002|Correction de gamma||
 #
 #
 # Map labels font Dialog
-MAPFONT001|Change Map Labels Font||
-MAPFONT002|Map Labels Font||
-MAPFONT003|Tiny||
-MAPFONT004|Small||
-MAPFONT005|Medium||
+MAPFONT001|Changer police d'annotation des cartes||
+MAPFONT002|Police d'annotation des cartes||
+MAPFONT003|Minusc||
+MAPFONT004|Petite||
+MAPFONT005|Moyenne||
 MAPFONT006|Large||
-MAPFONT007|Huge||
+MAPFONT007|Enorme||
 #
 # Distance/Bearing on status line
 PULDNDB001|Etat dist/relèvement||
