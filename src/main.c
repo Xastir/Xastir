@@ -9454,6 +9454,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
 
 
+
 /************************** Clear stations *******************************/
 /*************************************************************************/
 
@@ -9464,6 +9465,7 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     current_trail_color = 0x00;  // restart
     redraw_on_new_data=2;
 }
+
 
 
 
@@ -9483,6 +9485,7 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
+//WE7U
 // Gets the list of selected maps out of the dialog, writes them to
 // the selected maps disk file, destroys the dialog, then calls
 // create_image() with the newly selected map set in place.  This
@@ -9495,6 +9498,11 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     char *temp;
     XmString *list;
     FILE *f;
+    char selected_dir[8000];
+
+
+    // Zero it with string terminators
+    memset(selected_dir,0x00,8000);
 
     // It'd be nice to turn off auto-maps here, or better perhaps would
     // be if any button were chosen other than "Cancel".
@@ -9507,12 +9515,30 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
         for(x=1; x<=i;x++) {
-            if(XmListPosSelected(map_list,x)) {
-                if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            if (XmListPosSelected(map_list,x)) {
+                if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
                     fprintf(f,"%s\n",temp);
+
+// Check whether the user selected an entire directory.  If so, save
+// it in a special variable and use that to match all the files
+// inside the directory.
+if (temp[strlen(temp)-1] == '/') {
+    strcpy(selected_dir,temp);  // Save it
+printf("Selected %s directory\n",selected_dir);
+}
                     XtFree(temp);
                 }
             }
+            else if (selected_dir[0] != '\0') {
+                if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                    if (strstr(temp,selected_dir) == temp) {
+printf("Also matched: %s\n",temp);
+                        fprintf(f,"%s\n",temp);
+                    }
+                    XtFree(temp);
+                }
+            }
+ 
         }
         (void)fclose(f);
     }

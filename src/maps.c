@@ -10455,7 +10455,6 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
                                 //printf("FULL PATH %s\n",fullpath);
 
-//WE7U
                                 // If we're indexing, throw the
                                 // directory into the map index as
                                 // well.
@@ -10478,6 +10477,9 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                     // we can identify it as a
                                     // directory.
                                     strcat(temp_dir,"/");
+
+                                    // Add the directory to the
+                                    // in-memory map index.
                                     index_update_directory(temp_dir);
                                 }
 
