@@ -131,6 +131,12 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 // seen drawn at the distance that a person of that description
 // could travel since they were last seen.  It helps to limit a
 // search to a reasonable area.
+//
+// It'd be nice to have some method of showing where the center of
+// the circle was as well, in case we don't have a PLS object placed
+// there also.  Perhaps a small dot and/or four lines going from
+// that point to the edge of the circle?
+//
 void draw_pod_circle(long x_long, long y_lat, double range, Pixmap where) {
     double diameter;
     long max_x, max_y;
@@ -161,7 +167,7 @@ void draw_pod_circle(long x_long, long y_lat, double range, Pixmap where) {
                     //printf("Range:%f\tDiameter:%f\n",range,diameter);
 
                     if (diameter>4.0) {
-                        (void)XSetLineAttributes(XtDisplay(da), gc, 3, LineSolid, CapButt,JoinMiter);
+                        (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
                         //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
                         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
@@ -581,6 +587,9 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 // TODO: If Q between 1 and 8, shade the entire area to show the beam width?
 //
 //
+// Latest:  We ignore the color parameter and draw everything using
+// red3.
+//
 void draw_bearing(long x_long, long y_lat, char *course,
         char *bearing, char *NRQ, int color,
         time_t sec_heard, Pixmap where) {
@@ -718,11 +727,15 @@ void draw_bearing(long x_long, long y_lat, char *course,
                 if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
                     if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 */
+                        (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+                        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
-                        (void)XSetLineAttributes(XtDisplay(da), gc_tint, 2, LineSolid, CapRound, JoinRound);
+
+//                        (void)XSetLineAttributes(XtDisplay(da), gc_tint, 2, LineSolid, CapRound, JoinRound);
 
 
-                        (void)XSetFunction (XtDisplay (da), gc_tint, GXor);
+//                        (void)XSetFunction (XtDisplay (da), gc_tint, GXor);
                         /*
                           Options are:
                           GXclear         0                       (Don't use)
@@ -749,18 +762,25 @@ void draw_bearing(long x_long, long y_lat, char *course,
 //                        (void)XSetStipple(XtDisplay(da), gc_tint, pixmap_2x2_stipple);
 //                        (void)XSetFillStyle(XtDisplay(da), gc_tint, FillStippled);
 
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_tint,color);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_tint,color);
+                        if ((sec_old+sec_heard)>sec_now()) {  // New
+//                            (void)XSetForeground(XtDisplay(da),gc_tint,color);
+//                            (void)XSetForeground(XtDisplay(da),gc,color);
+                        }
+                        else {                                // Old
+//                            (void)XSetForeground(XtDisplay(da),gc_tint,color);
+//                            (void)XSetForeground(XtDisplay(da),gc,color);
+                        }
 
-                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
+
+//                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
+                        (void)XDrawLine(XtDisplay(da),where,gc,
                                 (x_long-x_long_offset)/scale_x,
                                 (y_lat-y_lat_offset)/scale_y,
                                 ((x_long-x_long_offset)/scale_x + offx_min),
                                 ((y_lat-y_lat_offset)/scale_y) + offy_min);
 
-                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
+//                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
+                        (void)XDrawLine(XtDisplay(da),where,gc,
                                 (x_long-x_long_offset)/scale_x,
                                 (y_lat-y_lat_offset)/scale_y,
                                 ((x_long-x_long_offset)/scale_x + offx_max),
@@ -773,7 +793,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
         }
     }
     // Change back to non-stipple for whatever drawing occurs after this
-    (void)XSetFillStyle(XtDisplay(da), gc_tint, FillSolid);
+//    (void)XSetFillStyle(XtDisplay(da), gc_tint, FillSolid);
 }
 
 
