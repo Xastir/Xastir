@@ -726,6 +726,8 @@ WPUPSTI062|Mistura do combustevel: %s%%   ||
 WPUPSTI063|Baro: %0.2f em Hg||
 WPUPSTI064|Procurar alerta de NWS||
 WPUPSTI065|Indicativo tactico: %s||
+WPUPSTI066|Assign Tactical Call||
+WPUPSTI067|Current Range: %d miles||
 #
 # FCC-RAC procurar indicativo
 STIFCC0001|Procurar FCC banco de datos||

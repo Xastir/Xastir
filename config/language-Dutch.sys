@@ -733,6 +733,7 @@ WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Vraag NWS waarschuwing||
 WPUPSTI065|Gemarkeerde bijnaam: %s||
 WPUPSTI066|Geef station een bijnaam||
+WPUPSTI067|Current Range: %d miles||
 #
 #
 # FCC-RAC Call Look up

@@ -723,6 +723,7 @@ WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Fetch NWS Alert||
 WPUPSTI065|Tactical Call: %s||
 WPUPSTI066|Assign Tactical Call||
+WPUPSTI067|Current Range: %d miles||
 #
 #
 # FCC-RAC Call Look up

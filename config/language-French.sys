@@ -721,6 +721,8 @@ WPUPSTI062|Humidité combustible: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Charger alerte NWS||
 WPUPSTI065|Indicatif tactique: %s||
+WPUPSTI066|Assign Tactical Call||
+WPUPSTI067|Current Range: %d miles||
 #
 # FCC-RAC Call Look up
 STIFCC0001|Recherche base de données FCC||

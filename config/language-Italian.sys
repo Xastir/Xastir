@@ -722,6 +722,8 @@ WPUPSTI062|Umidità Carburante: %s%%   ||
 WPUPSTI063|Pressione: %0.2f in Hg||
 WPUPSTI064|Ricevi avvisi NWS||
 WPUPSTI065|Chiamata tattica: %s||
+WPUPSTI066|Assign Tactical Call||
+WPUPSTI067|Current Range: %d miles||
 #
 # FCC-RAC Call Look up
 STIFCC0001|Ricerca nel database FCC||
