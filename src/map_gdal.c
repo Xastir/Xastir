@@ -495,6 +495,12 @@ void draw_ogr_map(Widget w,
             -180.0,  // Left
              180.0); // Right
 
+
+// Query the coordinate system.  Need to have the extents in WGS84
+// lat/long coordinate system in order to compute the extents
+// properly.
+
+
         // Close data source
         OGR_DS_Destroy( datasource );
 
@@ -502,19 +508,17 @@ void draw_ogr_map(Widget w,
     }
 
 
-// Find out what type of file we're dealing with:
-// const char * OGR_Dr_GetName(OGRSFDriverH hDriver)
-
-   
+    // This one returns the name/path.  Less than useful since we
+    // should already know this.
+    ptr = OGR_DS_GetName(datasource);
+    fprintf(stderr,"\nName of file: %s\n", ptr);
+ 
+    // Find out what type of file we're dealing with:
     // This reports "TIGER" for the tiger driver, "ESRI Shapefile"
     // for Shapefiles.
     // 
     ptr = OGR_Dr_GetName(driver);
-    fprintf(stderr,"Type of file: %s\n", ptr);
-
-    // This one returns the name/path.  Less than useful.
-//    ptr = OGR_DS_GetName(datasource);
-//    fprintf(stderr,"Name of file: %s\n", ptr);
+    fprintf(stderr,"  Type: %s\n", ptr);
 
 
     // If we're going to write, we need to test the capability using
@@ -524,26 +528,30 @@ void draw_ogr_map(Widget w,
 
 
 
-// Optimization:  Get the envelope for each layer, skip the layer if
-// it's completely outside our viewport.
-
-
 // Hard-coded line attributes, currently used for the entire drawing
 // process.
 (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 
 
-    // Loop through layers and dump their contents
+
+// Optimization:  Get the envelope for each layer, skip the layer if
+// it's completely outside our viewport.
+
+ 
+    // Loop through all layers in the data source.
     //
     numLayers = OGR_DS_GetLayerCount(datasource);
     for(i=0; i<numLayers; i++)
     {
         OGRLayerH layer;
-        int j, numFields;
+//        int j;
+//        int numFields;
         OGRFeatureH feature;
-        OGRFeatureDefnH layerDefn;
-
+//        OGRFeatureDefnH layerDefn;
+        OGREnvelope psExtent;  
+        OGRSpatialReferenceH spatial;
+ 
 
         if (interrupt_drawing_now) {
             // Close data source
@@ -565,13 +573,14 @@ void draw_ogr_map(Widget w,
         }
 
 
-        // We should test the capabilities of the layer so that we
-        // know the best way to access it.
+        // Test the capabilities of the layer so that we know the
+        // best way to access it.
         //
         // OGR_L_TestCapability:
         //
         //   OLCRandomRead: TRUE if the OGR_L_GetFeature() function works
         //   for this layer.
+        //   NOTE: Tiger and Shapefile report this as TRUE.
         //
         //   OLCFastSpatialFilter: TRUE if this layer implements spatial
         //   filtering efficiently.
@@ -580,52 +589,76 @@ void draw_ogr_map(Widget w,
         //   count (via OGR_L_GetFeatureCount()) efficiently.  In some cases
         //   this will return TRUE until a spatial filter is installed after
         //   which it will return FALSE.
+        //   NOTE: Tiger and Shapefile report this as TRUE.
         //
         //   OLCFastGetExtent: TRUE if this layer can return its data extent
         //   (via OGR_L_GetExtent()) efficiently ... ie. without scanning
         //   all the features. In some cases this will return TRUE until a
         //   spatial filter is installed after which it will return FALSE.
+        //   NOTE: Shapefile reports this as TRUE.
         //
         if (OGR_L_TestCapability(layer, OLCRandomRead)) {
             fprintf(stderr,
-                "\tLayer %d: Random Read Supported.\n",
+                "    Layer %d: Random Read Supported.\n",
                 i);
-        }
-        else {
-//            fprintf(stderr,
-//                "\tLayer %d: Random Read NOT Supported.\n",
-//                i);
         }
         if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
             fprintf(stderr,
-                "\tLayer %d: Fast Spatial Filter supported.\n",
+                "    Layer %d: Fast Spatial Filter supported.\n",
                 i);
-        }
-        else {
-//            fprintf(stderr,
-//                "\tLayer %d: Fast Spatial Filter NOT supported.\n",
-//                i);
         }
         if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
             fprintf(stderr,
-                "\tLayer %d: Fast Feature Count Supported.\n",
+                "    Layer %d: Fast Feature Count Supported.\n",
                 i);
-        }
-        else {
-//            fprintf(stderr,
-//                "\tLayer %d: Fast Feature Count NOT Supported.\n",
-//                i);
         }
         if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
             fprintf(stderr,
-                "\tLayer %d: Fast Get Extent Supported.\n",
+                "    Layer %d: Fast Get Extent Supported.\n",
                 i);
         }
-        else {
-//            fprintf(stderr,
-//                "\tLayer %d: Fast Get Extent NOT Supported.\n",
-//                i);
+
+
+        // Query the coordinate system.  Need to have the extents in
+        // WGS84 lat/long coordinate system in order to compute the
+        // extents properly.
+        //
+        spatial = OGR_L_GetSpatialRef(layer);
+        fprintf(stderr,"    Layer %d: ", i);
+        if (spatial) {
+            const char *temp;
+
+            if (OSRIsGeographic(spatial))
+                fprintf(stderr,"Geographic, ");
+            else
+                fprintf(stderr,"not Geographic, ");
+            if (OSRIsProjected(spatial))
+                fprintf(stderr,"Projected, ");
+            else
+                fprintf(stderr,"not Projected, ");
+
+            // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
+            temp = OSRGetAttrValue(spatial, "DATUM", 0);
+            fprintf(stderr,"Datum: %s\n", temp);
         }
+        else {
+            fprintf(stderr,"No Spatial Info in dataset\n");
+        }
+
+
+        // Get the extents for this layer.  OGRERR_FAILURE means
+        // that the layer has no spatial info or that it would be
+        // an expensive operation to establish the extent.
+        //OGRErr OGR_L_GetExtent(OGRLayerH hLayer, OGREnvelope *psExtent, int bForce);
+        if (OGR_L_GetExtent(layer, &psExtent, FALSE) != OGRERR_FAILURE) {
+            // We have extents.  Check whether any part of the layer
+            // is within our viewport.
+            fprintf(stderr,"    Got extents for layer %d\n", i);
+        }
+        else {
+            fprintf(stderr,"    Extents unavailable for layer %d without a FORCE.\n", i);
+        }
+
 
 
         // Dump info about this layer
@@ -688,16 +721,23 @@ fprintf(stderr,"4\n");
 // feature if it's completely outside our viewport.
 
 
-        // Dump each feature individually
-//        if ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
-//fprintf(stderr,"Starting feature loop\n");
+        // Loop through all of the features in the layer.
+        //
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
-//            OGRSpatialReferenceH spatial;
             OGRGeometryH shape;
             int num, ii;
             double X1, Y1, Z1, X2, Y2, Z2;
             int polygon = 0;
+//            OGRSpatialReferenceH spatial;
+ 
 
+            if (interrupt_drawing_now) {
+               if (feature != NULL)
+                   OGR_F_Destroy( feature );
+                // Close data source
+                OGR_DS_Destroy( datasource );
+                return;
+            }
 
             if (feature == NULL) {
                 continue;
@@ -800,11 +840,8 @@ fprintf(stderr,"4\n");
             }
             OGR_F_Destroy( feature );
         }
-//fprintf(stderr,"Done with feature loop\n");
- 
         // No need to free layer handle, it belongs to the datasource
     }
-
     // Close data source
     OGR_DS_Destroy( datasource );
 }
