@@ -195,6 +195,9 @@ LIB_X11=''
 LIB_XEXT='' 
 LIB_XT='' 
 AC_PATH_XTRA 
+#
+# Does "no_x" ever get defined/used?  What about "have_x" and
+# "HasX11"?  Useful?
 if test "$no_x" != 'yes' 
 then 
   LDFLAGS="$LDFLAGS $X_LIBS" 
@@ -203,10 +206,13 @@ then
   CPPFLAGS="$CPPFLAGS $X_CFLAGS" 
  
   AC_DEFINE(HasX11,,Define if you have X11 library) 
- 
+
+  # We're checking the same function in the same library twice. 
   AC_CHECK_LIB(Xext,XShmAttach,LIB_XEXT='-lXext',,) 
   echo "checking again for shared memory extension..." 
   AC_CHECK_LIB(Xext,XShmAttach,AC_DEFINE(HasSharedMemory,,X11 server supports shared memory extension),,) 
+
+  # We're checking the same function in the same library twice.
   AC_CHECK_LIB(Xext,XShapeCombineMask,LIB_XEXT='-lXext',,) 
   echo "checking again for shape extension..." 
   AC_CHECK_LIB(Xext,XShapeCombineMask,AC_DEFINE(HasShape,,X11 server supports shape extension),,) 
@@ -220,8 +226,8 @@ then
 else 
   have_x='no' 
   #
-  # Should be be checking for X11 headers in this section as well?
-  # We do check for Motif/Lesstif header files below.
+  # Should we be checking for X11 headers in this section as well?
+  # We check for Motif/Lesstif header files in a section below.
   #
   AC_MSG_ERROR(*** X11 libraries not found... This isn't going to work, giving up. ***)
 fi 
@@ -242,7 +248,7 @@ AC_CHECK_LIB(compat, main,
     AC_SUBST(LIBCOMPAT)])
 AC_CHECK_LIB([pthread],[pthread_create]) 
  
-# Check for sched_yield in librt (needed only for Solaris)
+# Check for sched_yield in librt (Needed for Solaris)
 AC_CHECK_LIB(rt,sched_yield,LIB_RT='-lrt',,)
 LIBS="$LIB_RT $LIBS"
  
@@ -260,11 +266,12 @@ AC_SUBST(LIBS)
 # 1) Normal paths.
 # 2) Special MacOSX path.
 # 3) Special Solaris path.
+#
 AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",
   AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes",
     AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes",
       AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install one of them. ***))))
-
+#
 AC_FUNC_ALLOCA 
 AC_HEADER_DIRENT 
 AC_HEADER_STDC 
@@ -395,13 +402,7 @@ fi
  
 # Check for intl library (Needed for Cygwin) 
 # 
-AC_CHECK_LIB(intl, gettext, XASTIR_INTL_LIB="-lintl") 
-if test "$XASTIR_INTL_LIB" = "-lintl" 
-then 
-  LIBS="${XASTIR_INTL_LIB} ${LIBS}" 
-fi 
-# 
-# End of intl checks 
+AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}") 
  
  
  
@@ -831,23 +832,15 @@ fi
 # 
 # Make sure to check /usr/local/lib & /usr/local/include as well 
 # 
-use_geotiff=no 
-AC_CHECK_LIB(tiff, TIFFClose, XASTIR_TIFF_LIB="-ltiff") 
-AC_CHECK_LIB(geotiff, GTIFNew, XASTIR_GEOTIFF_LIB="-lgeotiff") 
-AC_CHECK_LIB(proj, pj_init, XASTIR_PROJ_LIB="-lproj") 
-if test "$XASTIR_PROJ_LIB" = "-lproj" 
-then 
-  if test "$XASTIR_TIFF_LIB" = "-ltiff" 
-  then 
-    if test "$XASTIR_GEOTIFF_LIB" = "-lgeotiff" 
-    then 
-      AC_DEFINE_UNQUOTED(HAVE_GEOTIFF, 1, [Define if you have GeoTiff Package]) 
-      LIBS="${XASTIR_GEOTIFF_LIB} ${XASTIR_PROJ_LIB} ${LIBS} ${XASTIR_TIFF_LIB} " 
-      use_geotiff=yes 
-    fi 
-  fi 
-fi 
-# 
+use_geotiff=no
+AC_CHECK_LIB(tiff, TIFFClose,
+  AC_CHECK_LIB(geotiff, GTIFNew,
+    AC_CHECK_LIB(proj, pj_init, use_geotiff="yes")))
+if test "$use_geotiff" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_GEOTIFF, 1, [Define if you have GeoTiff Package])
+  LIBS="-lgeotiff -lproj ${LIBS} -ltiff "
+fi
+#
 # End of libgeotiff/libtiff/libproj checks 
  
  
