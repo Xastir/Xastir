@@ -201,7 +201,7 @@ README
          Date: Fri, 11 Jan 2002 16:38:57 -0800
          From: Chris Bell <cbell@junknet.com>
          To: "Curt Mills, WE7U" <hacker@tc.fluke.com>
-         Cc: xastir-dev@krypton.hscs.virginia.edu
+         Cc: xastir-dev
          Subject: Re: [Xastir-Dev] Autoconf fixes for various OS's 
 
          YAY!!! Xpm is properly detected for solaris7!!!!  On my system, (with
@@ -444,13 +444,14 @@ README
      (9) MAILING LIST
 
           There are currently a couple of mailing lists about Xastir.
-          xastir@krypton.hscs.virginia.edu is the one relevant for posts about
+          xastir@xastir.org is the one relevant for posts about
           Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
 
           To subscribe to the Xastir mailing list, send email to:
-          xastir-request@krypton.hscs.virginia.edu In the body of the message,
+          xastir-request@xastir.org In the body of the message,
           put "subscribe xastir"; or go to
-          http://krypton.hscs.virginia.edu/mailman/listinfo/xastir
+          http://www.xastir.org and click on "User List" or
+          "Developer List" links on the left to subscribe.
 
                ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
 
@@ -470,7 +471,7 @@ README
           spelling), or even substantive issues either for that
           matter. Please read and follow the mailing list rules.
 
-          The xastir@krypton.hscs.virginia.edu mail-list is dedicated to Bug
+          The xastir@xastir.org mail-list is dedicated to Bug
           reports, technical questions, your thoughts or
           suggestions on new features being added to Xastir, things
           that should be removed or fixed, amazing problems that even
@@ -480,7 +481,7 @@ README
 
           We're trying to keep the documentation up to date. If you
           feel that anything is missing here, or that anything should
-          be added etc, please email xastir@krypton.hscs.virginia.edu about it,
+          be added etc, please email xastir@xastir.org about it,
           thank you.
 
      (11) OBTAINING HELP
