@@ -28,6 +28,9 @@
 
 #define MAX_GPS_STRING 300
 
+extern char gps_sats[];
+extern int  gps_valid;
+
 extern int gps_stop_now;
 
 extern int gps_data_find(char *gps_line_data, int port);

@@ -65,6 +65,7 @@ char gps_alt[8] = "";
 char gps_spd[10] = "";
 char gps_sunit[2] = "";
 char gps_cse[10] = "";
+int  gps_valid = 0; // 0=invalid, 1=valid, 2=2D Fix, 3=3D Fix
  
 int gps_stop_now;
 
@@ -82,7 +83,8 @@ int decode_gps_rmc( char *data,
                     char *unit,
                     int unit_length,
                     char *cse,
-                    time_t *stim) {
+                    time_t *stim,
+                    int *status) {
 
     char *temp_ptr;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
@@ -131,6 +133,11 @@ int decode_gps_rmc( char *data,
 
     if (temp_ptr == NULL) // No comma found
         return(0);
+
+    if (temp_ptr[0] == 'A')
+        *status = 1;
+    else
+        *status = 0;
 
     // strncpy is ok here as long as nulls not in data.  We
     // null-terminate it ourselves to make sure it's terminated.
@@ -274,7 +281,8 @@ int decode_gps_gga( char *data,
                     int lat_pos_length,
                     char *sats,
                     char *alt,
-                    char *aunit ) {
+                    char *aunit,
+                    int *status ) {
 
     char *temp_ptr;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
@@ -376,10 +384,13 @@ int decode_gps_gga( char *data,
     // strncpy is ok here as long as nulls not in data.  We
     // null-terminate it ourselves to make sure it's terminated.
     strncpy(temp_data,temp_ptr,2);
-    temp_data[2] = '\0';
+    temp_data[1] = '\0';
 
     if(temp_data[0] != '1' && temp_data[0] != '2' )
         return(0);
+
+    // Save the fix quality in "status"
+    *status = atoi(temp_data);
 
     temp_ptr=strtok(NULL,",");      // Get sats vis
 
@@ -389,7 +400,7 @@ int decode_gps_gga( char *data,
     // strncpy is ok here as long as nulls not in data.  We
     // null-terminate it ourselves to make sure it's terminated.
     strncpy(sats_visible,temp_ptr,3);
-    sats_visible[3] = '\0';
+    sats_visible[2] = '\0';
 
     temp_ptr=strtok(NULL,",");      // get hoz dil
 
@@ -481,7 +492,8 @@ int gps_data_find(char *gps_line_data, int port) {
                             gps_sunit,
                             sizeof(gps_sunit),
                             gps_cse,
-                            &t ) == 1) {    // mod station data
+                            &t,
+                            &gps_valid ) == 1) {    // mod station data
             // got GPS data
             have_valid_string++;
             if (debug_level & 128)
@@ -558,7 +570,8 @@ DISABLE_SETUID_PRIVILEGE;
                              sizeof(lat_pos),
                              gps_sats,
                              gps_alt,
-                             aunit) == 1) { // mod station data
+                             aunit,
+                             &gps_valid ) == 1) { // mod station data
             // got GPS data
             have_valid_string++;
             if (debug_level & 128)

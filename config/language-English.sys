@@ -51,6 +51,7 @@ PULDNVI007|Weather Alerts|e|
 PULDNVI011|Message Traffic|T|
 PULDNVI013|Uptime|U|
 PULDNVI014|Program Uptime||
+PULDNVI015|GPS Status||
 #
 # Menu "Configure"
 PULDNCF004|Station|S|

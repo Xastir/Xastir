@@ -49,6 +49,7 @@ PULDNVI007|Alerta de tempo|A|
 PULDNVI011|Tráfego de mensagens|f|
 PULDNVI013|Aviso|v|
 PULDNVI014|Programar aviso|r|
+PULDNVI015|GPS Status||
 #
 # Menú de configuração
 PULDNCF004|Estação|E|

@@ -51,6 +51,7 @@ PULDNVI007|Alerta del tiempo|A|
 PULDNVI011|Tráficos de Mensajes|f|
 PULDNVI013|Tiempo de Inicio|I|
 PULDNVI014|Tiempo Transcurrido||
+PULDNVI015|GPS Status||
 #
 # Menú de Configuración
 PULDNCF004|Estación|E|

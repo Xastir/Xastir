@@ -3665,9 +3665,9 @@ void Object_History_Refresh( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
 void statusline(char *status_text,int update) {
 
     XmTextFieldSetString (text, status_text);
-    last_statusline = sec_now();
+    last_statusline = sec_now();    // Used for auto-ID timeout
 //    if (update != 0)
-//        XmUpdateDisplay(text);          // do an immediate update
+//        XmUpdateDisplay(text);      // do an immediate update
 }
 
 
@@ -4407,6 +4407,54 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+char *report_gps_status(void) {
+    static char gps_temp[100];
+    char temp2[20];
+
+    switch (gps_valid) {
+        case 3: // 3D Fix
+            strcpy(temp2, "3D");
+            break;
+        case 2: // 2D Fix
+            strcpy(temp2, "2D");
+            break;
+        case 1: // Valid
+            strcpy(temp2, "Valid");
+            break;
+        case 0: // Invalid
+        default:
+            strcpy(temp2, "Invalid");
+            break;
+    }
+
+    xastir_snprintf(gps_temp,
+        sizeof(gps_temp),
+        "Sats/View:%s Fix:%s",
+        gps_sats,
+        temp2);
+ 
+    // Reset the variables.
+    strncpy(gps_sats, "00", 3);
+    gps_valid = 0;
+
+    return(gps_temp);
+}
+
+
+
+
+
+void view_gps_status(Widget w, XtPointer clientData, XtPointer callData) {
+    char temp[200];
+
+    strcpy(temp, report_gps_status());
+    popup_message(langcode("PULDNVI015"),temp);
+}
+
+
+
+
+
 void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[200];
     unsigned long runtime;
@@ -4592,7 +4640,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         object_history_clear_button, tactical_clear_button,
         tactical_history_clear_button, uptime_button, save_button,
         file_button, open_file_button, exit_button,
-        view_button, view_messages_button,
+        view_button, view_messages_button, gps_status_button,
         bullet_button, packet_data_button, mobile_button,
         stations_button, localstations_button, laststations_button,
         objectstations_button, objectmystations_button,
@@ -5002,6 +5050,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             xmPushButtonGadgetClass,
             viewpane,
             XmNmnemonic,langcode_hotkey("PULDNVI011"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    gps_status_button = XtVaCreateManagedWidget(langcode("PULDNVI015"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI015"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -6783,6 +6838,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(locate_button,        XmNactivateCallback,Locate_station,NULL);
     XtAddCallback(alert_button,         XmNactivateCallback,Display_Wx_Alert,NULL);
     XtAddCallback(view_messages_button, XmNactivateCallback,view_all_messages,NULL);
+    XtAddCallback(gps_status_button,XmNactivateCallback,view_gps_status,NULL);
 
     XtAddCallback(map_pointer_menu_button, XmNactivateCallback,menu_link_for_mouse_menu,NULL);
 
@@ -9815,6 +9871,7 @@ void check_pointer_position(void) {
 
 
 
+
 // Used to determine when to update the station number on the status
 // line:
 int stations_old = 0;
@@ -10122,12 +10179,34 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 gprmc_save_string[0] = '\0';
                                 gpgga_save_string[0] = '\0';
 
-                                if (ret1 && ret2)
-                                    statusline("GPS:  $GPRMC, $GPGGA", 0);
-                                else if (ret1)
-                                    statusline("GPS:  $GPRMC", 0);
-                                else if (ret2)
-                                    statusline("GPS:  $GPGGA", 0);
+                                if (ret1 && ret2) {
+                                    char temp[200];
+
+                                    strcpy(temp, "GPS:GPRMC,GPGGA ");
+                                    strcat(temp, report_gps_status());
+                                    statusline(temp, 0);
+                                }
+                                else if (ret1) {
+                                    char temp[200];
+ 
+                                    strcpy(temp, "GPS:GPRMC ");
+                                    strcat(temp, report_gps_status());
+                                    statusline(temp, 0);
+                                }
+                                else if (ret2) {
+                                    char temp[200];
+ 
+                                    strcpy(temp, "GPS:GPGGA ");
+                                    strcat(temp, report_gps_status());
+                                    statusline(temp, 0);
+                                }
+                                else {
+                                    char temp[200];
+
+                                    strcpy(temp, "GPS: ");
+                                    strcat(temp, report_gps_status());
+                                    statusline(temp, 0);
+                                }
 
                                 break;
                             default:
@@ -10352,8 +10431,15 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
-                            if (port_data[data_port].dtr==1) // get GPS data
+                            if (port_data[data_port].dtr==1) { // get GPS data
+                                char temp[200];
+
                                 (void)gps_data_find((char *)incoming_data,data_port);
+
+                                strcpy(temp, "GPS: ");
+                                strcat(temp, report_gps_status());
+                                statusline(temp, 0);
+                            }
                             else {
                                 /* get TNC data */
                                 if (log_tnc_data)
@@ -10367,8 +10453,15 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_SERIAL_TNC_AUX_GPS:
                             tnc_data_clean((char *)incoming_data);
                             data_type=tnc_get_data_type((char *)incoming_data, data_port);
-                            if (data_type)  // GPS Data
+                            if (data_type) {  // GPS Data
+                                char temp[200];
+
                                 (void)gps_data_find((char *)incoming_data, data_port);
+
+                                strcpy(temp, "GPS: ");
+                                strcat(temp, report_gps_status());
+                                statusline(temp, 0);
+                            }
                             else {          // APRS Data
                                 if (log_tnc_data)
                                     log_data(LOGFILE_TNC, (char *)incoming_data);
@@ -10385,6 +10478,13 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_NET_GPSD:
                             /*fprintf(stderr,"GPS Data <%s>\n",incoming_data);*/
                             (void)gps_data_find((char *)incoming_data,data_port);
+                            {
+                                char temp[200];
+
+                                strcpy(temp, "GPS: ");
+                                strcat(temp, report_gps_status());
+                                statusline(temp, 0);
+                            }
                             break;
 
                         /* WX Devices */
@@ -26766,6 +26866,10 @@ int main(int argc, char *argv[]) {
 
     strcpy(lang_to_use_or,"");
     ag_error=0;
+
+    // Reset the gps variables.
+    strncpy(gps_sats, "00", 3);
+    gps_valid = 0;
 
     while ((ag = getopt(argc, argv, "v:l:012346789tim")) != EOF) {
 

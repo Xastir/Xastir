@@ -59,6 +59,7 @@ PULDNVI007|Weer Waarschuwingen|W|
 PULDNVI011|Berichten Verkeer|V|
 PULDNVI013|Tijdsduur Aktief|U|
 PULDNVI014|Tijdsduur Programma Beschikbaar||
+PULDNVI015|GPS Status||
 #
 # Menu "Configure"
 PULDNCF001|Standaard|S|

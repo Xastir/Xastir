@@ -50,6 +50,7 @@ PULDNVI007|Allarmi Meteo|A|
 PULDNVI011|Traffico Messaggi|T|
 PULDNVI013|Tempo trascorso dall'avvio|d|
 PULDNVI014|Uptime del programma||
+PULDNVI015|GPS Status||
 #
 # Menu' di Configurazione
 PULDNCF004|Dati Stazione|S|

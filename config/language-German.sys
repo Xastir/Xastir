@@ -56,6 +56,7 @@ PULDNVI007|Wetterwarnung|e|
 PULDNVI011|Nachrichten|N|
 PULDNVI013|Laufzeit|z|
 PULDNVI014|Programmlaufzeit||
+PULDNVI015|GPS Status||
 #
 # Menu "Einstellungen"
 PULDNCF004|Meine Stationsdaten|M|
