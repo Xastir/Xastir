@@ -736,19 +736,19 @@ void draw_grid(Widget w) {
         // Draw the vertical vectors (except for the irregular
         // regions and the prime meridian)
         for (i = -180; i < 0; i += 6) {
-            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
+            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc_tint, pixmap_final);
         }
         for (i = 42; i <= 180; i += 6) {
-            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
+            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc_tint, pixmap_final);
         }
  
-        // Draw the partial vectors from 80S to the irregular region
-        draw_vector_ll(w, -80.0,  6.0, 56.0,  6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0, 12.0, 72.0, 12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0, 18.0, 72.0, 18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0, 24.0, 72.0, 24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0, 30.0, 72.0, 30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0, 36.0, 72.0, 36.0, gc_tint, pixmap_final);
+        // Draw the partial vectors from 90S to the irregular region
+        draw_vector_ll(w, -90.0,  6.0, 56.0,  6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0, 12.0, 72.0, 12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0, 18.0, 72.0, 18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0, 24.0, 72.0, 24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0, 30.0, 72.0, 30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -90.0, 36.0, 72.0, 36.0, gc_tint, pixmap_final);
 
         // Draw the short vertical vectors in the irregular region 
         draw_vector_ll(w,  56.0,  3.0, 64.0,  3.0, gc_tint, pixmap_final);
@@ -756,6 +756,14 @@ void draw_grid(Widget w) {
         draw_vector_ll(w,  72.0,  9.0, 84.0,  9.0, gc_tint, pixmap_final);
         draw_vector_ll(w,  72.0, 21.0, 84.0, 21.0, gc_tint, pixmap_final);
         draw_vector_ll(w,  72.0, 33.0, 84.0, 33.0, gc_tint, pixmap_final);
+
+        // Draw the short vertical vectors above the irregular region 
+        draw_vector_ll(w,  84.0,  6.0, 90.0,  6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, 12.0, 90.0, 12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, 18.0, 90.0, 18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, 24.0, 90.0, 24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, 30.0, 90.0, 30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0, 36.0, 90.0, 36.0, gc_tint, pixmap_final);
 
 
         // Horizontal lines:
@@ -772,6 +780,10 @@ void draw_grid(Widget w) {
         // Draw the one 12 degree spaced line
         draw_vector_ll(w, 84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
 
+        // Draw the pole lines
+        draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  90.0, -180.0,  90.0, 180.0, gc_tint, pixmap_final);
+
         // Set to solid line for the equator.  Make it extra wide as
         // well.
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 3, LineSolid, CapButt,JoinMiter);
@@ -782,7 +794,7 @@ void draw_grid(Widget w) {
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
 
         // Draw the prime meridian in the same manner
-        draw_vector_ll(w, 84.0, 0.0, -80.0, 0.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, 90.0, 0.0, -90.0, 0.0, gc_tint, pixmap_final);
 
 
         // Set the line width and style in the GC to 1 pixel wide
