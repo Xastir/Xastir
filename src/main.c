@@ -9498,11 +9498,11 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     char *temp;
     XmString *list;
     FILE *f;
-    char selected_dir[8000];
+//    char selected_dir[MAX_FILENAME];
 
 
-    // Zero it with string terminators
-    memset(selected_dir,0x00,8000);
+    // Make sure the string is empty before we start
+//    selected_dir[0] = '\0';
 
     // It'd be nice to turn off auto-maps here, or better perhaps would
     // be if any button were chosen other than "Cancel".
@@ -9515,21 +9515,42 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
         for(x=1; x<=i;x++) {
+            // Check whether the current list item is "selected"
             if (XmListPosSelected(map_list,x)) {
                 if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                    // Yes it is, write it to the selected maps
+                    // file.
                     fprintf(f,"%s\n",temp);
 
+/*
 // Check whether the user selected an entire directory.  If so, save
 // it in a special variable and use that to match all the files
-// inside the directory.
+// inside the directory.  Note that with the way we have things
+// ordered in the list, the directories appear before their member
+// files.
 if (temp[strlen(temp)-1] == '/') {
-    strcpy(selected_dir,temp);  // Save it
+    xastir_snprintf(selected_dir,
+        sizeof(selected_dir),
+        "%s",
+        temp);
 //printf("Selected %s directory\n",selected_dir);
 }
+*/
                     XtFree(temp);
                 }
             }
+/*
             else if (selected_dir[0] != '\0') {
+                // We have two choices here, we can either save all
+                // of the selected files in the disk file, or just
+                // save the directory and fix another area of the
+                // program to load all of the maps underneath any
+                // selected directories.  I'm choosing the latter
+                // method.
+
+                // If the first part of the filepath matches the
+                // last selected directory, refuse to save it to the
+                // selected maps file.
                 if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
                     if (strstr(temp,selected_dir) == temp) {
 //printf("Also matched: %s\n",temp);
@@ -9538,6 +9559,7 @@ if (temp[strlen(temp)-1] == '/') {
                     XtFree(temp);
                 }
             }
+*/
  
         }
         (void)fclose(f);
@@ -9696,7 +9718,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
     XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
     int i, is, it, ipos, selected;
     char *temp;
-    char clicked_dir[8000];
+    char clicked_dir[MAX_FILENAME];
     XmString *list;
 
 
@@ -9765,7 +9787,7 @@ void map_list_list_click(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clie
     XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
     int i, is, it, ipos, selected;
     char *temp;
-    char clicked_dir[8000];
+    char clicked_dir[MAX_FILENAME];
     XmString *list, *slist;
     FILE *f;
 
@@ -9868,7 +9890,7 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
 void dir_sort(char *dir) {
     struct dirent *dl;
     DIR *dm;
-    char fullpath[8000];
+    char fullpath[MAX_FILENAME];
     struct stat nfile;
     const time_t *ftime;
     int my_size;
@@ -9984,7 +10006,8 @@ void map_chooser_fill_in (void) {
 	// Empty the map_list widget first
 	XmListDeleteAllItems(map_list);
 
-        // Find the names of all the map files on disk and put them into map_list
+        // Put all the map files/dirs in the map_index into the Map
+        // Chooser dialog list (map_list).
         n=1;
 
         while (current != NULL) {
@@ -10004,6 +10027,13 @@ void map_chooser_fill_in (void) {
 
         // Compare the maps in the list to those we've already selected
         // and highlight those that match.
+
+//WE7U
+// Later we could check for directories here.  If a directory is
+// selected, don't expand it into the individual files, or create
+// another method of expanding/compressing the directory list
+// independent of this.
+
         f=fopen(SELECTED_MAP_DATA,"r");
         if (f!=NULL) {
             while(!feof(f)) {

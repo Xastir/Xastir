@@ -10461,7 +10461,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 // well.
                                 if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
                                         || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-                                    char temp_dir[8000];
+                                    char temp_dir[MAX_FILENAME];
 
                                     // Drop off the base part of the
                                     // path for the indexing,
@@ -11402,12 +11402,19 @@ void load_maps (Widget w) {
     FILE *f;
     char mapname[MAX_FILENAME];
     int i;
+    char selected_dir[MAX_FILENAME];
+    map_index_record *current;
 
 
     if (debug_level & 1)
         printf ("Load maps start\n");
 
-    (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
+    // Make sure the string is empty before we start
+    selected_dir[0] = '\0';
+
+    // Create empty file if it doesn't exist
+    (void)filecreate(SELECTED_MAP_DATA);
+
     f = fopen (SELECTED_MAP_DATA, "r");
     if (f != NULL) {
         if (debug_level & 1)
@@ -11429,18 +11436,72 @@ void load_maps (Widget w) {
                 if (debug_level & 1)
                     printf("Found mapname: %s\n", mapname);
 
+                // Test for comment
                 if (mapname[0] != '#') {
 
+
+                    // Check whether it's a directory that was
+                    // selected.  If so, save it in a special
+                    // variable and use that to match all the files
+                    // inside the directory.  Note that with the way
+                    // we have things ordered in the list, the
+                    // directories appear before their member files.
+                    if (mapname[strlen(mapname)-1] == '/') {
+                        // Found a directory.  Save the name.
+                        xastir_snprintf(selected_dir,
+                            sizeof(selected_dir),
+                            "%s",
+                            mapname);
+
+//printf("Selected %s directory\n",selected_dir);
+
+                        // Here we need to run through the map_index
+                        // list to find all maps that match the
+                        // currently selected directory.  Attempt to
+                        // load all of those maps as well.
+//WE7U
+//printf("Load all maps under this directory: %s\n",selected_dir);
+
+                        // Point to the start of the map_index list
+                        current = map_index_head;
+
+                        while (current != NULL) {
+
+                           if (strstr(current->filename,selected_dir)) {
+
+                                if (current->filename[strlen(current->filename)-1] != '/') {
+
+//printf("Loading: %s\n",current->filename);
+
+                                    draw_map (w,
+                                        SELECTED_MAP_DIR,
+                                        current->filename,
+                                        NULL,
+                                        '\0',
+                                        DRAW_TO_PIXMAP);
+                                }
+                            }
+                            current = current->next;
+                        }
+                    }
+                    // Else must be a regular map file
+                    else { 
 //printf("%s\n",mapname);
 //start_timer();
-                    draw_map (w, SELECTED_MAP_DIR, mapname, NULL, '\0', DRAW_TO_PIXMAP);
+                        draw_map (w,
+                            SELECTED_MAP_DIR,
+                            mapname,
+                            NULL,
+                            '\0',
+                            DRAW_TO_PIXMAP);
 //stop_timer();
 //print_timer_results();
 
-                    if (debug_level & 1)
-                        printf ("Load maps -%s\n", mapname);
+                        if (debug_level & 1)
+                            printf ("Load maps -%s\n", mapname);
 
-                    XmUpdateDisplay (da);
+                        XmUpdateDisplay (da);
+                    }
                 }
             }
             else {  // We've hit EOF
