@@ -871,7 +871,9 @@ void draw_grid(Widget w) {
             utm_grid_spacing_m = 100000;
         else {
             utm_grid_spacing_m = 0;
-            goto utm_grid_dont_draw;
+            // All done!  Don't draw the minor grids.  Major grids
+            // have already been drawn by this point.
+            return;
         }
 
         // Check hash to see if utm_grid is already set up
@@ -1379,8 +1381,6 @@ utm_grid_draw:
                 }
             }
         }
-
-utm_grid_dont_draw:
     }   // End of UTM grid section
 
     else { // Lat/Long coordinate system, draw lat/long lines
