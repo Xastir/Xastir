@@ -359,7 +359,12 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2"
     }
     else {
         /* window open! */
+        // Pop it up
         ret=found;
+    }
+
+    if (found != -1) {  // Already have a window
+        XtPopup(mw[i].send_message_dialog,XtGrabNone);
     }
 
     return(ret);
