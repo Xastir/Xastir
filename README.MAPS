@@ -328,7 +328,10 @@ Getting Maps and other Data Files for Xastir:
       PROJECTION: Currently only supports "TM" for transverse mercator.
       REFRESH: number of seconds to reload the maps.  Multiple maps
           with different values pick the smallest value.
-      TRANSPARENT: Set to "1" to remove black background (make it transparent)
+      TRANSPARENT:  Color to remove from the background (make it transparent).
+          Use a number, 0=black.  Colormapped images use the map value, so 
+          white is usually 0xffff.  Value can be decimal or hex if preceeded 
+          by "0x".  
       CROP: removes borders.  Values are [left top right bottom] with
           (0,0) at the upper left.  A good value for the NWS radar
           images above is "CROP 35 20 616 600"

@@ -1111,8 +1111,11 @@ so the smallest REFRESH interval loaded takes effect for all selected
 maps.
 
 TRANSPARENT 
-Set to "1" to remove black background (make it transparent).  Will be
-expanded to allow user defined color(s) to be zapped.
+Color to remove from the background (make it transparent).  Use a
+number, 0=black.  Colormapped images use the map value, so white is
+usually 0xffff (65535).  Value can be decimal, or hex if preceeded by "0x".
+The value can be obtained by using debug level 16.  The first of the 
+four numbers after "Color allocated is" is the colormap index.  
 
 CROP <left top right bottom>
 Removes borders (makes them transparent).  Values are in pixels with
