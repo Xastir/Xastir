@@ -7577,7 +7577,18 @@ void Draw_CAD_Objects( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer calldata) {
 
+    static Cursor cs_CAD = (Cursor)NULL;
+
+
 //    fprintf(stderr,"Draw_CAD_Objects function enabled\n");
+ 
+    if(!cs_CAD) {
+        cs_CAD=XCreateFontCursor(XtDisplay(da),XC_pencil);
+    }
+
+    (void)XDefineCursor(XtDisplay(da),XtWindow(da),cs_CAD);
+    (void)XFlush(XtDisplay(da));
+ 
     draw_CAD_objects_flag = 1;
     polygon_last_x = -1;    // Invalid position
     polygon_last_y = -1;    // Invalid position
@@ -7593,6 +7604,10 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 
 //    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
     draw_CAD_objects_flag = 0;
+
+    // Remove the special "pencil" cursor
+    (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
+    (void)XFlush(XtDisplay(da));
 }
 
 
@@ -17484,6 +17499,11 @@ void Track_Me( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callD
 
 
 
+// Pointer to the Move/Measure cursor object
+static Cursor cs_move_measure = (Cursor)NULL;
+
+
+
 /*
  *  Measure_Distance
  *
@@ -17496,9 +17516,21 @@ void  Measure_Distance( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
         measuring_distance = atoi(which);
         XmToggleButtonSetState(move_button, FALSE, FALSE);
         moving_object = 0;
+
+        // Change the cursor
+        if(!cs_move_measure) {
+            cs_move_measure=XCreateFontCursor(XtDisplay(da),XC_crosshair);
+        }
+
+        (void)XDefineCursor(XtDisplay(da),XtWindow(da),cs_move_measure);
+        (void)XFlush(XtDisplay(da));
     }
     else {
         measuring_distance = 0;
+
+        // Remove the special "crosshair" cursor
+        (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
+        (void)XFlush(XtDisplay(da));
     }
 }
 
@@ -17518,9 +17550,21 @@ void  Move_Object( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
         moving_object = atoi(which);
         XmToggleButtonSetState(measure_button, FALSE, FALSE);
         measuring_distance = 0;
+
+        // Change the cursor
+            if(!cs_move_measure) {
+            cs_move_measure=XCreateFontCursor(XtDisplay(da),XC_crosshair);
+        }
+
+        (void)XDefineCursor(XtDisplay(da),XtWindow(da),cs_move_measure);
+        (void)XFlush(XtDisplay(da));
     }
     else {
         moving_object = 0;
+
+        // Remove the special "crosshair" cursor
+        (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
+        (void)XFlush(XtDisplay(da));
     }
 }
 
