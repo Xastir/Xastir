@@ -1609,7 +1609,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                             XmTextFieldSetString(WX_baro_data,weather->wx_baro); // hPa
                         }
                         else {  // inches mercury
-                            xastir_snprintf(temp, sizeof(temp), "%0.1f",
+                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
                                 (atof(weather->wx_baro)*0.02953));
                             XmTextFieldSetString(WX_baro_data,temp);
                         }
@@ -1624,7 +1624,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                             //        atof(wx_three_hour_baro)*25.4); // inch Hg -> mm Hg
                             XmTextFieldSetString(WX_three_hour_baro_data,wx_three_hour_baro);
                         } else {  // inches mercury
-                            xastir_snprintf(temp, sizeof(temp), "%0.1f",
+                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
                                 (atof(wx_three_hour_baro)*0.02953));
                             XmTextFieldSetString(WX_three_hour_baro_data,temp);
 			}

@@ -575,7 +575,7 @@ WPUPSTI059|Status: %s||
 WPUPSTI060|Fuel Temp: %02.1f°C  ||
 WPUPSTI061|Fuel Temp: %s°F   ||
 WPUPSTI062|Fuel Moisture: %s%%   ||
-WPUPSTI063|Baro: %0.1f in Hg||
+WPUPSTI063|Baro: %0.2f in Hg||
 #
 #
 # FCC-RAC Call Look up
