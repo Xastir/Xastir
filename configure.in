@@ -138,6 +138,7 @@ dnl Go back and check for Xp
 dnl This one is driving me nuts! Force it for now
 LIBS="$LIBS $XPM_LIBS"
 AC_CHECK_LIB(Xp, XpGetDocumentData)
+AC_CHECK_LIB(Xpm, XpmWriteFileFromPixmap)
 
 XASTIR_CHECK_GEOTIFF_LIBS
 XASTIR_CHECK_FESTIVAL

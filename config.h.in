@@ -96,6 +96,9 @@
 /* Define if you have the Xp library (-lXp).  */
 #undef HAVE_LIBXP
 
+/* Define if you have the Xpm library (-lXpm).  */
+#undef HAVE_LIBXPM
+
 /* Define if you have the nsl library (-lnsl).  */
 #undef HAVE_LIBNSL
 
