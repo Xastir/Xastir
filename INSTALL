@@ -555,10 +555,6 @@ First Time Install:
         cvs checkout gdal
         cd gdal
         ./configure --without-jasper --without-ld-shared
-
-        Note:  I had to comment out a troublemaker line at
-          ogr/ogrsf_frmts/dgn/ogrdgnlayer.cpp to get it to compile.
-
         make
         su -c 'make install'
 
