@@ -225,6 +225,10 @@ void *my_argv;
 void *my_envp;
 
 
+// A count of the stations currently on the screen.  Counted by
+// db.c:display_file() routine.
+int currently_selected_stations = 0;
+
 // Used in segfault handler
 char dangerous_operation[200];
 
@@ -11088,6 +11092,7 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
             xastir_snprintf(station_num,
                 sizeof(station_num),
                 langcode("BBARSTH001"),
+                currently_selected_stations,
                 stations);
             XmTextFieldSetString(text3, station_num);
 

@@ -280,7 +280,7 @@ POPUPMA033|Ende Zeichen-Modus||
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
 BBARZM0002|Zoom %s Tr||
-BBARSTH001|%d Stationen||
+BBARSTH001|%d/%d Stationen||
 BBARSTA000|%-9s Neues Objekt!||
 BBARSTA001|%-9s Neue Station!||
 BBARSTA002|%-9s||# neue Daten (nur Call angezeigt)

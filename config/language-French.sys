@@ -273,7 +273,7 @@ POPUPMA033|Finir mode de dessin||
 # Status line labels
 BBARZM0001|Zoom %s||
 BBARZM0002|Zoom %s Sv||
-BBARSTH001|%d stations||
+BBARSTH001|%d/%d stations||
 BBARSTA000|%-9s Nouvel objet!||
 BBARSTA001|%-9s Nouvelle station!||
 BBARSTA002|%-9s||

@@ -223,7 +223,7 @@ typedef struct _what_to_display {
 } What_to_display;
 extern What_to_display Display_;
 
-
+extern int currently_selected_stations;
 extern int colors[256];
 extern int max_trail_colors;
 extern int trail_colors[32];

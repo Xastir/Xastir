@@ -2263,6 +2263,11 @@ void display_station(Widget w, DataRow *p_station, int single) {
     if (!ok_to_draw_station(p_station))
         return;
 
+    // Update the count if we're displaying all selected stations
+    // (not just one)
+    if (!single)
+        currently_selected_stations++;
+
     // Set up call string for display
     if (Display_.callsign) {
         if (p_station->tactical_call_sign) {
@@ -3038,8 +3043,16 @@ void display_file(Widget w) {
     time_t temp_sec_heard;      // time last heard
     time_t t_clr, t_old;
 
+
     if(debug_level & 1)
         fprintf(stderr,"Display File Start\n");
+
+    // Keep track of how many station we are currently displaying on
+    // the screen.  We'll display this number and the total number
+    // of objects in the database as displayed/total on the status
+    // line.  Each time we call display_station() we'll bump this
+    // number.
+    currently_selected_stations = 0;
 
 // Draw probability of detection circle, if enabled
 //draw_pod_circle(64000000l, 32400000l, 10, colors[0x44], pixmap_final);
@@ -3106,7 +3119,11 @@ void display_file(Widget w) {
                     if (debug_level & 256)
                         fprintf(stderr,"calling display_station()\n");
 
+                    // This routine will also update the
+                    // currently_selected_stations variable, if
+                    // we're updating all of the stations at once.
                     display_station(w,p_station,0);
+
                 }
                 else if (debug_level & 64) {
                     fprintf(stderr,"display_file: Station %s skipped altnet\n",
@@ -12534,7 +12551,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
             if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
                 if ( ((p_station->flag & ST_VIATNC) != 0)   // test "via TNC" flag
                      && ((p_station->flag & ST_DIRECT) != 0) // And "direct" flag
-                     && sec_now() > (p_station->direct_heard + st_direct_timeout) // Within the last hour
+                     && sec_now() < (p_station->direct_heard + st_direct_timeout) // Within the last hour
                      && !is_my_call(p_station->call_sign,1) ) { // and not me
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
                         strncat(temp,

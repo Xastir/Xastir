@@ -274,7 +274,7 @@ POPUPMA033|End Draw Mode||
 # Status line labels
 BBARZM0001|Zoom %s||
 BBARZM0002|Zoom %s Tr||
-BBARSTH001|%d Stations||
+BBARSTH001|%d/%d Stations||
 BBARSTA000|%-9s New object!||
 BBARSTA001|%-9s New station!||
 BBARSTA002|%-9s||# new data (only display the call)

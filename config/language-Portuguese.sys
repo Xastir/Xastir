@@ -278,7 +278,7 @@ POPUPMA033|Fim do modo de desenho||
 # Menu dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||
 BBARZM0002|Foco %s Tr||
-BBARSTH001|%d estacoes||
+BBARSTH001|%d/%d estacoes||
 BBARSTA000|%-9s novo objecto!||
 BBARSTA001|%-9s nova estacao!||
 BBARSTA002|%s||
