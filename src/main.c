@@ -3006,13 +3006,41 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     x_distance_real = cvt_kn2len * calc_distance_course(a_y,a_x,a_y,b_x,temp_course,sizeof(temp_course));
                     // Keep x constant to get y distance
                     y_distance_real = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,a_x,temp_course,sizeof(temp_course));
-                    // Compute the total area
-                    area = x_distance_real * y_distance_real;
-                    xastir_snprintf(temp, sizeof(temp), "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s,  %0.2f square %s",
-                        full_distance, un_dst,
-                        x_distance_real, un_dst,
-                        y_distance_real, un_dst,
-                        area, un_dst);
+                    if (full_distance < 1.0) {
+                        switch (units_english_metric) {
+                            case 1:     // English
+                                full_distance   = full_distance   * 5280;   // convert from miles to feet
+                                x_distance_real = x_distance_real * 5280;   // convert from miles to feet
+                                y_distance_real = y_distance_real * 5280;   // convert from miles to feet
+                                break;
+                            case 2:     // Nautical miles and knots
+                                full_distance   = full_distance   * 6076;   // convert from miles to feet
+                                x_distance_real = x_distance_real * 6076;   // convert from miles to feet
+                                y_distance_real = y_distance_real * 6076;   // convert from miles to feet
+                                break;
+                            default:    // Metric
+                                full_distance   = full_distance   * 1000;   // convert from kilometers to meters
+                                x_distance_real = x_distance_real * 1000;   // convert from kilometers to meters
+                                y_distance_real = y_distance_real * 1000;   // convert from kilometers to meters
+                                break;
+                        }
+                        // Compute the total area
+                        area = x_distance_real * y_distance_real;
+                        xastir_snprintf(temp, sizeof(temp), "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s,  %0.2f square %s",
+                            full_distance, un_alt,      // feet/meters
+                            x_distance_real, un_alt,    // feet/meters
+                            y_distance_real, un_alt,    // feet/meters
+                            area, un_alt);
+                    }
+                    else {
+                        // Compute the total area
+                        area = x_distance_real * y_distance_real;
+                        xastir_snprintf(temp, sizeof(temp), "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s,  %0.2f square %s",
+                            full_distance, un_dst,      // miles/kilometers
+                            x_distance_real, un_dst,    // miles/kilometers
+                            y_distance_real, un_dst,    // miles/kilometers
+                            area, un_dst);
+                    }
                     popup_message(langcode("POPUPMA020"),temp);
                 }
 
