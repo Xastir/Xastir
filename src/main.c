@@ -8030,6 +8030,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     double area;
     int n;
     char temp_course[20];
+    char temp[200];
  
 
     // Check whether we're currently working on a polygon.  If not,
@@ -8179,7 +8180,19 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     if (area < 0.0)
         area = -area;
 
-fprintf(stderr,"Area: %f\n", area);
+
+    // Format it for output and dump it out
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "Area: %0.2f square %s",
+        area,
+        un_dst);
+    popup_message(langcode("POPUPMA020"),temp);
+
+#ifdef CAD_DEBUG
+    fprintf(stderr,"%s\n",temp);
+#endif
+
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
