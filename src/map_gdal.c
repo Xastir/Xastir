@@ -2093,16 +2093,32 @@ clear_dangerous();
                     && file_MinX >= -180.0 && file_MinX <= 180.0
                     && file_MaxX >= -180.0 && file_MaxX <= 180.0) {
 
+                    // Check for all-zero entries
+                    if (       file_MinY == 0.0
+                            && file_MaxY == 0.0
+                            && file_MinX == 0.0
+                            && file_MaxX == 0.0 ) {
+                        fprintf(stderr,
+                            "Geographic coordinates are all zero, skipping indexing\n");
+                        fprintf(stderr,"MinY:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                            file_MinX,
+                            file_MinY,
+                            file_MaxX,
+                            file_MaxY);
+                    }
+                    else {
+ 
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
 //#define WE7U
 #ifndef WE7U
-                    index_update_ll(filenm,    // Filename only
-                        file_MinY,  // Bottom
-                        file_MaxY,  // Top
-                        file_MinX,  // Left
-                        file_MaxX); // Right
+                        index_update_ll(filenm,    // Filename only
+                            file_MinY,  // Bottom
+                            file_MaxY,  // Top
+                            file_MinX,  // Left
+                            file_MaxX); // Right
 #endif  // WE7U
+                    }
                 }
                 else {
                     fprintf(stderr,
@@ -2152,16 +2168,47 @@ clear_dangerous();
                             x[1],y[1]);
                     }
                 }
+
+                if (       file_MinY >=  -90.0 && file_MinY <=  90.0
+                        && file_MaxY >=  -90.0 && file_MaxY <=  90.0
+                        && file_MinX >= -180.0 && file_MinX <= 180.0
+                        && file_MaxX >= -180.0 && file_MaxX <= 180.0) {
+
+                    // Check for all-zero entries
+                    if (       file_MinY == 0.0
+                            && file_MaxY == 0.0
+                            && file_MinX == 0.0
+                            && file_MaxX == 0.0 ) {
+                        fprintf(stderr,
+                            "Coordinates are all zero, skipping indexing\n");
+                        fprintf(stderr,"MinY:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                            file_MinX,
+                            file_MinY,
+                            file_MaxX,
+                            file_MaxY);
+                    }
+                    else {
  
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
 #ifndef WE7U
-                index_update_ll(filenm, // Filename only
-                    y[0],  // Bottom
-                    y[1],  // Top
-                    x[0],  // Left
-                    x[1]); // Right
+                        index_update_ll(filenm, // Filename only
+                            y[0],  // Bottom
+                            y[1],  // Top
+                            x[0],  // Left
+                            x[1]); // Right
 #endif  // WE7U
+                    }
+                }
+                else {
+                    fprintf(stderr,
+                        "Coordinates out of bounds, skipping indexing\n");
+                    fprintf(stderr,"MinY:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                        file_MinX,
+                        file_MinY,
+                        file_MaxX,
+                        file_MaxY);
+                }
             }
         }
 
