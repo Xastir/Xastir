@@ -5,7 +5,7 @@
 # ("xastir", "1.1.3", [])
 #
 # Also remember to change it in the AC_DEFINE below.
-AC_INIT("xastir", "1.1.3", [])
+AC_INIT(xastir, 1.1.3, xastir@xastir.org)
 
 AC_PREREQ(2.53)
 
@@ -22,7 +22,7 @@ SHORT_VERSION="AC_PACKAGE_VERSION"
 SHORT_VERSION=`echo $SHORT_VERSION | sed -e 's/\.//g'`
 AC_SUBST(SHORT_VERSION)
 
-AC_DEFINE(XASTIR_TOCALL, "APX113", [Defines the version tocall])
+AC_DEFINE_UNQUOTED(XASTIR_TOCALL, "APX$SHORT_VERSION", [Defines the version tocall])
 
 echo ""
 echo "TOCALL = APX$SHORT_VERSION"
