@@ -3129,7 +3129,7 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 
 
 void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, my_form, button_ok, button_close;
+    static Widget  pane, my_form, button_ok, button_close, label;
     Atom delw;
     Arg al[2];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -3166,6 +3166,22 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
+        // Display the callsign or object/item name we're working on
+        // in a label at the top of the dialog.  Otherwise we don't
+        // know what station we're operating on.
+        //
+        label = XtVaCreateManagedWidget(tactical_pointer->call_sign,
+                xmLabelWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         tactical_text = XtVaCreateManagedWidget("Change_Tactical text",
                 xmTextWidgetClass,
@@ -3179,7 +3195,8 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNmaxLength, MAX_CALLSIGN-1,
                 XmNbackground, colors[0x0f],
                 XmNtopOffset, 5,
-                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment,XmATTACH_NONE,
