@@ -7707,9 +7707,9 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 
 
 
-/*
- *  Extract data for $GPRMC, it fails if there is no position!!
- */
+//
+//  Extract data for $GPRMC, it fails if there is no position!!
+//
 int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
@@ -7743,7 +7743,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     // Make a copy of the incoming data.  The string passed to
     // split_string() gets destroyed.
     strncpy(temp_string, data, sizeof(temp_string));
-    split_string(temp_string, Substring, 15);
+    split_string(temp_string, Substring, 12);
 
     // The Substring[] array contains pointers to each substring in
     // the original data string.
@@ -7856,20 +7856,20 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
 
 
-/*
- *  Extract data for $GPGGA
- *
- * GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
- *
- * hhmmss = UTC
- * ddmm.mmm[m] = Degrees(dd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Lattitude (N|S=North/South)
- * dddmm.mmm[m] = Degrees (ddd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Longitude (E|W=East/West)
- * 0|1|2 == invalid/GPS/DGPS
- * nsat=Number of Sattelites being tracked
- * mmm.m,M=Meters MSL
- * mm.mM = Meters above GPS Ellipsoid
- *
- */
+//
+//  Extract data for $GPGGA
+//
+// GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+//
+// hhmmss = UTC
+// ddmm.mmm[m] = Degrees(dd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Lattitude (N|S=North/South)
+// dddmm.mmm[m] = Degrees (ddd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Longitude (E|W=East/West)
+// 0|1|2 == invalid/GPS/DGPS
+// nsat=Number of Sattelites being tracked
+// mmm.m,M=Meters MSL
+// mm.mM = Meters above GPS Ellipsoid
+//
+//
 int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
@@ -8032,15 +8032,27 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
 
 
-/*
- *  Extract data for $GPGLL
- */
+//
+//  Extract data for $GPGLL
+//
+// $GPGLL,4748.811,N,12219.564,W,033850,A*3C
+// lat, long, UTCtime in hhmmss, A=Valid, checksum
+//
+// GPGLL,4748.811,N,12219.564,W,033850,A*3C
+//   0       1    2      3    4    5   6
+//
 int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
-    char *temp_ptr;
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
     char long_s[20];
     int ok;
+    char *Substring[7];  // Pointers to substrings parsed by split_string()
+    char temp_string[MAX_MESSAGE_LENGTH+1];
+    char temp_char;
+
+
+    if (debug_level & 256)
+        fprintf(stderr, "extract_GLL\n");
 
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
   
@@ -8054,72 +8066,64 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     /* check aprs type on call sign */
     p_station->aprs_symbol = *id_callsign(call_sign, path);
-    if (strchr(data,',')!=NULL) {
-        (void)strtok(data,",");                    /* get gpgll */
-        temp_ptr=strtok(NULL,",");                /* get latitude */
-        if (temp_ptr!=NULL && temp_ptr[4]=='.') {
-            strncpy(lat_s,temp_ptr,8);
-            lat_s[8] = '\0';    // Terminate it (just in case)
 
+    // Make a copy of the incoming data.  The string passed to
+    // split_string() gets destroyed.
+    strncpy(temp_string, data, sizeof(temp_string));
+    split_string(temp_string, Substring, 7);
+
+    // The Substring[] array contains pointers to each substring in
+    // the original data string.
+
+    if (Substring[0] == NULL)  // No GPGGA string
+        return(ok);
+
+    if (Substring[1] == NULL)  // No latitude string
+        return(ok);
+
+    if (Substring[2] == NULL)   // No N/S string
+        return(ok);
+
+    if (Substring[3] == NULL)   // No longitude N/S
+        return(ok);
+
+    if (Substring[4] == NULL)   // No E/W string
+        return(ok);
+
+    temp_char = toupper((int)Substring[2][0]);
+    if (temp_char != 'N' && temp_char != 'S')
+        return(ok);
+
+    xastir_snprintf(lat_s,
+        sizeof(lat_s),
+        "%s%c",
+        Substring[1],
+        temp_char);
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234).  Next character after digits should be a ','
 
-// We really should check for a terminating zero at the end of each substring we collect,
-// and not rely on strtok exclusively.  We could have an extra-long field due to packet
-// corruption and therefore our substrings wouldn't have terminating zeroes.
-// We should also check the length of the string we're collecting from to make sure
-// we don't run off the end for a short packet.
+    temp_char = toupper((int)Substring[4][0]);
+    if (temp_char != 'E' && temp_char != 'W')
+        return(ok);
 
-           temp_ptr=strtok(NULL,",");                /* get N-S */
-            if (temp_ptr!=NULL) {
-                strncpy(temp_data,temp_ptr,1);
-                lat_s[8]=toupper((int)temp_data[0]);
-                lat_s[9] = '\0';
-                if (lat_s[8] =='N' || lat_s[8] =='S') {
-                    temp_ptr=strtok(NULL,",");            /* get long */
-                    if(temp_ptr!=NULL && temp_ptr[5] == '.') {
-                        strncpy(long_s,temp_ptr,9);
-                        long_s[9] = '\0';   // Terminate it, just in case
-
+    xastir_snprintf(lat_s,
+        sizeof(long_s),
+        "%s%c",
+        Substring[3],
+        temp_char);
 // Need to check long_s for validity here.  Should be all digits.  Note that some GPS's put out another
 // digit of precision.  (12201.1234).  Next character after digits should be a ','
 
-                       temp_ptr=strtok(NULL,",");            /* get E-W */
-                        if (temp_ptr!=NULL) {
-                            strncpy(temp_data,temp_ptr,1);
-                            long_s[9]  = toupper((int)temp_data[0]);
-                            long_s[10] = '\0';
-                            if (long_s[9] =='E' || long_s[9] =='W') {
-                                p_station->coord_lat = convert_lat_s2l(lat_s);
-                                p_station->coord_lon = convert_lon_s2l(long_s);
-                                ok = 1; // We have enough for a position now
-                                strcpy(p_station->course,"000.0");  // Fill in with dummy values
-                                strcpy(p_station->speed,"");        // Fill in with dummy values
-                                (void)strtok(NULL,",");             // get time, throw it away
-                                temp_ptr=strtok(NULL,",");          // get data_valid flag
-                                if (temp_ptr!=NULL) {
-                                    strncpy(temp_data,temp_ptr,2);
-                                    if (temp_data[0]=='A') {
-                                        /* A is valid, V is a warning but we can get good data still ? */
-                                    } else { // Invalid data
-                                    }
-                                }
-                                else { // Short packet, valid data flag missing
-                                }
-                            } else { // Not 'E' or 'W' for longitude direction
-                            }
-                        } else { // Short packet, missing longitude direction
-                        }
-                    } else { // Short packet, missing longitude
-                    }
-                } else { // Not 'N' or 'W' for latitude direction
-                }
-            } else { // Short packet, missing latitude direction
-            }
-        } else { // Short packet, missing latitude
-        }
-    } else { // Short packet, no ',' characters found
-    }
+    p_station->coord_lat = convert_lat_s2l(lat_s);
+    p_station->coord_lon = convert_lon_s2l(long_s);
+    ok = 1; // We have enough for a position now
+
+    strcpy(p_station->course,"000.0");  // Fill in with dummy values
+    strcpy(p_station->speed,"");        // Fill in with dummy values
+
+    // A is valid, V is a warning but we can get good data still?
+    // We don't currently check the data valid flag.
+
     return(ok);
 }
 
