@@ -1152,11 +1152,15 @@ double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *co
 
 
 
-/*********************************************************************/
-/* distance_from_my_station - compute distance from my station and   */
-/*       course with a given call                                    */
-/* return distance and course                                        */
-/*********************************************************************/
+//*****************************************************************
+// distance_from_my_station - compute distance from my station and
+//       course with a given call
+//
+// return distance and course
+//
+// Returns 0.0 for distance if station not found in database or the
+// station hasn't sent out a posit yet.
+//*****************************************************************
 
 double distance_from_my_station(char *call_sign, char *course_deg) {
     DataRow *p_station;
@@ -1169,13 +1173,28 @@ double distance_from_my_station(char *call_sign, char *course_deg) {
     l_lon = convert_lon_s2l(my_long);
     p_station = NULL;
     if (search_station_name(&p_station,call_sign,1)) {
-        value = (float)calc_distance_course(l_lat,l_lon,p_station->coord_lat,p_station->coord_lon,course_deg,sizeof(course_deg));
-        if (units_english_metric)
-            distance = value * 1.15078;         // nautical miles to miles
-        else
-            distance = value * 1.852;           // nautical miles to km
+        // Check whether we have a posit yet for this station
+        if ( (p_station->coord_lat == 0l)
+                && (p_station->coord_lon == 0l) ) {
+            distance = 0.0;
+        }
+        else {
+            value = (float)calc_distance_course(l_lat,
+                l_lon,
+                p_station->coord_lat,
+                p_station->coord_lon,
+                course_deg,
+                sizeof(course_deg));
 
-//    printf("DistFromMy: %s %s -> %f\n",temp_lat,temp_long,distance);
+            if (units_english_metric)
+                distance = value * 1.15078;         // nautical miles to miles
+            else
+                distance = value * 1.852;           // nautical miles to km
+        }
+//        printf("DistFromMy: %s %s -> %f\n",temp_lat,temp_long,distance);
+    }
+    else {  // Station not found
+        distance = 0.0;
     }
     return(distance);
 }

@@ -78,10 +78,11 @@ void view_message_print_record(Message *m_fill) {
     int my_size = 200;
     char temp_my_course[10];
     XmTextPosition drop_ptr;
+    int distance;
 
     // Make sure it's within our distance range we have set
-    if ((vm_range == 0)
-            || ((int)distance_from_my_station(m_fill->from_call_sign,temp_my_course) <= vm_range)) {
+    distance = (int)distance_from_my_station(m_fill->from_call_sign,temp_my_course);
+    if ((vm_range == 0) || (distance <= vm_range)) {
  
         if ((temp = malloc((size_t)my_size)) == NULL)
             return;
