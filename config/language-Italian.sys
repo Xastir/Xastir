@@ -99,7 +99,7 @@ MPUPTGR014|Laghi||
 MPUPTGR015|Aereoporti, Parchi, ecc||
 MPUPTGR016|Intensità Mappa||
 MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
+MPUPTGR018|Abilita Tiger Maps||
 #
 #
 # Finestra di dialogo mappe
@@ -198,7 +198,7 @@ PULDQUS002|Cerca le stazioni Gateway|I|
 PULDQUS003|Cerca le stazioni meteo|W|
 PULDNMG004|Imposta risposta automatica ai messaggi in arrivo|S|
 PULDNMG005|Risposta automatica ai messaggi in arrivo|R|
-PULDNMG006|Satellite Ack Mode|M|
+PULDNMG006|Modalita' Satellite Ack|M|
 #
 # Menu "Interfaces"
 PULDNTNT04|Avvia/Ferma|S|
@@ -287,10 +287,10 @@ BBARSTA036|Libero AUX, ricezione dati da TNC..||
 BBARSTA037|Dati GPS rilevati||
 BBARSTA038|Posizionare il cambiamento sulla mia stazione||
 BBARSTA039|Indicizzazione %s||
-BBARSTA040|Amateur APRS Station %s||
+BBARSTA040|Stazione APRS %s||
 BBARSTA041|Attendo dati GPS..||
 BBARSTA042|Transmetto oggetti/dettagli||
-BBARSTA043|Logging||
+BBARSTA043|Registro||
 #
 #Visualizzazione dati packet
 WPUPDPD001|Visualizzazione dati packet||
@@ -340,13 +340,13 @@ WPUPCFD029|Vedi bollettini a distanza zero||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
-WPUPCFTM02|Posit TX Interval (min)||
-WPUPCFTM03|Station Ghosting Time (min)||
-WPUPCFTM04|Object/Item TX Interval (min)||
-WPUPCFTM05|Station Clear Time (hours)||
-WPUPCFTM06|GPS Check Interval (sec)||
-WPUPCFTM07|Station Delete Time (days)||
-WPUPCFTM08|Dead-Reckoning Timeout (min)||
+WPUPCFTM02|Intervallo TX posizione (min)||
+WPUPCFTM03|Tempo di Ghosting della stazione (min)||
+WPUPCFTM04|Intervallo TX Oggetto/Entità (min)||
+WPUPCFTM05|Clear Time della stazione (ore)||
+WPUPCFTM06|Intervallo controllo GPS (sec)||
+WPUPCFTM07|Tempo eliminazione stazione (giorni)||
+WPUPCFTM08|Timeout del Dead-Reckoning (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||
@@ -411,15 +411,15 @@ WPUPCFT026|Dati binari||
 WPUPCFT027|Dati ASCII||
 WPUPCFT028|Configura TNC con cavo AUX per GPS||
 WPUPCFT029|Configura TNC con INVALID ENUM||
-WPUPCFT030|Configure KISS TNC||
-WPUPCFT031|TNC Configuration Files||
-WPUPCFT032|TNC Setup Filename|| 
-WPUPCFT033|TNC Shutdown Filename||
-WPUPCFT034|KISS Parameters||
-WPUPCFT035|TXDelay (10 ms units)||
-WPUPCFT036|Persistence (0 to 255)||
-WPUPCFT037|SlotTime (10 ms units)||
-WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT030|Configura TNC KISS||
+WPUPCFT031|File di configurazione del TNC||
+WPUPCFT032|Nome File configurazione TNC|| 
+WPUPCFT033|Nome File dello Shutdown TNC||
+WPUPCFT034|Parametetri KISS||
+WPUPCFT035|Ritardo TX (unità di 10 ms)||
+WPUPCFT036|Persistenza (0 to 255)||
+WPUPCFT037|SlotTime (unità di 10 ms)||
+WPUPCFT038|Coda Tx (unità di 10 ms)||
 WPUPCFT039|Full Duplex||
 #
 #Configura Porta Meteo
@@ -542,21 +542,21 @@ WPUPCFID14|Scrivo nel log le trasmissioni dalla Rete al TNC?|||
 WPUPCFID15|Parametri Filtro||
 #
 # PopUp "Configure AGWPE"
-WPUPCFIA01|Configure AGWPE||
+WPUPCFIA01|Configura AGWPE||
 WPUPCFIA02|Host ||
-WPUPCFIA03|Port ||
-WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA03|Porta ||
+WPUPCFIA04|(Host secondari)||
 WPUPCFIA05|Host1||
-WPUPCFIA06|Port1||
+WPUPCFIA06|Porta1||
 WPUPCFIA07|Host2||
-WPUPCFIA08|Port2||
+WPUPCFIA08|Porta2||
 WPUPCFIA09|Pass-code||
-WPUPCFIA10|(Leave Blank if None)||
-WPUPCFIA11|Reconnect on NET failure?||
-WPUPCFIA12|Run as an I-Gate?||
-WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
-WPUPCFIA14|Log I-Gate Transactions?||
-WPUPCFIA15|Transmit RadioPort||
+WPUPCFIA10|((Lascia in Bianco se Nessuno)||
+WPUPCFIA11|Riconnetti su errore NET?||
+WPUPCFIA12|Opera come I-Gate?||
+WPUPCFIA13|Manda messaggi Broadcast via TNC durante operazione I-Gate?||
+WPUPCFIA14|Registra su Log I-Gate Transactions?||
+WPUPCFIA15|Porta radio di trasmissione||
 #
 #Configure Audio Alarms
 WPUPCFA001|Configura Suoni||
@@ -591,8 +591,8 @@ WPUPTSP005|Segui ora!||
 WPUPTSP006|Annulla operazione||
 WPUPTSP007|Scarica tracciato||
 WPUPTSP008|Nominativo||
-WPUPTSP009|Start Trail (hrs ago)||
-WPUPTSP010|Trail Length (hrs)||
+WPUPTSP009|Percorso iniziato (ore fa)||
+WPUPTSP010|Durata percorso (ore)||
 #
 #Messages
 WPUPMSB001|Casella messaggi %d||
@@ -673,7 +673,7 @@ WPUPSTI055|Ripetuto da:||
 WPUPSTI056|Abilita Aggiornamento Automatico||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Puntamento DF:||
-WPUPSTI059|Status: %s||
+WPUPSTI059|Stato: %s||
 WPUPSTI060|Temp Carburante: %02.1f°C  ||
 WPUPSTI061|Temp Carburante: %s°F   ||
 WPUPSTI062|Umidità Carburante: %s%%   ||
@@ -725,7 +725,7 @@ UNIOP00026|%||
 UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Regolare il tempo del sistema dal GPS||
-UNIOP00030|RELAY Digipeat?||
+UNIOP00030|Ripeti come RELAY?||
 UNIOP00031|m||
 #
 # PopUp "Station Chooser"
@@ -884,8 +884,8 @@ POPEM00029|Trovato!||
 POPEM00030|Simbolo Stazione Meteo||
 POPEM00031|Cambiato al simbolo Meteo '/_', altre opzioni:  '\_'  '/W'  e  '\W'||
 POPEM00032|Attenzione: Stai usando il simbolo Meteo del Servizio Nazionale!||
-POPEM00033|No GPS Data!||
-POPEM00034|Disabling My Position TX Until Valid GPS Data!||
+POPEM00033|Nessun dato GPS!||
+POPEM00034|Disabilito TX Mia Posizione fino all'arrivo dei dati GPS!||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||
@@ -993,36 +993,36 @@ PULDNDB001|Stato Distanza/Puntamento||
 #
 #
 # GPS Transfer Operations
-GPS001|GPS Transfer||
-GPS002|Filename||
-GPS003|Select Color||
-GPS004|Red||
-GPS005|Green||
-GPS006|Black||
-GPS007|White||
-GPS008|Orange||
-GPS009|Blue||
-GPS010|Yellow||
-GPS011|Violet||
+GPS001|Trasferimento GPS||
+GPS002|Nome File||
+GPS003|Seleziona Colore||
+GPS004|Rosso||
+GPS005|Verde||
+GPS006|Nero||
+GPS007|Bianco||
+GPS008|Arancione||
+GPS009|Blu||
+GPS010|Giallo||
+GPS011|Viola||
 #
 #
 # Map Properties Dialog
-MAPP001|Map Properties||
-MAPP002| Map     Draw||
-MAPP003|Layer   Filled   AutoMap   Path/Filename||
-MAPP004|Change Layer->||
-MAPP005|Filled->||
-MAPP006|Yes||
+MAPP001|Proprietà Mappa||
+MAPP002|Disegna  Mappa||
+MAPP003|Livello  Riempi  AutoMap   Percorso/Nome File||
+MAPP004|Cambia Livello->||
+MAPP005|Riempito->||
+MAPP006|Si||
 MAPP007|No||
-MAPP008|Automaps->||
+MAPP008|Automappe->||
 #
 #
 # Time Strings
-TIME001|Day||
-TIME002|Days||
-TIME003|Hour||
-TIME004|Hours||
-TIME005|Minute||
-TIME006|Minutes||
-TIME007|Second||
-TIME008|Seconds||
+TIME001|Giorno||
+TIME002|Giorni||
+TIME003|Ora||
+TIME004|Ore||
+TIME005|Minuto||
+TIME006|Minuti||
+TIME007|Secondo||
+TIME008|Secondi||
