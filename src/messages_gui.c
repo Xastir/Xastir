@@ -306,7 +306,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
             (void)to_upper(call_sign);
             get_path_data(call_sign, path, MAX_PATH);
         }
-        XmTextFieldSetString(mw[i].send_message_path, path);
+        XmTextFieldSetString(mw[i].send_message_reverse_path, path);
     }
 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_messages" );
@@ -787,6 +787,30 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 NULL);
 
+        mw[i].send_message_reverse_path = XtVaCreateManagedWidget("Send_message reverse path", 
+                xmTextFieldWidgetClass, 
+                mw[i].form,
+                XmNeditable,   FALSE,
+                XmNcursorPositionVisible, FALSE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 26,
+                XmNwidth, ((26*7)+2),
+                XmNmaxLength, 199,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 80,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].send_message_path,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
                 xmLabelWidgetClass, 
                 mw[i].form,
@@ -924,7 +948,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
             XmTextFieldSetString(mw[i].send_message_call_data, group);
             get_path_data(group, path, MAX_PATH);
-            XmTextFieldSetString(mw[i].send_message_path, path);
+            XmTextFieldSetString(mw[i].send_message_reverse_path, path);
         }
 
         pos_dialog(mw[i].send_message_dialog);
