@@ -720,7 +720,7 @@ IFDNL00008|Meteo in rete||
 IFDNL00009|TNC Seriale con GPS connesso con cavo AUX||
 IFDNL00010|TNC Seriale in KISS||
 IFDNL00011|Database su Rete (Non ancora Implementato)||
-IFDNL00012|Networked AGWPE||
+IFDNL00012|AGWPE Via Rete||
 #
 #Interface device info 
 IFDIN00000|%s %d %s sulla seriale %s|| 
