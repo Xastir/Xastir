@@ -878,8 +878,6 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
 
 
-// Need to put in langcode() calls to support other languages.
-// Strings are currently hard-coded.
 void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, form, label1, label2, label3,
         label4, label5, label6, label7,
@@ -898,8 +896,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
  
     if (!smart_beacon_dialog) {
 
-//        smart_beacon_dialog = XtVaCreatePopupShell(langcode(""),xmDialogShellWidgetClass,Global.top,
-        smart_beacon_dialog = XtVaCreatePopupShell("Smart Beaconing",xmDialogShellWidgetClass,Global.top,
+        smart_beacon_dialog = XtVaCreatePopupShell(langcode("SMARTB001"),xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
                                     NULL);
@@ -915,8 +912,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNshadowThickness, 1,
                                 NULL);
 
-//        label1 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label1 = XtVaCreateManagedWidget("High Rate (secs):", xmLabelWidgetClass, form,
+        label1 = XtVaCreateManagedWidget(langcode("SMARTB002"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_FORM,
                                 XmNtopOffset, 10,
                                 XmNbottomAttachment, XmATTACH_NONE,
@@ -945,8 +941,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
-//        label2 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label2 = XtVaCreateManagedWidget("High Speed (mph):", xmLabelWidgetClass, form,
+        label2 = XtVaCreateManagedWidget(langcode("SMARTB003"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label1,
                                 XmNtopOffset, 10,
@@ -977,8 +972,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
-//        label3 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label3 = XtVaCreateManagedWidget("Low Rate (mins):", xmLabelWidgetClass, form,
+        label3 = XtVaCreateManagedWidget(langcode("SMARTB005"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label2,
                                 XmNtopOffset, 10,
@@ -1009,8 +1003,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
-//        label4 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label4 = XtVaCreateManagedWidget("Low Speed (mph):", xmLabelWidgetClass, form,
+        label4 = XtVaCreateManagedWidget(langcode("SMARTB006"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label3,
                                 XmNtopOffset, 10,
@@ -1041,8 +1034,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
-//        label5 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label5 = XtVaCreateManagedWidget("Minimum Turn (Deg):", xmLabelWidgetClass, form,
+        label5 = XtVaCreateManagedWidget(langcode("SMARTB008"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label4,
                                 XmNtopOffset, 10,
@@ -1073,8 +1065,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
-//        label6 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label6 = XtVaCreateManagedWidget("Turn Slope:", xmLabelWidgetClass, form,
+        label6 = XtVaCreateManagedWidget(langcode("SMARTB009"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label5,
                                 XmNtopOffset, 10,
@@ -1105,8 +1096,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
-//        label7 = XtVaCreateManagedWidget(langcode(""), xmLabelWidgetClass, form,
-        label7 = XtVaCreateManagedWidget("Wait Time (secs):", xmLabelWidgetClass, form,
+        label7 = XtVaCreateManagedWidget(langcode("SMARTB010"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label6,
                                 XmNtopOffset, 10,
