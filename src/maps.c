@@ -1355,7 +1355,16 @@ void draw_shapefile_map (Widget w,
         // type of file we may be dealing with.
         if (strncasecmp(filename,"tgr",3) == 0) {   // Found Mapshots or GeographyNetwork file
 
-            if (strstr(filename,"plc")) {         // Designated Places:  Arlington
+            if (strstr(filename,"lpt")) {           // Point file
+                mapshots_labels_flag++;
+                if (debug_level & 16) {
+                    printf("*** Found point file ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"plc")) {         // Designated Places:  Arlington
                 city_flag++;
                 mapshots_labels_flag++;
                 if (debug_level & 16) {
@@ -1615,14 +1624,7 @@ void draw_shapefile_map (Widget w,
 
     switch ( nShapeType ) {
         case SHPT_POINT:
-            printf("Point Shapefile format not implemented: %s\n",file);
             strcpy(sType,"Point");
-            DBFClose( hDBF );   // Clean up open file descriptors
-            SHPClose( hSHP );
-            // Free up any malloc's that we did
-            if (panWidth)
-                free(panWidth);
-            return; // Point type.  Not implemented yet.
             break;
 
         case SHPT_ARC:
@@ -1845,8 +1847,51 @@ void draw_shapefile_map (Widget w,
 
 
                 case SHPT_POINT:
-                        // Not implemented.
-                        printf("Shapefile Point format files aren't supported!\n");
+
+                    if (debug_level & 16)
+                        printf("Found Point Shapefile\n");
+
+                    // Read each point, place a label there, and an optional symbol
+                    //object->padfX
+                    //object->padfY
+                    //object->padfZ
+ 
+                    if (    mapshots_labels_flag
+                            && map_labels
+                            && (fieldcount >= 3) ) {
+
+                        const char *temp;
+                        int ok = 1;
+
+                        // Snag the label from the .dbf file
+                        temp = DBFReadStringAttribute( hDBF, structure, 2 );
+
+                        // Convert point to Xastir coordinates
+                        convert_to_xastir_coordinates(&my_long,
+                            &my_lat,
+                            (float)object->padfX[0],
+                            (float)object->padfY[0]);
+                        //printf("%ld %ld\n", my_long, my_lat);
+
+                        // Convert to screen coordinates.  Careful
+                        // here!  The format conversions you'll need
+                        // if you try to compress this into two
+                        // lines will get you into trouble.
+                        x = my_long - x_long_offset;
+                        y = my_lat - y_lat_offset;
+                        x = x / scale_x;
+                        y = y / scale_y;
+
+                        if (x >  16000) ok = 0;     // Skip this point
+                        if (x < -16000) ok = 0;     // Skip this point
+                        if (y >  16000) ok = 0;     // Skip this point
+                        if (y < -16000) ok = 0;     // Skip this point
+
+                        if (ok == 1) {
+                            (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                            //(void)draw_rotated_label_text (w, (int)angle, x, y, strlen(temp), colors[0x08], (char *)temp);
+                        }
+                    }
                     break;
 
 
