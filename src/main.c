@@ -9204,7 +9204,7 @@ void check_for_new_gps_map(void) {
 
 // This is the separate execution thread that transfers the data
 // to/from the GPS.  The thread is started up by the
-// GPS_operations_do_transfer() function below.
+// GPS_operations() function below.
 //
 static void* gps_transfer_thread(void *arg) {
     int input_param;
@@ -9359,7 +9359,8 @@ static void* gps_transfer_thread(void *arg) {
             break;
 
         default:
-            fprintf(stderr,"Illegal parameter passed to GPS_operations function!\n");
+            fprintf(stderr,"Illegal parameter %d passed to gps_transfer_thread!\n",
+                input_param);
             gps_operation_pending = 0;  // We're done
             return(NULL);
             break;
@@ -9424,17 +9425,11 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
             gps_got_data_from = 0;
         }
 
-        if (       (strcmp(clientData,"1") == 0)     // Fetch track from GPS
-                || (strcmp(clientData,"2") == 0)     // Fetch route from GPS
-                || (strcmp(clientData,"3") == 0) ) { // Fetch waypoints from GPS
-        }
-        else if (  (strcmp(clientData,"4") == 0)     // Send track to GPS
-                || (strcmp(clientData,"5") == 0)     // Send route to GPS
-                || (strcmp(clientData,"6") == 0) ) { // Send waypoints to GPS
-        }
+        parameter = atoi((char *)clientData);
 
-        parameter = atoi(clientData);
-
+if ( (parameter < 1) || (parameter > 3) ) {
+    fprintf(stderr,"GPS_operations: Parameter out-of-range: %d",parameter);
+}
 
 //----- Start New Thread -----
  
