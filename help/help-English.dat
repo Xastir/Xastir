@@ -59,13 +59,23 @@ know!
 
 
 
-APRS(tm) is a Trademark of Bob Bruninga, 
-his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"
-Please note that a great deal of information on APRS(tm) can be found
-in the APRSdos documentation written by Bob Bruninga.  An additional
-source of information is the APRS(tm) specification, available from
-http://www.tapr.org
+APRS(tm) is a Trademark of Bob Bruninga, his home page is at
+"http://web.usna.navy.mil/~bruninga/aprs.html". A great deal of information
+on APRS(tm) can be found in the APRSdos documentation written by
+Bob Bruninga. An additional source of information is the APRS(tm)
+specification, available from http://www.tapr.org .
 
+HELP-INDEX>What's new in Xastir BETA
+                    What's new in Xastir BETA
+
+(This section is an informal list of changes that will be formally written
+before a release)
+
+Serial TNX w/ gps on AUX port
+GPS clock setting
+Dropping setuid root privs
+Tracked proximity alarms
+Tracking self
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -319,9 +329,12 @@ New Message Body  - Speak the contents of a message.
 Proximity Alert   - Announce when receiving data from a station within the
     min.max distance of your proximity settings.  This option uses the 
     proximity settings found in the Audio Alarms menu.
+Tracked station Proximity Alert - Announce when receiving data from a
+    station within the min.max distance of the tracked station. This option
+    uses the proximity settings found in the Audio Alarms menu.
 Band Opening      - Announce when receiving data from a station (via TNC) 
     within the min/max distance of your band opening settings.  This option 
-    uses the proximity settings found in the Audio Alarms menu.
+    uses the distance settings found in the Audio Alarms menu.
 New Weather Alert - Not implemented yet.
 
 Info on Festival may be obtained from: http://www.speech.cs.cmu.edu/festival/
@@ -1225,6 +1238,7 @@ Internet Server
 AX.25 TNC
 Networked GPS (via gpsd)
 Networked WX
+Serial TNC w/GPS on AUX port
 
 To add a device, click on the add button. A "Choose Interface Type" box will
 appear. Click on the type of device you would like to add. Then click the Add
@@ -1290,6 +1304,14 @@ located in the /usr/local/xastir/config directory. Each file is a standard
 text file containing any commands you would like to send your TNC at the time
 the device is activated (startup file) or shut down.
 
+HELP-INDEX>Configure Serial TNC w/GPS on HSP cable or AUX port
+
+                Configure Serial TNC w/GPS on HSP cable or AUX port
+
+These hybrid interface types implement the options of both serial TNCs and
+GPSs. Please consult the configuration help for both serial TNCs and serial
+GPSs for further information on the configuration of this device.
+
 HELP-INDEX>Configure AX.25 TNC Devices
 
                         Configure AX.25 TNC Devices
@@ -1324,13 +1346,10 @@ use the more efficient flooding protocols, in which case you might use WIDE3-3
 or RELAY,WIDE3-3.
 
 NOTE: To use AX.25 devices with Xastir you will need to run the program as
-"root". If you want to run Xastir as another user you will need to set the
-suid bit on the Xastir program file. The following command as root should set
-this for you: "chmod a+s /usr/local/bin/xastir"
-
-As with any program running this way, please note that this may be considered
-a security risk, as the program has not been tested for exploits. Use in this
-fashion in a multi-user environment at your own risk!
+"root". If you want to run Xastir as another user you may want to set the
+suid bit on the Xastir program file. Please see README.1ST for more
+information; current Xastir drops the extra privledges but has not been audited
+for exploits. Use in this fashion in a multi-user environment at your own risk!
 
 HELP-INDEX>Configure Serial GPS Devices
 
@@ -1341,6 +1360,10 @@ Set the serial port device for your GPS unit. Common values of /dev/ttyS0
 
 Selecting "Activate on start up" will tell Xastir to look for this device and
 set up communications with it when the program first starts.
+
+Selecting "Set system clock from GPS data" will tell Xastir to try set the
+system's clock to the highly accurate time signal from the GPS receiver. This
+requires root privledges on most systems.
 
 Now set the bps rate under port settings, and the parameters under port
 style. Port Style setting 8N1 is used for 8 data bits, No parity and 1 stop
@@ -1364,6 +1387,10 @@ set up communications with it when the program first starts.
 
 Selecting "Reconnect on failure" will tell Xastir to try to reconnect when the
 data stream has failed.
+
+Selecting "Set system clock from GPS data" will tell Xastir to try set the
+system's clock to the highly accurate time signal from the GPS receiver. This
+requires root privledges on most systems.
 
 HELP-INDEX>Configure the Internet Server
 
@@ -1411,7 +1438,7 @@ Peet Bros.).
 
 HELP-INDEX>Configure a Networked WX Station
 
-                Configure a Networked WX Station
+                   Configure a Networked WX Station
 
 Xastir can use WX data servers such as wx200d. wx200d will allow several
 network connections, thus sharing the Weather data with several programs or
@@ -1430,7 +1457,7 @@ As before the Data Type will override the auto detection.
 
 HELP-INDEX>Printing
 
-                Printing the Map Screen
+                       Printing the Map Screen
 
 Xastir can print the drawing area in either black & white or color.  It does
 this by first dumping the image to an XPixmap file on disk, then using external
@@ -1448,7 +1475,7 @@ viewable.  This can save greatly on ink.
 
 HELP-INDEX>Creating Snapshots
 
-                Creating Automatic Snapshots
+                     Creating Automatic Snapshots
 
 Xastir has the capability to create automatic snapshots of the map screen
 on a recurring basis.  This time period is currently set at once per five
@@ -1464,7 +1491,7 @@ These are the symbols that you can select for your station under the "Station
 Information" configuration menu. The current list can be found in the APRS(tm)
 Reference which you could get from http://www.tapr.org
 
-                        Symbol Table
+                             Symbol Table
 
 Symbol     Group /                       Group \
 

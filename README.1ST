@@ -154,7 +154,7 @@ Unpack the Xastir source code anywhere..
   tar xvzf xastir-x.x.x.tgz (where x.x.x is the version number)
 
 If you have installed before, read the "Previous Install" notes for information
-on changes in file location.
+on changes in file location and permissions.
 
 
 First Time Install:
@@ -221,7 +221,7 @@ First Time Install:
      maps into a larger contiguous map of an area:
 
 
-       3a.  Edit your startup files:
+       3a.  Check/Edit your startup files:
        -----------------------------
        Check that /usr/local/lib, /usr/lib, and /usr/X11R6/lib are
        all listed in /etc/ld.so.conf. If you don't have permission to
@@ -426,8 +426,8 @@ First Time Install:
      "./configure --prefix=/home/apps/xastir"
 
      Which will cause executables to be installed in "/home/apps/xastir/bin/"
-     and the rest of Xastir to be installed under the "/home/apps/xastir/xastir/"
-     directory.
+     and the rest of Xastir to be installed under the
+     "/home/apps/xastir/xastir/" directory.
  
      This is useful if you don't have root access on a machine, but still
      wish to install and use Xastir from your home directory.  There are
@@ -606,7 +606,7 @@ END OF MANDRAKE LINUX NOTES.
      started it.  This allows Xastir to talk to the kernel AX.25 networking.
 
      GENERAL SECURITY WARNING:
-     Beware that Xastir has not been audited for security, and makes no
+     Beware that Xastir has not been audited for security, and makes limited
      effort to drop extra privileges. Use this in a multi-user environment
      at your own risk!  The developers have worked hard to fix remote buffer
      overflows in the code to make Xastir safer to use, but there are _MANY_
@@ -661,7 +661,7 @@ END OF MANDRAKE LINUX NOTES.
      serious security implications for some of this!
 
      If you're using a serial TNC, configure your TNC startup files in the
-     /usr/local/xastir/config directory.
+     /usr/local/xastir/config directory:
 
      tnc-startup.sys is used to set up your TNC for Xastir and tnc-stop.sys
      is to change the TNC back to your normal settings. There are several
@@ -725,8 +725,11 @@ END OF MANDRAKE LINUX NOTES.
         chmod 2500 /usr/local/bin/xastir
         chgrp uucp /usr/local/bin/xastir
 
-     Here's what Jack Twilley had to say about the issue with regards to
-     "chmod uog+rw" (same as chmod 555) for serial ports:
+     Solution #3:
+     You can change the permissions of the serial port to allow use by all
+     users, but this is highly discouraged.
+     Here's what Jack Twilley had to say with regards to "chmod uog+rw" (same
+     as chmod 555) for serial ports:
 
      > This is not necessary, and opens up the possibility of abuse.  Not all
      > Xastir installations are Linux boxes used by a single person with a
@@ -890,41 +893,39 @@ Previous Install Notes:
 -----------------------
      Backup all previous installed data!
 
-     For newest versions of Xastir you typically do ./configure, make,
-     su (root), make install.  If you've added/removed libraries or edited
-     the autoconfigure scripts in some way you may also have to remove
-     config.cache and/or config.status before running configure.
-
-     On older versions of Xastir you may need to do a make clean,
-     make depend, make, and finally a make install.
+  Xastir 0.1.0 users (if there are any of you still around!):
 
      For Xastir version 0.1.0 and below there are new file locations:
      All map data, tnc config data, and support files now go under the
-     /usr/local/xastir directory.
-
-     All personal config data, logs, etc are user the (user home dir)/.xastir
-     directory (which will be created after xastir starts).
-
-     Before following the same build instructions in #2, go to the source
-     directory and type "make clean".
-
-     If you have had a previous install you can copy (after your first xastir
-     startup) your xastir.cnf file to your (user home dir)/.xastir/config
-     directory. MAKE SURE YOU DELETE all lines referencing Files!
-     Xastir may not run properly if you don't!
+     /usr/local/xastir directory. All personal config data, logs, etc are
+     user the (user home dir)/.xastir directory (which will be created after
+     xastir starts). You can copy (after your first xastir startup) your
+     xastir.cnf file to your (user home dir)/.xastir/config directory. MAKE
+     SURE YOU DELETE all lines referencing Files! Xastir may not run properly
+     if you don't!
 
      If you have Xastir version 0.1.1 then your files are in the right place,
-     just follow build instructions in #2.
+     just follow the typical build instructions.
 
-     Xastir 0.2.0 has new device controls so you will need to setup your
-     devices again with 0.2.0.
-     Look at Configure->Interfaces and Configure->Defaults
+  Xastir 0.2.0 users:
 
+     Xastir 0.2.0 and newer have new device controls so you will need to
+     setup your devices again with 0.2.0.
+     Look at File->Configure->Interfaces and File->Configure->Defaults
 
+  Xastir 0.3.x, 0.9.x, 1.0.x, 1.1.0:
+
+     Versions above 1.1 drop privledges if they are run as root. If any of the
+     Xastir files are owned by root, on only readable by root, they will cause
+     problems. Fix these files by "chmod username.groupname filename" where
+     username and groupname are your user and group, and filename is the
+     problem file.
+ 
 Gating NWS Weather Alerts to RF:
 --------------------------------
-    If you wish to gate NWS weather alerts from the internet onto RF, you'll need
-    to create a text file in the users directory as ~/.xastir/data/nws-stations.txt
+    If you wish to gate NWS weather alerts from the internet onto RF, you'll
+    need to create a text file in the users directory as 
+    ~/.xastir/data/nws-stations.txt
     List each call or NWS station like "SECIND" that you would like to transmit
     via RF.  Here's what an example file looks like:
 
@@ -948,13 +949,13 @@ Gating NWS Weather Alerts to RF:
 
     Once that file is in place, you'll need to hook up to at least one internet
     server that is feeding you the weather alerts.  You'll also need to have at
-    least one RF interface up and running with transmit enabled on that interface.
-    Make sure that "Interfaces->Disable Transmit: All" is not selected.  You
-    should now be gating NWS weather messages to RF.
+    least one RF interface up and running with transmit enabled on that
+    interface. Make sure that "Interfaces->Disable Transmit: All" is not
+    selected.  You should now be gating NWS weather messages to RF.
 
     Turn on igate logging and look at that log file to view what you're sending
-    out via RF.  Don't forget to turn off logging or set up auto-rollover of the
-    log files, else your hard drive might fill up with logging info.
+    out via RF.  Don't forget to turn off logging or set up auto-rollover of
+    the log files, else your hard drive might fill up with logging info.
     Auto-rollover of log files is typically accomplished via CRON.
 
 
@@ -1138,15 +1139,11 @@ Getting Data Files for Xastir:
        database is installed, a Search RAC Database button will appear for
        callsigns beginning with a "VE" or a "VA".
 
-
        To use the FCC lookup download:
-       (FIXME: Bad link. Use the new database below till we find it again.)
-         ftp://ftp.fcc.gov/pub/XFS_AlphaTest/amateur/appl.zip
-       or the New database at:
        ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
-       (The only file needed from this 40Meg zip is the EN.dat file)
+       (The only file needed from this 60Meg zip is the EN.dat file)
 
-       **** NOTE to use the NEW data base file it must be sorted first!!! ****
+       **** NOTE To use the data base file it must be sorted first!!! ****
       
        Make sure you have plenty of disk space for this as the file is BIG!
        To sort the file:
