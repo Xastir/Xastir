@@ -6678,37 +6678,27 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
 // Returns a station with a call equal or after the searched one
 //
 // We use a doubly-linked list for the stations, so we can traverse
-// in either direction.  We use this to create/update an array of
-// pointers to dump us into the correct initial letter for the
-// callsign, which reduces search time quite a bit.  We end up doing
-// a linear search only through one letter group, instead of the
-// entire linked list.
+// in either direction.  We use a 14-bit hash table created from the
+// first two letters of the call to dump us into the beginning of
+// the correct area that may hold the callsign, which reduces search
+// time quite a bit.  We end up doing a linear search only through a
+// small area of the linked list.
 //
-// Even better would be to switch to a hash function for station
-// storage.  Zero or very little linear searching would be required
-// then, depending on the size/type of hash.
+// DK7IN:  I don't look at case, objects and internet names could
+// have lower case.
 //
 int search_station_name(DataRow **p_name, char *call, int exact) {
-
-    // DK7IN: we do a linear search here. (Only partially now --we7u)
-    // Maybe I set up a tree storage too, to see what is better,
-    // tree should be faster in search, list faster at display time.
-    // I don't look at case, objects and internet names could have lower case
-
-// Above comments are old now.  Implemented 14-bit hash table for
-// station lookup.  --we7u
-
-    int i,j;
-    int ok = 1;
-    char ch0,ch1;
+    int kk;
     int hash_key;
+    int result;
+    int ok = 1;
 
 
     (*p_name) = n_first;                                // start of alphabet
-    ch0 = call[0];
-    ch1 = call[1];
-    if (ch0 == '\0') {
-        // If call is empty, return n_first as the pointer
+
+    if (call[0] == '\0') {
+        // If call we're searching for is empty, return n_first as
+        // the pointer.
         return(0);
     }
 
@@ -6721,47 +6711,58 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
     // Look for a match using hash table lookup
     //
     (*p_name) = station_shortcuts[hash_key];
-    if ((*p_name) == NULL) {    // No entry found.
-        int jj;
+
+    if ((*p_name) == NULL) {    // No hash-table entry found.
+        int mm;
 
         // No index found for that letter.  Walk the array until
         // we find an entry that is filled.  That'll be our
-        // insertion point (insertion into the list will occur just
-        // ahead of the hash entry).
-        for (jj = hash_key; jj < 16384; jj++) {
-            if (station_shortcuts[jj] != NULL) {
-                (*p_name) = station_shortcuts[jj];
+        // potential insertion point (insertion into the list will
+        // occur just ahead of the hash entry).
+        for (mm = hash_key; mm < 16384; mm++) {
+            if (station_shortcuts[mm] != NULL) {
+                (*p_name) = station_shortcuts[mm];
                 break;
             }
         }
     }
 
-    if ((*p_name) == NULL
-            || (*p_name)->call_sign[0] != ch0
-            || (*p_name)->call_sign[1] != ch1) {
-        return(0);                                  // nothing found!
+    // If we got to this point, we either have a NULL pointer or a
+    // real hash-table pointer entry.  A non-NULL pointer means that
+    // we have a match for the lower seven bits of the first two
+    // characters of the callsign.  Check the rest of the callsign,
+    // and jump out of the loop if we get outside the linear search
+    // area (if first two chars are different).
+
+    kk = (int)strlen(call);
+
+    // Search through list.  Stop at end of list or break.
+    while ( (*p_name) != NULL) {
+
+        // Check first part of string for match
+        result = strncmp( call, (*p_name)->call_sign, kk );
+
+        if (result > 0) {   // We went past the right location.
+                            // We're done.
+            ok = 0;
+            break;
+        }
+        else if (result == 0) { // Found a possible match
+            break;
+        }
+        else {  // Result < 0.  We haven't found it yet.
+            (*p_name) = (*p_name)->n_next;  // Next element in list
+        }
     }
 
-    for ( i = 1; i < (int)strlen(call); i++ ) {         // check rest of string
-        ch1 = call[i];
-        ch0 = call[i-1];
-        while (ok) {
-            if ((*p_name)->call_sign[i] >= ch1)         // we also catch the '\0'
-                break;                                  // finished search
-            (*p_name) = (*p_name)->n_next;              // next element
-            if ((*p_name) == NULL)
-                break;                                  // reached end of list
-            for (j=0;ok && j<i;j++) {                   // unchanged first part?
-                if ((*p_name)->call_sign[j] != call[j]) {
-                    ok = 0;
-                }
-            }
-        }
-        // we now probably have found the next char
-        if ((*p_name) == NULL || (*p_name)->call_sign[i] != ch1)
-            ok = 0;                                     // nothing found!
-    }  // check next char in call
+    // Did we find anything?
+    if ( (*p_name) == NULL) {
+        ok = 0;
+        return(ok);
+    }
 
+    // If "exact" is set, check that the string lengths match as
+    // well.  If not, we didn't find it.
     if (exact && ok && strlen((*p_name)->call_sign) != strlen(call))
         ok = 0;
 
