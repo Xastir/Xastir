@@ -572,8 +572,17 @@ int pipe_check(char *client_address) {
                 if (passcode_str == NULL)
                     continue;
 
-                // This is the start of the string we want
-                passcode_str = passcode_str + 5;
+                // Fast-forward past the "pass" word.
+                passcode_str = passcode_str + 4;
+
+                // Skip past any additional spaces that might be
+                // present between "pass" and the passcode.
+                while (passcode_str[0] == ' ' && passcode_str[0] != '\0') {
+                    passcode_str += 1;
+                }
+
+                if (passcode_str[0] == '\0')
+                    continue;
 
                 // Find the space after the passcode
                 space = strstr(&passcode_str[0]," ");
