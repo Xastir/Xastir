@@ -14,7 +14,7 @@ OVERVIEW
 
 This is a bridge utility between "meteo", a Davis Weather Station 
 data storage & display application by Andreas Muller (see 
-http://meteo.othello.com) and "Xastir", the APRS package for
+http://meteo.othello.ch) and "Xastir", the APRS package for
 Linux (see http://www.xastir.org). It allows your Davis weather 
 data to be used by Xastir for local station data.
 
@@ -49,7 +49,7 @@ Steps in order:
    once again version 0.9.5 is going to be out soon and should 
    work fine. See the instructions for installing & then setting 
    up meteo that come with the tar ball. Obtain the latest meteo 
-   at http://meteo.othello.com - the setup is rather involved but
+   at http://meteo.othello.ch - the setup is rather involved but
    worth the efort. Some SQL/XML skills can help here, but are 
    not absolutely required...
 
