@@ -49,7 +49,7 @@ HELP-INDEX>Welcome! and Notes from the Authors
 
 XASTIR, or X-windows Amateur Station Tracking and Information Reporting.
 
-Xastir is an APRS(tm)-like program that is Open Source and free to use and 
+Xastir is an APRS(tm) program that is Open Source and free to use and 
 pass out to others. Currently this program is in development and should 
 not be seen as a finished product! Your help will be needed to make this
 a better program.  If you have programming skills and/or can write 
@@ -99,7 +99,7 @@ dialog allows individual control of map layering, map color filling, and
 consideration for auto-maps. Additionally, with extent caching under the hood,
 auto-maps regains much of its formal usefullness even with many maps installed!
 
-Bulletins pop up on screen, and emergency beacons cause and alert with the 
+Bulletins pop up on screen, and emergency beacons cause an alert with the 
 locate station dialog on hand. These changes are helpful in emergencies and
 event coordination.
 
@@ -107,16 +107,16 @@ Xastir can now be set to use one of several coordinate systems, including UTM,
 dd.ddddd, dd mm.mmm, and dd mm ss.s. This is helpful for coordinating with
 other groups using a different system.
 
-The online Tiger maps can now be enabled from the map menu, and many options
-can be adjusted to request the maps with the data you want.
+The online Tiger maps can now be enabled from the map menu, and options can
+be adjusted to request maps with just the data you want displayed.
 
-The stations menu has been reorganized, allowing you to more intuitively filter
-what stations are shown and what accompanying data is displayed.
+The stations menu has been reorganized, allowing more intuitive filtering of
+stations shown and of accompanying data.
 
 Other smaller interface changes include:
 * The density of the grid-lines can be adjusted with the +, =, and - keys.
 * Objects and item lists have been added to the view menu.
-* Station meidenhead grid squares are now shown in station info and the
+* Station maidenhead grid squares are now shown in station info and the
   coordinate calculator.
 * There is a checkbox "Track me" to enable easily tracking your own station
 * The length of trails downloaded from findu.com can now be specified.
@@ -125,13 +125,13 @@ Other smaller interface changes include:
   remotely via fast-scan TV. 
 * Timestamps are written to logfiles every 30 seconds of operation, to keep a
   record of when data was heard.
-* The status bar can display the course/distence to your station when
+* The status bar can display the course/distance to your station when
   enabled in the file|configure menu.
 * Range scales are now shown opposite the map scale. This is an attempt to
   standardize various APRS client approaches to zoom levels.
 
 (FIXME: These are undocumented features that don't really have their own
-tieins to the UI. Should they be listed here? anywhere?)
+tie-ins to the UI. Should they be listed here? anywhere?)
 Tracked proximity alarms
 export waypoints within proximity boundaries
 export trail as shapefile
@@ -139,20 +139,20 @@ export trail as shapefile
 The weather reporting features have been improved, with the addition of
 optional wind barbs to weather stations and decoding of storm wind radius data.
 Weather alert shading is now done with pixmap stipples showing the type of
-alert. And further information on an alert is available over the internet from
+alert. Further information on an alert is available over the internet from
 the WXserver by simply double-clicking the alert in the weather alerts list.
-Weather alerts now use the newer shapefile format maps.
+Weather alerts now use the newer shapefile-format maps.
 
 Xastir's map support has been improved with enhancements to the shapefile code
 to handle point-type shapefiles. Additionally, speed improvements have been
 made in the ImageMagick graphical map loading, and many color-correction
-features have been added. And as mentioned above, the map chooser has greatly
-improved, and weather alerts use shapefile format maps.
+features have been added. As mentioned above, the map chooser has been greatly
+improved, and weather alerts use shapefile-format maps.
 
 Under the hood, Xastir has had several major improvements:
 
 The messaging system has been largely rewritten, and the annoying timed updates
-to windows no longer occur. The new messaging system allows multiple messages
+to dialogs no longer occur. The new messaging system allows multiple messages
 to be queued, and implements reply-acks for speed. Xastir also attempts to
 specify a reasonable path for the message based on received messages. This
 improves speed and congestion control.
@@ -161,7 +161,8 @@ The build process has been significantly improved; Xastir is now able to be
 built on numerious operating systems with few manual interventions.
 
 Xastir now supports GPSMan/gpsmanshp, allowing the importing of waypoints,
-tracks, and routes from several types of GPS recievers.
+tracks, and routes from several types of GPS receivers.  This allows you to
+create Shapefile-format maps out of GPS data.
 
 Xastir now implements SmartBeaconing(tm), which greatly improves trail quality
 and reduces unneeded channel usage. See the "Configure SmartBeaconing" help
@@ -179,14 +180,15 @@ making it usable even with many maps installed.
 Objects controlled by Xastir are now stored in a file, so a restart of Xastir
 will not cause them to be lost. Additionally, Xastir now supports the
 compressed format for objects and items, which can help reduce RF channel
-congestion. See the help topic "Configure Default Operation".
+congestion. It also gives you better location accuracy of the placed objects.
+See the help topic "Configure Default Operation".
 
 Xastir now drops root privileges when not needed if run setuid root. Please
 read the information about this in INSTALL; this change provides only
 limited protection.
 
-Xastir now supports being run with a private colormap with the commandline
-argument "-i". This is recommended for systems running in 8-bit color mode. 
+Xastir now supports using a private colormap with the commandline argument
+"-i". This is recommended for systems running in 8-bit color mode. 
 
 Additionally, several more buffer overruns and other errors were corrected in
 Xastir's data parser, and numerious other bugs have been fixed.
@@ -210,29 +212,30 @@ change the current language choice, call Xastir with the option '-l':
 
     xastir -lEnglish
 
-Other language options are:
+Language options are:
     xastir -lDutch
+    xastir -lEnglish
     xastir -lFrench
     xastir -lGerman
     xastir -lItalian
     xastir -lPortuguese
     xastir -lSpanish
 
-The chosen language will be stored in your config file, so it is
-preserved for the next time you call Xastir without this option.
-For new installs Xastir will default to English until you change the
-language with this command line option.
+The chosen language will be stored in your config file, so it is preserved
+for the next time you call Xastir.  For new installs Xastir will default to
+English until you change the language with this command line option.
 
-The menus on the top may be accessed with the mouse, or with keyboard
-shortcuts. The keyboard shortcuts don't work correctly with numlock on.
+The menus on the top may be accessed with the mouse or with keyboard
+shortcuts. The keyboard shortcuts may not work correctly with numlock on.
 
-You will need to configure Xastir, and some interfaces to use.
+You will need to configure interfaces in order to actually use Xastir.
 Interface configuration is detailed under the "Configuring Interfaces" help
 topic and its subtopics.
 
 If you are operating in a situation where a coordinate system other than the
 default DD MM.MMMM system would be helpful, you may select your preferred
-system by going to File|Configure|Coordinate system.
+system by going to File|Configure|Coordinate system.  Any of the supported
+coordinate systems my be used as input by using the Coordinate Calculator.
 
 HELP-INDEX>Configure the Station Information
 
@@ -254,9 +257,9 @@ later.
 "Send Compressed posits", if selected, will transmit in the newer compressed
 format. This format will reduce the amount of data on the air, thereby
 increasing the capacity of the APRS(tm) network. The maximum precision of the
-transmitted position is also higher. Some older programs, including even
-recent versions of WinAPRS, do not decode this format yet. Findu.com might
-also have trouble with it.
+transmitted position is also higher. Some older programs, including recent
+versions of WinAPRS, do not decode this format yet. Findu.com might also have
+trouble with it.
 
 To select a symbol to be used for your station you need to specify
 a group and a symbol character. You can manually fill in these fields,
@@ -266,7 +269,8 @@ in the "symbol table" help topic.
 
 For some symbols of the secondary group you can specify an overlay.
 With that a symbol will be displayed together with an additional
-overlay character, e.g. a car symbol with the number 1 atop.
+overlay character, e.g. a car symbol with the number 1 overlayed on
+top of the symbol.
 
 For using overlays you need to select a symbol from the secondary symbol
 table and enter the overlay character to be shown in the group/overlay
@@ -280,14 +284,13 @@ Next, enter the data for the power/height/gain of your station. This
 is useful information but is not required; simply select "Disable PHG"
 to disable it. These choices present a granular representation of your
 stations range. Select the combination of values closest to the
-description of your station.
+description of your station.  Please use height above average
+terrain (HAAT) for the height value.  Do NOT use average height
+above sea level or height above ground.
 
 Another option would be to specify the RNG in the comment field in miles
 instead of using PHG. See the APRS(tm) spec for details.
     
-Please use height above average terrain (HAAT) for the height value. 
-Do NOT use average height above sea level or height above ground.
-
 For Gain use the gain of your antenna in dBi. 
 (FIXME: dBd? spec is unclear, I think it's implying dBi because it says "in
 absence of any data, stations are assumed to be running 10w to a 3dB omni at
@@ -332,7 +335,8 @@ comes in via the Internet and is transmitted via RF. You also will need to
 choose an igate option on each interface in order for the igate to function.
 If you want to have your igate forward NWS weather alerts to RF, you must
 create a ~/.xastir/data/nws-stations.txt file listing each call or NWS station
-(like "PHISVR") that you would like to transmit via RF.
+(like "PHISVR") that you would like to transmit via RF.  This feature is
+currently implemented only for NWS messages.
                      
 "Compress object/item data while transmitting?", if selected, will transmit
 objects and items in the newer compressed format. The maximum precision of the
@@ -349,7 +353,8 @@ be displayed or cause popups.
 
 Warn if Modifier keys will cause Xastir to print a warning if you attempt to
 use Xastir while num-lock, scroll-lock, or caps-lock is engaged. Some users
-report the screen blanking on them and similar problems when they attempt this.
+report the screen blanking on them and similar problems when they attempt to
+use Xastir with one of these modifier keys on.
 
 You can also select "Activate alternate net?" choose an altnet call from this
 dialog. Altnet allows you to have a private APRS(tm) network among the
@@ -415,7 +420,9 @@ HELP-INDEX>Configure Speech
 To use this option you must have a sound card and the 'festival' speech
 synthesis software installed.  Install Festival and start it in 'server' 
 mode prior to starting up XASTIR.  The normal command for this is 
-"festival --server &".
+"festival_server &".  If you use the "festival --server" option instead (old
+method), you may run into problems with connections getting rejected by the
+server.
 
 Once you have festival installed, Xastir will have the ability to speak using
 the following choices:
@@ -479,9 +486,9 @@ Lower speeds will require more degrees of turn to trigger a posit, based on
 the value of "Turn Slope" below.
 
 Turn Slope
-Fudget factor for making turns less sensitive at lower speeds.  No real units
-on this one. It ends up being non-linear over the speed range the way the
-original SmartBeaconing(tm) algorithm works.
+Fudget factor for making turns less sensitive at lower speeds.  The parameter
+doesn't have any units. It ends up being non-linear over the speed range the
+way the original SmartBeaconing(tm) algorithm works.
 
 Wait Time
 The time in seconds between corner-pegging beacons, prevents multiple
@@ -504,15 +511,16 @@ At the bottom of the window various status messages are available:
 In the first box on the left general status messages are displayed for a
 short time.
 
-The second box displays the current lat/long and Maidenhead grid square
-position of the mouse over the map. If file|configure|Dist/Bearing Status is
-selected, this box will also contain the course and bearing of this station
-relative to yours.
+The second box displays the current lat/long or UTM, and Maidenhead grid
+square position of the mouse over the map. If file|configure|Dist/Bearing
+Status is selected, this box will also contain the course and bearing of
+this station relative to yours.
 
 A third box is used to display how many stations are in the database.
 
 The fourth box will display the current zoom level and will display "Tr" if
-the station tracking is on. 
+the station tracking is on.  At some zoom levels the Tr is not
+displayed properly due to the size of the box. 
 
 The fifth box indicates whether logging is enabled.
 
@@ -554,11 +562,11 @@ A quicker zoom in function is to push and hold the left mouse button, drag it
 across the area of interest and let go.  The map will zoom to approximately
 the size of the square you just described with the mouse drag operation. The
 "move" and "measure" toolbar checkboxes must be disabled for this feature to
-work. Clicking the middle button zooms out with a factor
-of 2, centering where you clicked.
+work. Clicking the middle button zooms out with a factor of 2, centering
+where you clicked as well.
 
 The map can also be zoomed with the keyboard PageUp/PageDown keys.  The
-zooming in this case keeps the same map center. 
+zooming in this case keeps the same map center (no centering).
 
 Panning/Centering:
 The map can be centered at a specific location by choosing center in the
@@ -566,14 +574,14 @@ right-click options menu.
 
 Panning is also accomplished by using the options menu, or by using the arrow
 buttons on the top of the screen. The map position will shift a portion of a
-screen. Enough data from the previous screen should be available to reorient
-yourself.
+screen. Enough data from the previous screen should be available to
+re-orient yourself.
 
 The map can also be panned with the keyboard arrow keys.
 
 More About Options Menu:
 The "Station Info" selection on the options menu will look for the station
-closest to where you right clicked the mouse. If more than one station is
+closest to where you right-clicked the mouse. If more than one station is
 close to that position a "Station chooser" list will appear, then you can
 choose what station's data you want to look at. If only one station is close
 to the mouse pointer then that station's data will display immediately. For
@@ -600,7 +608,7 @@ Objects and items are nearly the same things, but their use could differ a bit.
 Objects are generally used for moving or variable things such as thunderstorms,
 while items are generally used for more inanimate things, such as water
 stations. Because items may not be decoded by some flavors of APRS(tm)
-programs, objects are often used for inanimated things, too.
+programs, objects are often used for inanimate things, too.
 
 Besides normal objects with a symbol at its position there are some special
 objects available. Area objects are useful for a variety of operations in
@@ -1139,7 +1147,7 @@ This sub-menu allows filtering of the displayed symbols:
     Determines if your own station is shown on the map.
 
   Select via TNC
-   Global toggle for displaying data recieved via a TNC, but may be narrowed:
+   Global toggle for displaying data received via a TNC, but may be narrowed:
 
    Select Direct
      This option only displays stations heard directly (not digipeted).
