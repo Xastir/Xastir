@@ -698,15 +698,16 @@ time_t max_transmit_time;       /* max time between transmits */
 time_t last_alert_redraw;       /* last time alert caused a redraw */
 time_t sec_next_gps;            /* next gps check */
 time_t gps_time;                /* gps delay time */
-time_t POSIT_rate;              // Posit & object/item rate timer
+time_t POSIT_rate;              // Posit TX rate timer
+time_t OBJECT_rate;             // Object/Item TX rate timer
 time_t update_DR_rate;          // How often to call draw_symbols if DR enabled
 time_t remove_ID_message_time;  // Time to get rid of large msg on screen.
 int pending_ID_message = 0;     // Variable turning on/off this function
 
 
-// SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
-// objects & items, sb_POSIT_rate computed via SmartBeaconing(tm) will
-// be used for posits.
+// SmartBeaconing(tm) stuff.  If enabled, POSIT_rate won't be used
+// for timing posits. sb_POSIT_rate computed via SmartBeaconing(tm)
+// will be used instead.
 int smart_beaconing;            // Master enable/disable for SmartBeaconing(tm) mode
 int sb_POSIT_rate = 30 * 60;    // Computed SmartBeaconing(tm) posit rate (secs)
 int sb_last_heading = -1;       // Heading at time of last posit
@@ -736,8 +737,7 @@ Widget clearing_time = (Widget)NULL;
 Widget posit_interval = (Widget)NULL;
 Widget gps_interval = (Widget)NULL;
 Widget dead_reckoning_time = (Widget)NULL;
-//Widget ghosting_time = (Widget)NULL;
-//Widget ghosting_time = (Widget)NULL;
+Widget object_item_interval = (Widget)NULL;
 
 time_t GPS_time;                /* gps time out */
 time_t last_statusline;         // last update of statusline or 0 if inactive
@@ -767,7 +767,7 @@ time_t net_last_time;           /* reconnect last time in seconds */
 time_t net_next_time;           /* reconnect Next update delay time */
 
 time_t posit_last_time;
-time_t posit_next_time;         /* time at which next posit will occur */
+time_t posit_next_time;         /* time at which next posit TX will occur */
 
 time_t last_time;               /* last time in seconds */
 time_t next_time;               /* Next update delay time */
@@ -12511,6 +12511,9 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     XmScaleGetValue(dead_reckoning_time, &value);  // Minutes
     dead_reckoning_timeout = value * 60;
 
+    XmScaleGetValue(object_item_interval, &value);  // Minutes
+    OBJECT_rate = value * 60;
+
     // Set the new posit rate into effect immediately
     posit_next_time = posit_last_time + POSIT_rate;
 
@@ -12720,7 +12723,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNmaximum, 60*60,  // One hour
                 XmNshowValue, TRUE,
                 XmNvalue, (int)POSIT_rate,
-                XtVaTypedArg, XmNtitleString, XmRString, "Posit Interval (sec)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (sec)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -12745,7 +12748,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNmaximum, 60,     // Sixty seconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)gps_time,
-                XtVaTypedArg, XmNtitleString, XmRString, "GPS Interval (sec)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "GPS Check Interval (sec)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -12772,6 +12775,32 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(dead_reckoning_timeout / 60),
                 XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Object Item Transmit Interval
+        object_item_interval = XtVaCreateManagedWidget("Object/Item Transmit Interval (min)",
+                xmScaleWidgetClass,
+                my_form2,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, posit_interval,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 5,      // Five minutes
+                XmNmaximum, 120,    // 120 minutes
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(OBJECT_rate / 60),
+                XtVaTypedArg, XmNtitleString, XmRString, "Object/Item TX Interval (min)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);

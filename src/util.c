@@ -1748,7 +1748,7 @@ void reload_object_item(void) {
     }
 
     // Start transmitting these objects in about 30 seconds.
-    last_object_check = sec_now() + 30 - POSIT_rate;
+    last_object_check = sec_now() + 30 - OBJECT_rate;
 }
 
 

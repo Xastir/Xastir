@@ -102,6 +102,7 @@ extern time_t remove_ID_message_time;
 extern int pending_ID_message;
 extern time_t gps_time;
 extern time_t POSIT_rate;
+extern time_t OBJECT_rate;
 extern time_t update_DR_rate;
 
 extern time_t posit_last_time;

@@ -12646,7 +12646,7 @@ void check_and_transmit_objects_items(time_t time) {
 
 
     // Time to re-transmit objects/items?
-    if (sec_now() < (last_object_check + POSIT_rate) ) // Check every POSIT_rate seconds
+    if (sec_now() < (last_object_check + OBJECT_rate) ) // Check every OBJECT_rate seconds
         return;
 
     if (debug_level & 1)
