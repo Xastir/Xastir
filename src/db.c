@@ -4629,15 +4629,15 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
     if ((p = strstr(data, "/TS")) != NULL) {
         // We have a Tropical Storm
-printf("Tropical Storm! %s\n",data);
+//printf("Tropical Storm! %s\n",data);
     }
     else if ((p = strstr(data, "/TD")) != NULL) {
         // We have a Tropical Depression
-printf("Tropical Depression! %s\n",data);
+//printf("Tropical Depression! %s\n",data);
     }
     else if ((p = strstr(data, "/HC")) != NULL) {
         // We have a Hurricane
-printf("Hurricane! %s\n",data);
+//printf("Hurricane! %s\n",data);
     }
     else {  // Not one of the three we're trying to decode
         ok = 0;
@@ -4649,14 +4649,14 @@ printf("Hurricane! %s\n",data);
     if (p2 >= data) {
         if (!extract_speed_course(p2,speed,course)) {
             // No speed/course to extract
-printf("No speed/course found\n");
+//printf("No speed/course found\n");
             ok = 0;
             return(ok);
         }
     }
     else {  // Not enough characters for speed/course.  Must have
             // guessed wrong on what type of data it is.
-printf("No speed/course found 2\n");
+//printf("No speed/course found 2\n");
         ok = 0;
         return(ok);
     }
@@ -4666,7 +4666,7 @@ printf("No speed/course found 2\n");
 
         // If we got this far, we have speed/course and know what type
         // of storm it is.
-printf("Speed: %s, Course: %s\n",speed,course);
+//printf("Speed: %s, Course: %s\n",speed,course);
 
         ok = get_weather_record(p_station);     // get existing or create new weather record
     }
