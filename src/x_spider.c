@@ -551,11 +551,16 @@ int pipe_check(void) {
                 if (checkHash(callsign, passcode)) {
                     // Authenticate the pipe.  It is now allowed to send
                     // to the upstream server.
-fprintf(stderr,"x_spider: Authenticated user %s\n", callsign);
+                    //fprintf(stderr,
+                    //    "x_spider: Authenticated user %s\n",
+                    //    callsign);
                     p->authenticated = 1;
                 }
                 else {
-fprintf(stderr,"x_spider: Bad authentication, user %s\n", callsign);
+                    fprintf(stderr,
+                        "x_spider: Bad authentication, user %s, pass %d\n",
+                        callsign,
+                        passcode);
                 }
             }
 
