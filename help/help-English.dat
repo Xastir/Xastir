@@ -72,11 +72,13 @@ release)
 REFRESH tags on .geos
 Beginnings of Opentrac support- see opentrac.org
 yellow2->yellow3 on tracks to be visable on polygon fill (minor)
-MAP_SCALE_CHECK/FUZZYRASTER to avoid useless map loading
+Optional MAP_SCALE_CHECK/FUZZYRASTER to avoid useless map loading
 usr/local/xastir->/usr/local/share/xastir, migration scripts
 break up maps.c
 Interrupting a sequence of map redraws
+Major CPU Usage improvments
 TRANSPAERENT and CROP tags in .geos
+
 
 HELP-INDEX>What's new in Xastir 1.2
 
