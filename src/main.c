@@ -46,8 +46,34 @@
 #include <time.h>
 #include <sys/types.h>
 #undef RETSIGTYPE
+/* JMT - stupid ImageMagick */
+#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
+#undef PACKAGE_BUGREPORT
+#define XASTIR_PACKAGE_NAME PACKAGE_NAME
+#undef PACKAGE_NAME
+#define XASTIR_PACKAGE_STRING PACKAGE_STRING
+#undef PACKAGE_STRING
+#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
+#undef PACKAGE_TARNAME
+#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
+#undef PACKAGE_VERSION
 #include <magick/api.h>
-#endif  // HAVE_IMAGEMAGICK
+#undef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
+#undef XASTIR_PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#define PACKAGE_NAME XASTIR_PACKAGE_NAME
+#undef XASTIR_PACKAGE_NAME
+#undef PACKAGE_STRING
+#define PACKAGE_STRING XASTIR_PACKAGE_STRING
+#undef XASTIR_PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
+#undef XASTIR_PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
+#undef XASTIR_PACKAGE_VERSION
+#endif // HAVE_IMAGEMAGICK
 
 #ifdef  HAVE_LIBINTL_H
 #include <libintl.h>
@@ -7828,6 +7854,10 @@ void quit(int sig) {
 
     if (debug_level & 1)
         fprintf(stderr,"Exiting..\n");
+
+#ifdef HAVE_LIBCURL
+    curl_global_cleanup();
+#endif
 
     exit (sig);
 }
@@ -21843,6 +21873,9 @@ int main(int argc, char *argv[]) {
 
     program_start_time = sec_now(); // For use by "Display Uptime"
 
+#ifdef HAVE_LIBCURL
+    curl_global_init();
+#endif
 
 #ifdef HAVE_IMAGEMAGICK
     #if (MagickLibVersion < 0x0538)

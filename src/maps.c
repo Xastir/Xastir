@@ -41,7 +41,33 @@
 #ifdef HAVE_IMAGEMAGICK
 #include <time.h>
 #undef RETSIGTYPE
+/* JMT - stupid ImageMagick */
+#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
+#undef PACKAGE_BUGREPORT
+#define XASTIR_PACKAGE_NAME PACKAGE_NAME
+#undef PACKAGE_NAME
+#define XASTIR_PACKAGE_STRING PACKAGE_STRING
+#undef PACKAGE_STRING
+#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
+#undef PACKAGE_TARNAME
+#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
+#undef PACKAGE_VERSION
 #include <magick/api.h>
+#undef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
+#undef XASTIR_PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#define PACKAGE_NAME XASTIR_PACKAGE_NAME
+#undef XASTIR_PACKAGE_NAME
+#undef PACKAGE_STRING
+#define PACKAGE_STRING XASTIR_PACKAGE_STRING
+#undef XASTIR_PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
+#undef XASTIR_PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
+#undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_IMAGEMAGICK
 
 #include <dirent.h>
@@ -82,6 +108,17 @@
 #endif // HAVE_LIBSHP_SHAPEFIL_H
 #endif // HAVE_SHAPEFIL_H
 #endif // HAVE_LIBSHP
+
+#ifdef HAVE_LIBCURL
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
+
+struct FtpFile {
+  char *filename;
+  FILE *stream;
+};
+#endif
 
 #include "xastir.h"
 #include "maps.h"
@@ -5666,9 +5703,16 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
+#ifdef HAVE_LIBCURL
+    CURL *curl;
+    CURLcode res;
+    char curlerr[CURL_ERROR_SIZE];
+    struct FtpFile ftpfile;
+#else
 #ifdef HAVE_WGET
     char tempfile[MAX_FILENAME];
 #endif  // HAVE_WGET
+#endif
     char gamma[16];
     struct {
         float r_gamma;
@@ -5875,7 +5919,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         url_e = (int)(left_e / t_scale); // N/E of the map corner
 
         xastir_snprintf(fileimg, sizeof(fileimg),
-        "\'http://terraservice.net/download.ashx?t=1\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d\'",
+        "http://terraservice.net/download.ashx?t=1\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
              t_zoom, url_e, url_n, z, geo_image_width, geo_image_height);
     }
 #endif // HAVE_IMAGEMAGICK
@@ -6058,9 +6102,48 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s",
                 username,ext);
 
+#ifdef HAVE_LIBCURL
+        curl = curl_easy_init();
+
+        if (curl) { 
+
+            /* verbose debug is keen */
+          //            curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
+            curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+
+            /* write function */
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+
+            /* download from fileimg */
+            curl_easy_setopt(curl, CURLOPT_URL, fileimg);
+
+            /* save as local_filename */
+            ftpfile.filename = local_filename;
+            ftpfile.stream = NULL;
+            curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
+
+            res = curl_easy_perform(curl);
+
+            curl_easy_cleanup(curl);
+
+            if (CURLE_OK != res) {
+                fprintf(stderr, "curl told us %d\n", res);
+                fprintf(stderr, "curlerr is %s\n", curlerr);
+            }
+
+            if (ftpfile.stream)
+                fclose(ftpfile.stream);
+
+        } else { 
+            fprintf(stderr,"Couldn't download the geo or Terraserver image\n");
+            return;
+        }
+
+
+#else
 #ifdef HAVE_WGET
         xastir_snprintf(tempfile, sizeof(tempfile),
-                "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+                "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s \'%s\' 2> /dev/null\n",
                 WGET_PATH,
                 local_filename,
                 fileimg);
@@ -6074,8 +6157,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             return;
         }
 #else   // HAVE_WGET
-        fprintf(stderr,"'wget' not installed.  Can't download image\n");
+        fprintf(stderr,"libcurl and 'wget' not installed.  Can't download image\n");
 #endif  // HAVE_WGET
+#endif  // HAVE_LIBCURL
 
         // Set permissions on the file so that any user can overwrite it.
         chmod(local_filename, 0666);
@@ -6610,9 +6694,16 @@ void draw_tiger_map (Widget w) {
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
+#ifdef HAVE_LIBCURL
+    CURL *curl;
+    CURLcode res;
+    char curlerr[CURL_ERROR_SIZE];
+    struct FtpFile ftpfile;
+#else
 #ifdef HAVE_WGET
     char tempfile[MAX_FILENAME];
 #endif  // HAVE_WGET
+#endif
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
@@ -6667,7 +6758,7 @@ void draw_tiger_map (Widget w) {
 		"\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=CITIES&on=GRID&on=counties&on=majroads&on=places&&on=interstate&on=states&on=ushwy&on=statehwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
                    lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1); */
 
-    xastir_snprintf(tigertmp, sizeof(tigertmp), "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?");
+    xastir_snprintf(tigertmp, sizeof(tigertmp), "http://tiger.census.gov/cgi-bin/mapper/map.gif?");
 
     if (tiger_show_grid)
         strcat(tigertmp, "&on=GRID");
@@ -6742,7 +6833,7 @@ void draw_tiger_map (Widget w) {
     strcat (tigertmp, tmpstr);
     xastir_snprintf(tmpstr, sizeof(tmpstr), "wid=%f\046ht=%f\046", map_width, map_height);
     strcat (tigertmp, tmpstr);
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "iwd=%i\046iht=%i\'", tp[1].img_x + 1, tp[1].img_y + 1);
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "iwd=%i\046iht=%i", tp[1].img_x + 1, tp[1].img_y + 1);
     strcat (tigertmp, tmpstr);
     xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
 
@@ -6763,9 +6854,46 @@ void draw_tiger_map (Widget w) {
 
     xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
 
+#ifdef HAVE_LIBCURL
+    curl = curl_easy_init();
+
+    if (curl) { 
+
+        /* verbose debug is keen */
+      //        curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
+        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+
+        /* write function */
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+
+        /* download from fileimg */
+        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
+
+        /* save as local_filename */
+        ftpfile.filename = local_filename;
+        ftpfile.stream = NULL;
+        curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
+         
+        res = curl_easy_perform(curl);
+
+        curl_easy_cleanup(curl);
+
+        if (CURLE_OK != res) {
+            fprintf(stderr, "curl told us %d\n", res);
+            fprintf(stderr, "curlerr is %s\n", curlerr);
+        }
+
+        if (ftpfile.stream)
+            fclose(ftpfile.stream);
+    
+    } else { 
+        fprintf(stderr,"Couldn't download the Tigermap image\n");
+        return;
+    }
+#else
 #ifdef HAVE_WGET
     xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
+        "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s \'%s\' 2> /dev/null\n",
         WGET_PATH,
         tigermap_timeout,
         local_filename,
@@ -6779,8 +6907,9 @@ void draw_tiger_map (Widget w) {
        return;
     }
 #else   // HAVE_WGET
-    fprintf(stderr,"'wget' not installed.  Can't download image\n");
+        fprintf(stderr,"libcurl and 'wget' not installed.  Can't download image\n");
 #endif  // HAVE_WGET
+#endif  // HAVE_LIBCURL
 
 
 
@@ -12957,5 +13086,3 @@ void load_maps (Widget w) {
     if (debug_level & 1)
         fprintf(stderr,"Load maps stop\n");
 }
-
-
