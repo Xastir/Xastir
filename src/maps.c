@@ -27,7 +27,7 @@
  *
  */
 
-
+//#define GDAL_SHAPEFILES
 //#define MAP_SCALE_CHECK
 
 
@@ -3405,33 +3405,42 @@ extern void draw_ogr_map(Widget w,
 } map_driver[] = {
   {"map",map,draw_dos_map},
   {"pdb",pdb,draw_palm_image_map},
-//#ifdef HAVE_LIBGDAL
-//  {"shp",shp,draw_ogr_map},
-//  {"rt1",shp,draw_ogr_map},
-//  {"rt2",shp,draw_ogr_map},
-//  {"rt4",shp,draw_ogr_map},
-//  {"rt5",shp,draw_ogr_map},
-//  {"rt6",shp,draw_ogr_map},
-//  {"rt7",shp,draw_ogr_map},
-//  {"rt8",shp,draw_ogr_map},
-//  {"rta",shp,draw_ogr_map},
-//  {"rtc",shp,draw_ogr_map},
-//  {"rth",shp,draw_ogr_map},
-//  {"rti",shp,draw_ogr_map},
-//  {"rtp",shp,draw_ogr_map},
-//  {"rtr",shp,draw_ogr_map},
-//  {"rts",shp,draw_ogr_map},
-//  {"rtt",shp,draw_ogr_map},
-//  {"rtz",shp,draw_ogr_map},
-//  {"tab",shp,draw_ogr_map},
-//#else   // HAVE_LIBGDAL
+
+#ifdef HAVE_LIBGDAL
+
+#ifdef GDAL_SHAPEFILES
+  {"shp",shp,draw_ogr_map},
+#endif  // GDAL_SHAPEFILES
+
+  {"rt1",shp,draw_ogr_map},
+  {"rt2",shp,draw_ogr_map},
+  {"rt4",shp,draw_ogr_map},
+  {"rt5",shp,draw_ogr_map},
+  {"rt6",shp,draw_ogr_map},
+  {"rt7",shp,draw_ogr_map},
+  {"rt8",shp,draw_ogr_map},
+  {"rta",shp,draw_ogr_map},
+  {"rtc",shp,draw_ogr_map},
+  {"rth",shp,draw_ogr_map},
+  {"rti",shp,draw_ogr_map},
+  {"rtp",shp,draw_ogr_map},
+  {"rtr",shp,draw_ogr_map},
+  {"rts",shp,draw_ogr_map},
+  {"rtt",shp,draw_ogr_map},
+  {"rtz",shp,draw_ogr_map},
+  {"tab",shp,draw_ogr_map},
+#endif  // HAVE_LIBGDAL
+
 #ifdef HAVE_LIBSHP
+#ifndef GDAL_SHAPEFILES
   {"shp",shp,draw_shapefile_map},
+#endif  // GDAL_SHAPEFILES
 #endif /* HAVE_LIBSHP */
-//#endif  // HAVE_LIBGDAL
+
 #ifdef HAVE_LIBGEOTIFF
   {"tif",tif,draw_geotiff_image_map},
 #endif /* HAVE_LIBGEOTIFF */
+
   {"geo",geo,draw_geo_image_map},
   {"gnis",gnis,draw_gnis_map},
   {NULL,none,NULL},
