@@ -207,6 +207,9 @@ before you can change the properties on the shortcut.
 
 [ ] Step 3)  Test Cygwin and create startup shortcuts:
 
+Note:  With Win2000, I had to do a reboot before I could proceed
+further.
+
 Double-click on the shortcut you just made.  You should get a shell
 window that looks very much like a DOS window.  It's a BASH shell
 window and understands Unix commands instead of DOS commands.
