@@ -5036,7 +5036,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     int erd;
     int write_in_pos_hold;
 
-    //fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
+//fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
     transmit_txt[0] = '\0';
 
@@ -5140,7 +5140,6 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     //
     transmit_txt2[j] = '\0';
 
-
 //-------------------------------------------------------------------
 // Had to snag code from port_write_string() below because our string
 // needs to have 0x00 chars inside it.  port_write_string() can't
@@ -5170,6 +5169,19 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
             erd = 1;
         }
     }
+
+
+
+// DEBUG.  Dump out the hex codes for the KISS packet we just
+// created.
+/*
+    for (i = 0; i< j; i++) {
+        fprintf(stderr,"%02x ", transmit_txt2[i]);
+    }
+    fprintf(stderr,"\n\n");
+*/
+
+
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
@@ -5398,7 +5410,7 @@ void port_read(int port) {
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
-//fprintf(stderr," in:%x ",cin);
+//fprintf(stderr," in:%02x ",cin);
                 }
 
                 else {  // Handle AX25_TNC interfaces
