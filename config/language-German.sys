@@ -275,9 +275,9 @@ WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen|||
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||
 WPUPCFC002|Select Coordinate System||
-WPUPCFC003|DD.DDDDD|D|
-WPUPCFC004|DD MM.MMM|M|
-WPUPCFC005|DD MM SSS|S|
+WPUPCFC003|dd.ddddd|d|
+WPUPCFC004|dd mm.mmm|m|
+WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
 #
 # PopUp "GPS Einstellungen"

@@ -835,7 +835,7 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 // CONVERT_HP_NOSP      = DDMM.MMMN
 // CONVERT_UP_TRK       = NDD MM.MMMM
 // CONVERT_DEC_DEG      = DD.DDDDDN
-// CONVERT_DMS_NORMAL   = DD MM SSN
+// CONVERT_DMS_NORMAL   = DD MM SS.SN
 // CONVERT_HP_NORMAL    = DD MM.MMMN
 //
 void convert_lat_l2s(long lat, char *str, int str_len, int type) {
@@ -869,11 +869,11 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
             xastir_snprintf(str, str_len, "%c%02d %07.4f", ns, ideg, min);
             break;
         case(CONVERT_DEC_DEG):
-            xastir_snprintf(str, str_len, "%08.5f%c", ideg+min/60, ns);
+            xastir_snprintf(str, str_len, "%08.5f%c", ideg+min/60.0, ns);
             break;
         case(CONVERT_DMS_NORMAL):
-            xastir_snprintf(str, str_len, "%02d %02d %02d%c", ideg, (int)min,
-                            (int)((min-(int)min)*60), ns);
+            xastir_snprintf(str, str_len, "%02d %02d %04.1f%c", ideg, (int)min,
+                            (float)((min-(int)min)*60.0), ns);
             break;
         case(CONVERT_HP_NORMAL):
 
@@ -894,7 +894,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
 // CONVERT_HP_NOSP      = DDDMM.MMME
 // CONVERT_UP_TRK       = EDDD MM.MMMM
 // CONVERT_DEC_DEG      = DDD.DDDDDE
-// CONVERT_DMS_NORMAL   = DDD MM SSN
+// CONVERT_DMS_NORMAL   = DDD MM SS.SN
 // CONVERT_HP_NORMAL    = DDD MM.MMME
 //
 void convert_lon_l2s(long lon, char *str, int str_len, int type) {
@@ -927,11 +927,11 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
             xastir_snprintf(str, str_len, "%c%03d %07.4f", ew, ideg, min);
             break;
         case(CONVERT_DEC_DEG):
-            xastir_snprintf(str, str_len, "%09.5f%c", ideg+min/60, ew);
+            xastir_snprintf(str, str_len, "%09.5f%c", ideg+min/60.0, ew);
             break;
         case(CONVERT_DMS_NORMAL):
-            xastir_snprintf(str, str_len, "%03d %02d %02d%c", ideg, (int)min,
-                            (int)((min-(int)min)*60), ew);
+            xastir_snprintf(str, str_len, "%03d %02d %04.1f%c", ideg, (int)min,
+                            (float)((min-(int)min)*60.0), ew);
             break;
         case(CONVERT_HP_NORMAL):
 
