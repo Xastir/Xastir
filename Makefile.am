@@ -9,8 +9,8 @@ SUBDIRS = src m4 config help symbols callpass
 # DISTCLEANFILES = intl/libintl.h
 
 EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltconfig \
-        ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README
-
+        ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README \
+        xastir.1
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
         config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs \
@@ -39,6 +39,9 @@ sound_DATA=placeholder
 
 docdir=${prefix}/xastir/doc
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README.1ST COPYING
+
+mandir=${prefix}/man/man1
+man_DATA=xastir.1
 
 ChangeLog::
 

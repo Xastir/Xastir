@@ -28,7 +28,6 @@ sharedstatedir = @sharedstatedir@
 localstatedir = @localstatedir@
 libdir = @libdir@
 infodir = @infodir@
-mandir = @mandir@
 includedir = @includedir@
 oldincludedir = /usr/include
 
@@ -114,7 +113,7 @@ SUBDIRS = src m4 config help symbols callpass
 # Remove this file here (it is created via configure), not from within intl.
 # DISTCLEANFILES = intl/libintl.h
 
-EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltconfig         ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README
+EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltconfig         ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README         xastir.1
 
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile         config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs         xastir.spec
@@ -143,12 +142,15 @@ sound_DATA = placeholder
 
 docdir = ${prefix}/xastir/doc
 doc_DATA = AUTHORS FAQ ChangeLog LICENSE README.1ST COPYING
+
+mandir = ${prefix}/man/man1
+man_DATA = xastir.1
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =  xastir.spec
 DATA =  $(county_DATA) $(doc_DATA) $(fcc_DATA) $(filled_DATA) \
-$(map_DATA) $(sound_DATA) $(trans_DATA) $(z_DATA)
+$(man_DATA) $(map_DATA) $(sound_DATA) $(trans_DATA) $(z_DATA)
 
 DIST_COMMON =  README ./stamp-h.in ABOUT-NLS AUTHORS COPYING ChangeLog \
 INSTALL Makefile.am Makefile.in NEWS TODO acconfig.h acinclude.m4 \
@@ -282,6 +284,25 @@ uninstall-filledDATA:
 	@$(NORMAL_UNINSTALL)
 	list='$(filled_DATA)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(filleddir)/$$p; \
+	done
+
+install-manDATA: $(man_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(mandir)
+	@list='$(man_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(mandir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(mandir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(mandir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(mandir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-manDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(man_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(mandir)/$$p; \
 	done
 
 install-mapDATA: $(map_DATA)
@@ -532,16 +553,17 @@ install-exec-am:
 install-exec: install-exec-recursive
 
 install-data-am: install-countyDATA install-docDATA install-fccDATA \
-		install-filledDATA install-mapDATA install-soundDATA \
-		install-transDATA install-zDATA
+		install-filledDATA install-manDATA install-mapDATA \
+		install-soundDATA install-transDATA install-zDATA
 install-data: install-data-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
 uninstall-am: uninstall-countyDATA uninstall-docDATA uninstall-fccDATA \
-		uninstall-filledDATA uninstall-mapDATA \
-		uninstall-soundDATA uninstall-transDATA uninstall-zDATA
+		uninstall-filledDATA uninstall-manDATA \
+		uninstall-mapDATA uninstall-soundDATA \
+		uninstall-transDATA uninstall-zDATA
 uninstall: uninstall-recursive
 all-am: Makefile $(DATA) config.h
 all-redirect: all-recursive-am
@@ -551,8 +573,9 @@ installdirs: installdirs-recursive
 installdirs-am:
 	$(mkinstalldirs)  $(DESTDIR)$(countydir) $(DESTDIR)$(docdir) \
 		$(DESTDIR)$(fccdir) $(DESTDIR)$(filleddir) \
-		$(DESTDIR)$(mapdir) $(DESTDIR)$(sounddir) \
-		$(DESTDIR)$(transdir) $(DESTDIR)$(zdir)
+		$(DESTDIR)$(mandir) $(DESTDIR)$(mapdir) \
+		$(DESTDIR)$(sounddir) $(DESTDIR)$(transdir) \
+		$(DESTDIR)$(zdir)
 
 
 mostlyclean-generic:
@@ -589,10 +612,10 @@ maintainer-clean: maintainer-clean-recursive
 .PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
 uninstall-countyDATA install-countyDATA uninstall-docDATA \
 install-docDATA uninstall-fccDATA install-fccDATA uninstall-filledDATA \
-install-filledDATA uninstall-mapDATA install-mapDATA \
-uninstall-soundDATA install-soundDATA uninstall-transDATA \
-install-transDATA uninstall-zDATA install-zDATA install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
+install-filledDATA uninstall-manDATA install-manDATA uninstall-mapDATA \
+install-mapDATA uninstall-soundDATA install-soundDATA \
+uninstall-transDATA install-transDATA uninstall-zDATA install-zDATA \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
 uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
 all-recursive check-recursive installcheck-recursive info-recursive \
 dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
