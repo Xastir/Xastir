@@ -912,10 +912,10 @@ int rswnc(unsigned char c) {
 //
 // This function is called only by wx.c:wx_decode()
 //
-// It's always called with a first parameter of 0, so we
-// must use this only for our own serially-connected or
-// network connected weather station, and not for decoding
-// other people's weather packets.
+// It is always called with a first parameter of 0, so we
+// use this only for our own serially-connected or network
+// connected weather station, not for decoding other
+// people's weather packets.
 //*********************************************************
 void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     time_t last_speed_time;
@@ -1006,9 +1006,24 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* rain total long term */
             if (data[14]!='-') {
                 substr(temp_data1,(char *)(data+14),4);
-                xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
-                if (!from) {    // From local station
+                if (!from) {  // From local station
+//WE7U
+// Correct this section of code for the different rain gauge types
+                    switch (WX_rain_gauge_type) {
+                        case 0: // 0.1" rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                            break;
+                        case 2: // 0.1mm rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                            break;
+                        case 1: // 0.01" rain gauge
+                        default:
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            break;
+                    }
                     /* local station */
                     compute_rain(atof(weather->wx_rain_total));
                     /*last hour rain */
@@ -1053,7 +1068,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 if (from) { // From remote station
                     substr(temp_data1,(char *)(data+42),4);
                     xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
-                            "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
                 }
             } else {
                 if (!from)  // From local station
@@ -1064,6 +1079,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
+        // This one assume 0.1" rain gauge.  Must correct in software if
+        // any other type is used.
         case(APRS_WX4):
             if (debug_level & 1)
                 printf("APRS WX4 Peet Bros U-II %s:<%s>\n",fill->call_sign,data);
@@ -1117,11 +1134,28 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* rain div by 100 for readings 0.1 inch */
+// What?  Shouldn't this be /10?
+
             if (data[6]!='-') {
                 substr(temp_data1,(char *)(data+6),4);
-                xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
                 if (!from) {    // From local station
+//WE7U
+// Correct this section of code for the different rain gauge types
+                    switch (WX_rain_gauge_type) {
+                        case 1: // 0.01" rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            break;
+                        case 2: // 0.1mm rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                            break;
+                        case 0: // 0.1" rain gauge
+                        default:
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                            break;
+                    }
                     /* local station */
                     compute_rain(atof(weather->wx_rain_total));
                     /*last hour rain */
@@ -1217,9 +1251,24 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* rain total long term */
             if (data[17]!='-') {
                 substr(temp_data1,(char *)(data+17),4);
-                xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
                 if (!from) {    // From local station
+//WE7U
+// Correct this section of code for the different rain gauge types
+                    switch (WX_rain_gauge_type) {
+                        case 0: // 0.1" rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                            break;
+                        case 2: // 0.1mm rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                            break;
+                        case 1: // 0.01" rain gauge
+                        default:
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            break;
+                    }
                     /* local station */
                     compute_rain(atof(weather->wx_rain_total));
                     /*last hour rain */
@@ -1364,32 +1413,46 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 /* todays rain total (on some units) */
                 if (data[28]!='-') {
                     substr(temp_data1,(char *)(data+28),4);
-
-//                    if (WX_rain_gauge_type == 0) {  // Tenth inch rain gauge
-//                        xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
-//                            "%0.2f",(float)strtol(temp_data1,&temp_conv,16)/10.0);
-//                    }
-//                    else {                          // Hundredth inch rain gauge
-                        xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
-                            "%0.2f",(float)strtol(temp_data1,&temp_conv,16)/100.0);
-//                    }
-
+//WE7U
+// Correct this section of code for the different rain gauge types
+                    switch (WX_rain_gauge_type) {
+                        case 0: // 0.1" rain gauge
+                            xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                            break;
+                        case 2: // 0.1mm rain gauge
+                            xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                            break;
+                        case 1: // 0.01" rain gauge
+                        default:
+                            xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            break;
+                    }
                 } else
                     weather->wx_prec_00[0]=0;
 
-               /* rain total long term */
+                /* rain total long term */
                 if (data[432]!='-') {
                     substr(temp_data1,(char *)(data+432),4);
-
-//                    if (WX_rain_gauge_type == 0) {  // Tenth inch rain gauge
-//                        xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-//                            "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
-//                    }
-//                    else {                          // Hundredth inch rain gauge
-                        xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                            "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
-//                    }
-
+//WE7U
+// Correct this section of code for the different rain gauge types
+                    switch (WX_rain_gauge_type) {
+                        case 0: // 0.1" rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                            break;
+                        case 2: // 0.1mm rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                            break;
+                        case 1: // 0.01" rain gauge
+                        default:
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            break;
+                    }
                     /* Since local station only */
                     compute_rain(atof(weather->wx_rain_total));
 
@@ -1704,10 +1767,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 //**********************************************************
 // Decode WX data line
 // wx_line: raw wx data to decode
+//
 // This is called from main.c:UpdateTime() only.  It
 // decodes data for serially-connected and network-connected
 // WX interfaces only.   It calls wx_fill_data() to do the
-// real work.
+// real work once it figures out what type of data it has.
 //**********************************************************
 void wx_decode(unsigned char *wx_line, int port) {
     DataRow *p_station;
