@@ -1070,12 +1070,12 @@ void load_data_or_default(void) {
         sprintf (name_temp, "LIST%0d_", i);
         strcpy (name, name_temp);
         strcat (name, "H");
-        if (!get_int (name, &list_size_h[i],10,8192,-1))
+        if (!get_int (name, &list_size_h[i],-1,8192,-1))
             list_size_h[i] = -1;
 
         strcpy (name, name_temp);
         strcat (name, "W");
-        if (!get_int (name, &list_size_w[i],10,8192,-1))
+        if (!get_int (name, &list_size_w[i],-1,8192,-1))
             list_size_w[i] = -1;
 
     }
