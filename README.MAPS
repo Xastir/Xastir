@@ -772,24 +772,27 @@ Getting Maps and other Data Files for Xastir:
       also searchable from the Maps menu.
 
          http://geonames.usgs.gov/
-         http://geonames.usgs.gov/gnisftp.html
 
-      These files should be named in the form "<ST>.gnis", where <ST> is the
-      abbreviation for the state that they cover, and should be placed in the
-      /usr/local/share/xastir/GNIS/ directory. To make sure that maps are
-      layered correctly with GNIS labels on the top, it is suggested that you
-      link /usr/local/share/xastir/maps/z to this GNIS directory.
+      Click the link "Download GNIS Data: State and Topical Gazetteers" on
+      the left.
+
+      These files should be renamed in the form "<ST>.gnis" after download,
+      where <ST> is the abbreviation for the state that they cover, and
+      should be placed in the /usr/local/share/xastir/GNIS/ directory. To
+      make sure that maps are layered correctly with GNIS labels on the top
+      of the map stack, plus searchable, it is suggested that you link
+      /usr/local/share/xastir/maps/z to this GNIS directory.
 
       Type this as root to create the link and directories:
        cd /usr/local/share/xastir/maps
        ln -s ../GNIS z
 
       The map files must end in ".gnis" to be used by Xastir, and must be in
-      comma delimited/double quotes format.  These are readily available from
-      http://geonames.usgs.gov/ with such filenames as "AZ_deci". The files
-      must be renamed to <ST>.gnis, and the trailing whitespace should be
-      removed for speed. This can be accomplished in one step with the
-      following command. (bash style...)
+      pipe delimited format.  These are readily available from the above link
+      with such filenames as "AZ_DECI.TXT". The files must be renamed to
+      <ST>.gnis, and the trailing whitespace should be removed for speed. This
+      can be accomplished in one step with the following command. (bash
+      style...)
 
    for a in *deci; do sed -e 's/[ ]*$//g' < $a > `basename $a _deci`.gnis; done
 

@@ -889,7 +889,47 @@ First Time Install:
      >    being yet another root exploit-in-waiting.
 
 
-   13. Start up XASTIR and read the help files to configure it. If you have 
+   13. Serially-Connected Garmin RINO Radio/GPS
+
+     If you have a Garmin RINO attached to a serial port, have GPSMan
+     installed, and have support for GPSMan compiled into Xastir, then Xastir
+     has the capability to periodically download waypoints from the RINO unit
+     and create APRS Objects out of them.  Any RINO waypoints that begin with
+     "APRS" will be automatically created, placed on the map, and transmitted
+     as your own Xastir APRS objects.  If you wish to see them but not transmit
+     them, turn off Object/Item transmit or global transmit in the interface
+     menu.  Another option is to turn off the transmit enable per interface.
+
+     Here's a blurb from Wes Johnston about the RINO's:
+
+     "Lets say I have three rino radios... two in the hands of the SAR teams on
+     the ground, and a third radio in a plane circling above.  It is preferred
+     that the radio in the hands of the SAR teams be the nicer rino120 since it
+     does mapping.  The radio in the plane can be the lowly rino110 since it
+     does not do mapping but you will have a copy of xastir with maps on the
+     laptop with you anyway.
+
+     If I set two of my rino radios to APRSSAR1 and APRSSAR2, and connect a
+     third rino radio to xastir with serial in the plane, xastir will query
+     rino radio #3 at any one minute interval between 0 and 30 minutes, get the
+     APRS* waypoints, lop off the first four characters and publish the shorter
+     named waypoints as SAR1 and SAR2 as APRS objects on to your TNC.  The
+     hitch to this is that the rino radio cannot automatically poll the RINO
+     users' locations on the ground.  You have to manually (on the radio)
+     select a menu item called POLL and poll the users that way.  The reason
+     the first four characters of the rino callsign have to be APRS is that
+     when you send a query, rino only asks about the first 4 chars... so any
+     station with the first four that match will answer... ie all of them in
+     your group.  The other method is to simply fly the plane overhead and
+     listen (evesdrop) on the channel and passively pickup the locations of the
+     groups as they converse with one another.  The rino will send it's
+     location just as you unkey the PTT if it has been >30 sec since the last
+     time you sent your position.  It would be practical to simply ask each
+     team for an update... they just need to squeeze their PTT for a moment
+     (ie kerchunk) to send a position."
+
+
+   14. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in

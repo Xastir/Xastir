@@ -310,14 +310,18 @@ HELP-INDEX>Configure Timing
 
 Click on File, then Configure, then Timing.
 
-The first slider specifies how often your station's position will be
+Posit TX Interval specifies how often your station's position will be
 transmitted.  For fixed stations a good recommendation is every 30 minutes,
 and definitely no less than 10 minutes.  Mobile stations may wish to use a
-faster rate.
+faster rate.  Note that if you're using SmartBeaconing, this slider is
+ignored.
 
-The second slider is the interval used for sending out objects and items. Try
-to keep these intervals reasonable, as transmitting to a long path every 30
-seconds will really take up a lot of the air time.
+Object/Item Max TX Interval is the maximum interval used for sending out
+objects and items. Try to keep these intervals reasonable, as transmitting
+to a long path every 5 minutes will really take up a lot of the air time.
+A decaying interval algorithm is triggered any time an object is created,
+modified, or killed.  The transmit interval will increase until it hits the
+max interval indicated by the slider.
 
 GPS Check Interval will set the interval of time to look at the GPS for new
 data. This is available for stations using an HSP or shared cable with their
@@ -326,11 +330,27 @@ TNC.
 Dead-Reckoning Timeout adjusts how long a position is assumed valid for the
 purpose of estimating its current position.
 
-The next slider specifies the ghosting interval. Stations that have not been
-heard in the given period will appear ghosted on screen. The next slider
-specifies when a station will be removed from the screen. The last slider
-specifies the number of full days before data from a station will be entirely
-removed from the Xastir database.
+New Track Time adjusts how many minutes must elapse before a new
+separate track is started.
+
+RINO -> Objects Interval adjusts how often waypoints are downloaded from an
+attached Garmin RINO radio/GPS unit.  APRS Objects are created out of any
+waypoints beginning with "APRS".  The "APRS" prefix is removed when creating
+the Object names.
+
+Station Ghosting Time specifies the ghosting interval. Stations that have not
+been heard in the given period will appear ghosted on screen.
+
+Station Clear Time specifies when a station will be removed from the screen.
+
+Station Delete Time specifies the number of full days before data from a
+station will be entirely removed from the Xastir database.
+
+Serial Inter-Char Delay specifies a wait time in milliseconds between each
+character sent to an attached TNC.
+
+New Track Interval (degrees) specifies distance in lat/long degrees at which
+a new track segment is started.
 
 HELP-INDEX>Configure Audio Alarms
 
@@ -1452,10 +1472,38 @@ objects. These are global options and affect all interfaces. Most interfaces
 have an option to disable transmission on that specific interface in their
 configuration menus also.
 
+Enable Server Port
+This enables/disables a listening socket at port 2023.  You may connect other
+APRS clients to that port in order to send/receive APRS data.  Once they
+authenticate, they'll be able to send data to Xastir.  Without authentication,
+they'll be able to receive every bit of TNC and INET data that Xastir receives.
+
+    "user WE7U-13 pass XXXX vers XASTIR 1.3.3"
+
+Connect another APRS client to that port and it should authenticate
+and be able to send to any server that Xastir is connected to, as
+well as receive packets from all ports/servers Xastir is hooked to.
+
 Transmit now
 Causes all interfaces that have transmit enabled (see configure|interfaces) to
 transmit a position packet.  It will be grayed out if Disable Transmit: ALL
 is selected.
+
+If you have GPSMan installed, you have these additional menu options
+displayed:
+
+Fetch GPS Track
+Download a set of trackpoints from an attached GPS.
+
+Fetch GPS Routes
+Download a set of routes from an attached GPS.
+
+Fetch GPS Waypoints
+Download a set of waypoints from an attached GPS.
+
+Fetch Garmin RINO Waypoints
+Snag waypoints from an attached Garmin RINO, create APRS Objects out of any
+waypoints which begin with "APRS".
 
 HELP-INDEX>Station info box - FCC and RAC lookup
 
