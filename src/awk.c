@@ -179,10 +179,31 @@ awk_symbol *awk_find_sym(awk_symtab *this,
                  const char *name,
                  const int len) {
     awk_symbol *s;
+    char c, d;
 
-    for (s = this->hash[AWK_SYM_HASH(name,len)]; s; s = s->next_sym)
-        if ((s->namelen == len) && (strncmp(s->name,name,len) == 0))
-            return s;
+
+    // Create holding spot for both cases of first character, in
+    // order to speed up the loop below.
+    c = toupper(name[0]);
+    d = name[0];
+
+    // Check through the hash
+    //
+    for (s = this->hash[AWK_SYM_HASH(name,len)]; s; s = s->next_sym) {
+
+        // Check length first (fast operation)
+        if (s->namelen == len) {
+
+            // Check first chars next (fast operation)
+            if (s->name[0] == c || s->name[0] == d) {
+
+                // Ok so far, test the entire string (slow
+                // operation)
+                if (strncmp(s->name,name,len) == 0)
+                    return s;
+            }
+        }
+    }
     return NULL;
 }
 
