@@ -159,7 +159,7 @@ D(printf("    Success...\n"));
 
 static int find_name(
 	struct io_file *index,int begin,int end,
-	char type,const char *name,int name_len)
+	char type,const char *name, unsigned int name_len)
 {
 	const int size = 45;
 	const int count = (end - begin) / size;
@@ -184,8 +184,8 @@ static int get_name_at(
 {
 	char n[41];
 	const char *next,*save;
-	int len = last - s->next;
-	int begin,end,pos;
+	unsigned int len = last - s->next;
+	unsigned int begin,end,pos;
 
 	if (io_in_i4(s->index,
 	    io_in_i4(s->index,
