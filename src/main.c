@@ -11976,13 +11976,25 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #ifdef HAVE_GPSMAN
 
 // Function to process the RINO.gpstrans file.  We'll create APRS
-// objects out of them as if our own callsign created them.
+// objects out of them as if our own callsign created them.  Lines
+// in the file look like this (spaces removed):
+//
+// W  N3EG3  20-JUN-02 17:55  07/08/2004 13:03:29  46.1141682  -122.9384817
+// W  N3JGI  20-JUN-02 18:29  07/08/2004 13:03:29  48.0021644  -116.0118324
+//
+// Fields are:
+// W  name   Comment          Date/Time            Latitude    Longitude
 //
 void process_RINO_waypoints(void) {
     FILE *f;
     char temp[MAX_FILENAME * 2];
-    char line[500];
+    char line[301];
+    float UTC_Offset;
+//    char datum[50];
 
+
+    // Just to be safe
+    line[300] = '\0';
 
     // Create the full path/filename
     xastir_snprintf(temp,
@@ -12011,13 +12023,61 @@ void process_RINO_waypoints(void) {
     //
     while (fgets(line, 300, f) != NULL) {
 
-        // Check that it is a waypoint entry
-        if (line[0] == 'W') {
+        // Snag the "Format:" line at the top of the file:
+        // Format: DDD  UTC Offset:  -8.00 hrs  Datum[100]: WGS 84
+        //
+        if (strncmp(line,"Format:",7) == 0) {
+            int i = 7;
+            char temp2[50];
+
+
+            // Find the ':' after "UTC Offset"
+            while (line[i] != ':'
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+            i++;
+
+            // Skip white space
+            while (line[i] == ' '
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+
+            // Copy UTC offset chars into temp2
+            temp2[0] = '\0';
+            while (line[i] != '\t'
+                    && line[i] != ' '
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                strncat(temp2,&line[i],1);
+                i++;
+            }
+
+            UTC_Offset = atof(temp2);
+
+//fprintf(stderr,"UTC Offset: %f\n", UTC_Offset);
+
+// NOTE:  This would be the place to snag the datum as well.
+
+        }
+
+        // Check for a waypoint entry
+        else if (line[0] == 'W') {
             char name[50];
+            char datetime[50];
             char lat_c[20];
             char lon_c[20];
             int i = 1;
 
+
+// NOTE:  We should check for the end of the string, skipping this
+// iteration of the loop if we haven't parsed enough fields.
 
             // Find non-white-space character
             while ((line[i] == '\t' || line[i] == ' ')
@@ -12027,7 +12087,9 @@ void process_RINO_waypoints(void) {
                 i++;
             }
 
-            // Copy into name until white space char
+            // Copy into name until tab or whitespace char.  We're
+            // assuming that a waypoint name can't have spaces in
+            // it.
             name[0] = '\0';
             while (line[i] != '\t'
                     && line[i] != ' '
@@ -12038,8 +12100,7 @@ void process_RINO_waypoints(void) {
                 i++;
             }
 
-            // Find the next tab character, which is at the end of
-            // the name field.
+            // Find tab character at end of name field
             while (line[i] != '\t'
                     && line[i] != '\0'
                     && line[i] != '\n'
@@ -12048,8 +12109,10 @@ void process_RINO_waypoints(void) {
             }
             i++;
 
-            // Find the next tab character, which is at the end of
-            // the comment field.
+            // We skip the comment field, doing nothing with the
+            // data.
+            //
+            // Find tab character at end of comment field
             while (line[i] != '\t'
                     && line[i] != '\0'
                     && line[i] != '\n'
@@ -12058,8 +12121,27 @@ void process_RINO_waypoints(void) {
             }
             i++;
 
-            // Find the next tab character, which is the end of the
-            // Date/Time field
+            // Find non-white-space character
+            while ((line[i] == '\t' || line[i] == ' ')
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+
+// Snag date/time.  Use it in the object date/time field.
+            // Copy into datetime until tab char.  Include the space
+            // between the time and date portions.
+            datetime[0] = '\0';
+            while (line[i] != '\t'
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                strncat(datetime,&line[i],1);
+                i++;
+            }
+
+            // Find tab character at end of date/time field
             while (line[i] != '\t'
                     && line[i] != '\0'
                     && line[i] != '\n'
@@ -12128,6 +12210,9 @@ void process_RINO_waypoints(void) {
                 float lat_min, lon_min;
                 char lat_dir, lon_dir;
                 char temp2[50];
+                int date;
+                int hour;
+                int minute;
 
 
                 // Strip off the "APRS" at the beginning of the
@@ -12146,6 +12231,43 @@ void process_RINO_waypoints(void) {
 
                 // Truncate the name at nine characters.
                 name[9] = '\0';
+
+                // We can either snag the UTC Offset from the top of
+                // the file, or we can put the date/time format into
+                // local time.  The spec suggests using zulu time
+                // for all future implementations, so we snagged the
+                // UTC Offset earlier in this routine.
+
+                // 07/09/2004 09:22:28
+//fprintf(stderr,"%s %s", name, datetime);
+
+                strncpy(temp2,&datetime[3],2);
+                temp2[2] = '\0';
+                date = atoi(temp2);
+//fprintf(stderr, "%02d\n", date);
+
+                strncpy(temp2,&datetime[11],2);
+                temp2[2] = '\0';
+                hour = atoi(temp2);
+                strncpy(temp2,&datetime[14],2);
+                temp2[2] = '\0';
+                minute = atoi(temp2);
+//fprintf(stderr,"\t\t%02d%02d%02d/\n", date, hour, minute);
+
+                // We need to remember to bump the date up if we go
+                // past midnight adding the UTC offset.  In that
+                // case we may need to bump the day as well if we're
+                // near the end of the month.  Use the Unix time
+                // facilities for this?
+
+                // Here we're assuming that the UTC offset is
+                // divisible by one hour.  Always correct?
+
+//                hour = (int)(hour - UTC_Offset);
+
+
+                
+
 
                 lat_deg = atoi(lat_c);
                 if (lat_deg < 0)
@@ -12177,24 +12299,28 @@ void process_RINO_waypoints(void) {
 
                 xastir_snprintf(line2,
                     sizeof(line2),
-                    ";%-9s*%s%02d%05.2f%c%c%03d%05.2f%c%c",
+                    ";%-9s*%02d%02d%02d/%02d%05.2f%c%c%03d%05.2f%c%c",
                     name,
-                    "010000z",  // Date/Time (faked)
+                    date,
+                    hour,
+                    minute,
                     lat_deg,    // Degrees
-                    lat_min,      // Minutes
+                    lat_min,    // Minutes
                     lat_dir,    // N/S
                     '/',        // Primary symbol table
                     lon_deg,    // Degrees
-                    lon_min,      // Minutes
+                    lon_min,    // Minutes
                     lon_dir,    // E/W
                     '[');       // Hiker symbol
 
-//                fprintf(stderr,
-//                    "%-9s\t%f\t%f\t\t\t\t\t\t",
-//                    name,
-//                    atof(lat_c),
-//                    atof(lon_c));
-//                fprintf(stderr,"%s\n",line2);
+/*
+                fprintf(stderr,
+                    "%-9s\t%f\t%f\t\t\t\t\t\t",
+                    name,
+                    atof(lat_c),
+                    atof(lon_c));
+                fprintf(stderr,"%s\n",line2);
+*/
 
                 // Update this object in our save file
                 log_object_item(line2,0,name);
