@@ -1214,9 +1214,14 @@ WINDOWS/CYGWIN NOTES:
 
      --- End of note from Charles
 
+
      Note: The above link line will soon be unnecessary, as a new configure
      script is being completed that works properly on Cygwin.  It'll be in
-     CVS Real Soon Now!
+     CVS Real Soon Now!  The new script finds ImageMagick and Shapelib
+     libraries just fine, and will get the link line correct as well,
+     simplifying the install.  Anyone wishing to try the new script before
+     it gets released can contact me.  I'll send it to you with instructions
+     on how to use it:  "archer@eskimo.com"
 
      Install default Cygwin plus these packages via a network install.  Note
      that clicking on some of these causes others to be selected and
@@ -1347,11 +1352,13 @@ WINDOWS/CYGWIN NOTES:
 
      -------------------
 
-     Another difference with Cygwin:  You can't do the make install portion
-     if Xastir is up and running.  You have to kill Xastir first.
+     Another difference with Cygwin as opposed to Unix-like operating
+     systems:  You can't do the make install portion if Xastir is up and
+     running.  You have to kill Xastir first before you do "make install" or
+     "make install-strip".
 
      Note that one user running Cygwin on XP had it crash every time his
-     screensaver kicked in.
+     screensaver kicked in.  Disabling the screenserver fixed it.
 
 
 END OF WINDOWS/CYGWIN NOTES.
