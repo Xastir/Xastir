@@ -692,8 +692,8 @@ WPUPSTI030|Temperatura: %s°F   ||
 WPUPSTI031|Humidade: %s%%   ||
 WPUPSTI032|Indice da humidade: %02.1f°C  ||
 WPUPSTI033|Pressão barométrica: %s mb||
-WPUPSTI034|Neve: %0.2f (cm/24h)||
-WPUPSTI035|Neve: %0.2f (plg/24h)||
+WPUPSTI034|Neve: %0.1f (cm/24h)||
+WPUPSTI035|Neve: %0.0f (plg/24h)||
 WPUPSTI036|Chuva: ||
 WPUPSTI037|%0.2f (mm/h)  ||
 WPUPSTI038|%0.2f (plg/h)  ||

@@ -689,8 +689,8 @@ WPUPSTI030|Temperatura: %s°F ||
 WPUPSTI031|Umidità: %s%%  ||
 WPUPSTI032|Humidex: %02.1f°C ||
 WPUPSTI033|Pressione: %s mb ||
-WPUPSTI034|Neve: %0.2f (cm/24ora) ||
-WPUPSTI035|Neve: %0.2f (inch/24ora) ||
+WPUPSTI034|Neve: %0.1f (cm/24ora) ||
+WPUPSTI035|Neve: %0.0f (inch/24ora) ||
 WPUPSTI036|Pioggia: ||
 WPUPSTI037|%0.2f (mm/ora)   ||
 WPUPSTI038|%0.2f (pollici/ora)   ||

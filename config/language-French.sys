@@ -688,8 +688,8 @@ WPUPSTI030|Température: %s°F   ||
 WPUPSTI031|Humidité: %s%%   ||
 WPUPSTI032| Humidex: %02.1f°C  ||
 WPUPSTI033|Baro: %s hPa||
-WPUPSTI034|Neige: %0.2f (cm/24h||
-WPUPSTI035|Neige: %0.2f (pouces/24h)||
+WPUPSTI034|Neige: %0.1f (cm/24h||
+WPUPSTI035|Neige: %0.0f (pouces/24h)||
 WPUPSTI036|Pluie: ||
 WPUPSTI037|%0.2f (mm/h)   ||
 WPUPSTI038|%0.2f (pouces/h)   ||
