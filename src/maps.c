@@ -2493,7 +2493,8 @@ void draw_shapefile_map (Widget w,
                             gps_color = 0x0c; // Red
                         }
                         else if (strstr(filenm,"_Green.shp")) {
-                            gps_color = 0x64; // ForestGreen
+//                            gps_color = 0x64; // ForestGreen
+                            gps_color = 0x23; // Area Green Hi
                         }
                         else if (strstr(filenm,"_Black.shp")) {
                             gps_color = 0x08; // black
@@ -2508,7 +2509,13 @@ void draw_shapefile_map (Widget w,
                             gps_color = 0x62; // orange3 (brighter)
                         }
                         else if (strstr(filenm,"_Blue.shp")) {
-                            gps_color = 0x09; // blue
+                            gps_color = 0x03; // cyan
+                        }
+                        else if (strstr(filenm,"_Yellow.shp")) {
+                            gps_color = 0x0e; // yellow
+                        }
+                        else if (strstr(filenm,"_Purple.shp")) {
+                            gps_color = 0x0b; // mediumorchid
                         }
                         else {  // Default color
                             gps_color = 0x0c; // Red

@@ -5625,10 +5625,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
-    iface_transmit_now = XtVaCreateManagedWidget(langcode("PULDNTNC01"),
+    iface_transmit_now = XtVaCreateManagedWidget(langcode("PULDNTNT01"),
             xmPushButtonGadgetClass,
             ifacepane,
-            XmNmnemonic,langcode_hotkey("PULDNTNC01"),
+            XmNmnemonic,langcode_hotkey("PULDNTNT01"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -5636,30 +5636,31 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(iface_transmit_now,FALSE);
 
 #ifdef HAVE_GPSMAN
-    Fetch_gps_track = XtVaCreateManagedWidget(langcode("Fetch_Tr"),
+    Fetch_gps_track = XtVaCreateManagedWidget(langcode("PULDNTNT07"),
             xmPushButtonGadgetClass,
             ifacepane,
-            XmNmnemonic,langcode_hotkey("Fetch_Tr"),
+            XmNmnemonic,langcode_hotkey("PULDNTNT07"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
 
-    Fetch_gps_route = XtVaCreateManagedWidget(langcode("Fetch_Rt"),
+    Fetch_gps_route = XtVaCreateManagedWidget(langcode("PULDNTNT08"),
             xmPushButtonGadgetClass,
             ifacepane,
-            XmNmnemonic,langcode_hotkey("Fetch_Rt"),
+            XmNmnemonic,langcode_hotkey("PULDNTNT08"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
 
-    Fetch_gps_waypoints = XtVaCreateManagedWidget(langcode("Fetch_Wp"),
+    Fetch_gps_waypoints = XtVaCreateManagedWidget(langcode("PULDNTNT09"),
             xmPushButtonGadgetClass,
             ifacepane,
-            XmNmnemonic,langcode_hotkey("Fetch_Wp"),
+            XmNmnemonic,langcode_hotkey("PULDNTNT09"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
 
+/*
     Send_gps_track = XtVaCreateManagedWidget(langcode("Send_Tr"),
             xmPushButtonGadgetClass,
             ifacepane,
@@ -5683,6 +5684,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+*/
 #endif  // HAVE_GPSMAN 
 
     /* Help*/
@@ -5742,9 +5744,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(Fetch_gps_track,      XmNactivateCallback,GPS_operations,"1");
     XtAddCallback(Fetch_gps_route,      XmNactivateCallback,GPS_operations,"2");
     XtAddCallback(Fetch_gps_waypoints,  XmNactivateCallback,GPS_operations,"3");
-    XtAddCallback(Send_gps_track,       XmNactivateCallback,GPS_operations,"4");
-    XtAddCallback(Send_gps_route,       XmNactivateCallback,GPS_operations,"5");
-    XtAddCallback(Send_gps_waypoints,   XmNactivateCallback,GPS_operations,"6");
+//    XtAddCallback(Send_gps_track,       XmNactivateCallback,GPS_operations,"4");
+//    XtAddCallback(Send_gps_route,       XmNactivateCallback,GPS_operations,"5");
+//    XtAddCallback(Send_gps_waypoints,   XmNactivateCallback,GPS_operations,"6");
 #endif  // HAVE_GPSMAN
 
     XtAddCallback(auto_msg_set_button,XmNactivateCallback,Auto_msg_set,NULL);
@@ -8641,6 +8643,21 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
     temp = XmTextGetString(gpsfilename_text);
     strcpy(short_filename,temp);
     XtFree(temp);
+
+    // Add date/time to filename if no filename is given
+    if (strlen(short_filename) == 0) {
+        int ii;
+
+        // Compute the date/time and put in string
+        get_timestamp(short_filename);
+
+        // Change spaces to underlines
+        // Wed Mar  5 15:24:48 PST 2003
+        for (ii = 0; ii < strlen(short_filename); ii++) {
+            if (short_filename[ii] == ' ')
+                short_filename[ii] = '_';
+        }
+    }
     
     (void)remove_trailing_spaces(short_filename);
 
@@ -8662,6 +8679,12 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
             break;
         case 5:
             strcpy(color_text,"Blue");
+            break;
+        case 6:
+            strcpy(color_text,"Yellow");
+            break;
+        case 7:
+            strcpy(color_text,"Purple");
             break;
         default:
             strcpy(color_text,"Red");
@@ -8700,7 +8723,7 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
             color_text);
     }
 
-fprintf(stderr,"%s\t%s\n",gps_map_filename,gps_map_filename_base);
+//fprintf(stderr,"%s\t%s\n",gps_map_filename,gps_map_filename_base);
 
     // Signify that the user has selected the filename and color for
     // the downloaded file.
@@ -8755,8 +8778,8 @@ void  GPS_operations_color_toggle( /*@unused@*/ Widget widget, XtPointer clientD
 //
 void GPS_transfer_select( void ) {
     static Widget pane, my_form, button_select, button_cancel,
-                  frame,  color_type, type_box, ctyp1, ctyp2,
-                  ctyp3, ctyp4, ctyp5, ctyp6,
+                  frame,  color_type, type_box, ctyp0, ctyp1,
+                  ctyp2, ctyp3, ctyp4, ctyp5, ctyp6, ctyp7,
                   gpsfilename_label;
     Atom delw;
     Arg al[2];                      // Arg List
@@ -8771,7 +8794,7 @@ void GPS_transfer_select( void ) {
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
         GPS_operations_dialog = XtVaCreatePopupShell(
-                langcode("WPUPCFD001"),
+                langcode("GPS001"),
                 xmDialogShellWidgetClass,
                 Global.top,
                 XmNdeleteResponse,XmDESTROY,
@@ -8798,8 +8821,8 @@ void GPS_transfer_select( void ) {
                 NULL);
 
 
-        gpsfilename_label = XtVaCreateManagedWidget(
-                langcode("Filename"),
+        gpsfilename_label = XtVaCreateManagedWidget(    // Filename
+                langcode("GPS002"),
                 xmLabelWidgetClass,
                 my_form,
                 XmNchildType, XmFRAME_TITLE_CHILD,
@@ -8846,8 +8869,8 @@ void GPS_transfer_select( void ) {
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        color_type  = XtVaCreateManagedWidget(
-                langcode("Select Color"),
+        color_type  = XtVaCreateManagedWidget(  // Select Color
+                langcode("GPS003"),
                 xmLabelWidgetClass,
                 frame,
                 XmNchildType, XmFRAME_TITLE_CHILD,
@@ -8865,59 +8888,77 @@ void GPS_transfer_select( void ) {
                 XmNnumColumns,2,
                 NULL);
 
-        ctyp1 = XtVaCreateManagedWidget(
-                langcode("Red"),
+        ctyp0 = XtVaCreateManagedWidget(    // Red
+                langcode("GPS004"),
                 xmToggleButtonGadgetClass,
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(ctyp1,XmNvalueChangedCallback,GPS_operations_color_toggle,"0");
+        XtAddCallback(ctyp0,XmNvalueChangedCallback,GPS_operations_color_toggle,"0");
 
-        ctyp2 = XtVaCreateManagedWidget(
-                langcode("Green"),
+        ctyp1 = XtVaCreateManagedWidget(    // Green
+                langcode("GPS005"),
                 xmToggleButtonGadgetClass,
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(ctyp2,XmNvalueChangedCallback,GPS_operations_color_toggle,"1");
+        XtAddCallback(ctyp1,XmNvalueChangedCallback,GPS_operations_color_toggle,"1");
 
-        ctyp3 = XtVaCreateManagedWidget(
-                langcode("Black"),
+        ctyp2 = XtVaCreateManagedWidget(    // Black
+                langcode("GPS006"),
                 xmToggleButtonGadgetClass,
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(ctyp3,XmNvalueChangedCallback,GPS_operations_color_toggle,"2");
+        XtAddCallback(ctyp2,XmNvalueChangedCallback,GPS_operations_color_toggle,"2");
 
-        ctyp4 = XtVaCreateManagedWidget(
-                langcode("White"),
+        ctyp3 = XtVaCreateManagedWidget(    // White
+                langcode("GPS007"),
                 xmToggleButtonGadgetClass,
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(ctyp4,XmNvalueChangedCallback,GPS_operations_color_toggle,"3");
+        XtAddCallback(ctyp3,XmNvalueChangedCallback,GPS_operations_color_toggle,"3");
 
-        ctyp5 = XtVaCreateManagedWidget(
-                langcode("Orange"),
+        ctyp4 = XtVaCreateManagedWidget(    // Orange
+                langcode("GPS008"),
                 xmToggleButtonGadgetClass,
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(ctyp5,XmNvalueChangedCallback,GPS_operations_color_toggle,"4");
+        XtAddCallback(ctyp4,XmNvalueChangedCallback,GPS_operations_color_toggle,"4");
 
-        ctyp6 = XtVaCreateManagedWidget(
-                langcode("Blue"),
+        ctyp5 = XtVaCreateManagedWidget(    // Blue
+                langcode("GPS009"),
                 xmToggleButtonGadgetClass,
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(ctyp6,XmNvalueChangedCallback,GPS_operations_color_toggle,"5");
+        XtAddCallback(ctyp5,XmNvalueChangedCallback,GPS_operations_color_toggle,"5");
+
+        ctyp6 = XtVaCreateManagedWidget(    // Yellow
+                langcode("GPS010"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp6,XmNvalueChangedCallback,GPS_operations_color_toggle,"6");
+
+        ctyp7 = XtVaCreateManagedWidget(    // Violet
+                langcode("GPS011"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp7,XmNvalueChangedCallback,GPS_operations_color_toggle,"7");
 
 
         button_select = XtVaCreateManagedWidget(
@@ -8968,8 +9009,14 @@ void GPS_transfer_select( void ) {
             GPS_operations_dialog);
 
         // Set default color to first selection
-        XmToggleButtonSetState(ctyp1,TRUE,FALSE);
+        XmToggleButtonSetState(ctyp0,TRUE,FALSE);
         gps_map_color = 0;
+
+        // De-sensitize the color selections if we're doing
+        // waypoints.
+        if (strcmp("Waypoints",gps_map_type) == 0) {
+            XtSetSensitive(frame, FALSE);
+        }
 
         pos_dialog(GPS_operations_dialog);
 
@@ -9054,7 +9101,7 @@ void check_for_new_gps_map(void) {
 
         if ( system(temp) ) {
             fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
-fprintf(stderr,"%s\n",temp);
+            fprintf(stderr,"%s\n",temp);
             gps_got_data_from = 0;
             gps_details_selected = 0;
             return;
@@ -9071,7 +9118,7 @@ fprintf(stderr,"%s\n",temp);
 
         if ( system(temp) ) {
             fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
-fprintf(stderr,"%s\n",temp);
+            fprintf(stderr,"%s\n",temp);
             gps_got_data_from = 0;
             gps_details_selected = 0;
             return;
@@ -9086,7 +9133,7 @@ fprintf(stderr,"%s\n",temp);
 
         if ( system(temp) ) {
             fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
-fprintf(stderr,"%s\n",temp);
+            fprintf(stderr,"%s\n",temp);
             gps_got_data_from = 0;
             gps_details_selected = 0;
             return;
@@ -9155,7 +9202,7 @@ static void* gps_transfer_thread(void *arg) {
         case 1: // Fetch track from GPS
             // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
 
-            fprintf(stderr,"Fetch track from GPS\n");
+//            fprintf(stderr,"Fetch track from GPS\n");
 
             xastir_snprintf(gps_temp_map_filename,
                 sizeof(gps_temp_map_filename),
@@ -9188,14 +9235,14 @@ static void* gps_transfer_thread(void *arg) {
         case 2: // Fetch route from GPS
             // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
 
-            fprintf(stderr,"Fetch routes from GPS\n");
+//            fprintf(stderr,"Fetch routes from GPS\n");
 
             xastir_snprintf(gps_temp_map_filename,
                 sizeof(gps_temp_map_filename),
-                "Unnamed_Routes_Green.shp");
+                "Unnamed_Routes_Red.shp");
             xastir_snprintf(gps_temp_map_filename_base,
                 sizeof(gps_temp_map_filename_base),
-                "Unnamed_Routes_Green");
+                "Unnamed_Routes_Red");
  
             xastir_snprintf(gps_map_type,
                 sizeof(gps_map_type),
@@ -9220,7 +9267,7 @@ static void* gps_transfer_thread(void *arg) {
         case 3: // Fetch waypoints from GPS
             // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
  
-            fprintf(stderr,"Fetch waypoints from GPS\n");
+//            fprintf(stderr,"Fetch waypoints from GPS\n");
 
             xastir_snprintf(gps_temp_map_filename,
                 sizeof(gps_temp_map_filename),

@@ -208,6 +208,10 @@ PULDNTNT03|Disabilita Trasmissioni: TUTTE||
 PULDNTNT05|Disabilita Trasmissioni: Mia Posizione||
 PULDNTNT06|Disabilita Trasmissioni: Oggetti/Entità||
 PULDNTNC01|Trasmetti ora!|N|
+PULDNTNT01|Transmit Now!|T|
+PULDNTNT07|Fetch GPS Track|F|
+PULDNTNT08|Fetch GPS Routes|R|
+PULDNTNT09|Fetch GPS Waypoints|W|
 #
 # Menù Aiuto
 PULDNHEL01|Versione di Xastir|A|
@@ -947,4 +951,19 @@ GAMMA002|Gamma Correction||
 #
 # Distance/Bearing on status line
 PULDNDB001|Dist/Bearing Status||
+#
+#
+# GPS Transfer Operations
+GPS001|GPS Transfer||
+GPS002|Filename||
+GPS003|Select Color||
+GPS004|Red||
+GPS005|Green||
+GPS006|Black||
+GPS007|White||
+GPS008|Orange||
+GPS009|Blue||
+GPS010|Yellow||
+GPS011|Violet||
+#
 #
