@@ -3820,6 +3820,7 @@ void create_gc(Widget w) {
     colors[0x17] = (int)GetPixelByName(w,"lightblue");
     colors[0x18] = (int)GetPixelByName(w,"purple");
     colors[0x19] = (int)GetPixelByName(w,"orange2");    // light orange
+    colors[0x1a] = (int)GetPixelByName(w,"SteelBlue");
     colors[0x20] = (int)GetPixelByName(w,"white");
 
     // Area object colors.  Order must not be changed. If beginning moves,
