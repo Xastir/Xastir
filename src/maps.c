@@ -1135,7 +1135,11 @@ void draw_shapefile_map (Widget w,
         printf ("\n---------------------------------------------\nInfo for %s\n",filenm);
 
     fieldcount = DBFGetFieldCount(hDBF);
+    if (fieldcount == (int)NULL)
+        return;     // Should have at least one field
     recordcount = DBFGetRecordCount(hDBF);
+    if (recordcount == (int)NULL)
+        return;     // Should have at least one record
     if (debug_level & 16)
         printf ("%d Columns,  %d Records in file\n", fieldcount, recordcount);
 
@@ -1168,7 +1172,6 @@ void draw_shapefile_map (Widget w,
               case FTInvalid:
                 strcpy (ftype, "invalid/unsupported");
                 break;
-
 
               default:
                 strcpy (ftype, "unknown");
@@ -1207,21 +1210,25 @@ void draw_shapefile_map (Widget w,
     SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
 
     switch ( nShapeType ) {
-       case SHPT_POINT:
-                strcpy(sType,"Point");
-                break;
+        case SHPT_POINT:
+            strcpy(sType,"Point");
+            break;
 
-       case SHPT_ARC:
-                strcpy(sType,"Polyline");
-                break;
+        case SHPT_ARC:
+            strcpy(sType,"Polyline");
+            break;
 
-       case SHPT_POLYGON:
-                strcpy(sType,"Polygon");
-                break;
+        case SHPT_POLYGON:
+            strcpy(sType,"Polygon");
+            break;
 
-       case SHPT_MULTIPOINT:
-                strcpy(sType,"MultiPoint");
-                break;
+        case SHPT_MULTIPOINT:
+            strcpy(sType,"MultiPoint");
+            break;
+
+        default:
+            return; // Unknown type.  Don't know how to process it.
+            break;
     }
 
     if (debug_level & 16)
@@ -1296,7 +1303,11 @@ void draw_shapefile_map (Widget w,
 
 
     for (structure = 0; structure < nEntities; structure++) {
+
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
+
+        if (object == NULL)
+            continue;   // Skip this iteration, go on to the next
 
         // Here we check the bounding box against our current viewport.
         // If we can't see it, don't draw it.  bottom/top/left/right
@@ -1310,16 +1321,16 @@ void draw_shapefile_map (Widget w,
             //printf("Shape %d is visible, drawing it\t", structure);
             //printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
 
-            // Print the field contents
-            for (jj = 0; jj < fieldcount; jj++) {
-                temp = DBFReadStringAttribute( hDBF, structure, jj );
-
-                if (debug_level & 16)
-                    printf("%s, ", temp);
-            }
-
-            if (debug_level & 16)
+            if (debug_level & 16) {
+                // Print the field contents
+                for (jj = 0; jj < fieldcount; jj++) {
+                    temp = DBFReadStringAttribute( hDBF, structure, jj );
+                    if (temp != NULL) {
+                        printf("%s, ", temp);
+                    }
+                }
                 printf("\n");
+            }
 
             switch ( nShapeType ) {
                 case SHPT_POINT:
@@ -1332,14 +1343,16 @@ void draw_shapefile_map (Widget w,
                     if (road_flag) {
                         // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
                         temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
-                        if (strlen(temp) == 0) {
+
+                        if ( (temp == NULL) || (strlen(temp) == 0) ) {
                             temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
+                            
                         }
                     } else if (water_flag) {
                         temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
                     }
 
-                    if ((strlen(temp) != 0) && (map_labels) ) {
+                    if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
                         ok = 1;
 
                         // Convert to Xastir coordinates
@@ -1393,7 +1406,9 @@ void draw_shapefile_map (Widget w,
                         int lanes;
 
                         lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
-                        (void)XSetLineAttributes (XtDisplay (w), gc_tint, lanes, LineSolid, CapButt,JoinMiter);
+                        if (lanes != (int)NULL) {
+                            (void)XSetLineAttributes (XtDisplay (w), gc_tint, lanes, LineSolid, CapButt,JoinMiter);
+                        }
                     }
 
                     if (water_flag) {
@@ -1502,7 +1517,7 @@ void draw_shapefile_map (Widget w,
                         temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME (lakes)
                     }
 
-                    if ( (strlen(temp) != 0) && (map_labels) ) {
+                    if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
                         ok = 1;
 
                         // Convert to Xastir coordinates
@@ -1526,6 +1541,10 @@ void draw_shapefile_map (Widget w,
                     break;
 
                 case SHPT_MULTIPOINT:
+                        // Not implemented.
+                    break;
+
+                default:
                         // Not implemented.
                     break;
             }
