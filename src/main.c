@@ -9952,97 +9952,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 NULL);
 
 //WE7U
-// "Filled-Yes"
-//        button_filled_no = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_filled_no = XtVaCreateManagedWidget("No",
-                xmPushButtonGadgetClass, 
-                my_form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 10,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-// "Filled-No"
-//        button_filled_yes = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_filled_yes = XtVaCreateManagedWidget("Yes",
-                xmPushButtonGadgetClass, 
-                my_form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
-                XmNrightAttachment, XmATTACH_WIDGET,
-                XmNrightWidget, button_filled_no,
-                XmNrightOffset, 5,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-//WE7U
-//        label2  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        label2  = XtVaCreateManagedWidget("Draw Filled?",
-                xmLabelWidgetClass,
-                my_form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
-                XmNrightAttachment, XmATTACH_WIDGET,
-                XmNrightWidget, button_filled_yes,
-                XmNrightOffset, 2,
-                XmNsensitive, TRUE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-// "Change Layer"
-//        button_layer_change = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_layer_change = XtVaCreateManagedWidget("Change Layer",
-                xmPushButtonGadgetClass, 
-                my_form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
-                XmNrightAttachment, XmATTACH_WIDGET,
-                XmNrightWidget, label2,
-                XmNrightOffset, 30,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        new_map_layer_text = XtVaCreateManagedWidget("Map Properties new layer number",
-                xmTextWidgetClass,
-                my_form,
-                XmNeditable,   TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 7,
-                XmNwidth, ((8*7)+2),
-                XmNmaxLength, 5,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment,XmATTACH_FORM,
-                XmNtopOffset, 3,
-                XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
-                XmNrightAttachment,XmATTACH_WIDGET,
-                XmNrightWidget, button_layer_change,
-                XmNrightOffset, 2,
-                XmNnavigationType, XmTAB_GROUP,
-                NULL);
-
-//WE7U
-//        label3  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
-        label3  = XtVaCreateManagedWidget("Layer   Filled   Path/Filename",
+//        label2  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
+        label2  = XtVaCreateManagedWidget("Layer   Filled   Path/Filename",
  
                 xmLabelWidgetClass,
                 my_form,
@@ -10060,7 +9971,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         XtVaSetValues(XtParent(map_properties_list),
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, label3,
+                XmNtopWidget, label2,
                 XmNtopOffset, 2,
                 XmNbottomAttachment, XmATTACH_WIDGET,
         		XmNbottomWidget, rowcol,
@@ -10071,6 +9982,95 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNleftOffset, 5,
                 NULL);
 
+// "Change Layer"
+//        button_layer_change = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_layer_change = XtVaCreateManagedWidget("Change Layer->",
+                xmPushButtonGadgetClass, 
+                rowcol,
+//                XmNtopAttachment, XmATTACH_FORM,
+//                XmNtopOffset, 5,
+//                XmNbottomAttachment, XmATTACH_NONE,
+//                XmNleftAttachment, XmATTACH_NONE,
+//                XmNrightAttachment, XmATTACH_WIDGET,
+//                XmNrightWidget, label3,
+//                XmNrightOffset, 30,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        new_map_layer_text = XtVaCreateManagedWidget("Map Properties new layer number",
+                xmTextWidgetClass,
+                rowcol,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((7*7)+2),
+                XmNmaxLength, 5,
+                XmNbackground, colors[0x0f],
+//                XmNtopAttachment,XmATTACH_FORM,
+//                XmNtopOffset, 3,
+//                XmNbottomAttachment,XmATTACH_NONE,
+//                XmNleftAttachment, XmATTACH_NONE,
+//                XmNrightAttachment,XmATTACH_WIDGET,
+//                XmNrightWidget, button_layer_change,
+                XmNrightOffset, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+//WE7U
+//        label3  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        label3  = XtVaCreateManagedWidget("Filled->",
+                xmLabelWidgetClass,
+                rowcol,
+//                XmNtopAttachment, XmATTACH_FORM,
+//                XmNtopOffset, 10,
+//                XmNbottomAttachment, XmATTACH_NONE,
+//                XmNleftAttachment, XmATTACH_NONE,
+//                XmNrightAttachment, XmATTACH_WIDGET,
+//                XmNrightWidget, button_filled_yes,
+//                XmNrightOffset, 2,
+//                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "Filled-Yes"
+//        button_filled_yes = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_filled_yes = XtVaCreateManagedWidget("Yes",
+                xmPushButtonGadgetClass, 
+                rowcol,
+//                XmNtopAttachment, XmATTACH_FORM,
+//                XmNtopOffset, 5,
+//                XmNbottomAttachment, XmATTACH_NONE,
+//                XmNleftAttachment, XmATTACH_NONE,
+//                XmNrightAttachment, XmATTACH_WIDGET,
+//                XmNrightWidget, button_filled_no,
+//                XmNrightOffset, 5,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+//WE7U
+// "Filled-No"
+//        button_filled_no = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_filled_no = XtVaCreateManagedWidget("No",
+                xmPushButtonGadgetClass, 
+                rowcol,
+//                XmNtopAttachment, XmATTACH_FORM,
+//                XmNtopOffset, 5,
+//                XmNbottomAttachment, XmATTACH_NONE,
+//                XmNleftAttachment, XmATTACH_NONE,
+//                XmNrightAttachment, XmATTACH_FORM,
+//                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 // "None"
         button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
@@ -10079,7 +10079,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
 
 // "Close"
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
