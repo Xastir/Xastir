@@ -3,13 +3,13 @@
 # Copyright (C) 2000-2004  The Xastir Group
 #
 # Xastir Version : 1.0.0
-# Creator        : Alessandro Frigeri, IK0YUP <afrigeri@email.it>
+# Creator        : Alessandro Frigeri, IK0YUP <ik0yup@myrealbox.com>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Last Modified  : Thu 03 Jun 21:15:00 CEST 2004 by IK0YUP
+# Last Modified  : Tue 31 Aug 11:00:00 CEST 2004 by IK0YUP
 #
 # comment lines with pound signs in front are ignored
 # Il formato del file è il seguente:
-# ID (10 caratteri alfanumerici)|(Stringa associata all'ID)|TastiDiSceltaRapida|#commento
+# ID (10 caratteri alfanum)|(Stringa associata all'ID)|TastiDiSceltaRapida|#commento
 # WARNING:
 # Some strings contain formatting commands like %s and %d, you should not
 # change these. Wrong format strings could produce a segfault!
@@ -50,13 +50,13 @@ PULDNVI007|Allarmi Meteo|A|
 PULDNVI011|Traffico Messaggi|T|
 PULDNVI013|Tempo trascorso dall'avvio|d|
 PULDNVI014|Uptime del programma||
-PULDNVI015|GPS Status||
+PULDNVI015|Stato GPS||
 #
 # Menu' di Configurazione
 PULDNCF004|Dati Stazione|S|
 PULDNCF001|Configurazioni originali|D|
 PULDNCF003|Temporizzazione|T|
-PULDNCF002|Coordinate System|C|
+PULDNCF002|Sistema di Coordinate|C|
 PULDNCF006|Allarmi Audio|A|
 PULDNCF007|Annunci Vocali|p|
 PULDNCF008|Salva la Configurazione Ora!|C|
@@ -83,7 +83,7 @@ PULDNMP021|Mappe Automatche - Disabilita Mappe Raster||
 PULDNMP022|Indicizza Mappe all' Avvio||
 PULDNMP023|Indice: Aggiungi Nuove Mappe|N|
 PULDNMP024|Indice: Riordina Tutte le Mappe|R|
-PULDNMP025|Map labels font||
+PULDNMP025|Carattere etichette||
 PULDNMP015|Xfontsel||
 #
 #
@@ -166,7 +166,7 @@ PULDNDP044|Seleziona Stazioni||
 PULDNDP028|- Seleziona Stazioni Fisse||
 PULDNDP029|- Seleziona Stazioni Mobili||
 PULDNDP030|- Seleziona Stazioni Meteo||
-PULDNDP053|  - Select CWOP WX Stations||
+PULDNDP053|  - Seleziona stazioni Meteo CWOP||
 PULDNDP045|- Seleziona Oggetti/Dettagli||
 PULDNDP026|- Seleziona Oggetti/Dettagli Meteo||
 PULDNDP039|- Seleziona Oggetti/Dettagli Misura Acqua||
@@ -199,10 +199,10 @@ PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|
 PULDNDP025|Cancella Storico Oggetti/Dettagli||
 PULDNDP048|Ricarica Storico Oggetti/Dettagli||
-PULDNDP049|Clear All Tactical Calls||
-PULDNDP050|Clear Tactical Call History||
-PULDNDP051|Select Tactical Calls Only||
-PULDNDP052|- Label Trailpoints||
+PULDNDP049|Cancella tutte le chiamate tattiche||
+PULDNDP050|Cancella lo storico delle chiamate tattiche||
+PULDNDP051|Seleziona solo chiamate tattiche||
+PULDNDP052|- Etichetta i punti percorso||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||
@@ -225,12 +225,12 @@ PULDNTNT02|Proprietà|P|
 PULDNTNT03|Disabilita Trasmissioni: TUTTE||
 PULDNTNT05|Disabilita Trasmissioni: Mia Posizione||
 PULDNTNT06|Disabilita Trasmissioni: Oggetti/Entità||
-PULDNTNT11|Enable Server Port||
+PULDNTNT11|Abilita la porta del Server||
 PULDNTNT01|Trasmetti Ora!|T|
 PULDNTNT07|Carica tracciato GPS|F|
 PULDNTNT08|Carica rotte GPS|R|
 PULDNTNT09|Carica punti GPS|W|
-PULDNTNT10|Fetch Garmin RINO Waypoints|G|
+PULDNTNT10|Ricevi Waypoints Garmin RINO|G|
 #
 # Menù Aiuto
 PULDNHEL01|Versione di Xastir|A|
@@ -264,13 +264,13 @@ POPUPMA022|RintracciaMi||
 POPUPMA023|Trovato Blocco Tastiera!||
 POPUPMA024|Per Favore disabilita Blocco Maiuscole/BlocNum/Scorrimento/||
 POPUPMA026|Center & Zoom||
-POPUPMA027|  Latitude||
-POPUPMA028| Longitude||
-POPUPMA029|Draw CAD Objects||
-POPUPMA030|Start Draw Mode||
-POPUPMA031|Close Polygon||
-POPUPMA032|Erase All CAD Polygons||
-POPUPMA033|End Draw Mode||
+POPUPMA027|  Latitudine||
+POPUPMA028| Longitudine||
+POPUPMA029|Disegna oggetti CAD||
+POPUPMA030|Entra in modalità disegno||
+POPUPMA031|Chiudi il poligono||
+POPUPMA032|Cancella tutti i poligoni CAD||
+POPUPMA033|Termina modalità disegno||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||
@@ -336,7 +336,7 @@ WPUPLSP003|Non rispetta Maius/Minus||
 WPUPLSP004|Rispetta Maius/minus ||
 WPUPLSP005|Localizza!||
 WPUPLSP006|Localizzazione di Emergenza!||
-WPUPLSP007|FCC/RAC Lookup||
+WPUPLSP007|Ricerca su FCC/RAC||
 #
 # Configure defaults popup
 WPUPCFD001|Parametri originali||
@@ -367,7 +367,7 @@ WPUPCFD026|Intervallo per invio rapporti posizione||
 WPUPCFD027|Apparizione nuovi bollettini||
 WPUPCFD028|Avvisa per utilizzo tasti inadatti||
 WPUPCFD029|Vedi bollettini a distanza zero||
-WPUPCFD030|Disable Posit Dupe-Checks||
+WPUPCFD030|Disattiva Posit Dupe-Checks||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
@@ -379,9 +379,9 @@ WPUPCFTM06|Intervallo controllo GPS (sec)||
 WPUPCFTM07|Tempo eliminazione stazione (giorni)||
 WPUPCFTM08|Fuori tempo Ricalcolo Assoluto (min)||
 WPUPCFTM09|Serial Inter-Char Delay (ms)||
-WPUPCFTM10|New Track Time (min)||
-WPUPCFTM11|New Track Interval (degrees)||
-WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
+WPUPCFTM10|Nuovo tempo della traccia (min)||
+WPUPCFTM11|Nuovo intervallo della traccia (gradi)||
+WPUPCFTM12|RINO -> Intervallo oggetto (min), 0 = Non attivo||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||
@@ -391,7 +391,7 @@ WPUPCFC004|gg mm.mmm|m|
 WPUPCFC005|gg mm ss.s|s|
 WPUPCFC006|UTM|U|
 WPUPCFC007|MGRS||
-WPUPCFC008|UTM w/special zones||
+WPUPCFC008|UTM con zone speciali||
 #
 # Configurazione GPS
 WPUPCFG001|Configura GPS||
@@ -459,7 +459,7 @@ WPUPCFT037|SlotTime (unità di 10 ms)||
 WPUPCFT038|Coda Tx (unità di 10 ms)||
 WPUPCFT039|Full Duplex||
 WPUPCFT040|Configura TNC Multi-Port KISS||
-WPUPCFT041|Radio Port||
+WPUPCFT041|Porta Radio||
 #
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||
@@ -545,8 +545,8 @@ POPUPOB040|Larghezza fascio - Puntamento||
 POPUPOB041|Antenna Omni||
 POPUPOB042|Antenna Direzionale||
 POPUPOB043|Sconosciuta||
-POPUPOB044|Adopt Object||
-POPUPOB045|Adopt Item||
+POPUPOB044|Adotta l'Oggetto||
+POPUPOB045|Adotte l'Item||
 #
 #Configure Internet
 WPUPCFI001|Configura Rete||
@@ -642,11 +642,11 @@ WPUPMSB003|Nominativi stazioni:||
 WPUPMSB004|Nominativo gruppo:||
 WPUPMSB005|Nuovo nominativo||
 WPUPMSB006|Nuovo gruppo||
-WPUPMSB007|Clear Msg History||
+WPUPMSB007|Cancella storico Msg||
 WPUPMSB008|Messaggio:||
 WPUPMSB009|Invia ora!||
 WPUPMSB010|Percorso:||
-WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB011|Cancella Msg in attesa||
 #
 #Auto Reply
 WPUPARM001|Cambia risposta automatica||
@@ -674,7 +674,7 @@ WPUPSTI013|, e ha cambiato posizione||
 WPUPSTI014|Potenza attuale: %s||
 WPUPSTI016|Altitudine: %.0f%s||
 WPUPSTI017| Direzione: %s° ||
-WPUPSTI018| Velocità: %.1f Km/ora||
+WPUPSTI018| Velocità: %.1f km/ora||
 WPUPSTI019| Velocità: %.1f miglia/ora||
 WPUPSTI020|%0.1f Miglia||
 WPUPSTI021|%0.1f chilometri||
@@ -720,8 +720,8 @@ WPUPSTI060|Temp Carburante: %02.1f°C  ||
 WPUPSTI061|Temp Carburante: %s°F   ||
 WPUPSTI062|Umidità Carburante: %s%%   ||
 WPUPSTI063|Pressione: %0.2f in Hg||
-WPUPSTI064|Fetch NWS Alert||
-WPUPSTI065|Tactical Call: %s||
+WPUPSTI064|Ricevi avvisi NWS||
+WPUPSTI065|Chiamata tattica: %s||
 #
 # FCC-RAC Call Look up
 STIFCC0001|Ricerca nel database FCC||
@@ -842,9 +842,9 @@ WXPUPSI007|Pioggia totale||
 WXPUPSI008|Pioggia totale odierna||
 WXPUPSI009|Pressione||
 WXPUPSI010|Umidità||
-WXPUPSI011|Peet Bros ULTIMETER 2000 Type (Data Logging Mode)||
-WXPUPSI012|Peet Bros ULTIMETER II Type||
-WXPUPSI013|Peet Bros ULTIMETER 2000 Type (Packet Mode)||
+WXPUPSI011|Peet Bros ULTIMETER 2000 (Modalità Data Logging)||
+WXPUPSI012|Peet Bros ULTIMETER II ||
+WXPUPSI013|Peet Bros ULTIMETER 2000 (Modalità Packet)||
 WXPUPSI014|Pioggia (ultima ora)||
 WXPUPSI015|Pioggia (24 ore)||
 WXPUPSI016|Qualimetrics Q-Net||
