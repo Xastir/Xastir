@@ -1,0 +1,5 @@
+/* Created with The GIMP */
+#define 13pct_width 4
+#define 13pct_height 4
+static unsigned char 13pct_bits[] = {
+   0x01, 0x00, 0x04, 0x00 };

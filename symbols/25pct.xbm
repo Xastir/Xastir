@@ -1,0 +1,5 @@
+/* Created with The GIMP */
+#define 25pct_width 4
+#define 25pct_height 4
+static unsigned char 25pct_bits[] = {
+   0x01, 0x04, 0x01, 0x04 };

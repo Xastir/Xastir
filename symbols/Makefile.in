@@ -105,8 +105,8 @@ x_libraries = @x_libraries@
 xastirpath = @xastirpath@
 
 symbolsdir = ${prefix}/xastir/symbols
-EXTRA_DIST = symbols.dat 2x2.xbm alert.xbm flood.xbm snow.xbm tornado.xbm wind.xbm winter_wx.xbm wntr_strm.xbm
-symbols_DATA = symbols.dat 2x2.xbm alert.xbm flood.xbm snow.xbm tornado.xbm wind.xbm winter_wx.xbm wntr_strm.xbm
+EXTRA_DIST = symbols.dat 2x2.xbm 25pct.xbm 13pct.xbm alert.xbm flood.xbm snow.xbm tornado.xbm wind.xbm winter_wx.xbm wntr_strm.xbm
+symbols_DATA = symbols.dat 2x2.xbm 25pct.xbm 13pct.xbm alert.xbm flood.xbm snow.xbm tornado.xbm wind.xbm winter_wx.xbm wntr_strm.xbm
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
