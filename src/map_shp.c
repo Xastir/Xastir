@@ -3330,7 +3330,7 @@ if (on_screen) {
                         }
 
                         if ( (i >= 3)
-                                && (ok_to_draw)
+                                && (ok_to_draw && !skip_it)
                                 && ( !draw_filled || !map_color_fill || (draw_filled && polygon_hole_storage[ring] == 0) ) ) {
                             // We have a polygon to draw!
 //WE7U3

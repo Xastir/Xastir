@@ -39,9 +39,9 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 #We need this just in case there is no CFCC code to tell us we're a water
 # feature
 #Perennial water
-/^WATER=1$/ {filled=1; fill_style=2; fill_stipple=2; color=117; fill_color=117; label_color=26; display_level=1;}
+/^WATER=1$/ {filled=1; fill_style=2; fill_stipple=2; color=117; fill_color=117; label_color=26; display_level=1024;}
 #intermittent water
-/^WATER=2$/ {filled=1; color=117; fill_color=117; label_color=26; display_level=1;pattern=1;}
+/^WATER=2$/ {filled=1; color=117; fill_color=117; label_color=26; display_level=512;pattern=1;}
 
 # These are *all* the allowed feature classes, even those that aren't
 # polygon types.  We won't actually bother testing for anything other 
@@ -127,7 +127,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # D00 - unknown
 # D10 - military installation
 # color is RosyBrown2
-/^CFCC=D1/ { filled=1; fill_color=112; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D1/ { filled=1; fill_color=112; fill_style=2; fill_stipple=0; display_level=1024; font_size=1; next}
 # D20 - multihousehold or transient quarters
 # D21 - apartment building or complex
 # D22 - rooming or boarding house
@@ -138,7 +138,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # D27 - hotel, motel, resort, spa, YMCA, YWCA
 # D28 - campground
 # D29 - shelter or mission
-/^CFCC=D2/ {filled=1;  fill_color=14; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D2/ {filled=1;  fill_color=14; fill_style=2; fill_stipple=0; display_level=128; font_size=1; next}
 # D30 - custodial facility
 # D31 - hospital
 # D32 - halfway house
@@ -147,13 +147,13 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # D35 - orphanage
 # D36 - jail 
 # D37 - federal penetentiary, state prison, or prison farm
-/^CFCC=D3/ {filled=1;  fill_color=13; fill_style=2; fill_stipple=0; display_level=0; font_size=1; next}
+/^CFCC=D3/ {filled=1;  fill_color=13; fill_style=2; fill_stipple=0; display_level=128; font_size=1; next}
 # D40 - unknown educational or religious
 # D41 - sorority or fraternity
 # D42 - convent or monastery
 # D43 - educational institution
 # D44 - religious institution
-/^CFCC=D4/ { filled=1; fill_color=20; fill_style=2; fill_stipple=0; display_level=0; font_size=1; next}
+/^CFCC=D4/ { filled=1; fill_color=20; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
 # D50 - transportation terminal
 # D51 - airport
 # D52 - train station
@@ -162,7 +162,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # D55 - seaplane anchorage
 # D57 - Airport
 # color is "gray81"
-/^CFCC=D5/ {filled=1;  fill_color=113; fill_style=2; fill_stipple=1; display_level=64; font_size=1; next}
+/^CFCC=D5/ {filled=1;  fill_color=113; fill_style=2; fill_stipple=1; display_level=512; font_size=1; next}
 # D60 - Employment center
 # D61 - Shopping center
 # D62 - Industrial Building or Ind. park
@@ -170,24 +170,24 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # D64 - Amusement Center
 # D65 - Government Center
 # D66 - Other emplyoment center
-/^CFCC=D6/ {filled=1;  fill_color=113; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D6/ {filled=1;  fill_color=113; fill_style=2; fill_stipple=0; display_level=256; font_size=1; next}
 # D70 - tower
 # D71 - lookout tower
-/^CFCC=D7/ {filled=1;  fill_color=113; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D7/ {filled=1;  fill_color=113; fill_style=2; fill_stipple=0; display_level=128; font_size=1; next}
 # D80 - open space
 # D81 - golf course
 # D82 - cemetery
 # Color is "tgr_park_1"
-/^CFCC=D8[01]/ {filled=1;  fill_color=114; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D8[01]/ {filled=1;  fill_color=114; fill_style=2; fill_stipple=0; display_level=512; font_size=1; next}
 # D83 - national park
 # D84 - national forest
 # D85 - state or local park or forest
 # color is "tgr_forest_1"
-/^CFCC=D8[3-5]/ {filled=1;  fill_color=116; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D8[3-5]/ {filled=1;  fill_color=116; fill_style=2; fill_stipple=0; display_level=1024; font_size=1; next}
 # D90 - special purpose landmark
 # D91 - post office box-only ZIP Code location
 # D92 - urbanizacion (Puerto Rico)
-/^CFCC=D9/ {filled=1;  fill_color=101; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D9/ {filled=1;  fill_color=101; fill_style=2; fill_stipple=0; display_level=256; font_size=1; next}
 
 # E: physical featuers
 # E00 - unknown physical feature
@@ -223,13 +223,13 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # F80 - other tabulation boundary
 # F81 - internal use
 # F82 - internal use
-/^CFCC=F/{filled=1; color=115; fill_color=115; fill_style=0; label_level=32; display_level=64; pattern=0; next}
+/^CFCC=F/{filled=1; color=115; fill_color=115; fill_style=0; label_level=32; display_level=512; pattern=0; next}
 #/^CFCC=F/{display_level=0; next}
 # Don't bother with the F's either for now
 # (G not used by census;  tig2aprs uses for special maps)
 # H: hydrography
 # Color is "tgr_water_1"
-/^CFCC=H/ {filled=1; color=117; fill_color=3; label_color=26; display_level=1;}
+/^CFCC=H/ {filled=1; color=117; fill_color=3; label_color=26; display_level=512;}
 # H00 - water feature
 # H01 - shoreline of perennial water feature
 # H02 - shoreline of intermittent "
