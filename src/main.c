@@ -12497,22 +12497,22 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
 
     XmScaleGetValue(ghosting_time, &value); // Minutes
-    sec_old = (time_t)(value * 60);
+    sec_old = (time_t)(value * 60); // Convert to seconds
 
     XmScaleGetValue(clearing_time, &value); // Hours
-    sec_clear = (time_t)(value * 60 * 60);
+    sec_clear = (time_t)(value * 60 * 60);  // Convert to seconds
 
-    XmScaleGetValue(posit_interval, &value);// Seconds
-    POSIT_rate = (long)value;
+    XmScaleGetValue(posit_interval, &value);// Minutes * 10
+    POSIT_rate = (long)(value * 60 / 10);   // Convert to seconds
 
     XmScaleGetValue(gps_interval, &value);  // Seconds
     gps_time = (long)value;
 
     XmScaleGetValue(dead_reckoning_time, &value);  // Minutes
-    dead_reckoning_timeout = value * 60;
+    dead_reckoning_timeout = value * 60;    // Convert to seconds
 
     XmScaleGetValue(object_item_interval, &value);  // Minutes
-    OBJECT_rate = value * 60;
+    OBJECT_rate = value * 60;   // Convert to seconds
 
     // Set the new posit rate into effect immediately
     posit_next_time = posit_last_time + POSIT_rate;
@@ -12719,11 +12719,12 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
-                XmNminimum, 30,     // Thirty seconds
-                XmNmaximum, 60*60,  // One hour
+                XmNminimum, 5,          // 0.5 = Thirty seconds
+                XmNmaximum, 45*10,      // 45 minutes
+                XmNdecimalPoints, 1,    // Move decimal point over one
                 XmNshowValue, TRUE,
-                XmNvalue, (int)POSIT_rate,
-                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (sec)", 6,
+                XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
+                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (min)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
