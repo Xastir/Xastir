@@ -91,7 +91,8 @@ then
 	freebsd*) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
-		AC_MSG_RESULT(none needed) 
+        CFLAGS="-g -O2 -pipe -pthread" 
+		AC_MSG_RESULT(FreeBSD - added -g -02 -pipe -pthread) 
 		AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
 		;; 
 	openbsd*) 
@@ -145,14 +146,16 @@ else
         AC_DEFINE(XASTIR_SYSTEM, [FreeBSD], [Define system type]) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
-        AC_MSG_RESULT(none needed) 
+        CFLAGS="-g -O2 -Wall -pipe -pthread" 
+        AC_MSG_RESULT(FreeBSD gcc - added -g -O2 -Wall -pipe -pthread) 
         AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
         ;; 
     openbsd*) 
         AC_DEFINE(XASTIR_SYSTEM, [OpenBSD], [Define system type]) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
-        AC_MSG_RESULT(none needed) 
+        CFLAGS="-g -O2 -Wall -pipe -pthread" 
+        AC_MSG_RESULT(OpenBSD gcc - added -g -O2 -Wall -pipe -pthread) 
         AC_DEFINE(SYS_OPENBSD, 1, Compiling for OpenBSD) 
         ;; 
 	cygwin*) 
@@ -169,13 +172,13 @@ else
     esac 
 fi 
  
-CXXFLAGS="$CXXFLAGS $CFLAGS" 
+# CXXFLAGS="$CXXFLAGS $CFLAGS" 
  
 AC_DEFINE_UNQUOTED(TNC_PORT, $ac_tnc_port, [Define default TNC port.]) 
 AC_DEFINE_UNQUOTED(GPS_PORT, $ac_gps_port, [Define default GPS port.]) 
  
 AC_DEFINE(_GNU_SOURCE, 1, [This is GNU compliant source, use GNU extensions.]) 
-# AC_DEFINE(_REENTRANT, 1, [Use reentrant code if available.]) 
+AC_DEFINE(_REENTRANT, 1, [Use reentrant code if available.]) 
 AC_DEFINE_UNQUOTED(STIPPLE, 1, [Legacy stuff, use crowbar and lets keep going]) 
  
 # Checks for libraries. 
@@ -213,6 +216,7 @@ else
   have_x='no' 
   AC_MSG_ERROR([Working X-dev not found... This ain't going to work, giving up.])
 fi 
+
 AM_CONDITIONAL(HasX11, test "$have_x" = 'yes') 
 AC_SUBST(LIB_X11) 
 AC_SUBST(LIB_XEXT) 
@@ -225,7 +229,10 @@ AC_CHECK_LIB([Xpm], [XpmWriteFileFromPixmap])
 AC_CHECK_LIB([Xp], [XpGetDocumentData]) 
 AC_CHECK_LIB([Xm], [XmTextFindString]) 
 AC_CHECK_LIB([Xt], [XtDisplay]) 
-AC_CHECK_LIB([pthread],[pthread_mutexattr_init]) 
+AC_CHECK_LIB(compat, main, 
+    [LIBCOMPAT="-lcompat"
+    AC_SUBST(LIBCOMPAT)])
+AC_CHECK_LIB([pthread],[pthread_create]) 
  
 # Check for endian 
 AC_C_BIGENDIAN 
