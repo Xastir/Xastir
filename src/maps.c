@@ -67,15 +67,6 @@
 #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 #undef PACKAGE_VERSION
 #include <magick/api.h>
-#ifdef HAVE_MAGICK_XWINDOW_H
-#include <magick/xwindow.h> 
-#else 
-#ifdef HAVE_MAGICK_XWINDOWS_H
-#include <magick/xwindows.h> 
-#else
-#error ImageMagick include file for XImportImage() not found
-#endif 
-#endif
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
 #undef XASTIR_PACKAGE_BUGREPORT
@@ -5171,17 +5162,11 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 static void* snapshot_thread(void *arg) {
 
 #ifndef NO_GRAPHICS
-
-// Temporary
-#ifdef HAVE_IMAGEMAGICK
-
+    char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
-    Image *snapshot_image;
-    ImageInfo *snapshot_info;
-    XImportInfo ximage_info;
-    ExceptionInfo exception;
-    unsigned int err;
-    char window[MAX_FILENAME];
+#ifdef HAVE_CONVERT
+    char command[MAX_FILENAME*2];
+#endif  // HAVE_CONVERT
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -5198,28 +5183,51 @@ static void* snapshot_thread(void *arg) {
     // Get my login name
     strcpy(username,user_info->pw_name);
 
-    xastir_snprintf(png_filename, sizeof(png_filename), "/var/tmp/xastir_%s_snap.png", username);
+    xastir_snprintf(xpm_filename, sizeof(xpm_filename), "/var/tmp/xastir_%s_snap.xpm",
+            username);
+    xastir_snprintf(png_filename, sizeof(png_filename),"/var/tmp/xastir_%s_snap.png",
+            username);
 
-    GetExceptionInfo(&exception);
-    snapshot_info = CloneImageInfo((ImageInfo *) NULL);
-    xastir_snprintf(window, sizeof(window), "%ld", XtWindow(da));
-    (void) strcpy(snapshot_info->filename, window);
-    XGetImportInfo(&ximage_info);
-    ximage_info.silent = True;
-    snapshot_image = XImportImage(snapshot_info, &ximage_info);
-    if (snapshot_image == (Image *) NULL) {
-      fprintf(stderr, "Unable to read image from window %s\n", window);
-    } else {
-      snapshot_info->quality=100;
-      snapshot_info->depth=8;
-      (void) strcpy(snapshot_image->filename, png_filename);
-      err = WriteImage(snapshot_info, snapshot_image);
+    if ( debug_level & 512 )
+        fprintf(stderr,"Creating %s\n", xpm_filename );
+
+    if ( !XpmWriteFileFromPixmap( XtDisplay(appshell),    // Display *display
+            xpm_filename,                               // char *filename
+            pixmap_final,                               // Pixmap pixmap
+            (Pixmap)NULL,                               // Pixmap shapemask
+            NULL ) == XpmSuccess ) {                    // XpmAttributes *attributes
+        fprintf(stderr,"ERROR writing %s\n", xpm_filename );
+    } else {  // We now have the xpm file created on disk
+
+        chmod( xpm_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+
+        if ( debug_level & 512 )
+            fprintf(stderr,"Convert %s ==> %s\n", xpm_filename, png_filename );
+
+#ifdef HAVE_CONVERT
+        // Convert it to a png file.  This depends on having the
+        // ImageMagick command "convert" installed.
+        xastir_snprintf(command,
+            sizeof(command),
+            "%s -quality 100 -colors 256 %s %s",
+            CONVERT_PATH,
+            xpm_filename,
+            png_filename );
+
+        if ( system( command ) != 0 ) {
+            fprintf(stderr,"convert failed to convert snapshot from xpm to png\n");
+        }
+        else {
+            chmod( png_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+
+            // Delete temporary xpm file
+            unlink( xpm_filename );
+
+            if ( debug_level & 512 )
+                fprintf(stderr,"  Done creating png.\n");
+        }
+#endif  // HAVE_CONVERT
     }
-    DestroyImageInfo(snapshot_info);
-    DestroyExceptionInfo(&exception);
-
-// Temporary
-#endif  // HAVE_IMAGEMAGICK
 
 #endif // NO_GRAPHICS
   
