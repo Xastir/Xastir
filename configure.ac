@@ -131,6 +131,14 @@ AC_SUBST(LIBS)
 # New stuff to check for Motif/Lesstif.  Shamelessly borrowed from
 # the "vim" project.
 
+# From Tom Russo:
+#
+# "Ideally, instead of doing a simple "if test -f $try/Xm/Xm.h", it
+# should add -I$try to CPPFLAGS and attempt an AC_CHECK_HEADER.  For
+# libXm it should add -L$try to LDFLAGS and try an AC_CHECK_LIB."
+#
+# Someone want to add that stuff in?
+
 # Check for Motif include files location.
 # The LAST one found is used, this makes the highest version to be
 # used, e.g. when Motif1.2 and Motif2.0 are both present.
