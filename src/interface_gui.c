@@ -989,8 +989,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
-//WE7U
-// Draw a different frame3 for Serial KISS TNC interfaces
+// Draw a different frame3 for Serial KISS/MKISS TNC interfaces
         switch(device_type) {
             case DEVICE_SERIAL_KISS_TNC:
             case DEVICE_SERIAL_MKISS_TNC:
