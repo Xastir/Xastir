@@ -891,7 +891,7 @@ void draw_ogr_map(Widget w,
         //   spatial filter is installed after which it will return FALSE.
         //   NOTE: Shapefile reports this as TRUE.
         //
-        fprintf(stderr," Layer %02d: ", i);
+        fprintf(stderr,"  Layer %02d: ", i);
         if (OGR_L_TestCapability(layer, OLCRandomRead)) {
             fprintf(stderr, "Random Read, ");
         }
@@ -993,14 +993,13 @@ void draw_ogr_map(Widget w,
         if (layerDefn != NULL) {
             numFields = OGR_FD_GetFieldCount( layerDefn );
 
-            fprintf(stderr,"\n===================\n");
-            fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
+            fprintf(stderr,"  Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
 
             for ( jj=0; jj<numFields; jj++ ) {
                 OGRFieldDefnH fieldDefn;
 
                 fieldDefn = OGR_FD_GetFieldDefn( layerDefn, jj );
-//                fprintf(stderr," Field %d: %s (%s)\n", 
+//                fprintf(stderr,"  Field %d: %s (%s)\n", 
 //                       jj, OGR_Fld_GetNameRef(fieldDefn), 
 //                       OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
             }
@@ -1017,10 +1016,12 @@ void draw_ogr_map(Widget w,
 
 //        if ( (feature = OGR_L_GetNextFeature( layer ) ) != NULL ) {
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
-            OGRGeometryH shape;
+            OGRGeometryH geometry;
             int num = 0;
+            int rings = 0;
             int ii;
             double X1, Y1, Z1, X2, Y2, Z2;
+//            char *buffer;
  
 
             if (interrupt_drawing_now) {
@@ -1035,15 +1036,24 @@ void draw_ogr_map(Widget w,
                 continue;
             }
 
+
             // Debug code
             //OGR_F_DumpReadable( feature, stderr );
 
-            // Get a handle to the shape itself
-            shape = OGR_F_GetGeometryRef(feature);
-            if (shape == NULL) {
+
+            // Get a handle to the geometry itself
+            geometry = OGR_F_GetGeometryRef(feature);
+            if (geometry == NULL) {
                 OGR_F_Destroy( feature );
                 continue;
             }
+
+
+            // More debug code.  Print the Well Known Text
+            // representation of the geometry.
+//            if (OGR_G_ExportToWkt(geometry, &buffer) == 0) {
+//                fprintf(stderr, "%s\n", buffer);
+//            }
 
 
             // These are from the OGRwkbGeometryType enumerated set
@@ -1075,15 +1085,15 @@ void draw_ogr_map(Widget w,
                 xastir_snprintf(geometry_type_name,
                     sizeof(geometry_type_name),
                     "%s",
-                    OGR_G_GetGeometryName(shape));
-                geometry_type = OGR_G_GetGeometryType(shape);
-                fprintf(stderr," Type: %d, %s\n",  
+                    OGR_G_GetGeometryName(geometry));
+                geometry_type = OGR_G_GetGeometryType(geometry);
+                fprintf(stderr,"  Type: %d, %s\n",  
                     geometry_type,
                     geometry_type_name);
             }
 
             // Debug code 
-            //OGR_G_DumpReadable(shape, stderr, "Shape: ");
+            //OGR_G_DumpReadable(geometry, stderr, "Shape: ");
 
 
 // We could call OGR_G_GetEnvelope() here and calculate for
@@ -1105,26 +1115,27 @@ void draw_ogr_map(Widget w,
                 case 4:             // MultiPoint
                 case 0x80000001:    // Point25D
                 case 0x80000004:    // MultiPoint25D
-                    // Get number of elements (points)
-                    num = OGR_G_GetPointCount(shape);
-//                    fprintf(stderr,"Number of elements: %d\n",num);
 
-                    // Print out the points
+                    // Get number of elements (points)
+                    num = OGR_G_GetPointCount(geometry);
+//                    fprintf(stderr,"  Number of elements: %d\n",num);
+
+                    // Print out the point
 //                    for ( ii=0; ii < num; ii++ ) {
-//                        X1 = OGR_G_GetX(shape, ii);
-//                        Y1 = OGR_G_GetY(shape, ii);
-//                        Z1 = OGR_G_GetZ(shape, ii);
-//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+//                        X1 = OGR_G_GetX(geometry, ii);
+//                        Y1 = OGR_G_GetY(geometry, ii);
+//                        Z1 = OGR_G_GetZ(geometry, ii);
+//                        fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
 //                    }
-                    // Draw
+
+                    // Draw one point
                     if (num > 0) {
                         for ( ii = 0;  ii < num; ii++ ) {
-                            OGR_G_GetPoint(shape,
+                            OGR_G_GetPoint(geometry,
                                 ii,
                                 &X1,
                                 &Y1,
                                 &Z1);
-//fprintf(stderr,"Draw Point here\n");
                             draw_point_ll(da,
                                 (float)Y1,
                                 (float)X1,
@@ -1138,23 +1149,25 @@ void draw_ogr_map(Widget w,
                 case 5:             // MultiLineString
                 case 0x80000002:    // LineString25D
                 case 0x80000005:    // MultiLineString25D
-                    // Get number of elements (lines)
-                    num = OGR_G_GetPointCount(shape);
-//                    fprintf(stderr,"Number of elements: %d\n",num);
 
-                    // Print out the points
+                    // Get number of elements (lines)
+                    num = OGR_G_GetPointCount(geometry);
+//                    fprintf(stderr,"  Number of elements: %d\n",num);
+
+                    // Print out the points the line is comprised of
 //                    for ( ii=0; ii < num; ii++ ) {
-//                        OGR_G_GetPoint(shape,
+//                        OGR_G_GetPoint(geometry,
 //                            ii,
 //                            &X1,
 //                            &Y1,
 //                            &Z1);
-//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+//                        fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
 //                    }
-                    // Draw
+
+                    // Draw one polyline
                     if (num > 0) {
                         // Get the first point
-                        OGR_G_GetPoint(shape,
+                        OGR_G_GetPoint(geometry,
                             0,
                             &X2,
                             &Y2,
@@ -1167,7 +1180,7 @@ void draw_ogr_map(Widget w,
                             Z1 = Z2;
 
                             // Get the next point
-                            OGR_G_GetPoint(shape,
+                            OGR_G_GetPoint(geometry,
                                 ii,
                                 &X2,
                                 &Y2,
@@ -1177,6 +1190,10 @@ void draw_ogr_map(Widget w,
 // It should be faster here to draw the entire Polyline with one X11
 // call, instead of drawing each line segment in turn.  Change to
 // that method at some point.
+//
+// We should be able to store them in an array, call the Translate()
+// function on all of them at once, and then call an X11 function to
+// draw the entire line at once.
 
                             draw_vector_ll(da,
                                 (float)Y1,
@@ -1193,50 +1210,77 @@ void draw_ogr_map(Widget w,
                 case 6:             // MultiPolygon
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
-                    // Get number of elements (polygons)
-                    num = OGR_G_GetGeometryCount(shape);
-//                    fprintf(stderr,"Number of elements: %d\n",num);
-                    if (num > 0) {
-//                        fprintf(stderr,"Draw %d Polygons here\n", num);
-//                        int geometry_count = 0;
-//                        int kk;
 
+                    // Get the number of rings in the polygon
+                    rings = OGR_G_GetGeometryCount(geometry);
+//                    fprintf(stderr,"  Rings: %d  ",rings);
 
-                        // First get the count of geometry's in
-                        // this layer.
-//                        geometry_count = OGR_G_GetGeometryCount(shape);
+//fprintf(stderr, "Points: ");
+                    // Run through each ring found
+                    for ( ii = 0; ii < rings; ii++) {
+                        OGRGeometryH polygon;
+                        int polygon_points;
 
+                        polygon = OGR_G_GetGeometryRef(geometry, ii);
+                        polygon_points = OGR_G_GetPointCount(polygon);
 
+                        if (polygon_points > 0) {
+                            int kk;
 
-                        // Get outer ring (there will only be
-                        // one)
-//                        outer_ring = getExteriorRing();
+//fprintf(stderr,"%d  ", polygon_points);
+                            // This can get complicated:  Polygons
+                            // are composed of rings.  If a ring
+                            // goes in one direction, it's a fill,
+                            // if the other direction, it's a hole
+                            // in the polygon.
 
-                        // Snag qty of inner rings
-//                        ring_qty = getNumInteriorRings();
-                        // And snag each inner ring in turn
-//                        for ( kk = 0; kk < interior_ring_qty) {
-//                            inner_ring = getInteriorRing(kk);
-//                        }
-                        
+                            // Get the first point
+                            OGR_G_GetPoint(polygon,
+                                0,
+                                &X2,
+                                &Y2,
+                                &Z2);
 
+                            for ( kk = 1; kk < polygon_points; kk++ ) {
 
-                        // This can get complicated:  Polygons are
-                        // composed of rings.  If a ring goes in one
-                        // direction, it's a fill, if the other
-                        // direction, it's a hole in the polygon.
+                                X1 = X2;
+                                Y1 = Y2;
+                                Z1 = Z2;
+
+                                // Get the next point
+                                OGR_G_GetPoint(polygon,
+                                    kk,
+                                    &X2,
+                                    &Y2,
+                                    &Z2);
+
+// Optimization:
+// It should be faster here to draw the entire Polyline with one X11
+// call, instead of drawing each line segment in turn.  Change to
+// that method at some point.
+//
+// We should be able to store them in an array, call the Translate()
+// function on all of them at once, and then call an X11 function to
+// draw the entire line at once.
+
+                                draw_vector_ll(da,
+                                    (float)Y1,
+                                    (float)X1,
+                                    (float)Y2,
+                                    (float)X2,
+                                    gc,
+                                    pixmap);
+                            }
+                        }
                     }
+//fprintf(stderr, "\n");
                     break;
 
                 case 7:             // GeometryCollection
                 case 0x80000007:    // GeometryCollection25D
-                    num = OGR_G_GetGeometryCount(shape);
-//                    fprintf(stderr,"Number of elements: %d\n",num);
-                    break;
-
                 default:            // Unknown/Unimplemented
                     num = 0;
-                    fprintf(stderr,"Unknown or unimplemented geometry\n");
+                    fprintf(stderr,"  Unknown or unimplemented geometry\n");
                     break;
             }
             OGR_F_Destroy( feature );
