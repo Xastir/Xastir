@@ -12846,6 +12846,7 @@ void index_sort(void) {
     int loops = 0; // for debug stats
 
     previous = map_index_head;
+    next = NULL;
     //  fprintf(stderr, "index_sort: start.\n");
     // check if we have any records at all, and at least two
     if ( (previous != NULL) && (previous->next != NULL) ) {
@@ -12911,6 +12912,7 @@ void index_restore_from_file(void) {
     }
 
     map_index_head = NULL;  // Starting with empty list
+    last_record = NULL;
 
     f = fopen(MAP_INDEX_DATA,"r");
     if (f == NULL)  // No map_index file yet
