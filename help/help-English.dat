@@ -73,15 +73,18 @@ This latest Xastir release greatly improves on the efficiency and usability of
 Xastir, and adds many helpful and often-requested new features.
 
 .geo files can now have REFRESH tags, to specify how often the file is
-reloaded. This is useful for weather radars, or other dynamic images. .geo
+reloaded. This is useful for weather radars and other dynamic images. .geo
 files can also have a TRANSPARENT tag to make a certain color transparent, and
 a CROP tag to specify a specific region to display.
 
-Opentrac packets are now decoded. See http://opentrac.org/ for more details.
+Some Opentrac packets are now decoded and displayed. See
+http://opentrac.org/ for more details.
 
 The default main Xastir directory is now /usr/local/share/xastir; please see
 the upgrade notes in README for migration information. This more closely
-mirrors the behavior of other applications.
+mirrors the behavior of other applications.  If you're installing
+from a binary package (rpm/deb/etc), the default install location
+may be /usr/share/xastir.
 
 Xastir efficiency has been greatly improved. Changes in data structures and
 timing values have made this Xastir release the most efficient yet.
@@ -90,7 +93,7 @@ has been improved.
 
 dbfawk support - Experimental support for configurable shapefile metadata, in
 an awk-like language. See README.MAPS for more details; this must be turned
-on with a specific switch to the configure command
+on with a specific switch to the configure command.
 
 GDAL/OGR support - Experimental support for GDAL and loading of native TIGER
 data (.RT1 files). This is automatically enabled if the GDAL library is
