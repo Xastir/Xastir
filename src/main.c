@@ -26380,26 +26380,57 @@ if (Area_object_enabled) {
             // Compute the range for the Map View object and store
             // it in the comment field.
             if (Map_View_object_enabled) {
+                double top_range, left_range, max_range;
+                char range[10];
+                Dimension width, height;
 
-/*
-// Get mouse position
-XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
 
-// Find distance from center to top of screen.
-top_range = distance from mid_x_long_offset, mid_y_lat_offset to
-mid_x_long_offset, mid_y_lat_offset-((height*scale_y)/2).
+                // Get the display parameters
+                XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
 
-// Find distance from center to left of screen.
-left_range = distance from mid_x_long_offset, mid_y_lat_offset to
-mid_x_long_offset-((width*scale_x)/2), mid_y_lat_offset.
+                // Find distance from center to top of screen.
+                // top_range = distance from mid_x_long_offset,
+                // mid_y_lat_offset to mid_x_long_offset,
+                // mid_y_lat_offset-((height*scale_y)/2).
+                top_range = calc_distance(mid_y_lat_offset,
+                    mid_x_long_offset,
+                    y_lat_offset,
+                    mid_x_long_offset);
+//fprintf(stderr," top_range:%1.0f meters\n", top_range);
+                // Find distance from center to left of screen.
+                // left_range = distance from mid_x_long_offset,
+                // mid_y_lat_offset to
+                // mid_x_long_offset-((width*scale_x)/2),
+                // mid_y_lat_offset.
+                left_range = calc_distance(mid_y_lat_offset,
+                    mid_x_long_offset,
+                    mid_y_lat_offset,
+                    x_long_offset);
+//fprintf(stderr,"left_range:%1.0f meters\n", left_range);
 
-// Compute greater of the two.  This is our range in miles that we
-// need to put into the comment.  Restrict it to four digits.
-*/
+                // Compute greater of the two.  This is our range in
+                // meters.
+                if (top_range > left_range)
+                    max_range = top_range;
+                else
+                    max_range = left_range;
+
+                // Convert from meters to miles
+                max_range = max_range / 1000.0;  // kilometers
+                max_range = max_range * 0.62137; // miles
+
+                // Restrict it to four digits.
+                if (max_range > 9999.0)
+                    max_range = 9999.0;
+
+//fprintf(stderr,"Range:%04d miles\n", (int)(max_range + 0.5));
+
+                xastir_snprintf(range,
+                    sizeof(range),
+                    "RNG%04d",
+                    (int)(max_range + 0.5)); // Poor man's rounding
  
-                XmTextFieldSetString(object_comment_data,"RNG0011 just for testing");
+                XmTextFieldSetString(object_comment_data, range);
             }
             else {
                 XmTextFieldSetString(object_comment_data,"");
