@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2001 Curt Mills, WE7U
+# Copyright (C) 2001-2003 Curt Mills, WE7U
 # Released to the public domain.
 #
 # $Id$
@@ -10,8 +10,7 @@
 # Get the image extents via "identify -ping filename"
 # Write out the .geo file
 # Note that this program assumes (and converts to)
-# lower-case for the filename.  It also assumes .gif
-# files in all cases.
+# lower-case for the filename.
 #
 # Note:  It appears that .INF files store the lat/lon
 # in DD.MM.MMMM format.  Converting the script to this
@@ -53,36 +52,14 @@ if ( ($tp1_lat =~ /E/) || ($tp1_lat =~ /W/) )   # Reverse them
 
 $filename = $ARGV[0];
 #$filename =~ tr/A-Z/a-z/;
-$filename1 = $filename . '.GIF';
-$filename2 = $filename . '.Gif';
-$filename  = $filename . '.gif';
 
 $tp0_lat2 = &convert($tp0_lat);
 $tp0_lon2 = &convert($tp0_lon);
 $tp1_lat2 = &convert($tp1_lat);
 $tp1_lon2 = &convert($tp1_lon);
 
-$final_filename = $filename;
-$string = `identify -ping $filename 2>/dev/null`;
-if ($string eq "")
-{
-    $final_filename = $filename1;
-    $string = `identify -ping $filename1 2>/dev/null`;
-}
-if ($string eq "")
-{
-    $final_filename = $filename2;
-    $string = `identify -ping $filename2 2>/dev/null`;
-}
+($final_filename, $string) = &findImageFile($filename);
 
-if ($string eq "")
-{
-    print "\nCouldn't run 'identify -ping' on the file\n";
-    print "Perhaps $filename, $filename1, or $filename2 couldn't be found.\n";
-    die "\n";
-}
-
-print $string;
 
 # The format returned by string changed from this:
 # test.gif 1148x830+0+0 PseudoClass 256c 48kb GIF 1s
@@ -91,19 +68,30 @@ print $string;
 # in later versions of ImageMagick.
 
 chomp($string);
-$string =~ s/^.*\s(\d+x\d+)\+\d+\+\d+\s+.*/$1/;    # Grab the 1148x830 portion
+$string =~ s/.*\s(\d+x\d+).*/$1/;    # Grab the 1148x830 portion
+
+#print "String: $string\n";
+
 $x = $y = $string;
-$x =~ s/^(\d+)x.*/$1/;
-$y =~ s/^\d+x(\d+).*/$1/;
+
+$x =~ s/(\d+)x\d+/$1/;
+$y =~ s/\d+x(\d+)/$1/;
+
+#print "X: $x\nY: $y\n";
 
 $x1 = $x - 1;    # We start numbering pixels at zero, not 1
 $y1 = $y - 1;    # We start numbering pixels at zero, not 1
+
+#print "X: $x\nY: $y\n";
+#print "X1: $x1\nY1: $y1\n";
 
 printf $geo "FILENAME    $final_filename\n";
 printf $geo "TIEPOINT    0\t\t0\t$tp0_lon2\t$tp0_lat2\n";
 printf $geo "TIEPOINT    $x1\t$y1\t$tp1_lon2\t$tp1_lat2\n";
 printf $geo "IMAGESIZE   $x\t$y\n";
+printf $geo "#$string\n";
 printf $geo "#\n# Converted from a .INF file by WE7U's inf2geo.pl script\n#\n";
+
 
 $inf->close();
 $geo->close();
@@ -155,4 +143,24 @@ sub convert
     #print "Temp = $temp\n";
     return($number);
 }
+
+
+
+sub findImageFile {
+    $filename = shift;
+    @extensions = ("gif", "bmp", "jpg", "png", "emf");
+    foreach $xtn (@extensions) {
+	$try_filename = "$filename.$xtn";
+	$string = `identify -ping $try_filename 2>/dev/null`;
+	if ($string ne "") {
+	    $filename = $try_filename;
+	    $image_size = $string;
+	}
+    }
+    die "Image file not found\n" if ($image_size eq "") ;
+    
+    print "Found this image: $image_size\n";
+    return ($filename, $image_size);
+}
+
 
