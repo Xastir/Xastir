@@ -173,14 +173,28 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
                        unsigned char *Data,
                        int length) {
     int ii;
-    unsigned char output_string[500];
+    unsigned char output_string[600];
     int full_length;
     int data_length;
 
 
     // Check size of data
-    if (length > 255)
+    if (length > 512)
         return;
+
+/*
+fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s\n",
+    FromCall,
+    ToCall,
+    ViaCall1,
+    ViaCall2,
+    ViaCall3,
+    ViaCall4,
+    ViaCall5,
+    ViaCall6,
+    ViaCall7,
+    ViaCall8);
+*/
 
     // Clear the output_string (set to binary zeroes)
     for (ii = 0; ii < sizeof(output_string); ii++) {
@@ -196,7 +210,9 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
     if (ToCall) // Write the ToCall string into the frame
         strcpy(&output_string[18], ToCall);
 
-    if (type != '\0') { // Type was specified, not a data frame
+
+    if ( (type != '\0') && (type != 'P') ) {
+        // Type was specified, not a data frame or login frame
 
         // Write the type character into the frame
         output_string[4] = type;
@@ -204,15 +220,26 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         // Send the packet to AGWPE
         port_write_binary(xastir_interface, output_string, 36);
     }
-    else if (ViaCall1 == NULL) { // No ViaCalls
+ 
+    else if (ViaCall1 == NULL) { // No ViaCalls, Data or login packet
 
-        // Write the type character into the frame
-        output_string[4] = 'M'; // Unproto, no vias
+        if (type == 'P') {
+            // Login/Password frame
+            // Write the type character into the frame
+            output_string[4] = type;
+        }
+        else {  // Data frame
+            // Write the type character into the frame
+            output_string[4] = 'M'; // Unproto, no vias
 
-        // Write the PID type into the frame
-        output_string[6] = 0xF0;    // UI Frame
+            // Write the PID type into the frame
+            output_string[6] = 0xF0;    // UI Frame
+        }
 
-        output_string[28] = (unsigned char)length;
+        output_string[28] = (unsigned char)(length % 256);
+        output_string[29] = (unsigned char)((length >> 8) % 256);
+
+//fprintf(stderr,"%02x %02x\n", output_string[28], output_string[29]);
 
         // Copy Data onto the end of the string
         strncpy(&output_string[36], Data, length);
@@ -222,7 +249,8 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         // Send the packet to AGWPE
         port_write_binary(xastir_interface, output_string, full_length);
     }
-    else {  // We have ViaCalls
+
+    else {  // We have ViaCalls.  Data packet.
 
         // Write the type character into the frame
         output_string[4] = 'V'; // Unproto, vias
@@ -298,12 +326,13 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         strncpy(&output_string[(output_string[36] * 10) + 37], Data, length);
 
         //Fill in the data length field.  We're assuming the total
-        //is less than 256 (one byte wide).
+        //is less than 512 + 37.
         data_length = length + (output_string[36] * 10) + 1;
-        if ( data_length > 255 )
+        if ( data_length > (512 + 37) )
             return;
 
-        output_string[28] = (unsigned char)data_length;
+        output_string[28] = (unsigned char)(data_length % 256);
+        output_string[29] = (unsigned char)((data_length >> 8) % 256);
 
         full_length = data_length + 36;
 
@@ -317,8 +346,8 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
 
 
 // Parse an AGWPE header.  Create a TAPR-2 style header out of the
-// data for feeding into the Xastir parsing code.  Format is as
-// follows:
+// data for feeding into the Xastir parsing code.  Input format is
+// as follows:
 //
 //  RadioPort     4 bytes (0-3)
 //  DataType      4 bytes (4-7)
@@ -345,11 +374,14 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     // position input_string[4].
     switch (input_string[4]) {
         case 'U':
+//fprintf(stderr,"AGWPE: Got UI packet\n");
             break;
         case 'R':
+//fprintf(stderr,"AGWPE: Got software version packet\n");
             return(NULL);
             break;
         default:
+//fprintf(stderr,"AGWPE: Got '%c' packet\n",input_string[4]);
             return(NULL);
             break;
     }
@@ -2341,7 +2373,7 @@ void port_write_binary(int port, unsigned char *data, int length) {
 
     erd = 0;
 
-    if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(1)" ) > 0)
+    if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(1)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 
     write_in_pos_hold = port_data[port].write_in_pos;
@@ -2365,7 +2397,7 @@ void port_write_binary(int port, unsigned char *data, int length) {
         }
     }
 
-    if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
+    if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 
 //fprintf(stderr,"\n");
@@ -2566,7 +2598,7 @@ void send_kiss_config(int port, int device, int command, int value) {
 
     erd = 0;
 
-    if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(1)" ) > 0)
+    if (begin_critical_section(&port_data[port].write_lock, "interface.c:send_kiss_config(1)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 
     write_in_pos_hold = port_data[port].write_in_pos;
@@ -2587,7 +2619,7 @@ void send_kiss_config(int port, int device, int command, int value) {
         }
     }
 
-    if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
+    if (end_critical_section(&port_data[port].write_lock, "interface.c:send_kiss_config(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 }
 
@@ -4048,41 +4080,45 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 if (ok == 1) {
                     int ii;
 
-                    // Send the commands to AGWPE here to allow
-                    // monitoring all of the radio ports.
-
                     // If password isn't empty, send login
                     // information
                     //
                     if (strlen(passwd) != 0) {
-                        xastir_snprintf(logon_txt, sizeof(logon_txt),
-"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-                            '\0','\0','\0','\0',    // RadioPort 0
-                            'P','\0','\0','\0',     // Login Info Header
-'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
-'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
-                            0xfe,0x01,0x00,0x00,    // DataLen (510)
-                            '\0','\0','\0','\0');   // User
-                        port_write_binary(port_avail, logon_txt, 36);
 
                         // Write login/password out as 255-byte strings
                         //
-                        for (ii = 0; ii < 255; ii++) {
+                        // Write zeroes into the portions we'll use
+                        for (ii = 0; ii < 512; ii++) {
                             logon_txt[ii] = '\0';
                         }
-                        xastir_snprintf(logon_txt, sizeof(logon_txt),
+
+                        xastir_snprintf(logon_txt, 255,
                             "%s",
                             my_callsign);
-//printf(":%s:\n",my_callsign);
-                        port_write_binary(port_avail, logon_txt, 255);
 
-                        for (ii = 0; ii < 255; ii++)
-                            logon_txt[ii] = '\0';
-                        xastir_snprintf(logon_txt, sizeof(logon_txt),
+                        xastir_snprintf(&logon_txt[255], 255,
                             "%s",
                             passwd);
-//printf(":%s:\n",passwd);
-                        port_write_binary(port_avail, logon_txt, 255);
+
+//fprintf(stderr,"Lengths: %d %d\n", strlen(my_callsign), strlen(passwd));
+//fprintf(stderr,"%s  %s\n", my_callsign, passwd);
+
+                        // Send the packet 
+                        send_agwpe_packet(port_avail,
+                            0,
+                            'P', // Login/Password Frame
+                            '\0',
+                            '\0',
+                            NULL,
+                            NULL,
+                            NULL,
+                            NULL,
+                            NULL,
+                            NULL,
+                            NULL,
+                            NULL,
+                            logon_txt,
+                            510);
                     }
                 }
                 break;
@@ -4129,12 +4165,11 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     break;
 
                 case DEVICE_NET_AGWPE:
-/*
                     // Query for the AGWPE version
                     //
                     send_agwpe_packet(port_avail,
                         0,
-                        'R', // Version query
+                        'R', // Request SW Version Frame
                         '\0',
                         '\0',
                         NULL,
@@ -4147,13 +4182,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         NULL,
                         NULL,
                         0);
-*/
 
                     // Ask to receive "Monitor" frames
                     //
                     send_agwpe_packet(port_avail,
                         0,
-                        'm',    // Monitor packets
+                        'm',    // Monitor Packets Frame
                         '\0',
                         '\0',
                         NULL,
@@ -4634,13 +4668,14 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         ok = 1;
         switch (port_data[port].device_type) {
 
-            case DEVICE_NET_STREAM:
 //            case DEVICE_NET_DATABASE:
+
             case DEVICE_NET_AGWPE:
 
-//WE7U
-// Special stuff needed for AGWPE?
-//WE7U
+                output_net[0] = '\0';   // We don't need this header for AGWPE
+                break;
+
+            case DEVICE_NET_STREAM:
 
                 xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
                 break;
@@ -4972,6 +5007,30 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                                     path_txt,       // path
                                     data_txt);      // data
                 }
+
+//WE7U:AGWPE
+                else if (port_data[port].device_type == DEVICE_NET_AGWPE) {
+
+// We need to remove the complete AX.25 header from data_txt before
+// we call this routine!  Instead put the digipeaters into the
+// ViaCall fields.
+                    send_agwpe_packet(port,         // Xastir interface port
+                                      0,            // AGWPE RadioPort
+                                      '\0',         // Type of frame
+                                      my_callsign,  // source
+                                      VERSIONFRM,   // destination
+                                      "RELAY",      // ViaCall1,
+                                      "WIDE2-2",    // ViaCall2,
+                                      NULL,         // ViaCall3,
+                                      NULL,         // ViaCall4,
+                                      NULL,         // ViaCall5,
+                                      NULL,         // ViaCall6,
+                                      NULL,         // ViaCall7,
+                                      NULL,         // ViaCall8,
+                                      data_txt,
+                                      strlen(data_txt));
+                }
+
                 else {  // Not a Serial KISS TNC interface
                     port_write_string(port, data_txt);  // Transmit the posit
                 }
@@ -5078,14 +5137,14 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
         if (type == 0) {                        // my data
             switch (port_data[i].device_type) {
 
-                case DEVICE_NET_STREAM:
 //                case DEVICE_NET_DATABASE:
+
                 case DEVICE_NET_AGWPE:
+//fprintf(stderr,"DEVICE_NET_AGWPE\n");
+                    output_net[0] = '\0';   // Clear header
+                    break;
 
-//WE7U
-// Special stuff needed for AGWPE?
-//WE7U
-
+                case DEVICE_NET_STREAM:
                     if (debug_level & 1)
                         fprintf(stderr,"%d Net\n",i);
                     xastir_snprintf(output_net,
@@ -5356,6 +5415,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
             /* send data */
             xastir_snprintf(data_txt, sizeof(data_txt), "%s%s\r", output_net, message);
 
+//fprintf(stderr,"%s\n",data_txt);
+
             if ( (port_data[i].status == DEVICE_UP)
                     && (devices[i].transmit_data == 1)
                     && !transmit_disable
@@ -5374,6 +5435,31 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                     path_txt,       // path
                                     data_txt);      // data
                 }
+
+//WE7U:AGWPE
+                else if (port_data[i].device_type == DEVICE_NET_AGWPE) {
+
+// We need to remove the complete AX.25 header from data_txt before
+// we call this routine!  Instead put the digipeaters into the
+// ViaCall fields.
+//fprintf(stderr,"send_agwpe_packet\n");
+                    send_agwpe_packet(i,            // Xastir interface port
+                                      0,            // AGWPE RadioPort
+                                      '\0',         // Type of frame
+                                      my_callsign,  // source
+                                      VERSIONFRM,   // destination
+                                      "RELAY",      // ViaCall1,
+                                      "WIDE2-2",    // ViaCall2,
+                                      NULL,         // ViaCall3,
+                                      NULL,         // ViaCall4,
+                                      NULL,         // ViaCall5,
+                                      NULL,         // ViaCall6,
+                                      NULL,         // ViaCall7,
+                                      NULL,         // ViaCall8,
+                                      data_txt,
+                                      strlen(data_txt));
+                }
+
                 else {  // Not a Serial KISS TNC interface
                     port_write_string(i, data_txt);  // Transmit
                 }
