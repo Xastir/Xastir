@@ -2987,7 +2987,10 @@ void clean_string(char *input) {
 
         if (j != NULL) {    // Found two quote characters
             j[0] = '\0';    // Terminate the string at the 2nd quote
-            strcpy(input,i+1);
+            // Can't use strcpy here because it can't work with
+            // overlapping strings.
+            //strcpy(input,i+1);
+            memmove(input, i+1, j-i);
         }
         else {  // We only found one quote character.  What to do?
 //            fprintf(stderr,"clean_string: Only one quote found!\n");
