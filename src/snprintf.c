@@ -4,7 +4,7 @@
  * $Id$
  */
 /*
- * Portions Copyright (C) 2000-2004 The Xastir Group
+ * Portions Copyright (C) 2000-2005 The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

@@ -1,4 +1,4 @@
-/* Copyright (C) 2004  The Xastir Group                                  */
+/* Copyright (C) 2004-2005  The Xastir Group                             */
 /*                                                                       */
 /* $Id$ */
 /*                                                                       */
