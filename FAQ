@@ -294,6 +294,11 @@ The Answers
     ImageMagick detection code says something like:  "ld: cannot find -llcms",
     "ld: cannot find -lz", or "ld: cannot find -ljpeg".  Install the additional
     libraries that it needs, and perhaps development packages for them as well.
+    NOTE:  If the "spec" file for the ImageMagick/ImageMagick-devel RPM's had
+    the proper dependencies listed, you would have been asked to install all of
+    the dependent libraries before you could have even installed the
+    ImageMagick RPM's.  Encourage your vendor to fix the "spec" files for those
+    RPM's to include all dependencies.
 
 
 4. Running Xastir
