@@ -906,7 +906,9 @@ void msg_record_interval_tries(char *to_call_sign,
 
 
 
-// Returns the time_t for last_ack_sent, or 0.
+// Returns the time_t for last_ack_sent, or 0 if the message doesn't
+// pass our tests or if it is a new message.
+//
 // Also returns the record number found if not passed a NULL pointer
 // in record_out or -1L if it's a new record.
 time_t msg_data_add(char *call_sign, char *from_call, char *data,
@@ -13255,29 +13257,41 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
         last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record); // id_fixed
 
-        new_message_data += 1;
-        (void)check_popup_window(call, 2);  // Calls update_messages()
-        //update_messages(1); // Force an update
-        if (sound_play_new_message)
-            play_sound(sound_command,sound_new_message);
+
+        // Here we need to know if it is a new message or an old.
+        // If we've already received it, we don't want to kick off
+        // the alerts or pop up the Send Message dialog again.  If
+        // last_ack_sent == (time_t)0, then it is a new message.
+        //
+        if (last_ack_sent == (time_t)0) {   // New message
+
+            new_message_data += 1;
+            (void)check_popup_window(call, 2);  // Calls update_messages()
+            //update_messages(1); // Force an update
+            if (sound_play_new_message)
+                play_sound(sound_command,sound_new_message);
+
 #ifdef HAVE_FESTIVAL
 /* I re-use ipacket_message as my string buffer */
-        if (festival_speak_new_message_alert) {
-            xastir_snprintf(ipacket_message,
-                sizeof(ipacket_message),
-                "You have a new message from %s.",
-                call);
-            SayText(ipacket_message);
-        }
-        if (festival_speak_new_message_body) {
-            xastir_snprintf(ipacket_message,
-                sizeof(ipacket_message),
-                " %s",
-                message);
-            SayText(ipacket_message);
-        }
+            if (festival_speak_new_message_alert) {
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message),
+                    "You have a new message from %s.",
+                    call);
+                SayText(ipacket_message);
+            }
+            if (festival_speak_new_message_body) {
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message),
+                    " %s",
+                    message);
+                SayText(ipacket_message);
+            }
 
 #endif  // HAVE_FESTIVAL
+
+        }
+
 
         // Only send an ack out once per 30 seconds
         if ( from != 'F'  // Not from a log file
