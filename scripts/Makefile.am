@@ -12,7 +12,7 @@ EXTRA_DIST = \
     update_langfile.pl \
     waypoint-get.pl
 
-bin_SCRIPTS = \
+pkglib_SCRIPTS = \
     Coordinate.pm \
     coord-convert.pl \
     fcc-get \

@@ -19,25 +19,25 @@ MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
         config.guess config.sub install-sh missing mkinstalldirs \
         xastir.spec
 
-countydir=${prefix}/xastir/Counties
+countydir=${pkgdatadir}/Counties
 county_DATA=placeholder
 
-fccdir=${prefix}/xastir/fcc
+fccdir=${pkgdatadir}/fcc
 fcc_DATA=placeholder
 
-gnisdir=${prefix}/xastir/GNIS
+gnisdir=${pkgdatadir}/GNIS
 gnis_DATA=placeholder
 
-mapdir=${prefix}/xastir/maps
+mapdir=${pkgdatadir}/maps
 map_DATA=placeholder terraserver.geo toposerver.geo
 
-gpsdir=${prefix}/xastir/maps/GPS
+gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
 
-sounddir=${prefix}/xastir/sounds
+sounddir=${pkgdatadir}/sounds
 sound_DATA=placeholder
 
-docdir=${prefix}/xastir/doc
+docdir=${pkgdatadir}/doc
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
         README.MAPS README.win32 COPYING INSTALL UPGRADE
 

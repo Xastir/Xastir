@@ -188,11 +188,12 @@ LIBS="$LIBS -lax25"
 AC_DEFINE(HAVE_LIBAX25, , Define to 1 if you have the `ax25' library (-lax25). )
 break)])
  
-# Set XASTIR_DATA_BASE in config.h. 
-if test "x${prefix}" = "xNONE"; then 
-  AC_DEFINE_UNQUOTED(XASTIR_DATA_BASE, "${ac_default_prefix}/xastir", [Stored data]) 
+# Set XASTIR_DATA_BASE in CPPFLAGS due to Gnu coding standard that requires
+# datadir expansion to be deferred until make time.
+if test "x${datadir}" = "x"; then 
+  CPPFLAGS="$CPPFLAGS -DXASTIR_DATA_BASE=\\\"${ac_default_prefix}/share/xastir\\\""
 else 
-  AC_DEFINE_UNQUOTED(XASTIR_DATA_BASE, "${prefix}/xastir", [Stored data]) 
+  CPPFLAGS="$CPPFLAGS -DXASTIR_DATA_BASE=\\\"${datadir}/xastir\\\""
 fi 
  
 # 

@@ -1,5 +1,5 @@
 # $Id$
-configdir = ${prefix}/xastir/config
+configdir = ${pkgdatadir}/config
 
 EXTRA_DIST = \
     language-Dutch.sys \

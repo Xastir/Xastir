@@ -1,5 +1,5 @@
 # $Id$
-helpdir = ${prefix}/xastir/help
+helpdir = ${pkgdatadir}/help
 EXTRA_DIST = \
     help-Dutch.dat \
     help-English.dat \
