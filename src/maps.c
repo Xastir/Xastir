@@ -728,6 +728,7 @@ void draw_grid(Widget w) {
     int done, zone_changed, z1, z2, zone, col, col_point, row, row_point, row_point_start;
     double e[4], n[4];
     float slope;
+    int iterations = 0;
 
     if (!long_lat_grid)
         return;
@@ -925,7 +926,14 @@ void draw_grid(Widget w) {
 
         while (done < 2) { // 1=done with a zone, 2=completely done
 
-           // Initially, done==0, so we skip this part the first
+            // Here's our escape in case we get stuck in this loop.
+            if (iterations++ > 10000) {
+                fprintf(stderr,
+                    "draw_grid() looped too many times, escaping.\n");
+                break;
+            }
+
+            // Initially, done==0, so we skip this part the first
             // time through.
             //
             if (done == 1) {
