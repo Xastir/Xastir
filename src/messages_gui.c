@@ -96,11 +96,16 @@ void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@un
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_messages" );
 
     if (mw[i].send_message_dialog) {
+        // If we have a dialog already, clear out the message area
+        // from 0 to the last text position.
+
         // Known to have memory leaks with some versions of Motif:
         //XmTextSetString(mw[i].send_message_text,"");
+
         XmTextReplace(mw[i].send_message_text, (XmTextPosition) 0,
                 XmTextGetLastPosition(mw[i].send_message_text), "");
 
+        // Set the cursor position to 0
         XtVaSetValues(mw[i].send_message_text,XmNcursorPosition,pos,NULL);
     }
 
@@ -236,11 +241,15 @@ void Clear_message_to_from( /*@unused@*/ Widget w, XtPointer clientData, /*@unus
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to_from" );
 
     if (mw[i].send_message_dialog) {
+
         // Known to have memory leaks with some versions of Motif:
         //XmTextSetString(mw[i].send_message_text,"");
+
+        // Clear out the message window
         XmTextReplace(mw[i].send_message_text, (XmTextPosition) 0,
                 XmTextGetLastPosition(mw[i].send_message_text), "");
 
+        // Set the cursor position to 0
         XtVaSetValues(mw[i].send_message_text,XmNcursorPosition,pos,NULL);
 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to_from" );
@@ -350,6 +359,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment,XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset,5); n++;
+        XtSetArg(args[n], XmNautoShowCursorPosition, FALSE); n++;
 
         mw[i].send_message_text = XmCreateScrolledText(mw[i].form,"Send_message smt",args,n);
 

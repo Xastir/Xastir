@@ -602,7 +602,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         }
 
         // Check for zero time
-        if (m_fill.sec_heard == 0) {
+        if (m_fill.sec_heard == (time_t)0) {
             m_fill.sec_heard = sec_now();
             printf("Zero time on a previous message.\n");
         }
@@ -708,6 +708,14 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
             if (mw[mw_p].send_message_dialog!=NULL/* && mw[mw_p].message_group==1*/) {
 
+//printf("\n");
+
+                // Clear the message window
+                XmTextReplace(mw[mw_p].send_message_text,
+                    (XmTextPosition) 0,
+                    XmTextGetLastPosition(mw[mw_p].send_message_text),
+                    "");
+
                 // Snag the callsign you're dealing with from the message dialogue
                 if (mw[mw_p].send_message_call_data != NULL) {
                     strcpy(temp1,XmTextFieldGetString(mw[mw_p].send_message_call_data));
@@ -808,7 +816,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                             while (!done && (p_prev != NULL)) {  // Loop until end of list
                                 int j = p_prev->index;  // Snag the index out of the record
 
-                                //printf("Looping through, reading messages\n");
+                                //printf("\nLooping through, reading messages\n");
  
 //printf("acked: %d\n",msg_data[msg_index[j]].acked);
  
@@ -835,12 +843,23 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     msg_data[msg_index[j]].from_call_sign,
                                     msg_data[msg_index[j]].message_line);
 
-                                //printf("update_message: %s|%s\n", temp1, temp2);
+//printf("update_message: %s|%s", temp1, temp2);
  
                                 if (debug_level & 2) printf("update_message: %s|%s\n", temp1, temp2);
                                 // Replace the text from pos to pos+strlen(temp2) by the string "temp2"
                                 if (mw[mw_p].send_message_text != NULL) {
 
+                                    // Insert the text at the end
+//                                    XmTextReplace(mw[mw_p].send_message_text,
+//                                            pos,
+//                                            pos+strlen(temp2),
+//                                            temp2);
+ 
+                                    // Insert the text at the end
+                                    XmTextInsert(mw[mw_p].send_message_text,
+                                            pos,
+                                            temp2);
+ 
                                     // Set highlighting based on the "acked" field
 //printf("acked: %d\t",msg_data[msg_index[j]].acked);
                                     if ( (msg_data[msg_index[j]].acked == 0)    // Not acked yet
@@ -861,10 +880,11 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     }
 
 //printf("Text: %s\n",temp2); 
-                                    XmTextReplace(mw[mw_p].send_message_text,
-                                            pos,
-                                            pos+strlen(temp2),
-                                            temp2);
+//                                    XmTextReplace(mw[mw_p].send_message_text,
+//                                            pos,
+//                                            pos+strlen(temp2),
+//                                            temp2);
+
                                     pos += strlen(temp2);
 
                                 }
@@ -901,6 +921,10 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                             free(p_prev);
                             p_prev = p_next;
                         }
+
+                        // Show the last added message in the window
+                        XmTextShowPosition(mw[mw_p].send_message_text,
+                            pos);
                     }
                 }
             }
