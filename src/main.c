@@ -286,12 +286,18 @@ static void Help_Index(Widget w, XtPointer clientData, XtPointer callData);
 // ----------------------------- map ---------------------------------
 Widget map_list;
 Widget map_properties_list;
-
+void map_index_update_temp_select(char *filename, map_index_record **current);
+void map_index_temp_select_clear(void);
+ 
 void map_chooser_fill_in (void);
 int map_chooser_expand_dirs = 0;
 
 void map_chooser_init (void);
+
 Widget map_chooser_dialog = (Widget)NULL;
+Widget map_chooser_button_ok = (Widget)NULL;
+Widget map_chooser_button_cancel = (Widget)NULL;
+ 
 Widget map_properties_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
 Widget map_chooser_maps_selected_data = (Widget)NULL;
@@ -13383,6 +13389,11 @@ void map_properties_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientD
     XtDestroyWidget(shell);
     map_properties_dialog = (Widget)NULL;
     re_sort_maps = 1;
+
+    if (map_chooser_dialog) {
+        XtSetSensitive(map_chooser_button_ok, TRUE);
+        XtSetSensitive(map_chooser_button_cancel, TRUE);
+    }
 }
 
 
@@ -13426,8 +13437,8 @@ void map_properties_fill_in (void) {
 // and only display it in the map_properties_list widget if selected
 // and a match with our string.
 //
-// Another method would be to make the Map Chooser selections set a
-// bit in the in-memory index, so that we can tell which ones are
+// One method would be to make the Map Chooser selections set a bit
+// in the in-memory index, so that we can tell which ones are
 // selected without a bunch of string compares.  The bit would need
 // to be tweaked on starting up the map chooser (setting the
 // selected entries that match the selected_maps.sys file), and when
@@ -13452,26 +13463,60 @@ void map_properties_fill_in (void) {
 // For selected directories, we need to add each file that has that
 // initial directory name.  We should be able to do this with a
 // match that stops at the end of the directory name.
-
-/*
-if (map_chooser_dialog) {
-
-    // Get the list and the list count from the dialog
-    XtVaGetValues(map_list,
-        XmNitemCount,&i,
-        XmNitems,&list,
-        NULL);
-
-    // Deselect all currently selected maps
-    if (XmListPosSelected(map_list,x)) {
-        XmListDeselectPos(map_list,x);
-    }
-}
-*/
+//
+// We need to grey-out the buttons in the Map Chooser until the
+// Properties dialog closes.  Otherwise we might not able to get to
+// to the map_list widget to re-do the Properties list when a button
+// is pressed in the Properties dialog (if the user closes the Map
+// Chooser).
+//
 
 
+        // Set all of the temp_select bits to zero in the in-memory
+        // map index.
+        map_index_temp_select_clear();
+
+        if (map_chooser_dialog) {
+            map_index_record *ptr = map_index_head;
+            int jj, x;
+            XmString *list;
+            char *temp;
+
+            // Get the list and list count from the Map Chooser
+            // dialog.
+            XtVaGetValues(map_list,
+                XmNitemCount,&jj,
+                XmNitems,&list,
+                NULL);
+
+            // Find all selected files/directories in the Map
+            // Chooser.  Set the "temp_select" bits in the in-memory
+            // map index to correspond.
+            //
+            for(x=1; x<=jj; x++)
+            {
+                if (XmListPosSelected(map_list,x)) {
+                    // Snag the filename portion from the line
+                    if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+
+                        // Update this file or directory in the in-memory
+                        // map index, setting the "temp_select" field to 1.
+                        map_index_update_temp_select(temp, &ptr);
+                        XtFree(temp);
+                    }
+                }
+            }
+        }
+
+        // We should now have all of the files/directories marked in
+        // the in-memory map index.  Files underneath selected
+        // directores should also be marked by this point, as the
+        // map_index_update_temp_select() routine should assure
+        // this.
 
         while (current != NULL) {
+
+if (current->temp_select) {
 
             //fprintf(stderr,"%s\n",current->filename);
 
@@ -13575,6 +13620,8 @@ if (map_chooser_dialog) {
                 n++;
                 XmStringFree(str_ptr);
             }
+}
+
             current = current->next;
         }
 
@@ -13711,7 +13758,7 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
 //fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
-                // map index, setting the "draw_field" field to 1.
+                // map index, setting the "draw_filled" field to 1.
                 map_index_update_filled_yes(temp2);
                 XtFree(temp);
             }
@@ -13763,7 +13810,7 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
 //fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
-                // map index, setting the "draw_field" field to 0.
+                // map index, setting the "draw_filled" field to 0.
                 map_index_update_filled_no(temp2);
                 XtFree(temp);
             }
@@ -14201,6 +14248,11 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
     busy_cursor(appshell);
 
+    if (map_chooser_dialog) {
+        XtSetSensitive(map_chooser_button_ok, FALSE);
+        XtSetSensitive(map_chooser_button_cancel, FALSE);
+    }
+
     i=0;
     if (!map_properties_dialog) {
 
@@ -14553,6 +14605,59 @@ void map_index_update_selected(char *filename, int selected, map_index_record **
             return;
         }
         (*current) = (*current)->next;
+    }
+}
+
+
+
+
+
+// Update the "temp_select" field in the in-memory map_index.
+void map_index_update_temp_select(char *filename, map_index_record **current) {
+    int result;
+
+    // If we're passed a NULL pointer, start at the head of the
+    // in-memory linked list.
+    //
+    if ( (*current) == NULL) {
+        (*current) = map_index_head;
+    }
+
+    // Start searching through the list at the pointer we were
+    // given.  We need to do a loose match here for directories.  If
+    // a selected directory is contained in a filepath, select that
+    // file as well.  For the directory case, once we find a match
+    // in the file path, keep walking down the list until we get a
+    // non-match.
+    //
+    while ( (*current) != NULL) {
+
+        result = strncmp( (*current)->filename,filename,strlen(filename));
+
+        if (result == 0) {
+            // Found a match.  Update the field.
+            (*current)->temp_select = 1;
+        }
+        else if (result > 0) {  // We passsed the relevant area.
+                                // All done for now.
+            return;
+        }
+        (*current) = (*current)->next;
+    }
+}
+
+
+
+
+
+// Clear all of the temp_select bits in the in-memory map index
+void map_index_temp_select_clear(void) {
+    map_index_record *current;
+
+    current = map_index_head;
+    while (current != NULL) {
+        current->temp_select = 0;
+        current = current->next;
     }
 }
 
@@ -15768,8 +15873,8 @@ void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
 
 
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    static Widget  pane, my_form, button_clear, button_V, button_ok,
-            button_cancel, button_C, button_F, button_O,
+    static Widget  pane, my_form, button_clear, button_V,
+            button_C, button_F, button_O,
             rowcol, expand_dirs_button, button_properties,
             maps_selected_label, button_apply;
     Atom delw;
@@ -15992,7 +16097,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 NULL);
 
 // "OK"
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        map_chooser_button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -16001,7 +16106,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 NULL);
 
 // "Cancel"
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+        map_chooser_button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -16010,8 +16115,8 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 NULL);
 
         XtAddCallback(button_apply, XmNactivateCallback, map_chooser_apply_maps, map_chooser_dialog);
-        XtAddCallback(button_cancel, XmNactivateCallback, map_chooser_destroy_shell, map_chooser_dialog);
-        XtAddCallback(button_ok, XmNactivateCallback, map_chooser_select_maps, map_chooser_dialog);
+        XtAddCallback(map_chooser_button_cancel, XmNactivateCallback, map_chooser_destroy_shell, map_chooser_dialog);
+        XtAddCallback(map_chooser_button_ok, XmNactivateCallback, map_chooser_select_maps, map_chooser_dialog);
         XtAddCallback(button_clear, XmNactivateCallback, map_chooser_deselect_maps, map_chooser_dialog);
         XtAddCallback(button_V, XmNactivateCallback, map_chooser_select_vector_maps, map_chooser_dialog);
 #ifdef HAVE_LIBGEOTIFF
@@ -16048,7 +16153,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         // have that default function happen.  Note:  We _can_ hit the
         // <SPACE> key, and that activates the option.
 //        XmUpdateDisplay(map_chooser_dialog);
-        XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
+        XmProcessTraversal(map_chooser_button_ok, XmTRAVERSE_CURRENT);
 
    } else {
         (void)XRaiseWindow(XtDisplay(map_chooser_dialog), XtWindow(map_chooser_dialog));
