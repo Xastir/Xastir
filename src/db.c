@@ -1883,12 +1883,12 @@ int ok_to_draw_symbol(DataRow *p_station) {
     else {    // Not an object or item
 
         // Check whether we wish to display normal local stations
-        if (p_station->flag & ST_LOCAL &&
+        if (p_station->flag & ST_VIATNC &&
             !symbol_display_local_stations)
             return 0;
 
         // Check whether we wish to display normal nonlocal stations
-        if (!(p_station->flag & ST_LOCAL) &&
+        if (!(p_station->flag & ST_VIATNC) &&
             !symbol_display_nonlocal_stations)
             return 0;
 
