@@ -118,10 +118,18 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
-            xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
+            //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
+            xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %c%c @ %c%c%c%c%c   %-7s   %-20s   %s",
+
                     alert_list[n].from,
                     alert_list[n].to,
-                    alert_list[n].activity,
+                    alert_list[n].activity[0],
+                    alert_list[n].activity[1],
+                    alert_list[n].activity[2],
+                    alert_list[n].activity[3],
+                    alert_list[n].activity[4],
+                    alert_list[n].activity[5],
+                    alert_list[n].activity[6],
                     alert_list[n].title,
                     alert_list[n].alert_tag,
                     alert_list[n].seq);
