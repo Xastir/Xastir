@@ -3,6 +3,10 @@
 # This simple routine will run autostuff in the appropriate
 # order to generate the needed configure/makefiles
 #
+
+echo "Removing autom4te.cache directory"
+rm -rf autom4te.cache
+
 echo "Running aclocal"
 aclocal
 
