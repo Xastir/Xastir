@@ -41,6 +41,7 @@
 #
 #
 # Code for this script contributed by Adi Linden, VA3ADI.
+# Modifications for latitudes above 67 degrees north contributed by Tom Tessier, VE4TRT
 
 
 
@@ -64,7 +65,7 @@ chdir "toporama";
 # Define some stuff
 $base_dir = "images/b250k";
 
-# This defines the top left corner of the 0 grid. 
+# This defines the top left corner of the 0 grid up to 67 degrees north latitude. 
 $basex = '-56';
 $basey = '44';
 %offsetx = ( 'a'  => 3,
@@ -132,6 +133,42 @@ $basey = '44';
              '15' => 0,
              '16' => 0 );
 
+# This defines the top left corner of the 0 grid between 68 and 84 degrees north latitude.
+%offsetx68 = ( 'a'  => 4,
+             'b'  => 0,
+             'c'  => 0,
+             'd'  => 4,
+             'e'  => 4,
+             'f'  => 0,
+             'g'  => 0,
+             'h'  => 4,
+             '1'  => 4,
+             '2'  => 0,
+             '3'  => 0,
+             '4'  => 4,
+             '5'  => 4,
+             '6'  => 0,
+             '7'  => 0,
+             '8'  => 4 );
+%offsety68 = ( 'a'  => 3,
+             'b'  => 3,
+             'c'  => 2,
+             'd'  => 2,
+             'e'  => 1,
+             'f'  => 1,
+             'g'  => 0,
+             'h'  => 0,
+             '1'  => 3,
+             '2'  => 3,
+             '3'  => 2,
+             '4'  => 2,
+             '5'  => 1,
+             '6'  => 1,
+             '7'  => 0,
+             '8'  => 0 );
+
+#def
+
 use File::Find;
 
 print "Writing .geo files\n";
@@ -152,10 +189,58 @@ sub process
         $file = "$_";
         $grida = substr($file, 0, 3);
         $gridb = substr($file, 3, 1);
+	$hilat = substr($file, 2, 1);
 
+	# .geo calculations for lattitudes greater than 78 degrees north latitude.
         if ( $grida > 119 ) {
+ 
+           # Calculate top left coordinates of the map sheet
+            use integer;
+            $topx = $basex - ((($grida/10) +10 ) / 22 * 16) + $offsetx68{$gridb} * 2; 
+            $topy = 84 - $offsety68{$gridb} * 1;
+            $botx = $topx + 8;
+            $boty = $topy - 2;
+
+            # Create the output file
+            $out = substr($file, 0, 4) . ".geo";
+            open (OUT, ">$out") or die "Can't open $OUT: $!\n";
+            print OUT "# Automatically created by toporama250k.pl\n";
+            print OUT "FILENAME\t$file\n";
+            print OUT "#\t\tx\ty\tlon\tlat\n";
+            print OUT "TIEPOINT\t0\t0\t$topx\t$topy\n";
+            print OUT "TIEPOINT\t6399\t1599\t$botx\t$boty\n";
+            print OUT "IMAGESIZE\t6400\t1600\n";
+            close OUT;
+
+            print ".";
             next;
         }
+
+	# .geo calculations for lattitudes between 68 and 78 degrees north latitude.
+	if ( $hilat > 6 ) {
+
+            # Calculate top left coordinates of the map sheet
+            use integer;
+            $topx = $basex - $grida / 10 * 8 + $offsetx68{$gridb} * 1; 
+            $topy = $basey + ($grida % 10) * 4 - $offsety68{$gridb} * 1;
+            $botx = $topx + 4;
+            $boty = $topy - 1;
+
+            # Create the output file
+            $out = substr($file, 0, 4) . ".geo";
+            open (OUT, ">$out") or die "Can't open $OUT: $!\n";
+            print OUT "# Automatically created by toporama250k.pl\n";
+            print OUT "FILENAME\t$file\n";
+            print OUT "#\t\tx\ty\tlon\tlat\n";
+            print OUT "TIEPOINT\t0\t0\t$topx\t$topy\n";
+            print OUT "TIEPOINT\t6399\t1599\t$botx\t$boty\n";
+            print OUT "IMAGESIZE\t6400\t1600\n";
+            close OUT;
+
+            print ".";
+	    next;
+
+	}
 
         # Calculate top left coordinates of the map sheet
         use integer;
@@ -179,5 +264,3 @@ sub process
     }
         
 }
-
-
