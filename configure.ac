@@ -314,13 +314,13 @@ echo following external libraries.
 echo  
 echo 
 echo Building with AX25.......... : $has_axlib 
-echo Building with GDAL.......... : $use_gdal
-echo Building with GeoTiff....... : $use_geotiff 
-echo Building with ShapeLib...... : $use_shapelib 
-echo Building with pcre.......... : $use_pcre
-echo Building with ImageMagick... : $use_imagemagick 
 echo Building with Festival...... : $use_festival 
 echo Building with GPSMan........ : $use_gpsman
+echo Building with ShapeLib...... : $use_shapelib 
+echo Building with ImageMagick... : $use_imagemagick 
+echo Building with GeoTiff....... : $use_geotiff 
+echo Building with GDAL.......... : $use_gdal
+echo Building with pcre.......... : $use_pcre
 echo Building with dbfawk........ : $use_dbfawk
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
