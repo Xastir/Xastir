@@ -850,7 +850,7 @@ void draw_grid(Widget w) {
             utm_grid_spacing_m =   1000;
         else if (scale_x < 1500)
             utm_grid_spacing_m =  10000;
-        else if (scale_x < 5000)
+        else if (scale_x < 3000)
             utm_grid_spacing_m = 100000;
         else {
             utm_grid_spacing_m = 0;
@@ -891,6 +891,10 @@ void draw_grid(Widget w) {
 // the screen before it goes out of view.  That's a major clue!
 // Looks like the left end of the grid line being above the current
 // view is concurrent with the problem showing up.
+// Actually, read the comment below (again with a "WE7U" tag).  It
+// appears that the problem occurs at the point where we copy the
+// last point from the previous grid over to the first point of a
+// new grid.  That can cause us to be off by one.
 //
 
 
