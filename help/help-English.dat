@@ -84,6 +84,9 @@ WXserver info via finger
 Major shapefile improvments, point-type shapefiles
 Private colormaps->8bit color usable
 Assorted bug fixes
+Tigermaps menu accesable
+Messaging cleanup, no more timed updates; reply-acks
+ImageMagick speedups and correction features
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -171,6 +174,10 @@ shortcuts. The keyboard shortcuts don't work correctly with numlock on.
 You will need to configure Xastir, and some interfaces to use.
 Interface configuration is detailed under the "Configuring Interfaces" help
 topic and its subtopics.
+
+If you are operating in a situation where a coordinate system other than the
+default DD MM.MMMM system would be helpful, you may select your preferred
+system by going to File|Configure|Coordinate system.
 
 HELP-INDEX>Configure the Station Information
 
@@ -647,11 +654,11 @@ causes all messages to be displayed.
 Uptime
 Shows the amount of time elapsed since Xastir was started.
 
-HELP-INDEX>Map Options and Map Chooser
+HELP-INDEX>Map Menu and the Map Chooser
 
-                       Map Options and Map Chooser
+                       Map Menu and the Map Chooser
 
-Map Options:
+Map Menu:
 
 Map Chooser
 This will present you with a list of map files in your map directory. Click
@@ -660,6 +667,12 @@ you click the OK button.  You may select any number of maps. Clicking the
 OK button will display the selected maps. Cancel will abandon any changes.
 There are also shortcut buttons to select all of a certain type of map,
 or deselect all of the maps at once.
+
+Enable/Configure Tigermap
+Turning this option on causes Xastir to download the map from the US census
+bureau's online tiger mapping server. The dialog that comes up allows one to
+select which layers are displayed, as well as the brightness of the resulting
+map. This is only available if you have compiled with ImageMagick support.
 
 Map Display Bookmarks
 See the help topic "Creating and using Jump Locations"
@@ -674,6 +687,11 @@ Disable All Maps
 This option disables the loading of any maps. It is most useful when doing
 rapid zooming or panning, because it saves the need to load the maps on each
 redraw.  Note that this option is not saved between sessions.
+
+Coordinate Calc
+This option opens a simple calculator that can convert between coordinate
+systems. This is useful for converting positions to the various formats used by
+different groups of people.
 
 Enable Auto Maps
 When enabled, any map found in the map directory (or any directory under it)
@@ -707,10 +725,10 @@ less elegant way to achieve the look you want.
 
 Enable Weather Alert Counties
 This toggles the display of county warning area maps for severe weather.
-These maps can be obtained at the locations listed in the "Map files" help
-topic. They are displayed on screen when special weather alert messages
-are received, and expire after a time or can be remotely cancelled. The
-weather alert text can be seen under View|WX Alerts.
+These maps can be obtained and installed according to the directions in the
+README.1ST file. They are displayed on screen when special weather alert
+messages are received, and expire after a time or can be remotely cancelled.
+The weather alert text can be seen under View|WX Alerts.
 
 Background color
 This option controls the color of the background behind the maps you have
@@ -719,8 +737,13 @@ displayed. The background color is often entirely hidden by filled maps
 
 Map Intensity
 This controls the brightness of any graphics used as maps. This option only
-appears if you have compiled with GeoTIFF support and/or ImageMagick.
-FIXME: XPM also?
+appears if you have compiled with GeoTIFF support.
+
+Adjust Gamma Correction
+This allows you to apply gamma connection to all loaded map graphics. Maps can
+be adjusted individually in their .geo files, see the section on .geos in
+"Map files and WX Counties". This option only appears if you've compiled with
+ImageMagick support, and does not apply to geoTIFF maps; see the above option. 
 
 Station Text Style
 Controls which font and style to use for station text and others.
@@ -783,7 +806,8 @@ world with the map world1.xpm:
 FILENAME   world1.xpm
 #          x          y        lon         lat
 TIEPOINT   0          0        -180        90
-TIEPOINT   640        320      180         -90
+TIEPOINT   639        319      180         -90
+IMAGESIZE  640        320
 
 .geo files can have many elements:
 
@@ -846,10 +870,6 @@ eg: MODULATE 90,150,100
 These are percents, 100,100,100 is the default.
 
 Special/nonstandard .geo files:
-
-TIGERMAP
-A file with just the word "TIGERMAP" will cause Xastir to retrieve an
-online Tiger map of the area on screen.
 
 TERRASERVER
 A file with just the word "TERRASERVER" will cause Xastir to retrieve a
