@@ -710,12 +710,17 @@ void draw_shapefile_map (Widget w,
 
     if (dbfawk_default_sig == NULL) {
         /* set up default dbfawk when no sig matches */
+        // This one is ok to leave allocated, as it gets malloc'ed
+        // once during each runtime and then gets left alone.  We
+        // don't need to free it.
         dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
 //WE7U
 //fprintf(stderr,"a13\n");
 
 //WE7U
-// Calls awk_new_program which allocates memory
+        // Calls awk_new_program which allocates memory.  Again, we
+        // don't need to free this one, as it gets allocated only
+        // once per runtime.
         dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
     }
 #endif
@@ -791,6 +796,17 @@ void draw_shapefile_map (Widget w,
             sig_info = dbfawk_default_sig;
         }
         if (sig_info) {         /* we've got a .dbfawk, so set up symtbl */
+
+//WE7U
+// Get rid of anything we allocated on previous runs before reusing
+// this symbol table memory area in the next section below.  This
+// doesn't work.  It locks up Xastir when the first alert is
+// received.
+//            if (Symtbl) {
+//                awk_free_symtab(Symtbl);
+//                Symtbl = NULL;
+//            }
+
             if (!Symtbl) {
 //WE7U
 // Allocates new memory!
@@ -820,15 +836,14 @@ void draw_shapefile_map (Widget w,
                 return;
             }
 //WE7U
-// Calls awk_eval_expr (eventually), which can allocate new memory
+// Calls awk_eval_expr (eventually), which can allocate new memory!
             awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
+
             /* find out which dbf fields we care to read */
-            fld_info = dbfawk_field_list(hDBF, dbffields);
 //WE7U
 // Here's where a bunch of calloc() calls occur.  Some of which
 // don't get freed!
-
-
+            fld_info = dbfawk_field_list(hDBF, dbffields);
 
         } else {                /* should never be reached anymore! */
             fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
