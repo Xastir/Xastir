@@ -589,12 +589,14 @@ void draw_shapefile_map (Widget w,
     char            file[MAX_FILENAME];  /* Complete path/name of image file */
     char            warning_text[MAX_FILENAME*2];
     int             i, fieldcount, recordcount, structure, ring;
+#ifndef WITH_DBFAWK
     char            ftype[15];
     int             nWidth, nDecimals;
+#endif /*!WITH_DBFAWK*/
     SHPHandle       hSHP;
     int             nShapeType, nEntities;
     double          adfBndsMin[4], adfBndsMax[4];
-    char            sType [15]= "";
+    char            *sType;
     unsigned long   my_lat, my_long;
     long            x,y;
     int             ok, index;
@@ -609,12 +611,16 @@ void draw_shapefile_map (Widget w,
     int             gps_flag = 0;
     char            gps_label[100];
     int             gps_color = 0x0c;
+#ifndef WITH_DBFAWK
     int             road_flag = 0;
+#endif /*!WITH_DBFAWK*/
     int             lake_flag = 0;
     int             river_flag = 0;
+#ifndef WITH_DBFAWK
     int             railroad_flag = 0;
     int             school_flag = 0;
     int             path_flag = 0;
+#endif /*!WITH_DBFAWK*/
     int             city_flag = 0;
     int             quad_overlay_flag = 0;
     int             mapshots_labels_flag = 0;
@@ -845,6 +851,7 @@ void draw_shapefile_map (Widget w,
         //fprintf(stderr,"Search_param2: %s\n",search_param2);
     } /* weather_alert */
 
+#ifndef WITH_DBFAWK
     for (i=0; i < fieldcount; i++) {
         char szTitle[12];
 
@@ -1054,7 +1061,7 @@ void draw_shapefile_map (Widget w,
             }
         }
     } /* for (i = 0; i < fieldcount; i++)... */
-
+#endif /* !WITH_DBFAWK */
 
     // Search for specific record if we're doing alerts
     if (weather_alert_flag && (alert->index == -1) ) {
@@ -1189,20 +1196,20 @@ void draw_shapefile_map (Widget w,
 
     switch ( nShapeType ) {
         case SHPT_POINT:
-            strcpy(sType,"Point");
+            sType = "Point";
             break;
 
         case SHPT_ARC:
-            strcpy(sType,"Polyline");
+            sType = "Polyline";
             break;
 
         case SHPT_POLYGON:
-            strcpy(sType,"Polygon");
+            sType = "Polygon";
             break;
 
         case SHPT_MULTIPOINT:
             fprintf(stderr,"Multi-Point Shapefile format not implemented: %s\n",file);
-            strcpy(sType,"MultiPoint");
+            sType = "MultiPoint";
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
 
@@ -1312,6 +1319,7 @@ void draw_shapefile_map (Widget w,
 
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
     }
+#ifndef WITH_DBFAWK
     else {
 // Are these actually used anymore by the code?  Colors get set later
 // when we know more about what we're dealing with.
@@ -1326,7 +1334,7 @@ void draw_shapefile_map (Widget w,
         else
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
     }
-
+#endif /*!WITH_DBFAWK*/
 
     // Now that we have the file open, we can read out the structures.
     // We can handle Point, PolyLine and Polygon shapefiles at the moment.
@@ -1444,6 +1452,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             if (sig_info) {
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
+                /* XXX set draw_filled */
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
                     fprintf(stderr,"color=%d ",color);
@@ -3025,6 +3034,7 @@ if (on_screen) {
                             else if (quad_overlay_flag) {
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
+                            /* XXX - glacier_flag not set WITH_DBFAWK */
                             else if (glacier_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
                                 if (map_color_fill && draw_filled) {
@@ -3066,6 +3076,7 @@ if (on_screen) {
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
+                            /* XXX - lake_flag not set WITH_DBFAWK */
                             else if (lake_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
                                 if (map_color_fill && draw_filled) {
@@ -3109,6 +3120,7 @@ if (on_screen) {
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
+                            /* XXX -- river_flag not set WITH_DBFAWK */
                             else if (river_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
                                 if (map_color_fill && draw_filled) {
@@ -3222,6 +3234,7 @@ if (on_screen) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
 
                                 // Draw a thicker border for city boundaries
+                                /* XXX - city_flag not set WITH_DBFAWK */
                                 if (city_flag) {
                                     if (scale_y <= 64) {
                                         (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
@@ -3266,6 +3279,7 @@ if (on_screen) {
 
                     temp = "";
 
+                    /* XXX lake_flag, city_flag, etc. not WITH_DBFAWK */
                     if (lake_flag) {
                         if (map_color_levels && scale_y > 128)
                             skip_label++;
