@@ -338,9 +338,15 @@ if test "$wget" != "/usr/bin"; then
   if test "$wget" != "/usr/local/bin"; then
     AC_CHECK_PROG(wget, [wget --version], /bin, , /bin)
     if test "$wget" != "/bin"; then
-      AC_CHECK_PROG(wget, [wget --version], /sw/bin, no, /sw/bin)
-      if test "$wget" != "/sw/bin"; then 
-        AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+      AC_CHECK_PROG(wget, [wget --version], /usr/sfw/bin, , /usr/sfw/bin)
+      if test "$wget" != "/usr/sfw/bin"; then
+        AC_CHECK_PROG(wget, [wget --version], /opt/sfw/bin, , /opt/sfw/bin)
+        if test "$wget" != "/opt/sfw/bin"; then
+          AC_CHECK_PROG(wget, [wget --version], /sw/bin, no, /sw/bin)
+          if test "$wget" != "/sw/bin"; then 
+            AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+          fi
+        fi
       fi
     fi
   fi 
@@ -356,19 +362,25 @@ fi
  
 # Check for convert, find out its path
 # 
-AC_CHECK_PROG(convert, [convert], /usr/X11R6/bin, , /usr/X11R6/bin)
-if test "$convert" != "/usr/X11R6/bin"; then
-  AC_CHECK_PROG(convert, [convert], /usr/X11/bin, , /usr/X11/bin)
-  if test "$convert" != "/usr/X11/bin"; then
-    AC_CHECK_PROG(convert, [convert], /usr/bin, , /usr/bin)
-    if test "$convert" != "/usr/bin"; then
-      AC_CHECK_PROG(convert, [convert], /usr/local/bin, , /usr/local/bin)
-      if test "$convert" != "/usr/local/bin"; then
-        AC_CHECK_PROG(convert, [convert], /bin, , /bin)
-        if test "$convert" != "/bin"; then
-          AC_CHECK_PROG(convert, [convert], /sw/bin, no, /sw/bin)
-          if test "$convert" != "/sw/bin"; then 
-            AC_MSG_WARN(*** Missing convert (or it is not in the path).  Building w/o convert support. ***) 
+AC_CHECK_PROG(convert, [convert], /usr/bin, , /usr/bin)
+if test "$convert" != "/usr/bin"; then
+  AC_CHECK_PROG(convert, [convert], /usr/local/bin, , /usr/local/bin)
+  if test "$convert" != "/usr/local/bin"; then
+    AC_CHECK_PROG(convert, [convert], /bin, , /bin)
+    if test "$convert" != "/bin"; then
+      AC_CHECK_PROG(convert, [convert], /usr/X11R6/bin, , /usr/X11R6/bin)
+      if test "$convert" != "/usr/X11R6/bin"; then
+        AC_CHECK_PROG(convert, [convert], /usr/X11/bin, , /usr/X11/bin)
+        if test "$convert" != "/usr/X11/bin"; then
+          AC_CHECK_PROG(convert, [convert], /usr/sfw/bin, , /usr/sfw/bin)
+          if test "$convert" != "/usr/sfw/bin"; then
+            AC_CHECK_PROG(convert, [convert], /opt/sfw/bin, , /opt/sfw/bin)
+            if test "$convert" != "/opt/sfw/bin"; then
+              AC_CHECK_PROG(convert, [convert], /sw/bin, no, /sw/bin)
+              if test "$convert" != "/sw/bin"; then 
+                AC_MSG_WARN(*** Missing convert (or it is not in the path).  Building w/o convert support. ***) 
+              fi
+            fi
           fi
         fi
       fi
@@ -413,9 +425,15 @@ if test "$gv" != "/usr/X11R6/bin"; then
       if test "$gv" != "/usr/bin"; then
         AC_CHECK_PROG(gv, [gv -v], /usr/local/bin, , /usr/local/bin)
         if test "$gv" != "/usr/local/bin"; then
-          AC_CHECK_PROG(gv, [gv -v], /sw/bin, no, /sw/bin)
-          if test "$gv" != "/sw/bin"; then 
-            AC_MSG_WARN(*** Missing gv (or it is not in the path).  Building w/o gv support. ***) 
+          AC_CHECK_PROG(gv, [gv -v], /usr/sfw/bin, , /usr/sfw/bin)
+          if test "$gv" != "/usr/sfw/bin"; then
+            AC_CHECK_PROG(gv, [gv -v], /opt/sfw/bin, , /opt/sfw/bin)
+            if test "$gv" != "/opt/sfw/bin"; then
+              AC_CHECK_PROG(gv, [gv -v], /sw/bin, no, /sw/bin)
+              if test "$gv" != "/sw/bin"; then 
+                AC_MSG_WARN(*** Missing gv (or it is not in the path).  Building w/o gv support. ***) 
+              fi
+            fi
           fi
         fi
       fi
@@ -439,9 +457,15 @@ if test "$cp" != "/bin"; then
   if test "$cp" != "/usr/bin"; then
     AC_CHECK_PROG(cp, [cp -version], /usr/local/bin, , /usr/local/bin)
     if test "$cp" != "/usr/local/bin"; then
-      AC_CHECK_PROG(cp, [cp -version], /sw/bin, no, /sw/bin)
-      if test "$cp" != "/sw/bin"; then 
-        AC_MSG_WARN(*** Missing cp (or it is not in the path).  Building w/o cp support. ***) 
+      AC_CHECK_PROG(cp, [cp -version], /usr/sfw/bin, , /usr/sfw/bin)
+      if test "$cp" != "/usr/sfw/bin"; then
+        AC_CHECK_PROG(cp, [cp -version], /opt/sfw/bin, , /opt/sfw/bin)
+        if test "$cp" != "/opt/sfw/bin"; then
+          AC_CHECK_PROG(cp, [cp -version], /sw/bin, no, /sw/bin)
+          if test "$cp" != "/sw/bin"; then 
+            AC_MSG_WARN(*** Missing cp (or it is not in the path).  Building w/o cp support. ***) 
+          fi
+        fi
       fi
     fi
   fi 
