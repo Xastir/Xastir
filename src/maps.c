@@ -2679,6 +2679,14 @@ void draw_shapefile_map (Widget w,
                         else {  // Must not be a mapshots or ESRI Tiger map
                             if (fieldcount >= 7) {  // Need at least 7 fields if we're snagging #6, else segfault
                                 lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
+
+                                // In case we guess wrong on the
+                                // type of file and the lanes are
+                                // really out of bounds:
+                                if (lanes < 1 || lanes > 10) {
+                                    fprintf(stderr,"lanes = %d\n",lanes);
+                                    lanes = 1;
+                                }
                             }
                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                         }
