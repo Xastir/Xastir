@@ -13562,6 +13562,31 @@ void map_properties_deselect_maps(Widget widget, XtPointer clientData, XtPointer
 
 
 
+// Selects all maps in the current view of the map properties list.
+//
+void map_properties_select_all_maps(Widget widget, XtPointer clientData, XtPointer
+ callData) {
+    int i, x;
+    XmString *list;
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, deselecting every line
+    for(x=1; x<=i;x++)
+    {
+          XmListSelectPos(map_properties_list,x,TRUE);
+    }
+}
+
+
+
+
+
+
 // Change the "draw_filled" field in the in-memory map_index to a
 // one.
 void map_index_update_filled_yes(char *filename) {
@@ -14115,7 +14140,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         rowcol1, rowcol2, label1, label2, label3, label4,
         button_filled_yes, button_filled_no, button_layer_change,
         button_auto_maps_yes, button_auto_maps_no,
-        button_max_zoom_change, button_min_zoom_change;
+        button_max_zoom_change, button_min_zoom_change,
+	button_select_all;
     Atom delw;
     Arg al[10];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -14369,6 +14395,15 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+// "Select All"
+        button_select_all = XtVaCreateManagedWidget(langcode("PULDNMMC09"),
+                xmPushButtonGadgetClass,
+                rowcol2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 // "Clear"
         button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
@@ -14389,6 +14424,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         XtAddCallback(button_close, XmNactivateCallback, map_properties_destroy_shell, map_properties_dialog);
         XtAddCallback(button_clear, XmNactivateCallback, map_properties_deselect_maps, map_properties_dialog);
+        XtAddCallback(button_select_all, XmNactivateCallback, map_properties_select_all_maps, map_properties_dialog);
         XtAddCallback(button_filled_yes, XmNactivateCallback, map_properties_filled_yes, map_properties_dialog);
         XtAddCallback(button_filled_no, XmNactivateCallback, map_properties_filled_no, map_properties_dialog);
         XtAddCallback(button_max_zoom_change, XmNactivateCallback, map_properties_max_zoom_change, map_properties_dialog);

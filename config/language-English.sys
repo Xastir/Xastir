@@ -114,6 +114,7 @@ PULDNMMC05|24k Topo|4|
 PULDNMMC06|Expand Dirs||
 PULDNMMC07|Dirs/Maps Selected:||
 PULDNMMC08|Clear Dirs|C
+PULDNMMC09|Select All|S|
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Gray||
