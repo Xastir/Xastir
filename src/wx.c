@@ -73,7 +73,7 @@ char wx_station_type[100];
 char raw_wx_string[800];
 
 #define MAX_WX_STRING 300
-#define WX_TYPE 'z'
+#define WX_TYPE 'X'
 
 /* rain totals */
 float rain_minute[60];              // Total rain for each min. of last hour, hundredths of an inch
