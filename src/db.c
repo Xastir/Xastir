@@ -7081,10 +7081,13 @@ void delete_all_stations(void) {
 
 
 /*
- *  Check if we have to delete old stations
+ *  Check if we have to delete old stations.
+ *
+ *  Called from main.c:UpdateTime() on a periodic basis.
+ *
  */
 void check_station_remove(void) {
-    DataRow *p_station;
+    DataRow *p_station, *p_station_t_next;
     time_t t_rem;
     int done = 0;
 
@@ -7095,6 +7098,11 @@ void check_station_remove(void) {
 
         p_station = t_first;    // Oldest station in our list
         while (p_station != NULL && !done) {
+
+            // Save a pointer to the next record in time-order
+            // before we delete a record and lose it.
+            p_station_t_next = p_station->t_next;
+
             if (p_station->sec_heard < t_rem) {
                 if ( (is_my_call(p_station->call_sign,1))                   // It's my station or
                         || ( (is_my_call(p_station->origin,1))              // Station is owned by me
@@ -7111,9 +7119,10 @@ void check_station_remove(void) {
                     //(void)delete_weather(p_station);            // free weather memory, if allocated
                     //delete_station_memory(p_station);           // free memory
                 }
-            } else
+            } else {
                 done++;                                         // all other stations are newer...
-            p_station = p_station->t_next;
+            }
+            p_station = p_station_t_next;
         }
         last_station_remove = sec_now();
     }
