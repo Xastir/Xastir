@@ -2626,12 +2626,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
             name[9] = '\0';
             remove_trailing_spaces(name);
         }
-        else if (line[1] == ';') {  // Commented out Object
-            substr(name,&line[2],10);
-            name[9] = '\0';
-            remove_trailing_spaces(name);
- 
-        }
+
         else if (line[0] == ')') {  // Item
             int i;
 
@@ -2648,6 +2643,14 @@ void disown_object_item(char *call_sign, char *new_owner) {
             // Don't remove trailing spaces for Items, else we won't
             // get a match.
         }
+
+        else if (line[1] == ';') {  // Commented out Object
+            substr(name,&line[2],10);
+            name[9] = '\0';
+            remove_trailing_spaces(name);
+ 
+        }
+
         else if (line[1] == ')') {  // Commented out Item
             int i;
 
