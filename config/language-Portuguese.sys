@@ -230,6 +230,7 @@ PULDNTNT01|Transmitir agora..!|T|
 PULDNTNT07|Buscar rastro de GPS|F|
 PULDNTNT08|Buscar rotas de GPS|R|
 PULDNTNT09|Buscar waypoints de GPS|W|
+PULDNTNT10|Fetch Garmin RINO Waypoints|G|
 #
 # Menú de ajuda
 PULDNHEL01|Acerca de|A|

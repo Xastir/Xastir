@@ -230,6 +230,7 @@ PULDNTNT01|Transmitir Ahora..!|T|
 PULDNTNT07|Coger Huella de GPS|F|
 PULDNTNT08|Coger Rutas de GPS|R|
 PULDNTNT09|Coger VíaPuntos de GPS|W|
+PULDNTNT10|Fetch Garmin RINO Waypoints|G|
 #
 # Menú de Ayuda
 PULDNHEL01|Acerca de|A|

@@ -226,6 +226,7 @@ PULDNTNT01|Transmettre maintenant!|T|
 PULDNTNT07|Extraire piste GPS|F|
 PULDNTNT08|Extraire routes GPS|R|
 PULDNTNT09|Extraire points de cheminement GPS|W|
+PULDNTNT10|Fetch Garmin RINO Waypoints|G|
 #
 # Menu "Help"
 PULDNHEL01|Information|I|

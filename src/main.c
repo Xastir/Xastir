@@ -545,6 +545,7 @@ Widget iface_transmit_now, posit_tx_disable_toggle, object_tx_disable_toggle;
 
 #ifdef HAVE_GPSMAN
 Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
+Widget Fetch_RINO_waypoints;
 Widget Send_gps_track, Send_gps_route, Send_gps_waypoints;
 int gps_got_data_from = 0;          // We got data from a GPS
 int gps_operation_pending = 0;      // A GPS transfer is happening
@@ -6760,6 +6761,15 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 */
+
+    Fetch_RINO_waypoints = XtVaCreateManagedWidget(langcode("PULDNTNT10"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("PULDNTNT10"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
 #endif  // HAVE_GPSMAN 
 
     /* Help*/
@@ -6825,6 +6835,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //    XtAddCallback(Send_gps_track,       XmNactivateCallback,GPS_operations,"4");
 //    XtAddCallback(Send_gps_route,       XmNactivateCallback,GPS_operations,"5");
 //    XtAddCallback(Send_gps_waypoints,   XmNactivateCallback,GPS_operations,"6");
+    XtAddCallback(Fetch_RINO_waypoints, XmNactivateCallback,GPS_operations,"7");
 #endif  // HAVE_GPSMAN
 
     XtAddCallback(auto_msg_set_button,XmNactivateCallback,Auto_msg_set,NULL);
@@ -11942,6 +11953,248 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
 #ifdef HAVE_GPSMAN
+
+// Function to process the RINO.gpstrans file.  We'll create APRS
+// objects out of them as if our own callsign created them.
+//
+void process_RINO_waypoints(void) {
+    FILE *f;
+    char temp[MAX_FILENAME * 2];
+    char line[500];
+
+
+    // Create the full path/filename
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s/RINO.gpstrans",
+        get_user_base_dir("gps"));
+
+    f=fopen(temp,"r"); // Open for reading
+
+    if (f == NULL) {
+        fprintf(stderr,
+            "Couldn't open %s file for reading\n",
+            temp);
+        return;
+    }
+ 
+    // Process the file line-by-line here.  The format for gpstrans
+    // files as written by GPSMan appears to be:
+    //
+    //   "W"
+    //   Waypoint name
+    //   Comment field (Date/Time is default on Garmins)
+    //   Date/Time
+    //   Decimal latitude
+    //   Decimal longitude
+    //
+    while (fgets(line, 300, f) != NULL) {
+
+        // Check that it is a waypoint entry
+        if (line[0] == 'W') {
+            char name[50];
+            char lat_c[20];
+            char lon_c[20];
+            int i = 1;
+
+
+            // Find non-white-space character
+            while ((line[i] == '\t' || line[i] == ' ')
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+
+            // Copy into name until white space char
+            name[0] = '\0';
+            while (line[i] != '\t'
+                    && line[i] != ' '
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                strncat(name,&line[i],1);
+                i++;
+            }
+
+            // Find the next tab character, which is at the end of
+            // the name field.
+            while (line[i] != '\t'
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+            i++;
+
+            // Find the next tab character, which is at the end of
+            // the comment field.
+            while (line[i] != '\t'
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+            i++;
+
+            // Find the next tab character, which is the end of the
+            // Date/Time field
+            while (line[i] != '\t'
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+            i++;
+
+            // Find non-white-space character
+            while ((line[i] == '\t' || line[i] == ' ')
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+
+            // Copy into lat_c until white space char
+            lat_c[0] = '\0';
+            while (line[i] != '\t'
+                    && line[i] != ' '
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                strncat(lat_c,&line[i],1);
+                i++;
+            }
+
+            // Find non-white-space character
+            while ((line[i] == '\t' || line[i] == ' ')
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                i++;
+            }
+
+            // Copy into lon_c until tab character
+            lon_c[0] = '\0';
+            while (line[i] != '\t'
+                    && line[i] != ' '
+                    && line[i] != '\0'
+                    && line[i] != '\n'
+                    && line[i] != '\r') {
+                strncat(lon_c,&line[i],1);
+                i++;
+            }
+            i++;
+
+/*
+            fprintf(stderr,
+                "%s\t%f\t%f\n",
+                name,
+                atof(lat_c),
+                atof(lon_c));
+*/
+
+
+// For now we're hard-coding the RINO group to "APRS".  Any RINO
+// waypoints that begin with these four characters will have those
+// four characters chopped and will be turned into our own APRS
+// object, which we will then attempt to transmit.
+    
+            if (strncmp(name,"APRS",4) == 0) {
+                // We have a match.  Turn this into an APRS Object
+                char line2[100];
+                int lat_deg, lon_deg;
+                float lat_min, lon_min;
+                char lat_dir, lon_dir;
+                char temp2[50];
+
+
+                // Strip off the "APRS" at the beginning of the
+                // name.  Add spaces to flush out the length of an
+                // APRS object name.
+                xastir_snprintf(temp2,
+                    sizeof(temp2),
+                    "%s         ",
+                    &name[4]);
+
+                // Copy it back to the "name" variable.
+                xastir_snprintf(name,
+                    sizeof(name),
+                    "%s",
+                    temp2);
+
+                // Truncate the name at nine characters.
+                name[9] = '\0';
+
+                lat_deg = atoi(lat_c);
+                if (lat_deg < 0)
+                    lat_deg = -lat_deg;
+
+                lon_deg = atoi(lon_c);
+                if (lon_deg < 0)
+                    lon_deg = -lon_deg;
+
+                lat_min = atof(lat_c);
+                if (lat_min < 0.0)
+                    lat_min = -lat_min;
+                lat_min = (lat_min - lat_deg) * 60.0;
+
+                lon_min = atof(lon_c);
+                if (lon_min < 0.0)
+                    lon_min = -lon_min;
+                lon_min = (lon_min - lon_deg) * 60.0;
+
+                if (lat_c[0] == '-')
+                    lat_dir = 'S';
+                else
+                    lat_dir = 'N';
+
+                if (lon_c[0] == '-')
+                    lon_dir = 'W';
+                else
+                    lon_dir = 'E';
+
+                xastir_snprintf(line2,
+                    sizeof(line2),
+                    ";%-9s*%s%02d%05.2f%c%c%03d%05.2f%c%c",
+                    name,
+                    "010000z",  // Date/Time (faked)
+                    lat_deg,    // Degrees
+                    lat_min,      // Minutes
+                    lat_dir,    // N/S
+                    '/',        // Primary symbol table
+                    lon_deg,    // Degrees
+                    lon_min,      // Minutes
+                    lon_dir,    // E/W
+                    '[');       // Hiker symbol
+
+                fprintf(stderr,
+                    "%-9s\t%f\t%f\t\t\t\t\t\t",
+                    name,
+                    atof(lat_c),
+                    atof(lon_c));
+                fprintf(stderr,"%s\n",line2);
+
+                // Update this object in our save file
+                log_object_item(line2,0,name);
+
+                if (object_tx_disable)
+                    output_my_data(line2,-1,0,1,0,NULL);    // Local loopback only, not igating
+                else
+                    output_my_data(line2,-1,0,0,0,NULL);    // Transmit/loopback object data, not igating
+            }
+        }
+    }
+
+fprintf(stderr,"\n");
+
+    (void)fclose(f);
+}
+
+
+
+
+ 
 void GPS_operations_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -12399,7 +12652,11 @@ void check_for_new_gps_map(void) {
         FILE *f;
         char temp[MAX_FILENAME * 2];
 
- 
+
+//fprintf(stderr,"check_for_new_gps_map()\n");
+
+
+
         // We have new data from a GPS!  Add the file to the
         // selected maps file, cause a reload of the maps to occur,
         // and then re-index maps (so that map may be deselected by
@@ -12411,71 +12668,73 @@ void check_for_new_gps_map(void) {
 // match before attempting to append any new lines.
 //
 
-        // Rename the temporary file to the new filename.  We must
-        // do this three times, once for each piece of the Shapefile
-        // map.
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "mv %s/%s %s/%s",
-            get_user_base_dir("gps"),
-            gps_temp_map_filename,
-            get_user_base_dir("gps"),
-            gps_map_filename);
+        // We don't rename if Garmin RINO waypoint file
+        if (strcmp(gps_map_type,"RINO") != 0) {
+            // Rename the temporary file to the new filename.  We must
+            // do this three times, once for each piece of the Shapefile
+            // map.
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "mv %s/%s %s/%s",
+                get_user_base_dir("gps"),
+                gps_temp_map_filename,
+                get_user_base_dir("gps"),
+                gps_map_filename);
 
-        if ( system(temp) ) {
-            fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
-            fprintf(stderr,"%s\n",temp);
-            gps_got_data_from = 0;
-            gps_details_selected = 0;
-            return;
-        }
-        // Done for the ".shp" file.  Now repeat for the ".shx" and
-        // ".dbf" files.
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "mv %s/%s.shx %s/%s.shx",
-            get_user_base_dir("gps"),
-            gps_temp_map_filename_base,
-            get_user_base_dir("gps"),
-            gps_map_filename_base);
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
+                fprintf(stderr,"%s\n",temp);
+                gps_got_data_from = 0;
+                gps_details_selected = 0;
+                return;
+            }
+            // Done for the ".shp" file.  Now repeat for the ".shx" and
+            // ".dbf" files.
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "mv %s/%s.shx %s/%s.shx",
+                get_user_base_dir("gps"),
+                gps_temp_map_filename_base,
+                get_user_base_dir("gps"),
+                gps_map_filename_base);
 
-        if ( system(temp) ) {
-            fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
-            fprintf(stderr,"%s\n",temp);
-            gps_got_data_from = 0;
-            gps_details_selected = 0;
-            return;
-        }
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "mv %s/%s.dbf %s/%s.dbf",
-            get_user_base_dir("gps"),
-            gps_temp_map_filename_base,
-            get_user_base_dir("gps"),
-            gps_map_filename_base);
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
+                fprintf(stderr,"%s\n",temp);
+                gps_got_data_from = 0;
+                gps_details_selected = 0;
+                return;
+            }
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "mv %s/%s.dbf %s/%s.dbf",
+                get_user_base_dir("gps"),
+                gps_temp_map_filename_base,
+                get_user_base_dir("gps"),
+                gps_map_filename_base);
 
-        if ( system(temp) ) {
-            fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
-            fprintf(stderr,"%s\n",temp);
-            gps_got_data_from = 0;
-            gps_details_selected = 0;
-            return;
-        }
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
+                fprintf(stderr,"%s\n",temp);
+                gps_got_data_from = 0;
+                gps_details_selected = 0;
+                return;
+            }
  
 
-        // Add the new gps map to the list of selected maps
-        f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
-        if (f!=NULL) {
+            // Add the new gps map to the list of selected maps
+            f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
+            if (f!=NULL) {
 
 //WE7U:  Change this:
-            fprintf(f,"GPS/%s\n",gps_map_filename);
+                fprintf(f,"GPS/%s\n",gps_map_filename);
 
-            (void)fclose(f);
+                (void)fclose(f);
 
-            // Reindex maps.  Use the smart timestamp-checking indexing.
-            map_indexer(0);     // Have to have the new map in the index first before we can select it
-            map_chooser_init(); // Re-read the selected_maps.sys file
-            re_sort_maps = 1;   // Creates a new sorted list from the selected maps
+                // Reindex maps.  Use the smart timestamp-checking indexing.
+                map_indexer(0);     // Have to have the new map in the index first before we can select it
+                map_chooser_init(); // Re-read the selected_maps.sys file
+                re_sort_maps = 1;   // Creates a new sorted list from the selected maps
 
 //
 // We should set some flags here instead of doing the map redraw
@@ -12483,20 +12742,26 @@ void check_for_new_gps_map(void) {
 // UpdateTime().
 //
 
-            // Reload maps
-            // Set interrupt_drawing_now because conditions have changed.
-            interrupt_drawing_now++;
+                // Reload maps
+                // Set interrupt_drawing_now because conditions have changed.
+                interrupt_drawing_now++;
 
-            // Request that a new image be created.  Calls create_image,
-            // XCopyArea, and display_zoom_status.
-            request_new_image++;
+                // Request that a new image be created.  Calls create_image,
+                // XCopyArea, and display_zoom_status.
+                request_new_image++;
 
-//            if (create_image(da)) {
-//                (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-//            }
+//                if (create_image(da)) {
+//                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//                }
+            }
+            else {
+                fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+            }
         }
         else {
-            fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+            // We're dealing with Garmin RINO waypoints.  Go process
+            // the RINO.gpstrans file, creating objects out of them.
+            process_RINO_waypoints();
         }
 
         // Set up for the next GPS run
@@ -12626,7 +12891,7 @@ static void* gps_transfer_thread(void *arg) {
                 sizeof(temp),
                 "%s getwrite WP %s%s",
                 prefix,
-               postfix,
+                postfix,
                 gps_temp_map_filename);
 
             if ( system(temp) ) {
@@ -12665,11 +12930,51 @@ static void* gps_transfer_thread(void *arg) {
             return(NULL);
             break;
 
+       case 7: // Fetch waypoints from GPS in GPSTrans format
+            // gpsman.tcl -dev /dev/ttyS0 getwrite WP GPStrans waypoints.date
+
+//            fprintf(stderr,"Fetch Garmin RINO waypoints\n");
+
+            // Set up the postfix string.  The files will be created in the
+            // "~/.xastir/gps/" directory.
+            xastir_snprintf(postfix, sizeof(postfix),
+                "Shapefile_2D %s/",
+                get_user_base_dir("gps"));
+
+            xastir_snprintf(gps_temp_map_filename,
+                sizeof(gps_temp_map_filename),
+                "RINO.gpstrans");
+ 
+            xastir_snprintf(gps_temp_map_filename_base,
+                sizeof(gps_temp_map_filename_base),
+                "RINO");
+ 
+            xastir_snprintf(gps_map_type,
+                sizeof(gps_map_type),
+                "RINO");
+ 
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "(%s getwrite WP GPStrans %s/%s 2>&1) >/dev/null",
+                prefix,
+                get_user_base_dir("gps"),
+                gps_temp_map_filename);
+
+// Execute the command
+system(temp);
+//            if ( system(temp) ) {
+//                fprintf(stderr,"Couldn't download the gps waypoints\n");
+//                gps_operation_pending = 0;  // We're done
+//                return(NULL);
+//            }
+            // Set the got_data flag
+            gps_got_data_from++;
+            break;
+
         default:
             fprintf(stderr,"Illegal parameter %d passed to gps_transfer_thread!\n",
                 input_param);
             gps_operation_pending = 0;  // We're done
-            return(NULL);
             break;
     }   // End of switch
 
@@ -12727,16 +13032,23 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
             fprintf(stderr,"GPS Operation is already pending, can't start another one!\n");
             return;
         }
-        else {  // We're not, set flags appropriately.
-            gps_operation_pending++;
-            gps_got_data_from = 0;
-        }
 
         parameter = atoi((char *)clientData);
 
-        if ( (parameter < 1) || (parameter > 3) ) {
+        if ( ((parameter < 1) || (parameter > 3)) && parameter != 7) {
             fprintf(stderr,"GPS_operations: Parameter out-of-range: %d",parameter);
+            return;
         }
+
+
+        gps_operation_pending++;
+        gps_got_data_from = 0;
+
+        // We don't need to select filename/color if option 7
+        if (parameter == 7) {
+            gps_details_selected++;
+        }
+
 
 //----- Start New Thread -----
  

@@ -227,6 +227,7 @@ PULDNTNT01|Transmit Now!|T|
 PULDNTNT07|Fetch GPS Track|F|
 PULDNTNT08|Fetch GPS Routes|R|
 PULDNTNT09|Fetch GPS Waypoints|W|
+PULDNTNT10|Fetch Garmin RINO Waypoints|G|
 #
 # Menu "Help"
 PULDNHEL01|About|A|

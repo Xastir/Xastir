@@ -238,6 +238,7 @@ PULDNTNT01|Zend Nu!|Z|
 PULDNTNT07|Volg GPS Spoor|F|
 PULDNTNT08|Volg GPS Routes|R|
 PULDNTNT09|Volg GPS Routepunten|W|
+PULDNTNT10|Fetch Garmin RINO Waypoints|G|
 #
 # Menu "Help"
 PULDNHEL01|Informatie|A|
