@@ -2,6 +2,27 @@
 $Id$
 
 
+  Two companies have created simpler installs of Cygwin/Xastir than
+  described in this document.  Contact one of these folks for more
+  info.
+
+
+    Lintronix:  WinXastir CD available for a nominal fee.
+    Everything needed to install Cygwin/Xastir off-line.  Walks you
+    through an automated install:
+
+        http://www.lintronix.com/winxastir/
+        winxastir@lintronix.com
+
+
+    Inuit Nunaani Wireless Inc:  CD available for a nominal fee.
+    Everything needed to install Cygwin/Xastir off-line.  Walks you
+    through an automated install:
+
+        Tom Tessier <ttessier@trtdigital.ca>
+
+
+
 ------------------------------------
 Installing Xastir on Windows/Cygwin:
 ------------------------------------
