@@ -328,7 +328,11 @@ The Answers
         screens.
 
     From a software standpoint, check that you have transmitting enabled
-    on your interface. Check that your digipeater path is set reasonably; other
+    on your interface, and that the disbale transmission "all" and "my
+    position" options in the Interfaces menu are not enabled.Check that ALTNET
+    support in File|Configure|Defaults isn't enabled.
+
+    Also check that your digipeater path is set reasonably; other
     hams in your area could probably help with this, as the exact settings
     depend on your setup and on your area's network. The other possibilities
     are hardware problems: Is the output level on your TNC or soundcard
@@ -344,15 +348,19 @@ The Answers
     from the packet headers? Are you using the correct startup file?  See
     README.1ST.
 
+    Check that the Display Incoming Data windows is actually showing
+    data coming in.  If not, check your radio's volume/squelch
+    levels and your cabling, both between the radio/TNC and between
+    the TNC/Computer.
+
     Check that ALTNET support in File|Configure|Defaults isn't enabled.
 
     The "Display Symbols" button in the Stations menu must be
     checked in order to see stations on the map screen.
 
-    Check that the Display Incoming Data windows is actually showing
-    data coming in.  If not, check your radio's volume/squelch
-    levels and your cabling, both between the radio/TNC and between
-    the TNC/Computer.
+    If you are using an older version of Xastir, Qxx packets are considered
+    invalid. This is a newer addition to APRS, and recent Xastir releases
+    decode this correctly.
 
     4.6 Who is this APX112 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are

@@ -134,6 +134,7 @@ Other smaller interface changes include:
 tieins to the UI. Should they be listed here? anywhere?)
 Tracked proximity alarms
 export waypoints within proximity boundaries
+export trail as shapefile
 
 The weather reporting features have been improved, with the addition of
 optional wind barbs to weather stations and decoding of storm wind radius data.
@@ -155,6 +156,12 @@ to windows no longer occur. The new messaging system allows multiple messages
 to be queued, and implements reply-acks for speed. Xastir also attempts to
 specify a reasonable path for the message based on received messages. This
 improves speed and congestion control.
+
+The build process has been significantly improved; Xastir is now able to be
+built on numerious operating systems with few manual interventions.
+
+Xastir now supports GPSMan/gpsmanshp, allowing the importing of waypoints,
+tracks, and routes from several types of GPS recievers.
 
 Xastir now implements SmartBeaconing(tm), which greatly improves trail quality
 and reduces unneeded channel usage. See the "Configure SmartBeaconing" help
