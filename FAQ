@@ -39,6 +39,8 @@ The Questions
         `CompressImageColormap'".  What to do?
     3.5 Some of the text looks strange, writes over itself and other
         user interface weirdness occurs.  Why?
+    3.6 Why isn't ImageMagick recognized and used during Xastir's
+        "configure" stage?
 
 4.  Running Xastir
 
@@ -281,6 +283,17 @@ The Answers
     distribution.  One caveat that was found on Slackware 8.1 is the need
     to delete all the text in the /usr/X11R6/lib/X11/config/host.def file
     otherwise it still refers to the LessTif installation.
+
+    3.6 Why isn't ImageMagick recognized and used during Xastir's
+        "configure" stage?
+
+    You might have forgotten to install both ImageMagick and the
+    ImageMagick-devel RPM.  Another possibility is that your particular RPM's
+    might not contain all of the library dependencies that you need, like
+    libcms or zlib.  Check carefully through "config.log" to see if the
+    ImageMagick detection code says something like:  "ld: cannot find -llcms",
+    "ld: cannot find -lz", or "ld: cannot find -ljpeg".  Install the additional
+    libraries that it needs, and perhaps development packages for them as well.
 
 
 4. Running Xastir
