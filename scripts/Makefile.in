@@ -104,7 +104,7 @@ x_includes = @x_includes@
 x_libraries = @x_libraries@
 xastirpath = @xastirpath@
 
-bin_SCRIPTS =      coord-convert.pl     inf2geo.pl     mapblast2geo.pl     mapfgd.pl     permutations.pl     track-get.pl     waypoint-get.pl
+bin_SCRIPTS =      coord-convert.pl     fcc-get inf2geo.pl     mapblast2geo.pl     mapfgd.pl     permutations.pl     track-get.pl     waypoint-get.pl
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
