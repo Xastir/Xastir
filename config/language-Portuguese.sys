@@ -666,6 +666,7 @@ IGPUPCF000|I-Gate Opções||
 IGPUPCF001|Desactiva todo o tráfego da IGate||
 IGPUPCF002|Só permite tráfego de RF para Inet||
 IGPUPCF003|Permite tráfego de RF->Inet e Inet->RF||
+IGPUPCF004|Igate -> RF Path   ||
 #
 # Estação meteorológica
 WXPUPSI000|Estação meteorológica||

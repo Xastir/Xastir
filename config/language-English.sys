@@ -668,6 +668,7 @@ IGPUPCF000|IGate Options||
 IGPUPCF001|Disable all IGate traffic||
 IGPUPCF002|Allow RF to Inet traffic ONLY||
 IGPUPCF003|Allow RF->Inet and Inet->RF traffic||
+IGPUPCF004|Igate -> RF Path   ||
 #
 # WX Station
 WXPUPSI000|WX Station||

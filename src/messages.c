@@ -475,26 +475,26 @@ void transmit_message_data(char *to, char *message) {
         if (strcmp(to,my_callsign)!=0) {
             /* check to see if it was heard via a TNC otherwise send it to the last port heard */
             if ((p_station->flag & ST_VIATNC) != 0) {        // heard via TNC ?
-                output_my_data(message,p_station->heard_via_tnc_port,0,0);
+                output_my_data(message,p_station->heard_via_tnc_port,0,0,0);
                 /* station heard via tnc but in the past hour? */
                 /* if not heard with in the hour try via net */
                 if (!heard_via_tnc_in_past_hour(to)) {
                     if (p_station->data_via==DATA_VIA_NET) {
                         /* try last port herd */
-                        output_my_data(message,p_station->last_port_heard,0,0);
+                        output_my_data(message,p_station->last_port_heard,0,0,0);
                     }
                 }
             } else {
                 /* if not a TNC then a NET port? */
                 if (p_station->data_via==DATA_VIA_NET) {
                     /* try last port herd */
-                    output_my_data(message,p_station->last_port_heard,0,0);
+                    output_my_data(message,p_station->last_port_heard,0,0,0);
                 } else {
                     /* Not a TNC or a NET try all possible */
                     if (debug_level & 2)
                         printf("VIA any way\n");
 
-                    output_my_data(message,-1,0,0);
+                    output_my_data(message,-1,0,0,0);
                 }
             }
         } else {
@@ -503,7 +503,7 @@ void transmit_message_data(char *to, char *message) {
             if (debug_level & 2)
                 printf("My call VIA any way\n");
 
-            output_my_data(message,-1,0,0);
+            output_my_data(message,-1,0,0,0);
         }
     } else {
         /* no data found try every way*/
@@ -511,7 +511,7 @@ void transmit_message_data(char *to, char *message) {
         if (debug_level & 2)
             printf("VIA any way\n");
 
-        output_my_data(message,-1,0,0);
+        output_my_data(message,-1,0,0,0);
     }
 }
 

@@ -671,6 +671,7 @@ IGPUPCF000|IGate Opties||
 IGPUPCF001|Schakel al het IGate verkeer uit||
 IGPUPCF002|Sta ALLEEN RF naar Inet verkeer toe||
 IGPUPCF003|Sta RF->Inet en Inet->RF verkeer toe||
+IGPUPCF004|Igate -> RF Path   ||
 #
 # WX Station
 WXPUPSI000|WX Station||

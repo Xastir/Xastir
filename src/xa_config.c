@@ -396,57 +396,78 @@ void save_data(void)  {
 
         for (i = 0; i < MAX_IFACE_DEVICES; i++) {
             sprintf (name_temp, "DEVICE%0d_", i);
+
             strcpy (name, name_temp);
             strcat (name, "TYPE");
             store_int (fout, name, devices[i].device_type);
+
             strcpy (name, name_temp);
             strcat (name, "NAME");
             store_string (fout, name, devices[i].device_name);
+
             strcpy (name, name_temp);
             strcat (name, "HOST");
             store_string (fout, name, devices[i].device_host_name);
+
             strcpy (name, name_temp);
             strcat (name, "PASSWD");
             store_string (fout, name, devices[i].device_host_pswd);
+
             strcpy (name, name_temp);
             strcat (name, "UNPROTO1");
             store_string (fout, name, devices[i].unproto1);
+
             strcpy (name, name_temp);
             strcat (name, "UNPROTO2");
             store_string (fout, name, devices[i].unproto2);
+
             strcpy (name, name_temp);
             strcat (name, "UNPROTO3");
             store_string (fout, name, devices[i].unproto3);
+
+            strcpy (name, name_temp);
+            strcat (name, "UNPROTO_IGATE");
+            store_string (fout, name, devices[i].unproto_igate);
+ 
             strcpy (name, name_temp);
             strcat (name, "TNC_UP_FILE");
             store_string (fout, name, devices[i].tnc_up_file);
+
             strcpy (name, name_temp);
             strcat (name, "TNC_DOWN_FILE");
             store_string (fout, name, devices[i].tnc_down_file);
+
             strcpy (name, name_temp);
             strcat (name, "SPEED");
             store_int (fout, name, devices[i].sp);
+
             strcpy (name, name_temp);
             strcat (name, "STYLE");
             store_int (fout, name, devices[i].style);
+
             strcpy (name, name_temp);
             strcat (name, "IGATE_OPTION");
             store_int (fout, name, devices[i].igate_options);
+
             strcpy (name, name_temp);
             strcat (name, "TXMT");
             store_int (fout, name, devices[i].transmit_data);
+
             strcpy (name, name_temp);
             strcat (name, "RECONN");
             store_int (fout, name, devices[i].reconnect);
+
             strcpy (name, name_temp);
             strcat (name, "ONSTARTUP");
             store_int (fout, name, devices[i].connect_on_startup);
-                        strcpy (name, name_temp);
-                        strcat(name, "GPSRETR");
-                        store_int (fout, name, devices[i].gps_retrieve);
-                        strcpy (name, name_temp);
-                        strcat (name, "SETTIME");
-                        store_int (fout, name, devices[i].set_time);
+
+            strcpy (name, name_temp);
+            strcat(name, "GPSRETR");
+            store_int (fout, name, devices[i].gps_retrieve);
+
+            strcpy (name, name_temp);
+            strcat (name, "SETTIME");
+            store_int (fout, name, devices[i].set_time);
         }
         /* TNC */
         store_int (fout, "TNC_LOG_DATA", log_tnc_data);
@@ -878,6 +899,11 @@ void load_data_or_default(void) {
         strcat (name, "UNPROTO3");
         if (!get_string (name, devices[i].unproto3))
             strcpy (devices[i].unproto3, "");
+
+        strcpy (name, name_temp);
+        strcat (name, "UNPROTO_IGATE");
+        if (!get_string (name, devices[i].unproto_igate))
+            strcpy (devices[i].unproto_igate, "");
 
         strcpy (name, name_temp);
         strcat (name, "TNC_UP_FILE");

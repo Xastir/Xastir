@@ -2630,7 +2630,7 @@ void General_query(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     char temp[50];
 
     xastir_snprintf(temp, sizeof(temp), "?APRS?%s", location);
-    output_my_data(temp,-1,0,0);
+    output_my_data(temp,-1,0,0,0);  // Not igating
 }
 
 
@@ -2638,7 +2638,7 @@ void General_query(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
 
 
 void IGate_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
-    output_my_data("?IGATE?",-1,0,0);
+    output_my_data("?IGATE?",-1,0,0,0); // Not igating
 }
 
 
@@ -2646,7 +2646,7 @@ void IGate_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
 
 void WX_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
-    output_my_data("?WX?",-1,0,0);
+    output_my_data("?WX?",-1,0,0,0);    // Not igating
 }
 
 
@@ -8935,7 +8935,7 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
     if (!ok && strncmp(message,"IGATE?",6)==0) {
         if (operate_as_an_igate && from != 'F') {
             xastir_snprintf(temp, sizeof(temp), "<IGATE,MSG_CNT=%d,LOC_CNT=%d",(int)igate_msgs_tx,stations_types(3));
-            output_my_data(temp,port,0,0);
+            output_my_data(temp,port,0,0,0);    // Not igating
         }
         ok = 1;
     }
@@ -10907,10 +10907,10 @@ void check_and_transmit_objects_items(time_t time) {
 
                 // Attempt to transmit the object/item again
                 if (object_tx_disable) {
-                    output_my_data(line,-1,0,1);    // Local loopback only
+                    output_my_data(line,-1,0,1,0);    // Local loopback only, not igating
                 }
                 else {
-                    output_my_data(line,-1,0,0);    // Transmit/loopback object data
+                    output_my_data(line,-1,0,0,0);    // Transmit/loopback object data, not igating
                 }
             }
         }

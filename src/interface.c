@@ -3432,15 +3432,18 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 // 4) Used from output_nws_igate_rf() to send NWS packets out RF.  Cooked mode.
 // 5) Used for queries and responses.  Cooked mode.
 //
+// Parameters:
 // message: the message data to send
 // port: the port transmitting through, or -1 for all
 // type: 0 for my data, 1 for raw data (Cooked/Raw)
 // loopback_only: 0 for transmit/loopback, 1 for loopback only
+// use_igate_path: 0 for standard unproto paths, 1 for igate path
+//
 // This function sends out messages/objects/bulletins/etc.
 // This one currently tries to do local logging even if
 // transmit is disabled.
 //*****************************************************************************
-void output_my_data(char *message, int port, int type, int loopback_only) {
+void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char output_net[100];
@@ -3506,12 +3509,27 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     }
                     usleep(100000);  // 100ms
  
-                    // Set unproto path:
-                    // We look for a non-null path entry starting at the current
-                    // value of "unprotonum".  The first non-null path wins.
                     count = 0;
                     done = 0;
                     bump_up = 0;
+ 
+                    // Set unproto path.  First check whether we're
+                    // to use the igate path.  If so and the path
+                    // isn't empty, skip the rest of the path selection:
+                    if (use_igate_path) {
+                        if (strlen(devices[i].unproto1) > 0) {
+                            xastir_snprintf(data_txt, sizeof(data_txt),
+                                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
+                                            VERSIONFRM,devices[i].unproto_igate);
+                            xastir_snprintf(data_txt_save, sizeof(data_txt_save),
+                                            "%s>%s,%s:", my_callsign,
+                                            VERSIONFRM,devices[i].unproto_igate);
+                            done++;
+                        }
+                    }
+
+                    // We look for a non-null path entry starting at the current
+                    // value of "unprotonum".  The first non-null path wins.
                     while (!done && (count < 3)) {
                         temp = (devices[i].unprotonum + count) % 3;
                         switch (temp) {

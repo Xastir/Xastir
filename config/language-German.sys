@@ -673,6 +673,7 @@ IGPUPCF000|IGate Optionen||
 IGPUPCF001|Allen IGate-Verkehr verhindern||
 IGPUPCF002|Verkehr NUR von HF nach Inet erlauben||
 IGPUPCF003|HF->Inet und Inet->HF Verkehr erlauben||
+IGPUPCF004|Igate -> RF Path   ||
 #
 # Wetterstation
 WXPUPSI000|Wetterstation||

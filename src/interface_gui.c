@@ -228,6 +228,7 @@ Widget TNC_device_name_data;
 Widget TNC_unproto1_data;
 Widget TNC_unproto2_data;
 Widget TNC_unproto3_data;
+Widget TNC_igate_data;
 Widget TNC_up_file_data;
 Widget TNC_down_file_data;
 Widget TNC_GPS_set_time;
@@ -310,6 +311,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     strcpy(devices[TNC_port].unproto3,XmTextFieldGetString(TNC_unproto3_data));
     (void)remove_trailing_spaces(devices[TNC_port].unproto3);
 
+    strcpy(devices[TNC_port].unproto_igate,XmTextFieldGetString(TNC_igate_data));
+    (void)remove_trailing_spaces(devices[TNC_port].unproto_igate);
+
     strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
     (void)remove_trailing_spaces(devices[TNC_port].tnc_up_file);
     strcpy(devices[TNC_port].tnc_down_file,XmTextFieldGetString(TNC_down_file_data));
@@ -348,6 +352,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 style_8n1, style_7e1, style_7o1,
                 igate, igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
+                igate_label,
                 proto, proto1, proto2, proto3;
     char temp[50];
     Atom delw;
@@ -757,10 +762,42 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
+        xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
+        igate_label = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, proto3,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 45,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        TNC_igate_data = XtVaCreateManagedWidget("Config_TNC igate_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_unproto3_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, igate_label,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
         frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopOffset,10,
-                                    XmNtopWidget, TNC_unproto3_data,
+                                    XmNtopWidget, TNC_igate_data,
                                     XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment, XmATTACH_FORM,
                                     XmNleftOffset, 10,
@@ -897,6 +934,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             XmTextFieldSetString(TNC_unproto1_data,"RELAY,WIDE");
             XmTextFieldSetString(TNC_unproto2_data,"");
             XmTextFieldSetString(TNC_unproto3_data,"");
+            XmTextFieldSetString(TNC_igate_data,"");
             XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
             XmTextFieldSetString(TNC_down_file_data,"tnc-stop.sys");
         } else {
@@ -1034,6 +1072,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
             XmTextFieldSetString(TNC_unproto1_data,devices[TNC_port].unproto1);
             XmTextFieldSetString(TNC_unproto2_data,devices[TNC_port].unproto2);
             XmTextFieldSetString(TNC_unproto3_data,devices[TNC_port].unproto3);
+            XmTextFieldSetString(TNC_igate_data,devices[TNC_port].unproto_igate);
 
             XmTextFieldSetString(TNC_up_file_data,devices[TNC_port].tnc_up_file);
             XmTextFieldSetString(TNC_down_file_data,devices[TNC_port].tnc_down_file);
@@ -2829,6 +2868,7 @@ Widget AX25_device_name_data;
 Widget AX25_unproto1_data;
 Widget AX25_unproto2_data;
 Widget AX25_unproto3_data;
+Widget AX25_igate_data;
 Widget AX25_active_on_startup;
 Widget AX25_transmit_data;
 
@@ -2888,6 +2928,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
     strcpy(devices[AX25_port].unproto3,XmTextFieldGetString(AX25_unproto3_data));
     (void)remove_trailing_spaces(devices[AX25_port].unproto3);
 
+    strcpy(devices[AX25_port].unproto_igate,XmTextFieldGetString(AX25_igate_data));
+    (void)remove_trailing_spaces(devices[AX25_port].unproto_igate);
+
     devices[AX25_port].reconnect=1;
 
     /* reopen or open port*/
@@ -2919,6 +2962,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                 proto, proto1, proto2, proto3,
                 igate, igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
+                igate_label,
                 sep;
 
     char temp[50];
@@ -3156,10 +3200,42 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
-        sep = XtVaCreateManagedWidget("Config_AX25 sep", xmSeparatorGadgetClass,form,
+        xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
+        igate_label = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, proto3,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 60,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AX25_igate_data = XtVaCreateManagedWidget("Config_TNC igate_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AX25_unproto3_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, igate_label,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        sep = XtVaCreateManagedWidget("Config_AX25 sep", xmSeparatorGadgetClass,form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, igate_label,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -3213,6 +3289,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
             XmTextFieldSetString(AX25_unproto1_data,"RELAY,WIDE");
             XmTextFieldSetString(AX25_unproto2_data,"");
             XmTextFieldSetString(AX25_unproto3_data,"");
+            XmTextFieldSetString(AX25_igate_data,"");
         } else {
             /* reconfig */
 
@@ -3253,6 +3330,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25" );
             XmTextFieldSetString(AX25_unproto1_data,devices[AX25_port].unproto1);
             XmTextFieldSetString(AX25_unproto2_data,devices[AX25_port].unproto2);
             XmTextFieldSetString(AX25_unproto3_data,devices[AX25_port].unproto3);
+            XmTextFieldSetString(AX25_igate_data,devices[AX25_port].unproto_igate);
  
 end_critical_section(&devices_lock, "interface_gui.c:Config_AX25" );
 

@@ -668,6 +668,7 @@ IGPUPCF000|Opzioni Gateway||
 IGPUPCF001|Disabilita tutto il traffico per il gateway||
 IGPUPCF002|Permetti solo il traffico verso il Gateway||
 IGPUPCF003|Permetti il traffico Radio->Rete e Rete->Radio||
+IGPUPCF004|Igate -> RF Path   ||
 #
 #Stazione Meteo
 WXPUPSI000|Stazione Meteo||

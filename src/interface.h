@@ -121,6 +121,7 @@ typedef struct {
     char   unproto1[50];                          /* unproto path 1 for this port            */
     char   unproto2[50];                          /* unproto path 2 for this port            */
     char   unproto3[50];                          /* unproto path 3 for this port            */
+    char   unproto_igate[50];                     /* unproto igate path for this port        */
     int    unprotonum;                            /* unproto path selection                  */
     char   tnc_up_file[100];                      /* file for setting up TNC on this port    */
     char   tnc_down_file[100];                    /* file for shutting down TNC on this port */
@@ -181,7 +182,7 @@ extern char aprs_station_message_type;
 extern void port_dtr(int port, int dtr);
 void port_write_string(int port, char *data);
 extern void init_device_names(void);
-extern void output_my_data(char *message, int port, int type, int loopback_only);
+extern void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path);
 int tnc_get_data_type(char *buf, int port);
 void tnc_data_clean(char *buf);
 extern void output_waypoint_data(char *message);

@@ -2267,7 +2267,7 @@ time_t wx_tx_data1(char *st) {
 void tx_raw_wx_data(void) {
 
     if (strlen(raw_wx_string)>10) {
-        output_my_data(raw_wx_string,-1,0,0);
+        output_my_data(raw_wx_string,-1,0,0,0);
         if (debug_level & 1)
             printf("Sending Raw WX data <%s>\n",raw_wx_string);
     }

@@ -11713,9 +11713,9 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
     if (Setup_object_data(line, sizeof(line))) {
 
         if (object_tx_disable)
-            output_my_data(line,-1,0,1);    // Local loopback only
+            output_my_data(line,-1,0,1,0);    // Local loopback only, not igating
         else
-            output_my_data(line,-1,0,0);    // Transmit/loopback object data
+            output_my_data(line,-1,0,0,0);    // Transmit/loopback object data, not igating
 
         sched_yield();                  // Wait for transmitted data to get processed
         Object_destroy_shell(widget,clientData,NULL);
@@ -11740,9 +11740,9 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
     if (Setup_item_data(line,sizeof(line))) {
 
         if (object_tx_disable)
-            output_my_data(line,-1,0,1);    // Local loopback only
+            output_my_data(line,-1,0,1,0);    // Local loopback only, not igating
         else
-            output_my_data(line,-1,0,0);    // Transmit/loopback item data
+            output_my_data(line,-1,0,0,0);    // Transmit/loopback item data, not igating
 
         sched_yield();                  // Wait for transmitted data to get processed
         Object_destroy_shell(widget,clientData,NULL);
@@ -11768,9 +11768,9 @@ void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
         line[10] = '_';                         // mark as deleted object
 
         if (object_tx_disable)
-            output_my_data(line,-1,0,1);    // Local loopback only
+            output_my_data(line,-1,0,1,0);    // Local loopback only, not igating
         else
-            output_my_data(line,-1,0,0);    // Transmit object data
+            output_my_data(line,-1,0,0,0);    // Transmit object data, not igating
 
         Object_destroy_shell(widget,clientData,NULL);
     }
@@ -11799,9 +11799,9 @@ void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
         }
 
         if (object_tx_disable)
-            output_my_data(line,-1,0,1);    // Local loopback only
+            output_my_data(line,-1,0,1,0);    // Local loopback only, not igating
         else
-            output_my_data(line,-1,0,0);    // Transmit item data
+            output_my_data(line,-1,0,0,0);    // Transmit item data, not igating
 
         Object_destroy_shell(widget,clientData,NULL);
     }

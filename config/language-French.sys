@@ -667,6 +667,7 @@ IGPUPCF000|Options IGate||
 IGPUPCF001|Arrêter traffic Internet||
 IGPUPCF002|Autoriser RF vers Internet seulement||
 IGPUPCF003|Autoriser RF->Inet et Inet->RF||
+IGPUPCF004|Igate -> RF Path   ||
 #
 # WX Station
 WXPUPSI000|Station météo||
