@@ -81,6 +81,8 @@ The Questions
     4.20 How to I redirect serial ports from one computer to another?
     4.21 I have Festival compiled in, but I can't get any speech, why?
     4.22 ImageMagick gives me: "no decode delegate", why?
+    4.23 How do I get through an http proxy server with Xastir to
+         get maps?
 
 
 5.  Features
@@ -780,6 +782,15 @@ The Answers
     each time you log in.  The location "/usr" will probably be different
     on a non-Windows machine, so change the line above as required for your
     system.
+
+    4.23 How do I get through an http proxy server with Xastir to
+         get maps?
+
+    *) Install libcurl and/or wget.
+    *) Set the HTTP_PROXY environment variable in your ~/.profile
+       file.
+    *) Create and fill in the ~/.netrc and/or .wgetrc files with
+       proper values.
 
 
 5.  Features
