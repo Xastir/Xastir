@@ -437,10 +437,9 @@ to the mouse pointer then that station's data will display immediately. For
 mobile stations with a lot of track data this could need some time on slow
 computers. Note that expired stations still have their data stored in the
 Xastir database, and if one knows a station's former location, one can still
-view its info in this manner. It is also possible to display old stations by
-turning on the "Display Expired Data" option in the stations menu.
-FIXME: Not entirely true.  This just displays some of the data that
-dissapears for ghosted stations, like speed/altitude, etc.
+view its info in this manner. Use the "Display Expired Data" option
+to display some data that disappears for ghosted stations, like
+speed/altitude, etc.
 
 With "Last Map View" you can restore the previous map view by restoring the
 previous values of the map zoom and centering values.
@@ -493,9 +492,9 @@ toolbar is enabled.
 Description of the entries in the object dialogue:
 
 = Signpost =
-This makes the object a signpost object. These signs can be 3 characters,
-visible on a signpost at the location when zoomed in close. (FIXME: We don't
-do the display of signposts this way yet).
+This makes the object a signpost object. These signs can contain one
+to three characters, and currently appear in Xastir as a blank sign.
+Station Info shows the value contained on the sign.
 
 = Area Object =
 This makes the object an area object, and enables the area object controls
@@ -563,8 +562,6 @@ detail onto maps. This will be done with the following entries:
   = Object corridor =
     This is the width of a line area object. Useful for runways, weather
     watchboxes, describing an area of interest or an area of exclusion, etc.
-(FIXME: Write this part! (area objects) The spec is unclear to me, the code
-is unclear to me, but eventually I'll figure it all out!)
 
 Always delete your objects and items when you are done with them!
 Don't just allow them to expire from your cache, as they may hang
@@ -709,8 +706,7 @@ displayed. The background color is often entirely hidden by filled maps
 
 Map Intensity
 This controls the brightness of any graphics used as maps. This option only
-appears if you have compiled with GeoTIFF support and/or ImageMagick.
-FIXME: XPM also?
+appears if you have compiled with GeoTIFF support.
 
 Station Text Style
 Controls which font and style to use for station text and others.

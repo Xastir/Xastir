@@ -130,11 +130,14 @@ Other smaller interface changes include:
 * Range scales are now shown opposite the map scale. This is an attempt to
   standardize various APRS client approaches to zoom levels.
 
-(FIXME: These are undocumented features that don't really have their own
-tie-ins to the UI. Should they be listed here? anywhere?)
-Tracked proximity alarms
-export waypoints within proximity boundaries
-export trail as ESRI Shapefile
+New additions under-the-hood:
+* Tracked proximity alarms.
+* Export waypoints within proximity boundaries.  Your GPS can show
+  you the locations of APRS stations as waypoints on the GPS map
+  screen.
+* Export trail as ESRI Shapefile.  New feature if you have Shapelib
+  compiled in.  Station Info->Store Track button also creates a
+  Shapefile map of the station's track now.
 
 The weather reporting features have been improved, with the addition of
 optional wind barbs to weather stations and decoding of storm wind radius data.
@@ -594,10 +597,9 @@ to the mouse pointer then that station's data will display immediately. For
 mobile stations with a lot of track data this could need some time on slow
 computers. Note that expired stations still have their data stored in the
 Xastir database, and if one knows a station's former location, one can still
-view its info in this manner. It is also possible to display old stations by
-turning on the "Display Expired Data" option in the stations menu.
-FIXME: Not entirely true.  This just displays some of the data that
-disappears for ghosted stations, like speed/altitude, etc.
+view its info in this manner. Use the "Display Expired Data" option
+to display some data that disappears for ghosted stations, like
+speed/altitude, etc.
 
 With "Last Map View" you can restore the previous map view by restoring the
 previous values of the map zoom and centering values.
@@ -651,9 +653,9 @@ toolbar is enabled.
 Description of the entries in the object dialogue:
 
 = Signpost =
-This makes the object a signpost object. These signs can be 3 characters,
-visible on a signpost at the location when zoomed in close. (FIXME: We don't
-do the display of signposts this way yet).
+This makes the object a signpost object. These signs can contain one
+to three characters, and currently appear in Xastir as a blank sign.
+Station Info shows the value contained on the sign.
 
 = Area Object =
 This makes the object an area object, and enables the area object controls
