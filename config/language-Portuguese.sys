@@ -78,6 +78,8 @@ PULDNMP021|Auto Map - Desactivar raster mapas||
 PULDNMP022|Indexar mapas no começo||
 PULDNMP023|Index: Acrescentar mapas novos|A|
 PULDNMP024|Index: Reindexar os mapas TODOS|R|
+PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 # PopUp "Configurar tigermap"
 MPUPTGR001|Grelha||

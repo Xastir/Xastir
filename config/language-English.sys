@@ -81,6 +81,7 @@ PULDNMP022|Index New Maps on Startup||
 PULDNMP023|Index: Add New Maps|N|
 PULDNMP024|Index: Reindex ALL Maps|R|
 PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 #
 # PopUp "Configure Tigermap"

@@ -79,6 +79,8 @@ PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
 PULDNMP023|Indice: Agregar Nuevos Mapas|A|
 PULDNMP024|Indice: Reindezar TODOS los Mapas|T|
+PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 # Menú "Configurar Tigermapa"
 MPUPTGR001|Rejilla||

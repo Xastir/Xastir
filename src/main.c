@@ -3876,6 +3876,10 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
 }
 #endif  // NO_GRAPHICS && HAVE_IMAGEMAGICK
 
+
+
+
+
 // chose map label font
 void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
@@ -3883,6 +3887,27 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
     XtDestroyWidget(shell);
     map_font_dialog = (Widget)NULL;
 }
+
+
+
+
+
+void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
+    char temp[50] = "/usr/X11R6/bin/xfontsel -print";
+
+    if ( system(temp) ) {
+        fprintf(stderr,"Couldn't execute %s\n",temp);
+    }
+    else {
+        // Finish the line that xfontsel wrote.   xfontsel doesn't
+        // write out a <LF>.
+        fprintf(stderr,"\n");
+    }
+}
+
+
+
+
 
 void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
@@ -3912,7 +3937,8 @@ void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callDat
 
 
 void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, my_form, fontname, button_ok, button_cancel;
+    static Widget  pane, my_form, fontname, button_ok,
+                button_cancel,button_xfontsel;
     Atom delw;
 
     if (!map_font_dialog) {
@@ -3930,7 +3956,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
         my_form =  XtVaCreateWidget("Map font my_form",
                 xmFormWidgetClass,  pane,
-                XmNfractionBase,    5,
+                XmNfractionBase,    3,
                 XmNautoUnmanage,    FALSE,
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
@@ -3979,6 +4005,23 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
         XmTextSetString(map_font_text, rotated_label_fontname);
 
+        // Xfontsel
+        button_xfontsel = XtVaCreateManagedWidget(langcode("PULDNMP015"),
+                xmPushButtonGadgetClass, my_form,
+                XmNtopAttachment,        XmATTACH_WIDGET,
+                XmNtopWidget,            map_font_text,
+                XmNtopOffset,            10,
+                XmNbottomAttachment,     XmATTACH_FORM,
+                XmNbottomOffset,         5,
+                XmNleftAttachment,       XmATTACH_POSITION,
+                XmNleftPosition,         0,
+                XmNrightAttachment,      XmATTACH_POSITION,
+                XmNrightPosition,        1,
+                XmNnavigationType,       XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, my_form,
                 XmNtopAttachment,        XmATTACH_WIDGET,
@@ -4003,15 +4046,17 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNbottomAttachment,     XmATTACH_FORM,
                 XmNbottomOffset,         5,
                 XmNleftAttachment,       XmATTACH_POSITION,
-                XmNleftPosition,         3,
+                XmNleftPosition,         2,
                 XmNrightAttachment,      XmATTACH_POSITION,
-                XmNrightPosition,        4,
+                XmNrightPosition,        3,
                 XmNnavigationType,       XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        XtAddCallback(button_xfontsel,
+                      XmNactivateCallback, Map_font_xfontsel,      map_font_dialog);
         XtAddCallback(button_ok,
                       XmNactivateCallback, Map_font_change_data,   map_font_dialog);
         XtAddCallback(button_cancel,
@@ -4039,6 +4084,10 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
     } else
         (void)XRaiseWindow(XtDisplay(map_font_dialog), XtWindow(map_font_dialog));
 }
+
+
+
+
 
 void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[200];

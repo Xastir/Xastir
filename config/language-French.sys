@@ -79,6 +79,8 @@ PULDNMP021|Cartographie automatique - désactiver cartes tramées||
 PULDNMP022|Indexer nouvelles cartes au démarrage||
 PULDNMP023|Index: Ajouter nouvelles cartes|R|
 PULDNMP024|Index: Re-indexer toutes cartes|A|
+PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 #
 # PopUp "Configure Tigermap"

@@ -85,6 +85,8 @@ PULDNMP021|Autom. Karten - PixelKarten aus||
 PULDNMP022|Neue Karten beim Start indizieren||
 PULDNMP023|Index: Neue Karten hinzufügen|N|
 PULDNMP024|Index: ALLE Karten reindizieren|r|
+PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 #
 # PopUp "Einstellungen Tigermaps"

@@ -87,6 +87,8 @@ PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
 PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
 PULDNMP024|Index: Herindexeer ALLE kaarten|H|
+PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 #
 # PopUp "Configureren Tigermap"

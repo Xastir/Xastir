@@ -80,6 +80,8 @@ PULDNMP021|Mappe Automatche - Disabilita Mappe Raster||
 PULDNMP022|Indicizza Mappe all' Avvio||
 PULDNMP023|Indice: Aggiungi Nuove Mappe|N|
 PULDNMP024|Indice: Riordina Tutte le Mappe|R|
+PULDNMP025|Map labels font||
+PULDNMP015|Xfontsel||
 #
 #
 # PopUp "Configure Tigermap"
