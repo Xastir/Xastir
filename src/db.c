@@ -6559,7 +6559,7 @@ void delete_station_memory(DataRow *p_del) {
 
 //if (p_new->n_prev != NULL) {
 //    fprintf(stderr,"\tprev: %s",
-//        p_new->n_prev->call_sign);\
+//        p_new->n_prev->call_sign);
 //}
 
 //if (p_new->n_next != NULL) {
