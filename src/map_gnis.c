@@ -784,6 +784,10 @@ Cell Name
                             if (scale_y > 50)
                                 ok = 0;
                         }
+                        else if (strcasecmp(type,"ruin") == 0) {
+                            if (scale_y > 50)
+                                ok = 0;
+                        }
                         else {
                             fprintf(stderr,"Something unusual found, Type:%s\tState:%s\tCounty:%s\tName:%s\n",
                                 type,state,county,name);
