@@ -3192,11 +3192,12 @@ void draw_shapefile_map (Widget w,
 
 //WE7U
 // We don't handle the "hole" drawing in polygon shapefiles, where
-// one direction around the ring means a fill, and the other
-// direction means a hole in the polygon.  Once we do handle this
-// correctly, delete this note and the one in the function comment
-// block.
+// clockwise direction around the ring means a fill, and CCW means a
+// hole in the polygon.  Once we do handle this correctly, delete
+// this note and the one in the function comment block.
+//
 // Could try to implement the holes in one of two ways:
+//
 // 1) Snag an algorithm for a polygon "fill" function from
 // somewhere, but add a piece that will check for being inside a
 // "hole" polygon and just not draw while traversing it (change the
@@ -3205,6 +3206,31 @@ void draw_shapefile_map (Widget w,
 // draw pixels, skipping the holes.
 // 3) Try to use bitmasks to prevent drawing over certain areas, or
 // only allow drawing over certain areas.
+//
+// Shapefiles also allow identical points to be next to each other
+// in the vertice list.  We should look for that and get rid of
+// duplicate vertices.
+//
+// Here are some X11 functions that set up a clip-mask so that we
+// can fill a polygon without drawing over the holes (hopefully).
+// The trick is:  Can we reverse the bit pattern so that we draw
+// only where we don't specify the hole?  Might have to draw the
+// polygons and holes into a separate 1-bit pixmap, then use that as
+// the clip-mask to draw the same thing onto the real pixmap.  It
+// looks like we could malloc a very small pixmap that is the size
+// of the polygon extents for this and free() it when we're done.
+// Only malloc if we find out we have holes in our shape, else just
+// draw it normally.
+//
+// XSetRegion:
+// XPolygonRegion: Creates a region from a polygon
+// XCreateRegion
+// XDestroyRegion
+// XUnionRegion:  Creates a new region from two
+//
+// Then set the clip-mask for the XFillPolygon() function when we
+// know we have holes in our polygon.
+
 
 
                     // Read the vertices for each ring
