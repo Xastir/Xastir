@@ -331,6 +331,7 @@ WPUPLSP003|Non rispetta Maius/Minus||
 WPUPLSP004|Rispetta Maius/minus ||
 WPUPLSP005|Localizza!||
 WPUPLSP006|Localizzazione di Emergenza!||
+WPUPLSP007|FCC/RAC Lookup||
 #
 # Configure defaults popup
 WPUPCFD001|Parametri originali||

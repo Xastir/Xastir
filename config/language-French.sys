@@ -330,6 +330,7 @@ WPUPLSP003|Casse exacte|C|
 WPUPLSP004|Correspondance exacte|E|
 WPUPLSP005|Localiser maintenant!|L|
 WPUPLSP006|Localiser détresse!||
+WPUPLSP007|FCC/RAC Lookup||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configurer défauts||

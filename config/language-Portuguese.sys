@@ -334,6 +334,7 @@ WPUPLSP003|Maíscula/minúscula|M|
 WPUPLSP004|Exacta|E|
 WPUPLSP005|Localizar agora!|A|
 WPUPLSP006|Localizar emergência!||
+WPUPLSP007|FCC/RAC Lookup||
 #
 # Configurar predefinidos
 WPUPCFD001|Configurar valores pré-definidos||

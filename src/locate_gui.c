@@ -105,6 +105,128 @@ end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station_d
 
 
 /*
+ * Look up detailed FCC/RAC info about the station
+ */
+
+// Determine whether it is a U.S. or Canadian callsign then search
+// through the appropriate database and present the results.
+
+void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
+    char station_call[200];
+    char temp[1000];
+    char temp2[300];
+    char *temp_ptr;
+    FccAppl my_fcc_data;
+    rac_record my_rac_data;
+
+
+    // Snag station call
+    temp_ptr = XmTextFieldGetString(locate_station_data);
+    xastir_snprintf(station_call,
+        sizeof(station_call),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    (void)remove_trailing_spaces(station_call);
+
+    to_upper(station_call);
+
+    switch (station_call[0]) {
+        case 'A':
+        case 'K':
+        case 'N':
+        case 'W':
+            if (search_fcc_data_appl(station_call, &my_fcc_data) == 1) {
+
+                xastir_snprintf(temp,
+                    sizeof(temp),
+                    "%s\n%s %s\n%s %s %s\n%s %s, %s %s, %s %s\n\n",
+                    langcode("STIFCC0001"),
+                    langcode("STIFCC0003"),
+                    my_fcc_data.name_licensee,
+                    langcode("STIFCC0004"),
+                    my_fcc_data.text_street,
+                    my_fcc_data.text_pobox,
+                    langcode("STIFCC0005"),
+                    my_fcc_data.city,
+                    langcode("STIFCC0006"),
+                    my_fcc_data.state,
+                    langcode("STIFCC0007"),
+                    my_fcc_data.zipcode);
+
+                popup_message(langcode("WPUPLSP007"),temp);
+            }
+            else {
+                xastir_snprintf(temp2,
+                    sizeof(temp2),
+                    "Callsign Not Found!\n");
+                popup_message(langcode("POPEM00001"),temp2);
+            }
+            break;
+        case 'V':
+            if (search_rac_data(station_call, &my_rac_data) == 1) {
+
+                xastir_snprintf(temp,
+                    sizeof(temp),
+                    "%s\n%s %s\n%s\n%s, %s\n%s\n",
+                    langcode("STIFCC0002"),
+                    my_rac_data.first_name,
+                    my_rac_data.last_name,
+                    my_rac_data.address,
+                    my_rac_data.city,
+                    my_rac_data.province,
+                    my_rac_data.postal_code);
+
+                    if (my_rac_data.qual_a[0] == 'A')
+                        strcat(temp,langcode("STIFCC0008"));
+
+                    if (my_rac_data.qual_d[0] == 'D')
+                        strcat(temp,langcode("STIFCC0009"));
+
+                    if (my_rac_data.qual_b[0] == 'B' && my_rac_data.qual_c[0] != 'C')
+                        strcat(temp,langcode("STIFCC0010"));
+
+                    if (my_rac_data.qual_c[0] == 'C')
+                        strcat(temp,langcode("STIFCC0011"));
+
+                    strcat(temp,"\n");
+
+                    if (strlen(my_rac_data.club_name) > 1) {
+                        xastir_snprintf(temp2,
+                            sizeof(temp2),
+                            "%s\n%s\n%s\n%s, %s\n%s\n",
+                            my_rac_data.club_name,
+                            my_rac_data.club_address,
+                            my_rac_data.club_city,
+                            my_rac_data.club_province,
+                            my_rac_data.club_postal_code);
+                        strcat(temp,temp2);
+                    }
+
+
+                popup_message(langcode("WPUPLSP007"),temp);
+            }
+            else {
+                // RAC code does its own popup in this case?
+                //fprintf(stderr, "Callsign not found\n");
+            }
+            break;
+        default:
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "Not an FCC or RAC callsign!\n");
+            popup_message(langcode("POPEM00001"),temp2);
+            break;
+    }
+    Locate_station_destroy_shell(w, clientData, callData);
+}
+
+
+
+
+
+/*
  *  Locate a station by centering the map at its position
  */
 void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
@@ -138,7 +260,8 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
 // for when we've received a Mic-E emergency packet.
 //
 void Locate_station(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, XtPointer callData) {
-    static Widget pane, form, button_ok, button_cancel, call, sep;
+    static Widget pane, form, button_locate, button_cancel, call,
+        button_lookup, sep;
     Atom delw;
     int emergency_flag = (int) callData;
 
@@ -168,7 +291,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                           NULL);
 
         form =  XtVaCreateWidget("Locate_station form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 2,
+                            XmNfractionBase, 3,
                             XmNbackground, colors[0xff],
                             XmNautoUnmanage, FALSE,
                             XmNshadowThickness, 1,
@@ -243,7 +366,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("WPUPLSP005"),xmPushButtonGadgetClass, form,
+        button_lookup = XtVaCreateManagedWidget(langcode("WPUPLSP007"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 5,
@@ -259,7 +382,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNtraversalOn, TRUE,
                                       NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+        button_locate = XtVaCreateManagedWidget(langcode("WPUPLSP005"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 5,
@@ -267,15 +390,32 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbottomOffset, 5,
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 1,
+                                      XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
+                                      XmNbackground, colors[0xff],
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 2,
+                                      XmNrightAttachment, XmATTACH_POSITION,
+                                      XmNrightPosition, 3,
                                       XmNrightOffset, 5,
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       NULL);
 
-        XtAddCallback(button_ok, XmNactivateCallback, Locate_station_now, locate_station_dialog);
+        XtAddCallback(button_lookup, XmNactivateCallback, fcc_rac_lookup, locate_station_dialog);
+        XtAddCallback(button_locate, XmNactivateCallback, Locate_station_now, locate_station_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Locate_station_destroy_shell, locate_station_dialog);
 
         XmToggleButtonSetState(locate_case_data,FALSE,FALSE);
