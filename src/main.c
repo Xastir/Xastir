@@ -5324,7 +5324,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 //    geocode_place_button = XtVaCreateManagedWidget(langcode("PULDNMP014"),
     geocode_place_button = XtVaCreateManagedWidget("Find Address",
- 
             xmPushButtonGadgetClass,
             mappane,
             XmNmnemonic,langcode_hotkey("PULDNMP014"),
@@ -11387,7 +11386,7 @@ void check_range(void) {
     Dimension width, height;
 
 
-    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
 
     // Check the window itself to see if our new y-scale fits it
     //
