@@ -33,6 +33,7 @@ PULDNFI015|Imprimer carte|p|
 PULDNFI003|Test|e|
 PULDNFI007|Changer niveau de débogage|d|
 PULDNFI004|Quitter|Q|
+PULDNFI005|Exit Now!||
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|

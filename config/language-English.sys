@@ -25,15 +25,16 @@ MENUTB0009|Help|H|
 # Menu "File"
 PULDNFI001|Configure|C|
 PULDNFI002|Open Log File|O|
+PULDNFI003|Test|T|
+PULDNFI004|Exit|x|
+PULDNFI005|Exit Now!|x|
+PULDNFI007|Change Debug Level|D|
 PULDNFI010|Enable TNC Logging||
 PULDNFI011|Enable Net Logging||
 PULDNFI012|Enable IGate Logging||
 PULDNFI013|Enable WX Logging||
 PULDNFI014|Enable PNG Snapshots||
 PULDNFI015|Print Map|P|
-PULDNFI003|Test|T|
-PULDNFI007|Change Debug Level|D|
-PULDNFI004|Exit|x|
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|

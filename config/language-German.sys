@@ -39,6 +39,7 @@ PULDNFI015|Karte drucken|d|
 PULDNFI003|Test|T|
 PULDNFI007|Debug Level ändern|D|
 PULDNFI004|Beenden|B|
+PULDNFI005|Exit Now!||
 #
 # Menu "Zeige"
 PULDNVI001|Berichte|B|

@@ -34,6 +34,7 @@ PULDNFI015|Imprimir Mapa|P|
 PULDNFI003|Prueba|P|
 PULDNFI007|Cambia nivel Debug|D|
 PULDNFI004|Salir|S|
+PULDNFI005|Exit Now!||
 #
 # Menú visor
 PULDNVI001|Boletines|B|

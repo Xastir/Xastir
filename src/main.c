@@ -2400,14 +2400,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
-    Widget filepane, configpane, mappane, viewpane, stationspane, messagepane, ifacepane, helppane;
+    Widget filepane, configpane, exitpane, mappane, viewpane, stationspane, messagepane, ifacepane, helppane;
 
     Widget measure_frame, move_frame, display_button, 
        track_button, download_trail_button,
        symbols_button,
        station_trails_button,
        station_clear_button, tracks_clear_button, uptime_button,
-       save_button,file_button, open_file_button, exit_button,
+       save_button,file_button, open_file_button, exit_button, really_exit_button,
        view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
        localstations_button, laststations_button,
        weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
@@ -2629,8 +2629,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     (void)XtVaCreateManagedWidget("create_appshell sep1c",xmSeparatorGadgetClass,filepane,XmNbackground,colors[0xff],NULL);
 
-    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),xmPushButtonWidgetClass,filepane,
-                        XmNmnemonic,langcode_hotkey("PULDNFI004"),XmNbackground,colors[0xff],NULL);
+    exitpane  = XmCreatePulldownMenu(filepane, "exitpane", al, ac);
+
+    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),xmCascadeButtonGadgetClass,filepane,
+                    XmNsubMenuId,exitpane,
+                    XmNmnemonic,langcode_hotkey("PULDNFI004"),
+                    XmNbackground,colors[0xff],
+                    NULL);
+ 
+//    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),xmPushButtonWidgetClass,filepane,
+//                        XmNmnemonic,langcode_hotkey("PULDNFI004"),XmNbackground,colors[0xff],NULL);
 
     /* View */
     bullet_button = XtVaCreateManagedWidget(langcode("PULDNVI001"),xmPushButtonGadgetClass,viewpane,
@@ -2690,6 +2698,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     save_button = XtVaCreateManagedWidget(langcode("PULDNCF008"),xmPushButtonGadgetClass,configpane,
                                 XmNmnemonic,langcode_hotkey("PULDNCF008"),XmNbackground,colors[0xff],NULL);
+
+
+    /* Exit */
+    really_exit_button = XtVaCreateManagedWidget(langcode("PULDNFI005"),xmPushButtonWidgetClass,exitpane,
+                        XmNmnemonic,langcode_hotkey("PULDNFI005"),XmNbackground,colors[0xff],NULL);
 
 
 //- Maps -------------------------------------------------------------
@@ -3236,7 +3249,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(WX_q_button,          XmNactivateCallback,WX_query,NULL);
     XtAddCallback(station_clear_button, XmNactivateCallback,Stations_Clear,NULL);
     XtAddCallback(tracks_clear_button,  XmNactivateCallback,Tracks_All_Clear,NULL);
-    XtAddCallback(exit_button,          XmNactivateCallback,Menu_Quit,NULL);
+    XtAddCallback(really_exit_button,   XmNactivateCallback,Menu_Quit,NULL);
 
     XtAddCallback(defaults_button,      XmNactivateCallback,Configure_defaults,NULL);
     XtAddCallback(coordinates_button,   XmNactivateCallback,Configure_coordinates,NULL);
