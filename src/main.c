@@ -934,6 +934,7 @@ Widget object_item_interval = (Widget)NULL;
 Widget serial_pacing_time = (Widget)NULL;
 Widget trail_segment_timeout = (Widget)NULL;
 Widget trail_segment_distance_max = (Widget)NULL;
+Widget RINO_download_timeout = (Widget)NULL;
 
 
 time_t GPS_time;                /* gps time out */
@@ -944,6 +945,9 @@ time_t sec_clear;               /* station cleared after */
 time_t sec_remove;              /* Station removed after */
 int trail_segment_time;         // Segment missing if above this time (mins)
 int trail_segment_distance;     // Segment missing if greater distance
+int RINO_download_interval;     // Interval at which to download RINO waypoints,
+                                // creating APRS Objects from them.
+time_t last_RINO_download = (time_t)0;
 time_t sec_next_raw_wx;         /* raw wx transmit data */
 int dead_reckoning_timeout = 60 * 10;   // 10 minutes;
 
@@ -10000,6 +10004,18 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // have new maps to draw because of it.  This function
             // can cause a complete redraw of the maps.
             check_for_new_gps_map();
+
+            // Check whether it is time to snag RINO waypoints
+            // again, creating APRS Objects out of them.  "0" for
+            // the download interval disables this function.
+            if (RINO_download_interval > 0) {
+                int rino_time = RINO_download_interval * 60;
+
+                if (last_RINO_download + rino_time < sec_now()) {
+                    last_RINO_download = sec_now();
+                    GPS_operations(NULL, "7", NULL);
+                }
+            }
 #endif  // HAVE_GPSMAN
 
             if (xfontsel_query) {
@@ -13019,7 +13035,7 @@ system(temp);
 // transfer operation, to make sure we're not called again until the
 // first operation is over.
 //
-void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void GPS_operations( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     pthread_t gps_operations_thread;
     int parameter;
 
@@ -18479,10 +18495,13 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
     XmScaleGetValue(serial_pacing_time, &serial_char_pacing);     // Milliseconds
 
     XmScaleGetValue(trail_segment_timeout, &value); // Minutes
-    trail_segment_time = (time_t)value;
+    trail_segment_time = (int)value;
 
     XmScaleGetValue(trail_segment_distance_max, &value); // Degrees
-    trail_segment_distance = (time_t)value;
+    trail_segment_distance = (int)value;
+
+    XmScaleGetValue(RINO_download_timeout, &value); // Degrees
+    RINO_download_interval = (int)value;
 
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
@@ -18801,13 +18820,47 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+#ifdef HAVE_GPSMAN
+        length = strlen(langcode("WPUPCFTM12")) + 1;
 
+        // Time below which track segment will get drawn, in minutes
+        RINO_download_timeout = XtVaCreateManagedWidget("RINO download interval",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, trail_segment_timeout,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 0,      // Zero minutes (disables the function)
+                XmNmaximum, 30,     // 30 minutes
+                XmNshowValue, TRUE,
+                XmNvalue, RINO_download_interval,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM12"), length,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+#endif  // HAVE_GPSMAN
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
+
+#ifdef HAVE_GPSMAN
+                XmNtopWidget, RINO_download_timeout,
+#else   // HAVE_GPSMAN
                 XmNtopWidget, trail_segment_timeout,
+#endif  // HAVE_GPSMAN
+
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -18825,7 +18878,13 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
+
+#ifdef HAVE_GPSMAN
+                XmNtopWidget, RINO_download_timeout,
+#else   // HAVE_GPSMAN
                 XmNtopWidget, trail_segment_timeout,
+#endif  // HAVE_GPSMAN
+
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,

@@ -384,6 +384,7 @@ WPUPCFTM08|Timeout Pos-Voraussage [Min]||
 WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
 WPUPCFTM10|Neue Spur Zeit (Min)||
 WPUPCFTM11|Neue Spur Intervall (Grad)||
+WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||
