@@ -1115,6 +1115,13 @@ void alert_build_list(Message *fill) {
 
         memset(&entry, 0, sizeof(entry));
 
+        // Zero the title strings
+        title[0][0] = '\0';
+        title[1][0] = '\0';
+        title[2][0] = '\0';
+        title[3][0] = '\0';
+        title[4][0] = '\0';
+
         // This fills in the zone numbers (title) for uncompressed
         // alerts with up to five alerts per message.  This doesn't
         // handle filling in the title for compressed alerts though.
@@ -1365,7 +1372,7 @@ void alert_build_list(Message *fill) {
 // End of compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
 
-        // Terminate the strings
+       // Terminate the strings
         entry.activity[20] = entry.alert_tag[20] = '\0';
 
         // If the expire time is missing, shift fields to the right
@@ -1374,6 +1381,10 @@ void alert_build_list(Message *fill) {
         // titles to the next record before fixing up the title and
         // alert_tag for entry.
         if (!isdigit((int)entry.activity[0]) && entry.activity[0] != '-') {
+
+            if (title[0][0] == '\0') {
+                // No alerts in this message
+            }
 
             for (jj = 4; jj > 0; jj--) {
                 strcpy(&title[jj][0], &title[jj-1][0]);
@@ -1391,6 +1402,7 @@ void alert_build_list(Message *fill) {
             // Compute expiration time_t from zulu time
             entry.expiration = time_from_aprsstring(entry.activity);
         }
+
 
         // Copy the sequence (which contains issue_date_time and
         // message sequence) into the record.
@@ -1444,7 +1456,7 @@ void alert_build_list(Message *fill) {
                 date_time);
             //entry.issue_date_time = time_from_aprsstring(date_time);
         }
-        
+ 
  
         // flags[0] specifies whether it's onscreen or not
         memset(entry.flags, (int)'?', sizeof(entry.flags));
@@ -1461,7 +1473,7 @@ void alert_build_list(Message *fill) {
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-
+ 
         // Iterate through up to five uncompressed alerts, or
         // through the string of now-uncompressed "compressed"
         // alerts, creating an alert out of each.
