@@ -324,7 +324,7 @@ void save_data(void)  {
         if (scale_y > 0)
             store_long (fout, "SCREEN_ZOOM", scale_y);
         else
-            store_long (fout, "SCREEN_ZOOM", 327680);
+            store_long (fout, "SCREEN_ZOOM", 1);
 
         store_int (fout, "MAP_BGCOLOR", map_background_color);
 
@@ -788,7 +788,7 @@ void load_data_or_default(void) {
     if (!get_int ("COORDINATE_SYSTEM", &coordinate_system, 0, 5, USE_DDMMMM))
         coordinate_system = USE_DDMMMM;
 
-    if (!get_long ("SCREEN_ZOOM", &scale_y, 1l, 300000l, 327680l))
+    if (!get_long ("SCREEN_ZOOM", &scale_y, 1l, 327680l, 327680l))
         scale_y = 327680;
     scale_x = get_x_scale(mid_x_long_offset,mid_y_lat_offset,scale_y);
 

@@ -10259,12 +10259,15 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
                 new_scale_y = 262144;
                 break;
 
-            case(8):
+            case(8):    // 10% out
                 new_scale_y = (int)(scale_y * 1.1);
                 break;
 
-            case(9):
+            case(9):    // 10% in
                 new_scale_y = (int)(scale_y * 0.9);
+                // Don't allow the user to go in further than zoom 1
+                if (new_scale_y < 1)
+                    new_scale_y = 1;
                 break;
 
             default:
