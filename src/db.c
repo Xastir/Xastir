@@ -7333,11 +7333,12 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 //   30mph  28 degrees
 //   20mph  33 degrees
 //   10mph  45 degrees
-//    3mph 103 degrees
-//    2mph 145 degrees
+//    3mph 103 degrees (we limit it to 80 now)
+//    2mph 145 degrees (we limit it to 80 now)
 //
 // I added a max threshold of 80 degrees into the code.  145 degrees
-// is unreasonable to expect.
+// is unreasonable to expect except for perhaps switchback or 'U'
+// turns.
 //
 void compute_smart_beacon(char *current_course, char *current_speed) {
     int course;
@@ -7367,7 +7368,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
 
 // EXPERIMENTAL!!!
-///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
         // Check to see if we're just crossing the threshold, if so,
         // beacon.  This keeps dead-reckoning working properly on
         // other people's displays.
@@ -7375,7 +7376,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 //            beacon_now++; // Force a posit right away
 //            //printf("Stopping, POSIT!\n");
 //        }
-///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 
         // Set to slow posit rate
@@ -7385,14 +7386,14 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
 
 // EXPERIMENTAL!!!
-///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
         // Check to see if we're just starting to move
 //        if ( (secs_since_beacon > sb_turn_time)    // Haven't beaconed for a bit
 //                && (sb_POSIT_rate == (sb_posit_slow * 60) ) ) { // Last rate was the slow rate
 //            beacon_now++; // Force a posit right away
 //            //printf("Starting to move, POSIT!\n");
 //        }
-///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 
         // Start with turn_min degrees as the threshold
@@ -7418,7 +7419,8 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
             turn_threshold = 80;
  
         // Check to see if we've written anything into
-        // sb_last_heading variable yet
+        // sb_last_heading variable yet.  If not, write the current
+        // course into it.
         if (sb_last_heading == -1)
             sb_last_heading = course;
 
@@ -7439,6 +7441,20 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
             //    speed,
             //    turn_threshold);
         }
+
+
+// EXPERIMENTAL
+////////////////////////////////////////////////////////////////////
+        // If we haven't beaconed for a bit (3 * sb_turn_time?), and
+        // just completed a turn, check to see if our heading has
+        // stabilized yet.  If so, beacon the latest heading.  We'll
+        // have to save another variable which says whether the last
+        // beacon was caused by a turn.
+        if (0) {
+        }
+////////////////////////////////////////////////////////////////////
+
+
     }
     if (beacon_now) {
         posit_next_time = 0;    // Force a posit right away
@@ -7462,6 +7478,9 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     char temp_long[12];
     DataRow *p_station;
     DataRow *p_time;
+
+    // Note that speed will be in knots 'cuz it was derived from a
+    // GPRMC string without modification.
 
     // Recompute the SmartBeaconing parameters based on current/past
     // course & speed
