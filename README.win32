@@ -472,7 +472,8 @@ See the README.MAPS file for where to get the maps.
 
 
 
-OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3):
+OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3 &
+ImageMagick 5.5.7):
 --------------------------------------------------------------
 Allows using more than 68 different graphics format files as maps,
 by creating an associated .geo file for each with tiepoints.  This
@@ -485,9 +486,27 @@ Note:  The Cygwin binary for ImageMagick-5.5.5 has a problem in it's
 Magick-config script which makes it impossible to use for our
 purposes.  Don't try to use that version.
 
-Note:  The Cygwin binary for ImageMagick-5.5.6 fails at the link
-stage trying to link to "liblcms", which is the "little cms engine"
-library.  Don't try to use that version.
+Later versions of ImageMagick depend on "liblcms", which isn't part
+of Cygwin.  Install liblcms _before_ installing ImageMagick.
+
+[ ] cd ~/src
+    mkdir lcms
+
+[ ] Download lcms.  Get the "linux/other" version.  Put the
+downloaded file into the ~/src/lcms directory you just created:
+
+    http://www.littlecms.com/downloads.htm"
+
+[ ] Extract the lcms files:
+
+    cd ~/src/lcms
+    tar xzvf lcms-1.10.tar.gz
+
+[ ] Configure/build/install the lcms library:
+
+    cd lcms-1.10
+    make all
+    make install
 
 Note that Xastir's "./configure" stage may fail trying to compile in
 ImageMagick support.  If this happens, make sure you have the
@@ -523,7 +542,7 @@ here:
 
 [ ] Copy the files/directories into the /usr tree:
 
-    cd ImageMagick-5.5.3
+    cd ImageMagick-5.5.7
     cp -R * /usr
 
 [ ] Reconfigure Xastir to use this library:
