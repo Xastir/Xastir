@@ -1174,6 +1174,17 @@ SOLARIS NOTES:
      Type "gmake" instead of "make" to build Xastir, and substitute "gmake"
      for "make" in the following instructions.
 
+     ---
+     From: Chris Bell
+
+     A note to add, the auto* tools from sunfreeware (precompiled packages)
+     need the environment variable M4 set to gnu m4 (M4=/usr/local/bin/m4)
+     to work.  I also set LDFLAGS to '-L/usr/local/lib -R/usr/local/lib' (to
+     avoid the ancient libtiff in /usr/openwin/lib) before running configure,
+     then the tests (and final link) work properly.
+
+     Chris.
+
 END OF SOLARIS NOTES.
      ----------------------------------------------------------------------- 
 
