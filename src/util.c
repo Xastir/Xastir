@@ -3925,7 +3925,11 @@ int check_unproto_path ( char *data ) {
     bad_path = i = have_relay = have_wide = have_widen = have_trace = have_tracen = is_wide = 0;
 
     // Remember to free() tmpdata before we return
+#ifdef HAVE_STRNDUP
     tmpdata = (char *)strndup(data, strlen(data));
+#else
+    tmpdata = (char *)strdup(data);
+#endif
     (void)to_upper(tmpdata);
     split_string(tmpdata, ViaCalls, 10);
 

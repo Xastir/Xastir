@@ -187,7 +187,8 @@ AC_CHECK_FUNCS([putenv select setenv setlocale settimeofday signal])
 AC_CHECK_FUNCS([snprintf socket sqrt stpcpy strcasecmp strchr strdup])
 AC_CHECK_FUNCS([strerror strncasecmp strpbrk strptime strrchr strstr])
 AC_CHECK_FUNCS([strtol strtoul tzset vsnprintf])
-
+# this is a GNU extension and not present on all systems.
+AC_CHECK_FUNCS([strndup])
  
 # Check for intl library (Needed for Cygwin) 
 # 
