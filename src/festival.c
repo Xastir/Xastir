@@ -233,6 +233,7 @@ int festivalOpen(void) {
     // Check whether we already have a socket open (or think we do)
     if (info->server_fd != -1) {    // We have a socket open
         (void)festivalClose();      // Close it, free struct
+        usleep(50000);              // 50ms wait
     }
 
     info->server_fd = festival_socket_open(info->server_host, info->server_port);
@@ -240,6 +241,7 @@ int festivalOpen(void) {
     if (info->server_fd == -1) {    // Error occured opening socket
         //fprintf(stderr,"festivalOpen: Error opening socket\n");
         (void)festivalClose();      // Close, free struct
+        usleep(50000);              // 50ms wait
         return(-1);
     }
 
