@@ -410,6 +410,7 @@ command, saving you some typing.
 Repeat step 6) above to recompile/reinstall the latest Xastir.
 
 
+
 -------------------------------------------
 OPTIONAL:  ADDING ADDITIONAL MAP LIBRARIES:
 -------------------------------------------
@@ -423,7 +424,16 @@ These additional Xastir libraries have been tested on Cygwin:
     libgeotiff
 
 Anyone testing additional libraries is encouraged to share their
-findings on the Xastir mailing lists.
+findings on the Xastir mailing lists.  The libraries which have
+_not_ been made to work yet on Cygwin are:
+
+    AX25
+    Festival
+    GPSMan
+
+The AX25 libraries will probably never work, as they are for Linux
+only.  Festival and GPSMan may work on Cygwin at some point if
+enough work is done to figure out and document the process.
 
 
 
