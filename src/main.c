@@ -7713,7 +7713,7 @@ void CAD_vertice_allocate(long latitude, long longitude) {
     if (CAD_list_head) {   // We have at least one object defined
         VerticeRow *p_new;
 
-        // Allocate area to hold the first vertice
+        // Allocate area to hold the vertice
         p_new = (VerticeRow *)malloc(sizeof(VerticeRow));
 
         p_new->latitude = latitude;
@@ -8011,17 +8011,31 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 
 
 
+// Add an ending vertice that is the same as the starting vertice.
+// Best not to use the screen coordinates we captured first, as the
+// user may have zoomed or panned since then.  Better to copy the
+// first vertice that we recorded in our linked list.
+//
+// Also compute the area of the closed polygon.  Write it out to
+// STDERR and perhaps to a storage area in the Object and to a
+// dialog that pops up on the screen?
+//
 void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
 
-    long lat, lon;
+//    long lat, lon;
+    VerticeRow *tmp;
+    double area;
 
 
-    // Draw a line from the last position recorded to the first
-    // position recorded.
-    if (polygon_last_x != -1 && polygon_last_y != -1) {
+    // Find the last vertice in the linked list.  That will be the
+    // first vertice we recorded for the object.
+    if (polygon_last_x != -1
+            && polygon_last_y != -1
+            && CAD_list_head != NULL) {
  
+/*
         // Convert from screen coordinates to Xastir coordinate
         // system and save in the object->vertice list.
         convert_screen_to_xastir_coordinates(polygon_start_x,
@@ -8029,12 +8043,51 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             &lat,
             &lon);
         CAD_vertice_allocate(lat, lon);
+*/
+
+        // Walk the linked list.  Stop at the last record.
+        tmp = CAD_list_head->start;
+        if (tmp != NULL) {
+            while (tmp->next != NULL) {
+                tmp = tmp->next;
+            }
+            CAD_vertice_allocate(tmp->latitude, tmp->longitude);
+        }
     }
  
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
     polygon_last_x = -1;    // Invalid position
-    polygon_last_y = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position 
+
+
+    // Walk the linked list again, computing the area of the
+    // polygon.
+/*
+    area = 0.0;
+    for (int i = 0; i < num_vertices; i++) {
+        area += (v2dx[i]-v2dx[i+1]) * (v2dy[i]+v2dy[i+1]);
+    }
+    area *= 0.5;
+*/
+    area = 0.0;
+    tmp = CAD_list_head->start;
+    if (tmp != NULL) {
+        while (tmp->next != NULL) {
+            // Our latitude is inverted so we have to swap the signs
+            // for the second line here:
+            area += (   (double)tmp->longitude - (double)tmp->next->longitude)
+                  * ( (-(double)tmp->latitude) - (double)tmp->next->latitude);
+            tmp = tmp->next;
+        }
+    }
+    area *= 0.5;
+
+fprintf(stderr,"Area in Xastir units = %f\n", area);
+
+// Because lat/long units can vary drastically w.r.t. real units, we
+// need to multiply the terms above by the real units in order to
+// get real area.  Take care to do that soon.
 }
 
 
