@@ -2590,6 +2590,160 @@ void draw_ruler_text(Widget w, char * text, long ofs) {
 
 
 
+// Compute Range Scale in miles or kilometers.
+//
+// For this we need to figure out x-distance and y-distance across
+// the screen.  Take the smaller of the two, then figure out which
+// power of 2 miles fits from the center to the edge of the screen.
+// "For metric, use the nearest whole number kilometer in powers of
+// two of 1.5 km above the 1 mile scale.  At 1 mile and below, do
+// the conversion to meters where 1 mi is equal to 1600m..." (Bob
+// Bruninga's words).
+void draw_range_scale(Widget w) {
+    Dimension width, height;
+    long x, x0, y, y0;
+    double x_miles_km, y_miles_km, distance;
+    char temp_course[10];
+    long temp;
+    double temp2;
+    long range;
+    int small_flag = 0;
+    int x_screen, y_screen;
+    int len;
+    char text[80];
+
+
+    // Find out the screen values
+    XtVaGetValues(da,XmNwidth, &width, XmNheight, &height, 0);
+
+    // Convert points to Xastir coordinate system
+
+    // X
+    x = mid_x_long_offset  - ((width *scale_x)/2);
+    x0 = mid_x_long_offset; // Center of screen
+
+    // Y
+    y = mid_y_lat_offset   - ((height*scale_y)/2);
+    y0 = mid_y_lat_offset;  // Center of screen
+
+    // Compute distance from center to each edge
+
+    // X distance.  Keep Y constant.
+    x_miles_km = cvt_kn2len * calc_distance_course(y0,x0,y0,x,temp_course,sizeof(temp_course));
+ 
+    // Y distance.  Keep X constant.
+    y_miles_km = cvt_kn2len * calc_distance_course(y0,x0,y,x0,temp_course,sizeof(temp_course));
+
+    // Choose the smaller distance
+    if (x_miles_km < y_miles_km) {
+        distance = x_miles_km;
+    }
+    else {
+        distance = y_miles_km;
+    }
+
+    // Convert it to nearest power of two that fits inside
+
+    if (units_english_metric) { // English units
+        if (distance >= 1.0) {
+            // Shift it right until it is less than 2.
+            temp = (long)distance;
+            range = 1;
+            while (temp >= 2) {
+                temp = temp / 2;
+                range = range * 2;
+            }
+        }
+        else {  // Distance is less than one
+            // divide 1.0 by 2 until distance is greater
+            small_flag++;
+            temp2 = 1.0;
+            range = 1;
+            while (temp2 > distance) {
+                //printf("temp2: %f,  distance: %f\n", temp2, distance);
+                temp2 = temp2 / 2.0;
+                range = range * 2;
+            }
+        }
+    }
+    else {  // Metric units
+        if (distance >= 12800.0)
+            range = 12800;
+        else if (distance >= 6400.0)
+            range = 6400;
+        else if (distance >= 3200.0)
+            range = 3200;
+        else if (distance >= 1600.0)
+            range = 1600;
+        else if (distance >= 800.0)
+            range = 800;
+        else if (distance >= 400.0)
+            range = 400;
+        else if (distance >= 200.0)
+            range = 200;
+        else if (distance >= 100.0)
+            range = 100;
+        else if (distance >= 50.0)
+            range = 50;
+        else if (distance >= 25.0)
+            range = 25;
+        else if (distance >= 12.0)
+            range = 12;
+        else if (distance >= 6.0)
+            range = 6;
+        else if (distance >= 3.0)
+            range = 3;
+        else {
+            small_flag++;
+            if (distance >= 1.6)
+                range = 1600;
+            else if (distance >= 0.8)
+                range = 800;
+            else if (distance >= 0.4)
+                range = 400;
+            else if (distance >= 0.2)
+                range = 200;
+            else if (distance >= 0.1)
+                range = 100;
+            else if (distance >= 0.05)
+                range = 50;
+            else if (distance >= 0.025)
+                range = 25;
+            else range = 12;
+        }
+    }
+
+    //printf("Distance: %f\t", distance);
+    //printf("Range: %ld\n", range);
+
+    if (units_english_metric) { // English units
+        if (small_flag) {
+            xastir_snprintf(text,sizeof(text),"RANGE SCALE 1/%ld mi", range);
+        }
+        else {
+            xastir_snprintf(text,sizeof(text),"RANGE SCALE %ld mi", range);
+        }
+    }
+    else {  // Metric units
+        if (small_flag) {
+            xastir_snprintf(text,sizeof(text),"RANGE SCALE %ld m", range);
+        }
+        else {
+            xastir_snprintf(text,sizeof(text),"RANGE SCALE %ld km", range);
+        }
+    }
+
+    // Draw it on the screen
+    len = (int)strlen(text);
+    x_screen = 10;
+    y_screen = screen_height - 5;
+    draw_nice_string(w,pixmap_final,0,x_screen,y_screen,text,0x10,0x20,len);
+}
+
+
+
+
+
 /*
  *  Calculate and draw ruler on right bottom of screen
  */
@@ -2664,7 +2818,10 @@ void draw_ruler(Widget w) {
             draw_test_line(w,dx+0.8*ruler_pix,dy,0,3,ruler_pix);        // ver middle
         }
     }
+
     draw_ruler_text(w,text,ruler_pix);
+
+    draw_range_scale(w);
 }
 
 
