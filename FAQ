@@ -691,7 +691,7 @@ The Answers
     find it for you.  One user was able to use a spare serial port
     on his windows box using "remserial" on the linux computer and a
     program called "serproxy" on the windows machine. Another one I
-    have to try for windows is comfoolery.
+    have to try for windows is comfoolery.  See links below.
 
     Another option is to use a Perl script on each end to do the
     conversion.
@@ -712,6 +712,10 @@ The Answers
 
     You may also connect to a remote AGWPE instance for using remote
     TNC's/soundcards.  Note that AGWPE runs only on WIndows.
+
+    Comfoolery:     http://www.brianpoe.com/comfoolery/
+    Serproxy:       http://freshmeat.net/projects/serproxy/
+    Remserial:      http://lpccomp.bc.ca/remserial/
 
 
 5.  Features
