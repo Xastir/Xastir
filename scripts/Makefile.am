@@ -1,4 +1,4 @@
-
+# $Id$
 EXTRA_DIST = \
     Coordinate.pm \
     coord-convert.pl \

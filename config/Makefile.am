@@ -1,3 +1,4 @@
+# $Id$
 configdir = ${prefix}/xastir/config
 
 EXTRA_DIST = \

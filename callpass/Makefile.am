@@ -1,6 +1,4 @@
-#
-# $Header$
-#
+# $Id$
 
 MAINTAINERCLEANFILES=Makefile.in
 

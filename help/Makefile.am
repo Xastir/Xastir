@@ -1,3 +1,4 @@
+# $Id$
 helpdir = ${prefix}/xastir/help
 EXTRA_DIST = \
     help-Dutch.dat \
