@@ -73,11 +73,67 @@
 
 #warning GDAL library support not implemented yet.  Coming soon!!!
 
+
+#define HAVE_LIBGDAL
+
+
 #ifdef HAVE_LIBGDAL
+// WE7U - Getting rid of stupid compiler warnings in GDAL
+#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
+#undef PACKAGE_BUGREPORT
+#define XASTIR_PACKAGE_NAME PACKAGE_NAME
+#undef PACKAGE_NAME
+#define XASTIR_PACKAGE_STRING PACKAGE_STRING
+#undef PACKAGE_STRING
+#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
+#undef PACKAGE_TARNAME
+#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
+#undef PACKAGE_VERSION
 #include "gdal.h"
+#undef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
+#undef XASTIR_PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#define PACKAGE_NAME XASTIR_PACKAGE_NAME
+#undef XASTIR_PACKAGE_NAME
+#undef PACKAGE_STRING
+#define PACKAGE_STRING XASTIR_PACKAGE_STRING
+#undef XASTIR_PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
+#undef XASTIR_PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
+#undef XASTIR_PACKAGE_VERSION
+#endif  // HAVE_LIBGDAL
 
 
 
+
+
+void map_gdal_init() {
+
+#ifdef HAVE_LIBGDAL
+    GDALAllRegister();
+#endif  // HAVE_LIBGDAL
+
+}
+
+
+
+
+#ifdef HAVE_LIBGDAL
+
+int gdal_main() {
+//    GDALDatasetH  hDataset;
+
+//    hDataset = GDALOpen( pszFilename, GA_ReadOnly );
+//    if( hDataset == NULL )
+    {
+//        ...;
+    }
+    return(0);
+}
 
 
 #endif // HAVE_LIBGDAL

@@ -155,6 +155,9 @@ extern void map_plot (Widget w, long max_x, long max_y, long x_long_cord, long y
 
 extern int check_trans ( XColor c, long c_trans_color );
 
+extern void map_gdal_init(void);
+
+
 #endif /* __XASTIR_MAPS_H */
 
 

@@ -23547,6 +23547,7 @@ int main(int argc, char *argv[]) {
     (void)locate_gui_init();
     (void)location_gui_init();
     (void)maps_init();
+    (void)map_gdal_init();
     (void)messages_gui_init();
     (void)popup_gui_init();
     (void)track_gui_init();

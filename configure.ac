@@ -163,6 +163,14 @@ AC_CHECK_FUNCS([strtol strtoul tzset vsnprintf])
 # Check for intl library (Needed for Cygwin) 
 # 
 AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}") 
+
+# Check for GDAL
+use_gdal=no
+AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister, use_gdal=yes
+LIBS="$LIBS -lgdal"
+AC_DEFINE(HAVE_LIBGDAL, , Define to 1 if you have the `gdal' library (-lgdal). )
+break)])
+ 
  
 # Check for Shapelib
 use_shapelib=no
@@ -303,6 +311,7 @@ echo following external libraries.
 echo  
 echo 
 echo Building with AX25.......... : $has_axlib 
+echo Building with GDAL.......... : $use_gdal
 echo Building with GeoTiff....... : $use_geotiff 
 echo Building with ShapeLib...... : $use_shapelib 
 echo Building with pcre.......... : $use_pcre
