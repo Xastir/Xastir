@@ -805,38 +805,38 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
     addrp = sax->fsa_ax25.sax25_call.ax25_call;
 
     do {
-	/* Fetch one callsign token */
-	if ((bp = call[argp++]) == NULL)
-	    break;
+        /* Fetch one callsign token */
+        if ((bp = call[argp++]) == NULL)
+            break;
 
-	/* Check for the optional 'via' syntax */
-	if (n == 1 && (strcasecmp(bp, "V") == 0 || strcasecmp(bp, "VIA") == 0))
-	    continue;
+        /* Check for the optional 'via' syntax */
+        if (n == 1 && (strcasecmp(bp, "V") == 0 || strcasecmp(bp, "VIA") == 0))
+            continue;
 
-	/* Process the token (Removes the star before the ax25_aton_entry call
+        /* Process the token (Removes the star before the ax25_aton_entry call
            because it would call it a bad callsign.) */
-	len = strlen(bp);
-	if (len > 1 && bp[len-1] == '*') {
-	    star = 1;
-	    bp[len-1] = '\0';
-	}
-	else {
-	    star = 0;
-	}
-	if (ax25_aton_entry(bp, addrp) == -1) {
-	    popup_message("Bad callsign!", bp);
-	    return -1;
-	}
-	if (n >= 1 && star) {
-	    addrp[6] |= 0x80; // set digipeated bit if we had found a star
-	}
+        len = strlen(bp);
+        if (len > 1 && bp[len-1] == '*') {
+            star = 1;
+            bp[len-1] = '\0';
+        }
+        else {
+            star = 0;
+        }
+        if (ax25_aton_entry(bp, addrp) == -1) {
+            popup_message("Bad callsign!", bp);
+            return -1;
+        }
+        if (n >= 1 && star) {
+            addrp[6] |= 0x80; // set digipeated bit if we had found a star
+        }
 
-	n++;
+        n++;
 
-	if (n == 1)
-	    addrp  = sax->fsa_digipeater[0].ax25_call;      /* First digipeater address */
-	else
-	    addrp += sizeof(ax25_address);
+        if (n == 1)
+            addrp  = sax->fsa_digipeater[0].ax25_call;      /* First digipeater address */
+        else
+            addrp += sizeof(ax25_address);
 
     } while (n < AX25_MAX_DIGIS && call[argp] != NULL);
 
@@ -921,7 +921,7 @@ int ui_connect( int port, char *to[]) {
      */
     ENABLE_SETUID_PRIVILEGE;
     if (bind(s, (struct sockaddr *)&axbind, addrlen) != 0) {
-	DISABLE_SETUID_PRIVILEGE;
+        DISABLE_SETUID_PRIVILEGE;
         xastir_snprintf(temp, sizeof(temp), langcode("POPEM00010"), strerror(errno));
         popup_message(langcode("POPEM00004"),temp);
         return -1;
@@ -929,13 +929,13 @@ int ui_connect( int port, char *to[]) {
     DISABLE_SETUID_PRIVILEGE;
 
     if (devices[port].relay_digipeat)
-	sockopt = 1;
+        sockopt = 1;
     else
-	sockopt = 0;
+        sockopt = 0;
 
     if (setsockopt(s, SOL_AX25, AX25_IAMDIGI, &sockopt, sizeof(int))) {
-	fprintf(stderr,"AX25 IAMDIGI setsockopt FAILED");
-	return -1;
+        fprintf(stderr,"AX25 IAMDIGI setsockopt FAILED");
+        return -1;
     }
 
     if (debug_level & 2)

@@ -412,7 +412,7 @@ void draw_grid(Widget w) {
                 (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
                 continue;
             }
-	    else if ((coord%(72000*100)) == 0) {
+            else if ((coord%(72000*100)) == 0) {
                 dash[0] = dash[1] = 8;
                 (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
             } else if ((coord%(7200*100)) == 0) {
@@ -1107,7 +1107,7 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
     if(!rotated_label_font) {
         rotated_label_font=(XFontStruct *)XLoadQueryFont(XtDisplay (w),
                                                 rotated_label_fontname);
-        if (rotated_label_font == NULL) {	// Couldn't get the font!!!
+        if (rotated_label_font == NULL) {    // Couldn't get the font!!!
             fprintf(stderr,"draw_rotated_label_text: Couldn't get font %s\n",
                 rotated_label_fontname);
             return;
@@ -2174,7 +2174,7 @@ void draw_shapefile_map (Widget w,
         statusline(status_text,0);       // Indexing ...
 
         // We're indexing only.  Save the extents in the index.
-        index_update_ll(filenm,	// Filename only
+        index_update_ll(filenm,    // Filename only
             adfBndsMin[1],  // Bottom
             adfBndsMax[1],  // Top
             adfBndsMin[0],  // Left
@@ -7657,8 +7657,8 @@ void draw_tiger_map (Widget w) {
     lat_center  = (top + bottom)/2.0l;
 
 //  Example query to the census map server....
-/*		xastir_snprintf(fileimg, sizeof(fileimg), 
-		"\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=CITIES&on=GRID&on=counties&on=majroads&on=places&&on=interstate&on=states&on=ushwy&on=statehwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
+/*        xastir_snprintf(fileimg, sizeof(fileimg), 
+        "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=CITIES&on=GRID&on=counties&on=majroads&on=places&&on=interstate&on=states&on=ushwy&on=statehwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
                    lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1); */
 
     xastir_snprintf(tigertmp, sizeof(tigertmp), "http://tiger.census.gov/cgi-bin/mapper/map.gif?");
@@ -7732,7 +7732,7 @@ void draw_tiger_map (Widget w) {
     else
         strcat(tigertmp, "&off=miscell");
 
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);	
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);    
     strcat (tigertmp, tmpstr);
     xastir_snprintf(tmpstr, sizeof(tmpstr), "wid=%f\046ht=%f\046", map_width, map_height);
     strcat (tigertmp, tmpstr);
@@ -8046,7 +8046,7 @@ void draw_tiger_map (Widget w) {
         fprintf(stderr,"\nImage: %s\n", file);
         fprintf(stderr,"Image size %d %d\n", geo_image_width, geo_image_height);
         fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
-	    map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+            map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
         fprintf(stderr,"Image size %d %d\n", atb.width, atb.height);
 #if (MagickLibVersion < 0x0540)
         fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
