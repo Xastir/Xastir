@@ -224,6 +224,7 @@ typedef struct {
 // An empty string indicates undefined data.
 typedef struct {                //                      strlen
     time_t  wx_sec_time;
+    int     wx_storm;           // Set to one if severe storm
     char    wx_time[MAX_TIME];
     char    wx_course[4];       // in °                     3
     char    wx_speed[4];        // in mph                   3

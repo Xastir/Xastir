@@ -2377,10 +2377,7 @@ _do_the_drawing:
     }
 
     // Draw additional stuff if this is a storm
-    if ( (weather != NULL)
-         && (   (weather->wx_hurricane_radius[0]  != '\0')
-                || (weather->wx_trop_storm_radius[0] != '\0')
-                || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
+    if ( (weather != NULL) && (weather->wx_storm) ) {
         char temp[4];
         int ghost = (int)(((sec_old + weather->wx_sec_time)) < sec_now());
 
@@ -2430,9 +2427,7 @@ _do_the_drawing:
     // storm (wind barbs just confuse the matter).
     if (Display_.weather && Display_.wind_barb
             && weather != NULL && atoi(weather->wx_speed) >= 5
-            && weather->wx_hurricane_radius[0] == '\0'
-            && weather->wx_trop_storm_radius[0] == '\0'
-            && weather->wx_whole_gale_radius[0] == '\0') {
+            && !weather->wx_storm ) {
         draw_wind_barb(p_station->coord_lon,
                        p_station->coord_lat,
                        weather->wx_speed,
@@ -5182,6 +5177,8 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     if (ok) {
         p_station->speed_time[0]     = '\0';
 
+        p_station->weather_data->wx_storm = 1;  // We found a storm
+
         // Note that speed is in knots.  If we were stuffing it into
         // "wx_speed" we'd have to convert it to MPH.
         if (strcmp(speed,"   ") != 0 && strcmp(speed,"...") != 0)
@@ -5463,6 +5460,7 @@ static void extract_multipoints(DataRow *p_station, char *data, int type) {
 void init_weather(WeatherRow *weather) {    // clear weather data
 
     weather->wx_sec_time             = 0; // ?? is 0 ok ??
+    weather->wx_storm                = 0;
     weather->wx_time[0]              = '\0';
     weather->wx_course[0]            = '\0';
     weather->wx_speed[0]             = '\0';
