@@ -35,11 +35,13 @@ README
 
      (2) HOW TO GET XASTIR
 
-          Currently, the 1.0.x tree of xastir is developed at xastir.org.
-          You can get the latest version of xastir from
-          ftp://argon.hscs.virginia.edu/pub/xastir
+          Currently, the 1.0.x tree of xastir is developed at
+          <http://sourceforge.net/projects/xastir/>
+          You can get the latest version of xastir from there.
 
           You might try www.xastir.org for help and information.
+          The new web site will soon be:
+          <http://xastir.sourceforge.net>.
 
 
      (2a) CVS USAGE

@@ -3,7 +3,8 @@
 $Revision$
 
 The latest version of this FAQ is always available from the Xastir web site, at
-<http://www.xastir.org/docs/FAQ.html>.
+<http://www.xastir.org/docs/FAQ.html>, soon to be at:
+<http://xastir.sourceforge.net>.
 
 The Questions
 -------------
@@ -105,11 +106,13 @@ The Answers
     This FAQ may answer many of users frequent questions.  However, there
     are two active mailing lists that users could use to help answer any
     other questions.  Both mailing list are by subscription only and can
-    be accessed through the XASTIR website http://www.xastir.org
+    be accessed through the XASTIR website <http://www.xastir.org>.  The
+    website will soon be at:  <http://xastir.sourceforge.net>.
 
     1.7 Is there any more information on XASTIR?
 
-    See the main XASTIR website for more information http://www.xastir.org
+    See the main XASTIR website for more information <http://www.xastir.org>
+    or (soon):  <http://xastir.sourceforge.net>.
 
     1.8 Where can I get XASTIR?
 
@@ -128,7 +131,8 @@ The Answers
         1.  Check the FAQ!
 
             The latest version of the XASTIR FAQ can be found on the
-            XASTIR website http://www.xastir.org
+            XASTIR website http://www.xastir.org or (soon):
+            <http://xastir.sourceforge.net>.
 
         2.  Ask in the xastir@krypton.hscs.virginia.edu mailing list.
 
@@ -410,4 +414,6 @@ The Answers
 
 If you find other problems, or would like to point out other caveats to add to
 this FAQ, please point them out to the developers on the Xastir-dev mailing
-list, linked to on http://www.xastir.org
+list, linked to on http://www.xastir.org or (soon):
+<http://xastir.sourceforge.net>.
+
