@@ -968,7 +968,7 @@ Two tiepoints are required, and more than 2 will be ignored.
 these two lines are for connecting an x,y pixel position in the image
 to a lat and long position on the earth. The points should be as close as
 possible to the upper left corner and the lower right corner of the image for
-best accuracy.
+best accuracy.  The latitude/longitude are specified in decimal degrees.
 
 IMAGESIZE <pixels horizontally> <pixels vertically>
 This specifies the size of the image in pixels. If this is not set, the image
