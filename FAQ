@@ -550,8 +550,8 @@ The Answers
 
     This message and similar have to do with localization and OpenMotif/
     Lesstif.  For most of us this is a benign message and can be ignored.
-    If you simply can't stand it any more set LANG = C or en_US.  In RH 9
-    the default LANG is set to en_US.UTF-8 and this is where the "warning"
+    If you simply can't stand it any more set LANG="C" or LANG="en_US".  In
+    RH 9 the default LANG is set to en_US.UTF-8 and this is where the warnings
     are coming from.
 
     A quick way to address this on RedHat 8 and 9 is to edit your
@@ -593,14 +593,14 @@ The Answers
 
     4.16 Why can't I set my position in Xastir correctly?
 
-    If you LANG environment variable is set to something other than
-    "en_US", it can cause commas and periods to be swapped when
-    Xastir tries to read/write files.  See question 4.13 above for
-    one solution.  Another solution is to type this when starting
-    Xastir (from a BASH shell.  If you use another type of shell,
-    modify the syntax accordingly):
+    If your LC_NUMERIC environment variable is set to something other than
+    "C", it can cause commas and periods to be swapped when Xastir tries to
+    read/write files.  We've tried to address this in the latest Xastir code,
+    forcing LC_NUMERIC="C" inside Xastir itself.  Another solution is to type
+    this when starting Xastir (from a BASH shell.  If you use another type of
+    shell, modify the syntax accordingly):
 
-        export LANG=en_US; xastir &
+        export LC_NUMERIC="C"; xastir &
 
     4.17 Why do I get black map images when I use ImageMagick?
 
