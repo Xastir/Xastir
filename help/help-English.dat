@@ -1223,7 +1223,12 @@ This sub-menu allows filtering of the displayed data:
 
   Display Trail
   When enabled, any moving station will trail a colored line.  We now display
-  as many locations as we have in our database (old limit was 100).
+  as many locations as we have in our database (old limit was 100).  Long
+  trail segments (over 2 degrees latitude or 2 degrees long), or segments with
+  more than 45 minutes receive delay between the points will not be displayed.
+  Duplicate points are also eliminated from the track (SAR team returning to
+  base:  Last segment may not be displayed due to the starting point appearing
+  twice in the trail list).
 
   Display Course
   When enabled, green text will appear below the call sign. This will display
