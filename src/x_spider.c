@@ -693,6 +693,11 @@ int pipe_check(char *client_address) {
 // Also send it down the socket.
         pipe_object *q = pipe_head;
 
+        // The internet protocol for sending lines is "\r\n", and we
+        // only have a '\r' on the end at present.  Add a '\n' to
+        // the end.
+        strncat(line,"\n",1);
+
         while (q != NULL) {
 //          fprintf(stderr,"pipe_check: %s\n",line);
 
