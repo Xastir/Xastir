@@ -483,10 +483,6 @@ fi
 # Note that on some operating systems XPM is included in other 
 # libraries (I think Solaris is this way). 
 # 
-# Note that we might need to include this in the ImageMagick checks 
-# below, or else just save away the variables found and then insert 
-# them if ImageMagick can't be used. 
-# 
 # Adapted from a macro by Andreas Zeller. 
 # 
 # The variables provided are : 
@@ -753,27 +749,33 @@ save_cppflags="$CPPFLAGS"
 save_cxxflags="$CXXFLAGS" 
 save_libs="$LIBS" 
 save_ldflags="$LDFLAGS" 
- 
+#
+# First look for the needed Magick-config script, which tells us all
+# of the build options we need.
+#
 AC_CHECK_PROG(use_imagemagick, [Magick-config --version], yes, no) 
 if test "$use_imagemagick" = "yes"; then
   MAGIC_BIN="Magick-config"
+else
+  #
+  # Test for MacOSX/Fink directories under "/sw".  If found, we may
+  # need to add another "-L" path to the LIBS variable.
+  #
+  AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
+  if test "$use_imagemagick" = "yes"; then
+    MAGIC_BIN="/sw/bin/Magick-config"
+    #
+    # Do we need this next line for MacOSX?
+    #MAGIC_LIB_DIR="-L/sw/lib -lMagick"
+  else
+    AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
+  fi
 fi
-
-# Test for MacOSX/Fink directories under "/sw".  If found, we need
-# to add another "-L" path to the LIBS variable.
 #
-AC_CHECK_FILE(/sw/bin/Magick-config, sw_dir="yes") 
-if test "$sw_dir" = "yes"; then
-  use_imagemagick="yes"
-  MAGIC_BIN="/sw/bin/Magick-config"
-  MAGIC_LIB_DIR="-L/sw/lib -lMagick"
-fi
- 
-if test "$use_imagemagick" != "yes"; then
-  AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
-fi
-
 if test "$use_imagemagick" = "yes"; then
+  #
+  # Compute the ImageMagick revision number
+  #
   magickversion=`${MAGIC_BIN} --version` 
   magickmajor=`echo $magickversion | cut -d '.' -f 1` 
   magickminor=`echo $magickversion | cut -d '.' -f 2` 
@@ -785,12 +787,13 @@ if test "$use_imagemagick" = "yes"; then
   elif test "$magickmajor" -eq 5 -a "$magickminor" -eq 4 -a "$magicktiny" -lt 9; then 
     magickold="yes"; 
   fi 
-
+  #
+  # Figure out the build options using the Magick-config script
+  #
   CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`" 
   CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`" 
   LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`" 
   LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS" 
-
   # 
   # For the case of apple-darwin, we don't want to check the
   # headers/libraries 'cuz the standard macros won't find them anyway.
@@ -808,16 +811,17 @@ if test "$use_imagemagick" = "yes"; then
       fi
     fi
   fi
-
+  #
   if test "$magickold" = "yes"; then 
     AC_MSG_WARN(*********************************************************)
     AC_MSG_WARN(***     Old ImageMagick version ($magickversion) found.        ***)
     AC_MSG_WARN(*** Upgrade to 5.4.9 or newer for full functionality. ***)
     AC_MSG_WARN(*********************************************************) 
   fi 
-fi
-
-if test "$use_imagemagick" = "no"; then
+else
+  #
+  # No ImageMagick found.  Restore variables.
+  #
   CPPFLAGS=$save_cppflags 
   CXXFLAGS=$save_cxxflags 
   LIBS=$save_libs 
