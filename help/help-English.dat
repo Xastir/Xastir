@@ -297,9 +297,12 @@ create a ~/.xastir/data/nws-stations.txt file listing each call or NWS station
 (like "PHISVR") that you would like to transmit via RF.
                      
 "Compress object/item data while transmitting?", if selected, will transmit
-obejcts and items in the newer compressed format. The maximum precision of the
+objects and items in the newer compressed format. The maximum precision of the
 transmitted position is higher, and the transmission is shorter, but some older
-programs do not decode this format yet.
+programs do not decode this format yet.  Currently this only compresses
+"standard" objects/items with an optional speed/course.  It won't compress
+area, signpost, or DF objects/items, and won't currently represent
+altitude in "standard" objects/items.
 
 "Transmit Raw WX data", if selected, will also send a packet containing raw
 Weather Station Data. This is useful on ASCII types of WX stations, 
@@ -1103,10 +1106,10 @@ Enable Auto Reply Msg
 This will turn on an automatic reply when an incoming message is received.
 
 Satellite Ack Mode
-This mode disables the sending of ack messages in response to recieved
-messages. Messages are still acknologed using the reply-ack system. When
+This mode disables the sending of ack messages in response to received
+messages. Messages are still acknowleged using the reply-ack system. When
 operating over a satellite it is clear that your message made it, because you
-will hear it repeated. The recieving station sending an independant ack only
+will hear it repeated. The receiving station sending an independent ack only
 adds QRM.
  
 HELP-INDEX>Interfaces Menu
