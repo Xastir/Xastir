@@ -419,14 +419,14 @@ First Time Install:
 
      This builds XASTIR, You should not get any error or warning messages.
 
-     If you wish to install Xastir in some location other than the default
-     /usr/local/bin and /usr/local/xastir directories, you may add the
+     If you wish to install Xastir in a location other than the default
+     ("/usr/local/bin" and "/usr/local/xastir" directories), you may add the
      "--prefix=<path>" flag to configure before compiling.  i.e.
 
      "./configure --prefix=/home/apps/xastir"
 
-     While will cause the executables to be installed in /home/apps/xastir/bin/
-     and the rest of Xastir to be installed under the /home/apps/xastir/xastir/
+     While will cause executables to be installed in "/home/apps/xastir/bin/"
+     and the rest of Xastir to be installed under the "/home/apps/xastir/xastir/"
      directory.
   
 
