@@ -136,10 +136,10 @@ required:
 [ ] libgeotiff
 [ ] libgeotiff-devel
 [ ] libgeotiff1
-[ ] libproj-devel
-[ ] libproj0
 [ ] libMagick-devel
 [ ] libMagick6
+[ ] libproj-devel
+[ ] libproj0
 [ ] libtool
 [ ] libxml2-devel
 [ ] m4
