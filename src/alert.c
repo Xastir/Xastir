@@ -273,7 +273,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
         // Force the string to be terminated
         title_e[32] = title_m[32] = '\0';
 
-        // Now interate through the entire alert_list
+        // Interate through the entire alert_list
         for (i = 0; i < alert_list_count; i++) {
 
             // If flag was '?' or has changed
@@ -308,11 +308,20 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
 
 //
-// Here's where we mark the expired alerts in the list.
+// Here's where we get rid of expired alerts in the list.
 // Called from alert_compare(), alert_display_request(),
 // alert_on_screen(), alert_build_list(), and alert_message_scan()
 // functions.  Also called from maps.c:load_alert_maps() functions
 // (both of them).
+//
+// Alert Match Levels:
+// 0 = ?
+// 1 = R
+// 2 = Y
+// 3 = B
+// 4 = T
+// 5 = G
+// 6 = C
 //
 int alert_active(alert_entry *alert, alert_match_level match_level) {
     alert_entry *a_ptr;
@@ -329,7 +338,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
             a_ptr->title[0] = '\0';                     // so delete it from list.
         }
-        else if (a_ptr->flags[0] == '?') {
+        else if (a_ptr->flags[0] == '?') {  // Expired between 1sec and 1hr and found '?'
             a_ptr->flags[0] = '-';
         }
     }
@@ -388,6 +397,8 @@ static int alert_compare(const void *a, const void *b) {
 
 
 //
+// This sorts the alert_list so that the active items are at the
+// beginning.
 // Called from maps.c:load_alert_maps() functions (both of them).
 //
 void alert_sort_active(void) {
@@ -400,19 +411,24 @@ void alert_sort_active(void) {
 
 
 //
+// Function which checks whether an alert should be displayed.
 // Called from maps.c:load_alert_maps() functions (both of them).
 //
 int alert_display_request(void) {
     int i, alert_count;
     static int last_alert_count;
 
+    // Iterate through entire alert_list
     for (i = 0, alert_count = 0; i < alert_list_count; i++) {
+        // If it's an active alert (not expired), and flags == 'Y'
+        // (meaning it is within our viewport), set the flag to '?'.
         if (alert_active(&alert_list[i], ALERT_ALL) && (alert_list[i].flags[0] == 'Y' ||
                 alert_list[i].flags[0] == '?')) {
             alert_count++;
         }
     }
 
+    // If we found any, return TRUE.
     if (alert_count != last_alert_count) {
         last_alert_count = alert_count;
         return ((int)TRUE);
@@ -426,7 +442,8 @@ int alert_display_request(void) {
 
 
 //
-// Returns a count of active weather alerts in the list
+// Returns a count of active weather alerts in the list which are
+// within our viewport.
 // Called from main.c:UpdateTime() function.
 //
 int alert_on_screen(void) {
@@ -500,10 +517,13 @@ static void alert_build_list(Message *fill) {
             strcpy(entry[0].alert_tag, entry[0].activity);
         }
 
+        // flags[0] specifies whether it's onscreen or not
         entry[0].expiration = time_from_aprsstring(entry[0].activity);
         memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
         p_station = NULL;
 
+        // flags[1] specifies source of the alert DATA_VIA_TNC or
+        // DATA_VIA_LOCAL
         if (search_station_name(&p_station,fill->from_call_sign,1))
             entry[0].flags[1] = p_station->data_via;
 
@@ -610,15 +630,24 @@ int alert_message_scan(void) {
 
     // Rebuild the alert tag string for the current alerts
     for (j = 0; j < alert_list_count; j++) {
-        if (alert_list[j].flags[0] == '?') {
-            for (i = 0; i < (int)strlen(alert_tag); i += 3) {
-                if (strncmp(&alert_tag[i], alert_list[j].title, 2) == 0) {
-                    if (alert_list[j].flags[1]==DATA_VIA_TNC || alert_list[j].flags[1]==DATA_VIA_LOCAL)
-                        alert_tag[i+2] = alert_list[j].flags[1];
 
+        if (alert_list[j].flags[0] == '?') {    // On-screen status not known yet
+
+            // Look through global alert_tag string looking for a
+            // match.
+            for (i = 0; i < (int)strlen(alert_tag); i += 3) {
+                // If first 2 chars of title match
+                if (strncmp(&alert_tag[i], alert_list[j].title, 2) == 0) {
+                    if (alert_list[j].flags[1]==DATA_VIA_TNC || alert_list[j].flags[1]==DATA_VIA_LOCAL) {
+                        // Set the 3rd char to DATA_VIA_TNC or DATA_VIA_LOCAL
+                        alert_tag[i+2] = alert_list[j].flags[1];
+                    }
                     break;
                 }
             }
+
+            // If global alert_tag string isn't long enough,
+            // allocate some more space.
             if (i == (int)strlen(alert_tag)) {
                 if (i+4 >= alert_tag_size) {
                     a_ptr = realloc(alert_tag, (size_t)(alert_tag_size+21) );
@@ -627,6 +656,7 @@ int alert_message_scan(void) {
                         alert_tag_size += 21;
                     }
                 }
+                // Add new 3-character string to end of global alert_tag
                 if (i+4 < alert_tag_size) {
                     a_ptr = &alert_tag[i];
                     if (alert_list[j].title[0] && alert_list[j].title[1]) {
@@ -634,6 +664,7 @@ int alert_message_scan(void) {
                         *a_ptr++ = alert_list[j].title[1];
                         *a_ptr++ = alert_list[j].flags[1];
                     }
+                    // Terminate the alert_tag string
                     *a_ptr = '\0';
                 }
             }
