@@ -19,8 +19,7 @@
 # Write out the .geo file
 #
 # 2003-08-15 ZL2UMF: add processing multiple files in one go (masks
-# and whot-not) so you can convert all your ui-view maps in one
-# step.
+# and whot-not) so you can convert all your maps in one step.
 
 #use strict; 
 use IO::File;
