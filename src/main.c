@@ -154,6 +154,7 @@ Widget coordinate_calc_dialog = (Widget)NULL;
 Widget coordinate_calc_zone = (Widget)NULL;
 Widget coordinate_calc_latitude_easting = (Widget)NULL;
 Widget coordinate_calc_longitude_northing = (Widget)NULL;
+Widget coordinate_calc_result_text = (Widget)NULL;
 long coordinate_calc_lon;   // In Xastir coordinates
 long coordinate_calc_lat;   // In Xastir coordinates
 struct {
@@ -686,6 +687,7 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
     XmTextSetString(coordinate_calc_zone, "");
     XmTextSetString(coordinate_calc_latitude_easting, "");
     XmTextSetString(coordinate_calc_longitude_northing, "");
+    XmTextSetString(coordinate_calc_result_text, "");
 }
 
 
@@ -693,6 +695,60 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
 
 
 // WE7U
+// This one needs a bit of work yet (needs to actually _do_ something!).
+void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer callData) {
+    char temp_string[50];
+    xastir_snprintf(temp_string, sizeof(temp_string), "Output should appear here");
+    XmTextSetString(coordinate_calc_result_text, temp_string);
+
+
+    // Goal is to suck in the format provided, figure out what
+    // format it is, then convert to the four major formats we
+    // support and put all four into the output window, each on a
+    // different line.
+
+    // These are the formats that I'd like to be able to
+    // auto-recognize and support:
+
+    // ddN          dddW
+    // dd N         ddd W
+    // -dd          -ddd
+
+    // dd.ddddN     ddd.ddddW
+    // dd.dddd N    ddd.dddd W
+    // -dd.dddd     -ddd.ddddW
+
+    // dd mmN       ddd mmW
+    // dd mm N      ddd mm W
+    // -dd mm       -ddd mm
+
+    // dd mm.mmmN   ddd mm.mmmW
+    // dd mm.mmm N  ddd mm.mmm W
+    // -dd mm.mmm   -ddd mm.mmm
+
+    // dd mm ssN    ddd mm ssW
+    // dd mm ss N   ddd mm ss W
+    // -dd mm ss    -ddd mm ss
+
+    // dd mm ss.sN  ddd mm ss.sW
+    // dd mm ss.s N ddd mm ss.s W
+    // -dd mm ss.s  -ddd mm ss.s
+
+    // 10T  0123456     1234567
+    // 10T   123456     1234567
+    // 10T  012 3456    123 4567
+    // 10T   12 3456    123 4567
+
+    // Once the four major formats are created and written to the
+    // output test widget, the dd mm.mmmN/ddd mm.mmmW formatted
+    // output should also be saved for later pasting into the
+    // calling dialog's input fields.
+}
+
+
+
+
+
 // Make sure that if an error occurs during computation we don't
 // write a bad value back to the calling widget.  Pop up a message
 // in that case explaining the error.
@@ -766,7 +822,7 @@ struct {
 // array.
 //
 void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, form, result_text, label1, label2, label3,
+    static Widget  pane, form, label1, label2, label3,
         label4, label5, label6,
         button_clear, button_calculate, button_ok, button_cancel;
     Atom delw;
@@ -926,8 +982,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
 //        xastir_snprintf(temp_string, sizeof(temp_string), "%d", temp);
 //        XmTextSetString(coordinate_calc_text, temp_string);
 
-        result_text = NULL;
-        result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
+        coordinate_calc_result_text = NULL;
+        coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
                             XmNrows, 7,
                             XmNcolumns, 30,
                             XmNeditable, FALSE,
@@ -949,7 +1005,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
 
         button_clear = XtVaCreateManagedWidget(langcode("Clear"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, result_text,
+                                        XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -960,11 +1016,11 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
-
+        XtAddCallback(button_clear, XmNactivateCallback, Coordinate_calc_clear_data, coordinate_calc_dialog);
 
         button_calculate = XtVaCreateManagedWidget(langcode("Calculate"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, result_text,
+                                        XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -975,11 +1031,11 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
-
+        XtAddCallback(button_calculate, XmNactivateCallback, Coordinate_calc_compute, coordinate_calc_dialog);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, result_text,
+                                        XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -990,11 +1046,11 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
-
+        XtAddCallback(button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, result_text,
+                                        XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -1005,9 +1061,6 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
-        XtAddCallback(button_clear, XmNactivateCallback, Coordinate_calc_clear_data, coordinate_calc_dialog);
-//        XtAddCallback(button_calculate, XmNactivateCallback, Coordinate_calc_destroy_shell, coordinate_calc_dialog);
-        XtAddCallback(button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Coordinate_calc_destroy_shell, coordinate_calc_dialog);
 
         pos_dialog(coordinate_calc_dialog);
