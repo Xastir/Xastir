@@ -880,8 +880,8 @@ Colormap cmap;                  /* current colormap */
 int redo_list;                  // Station List update request
 int redraw_on_new_data;         // Station redraw request
 int wait_to_redraw;             /* wait to redraw until system is up */
-int display_up;                 /* display up? */
-int display_up_first;           /* display up first */
+int display_up = 0;             /* display up? */
+int display_up_first = 0;       /* display up first */
 
 time_t max_transmit_time;       /* max time between transmits */
 time_t last_alert_redraw;       /* last time alert caused a redraw */
@@ -978,7 +978,7 @@ time_t next_time;               /* Next update delay time */
 time_t next_redraw;             /* Next update time */
 time_t last_redraw;             /* Time of last redraw */
 
-char aprs_station_message_type; /* aprs station message type message capable or not */
+char aprs_station_message_type = '='; // station message-capable or not
 
 int transmit_now;               /* set to transmit now (push on moment) */
 int my_position_valid = 1;      /* Don't send posits if this is zero */
