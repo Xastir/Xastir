@@ -11643,13 +11643,16 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 
 
 //WE7U
-fprintf(stderr,"\nrelay_digipeat inputs:\n port: %d\n call: %s\n path: %s\n info: %s\n\n",
+fprintf(stderr,"relay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, path, info);
 
 
     // Check to see if this is a packet from me (in some cases, you hear
     // yourself transmit...)
     if (!strcasecmp(call, my_callsign)) {
+
+fprintf(stderr,"relay_digipeat: packet was mine, don't digipeat it!\n");
+
         return;
     }
 
@@ -11673,6 +11676,9 @@ fprintf(stderr,"\nrelay_digipeat inputs:\n port: %d\n call: %s\n path: %s\n info
 
     // Check to see if we just ran out of path
     if (short_path == NULL || short_path[0] == '\0') {
+
+fprintf(stderr,"relay_digipeat: ran out of path, don't digipeat it!\n");
+
         return;
     }
 
@@ -11685,18 +11691,19 @@ fprintf(stderr,"\nrelay_digipeat inputs:\n port: %d\n call: %s\n path: %s\n info
     // see where they are and whether the packet has been digipeated
     // through that callsign (or a later one).
     if ( (r_ptr = strstr(short_path,"RELAY")) != NULL) {
-//        if ( (r_ptr = strstr(short_path,"SOMTN")) != NULL) {  // DEBUG STATEMENT
-//        fprintf(stderr,"*** FOUND RELAY: ", short_path);
+        if ( (r_ptr = strstr(short_path,"SOMTN")) != NULL) {  // DEBUG STATEMENT
+fprintf(stderr,"*** FOUND RELAY: ", short_path);
+        }
     }
 
     if ( (c_ptr = strstr(short_path,my_callsign)) != NULL) {
         // Note that my_callsign is in all caps already
-//        fprintf(stderr,"*** FOUND MY CALLSIGN: ", short_path);
+fprintf(stderr,"*** FOUND MY CALLSIGN: ", short_path);
     }
 
     // Check whether either RELAY or my_callsign were found
     if (c_ptr == NULL && r_ptr == NULL) {   // Nope, neither one found
-        //fprintf(stderr,"Nothing to see here folks, move along: %s\n", short_path);
+fprintf(stderr,"Nothing to see here folks, move along: %s\n", short_path);
         return;
     }
 
@@ -11740,7 +11747,7 @@ fprintf(stderr,"\nrelay_digipeat inputs:\n port: %d\n call: %s\n path: %s\n info
     }
 
     if (!ok) {
-        //fprintf(stderr,"Used up digi: %s\n", short_path);
+fprintf(stderr,"Used up digi: %s\n", short_path);
         return;
     }
 
@@ -11799,7 +11806,7 @@ fprintf(stderr,"\nrelay_digipeat inputs:\n port: %d\n call: %s\n path: %s\n info
 
 
 //WE7U
-fprintf(stderr,"\nrelay_digipeat output:\n port: %d\n call: %s\n dest: %s\n path: %s\n info: %s\n\n",
+fprintf(stderr,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, destination, new_path, info);
 
 
@@ -11818,7 +11825,7 @@ fprintf(stderr,"\nrelay_digipeat output:\n port: %d\n call: %s\n dest: %s\n path
             port_write_string(port, header_txt);
         // set path
         xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO",
-                        destination, new_path);
+            destination, new_path);
         if (port_data[port].status == DEVICE_UP)
             port_write_string(port, header_txt);
         // set converse mode
@@ -11832,7 +11839,7 @@ fprintf(stderr,"\nrelay_digipeat output:\n port: %d\n call: %s\n dest: %s\n path
 
 
 //WE7U
-fprintf(stderr,"\nrelay_digipeat output:\n port: %d\n call: %s\n dest: %s\n path: %s\n info: %s\n\n",
+fprintf(stderr,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, destination, new_path, info);
 
 
