@@ -3179,17 +3179,21 @@ void Snapshot(void) {
 
         // Convert it to a png file.  This depends on having the
         // ImageMagick command "convert" installed.
-        xastir_snprintf(command, sizeof(command), "convert -quality 100 %s %s",
+        xastir_snprintf(command, sizeof(command), "/usr/bin/convert -quality 100 %s %s",
                 xpm_filename, png_filename );
-        system( command );
 
-        chmod( png_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+        if ( system( command ) != 0 ) {
+            printf("/usr/bin/convert failed to convert snapshot from xpm to png\n");
+        }
+        else {
+            chmod( png_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
-        // Delete temporary xpm file
-        unlink( xpm_filename );
+            // Delete temporary xpm file
+            unlink( xpm_filename );
 
-        if ( debug_level & 512 )
-            printf("  Done creating png.\n");
+            if ( debug_level & 512 )
+                printf("  Done creating png.\n");
+        }
     }
 
 #endif // NO_GRAPHICS
