@@ -545,7 +545,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                     case DRAW_TO_PIXMAP:
                         // We must be drawing maps 'cuz this is the pixmap we use for it.
                         if (map_color_fill && draw_filled)
-                            (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Complex,CoordModeOrigin);
+                            (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Nonconvex,CoordModeOrigin);
                         break;
 
                     case DRAW_TO_PIXMAP_ALERTS:
@@ -3190,6 +3190,23 @@ void draw_shapefile_map (Widget w,
                     // rings, and each ring has multiple points that
                     // define it.
 
+//WE7U
+// We don't handle the "hole" drawing in polygon shapefiles, where
+// one direction around the ring means a fill, and the other
+// direction means a hole in the polygon.  Once we do handle this
+// correctly, delete this note and the one in the function comment
+// block.
+// Could try to implement the holes in one of two ways:
+// 1) Snag an algorithm for a polygon "fill" function from
+// somewhere, but add a piece that will check for being inside a
+// "hole" polygon and just not draw while traversing it (change the
+// pen color to transparent?).
+// 2) Draw to another layer, then copy pixels over where we actually
+// draw pixels, skipping the holes.
+// 3) Try to use bitmasks to prevent drawing over certain areas, or
+// only allow drawing over certain areas.
+
+
                     // Read the vertices for each ring
                     for (ring = 0; ring < object->nParts; ring++ ) {
                         int endpoint;
@@ -3303,14 +3320,14 @@ void draw_shapefile_map (Widget w,
                             else if (glacier_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
                                 if (map_color_fill && draw_filled) {
-                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (lake_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
                                 if (map_color_fill && draw_filled) {
-                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
 //                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
@@ -3318,13 +3335,13 @@ void draw_shapefile_map (Widget w,
                             else if (river_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
                                 if (map_color_fill && draw_filled)
-                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
                                 else
                                     (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (weather_alert_flag) {
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
-                                (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
+                                (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, i, Nonconvex, CoordModeOrigin);
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
                                 (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
                             }
@@ -3334,7 +3351,7 @@ void draw_shapefile_map (Widget w,
                                 else
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
 
-                                (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
 
                                 // Draw a thicker border for city boundaries
