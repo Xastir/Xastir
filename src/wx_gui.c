@@ -223,7 +223,10 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
     XmListDeleteAllItems(wx_detailed_alert_list);
 
     // Perform a "finger" command in another process
-    xastir_snprintf(temp, sizeof(temp), "/usr/bin/finger %s@wxsvr.net", handle);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "/usr/bin/finger %s@wxsvr.net",
+        handle);
     if (!(pp = popen (temp, "r"))) {    // Go do the finger command
         perror (temp);  // Print an error message if it failed
         fprintf(stderr,"Weather server didn't answer or 'finger' command couldn't be run\n");
@@ -268,7 +271,10 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
     // Grab the first 13 characters.  Remove spaces.  This is our handle
     // into the weather server for the full weather alert text.
 
-    xastir_snprintf(handle, sizeof(handle), "%s", choice);
+    xastir_snprintf(handle,
+        sizeof(handle),
+        "%s",
+        choice);
 
     handle[13] = '\0';  // Terminate the string
     // Remove spaces
@@ -336,31 +342,35 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
             //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
 
-            xastir_snprintf(status, sizeof(status), "   ");
-            xastir_snprintf(temp, sizeof(temp),
-                    "%-9s%s   %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %s   %s%s%s%s",
-                    alert_list[nn].from,
-                    alert_list[nn].seq,
-                    alert_list[nn].to,
-                    alert_list[nn].issue_date_time[0],
-                    alert_list[nn].issue_date_time[1],
-                    alert_list[nn].issue_date_time[2],
-                    alert_list[nn].issue_date_time[3],
-                    alert_list[nn].issue_date_time[4],
-                    alert_list[nn].issue_date_time[5],
-                    alert_list[nn].activity[0],
-                    alert_list[nn].activity[1],
-                    alert_list[nn].activity[2],
-                    alert_list[nn].activity[3],
-                    alert_list[nn].activity[4],
-                    alert_list[nn].activity[5],
-                    status,
-                    alert_list[nn].title,
-                    alert_list[nn].alert_tag,
-                    alert_list[nn].desc0,
-                    alert_list[nn].desc1,
-                    alert_list[nn].desc2,
-                    alert_list[nn].desc3);
+            xastir_snprintf(status,
+                sizeof(status),
+                "   ");
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%-9s%s   %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %s   %s%s%s%s",
+                alert_list[nn].from,
+                alert_list[nn].seq,
+                alert_list[nn].to,
+                alert_list[nn].issue_date_time[0],
+                alert_list[nn].issue_date_time[1],
+                alert_list[nn].issue_date_time[2],
+                alert_list[nn].issue_date_time[3],
+                alert_list[nn].issue_date_time[4],
+                alert_list[nn].issue_date_time[5],
+                alert_list[nn].activity[0],
+                alert_list[nn].activity[1],
+                alert_list[nn].activity[2],
+                alert_list[nn].activity[3],
+                alert_list[nn].activity[4],
+                alert_list[nn].activity[5],
+                status,
+                alert_list[nn].title,
+                alert_list[nn].alert_tag,
+                alert_list[nn].desc0,
+                alert_list[nn].desc1,
+                alert_list[nn].desc2,
+                alert_list[nn].desc3);
 
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
@@ -1493,8 +1503,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                 if (weather != 0) {  // we have weather data
                     if (strlen(weather->wx_temp) > 0) {
                        if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(((atof(weather->wx_temp)-32)*5.0)/9.0));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(((atof(weather->wx_temp)-32)*5.0)/9.0));
 
                             XmTextFieldSetString(WX_temp_data,temp);
                         } else XmTextFieldSetString(WX_temp_data,weather->wx_temp);
@@ -1511,8 +1523,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(weather->wx_speed) > 0) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(atof(weather->wx_speed)*1.6094));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(atof(weather->wx_speed)*1.6094));
 
                             XmTextFieldSetString(WX_wind_spd_data,temp);
                         } else
@@ -1524,8 +1538,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(weather->wx_gust) > 0) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(atof(weather->wx_gust)*1.6094));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(atof(weather->wx_gust)*1.6094));
 
                             XmTextFieldSetString(WX_wind_gst_data,temp);
                         } else
@@ -1537,11 +1553,15 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(weather->wx_rain_total) > 0) {
                         if (!units_english_metric)
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_rain_total)*.254);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                                atof(weather->wx_rain_total)*.254);
                         else
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_rain_total)/100.0);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                                atof(weather->wx_rain_total)/100.0);
 
                         XmTextFieldSetString(WX_rain_data,temp);
                     } else
@@ -1551,11 +1571,15 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(weather->wx_rain) > 0) {
                         if (!units_english_metric)
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
                                 atof(weather->wx_rain)*.254);
                         else
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_rain)/100.0);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                               atof(weather->wx_rain)/100.0);
 
                         XmTextFieldSetString(WX_rain_h_data,temp);
                     } else
@@ -1565,11 +1589,15 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(weather->wx_prec_24) > 0) {
                         if (!units_english_metric)
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_prec_24)*.254);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                                atof(weather->wx_prec_24)*.254);
                         else
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_prec_24)/100.0);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                                atof(weather->wx_prec_24)/100.0);
 
                         XmTextFieldSetString(WX_rain_24_data,temp);
                     } else
@@ -1579,11 +1607,15 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(weather->wx_prec_00) > 0) {
                         if (!units_english_metric)
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_prec_00)*.254);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                                atof(weather->wx_prec_00)*.254);
                         else
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
-                                    atof(weather->wx_prec_00)/100.0);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
+                                atof(weather->wx_prec_00)/100.0);
 
                         XmTextFieldSetString(WX_to_rain_data,temp);
                     } else
@@ -1600,8 +1632,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(wx_dew_point) > 0) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(((atof(wx_dew_point)-32)*5.0)/9.0));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(((atof(wx_dew_point)-32)*5.0)/9.0));
                             XmTextFieldSetString(WX_dew_point_data,temp);
                         } else
                             XmTextFieldSetString(WX_dew_point_data,wx_dew_point);
@@ -1612,8 +1646,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(wx_high_wind) > 0) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(atof(wx_high_wind)*1.6094));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(atof(wx_high_wind)*1.6094));
                             XmTextFieldSetString(WX_high_wind_data,temp);
                         } else
                             XmTextFieldSetString(WX_high_wind_data,wx_high_wind);
@@ -1624,8 +1660,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (strlen(wx_wind_chill) > 0) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(((atof(wx_wind_chill)-32)*5.0)/9.0));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(((atof(wx_wind_chill)-32)*5.0)/9.0));
                             XmTextFieldSetString(WX_wind_chill_data,temp);
                         } else
                             XmTextFieldSetString(WX_wind_chill_data,wx_wind_chill);
@@ -1642,7 +1680,9 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                             XmTextFieldSetString(WX_baro_data,weather->wx_baro); // hPa
                         }
                         else {  // inches mercury
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
                                 (atof(weather->wx_baro)*0.02953));
                             XmTextFieldSetString(WX_baro_data,temp);
                         }
@@ -1657,7 +1697,9 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                             //        atof(wx_three_hour_baro)*25.4); // inch Hg -> mm Hg
                             XmTextFieldSetString(WX_three_hour_baro_data,wx_three_hour_baro);
                         } else {  // inches mercury
-                            xastir_snprintf(temp, sizeof(temp), "%0.2f",
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.2f",
                                 (atof(wx_three_hour_baro)*0.02953));
                             XmTextFieldSetString(WX_three_hour_baro_data,temp);
                         }
@@ -1668,8 +1710,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (wx_hi_temp_on) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(((atof(wx_hi_temp)-32)*5.0)/9.0));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(((atof(wx_hi_temp)-32)*5.0)/9.0));
                             XmTextFieldSetString(WX_hi_temp_data,temp);
                         } else
                             XmTextFieldSetString(WX_hi_temp_data,wx_hi_temp);
@@ -1680,8 +1724,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (wx_low_temp_on) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(((atof(wx_low_temp)-32)*5.0)/9.0));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(((atof(wx_low_temp)-32)*5.0)/9.0));
                             XmTextFieldSetString(WX_low_temp_data,temp);
                         } else
                             XmTextFieldSetString(WX_low_temp_data,wx_low_temp);
@@ -1692,8 +1738,10 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     if (wx_heat_index_on) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%03d",
-                                    (int)(((atof(wx_heat_index)-32)*5.0)/9.0));
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%03d",
+                                (int)(((atof(wx_heat_index)-32)*5.0)/9.0));
                             XmTextFieldSetString(WX_heat_index_data,temp);
                         } else
                             XmTextFieldSetString(WX_heat_index_data,wx_heat_index);
