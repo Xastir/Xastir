@@ -223,6 +223,8 @@ void channel_data(int port, unsigned char *string, int length) {
     int max;
     struct timeval tmv;
 
+    //printf("channel_data: %x %d\n",string[0],length);
+
     max = 0;
 
     if (string == NULL)
@@ -265,6 +267,7 @@ void channel_data(int port, unsigned char *string, int length) {
         incoming_data_length = length;
         data_port = port;
         data_avail = 1;
+        //printf("data_avail\n");
 
         if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
             printf("data_lock, Port = %d\n", port);
@@ -2175,13 +2178,16 @@ void port_read(int port) {
                     && (port_data[port].status == DEVICE_UP) ) {
                 int skip = 0;
 
+                // Handle all except AX25_TNC interfaces here
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
                     pthread_testcancel();   // Check for thread termination request
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
+//printf("%c",cin);
                     pthread_testcancel();   // Check for thread termination request
                 }
-                else {
+
+                else {  // Handle AX25_TNC interfaces
                     /*
                     * Use recvfrom on a network socket to know from which interface
                     * the packet came - PE1DNN
@@ -2207,6 +2213,7 @@ void port_read(int port) {
                 }
 
                 if (port_data[port].scan > 0 && port_data[port].status == DEVICE_UP ) {
+
                     if (port_data[port].device_type != DEVICE_AX25_TNC)
                         port_data[port].bytes_input += port_data[port].scan;      // Add character to read buffer
 
@@ -2215,7 +2222,7 @@ void port_read(int port) {
 // if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
 //    printf("read_lock, Port = %d\n", port);
 
-
+                    // Handle all except AX25_TNC interfaces here
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
 
 
@@ -2323,6 +2330,8 @@ void port_read(int port) {
                             port_data[port].read_in_pos = 0;
                         }
                         else if (!skip) {
+
+                            // Check for binary WX station data
                             if (port_data[port].data_type == 1 && (port_data[port].device_type == DEVICE_NET_WX ||
                                     port_data[port].device_type == DEVICE_SERIAL_WX)) {
 
@@ -2377,7 +2386,7 @@ void port_read(int port) {
                                     port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
                                 } else {
                                     if (debug_level & 2)
-                                        printf("Port read overrun on %d\n",port);
+                                        printf("Port read overrun (1) on %d\n",port);
 
                                     port_data[port].read_in_pos = 0;
                                 }
@@ -2392,20 +2401,27 @@ void port_read(int port) {
                                     group = 0;
                                     port_data[port].read_in_pos = 0;
                                 }
-                            } else {
-                                /* Normal Data input */
+                            }
+                            else { /* Normal Data input */
+
+                                if (cin == '\0')    // OWW WX daemon sends 0x00's!
+                                    cin = '\n';
+
                                 if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
                                     port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)cin;
                                     port_data[port].read_in_pos++;
                                     port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
-                                } else {
+                                }
+                                else {
                                     if (debug_level & 2)
-                                        printf("Port read overrun on %d\n",port);
+                                        printf("Port read overrun (2) on %d\n",port);
 
                                     port_data[port].read_in_pos = 0;
                                 }
                             }
                         }
+
+                        // Ascii WX station data but no line-ends?
                         if (port_data[port].read_in_pos > MAX_DEVICE_BUFFER_UNTIL_BINARY_SWITCH &&
                                 (port_data[port].device_type == DEVICE_NET_WX
                                 || port_data[port].device_type == DEVICE_SERIAL_WX)) {
