@@ -1,5 +1,7 @@
 // Dummy for now...
 //
+// Copyright (C) 2004 Bruce Bennett <bruts@adelphia.net>
+// Portions Copyright (C) 2004  The Xastir group
 
 
 #define VERSION "0.1"

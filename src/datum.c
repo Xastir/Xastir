@@ -1,6 +1,9 @@
 /*
    See the top of datum.h for information on this code.
    N7TAP
+
+   Portions Copyright (C) 2002-2004  The Xastir Group
+
    $Id$
 */
 

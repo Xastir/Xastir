@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2000-2004  The Xastir Group
+#
+
 #Corridors (Line with width in miles)
 #{1} means a corridor 1 mile on either side of the line
 N0CALL>APRS:)Corridor1!5012.00N\13033.00Wl130/200{1}

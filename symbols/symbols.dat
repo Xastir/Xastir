@@ -1,6 +1,6 @@
 # XASTIR, Amateur Station Tracking and Information Reporting
 # Copyright (C) 1999,2000  Frank Giannandrea
-# Copyright (C) 2001-2003  The Xastir Group
+# Copyright (C) 2001-2004  The Xastir Group
 #
 # $Id$
 #
@@ -23,7 +23,9 @@
 # Symbol colors are defined in:
 # draw_symbols.c:read_symbol_from_file()
 #
-# 
+#
+# -------------------------------
+#
 TABLE !              description from APRS101.pdf [used here as]
 APRS #
 ....................
@@ -46,6 +48,11 @@ APRS #
 ...q....qqqq....q...
 ....................
 ....................
+#
+#
+# -----------------------------------
+# Primary table section starts here
+#
 TABLE /
 APRS !               Police, Sheriff
 ....................
@@ -1812,6 +1819,10 @@ APRS y               Yagi at QTH
 #
 #APRS ~               Reserved - TNC Stream Switch
 #
+#
+# -----------------------------------
+# Secondary table section starts here
+#
 TABLE \
 APRS !               Emergency
 ....................
@@ -3292,6 +3303,8 @@ APRS {
 #APRS ~               Reserved - TNC Stream Switch
 #
 #
+# -------------------------
+#
 TABLE #
 APRS 0               Overlay Characters, etc
 ....................
@@ -4133,6 +4146,10 @@ APRS ^
 .nkkkkkkk...........
 .nnnnnnn............
 ....................
+#
+#
+# -------------------------
+#
 TABLE ~
 APRS 0
 ..gggggg............

@@ -1,5 +1,7 @@
 # $Id$
 #
+# Copyright (C) 2000-2004  The Xastir Group
+#
 # TNC Init file for KENWOOD TH-D7
 AWlen 8
 BBSMsgs ON

@@ -1,4 +1,7 @@
 # $Id$
+#
+# Copyright (C) 2000-2004  The Xastir Group
+#
 
 pkglib_SCRIPTS = \
     Coordinate.pm \

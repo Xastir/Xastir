@@ -1,4 +1,6 @@
 /*
+   Portions Copyright (C) 2002-2004  The Xastir Group
+
    The datum conversion code here and in datum.c is from MacGPS 45.
 
    According to the Read_Me file in the source archive of that program,

@@ -1,4 +1,7 @@
 # $Id$
+#
+# Copyright (C) 2000-2004  The Xastir Group
+#
 # This is the TNC Startup file for a Kantronics KAM TNC. 
 # lines that begin with a pound sign are comments.
 # Edit this file for your tnc!

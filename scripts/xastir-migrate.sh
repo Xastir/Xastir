@@ -2,6 +2,8 @@
 #
 # $Id$
 #
+# Copyright (C) 2003-2004  The Xastir Group
+#
 # migrate from old xastir USER FILES to new directory structure.
 # Stuff that was under /usr/local/xastir is now under /usr/local/share/xastir/
 # fixed up the .xastir/config/xastir.cfg as well.

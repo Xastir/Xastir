@@ -1,4 +1,7 @@
 # $Id$
+#
+# Copyright (C) 2000-2004  The Xastir Group
+#
 
 bin_PROGRAMS = xastir
 noinst_PROGRAMS = testawk x_spider
