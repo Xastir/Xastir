@@ -98,6 +98,8 @@
 
 
 //extern pid_t getpgid(pid_t pid);
+extern void port_write_binary(int port, unsigned char *data, int length);
+ 
 
 iodevices dtype[MAX_IFACE_DEVICE_TYPES]; // device names
 
@@ -128,7 +130,7 @@ int NETWORK_WAITTIME;
 
 
 
-// Create a packet that can be fed to AGWPE for transmission.
+// Create a packet and send to AGWPE for transmission.
 // Format is as follows:
 //
 //  RadioPort     4 bytes (0-3)
@@ -142,118 +144,173 @@ int NETWORK_WAITTIME;
 // Callsigns are null-terminated at end of string, but callsign
 // field width is specified to be 10 bytes in all cases.
 //
-// ViaCalls is a string containing the digi callsigns, placed into
-// 10-byte fields.  num_digis specifies how many digis are in the
-// ViaCalls string.
+// ViaCalls are null-terminated and may also be NULL pointers.
 //
-// If ViaCalls is not empty, then we'll use packet format "V" with
+//
+// If type != '\0', then we'll create that type of packet.
+//
+// Else if ViaCalls are not empty, we'll use packet format "V" with
 // Viacalls prepended to the Data portion of the packet, 10 chars
 // per digi, with the number of digis as the first character.  The
 // packet data then follows after the last via callsign.
 //
-// If no ViaCalls, then put the Data directly into the Data field
-// and use "M" format packets instead.
+// Else if no ViaCalls, then put the Data directly into the Data
+// field and use "M" format packets instead.
 //
-// output_string must be minimum 36 chars (enough for one header).
-//
-unsigned char *create_agwpe_packet(int RadioPort,
-                                   char *FromCall,
-                                   char *ToCall,
-                                   unsigned char *ViaCalls,
-                                   int num_digis,
-                                   char *Data,
-                                   int output_length,
-                                   unsigned char *output_string) {
+void send_agwpe_packet(int xastir_interface,// Xastir interface port
+                       int RadioPort,       // AGWPE RadioPort
+                       unsigned char type,
+                       unsigned char *FromCall,
+                       unsigned char *ToCall,
+                       unsigned char *ViaCall1,
+                       unsigned char *ViaCall2,
+                       unsigned char *ViaCall3,
+                       unsigned char *ViaCall4,
+                       unsigned char *ViaCall5,
+                       unsigned char *ViaCall6,
+                       unsigned char *ViaCall7,
+                       unsigned char *ViaCall8,
+                       unsigned char *Data,
+                       int length) {
     int ii;
+    unsigned char output_string[500];
+    int full_length;
+    int data_length;
 
 
-    // Check for short string
-    if (output_length < 200) {
-        fprintf(stderr,"create_agwpe_packet: string too short\n");
-        output_string[0] = '\0';
-        return(output_string);
-    }
+    // Check size of data
+    if (length > 255)
+        return;
 
     // Clear the output_string (set to binary zeroes)
-    for (ii = 0; ii < output_length; ii++) {
+    for (ii = 0; ii < sizeof(output_string); ii++) {
         output_string[ii] = '\0';
     }
 
-    // Write the port number
-    output_string[3] = (unsigned char)RadioPort;
+    // Write the port number into the frame
+    output_string[0] = (unsigned char)RadioPort;
 
-    // Write the FromCall string
-    strcpy(&output_string[8], FromCall);
+    if (FromCall)   // Write the FromCall string into the frame
+        strcpy(&output_string[8], FromCall);
 
-    // Write the ToCall string
-    strcpy(&output_string[18], ToCall);
+    if (ToCall) // Write the ToCall string into the frame
+        strcpy(&output_string[18], ToCall);
 
-    if (ViaCalls == NULL) { // No ViaCalls
+    if (type != '\0') { // Type was specified, not a data frame
 
-        // Write the type character
-        output_string[7] = 'M'; // Unproto, no vias
+        // Write the type character into the frame
+        output_string[4] = type;
 
-        // We assume the data length is less than 256 bytes (one
-        // byte wide)
-        output_string[31] = (unsigned char)strlen(Data);
+        // Send the packet to AGWPE
+        port_write_binary(xastir_interface, output_string, 36);
+    }
+    else if (ViaCall1 == NULL) { // No ViaCalls
 
-        if (output_length < (strlen(Data) + 36) ) {
-            fprintf(stderr,"create_agwpe_packet: string too short\n");
-            output_string[0] = '\0';
-            return(output_string);
-        }
-        else {
-            // Copy Data onto the end of the string
-            strcpy(&output_string[36], Data);
-        }
+        // Write the type character into the frame
+        output_string[4] = 'M'; // Unproto, no vias
+
+        // Write the PID type into the frame
+        output_string[6] = 0xF0;    // UI Frame
+
+        output_string[28] = (unsigned char)length;
+
+        // Copy Data onto the end of the string
+        strncpy(&output_string[36], Data, length);
+
+        full_length = length + 36;
+
+        // Send the packet to AGWPE
+        port_write_binary(xastir_interface, output_string, full_length);
     }
     else {  // We have ViaCalls
 
-        // Write the type character
-        output_string[7] = 'V'; // Unproto, vias
+        // Write the type character into the frame
+        output_string[4] = 'V'; // Unproto, vias
+
+        // Write the PID type into the frame
+        output_string[6] = 0xF0;    // UI Frame
 
         // Write the number of ViaCalls into the first byte
-        output_string[36] = (unsigned char)num_digis;
-
+        if (ViaCall8)
+            output_string[36] = 0x08;
+        else if (ViaCall7)
+            output_string[36] = 0x07;
+        else if (ViaCall6)
+            output_string[36] = 0x06;
+        else if (ViaCall5)
+            output_string[36] = 0x05;
+        else if (ViaCall4)
+            output_string[36] = 0x04;
+        else if (ViaCall3)
+            output_string[36] = 0x03;
+        else if (ViaCall2)
+            output_string[36] = 0x02;
+        else
+            output_string[36] = 0x01;
+ 
         // Write the ViaCalls into the Data field
-        for (ii = 0; ii < (num_digis * 10); ii++) {
-            strcpy(&output_string[ii + 37], &ViaCalls[ii]);
+        switch (output_string[36]) {
+            case 8:
+                if (ViaCall8)
+                    strcpy(&output_string[37+70], ViaCall8);
+                else
+                    return;
+            case 7:
+                if (ViaCall7)
+                    strcpy(&output_string[37+60], ViaCall7);
+                else
+                    return;
+            case 6:
+                if (ViaCall6)
+                    strcpy(&output_string[37+50], ViaCall6);
+                else
+                    return;
+            case 5:
+                if (ViaCall5)
+                    strcpy(&output_string[37+40], ViaCall5);
+                else
+                    return;
+            case 4:
+                if (ViaCall4)
+                    strcpy(&output_string[37+30], ViaCall4);
+                else
+                    return;
+            case 3:
+                if (ViaCall3)
+                    strcpy(&output_string[37+20], ViaCall3);
+                else
+                    return;
+            case 2:
+                if (ViaCall2)
+                    strcpy(&output_string[37+10], ViaCall2);
+                else
+                    return;
+            case 1:
+            default:
+                if (ViaCall1)
+                    strcpy(&output_string[37],    ViaCall1);
+                else
+                    return;
+                break;
         }
 
         // Write the Data onto the end
-        strcpy(&output_string[(num_digis * 10) + 37], Data);
+        strncpy(&output_string[(output_string[36] * 10) + 37], Data, length);
 
         //Fill in the data length field.  We're assuming the total
         //is less than 256 (one byte wide).
-        output_string[31] = (unsigned char)(strlen(Data) + (num_digis * 10) + 1);
+        data_length = length + (output_string[36] * 10) + 1;
+        if ( data_length > 255 )
+            return;
+
+        output_string[28] = (unsigned char)data_length;
+
+        full_length = data_length + 36;
+
+        // Send the packet to AGWPE
+        port_write_binary(xastir_interface, output_string, full_length);
     }
-
-    return(output_string);
 }
-
-
-
-
-
-/*
-// Function to convert a TAPR2 style packet into an AGWPE packet
-// (suitable for transmitting with AGWPE).  Uses
-// create_agwpe_packet() function above.
-//
-// Not implemented yet.
-//
-void taprToAGWPE(void) {
-
-unsigned char *create_agwpe_packet(int RadioPort,
-                                   char *FromCall,
-                                   char *ToCall,
-                                   unsigned char *ViaCalls,
-                                   int num_digis,
-                                   char *Data,
-                                   int output_length,
-                                   unsigned char *output_string) {
-}
-*/
 
 
 
@@ -269,23 +326,160 @@ unsigned char *create_agwpe_packet(int RadioPort,
 //  ToCall       10 bytes (18-27)
 //  DataLength    4 bytes (28-31)
 //  UserField     4 bytes (32-35)
+//  Data         xx bytes (36-??)
 //
 // Callsigns are null-terminated at end of string, but field width
 // is specified to be 10 bytes in all cases.
 //
 // output_string should be quite long, perhaps 1000 characters.
 //
-unsigned char *parse_agwpe_header(unsigned char *input_string,
-                                  int output_length,
-                                  unsigned char *output_string) {
-    int ii;
+unsigned char *parse_agwpe_packet(unsigned char *input_string,
+                                  int output_string_length,
+                                  unsigned char *output_string,
+                                  int *new_length) {
+    int ii, jj, kk;
+    unsigned char data_length;
 
+
+    // Check that it's a UI packet.  It should have a 'U' in
+    // position input_string[4].
+    switch (input_string[4]) {
+        case 'U':
+            break;
+        case 'R':
+            return(NULL);
+            break;
+        default:
+            return(NULL);
+            break;
+    }
 
     // Clear the output_string (set to binary zeroes)
-    for (ii = 0; ii < output_length; ii++) {
+    for (ii = 0; ii < output_string_length; ii++) {
         output_string[ii] = '\0';
     }
+
+    jj = 0;
+
+    // Copy the source callsign
+    ii = 42;
+    while (input_string[ii] != ' ') {
+        output_string[jj++] = input_string[ii++];
+    }
+
+    // Add a '>' character
+    output_string[jj++] = '>';
+
+    // Skip over the <space>To<space> portion
+    ii += 4;
+
+    // Copy the destination callsign
+    while (input_string[ii] != ' ') {
+        output_string[jj++] = input_string[ii++];
+    }
+    ii++;
+
+    // If next characters are "Via", then we have digipeaters, else
+    // we have the "<Ui pid=" portion.
+    if (input_string[ii] == 'V'
+            && input_string[ii+1] == 'i'
+            && input_string[ii+2] == 'a') {
+        output_string[jj++] = ',';   // Add a comma
+        // Copy the digipeater callsigns
+        // APRS Via RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1 <UI pid=F0
+        ii += 4;
+        while (input_string[ii] != ' ') {
+            output_string[jj++] = input_string[ii++];
+        }
+        ii++;
+    }
+
+    // Add a ':' character
+    output_string[jj++] = ':';
+
+    // Skip over the "<UI pid=" portion
+    ii += 8;
+
+    // Make sure that the protocol ID is "F0"
+    if (input_string[ii++] != 'F')
+        return(NULL);
+    if (input_string[ii++] != '0')
+        return(NULL);
+
+    // Skip over the " Len=" portion
+    ii += 5;
+
+    // Figure out how much data is in the payload
+    // "Len=126"
+    data_length = 0;
+    while (input_string[ii] != ' ') {
+        data_length = (data_length * 10) + (input_string[ii++] - 0x30);
+    }
+//fprintf(stderr,"parse_awgpe_packet:Length:%d\n", data_length);
+
+    // Skip over the timestamp
+    ii += 13;
+    
+    // Copy the data across
+    kk = data_length;
+    while (kk > 0) {
+//fprintf(stderr,"%c",input_string[ii]);
+        output_string[jj++] = input_string[ii++];
+        kk--;
+    }
+//fprintf(stderr,"\n");
+
+    // We end up with 0x0d characters on the end.  Make sure we
+    // account for these (and get rid of them):
+    // Terminate it to knock off trailing 0x0d characters
+    output_string[jj] = '\0';
+    if (output_string[jj-1] == 0x0d) {
+        jj--;
+        output_string[jj] = '\0';
+//fprintf(stderr,"Found 0x0d, chopping 1\n");
+    }
+    if (output_string[jj-1] == 0x0d) {
+        jj--;
+        output_string[jj] = '\0';
+//fprintf(stderr,"Found 0x0d, chopping 2\n");
+    }
+
+
+    *new_length = jj;
+
+    // Print out the intermediate result
+//fprintf(stderr,"AGWPE RX: %s\n", output_string);
+//fprintf(stderr,"new_length: %d\n",*new_length);
+//for (ii = 0; ii < strlen(output_string); ii++) {
+//  fprintf(stderr,"%02x ",output_string[ii]);
+//}
+//fprintf(stderr,"\n");
+
+    return(output_string);
 }
+/*
+Found complete AGWPE packet, 93 bytes total in frame:
+00 00 00 00
+55 00 00 00                     'U' Packet
+57 45 37 55 2d 33 00 00 ff ff   WE7U-3
+41 50 52 53 00 20 ec e9 6c 00   APRS
+39 00 00 00                     Length
+00 00 00 00
+
+20 31                           .1 (36-37)
+3a 46 6d 20                     :Fm (38-41)
+57 45 37 55 2d 33               WE7U-3 (42-space)
+20 54 6f                        .To
+20 41 50 52 53                  .APRS
+20 3c 55 49                     .<UI
+20 70 69 64 3d 46 30            .pid=F0
+20 4c 65 6e 3d 34               .Len=4
+20 3e 5b 32 33 3a 31 33 3a 32 30 5d 0d  >[23:13:20].
+54 65 73 74 0d 0d 00            Test<CR><CR>.
+....U...WE7U-3....APRS. ..l.9....... 1:Fm WE7U-3 To APRS <UI pid=F0 Len=4 >[23:13:20].Test...
+
+1:Fm WE7U-3 To APRS Via RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1 <UI pid=F0 Len=26 >[23:51:46].Testing this darned thing!...
+*/
 
 
 
@@ -2143,7 +2337,7 @@ void port_write_binary(int port, unsigned char *data, int length) {
     int write_in_pos_hold;
 
 
-fprintf(stderr,"Sending to AGWPE:\n");
+//fprintf(stderr,"Sending to AGWPE:\n");
 
     erd = 0;
 
@@ -2154,7 +2348,7 @@ fprintf(stderr,"Sending to AGWPE:\n");
 
     for (ii = 0; ii < length && !erd; ii++) {
 
-fprintf(stderr,"%02x ",data[ii]);
+//fprintf(stderr,"%02x ",data[ii]);
 
         port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[ii];
         if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
@@ -2174,7 +2368,7 @@ fprintf(stderr,"%02x ",data[ii]);
     if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 
-fprintf(stderr,"\n");
+//fprintf(stderr,"\n");
 
 }
 
@@ -2626,7 +2820,7 @@ void port_read(int port) {
 
 
 
-//WE7U:AGWPE
+// AGWPE
 // Process AGWPE packets here.  Massage the frames so that they look
 // like normal serial packets to the Xastir decoding functions?
 //
@@ -2700,35 +2894,28 @@ void port_read(int port) {
                                 // decoding routines.
                                 //
                                 if (bytes_available >= (frame_length + 36)) {
-//                                    char input_string[MAX_DEVICE_BUFFER];
-//                                    char output_string[MAX_DEVICE_BUFFER];
-int ii;
-fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length + 36);
-my_pointer = port_data[port].read_out_pos;
-for (ii = 0; ii < frame_length + 36; ii++) {
-    fprintf(stderr,"%02x ",(unsigned char)port_data[port].device_read_buffer[my_pointer]);
-    my_pointer = (my_pointer + 1) % MAX_DEVICE_BUFFER;
-}
-fprintf(stderr,"\n");
-fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
+                                    char input_string[MAX_DEVICE_BUFFER];
+                                    char output_string[MAX_DEVICE_BUFFER];
+                                    int ii,jj,new_length;
 
-                                    //strcpy(input_string, port_data[port].device_read_buffer);
-                                    //output_string[0] = '\0';
-                                    //parse_agwpe_header(input_string, output_length, output_string);
+//fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length + 36);
 
-// Be careful here!  device_read_buffer is a circular buffer.  We
-// need to copy the data to an array of chars before calling
-// channel_data().
+                                    my_pointer = port_data[port].read_out_pos;
+                                    jj = 0;
+                                    for (ii = 0; ii < frame_length + 36; ii++) {
+                                        input_string[jj++] = (unsigned char)port_data[port].device_read_buffer[my_pointer];
+                                        my_pointer = (my_pointer + 1) % MAX_DEVICE_BUFFER;
+                                    }
+                                    my_pointer = port_data[port].read_out_pos;
 
-                                    //channel_data(port,
-                                    //    (unsigned char *)port_data[port].device_read_buffer,
-                                    //    length);   // Length of string
+                                    if ( parse_agwpe_packet(input_string, frame_length+36, output_string, &new_length) ) {
+                                        channel_data(port, output_string, new_length);
+                                    }
 
-                                    // Move pointers so that
-                                    // processed data gets deleted.
-                                    port_data[port].read_out_pos =
-                                        (port_data[port].read_out_pos + frame_length + 36)
-                                        % MAX_DEVICE_BUFFER;
+                                    for (i = 0; i <= port_data[port].read_in_pos; i++)
+                                        port_data[port].device_read_buffer[i] = (char)0;
+
+                                    port_data[port].read_in_pos = 0;
                                 }
                             }
                             else {
@@ -2738,7 +2925,7 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                 // more data.
                             }
                         }
-//WE7U:AGWPE:  End of new AGWPE code
+// End of new AGWPE code
 
 
 
@@ -2786,10 +2973,6 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     length = 0;
                                 }
 
-// Be careful here!  device_read_buffer is a circular buffer.  We
-// need to copy the data to an array of chars before calling
-// channel_data().
-
                                 channel_data(port,
                                     (unsigned char *)port_data[port].device_read_buffer,
                                     length);   // Length of string
@@ -2797,10 +2980,6 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
 
                             for (i = 0; i <= port_data[port].read_in_pos; i++)
                                 port_data[port].device_read_buffer[i] = (char)0;
-
-// We reset our write pointer back to the start location.
-// What?  Why aren't we using this in a circular buffer fashion?  Is
-// it because channel_data() expects a linear string?
 
                             port_data[port].read_in_pos = 0;
                         }
@@ -2867,20 +3046,12 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {   /* ok try to decode it */
 
-// Be careful here!  device_read_buffer is a circular buffer.  We
-// need to copy the data to an array of chars before calling
-// channel_data().
-
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
                                             0);
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
-
-// We reset our write pointer back to the start location.
-// What?  Why aren't we using this in a circular buffer fashion?  Is
-// it because channel_data() expects a linear string?
 
                                     port_data[port].read_in_pos = 0;
                                 }
@@ -2931,10 +3102,6 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     if (process_ax25_packet(buffer, port_data[port].scan, port_data[port].device_read_buffer) != NULL) {
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
 
-// Be careful here!  device_read_buffer is a circular buffer.  We
-// need to copy the data to an array of chars before calling
-// channel_data().
-
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
                                              0);
@@ -2946,10 +3113,6 @@ fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
                                     if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
                                         port_data[port].read_in_pos += port_data[port].scan;
                                     } else {
-
-// We reset our write pointer back to the start location.
-// What?  Why aren't we using this in a circular buffer fashion?  Is
-// it because channel_data() expects a linear string?
 
                                        /* no buffer over runs writing a line at a time */
                                         port_data[port].read_in_pos = 0;
@@ -3898,26 +4061,28 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             'P','\0','\0','\0',     // Login Info Header
 '\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
 '\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
-                            '\0','\2','\0','\0',    // DataLen (512)
+                            0xfe,0x01,0x00,0x00,    // DataLen (510)
                             '\0','\0','\0','\0');   // User
                         port_write_binary(port_avail, logon_txt, 36);
 
-                        // Write login/password out as 256-byte strings
+                        // Write login/password out as 255-byte strings
                         //
-                        for (ii = 0; ii < 256; ii++) {
+                        for (ii = 0; ii < 255; ii++) {
                             logon_txt[ii] = '\0';
                         }
                         xastir_snprintf(logon_txt, sizeof(logon_txt),
                             "%s",
                             my_callsign);
-                        port_write_binary(port_avail, logon_txt, 256);
+printf(":%s:\n",my_callsign);
+                        port_write_binary(port_avail, logon_txt, 255);
 
-                        for (ii = 0; ii < 256; ii++)
+                        for (ii = 0; ii < 255; ii++)
                             logon_txt[ii] = '\0';
                         xastir_snprintf(logon_txt, sizeof(logon_txt),
                             "%s",
                             passwd);
-                        port_write_binary(port_avail, logon_txt, 256);
+printf(":%s:\n",passwd);
+                        port_write_binary(port_avail, logon_txt, 255);
                     }
                 }
                 break;
@@ -3964,29 +4129,82 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     break;
 
                 case DEVICE_NET_AGWPE:
+/*
                     // Query for the AGWPE version
                     //
-                    xastir_snprintf(logon_txt, sizeof(logon_txt),
-"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-                        '\0','\0','\0','\0',    // RadioPort 0
-                        'R','\0','\0','\0',     // Query Version Header
-'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
-'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
-                        '\0','\0','\0','\0',    // DataLen
-                        '\0','\0','\0','\0');   // User
-                    port_write_binary(port_avail, logon_txt, 36);
- 
+                    send_agwpe_packet(port_avail,
+                        0,
+                        'R', // Version query
+                        '\0',
+                        '\0',
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        0);
+*/
+
                     // Ask to receive "Monitor" frames
                     //
-                    xastir_snprintf(logon_txt, sizeof(logon_txt),
-"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-                        '\0','\0','\0','\0',    // RadioPort 0
-                        'm','\0','\0','\0',     // Monitor Frame Header
-'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
-'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
-                        '\0','\0','\0','\0',    // DataLen
-                        '\0','\0','\0','\0');   // User
-                    port_write_binary(port_avail, logon_txt, 36);
+                    send_agwpe_packet(port_avail,
+                        0,
+                        'm',    // Monitor packets
+                        '\0',
+                        '\0',
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        0);
+
+/*
+                    // Send a dummy UI frame for testing purposes.
+                    //
+                    send_agwpe_packet(port_avail,
+                        0,      // AGWPE radio port
+                        '\0',   // type
+                        "WE7U-3",   // FromCall
+                        "APRS",   // ToCall
+                        NULL,   // ViaCall1
+                        NULL,   // ViaCall2
+                        NULL,   // ViaCall3
+                        NULL,   // ViaCall4
+                        NULL,   // ViaCall5
+                        NULL,   // ViaCall6
+                        NULL,   // ViaCall7
+                        NULL,   // ViaCall8
+                        "Test",   // Data
+                        4);     // length
+
+                    // Send another dummy UI frame.
+                    //
+                    send_agwpe_packet(port_avail,
+                        0,          // AGWPE radio port
+                        '\0',       // type
+                        "WE7U-3",   // FromCall
+                        "APRS",     // ToCall
+                        "RELAY",    // ViaCall1
+                        "SAR1-1",  // ViaCall2
+                        "SAR2-1",  // ViaCall3
+                        "SAR3-1",  // ViaCall4
+                        "SAR4-1",  // ViaCall5
+                        "SAR5-1",  // ViaCall6
+                        "SAR6-1",  // ViaCall7
+                        "SAR7-1",  // ViaCall8
+                        "Testing this darned thing!",   // Data
+                        26);     // length
+*/
+
                     break;
  
                 default:
@@ -4097,7 +4315,6 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                     break;
 
                 case DEVICE_NET_AGWPE:
-//WE7U
                     if (devices[i].connect_on_startup == 1 || override) {
 
 //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
