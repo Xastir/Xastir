@@ -373,11 +373,12 @@ void output_message(char *from, char *to, char *message) {
 
                 // Roll over message_counter if we hit the max.  Now
                 // with Reply/Ack protocol the max is only two
-                // characters worth (change to Base-91 soon to get
-                // more range).
+                // characters worth.  We changed to sending the
+                // sequence number in Base-91 format in order to get
+                // more range from the 2-character variable.
                 message_counter++;
-                if (message_counter > 99)
-                    message_counter=0;
+                if (message_counter > 8281) // 91*91
+                    message_counter = 0;
 
                 message_pool[i].active = MESSAGE_ACTIVE;
                 message_pool[i].wait_on_first_ack = wait_on_first_ack;
@@ -385,8 +386,12 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].from_call_sign,from);
                 strcpy(message_pool[i].message_line,message_out);
 
-                xastir_snprintf(message_pool[i].seq, sizeof(message_pool[i].seq),
-                        "%d", message_counter);
+                // We compute the base-91 sequence number here
+                xastir_snprintf(message_pool[i].seq,
+                    sizeof(message_pool[i].seq),
+                    "%c%c",
+                    (char)(((message_counter / 91) % 91) + 33),
+                    (char)((message_counter % 91) + 33));
 
                 message_pool[i].active_time=0;
                 message_pool[i].next_time = (time_t)15l;
@@ -484,8 +489,11 @@ void check_and_transmit_messages(time_t time) {
                             message_pool[i].tries,message_pool[i].to_call_sign,message_pool[i].from_call_sign,message_pool[i].message_line,message_pool[i].seq);
 
                     pad_callsign(to_call,message_pool[i].to_call_sign);
-                    /* Add Leading ":" as per APRS Spec */
-                    xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s",
+
+                    // Add Leading ":" as per APRS Spec.
+                    // Add trailing '}' to signify that we're
+                    // Reply/Ack protocol capable.
+                    xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s}",
                             to_call, message_pool[i].message_line,message_pool[i].seq);
 
                     if (debug_level & 2)
@@ -568,13 +576,14 @@ void check_and_transmit_messages(time_t time) {
 void clear_acked_message(char *from, char *to, char *seq) {
     int i,ii;
     int found;
-    int lowest;
+    char lowest[3];
     char temp1[MAX_CALLSIGN+1];
 
 
     (void)remove_trailing_spaces(seq);  // This is IMPORTANT here!!!
 
-    lowest=100000;
+    //lowest=100000;
+    strncpy(lowest,"||",2);     // Highest Base-91 2-char string
     found=-1;
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
@@ -598,8 +607,12 @@ void clear_acked_message(char *from, char *to, char *seq) {
                         for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
                             if (message_pool[i].active==MESSAGE_ACTIVE) {
                                 if (strcmp(message_pool[i].to_call_sign,from)==0) {
-                                    if (atoi(message_pool[i].seq)<lowest) {
-                                        lowest=atoi(message_pool[i].seq);
+// Need to change this to a string compare instead of an integer
+// compare.  We are using base-91 encoding now.
+                                    //if (atoi(message_pool[i].seq)<lowest) {
+                                    if (strncmp(message_pool[i].seq,lowest,2) < 0) {
+                                        //lowest=atoi(message_pool[i].seq);
+                                        strncpy(lowest,message_pool[i].seq,2);
                                         found=i;
                                     }
                                 }
