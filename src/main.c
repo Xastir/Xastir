@@ -1030,10 +1030,11 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 
 
 static void ClearTrackMouse( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XEvent *event, /*@unused@*/ Boolean *flag) {
-
-    Widget textarea = (Widget) clientData;
-    XmTextFieldSetString(textarea," ");
-    XtManageChild(textarea);
+// N7TAP: In my opinion, it is handy to have the cursor position still displayed
+//        in the xastir window when I switch to another (like to write it down...)
+//    Widget textarea = (Widget) clientData;
+//    XmTextFieldSetString(textarea," ");
+//    XtManageChild(textarea);
 }
 
 
