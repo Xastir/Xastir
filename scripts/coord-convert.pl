@@ -5,8 +5,6 @@
 # Copyright (C) 2002 Paul Lutt, KE7XT.
 # Released to the public domain.
 #
-# Modified by Curt Mills, WE7U.
-#
 #
 # $Id$
 #
