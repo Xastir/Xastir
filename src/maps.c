@@ -11972,7 +11972,7 @@ void load_auto_maps (Widget w, char *dir) {
     // Skip the sorting of the maps if we don't need to do it
     if (re_sort_maps) {
 
-printf("*** Sorting the selected maps by layer...\n");
+        //printf("*** Sorting the selected maps by layer...\n");
 
         // Empty the sorted list first.  We'll create a new one.
         empty_map_sorted_list();
@@ -12016,8 +12016,7 @@ printf("*** Sorting the selected maps by layer...\n");
         // Chooser.
         re_sort_maps = 0;
 
-printf("*** DONE sorting the selected maps.\n");
-
+        //printf("*** DONE sorting the selected maps.\n");
     }
 
     // We have the maps in sorted order.  Run through the list and
@@ -12076,7 +12075,7 @@ void load_maps (Widget w) {
     // Skip the sorting of the maps if we don't need to do it
     if (re_sort_maps) {
 
-printf("*** Sorting the selected maps by layer...\n");
+        //printf("*** Sorting the selected maps by layer...\n");
 
         // Empty the sorted list first.  We'll create a new one.
         empty_map_sorted_list();
@@ -12204,8 +12203,7 @@ printf("*** Sorting the selected maps by layer...\n");
         // Chooser.
         re_sort_maps = 0;
 
-printf("*** DONE sorting the selected maps.\n");
-
+        //printf("*** DONE sorting the selected maps.\n");
     }
 
     // We have the maps in sorted order.  Run through the list and
