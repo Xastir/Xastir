@@ -75,7 +75,7 @@ yellow2->yellow3 on tracks to be visable on polygon fill (minor)
 MAP_SCALE_CHECK/FUZZYRASTER to avoid useless map loading
 usr/local/xastir->/usr/local/share/xastir, migration scripts
 break up maps.c
-redrawing interruptions
+Interrupting a sequence of map redraws
 
 HELP-INDEX>What's new in Xastir 1.2
 
@@ -587,7 +587,7 @@ The map can also be zoomed with the keyboard PageUp/PageDown keys.  The
 zooming in this case keeps the same map center (no centering).
 
 Map Display Bookmarks
-See the help topic "Creating and using Jump Locations"
+See the help topic "Creating and using Map Display Bookmarks"
 
 Panning/Centering:
 The map can be centered at a specific location by choosing center in the
@@ -877,7 +877,7 @@ Tigermaps are always loaded as the bottom layer; they do not have layering
 settings in the Map Chooser.
 
 Map Display Bookmarks
-See the help topic "Creating and using Jump Locations"
+See the help topic "Creating and using Map Display Bookmarks"
 
 Locate Map Feature
 This option brings up a search dialog where you can search through the labels
@@ -1643,6 +1643,91 @@ button. While tracking is active, a "Tr" is shown in the status bar next to
 the zoom level.  If the station is not on the map yet, tracking will begin
 as soon as it shows up.
 
+HELP-INDEX>Printing
+
+                       Printing the Map Screen
+
+Note: Printing has not been set up on Windows/Cygwin.  These instructions
+are for Unix and Unix-like operating systems.
+
+Xastir can print the drawing area in either black & white or color.  It does
+this by first dumping the image to an XPixmap file on disk, then using external
+tools to convert it to postscript, scale it, rotate it, preview it, then print
+it.  You must have your system printing set up to handle postscript (usually
+this requires Ghostscript and a print filter installed, as well as lp or lpr
+print spoolers).  You must also have the following tools installed for this
+capability:  ImageMagick tools (specifically "convert"), "Ghostscript",
+Ghostscript fonts, and "gv".  Once all of these packages are installed and
+functional, you should get a "gv" window popping up shortly after you tell
+Xastir to create a print file.  From there  you can view the printed image, and
+if acceptable, tell "gv" to print it.  Note that sometimes changing to a white
+default background for the maps is recommended, depending on what maps you have
+viewable.  This can save greatly on ink.
+
+HELP-INDEX>Creating Snapshots
+
+                     Creating Automatic Snapshots
+
+Xastir has the capability to create automatic snapshots of the map screen
+on a recurring basis.  This time period is currently set at once per five
+minutes.  Assuming that you have "convert" from the ImageMagick tools
+installed, Xastir will create an XPM format file in /var/tmp, then convert
+it to the PNG file /var/tmp/xastir_snap.png.  This file is useful for
+embedding in web pages to show a "live" image of what is on your Xastir
+screen.  Enable this feature via the "File->Enable PNG Snapshots"
+togglebutton.  The rate is once every five minutes, or every time the
+button is toggled from off to on.
+
+HELP-INDEX>Included Scripts
+
+                        Included Scripts
+
+Xastir includes several Perl scripts and a shell script that may be useful:
+
+fcc-get
+This shell script automates retrieving and installing the FCC and the RAC
+callsign databases. Note that these databases are large; the two downloads are
+60Mb total!
+
+icontable.pl
+This script generates an xpm bitmap of all Xastir's primary and secondary
+symbols from the symbols.dat file. The overlays and specials are ignored.
+Output is to STDOUT, so a typical call would be "icontable.pl > symbols.xpm".
+
+inf2geo.pl
+This script creates .geo files from UI-View .inf files. To create a map.geo
+from a map.inf, typical usage would be "inf2geo.pl map".
+
+mapblast2geo.pl
+This script creates .geo files for Mapblast pixel maps. It includes usage
+information.
+
+mapfgd.pl
+This script creates minimal .fgd files for GeoTIFF images lacking them, based
+on information found in the GeoTIFF file. The created files allow Xastir to
+crop the white borders and rotate/scale the map properly. Typical usage would
+be "mapfgd.pl mapdir" where mapdir is the directory containing the GeoTIFF
+images.
+
+track-get.pl
+This script downloads the tracklog of a specified object from a Garmin GPS.
+It requires the GPS::Garmin module. It prompts for an object name, and writes
+the tracklog to the ~/.xastir/logs directory.
+
+waypoint-get.pl
+This similar script downloads the waypoints from a Garmin GPS, and creates a
+log in the ~/.xastir/logs directory containing the waypoints as objects. It
+also requires the GPS::Garmin module.
+
+update_langfile.pl
+This script is targeted toward developers. It rebuilds a specified language
+file to contain all the strings of another. It is usually used to regenerate
+the non-English language files when significant changes have been made to the
+English file. When the second language file lacks a string in the main file,
+the untranslated string is inserted. Typical usage would be 
+"update_langfile.pl language-German.sys" . The main language file is
+hard-coded but easily editable.
+
 HELP-INDEX>Configuring Interfaces
 
                            Configuring Interfaces
@@ -1967,101 +2052,18 @@ Now set the Rain Gauge correction factor. Xastir requires that the rain gauge
 report in .01 inch increments. If the unit reports in .1 inch or .1 millimeter
 increments, a correction must be specified to obtain accurate measurements.
 
+HELP-INDEX>Configure an AGWPE Connection
+
                    Configure an AGWPE Connection
 
 Xastir can use an AGWPE network interface running on a Windows box
-as a TNC interface. It cannot currently do the login/password
+as a TNC interface. It cannot currently use the login/password
 security that AGWPE has built-in, so you must set up the AGWPE
 security appropriately to allow Xastir to connect.
 
 The other options are described in the sections for Serial TNC and for
 Network interfaces.
 
-
-HELP-INDEX>Printing
-
-                       Printing the Map Screen
-
-Note: Printing has not been set up on Windows/Cygwin.  These instructions
-are for Unix and Unix-like operating systems.
-
-Xastir can print the drawing area in either black & white or color.  It does
-this by first dumping the image to an XPixmap file on disk, then using external
-tools to convert it to postscript, scale it, rotate it, preview it, then print
-it.  You must have your system printing set up to handle postscript (usually
-this requires Ghostscript and a print filter installed, as well as lp or lpr
-print spoolers).  You must also have the following tools installed for this
-capability:  ImageMagick tools (specifically "convert"), "Ghostscript",
-Ghostscript fonts, and "gv".  Once all of these packages are installed and
-functional, you should get a "gv" window popping up shortly after you tell
-Xastir to create a print file.  From there  you can view the printed image, and
-if acceptable, tell "gv" to print it.  Note that sometimes changing to a white
-default background for the maps is recommended, depending on what maps you have
-viewable.  This can save greatly on ink.
-
-HELP-INDEX>Creating Snapshots
-
-                     Creating Automatic Snapshots
-
-Xastir has the capability to create automatic snapshots of the map screen
-on a recurring basis.  This time period is currently set at once per five
-minutes.  Assuming that you have "convert" from the ImageMagick tools
-installed, Xastir will create an XPM format file in /var/tmp, then convert
-it to the PNG file /var/tmp/xastir_snap.png.  This file is useful for
-embedding in web pages to show a "live" image of what is on your Xastir
-screen.  Enable this feature via the "File->Enable PNG Snapshots"
-togglebutton.  The rate is once every five minutes, or every time the
-button is toggled from off to on.
-
-HELP-INDEX>Included Scripts
-
-                        Included Scripts
-
-Xastir includes several Perl scripts and a shell script that may be useful:
-
-fcc-get
-This shell script automates retrieving and installing the FCC and the RAC
-callsign databases. Note that these databases are large; the two downloads are
-60Mb total!
-
-icontable.pl
-This script generates an xpm bitmap of all Xastir's primary and secondary
-symbols from the symbols.dat file. The overlays and specials are ignored.
-Output is to STDOUT, so a typical call would be "icontable.pl > symbols.xpm".
-
-inf2geo.pl
-This script creates .geo files from UI-View .inf files. To create a map.geo
-from a map.inf, typical usage would be "inf2geo.pl map".
-
-mapblast2geo.pl
-This script creates .geo files for Mapblast pixel maps. It includes usage
-information.
-
-mapfgd.pl
-This script creates minimal .fgd files for GeoTIFF images lacking them, based
-on information found in the GeoTIFF file. The created files allow Xastir to
-crop the white borders and rotate/scale the map properly. Typical usage would
-be "mapfgd.pl mapdir" where mapdir is the directory containing the GeoTIFF
-images.
-
-track-get.pl
-This script downloads the tracklog of a specified object from a Garmin GPS.
-It requires the GPS::Garmin module. It prompts for an object name, and writes
-the tracklog to the ~/.xastir/logs directory.
-
-waypoint-get.pl
-This similar script downloads the waypoints from a Garmin GPS, and creates a
-log in the ~/.xastir/logs directory containing the waypoints as objects. It
-also requires the GPS::Garmin module.
-
-update_langfile.pl
-This script is targeted toward developers. It rebuilds a specified language
-file to contain all the strings of another. It is usually used to regenerate
-the non-English language files when significant changes have been made to the
-English file. When the second language file lacks a string in the main file,
-the untranslated string is inserted. Typical usage would be 
-"update_langfile.pl language-German.sys" . The main language file is
-hard-coded but easily editable.
 
 HELP-INDEX>Symbol Table
 
