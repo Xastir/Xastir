@@ -179,7 +179,7 @@ Getting Maps and other Data Files for Xastir:
       Here's a page that we'll try to keep up-to-date which will have lots of
       links to downloadable maps on it:
 
-        http://www.findewe.com/nwaprs/XastirMaps
+        http://wiki.findewe.com/nwaprs/XastirMaps
 
 
      Dos/Win/MacAPRS style vector/fill maps:
@@ -291,6 +291,10 @@ Getting Maps and other Data Files for Xastir:
       available only in uncompressed or in tar/bzip2 format.  To decompress
       the latter file, you'd type "bunzip2 filename" and then
       "tar xvf filename".
+
+      www.bts.gov has the "National Transportation Atlas" that you can download
+      pieces of (at least for the larger layers) or ask for (free) CDs to be
+      mailed to you.
 
       -----
       Reprojecting shapefiles (or: why doesn't my shapefile show up?)
