@@ -361,6 +361,7 @@ WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
+WPUPCFC007|MGRS||
 #
 # PopUp "Configure GPS"
 WPUPCFG001|Configurer GPS||
