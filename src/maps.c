@@ -1354,122 +1354,51 @@ void create_map_from_trail(char *call_sign) {
 
 
 
-// SHPRingDir_2d Function snagged from Shapelib/contrib/shpgeo.c.
-// The below copyright notice applies to this one function only.
-/********************************************************************
- * Copyright (c) 1999, Carl Anderson
- *
- * This code is based in part on the earlier work of Frank Warmerdam
- * 
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- ********************************************************************/
+// Code borrowed from Shapelib which determines whether a ring is CW
+// or CCW.  Thanks to Frank Warmerdam for permitting us to use this
+// under the GPL license!  Per e-mail of 04/29/2003 between Frank
+// and Curt, WE7U.
+//
+// Test Ring for Clockwise/Counter-Clockwise (fill or hole ring)
+//
+// Return  1  for Clockwise (fill ring)
+// Return -1  for Counter-Clockwise (hole ring)
+// Return  0  for error/indeterminate (shouldn't get this!)
+//
+int shape_ring_direction ( SHPObject *psObject, int Ring ) {
+    int nVertStart;
+    int nVertCount;
+    int iVert;
+    float dfSum;
+    int result;
 
-// SHPRingDir_2d
-//
-// Test Polygon for CW / CCW  ( R+ / R- )
-//
-// return 1  for R+
-// return -1 for R-
-// return 0  for error
-// **************************************************************************
-int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
-    int     i, ti, last_vtx;
-    double  tX;
-    double  *a, *b;
-    double  dx0, dx1, dy0, dy1;
-    //double  v1, v2;
-    double  v3;
-   
-    tX = 0.0;
-    a = psCShape->padfX;
-    b = psCShape->padfY;
-   
-    if ( Ring >= psCShape->nParts )
-        return(0);
-   
-    if ( Ring >= psCShape->nParts -1 ) {
-        last_vtx = psCShape->nVertices;
-    }
-    else {
-        last_vtx = psCShape->panPartStart[Ring + 1];
-    }
-      
-    // All vertices at the corners of the extrema (rightmost lowest,
-    // leftmost lowest, topmost rightest, ...) must be less than pi
-    // wide.  If they werent they couldn't be extrema.  Of course
-    // the following will fail if the Extents are even a little
-    // wrong.
  
-    // WE7U:  Give "ti" a starting value else the compiler will
-    // complain if "-Wall" flag is turned on.
-    ti = psCShape->panPartStart[Ring];
+    nVertStart = psObject->panPartStart[Ring];
 
-    for ( i = psCShape->panPartStart[Ring]; i < last_vtx; i++ ) {
-        if ( b[i] == psCShape->dfYMax && a[i] > tX ) {
-            ti = i;
-        }
-    }
+    if( Ring == psObject->nParts-1 )
+        nVertCount = psObject->nVertices - psObject->panPartStart[Ring];
+    else
+        nVertCount = psObject->panPartStart[Ring+1] 
+            - psObject->panPartStart[Ring];
 
-    if (debug_level & 16) {
-        printf ("maps.c:SHPRingDir: highest Rightmost Pt is vtx %d (%f, %f)\n",
-            ti,
-            a[ti],
-            b[ti]);
-    }
-   
-    // Cross product:
-    // The sign of the cross product of two vectors indicates the
-    // right or left half-plane which we can use to indicate Ring
-    // Dir
-    if ( (ti > psCShape->panPartStart[Ring]) & (ti < last_vtx) ) {
-        dx0 = a[ti-1] - a[ti];
-        dx1 = a[ti+1] - a[ti];
-        dy0 = b[ti-1] - b[ti];
-        dy1 = b[ti+1] - b[ti];
-    }
-    else {
-        // if the tested vertex is at the origin then continue from 0
-        dx1 = a[1] - a[0];
-        dx0 = a[last_vtx] - a[0];
-        dy1 = b[1] - b[0];
-        dy0 = b[last_vtx] - b[0];
-    }
-  
-    // These next two are alwyas zero so why do the math? 
-    //v1 = ( (dy0 * 0) - (0 * dy1) );
-    //v2 = ( (0 * dx1) - (dx0 * 0) );
-
-    v3 = ( (dx0 * dy1) - (dx1 * dy0) );
-
-    if (debug_level & 16) {
-        printf ("maps.c:SHPRingDir:  cross product for vtx %d was %f n",
-            ti, v3); 
+    dfSum = 0.0;
+    for( iVert = nVertStart; iVert < nVertStart+nVertCount-1; iVert++ )
+    {
+        dfSum += psObject->padfX[iVert] * psObject->padfY[iVert+1]
+               - psObject->padfY[iVert] * psObject->padfX[iVert+1];
     }
 
-    if ( v3 > 0 ) {
-        return (1);
-    }
-    else {
-        return (-1);
-    }
+    dfSum += psObject->padfX[iVert] * psObject->padfY[nVertStart]
+           - psObject->padfY[iVert] * psObject->padfX[nVertStart];
+
+    if (dfSum < 0.0)
+        result = 1;
+    else if (dfSum > 0.0)
+        result = -1;
+    else 
+        result = 0;
+
+    return(result);
 }
 
 
@@ -3538,7 +3467,12 @@ void draw_shapefile_map (Widget w,
                     // this Shape.
                     // !!Remember to free this storage later!!
                     polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
- 
+
+// Run through the entire shape (all rings of it) once.  Create an
+// array of flags that specify whether each ring is a fill or a
+// hole.  If any holes found, set the global polygon_hole_flag as
+// well.
+
                     for (ring = 0; ring < object->nParts; ring++ ) {
 
                         // Testing for fill or hole ring.  This will
@@ -3551,8 +3485,9 @@ void draw_shapefile_map (Widget w,
                         // return -1 for R- (CCW or a hole in the polygon)
                         // return 0  for error
                         //
-                        switch ( SHPRingDir_2d( object, ring) ) {
+                        switch ( shape_ring_direction( object, ring) ) {
                             case  0:    // Error in trying to compute whether fill or hole
+                                fprintf(stderr,"Error in computing fill/hole ring\n");
                             case  1:    // It's a fill ring
                                 // Do nothing for these two cases
                                 // except clear the hole_flag in our
@@ -3560,13 +3495,16 @@ void draw_shapefile_map (Widget w,
                                 polygon_hole_storage[ring] = 0;
                                 break;
                             case -1:    // It's a hole ring
+                                // Add it to our list of hole rings
+                                // here and set a flag.  That way we
+                                // won't have to run through
+                                // SHPRingDir_2d again in the next
+                                // loop.
                                 polygon_hole_flag++;
+                                polygon_hole_storage[ring] = 1;
 //                                fprintf(stderr, "Ring %d/%d is a polygon hole\n",
 //                                    ring,
 //                                    object->nParts);
-// Add it to a list of hole rings here and set a flag.  That way we
-// won't have to run through SHPRingDir_2d again in the next loop.
-                                polygon_hole_storage[ring] = 1;
                                 break;
                         }
                     }
@@ -3576,11 +3514,9 @@ void draw_shapefile_map (Widget w,
 //                            polygon_hole_flag,
 //                            structure);
                     }
-//WE7U
 
-
-
-
+// Now that we know which are fill/hole rings, worry about drawing
+// each ring of the Shape.
 
                     // Read the vertices for each ring in the Shape
                     for (ring = 0; ring < object->nParts; ring++ ) {
@@ -3590,26 +3526,16 @@ void draw_shapefile_map (Widget w,
                         int hole_flag = 0;
 
 
-
-
-
                         if (polygon_hole_flag) {
                             // We know that at least one ring for
                             // this Shape is a "hole" ring.  We need
                             // to draw the shape quite differently
                             // because of this.
                             if (polygon_hole_storage[ring]) {
-                                //hole_flag++;
-//                              fprintf(stderr, "Ring %d/%d is a polygon hole\n",
-//                                  ring,
-//                                  object->nParts);
+//                                hole_flag++;
                             }
                         }
 
-
-
-
- 
                         if (lake_flag || river_flag) {
                             if ( mapshots_labels_flag && (fieldcount >= 3) ) {
                                 temp = DBFReadStringAttribute( hDBF, structure, 2 );    // CFCC Field
