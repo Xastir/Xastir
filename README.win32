@@ -576,7 +576,7 @@ window into a continuous map.
 
 How to make Sound Alerts work under Cygwin
 ------------------------------------------
-(from Kirk Mefford kc2elo@softhome.net)
+(from Kirk Mefford, kc2elo)
 "I figured I'd share exactly what I did to make the sound alerts work in
 xastir under Cygwin. Sound support seems to be just one of the many many quirks
 of trying to use *nix native software under Microsoft OS's. Hope this helps
