@@ -954,7 +954,7 @@ void load_data_or_default(void) {
         sprintf (name_temp, "DEVICE%0d_", i);
         strcpy (name, name_temp);
         strcat (name, "TYPE");
-        if (!get_int (name, &devices[i].device_type,0,10,DEVICE_NONE)) {
+        if (!get_int (name, &devices[i].device_type,0,MAX_IFACE_DEVICE_TYPES,DEVICE_NONE)) {
             devices[i].device_type = DEVICE_NONE;
         }
         strcpy (name, name_temp);
