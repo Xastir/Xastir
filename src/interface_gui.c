@@ -613,8 +613,6 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
         speed_box = XmCreateRadioBox(frame,"Config_TNC Speed_box",al,ac);
         XtVaSetValues(speed_box,XmNnumColumns,5,NULL);
@@ -1677,8 +1675,6 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
 
         speed_box = XmCreateRadioBox(frame,"Config_GPS Speed_box",al,ac);
@@ -2147,8 +2143,6 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
 
         speed_box = XmCreateRadioBox(frame,"Config_WX Speed_box",al,ac);
@@ -2769,8 +2763,6 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
 
         frame3 = XtVaCreateManagedWidget("Config_NWX frame3", xmFrameWidgetClass, form,
@@ -3561,8 +3553,6 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
         /* set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
 
         igate_box = XmCreateRadioBox(frame,"Config_AX25 IGate box",al,ac);
@@ -5038,8 +5028,6 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
         // Set args for color
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
 
         igate_box = XmCreateRadioBox(frame,"Config_AGWPE IGate box",al,ac);
@@ -5823,7 +5811,6 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 ac=0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
                 XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICE_TYPES); ac++;
-                XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
                 XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
                 XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
                 XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -6139,7 +6126,6 @@ void Configure_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientD
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -6420,7 +6406,6 @@ begin_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
-        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
