@@ -272,6 +272,20 @@ if test "${use_gdal}" = "yes"; then
   break)])
 fi
 
+
+AC_ARG_ENABLE(davis, [  --enable-davis       Turn on Davis support],
+  [case "${enableval}" in
+    yes) davis=true ;;
+     no) davis=false ;;
+      *) AC_MSG_ERROR(bad value ${enableval} for --enable-davis) ;;
+  esac],[davis=false])
+AM_CONDITIONAL(DAVIS, test x$davis = xtrue)
+if test "${davis}" = "true"; then
+  davis=yes
+else
+  davis=no
+fi
+
  
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
@@ -438,6 +452,7 @@ echo Building with GDAL/OGR...... : $use_gdal
 echo Building with ShapeLib...... : $use_shapelib 
 echo Building with pcre.......... : $use_pcre
 echo Building with dbfawk........ : $use_dbfawk
+#echo Building with Davis/MySQL... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
 if test "x$xastirpath" != "x" ; then 
