@@ -188,6 +188,7 @@ int decode_gps_rmc( char *data,
             }
         }
     }
+    //printf("Speed %s\n",spd);
     return(ok);
 }
 
