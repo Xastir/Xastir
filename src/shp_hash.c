@@ -96,7 +96,7 @@ void destroy_shpinfo(shpinfo *si) {
         empty_shpinfo(si);
         //        fprintf(stderr,
         //                "       Freeing shpinfo %lx\n",
-        //                        (unsigned long int) si);
+        //        (unsigned long int) si);
         free(si);
     }
 }
@@ -219,32 +219,34 @@ void purge_shp_hash() {
     int ret;
 
     time_now = sec_now();
-
-    if (time_now >= purge_time) {  // Time to purge
-        //        fprintf(stderr,"Purging...\n");
+    if (time_now > purge_time) {  // Time to purge
+        //   fprintf(stderr,"Purging...\n");
         purge_time += PURGE_PERIOD;
 
         if (shp_hash) {
             // walk through the hash table and kill entries that are old
 
             iterator=hashtable_iterator(shp_hash);
-            do {
-                si=hashtable_iterator_value(iterator);
-                if (time_now > si->last_access+PURGE_PERIOD) {
-                    // this is stale, hasn't been accessed in a long time
-                    //    fprintf(stderr,
-                    //         "    found stale entry for %s, deleting it.\n",
-                    //          si->filename);
-                    //     fprintf(stderr,"    Destroying si=%lx\n",
-                    //                    (unsigned long int) si);
-                    destroy_shpinfo(si);
-                    //  fprintf(stderr,"    removing from hashtable\n");
-                    ret=hashtable_iterator_remove(iterator);
-                } else {
-                    ret=hashtable_iterator_advance(iterator);
-                }
-            } while (ret);
+            if (iterator) { // could be null if we've already purged everything
+                do {
+                    si=hashtable_iterator_value(iterator);
+                    if (time_now > si->last_access+PURGE_PERIOD) {
+                        // this is stale, hasn't been accessed in a long time
+                        //                        fprintf(stderr,
+                        // "    found stale entry for %s, deleting it.\n",
+                        //     si->filename);
+                        //fprintf(stderr,"    Destroying si=%lx\n",
+                        //        (unsigned long int) si);
+                        destroy_shpinfo(si);
+                        // fprintf(stderr,"    removing from hashtable\n");
+                        ret=hashtable_iterator_remove(iterator);
+                    } else {
+                        ret=hashtable_iterator_advance(iterator);
+                    }
+                } while (ret);
+            }
         }
     }
+    
 }
 #endif // USE_RTREE

@@ -123,7 +123,7 @@ int RTreeSearchCallback(int id, void* arg)
         CHECKREALLOC(ptr);  // fatal error if we can't get 'em :-(
         RTree_hitarray=ptr;
         RTree_hitarray_size += 1000;
-        //        fprintf(stderr,"Hitarray now at %d\n",RTree_hitarray_size);
+        //fprintf(stderr,"Hitarray now at %d\n",RTree_hitarray_size);
     }
 
         
@@ -1654,36 +1654,45 @@ void draw_shapefile_map (Widget w,
 #ifdef USE_RTREE
     // Now instead of looping over all the shapes, search for the ones that
     // are in our viewport and only loop over those
+    //fprintf(stderr,"Deciding how to process this file...\n");
     if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
+        //fprintf(stderr," weather alert flag set...\n");
         if (found_shape != -1) {    // Found the record
+            //fprintf(stderr,"  found_shape set...\n");
             // just in case we haven't drawn any real maps yet...
             if (!RTree_hitarray) {
+                //fprintf(stderr,"   mallocing hitarray...\n");
                 RTree_hitarray = (int *)malloc(sizeof(int)*1000);
                 RTree_hitarray_size=1000;
             }
             CHECKMALLOC(RTree_hitarray);
             RTree_hitarray[0]=found_shape;
-            // fprintf(stderr," %s contains alert\n");
+            //fprintf(stderr," %s contains alert\n");
             nhits=1;
         }
         else {  // Didn't find the record
+            //fprintf(stderr,"   found_shape is -1...\n");
             nhits=0;
         }
     }
     else {  // Draw an entire Shapefile map
+        //fprintf(stderr,"   weather_alert_flag not set...\n");
         if (si) {
+            //fprintf(stderr,"   si is 0x%lx...\n",(unsigned long int) si);
             RTree_hitarray_index=0;
             // the callback will be executed every time the search finds a 
             // shape whose bounding box overlaps the viewport.
             nhits = RTreeSearch(si->root, &viewportRect, 
                                 RTreeSearchCallback, 0);
-            // fprintf(stderr,"Found %d hits in %s\n",nhits,file);
+            //fprintf(stderr,"Found %d hits in %s\n",nhits,file);
         } else {
+            //fprintf(stderr,"   si not set ...\n");
             // we read the entire shapefile
             nhits=nEntities;
-            // fprintf(stderr," %s entirely in view, with %d shapes\n",nhits);
+            // fprintf(stderr," %s entirely in view, with %d shapes\n",file,nhits);
         }
     }
+    //fprintf(stderr," Done with decision, nhits is %d\n",nhits);
 #else
     if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
         if (found_shape != -1) {    // Found the record
