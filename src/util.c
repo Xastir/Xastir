@@ -1404,6 +1404,10 @@ time_t time_from_aprsstring(char *aprs_time) {
 
 // Note: last_speed should be in knots.
 //
+// Input format for lat/long is DDMM.MM or DDMM.MMM format, like:
+// 4722.93N   12244.17W  or
+// 4722.938N  12244.177W
+//
 char *compress_posit(const char *input_lat, const char group, const char *input_lon, const char symbol,
             const int last_course, const int last_speed, const char *phg) {
     static char pos[100];
@@ -1411,21 +1415,47 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     char c, s, t, ext;
     int temp, deg;
     double minutes;
+    char temp_str[20];
 
-    //fprintf(stderr,"lat:%s, long:%s, symbol:%c%c, course:%d, speed:%d, phg:%s\n",
-    //    input_lat,
-    //    input_lon,
-    //    group,
-    //    symbol,
-    //    last_course,
-    //    last_speed,
-    //    phg);
 
-    (void)sscanf(input_lat, "%2d%lf%c", &deg, &minutes, &ext);
-    ext = (char)toupper((int)ext);
+//fprintf(stderr,"lat:%s, long:%s, symbol:%c%c, course:%d, speed:%d, phg:%s\n",
+//    input_lat,
+//    input_lon,
+//    group,
+//    symbol,
+//    last_course,
+//    last_speed,
+//    phg);
+
+    // sscanf() doesn't work on latest Cygwin!
+    //(void)sscanf(input_lat, "%2d%lf%c", &deg, &minutes, &ext);
+
+    // Fetch degrees (first two chars)
+    temp_str[0] = input_lat[0];
+    temp_str[1] = input_lat[1];
+    temp_str[2] = '\0';
+    deg = atoi(temp_str);
+
+    // Fetch minutes (rest of numbers)
+    xastir_snprintf(temp_str,
+        sizeof(temp_str),
+        "%s",
+        input_lat);
+    temp_str[0] = ' ';  // Blank out degrees
+    temp_str[1] = ' ';  // Blank out degrees
+    minutes = atof(temp_str);
+
+    // Check for North latitude
+    if (strstr(input_lat, "N") || strstr(input_lat, "n"))
+        ext = 'N';
+    else
+        ext = 'S';
+
+//fprintf(stderr,"ext:%c\n", ext);
+
     temp = 380926 * (90 - (deg + minutes / 60.0) * ( ext=='N' ? 1 : -1 ));
 
-    //fprintf(stderr,"temp: %d\t",temp);
+//fprintf(stderr,"temp: %d\t",temp);
 
     lat[3] = (char)(temp%91 + 33); temp /= 91;
     lat[2] = (char)(temp%91 + 33); temp /= 91;
@@ -1433,13 +1463,39 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     lat[0] = (char)(temp    + 33);
     lat[4] = '\0';
 
-    //fprintf(stderr,"%s\n",lat);
+//fprintf(stderr,"%s\n",lat);
 
-    (void)sscanf(input_lon, "%3d%lf%c", &deg, &minutes, &ext);
-    ext = (char)toupper((int)ext);
+    // This doesn't work on latest Cygwin!
+    //(void)sscanf(input_lon, "%3d%lf%c", &deg, &minutes, &ext);
+
+    // Fetch degrees (first three chars)
+    temp_str[0] = input_lon[0];
+    temp_str[1] = input_lon[1];
+    temp_str[2] = input_lon[2];
+    temp_str[3] = '\0';
+    deg = atoi(temp_str);
+
+    // Fetch minutes (rest of numbers)
+    xastir_snprintf(temp_str,
+        sizeof(temp_str),
+        "%s",
+        input_lon);
+    temp_str[0] = ' ';  // Blank out degrees
+    temp_str[1] = ' ';  // Blank out degrees
+    temp_str[2] = ' ';  // Blank out degrees
+    minutes = atof(temp_str);
+
+    // Check for West longitude
+    if (strstr(input_lon, "W") || strstr(input_lon, "w"))
+        ext = 'W';
+    else
+        ext = 'E';
+
+//fprintf(stderr,"ext:%c\n", ext);
+
     temp = 190463 * (180 + (deg + minutes / 60.0) * ( ext=='W' ? -1 : 1 ));
 
-    //fprintf(stderr,"temp: %d\t",temp);
+//fprintf(stderr,"temp: %d\t",temp);
 
     lon[3] = (char)(temp%91 + 33); temp /= 91;
     lon[2] = (char)(temp%91 + 33); temp /= 91;
@@ -1447,7 +1503,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     lon[0] = (char)(temp    + 33);
     lon[4] = '\0';
 
-    //fprintf(stderr,"%s\n",lon);
+//fprintf(stderr,"%s\n",lon);
 
     // Set up csT bytes for course/speed if either are non-zero
     c = s = t = ' ';
@@ -1515,7 +1571,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
         s,
         t);
 
-    //fprintf(stderr,"New compressed pos: (%s)\n",pos);
+//fprintf(stderr,"New compressed pos: (%s)\n",pos);
     return pos;
 }
 
