@@ -7724,6 +7724,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     int max;
         int i;
     static int last_alert_on_screen;
+    char station_num[30];
+    int stations_old = stations;
 
 
     do_time = 0;
@@ -8278,6 +8280,17 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
             }
             /* END- READ FILE IF OPENED */
         }
+
+        // If number of stations has changed
+        if (stations != stations_old) {
+            // show number of stations in status line
+            xastir_snprintf(station_num,
+                sizeof(station_num),
+                langcode("BBARSTH001"),
+                stations);
+            XmTextFieldSetString(text3, station_num);
+        }
+
     }
     sched_yield();  // Yield the processor to another thread
 
