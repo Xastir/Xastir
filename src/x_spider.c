@@ -159,17 +159,21 @@
 #define _(x)        (x)
 #endif  // HAVE_LIBINTL_H
 
-//#include "xastir.h"
-//#include "interface.c"
 
 #ifndef SIGRET
 #define SIGRET  void
 #endif  // SIGRET
 
 
+// This is from util.h/util.c.  We can't include util.h here because
+// it causes other problems.
+extern short checkHash(char *theCall, short theHash);
+
+
 typedef struct _pipe_object {
     int to_child[2];
     int to_parent[2];
+    int authenticated;
     struct _pipe_object *next;
 } pipe_object;
 
@@ -183,7 +187,9 @@ int pipe_xastir_to_server = -1;
 int pipe_server_to_xastir = -1;
 
 
- 
+
+
+
 /*
 // Read "n" bytes from a descriptor.  Use in place of read() when fd
 // is a stream socket.  This routine is from "Unix Network
@@ -448,7 +454,6 @@ int pipe_check(void) {
         // Read data from pipe, write to all pipes except the one
         // who sent it.
         //
- 
         n = readline(p->to_parent[0], line, MAXLINE);
         if (n == 0) {
             pipe_object *q = pipe_head;
@@ -471,7 +476,7 @@ int pipe_check(void) {
             free(p);    // Free the malloc'd memory.
             wait(0);    // Reap the status of the dead process
         }
-        if (n < 0) {
+        else if (n < 0) {
             //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 // This is normal if we have no data to read
@@ -483,7 +488,77 @@ int pipe_check(void) {
         }
         else {  // We received some data.  Send it down all of the
                 // pipes except the one that sent it.
-// Also send it down the socket.
+
+// Check for an authentication string.  If the pipe has not been
+// authenticated, we don't allow it to send anything to the upstream
+// server.  It's probably ok to send it to downstream connections
+// though.
+
+            // Check for "user" "pass" string.
+            // "user WE7U-13 pass XXXX vers XASTIR 1.3.3"
+            if (strstr(line,"user") && strstr(line,"pass")) {
+                char line2[MAXLINE];
+                char *callsign;
+                char *passcode_str;
+                short passcode;
+                char *space;
+
+//fprintf(stderr,"x_spider:Found an authentication string\n");
+
+                // Copy the line
+                strncpy(line2, line, sizeof(line2));
+
+                // Add white space to the end.
+                strcat(line2,"                                    ");
+
+                // Snag the callsign string
+
+                callsign = &line2[5];
+
+                // Find the space after the callsign
+                space = strstr(&line2[5]," ");
+
+                if (space == NULL)
+                    continue;
+
+                // Terminate the callsign string
+                space[0] = '\0';
+
+                // Snag the passcode string 
+
+                // Find the "pass" string first
+                passcode_str = strstr(&space[1],"pass");
+
+                if (passcode_str == NULL)
+                    continue;
+
+                // This is the start of the string we want
+                passcode_str = passcode_str + 5;
+
+                // Find the space after the passcode
+                space = strstr(&passcode_str[0]," ");
+
+                if (space == NULL)
+                    continue;
+
+                // Terminate the passcode string
+                space[0] = '\0';
+
+                passcode = atoi(passcode_str);
+
+//fprintf(stderr,"x_spider: user:.%s., pass:%d\n", callsign, passcode);
+
+                if (checkHash(callsign, passcode)) {
+                    // Authenticate the pipe.  It is now allowed to send
+                    // to the upstream server.
+fprintf(stderr,"x_spider: Authenticated user %s\n", callsign);
+                    p->authenticated = 1;
+                }
+                else {
+fprintf(stderr,"x_spider: Bad authentication, user %s\n", callsign);
+                }
+            }
+
             pipe_object *q = pipe_head;
 
             while (q != NULL) {
@@ -518,11 +593,15 @@ int pipe_check(void) {
             strncat(line,"\n",1);
             n++;
 
+// Only send to upstream server if this client has authenticated.
+            if (p->authenticated) {
+
 //fprintf(stderr,"Data available, sending to server\n");
-            if (writen(pipe_server_to_xastir, line, n) != n) {
-                fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
+
+                if (writen(pipe_server_to_xastir, line, n) != n) {
+                    fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
+                }
             }
- 
         }
 
         p = p->next;
@@ -703,6 +782,9 @@ void Server(void) {
             goto finis;
         }
 
+        // We haven't authenticated this user client yet.
+        p->authenticated = 0;
+
         // Link it into the head of the chain.
         //
         p->next = pipe_head;
@@ -815,6 +897,8 @@ int Fork_server(void) {
         free(xastir_pipe);    // Free the malloc'd memory.
         return(0);
     }
+ 
+    xastir_pipe->authenticated = 1;
  
     if ( (childpid = fork()) < 0) {
         fprintf(stderr,"Fork_server: Fork error\n");
