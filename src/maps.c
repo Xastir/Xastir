@@ -7803,55 +7803,62 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
         if (alert->filename[0]) {   // We have at least a partial filename
             int done = 0;
-            // Look through the warning directory to find a match for
-            // the first few characters that we already figured out.
-            // This is designed so that we don't need to know the exact
-            // filename, but only the lead three characters in order to
-            // figure out which shapefile to use.
-            dm = opendir (dir);
-            if (!dm) {  // Couldn't open directory
-                xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
-                if (warn)
-                    perror (fullpath);
-            }
-            else {    // We could open the directory just fine
-                while ( (dl = readdir(dm)) && !done ) {
-                    xastir_snprintf(fullpath, sizeof(fullpath), "%s%s", dir, dl->d_name);
-                    /*printf("FULL PATH %s\n",fullpath); */
-                    if (stat (fullpath, &nfile) == 0) {
-                        ftime = (time_t *)&nfile.st_ctime;
-                        switch (nfile.st_mode & S_IFMT) {
-                            case (S_IFDIR):     // It's a directory, skip it
-                                break;
 
-                            case (S_IFREG):     // It's a file, check it
-                                /*printf("FILE %s\n",dl->d_name); */
-                                // Here we look for a match for the
-                                // first 2 characters of the filename.
-                                // 
-                                if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
-                                    // We have a match
-                                    //printf("%s\n",fullpath);
-                                    // Force last three characters to
-                                    // "shp"
-                                    dl->d_name[strlen(dl->d_name)-3] = 's';
-                                    dl->d_name[strlen(dl->d_name)-2] = 'h';
-                                    dl->d_name[strlen(dl->d_name)-1] = 'p';
+            if (strlen(alert->filename) > 3)
+                done++; // We already have a filename
 
-                                    // Save the filename in the alert
-                                    strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
-                                    done++;
-                                    //printf("%s\n",dl->d_name);
-                                }
-                                break;
+            if (!done) {    // We don't have a filename yet
 
-                            default:    // Not dir or file, skip it
-                                break;
+                // Look through the warning directory to find a match for
+                // the first few characters that we already figured out.
+                // This is designed so that we don't need to know the exact
+                // filename, but only the lead three characters in order to
+                // figure out which shapefile to use.
+                dm = opendir (dir);
+                if (!dm) {  // Couldn't open directory
+                    xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
+                    if (warn)
+                        perror (fullpath);
+                }
+                else {    // We could open the directory just fine
+                    while ( (dl = readdir(dm)) && !done ) {
+                        xastir_snprintf(fullpath, sizeof(fullpath), "%s%s", dir, dl->d_name);
+                        /*printf("FULL PATH %s\n",fullpath); */
+                        if (stat (fullpath, &nfile) == 0) {
+                            ftime = (time_t *)&nfile.st_ctime;
+                            switch (nfile.st_mode & S_IFMT) {
+                                case (S_IFDIR):     // It's a directory, skip it
+                                    break;
+
+                                case (S_IFREG):     // It's a file, check it
+                                    /*printf("FILE %s\n",dl->d_name); */
+                                    // Here we look for a match for the
+                                    // first 2 characters of the filename.
+                                    // 
+                                    if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
+                                        // We have a match
+                                        //printf("%s\n",fullpath);
+                                        // Force last three characters to
+                                        // "shp"
+                                        dl->d_name[strlen(dl->d_name)-3] = 's';
+                                        dl->d_name[strlen(dl->d_name)-2] = 'h';
+                                        dl->d_name[strlen(dl->d_name)-1] = 'p';
+
+                                        // Save the filename in the alert
+                                        strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
+                                        done++;
+                                        //printf("%s\n",dl->d_name);
+                                    }
+                                    break;
+
+                                default:    // Not dir or file, skip it
+                                    break;
+                            }
                         }
                     }
                 }
+                (void)closedir (dm);
             }
-            (void)closedir (dm);
 
             if (done) {    // We found a filename match for the alert
                 // Go draw the weather alert (kind'a)
