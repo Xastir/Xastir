@@ -8424,7 +8424,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     struct {
         char name[32];
         short file_attributes;
-        short version;
+        short version;  // 2: No placeholder bytes in file, 3: w/bytes
         long creation_date;
         long modification_date;
         long backup_date;
@@ -8443,6 +8443,12 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         char category;
         char id[3];
     } prl;
+
+    // Two placeholder bytes where were added in version 3.  We
+    // effectively skip these with fseek() below.
+//    struct {
+//        short placeholder;
+//    } pdb_ph;
 
     struct {
         long left_bounds;
