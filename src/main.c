@@ -4377,7 +4377,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
     // Create the mouse menus here
-
+//WE7U
     ac = 0;
     XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
     XtSetArg(al[ac], XmNmenuPost, "<Btn3Down>"); ac++;  // Set for popup menu on button 3
@@ -4398,88 +4398,201 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     (void)XtCreateManagedWidget("create_appshell sep",xmSeparatorWidgetClass,right_menu_popup,al,ac);
 
     // "Center"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA00c")); ac++;
     pan_ctr=XtCreateManagedWidget(langcode("POPUPMA00c"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(pan_ctr,XmNactivateCallback,Pan_ctr,NULL);
 
     // "Station info"
-    station_info=XtCreateManagedWidget(langcode("POPUPMA015"),xmPushButtonGadgetClass,right_menu_popup,NULL,0);
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA015")); ac++;
+    station_info=XtCreateManagedWidget(langcode("POPUPMA015"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(station_info,XmNactivateCallback,Station_info,NULL);
 
     // Zoom in"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA002")); ac++;
     zoom_in=XtCreateManagedWidget(langcode("POPUPMA002"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(zoom_in,XmNactivateCallback,Zoom_in,NULL);
 
     // Zoom out" 
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA003")); ac++;
     zoom_out=XtCreateManagedWidget(langcode("POPUPMA003"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(zoom_out,XmNactivateCallback,Zoom_out,NULL);
 
-    // "Zoom level"
     zoom_sub=XmCreatePulldownMenu(right_menu_popup,"create_appshell zoom sub",al,ac);
+ 
+    // "Zoom level"
     zoom_level=XtVaCreateManagedWidget(langcode("POPUPMA004"),xmCascadeButtonGadgetClass,right_menu_popup,
-    XmNsubMenuId,zoom_sub,XmNbackground,colors[0xff],NULL);
+    XmNsubMenuId,zoom_sub,XmNbackground,colors[0xff],XmNmnemonic,langcode_hotkey("POPUPMA004"),NULL);
 
     // "1"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA005")); ac++;
     zl1=XtCreateManagedWidget(langcode("POPUPMA005"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl1,XmNactivateCallback,Zoom_level,"1");
+
     // "16"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA006")); ac++;
     zl2=XtCreateManagedWidget(langcode("POPUPMA006"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl2,XmNactivateCallback,Zoom_level,"2");
+
     // "64"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA007")); ac++;
     zl3=XtCreateManagedWidget(langcode("POPUPMA007"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl3,XmNactivateCallback,Zoom_level,"3");
+
     // "256"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA008")); ac++;
     zl4=XtCreateManagedWidget(langcode("POPUPMA008"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl4,XmNactivateCallback,Zoom_level,"4");
+
     // "1024"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA009")); ac++;
     zl5=XtCreateManagedWidget(langcode("POPUPMA009"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl5,XmNactivateCallback,Zoom_level,"5");
+
     // "8192"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA010")); ac++;
     zl6=XtCreateManagedWidget(langcode("POPUPMA010"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl6,XmNactivateCallback,Zoom_level,"6");
+
     // "Entire World"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA017")); ac++;
     zl7=XtCreateManagedWidget(langcode("POPUPMA017"),xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl7,XmNactivateCallback,Zoom_level,"7");
+
     // "10% out"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, 'o'); ac++;
     zl8=XtCreateManagedWidget("10% out" ,xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl8,XmNactivateCallback,Zoom_level,"8");
+
     // "10% in"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
     zl9=XtCreateManagedWidget("10% in" ,xmPushButtonGadgetClass,zoom_sub,al,ac);
     XtAddCallback(zl9,XmNactivateCallback,Zoom_level,"9");
 
     // "Last map pos/zoom"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA016")); ac++;
     last_loc=XtCreateManagedWidget(langcode("POPUPMA016"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(last_loc,XmNactivateCallback,Last_location,NULL);
 
     (void)XtCreateManagedWidget("create_appshell sep",xmSeparatorWidgetClass,right_menu_popup,al,ac);
 
     // "Object -> Create"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA018")); ac++;
     set_object=XtCreateManagedWidget(langcode("POPUPMA018"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(set_object,XmNactivateCallback,Set_Del_Object,NULL);
 
     // "Object -> Modify"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
     modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
     XtCreateManagedWidget("create_appshell sep",xmSeparatorWidgetClass,right_menu_popup,al,ac);
 
+    // "Pan Up"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA011")); ac++;
     pan_up=XtCreateManagedWidget(langcode("POPUPMA011"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     //pan_up=XtVaCreateManagedWidget("create_appshell arrow1",xmArrowButtonGadgetClass, right_menu_popup,
     //    XmNarrowDirection,  XmARROW_UP,
     //    NULL);
     XtAddCallback(pan_up,XmNactivateCallback,Pan_up,NULL);
 
+    // "Pan Left"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA013")); ac++;
     pan_left=XtCreateManagedWidget(langcode("POPUPMA013"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     //pan_left=XtVaCreateManagedWidget("create_appshell arrow3",xmArrowButtonGadgetClass, right_menu_popup,
     //    XmNarrowDirection,  XmARROW_LEFT,
     //    NULL);
     XtAddCallback(pan_left,XmNactivateCallback,Pan_left,NULL);
 
+    // "Pan Right"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA014")); ac++;
     pan_right=XtCreateManagedWidget(langcode("POPUPMA014"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     //pan_right=XtVaCreateManagedWidget("create_appshell arrow4",xmArrowButtonGadgetClass, right_menu_popup,
     //    XmNarrowDirection,  XmARROW_RIGHT,
     //    NULL);
     XtAddCallback(pan_right,XmNactivateCallback,Pan_right,NULL);
 
+    // "Pan Down"
+    ac = 0;
+    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA012")); ac++;
     pan_down=XtCreateManagedWidget(langcode("POPUPMA012"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
     //pan_down=XtVaCreateManagedWidget("create_appshell arrow2",xmArrowButtonGadgetClass, right_menu_popup,
     //    XmNarrowDirection,  XmARROW_DOWN,
