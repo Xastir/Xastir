@@ -10303,6 +10303,8 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
 int Setup_object_data(char *line, int line_length) {
     char lat_str[MAX_LAT];
     char lon_str[MAX_LONG];
+    char ext_lat_str[20];
+    char ext_lon_str[20];
     char comment[43+1];                 // max 43 characters of comment
     char time[7+1];
     struct tm *day_time;
@@ -10350,6 +10352,10 @@ int Setup_object_data(char *line, int line_length) {
         atoi(XmTextFieldGetString(object_lat_data_deg)),
         atof(XmTextFieldGetString(object_lat_data_min)), line[0]);
 
+    xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
+        atoi(XmTextFieldGetString(object_lat_data_deg)),
+        atof(XmTextFieldGetString(object_lat_data_min)), line[0]);
+
     strcpy(line,XmTextFieldGetString(object_lon_data_ew));
     if((char)toupper((int)line[0]) == 'E')
         line[0] = 'E';
@@ -10369,6 +10375,10 @@ int Setup_object_data(char *line, int line_length) {
         return(0);
 
     xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
+        atoi(XmTextFieldGetString(object_lon_data_deg)),
+        atof(XmTextFieldGetString(object_lon_data_min)), line[0]);
+
+    xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
         atoi(XmTextFieldGetString(object_lon_data_deg)),
         atof(XmTextFieldGetString(object_lon_data_min)), line[0]);
 
@@ -10567,9 +10577,9 @@ int Setup_object_data(char *line, int line_length) {
             xastir_snprintf(line, line_length, ";%-9s*%s%s",
                 last_object,
                 time,
-                compress_posit(lat_str,
+                compress_posit(ext_lat_str,
                     last_obj_grp,
-                    lon_str,
+                    ext_lon_str,
                     last_obj_sym,
                     0,  // Course
                     0,  // Speed
@@ -10623,6 +10633,8 @@ printf("line: %s\n",line);
 int Setup_item_data(char *line, int line_length) {
     char lat_str[MAX_LAT];
     char lon_str[MAX_LONG];
+    char ext_lat_str[20];
+    char ext_lon_str[20];
     char comment[43+1];                 // max 43 characters of comment
     char complete_area_color[3];
     int complete_area_type;
@@ -10677,6 +10689,10 @@ int Setup_item_data(char *line, int line_length) {
             atoi(XmTextFieldGetString(object_lat_data_deg)),
             atof(XmTextFieldGetString(object_lat_data_min)),line[0]);
 
+    xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
+            atoi(XmTextFieldGetString(object_lat_data_deg)),
+            atof(XmTextFieldGetString(object_lat_data_min)),line[0]);
+
     strcpy(line,XmTextFieldGetString(object_lon_data_ew));
     if((char)toupper((int)line[0]) == 'E')
         line[0] = 'E';
@@ -10697,6 +10713,10 @@ int Setup_item_data(char *line, int line_length) {
         return(0);
 
     xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
+            atoi(XmTextFieldGetString(object_lon_data_deg)),
+            atof(XmTextFieldGetString(object_lon_data_min)),line[0]);
+
+    xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
             atoi(XmTextFieldGetString(object_lon_data_deg)),
             atof(XmTextFieldGetString(object_lon_data_min)),line[0]);
 
@@ -10875,9 +10895,9 @@ int Setup_item_data(char *line, int line_length) {
 // Need to compute "csT" at some point and add it to the item
             xastir_snprintf(line, line_length, ")%s!%s",
                 last_object,
-                compress_posit(lat_str,
+                compress_posit(ext_lat_str,
                     last_obj_grp,
-                    lon_str,
+                    ext_lon_str,
                     last_obj_sym,
                     0,  // Course
                     0,  // Speed
