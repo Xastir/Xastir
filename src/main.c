@@ -13881,21 +13881,6 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        warn_about_mouse_modifiers_enable = XtVaCreateManagedWidget(langcode("WPUPCFD028"),
-                xmToggleButtonWidgetClass,
-                my_form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, compressed_objects_items_tx,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, new_bulletin_popup_enable,
-                XmNleftOffset,10,
-                XmNrightAttachment, XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
         zero_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD029"),
                 xmToggleButtonWidgetClass,
                 my_form,
@@ -13909,6 +13894,22 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+        warn_about_mouse_modifiers_enable = XtVaCreateManagedWidget(langcode("WPUPCFD028"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, new_bulletin_popup_enable,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, zero_bulletin_popup_enable,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 
 
 #ifdef TRANSMIT_RAW_WX
@@ -13934,9 +13935,9 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget, frame5,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 100,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, compressed_objects_items_tx,
+                XmNrightAttachment, XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -13959,7 +13960,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment,XmATTACH_WIDGET,
                 XmNtopWidget, altnet_active,
                 XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, compressed_objects_items_tx,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 160,
                 XmNnavigationType, XmTAB_GROUP,
