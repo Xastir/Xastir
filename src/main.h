@@ -115,6 +115,7 @@ extern int sb_low_speed_limit;
 extern int sb_high_speed_limit;
 
 extern int pop_up_new_bulletins;
+extern int warn_about_mouse_modifiers;
 
 extern int output_station_type;
 extern int symbol_display_enable;

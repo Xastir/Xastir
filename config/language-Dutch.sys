@@ -311,6 +311,7 @@ WPUPCFD024|Comprimeer object/item gegevens bij uitzenden?||
 WPUPCFD025|Activeer Alternatief net?||
 WPUPCFD026|Met welk interval positie gegevens verzenden?||
 WPUPCFD027|Nieuwe berichten weergeven||
+WPUPCFD028|Warn if Modifier Keys||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||

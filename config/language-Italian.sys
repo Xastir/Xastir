@@ -307,6 +307,7 @@ WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Attivare rete alternativa?|A|
 WPUPCFD026|Intervallo per invio rapporti posizione||
 WPUPCFD027|Pop up new bulletins||
+WPUPCFD028|Warn if Modifier Keys||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||

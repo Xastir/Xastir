@@ -305,6 +305,7 @@ WPUPCFD024|Comprimir objecto/item durante a transmissão?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
 WPUPCFD027|Pop up de novos boletins||
+WPUPCFD028|Warn if Modifier Keys||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||

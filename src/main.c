@@ -511,7 +511,9 @@ Widget raw_wx_tx;
 Widget compressed_posit_tx;
 Widget compressed_objects_items_tx;
 Widget new_bulletin_popup_enable;
+Widget warn_about_mouse_modifiers_enable;
 int pop_up_new_bulletins = 0;
+int warn_about_mouse_modifiers = 1;
 Widget altnet_active;
 Widget altnet_text;
 Widget debug_level_text;
@@ -3366,7 +3368,7 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
 
         // Check whether any modifiers are pressed.
         // If so, pop up a warning message.
-        if (event->state != 0) {
+        if ( (event->state != 0) && warn_about_mouse_modifiers) {
             popup_message(langcode("POPUPMA023"),langcode("POPUPMA024"));
         }
     }
@@ -10646,6 +10648,8 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     pop_up_new_bulletins = (int)XmToggleButtonGetState(new_bulletin_popup_enable);
 
+    warn_about_mouse_modifiers = (int)XmToggleButtonGetState(warn_about_mouse_modifiers_enable);
+
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 
     // Small memory leak in below statement:
@@ -11364,12 +11368,27 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        warn_about_mouse_modifiers_enable = XtVaCreateManagedWidget(langcode("WPUPCFD028"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, compressed_objects_items_tx,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, new_bulletin_popup_enable,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),
                 xmToggleButtonWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, new_bulletin_popup_enable,
+                XmNtopWidget, warn_about_mouse_modifiers_enable,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 10,
@@ -11669,6 +11688,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(new_bulletin_popup_enable,TRUE,FALSE);
         else
             XmToggleButtonSetState(new_bulletin_popup_enable,FALSE,FALSE);
+
+        if(warn_about_mouse_modifiers)
+            XmToggleButtonSetState(warn_about_mouse_modifiers_enable,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(warn_about_mouse_modifiers_enable,FALSE,FALSE);
 
         XmToggleButtonSetState(altnet_active, altnet, FALSE);
 

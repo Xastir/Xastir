@@ -549,6 +549,8 @@ void save_data(void)  {
 
         store_int (fout, "POP_UP_NEW_BULLETINS", pop_up_new_bulletins);
 
+        store_int (fout, "WARN_ABOUT_MOUSE_MODIFIERS", warn_about_mouse_modifiers);
+
         /* -dk7in- variable beacon interval */
         /*         mobile:   max  2 min */
         /*         fixed:    max 15 min  */
@@ -1119,6 +1121,9 @@ void load_data_or_default(void) {
 
     if (!get_int ("POP_UP_NEW_BULLETINS", &pop_up_new_bulletins,0,1,1))
         pop_up_new_bulletins = 1;
+
+    if (!get_int ("WARN_ABOUT_MOUSE_MODIFIERS", &warn_about_mouse_modifiers,0,1,1))
+        warn_about_mouse_modifiers = 1;
 
 
     /* Audio Alarms*/
