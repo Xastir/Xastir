@@ -12338,48 +12338,48 @@ void map_properties_fill_in (void) {
                 }
 
                 if (current->draw_filled == 0) {
-                    strcpy(temp_filled,"      ");
+                    strcpy(temp_filled,"     ");
                 }
                 else {
                     int len, start;
 
                     // Center the string in the column
                     len = strlen(langcode("MAPP006"));
-                    start = (int)( (6 - len) / 2 + 0.5);
+                    start = (int)( (5 - len) / 2 + 0.5);
                     if (start < 0)
                         start = 0;
                     else
-                        strncpy(temp_filled, "      ", start);
-                    strncpy(&temp_filled[start], langcode("MAPP006"), 6-start);
+                        strncpy(temp_filled, "     ", start);
+                    strncpy(&temp_filled[start], langcode("MAPP006"), 5-start);
                     // Fill with spaces past the end
-                    strncat(temp_filled, "      ", 6);
+                    strncat(temp_filled, "     ", 5);
                     // Truncate it so it fits our column width.
-                    temp_filled[6] = '\0';
+                    temp_filled[5] = '\0';
                 }
 
                 if (current->auto_maps == 0) {
-                    strcpy(temp_auto,"       ");
+                    strcpy(temp_auto,"     ");
                 }
                 else {
                     int len, start;
 
                     // Center the string in the column
                     len = strlen(langcode("MAPP006"));
-                    start = (int)( (7 - len) / 2 + 0.5);
+                    start = (int)( (5 - len) / 2 + 0.5);
                     if (start < 0)
                         start = 0;
                     else
-                        strncpy(temp_auto, "       ", start);
-                    strncpy(&temp_auto[start], langcode("MAPP006"), 7-start);
+                        strncpy(temp_auto, "     ", start);
+                    strncpy(&temp_auto[start], langcode("MAPP006"), 5-start);
                     // Fill with spaces past the end
-                    strncat(temp_auto, "       ", 7);
+                    strncat(temp_auto, "     ", 5);
                     // Truncate it so it fits our column width.
-                    temp_auto[7] = '\0';
+                    temp_auto[5] = '\0';
                 }
 
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    " %s %s %s   %s   %s   %s",
+                    "%s %s %s %s %s %s",
                     temp_max_zoom,
                     temp_min_zoom,
                     temp_layer,
