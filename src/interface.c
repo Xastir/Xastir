@@ -292,7 +292,10 @@ fprintf(stderr,"%s %s %s\n",
 
 //fprintf(stderr,"%02x %02x\n", output_string[28], output_string[29]);
 
-            // Copy Data onto the end of the string
+            // Copy Data onto the end of the string.  This one
+            // doesn't have to be null-terminated, so strncpy() is
+            // ok to use here.  strncpy stops at the first null byte
+            // though.  Proper for a binary output routine?
             strncpy(&output_string[36], Data, length);
 
             full_length = length + 36;
@@ -305,6 +308,9 @@ fprintf(stderr,"%s %s %s\n",
     else {  // We have ViaCalls.  Data packet.
         char *ViaCall[10];
 
+        // Doesn't need to be null-terminated, so strncpy is ok to
+        // use here.  strncpy stops at the first null byte though.
+        // Proper for a binary output routine?
         strncpy(path_string, Path, sizeof(path_string));
 
         split_string(path_string, ViaCall, 10);
@@ -379,7 +385,10 @@ fprintf(stderr,"%s %s %s\n",
                 break;
         }
 
-        // Write the Data onto the end
+        // Write the Data onto the end.
+        // Doesn't need to be null-terminated, so strncpy is ok to
+        // use here.  strncpy stops at the first null byte though.
+        // Proper for a binary output routine?
         strncpy(&output_string[(output_string[36] * 10) + 37], Data, length);
 
         //Fill in the data length field.  We're assuming the total
@@ -771,11 +780,11 @@ void channel_data(int port, unsigned char *string, int length) {
                 // Drop other GPS strings on the floor.
                 //
                 if ( (length > 7) && (strncmp(string,"$GPRMC,",7) == 0) ) {
-                    strncpy(gprmc_save_string,string,MAX_LINE_SIZE);
+                    xastir_snprintf(gprmc_save_string,MAX_LINE_SIZE,"%s",string);
                     gps_port_save = port;
                 }
                 else if ( (length > 7) && (strncmp(string,"$GPGGA,",7) == 0) ) {
-                    strncpy(gpgga_save_string,string,MAX_LINE_SIZE);
+                    xastir_snprintf(gpgga_save_string,MAX_LINE_SIZE,"%s",string);
                     gps_port_save = port;
                 }
                 else {
@@ -1238,6 +1247,9 @@ int OpenTrac_decode_origination(unsigned char *element,
     if (element_len > 9)
         return -1;
 
+    // Binary routine.  strncpy is ok here as long as nulls not in
+    // data.  We null-terminate it ourselves to make sure it is
+    // terminated.
     strncpy(callsign, element, 6);
     callsign[6]=0;
     for (c=*ssid=0;c<6;c++) {
@@ -1513,9 +1525,15 @@ int OpenTrac_decode_country(unsigned char *element,
     if (element_len > 5)
         return -1;
 
+    // Binary routine.  strncpy is ok here as long as nulls not in
+    // data.  We null-terminate it ourselves to make sure it is
+    // terminated.
     strncpy(country, element, 2);
     country[2] = 0;
     if (element_len > 2) {
+        // Binary routine.  strncpy is ok here as long as nulls not
+        // in data.  We null-terminate it ourselves to make sure it
+        // is terminated.
         strncpy(subdivision, element+2, element_len-2);
         subdivision[element_len-2] = 0;
         fprintf(stderr, "Country Code %s-%s\n", country, subdivision);
@@ -1541,6 +1559,9 @@ int OpenTrac_decode_displayname(unsigned char *element,
     if (element_len > 30 || !element_len)
         return -1;
 
+    // Binary routine.  strncpy is ok here as long as nulls not in
+    // data.  We null-terminate it ourselves to make sure it is
+    // terminated.
     strncpy(displayname, element, element_len);
     displayname[element_len] = 0;
 
@@ -1563,6 +1584,9 @@ int OpenTrac_decode_waypoint(unsigned char *element,
     if (element_len > 6 || !element_len)
         return -1;
 
+    // Binary routine.  strncpy is ok here as long as nulls not in
+    // data.  We null-terminate it ourselves to make sure it is
+    // terminated.
     strncpy(waypoint, element, element_len);
     waypoint[element_len] = 0;
 
@@ -1916,6 +1940,9 @@ int OpenTrac_decode_maidenhead(unsigned char *element,
     if (element_len < 4)
         return -1;
 
+    // Binary routine.  strncpy is ok here as long as nulls not in
+    // data.  We null-terminate it ourselves to make sure it is
+    // terminated.
     strncpy(maidenhead, element, element_len);
     maidenhead[element_len] = 0;
 
@@ -1975,6 +2002,9 @@ int OpenTrac_decode_acreg(unsigned char *element,
     if (element_len > 8)
         return -1;
 
+    // Binary routine.  strncpy is ok here as long as nulls not in
+    // data.  We null-terminate it ourselves to make sure it is
+    // terminated.
     strncpy(aircraft_id, element, element_len);
     aircraft_id[element_len]=0;
 
@@ -7437,6 +7467,8 @@ void tnc_data_clean(char *buf) {
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
 
+        // strncpy is ok here as long as nulls not in data.  We
+        // null-terminate it ourselves to make sure it is terminated.
         strncpy(filtered_data, buf, MAX_LINE_SIZE);
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
@@ -7451,6 +7483,9 @@ void tnc_data_clean(char *buf) {
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
 
+        // Binary routine.  strncpy is ok here as long as nulls not
+        // in data.  We null-terminate it ourselves to make sure it
+        // is terminated.
         strncpy(filtered_data, buf, MAX_LINE_SIZE);
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
@@ -7480,6 +7515,9 @@ int tnc_get_data_type(char *buf, int port) {
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
 
+        // Binary routine.  strncpy is ok here as long as nulls not
+        // in data.  We null-terminate it ourselves to make sure it
+        // is terminated.
         strncpy(filtered_data, buf, MAX_LINE_SIZE);
         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
@@ -7498,6 +7536,10 @@ int tnc_get_data_type(char *buf, int port) {
                     if (debug_level & 1) {
                         char filtered_data[MAX_LINE_SIZE+1];
 
+                        // Binary routine.  strncpy is ok here as
+                        // long as nulls not in data.  We
+                        // null-terminate it ourselves to make
+                        // sure it is terminated.
                         strncpy(filtered_data, buf, MAX_LINE_SIZE);
                         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
@@ -7515,6 +7557,10 @@ int tnc_get_data_type(char *buf, int port) {
                     if (debug_level & 1) {
                         char filtered_data[MAX_LINE_SIZE+1];
 
+                        // Binary routine.  strncpy is ok here as
+                        // long as nulls not in data.  We
+                        // null-terminate it ourselves to make
+                        // sure it is terminated.
                         strncpy(filtered_data, buf, MAX_LINE_SIZE);
                         filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
 
