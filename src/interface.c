@@ -2586,7 +2586,7 @@ void port_read(int port) {
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100;
+            tmv.tv_usec = 100000;
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
@@ -2701,7 +2701,7 @@ void port_write(int port) {
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100;  // Delay 100us
+            tmv.tv_usec = 100000;  // Delay 100ms
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
