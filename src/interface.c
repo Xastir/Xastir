@@ -3635,7 +3635,7 @@ void tnc_data_clean(char *buf) {
 // the GPS or data from an AX25 packet.
 int tnc_get_data_type(char *buf, int port) {
     register int i;
-    int type=0;      // Don't know what it is yet.
+    int type=1;      // Don't know what it is yet.  Assume NMEA for now.
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
@@ -3649,7 +3649,6 @@ int tnc_get_data_type(char *buf, int port) {
         //This looks kind of NMEA-ish, let's check for known message type
         //headers ($P[A-Z][A-Z][A-Z][A-Z] or $GP[A-Z][A-Z][A-Z])
         if(buf[1]=='P') {
-            type=1; // Assume NMEA until disqualified.
             for(i=2; i<=5; i++) {
                 if (buf[i]<'A' || buf[i]>'Z') {
                     type=0; // Disqualified, not valid NMEA-0183
@@ -3663,8 +3662,7 @@ int tnc_get_data_type(char *buf, int port) {
                 }
             }
         }
-
-        if(buf[1]=='G' && buf[2]=='P') {
+        else if(buf[1]=='G' && buf[2]=='P') {
             for(i=3; i<=5; i++) {
                 if (buf[i]<'A' || buf[i]>'Z') {
                     type=0; // Disqualified, not valid NMEA-0183
