@@ -4523,14 +4523,13 @@ void port_read(int port) {
 
                 int skip = 0;
 
-
+//                pthread_testcancel();   // Check for thread termination request
+ 
                 // Handle all EXCEPT AX25_TNC interfaces here
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
-                    pthread_testcancel();   // Check for thread termination request
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
 //fprintf(stderr," in:%x ",cin);
-                    pthread_testcancel();   // Check for thread termination request
                 }
 
                 else {  // Handle AX25_TNC interfaces
@@ -4549,13 +4548,11 @@ void port_read(int port) {
   #endif    // socklen_t
 #endif  // __solaris__
 
-                    pthread_testcancel();   // Check for thread termination request
                     port_data[port].scan = recvfrom(port_data[port].channel,buffer,
                         sizeof(buffer) - 1,
                         0,
                         &from,
                         &from_len);
-                    pthread_testcancel();   // Check for thread termination request
                 }
 
 
