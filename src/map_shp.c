@@ -827,7 +827,8 @@ void draw_shapefile_map (Widget w,
 
         } else {                /* should never be reached anymore! */
             fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
-            exit(1);
+            //exit(1);  // Debug
+            return;
         }
     }
 #endif /* WITH_DBFAWK */
