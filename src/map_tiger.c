@@ -1,4 +1,4 @@
-/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
