@@ -13608,13 +13608,17 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
         &incoming_data[ptr],
         sizeof(result) - strlen(result));
 
-//    fprintf(stderr,"%s\n",result);
-
-    // Copy the result onto the top of the input data
+    // Copy the result onto the top of the input data.  Note that
+    // the length can sometimes be longer than the input string, so
+    // we can't just use the "length" variable here or we'll
+    // truncate our string.
+    //
     xastir_snprintf(incoming_data,
-        length,
+        MAX_LINE_SIZE,
         "%s",
         result);
+
+//fprintf(stderr,"%s\n",incoming_data);
 
     return(1);
 }
