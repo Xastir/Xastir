@@ -326,8 +326,8 @@
 
 
 alert_entry *alert_list = NULL;
-int alert_list_count = 0;
-static int alert_max_count = 0;
+static int alert_list_count = 0;           // Count of active alerts
+int alert_max_count = 0;     // Alerts we've allocated space for
 char *alert_status = NULL;
 static int alert_status_size = 0;
 int alert_redraw_on_update = 0;
@@ -346,8 +346,8 @@ void normal_title(char *incoming_title, char *outgoing_title) {
     char *c_ptr;
 
 
-    if (debug_level & 1)
-        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
+//    if (debug_level & 2)
+//        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
 
     strncpy(outgoing_title, incoming_title, 32);
     outgoing_title[32] = '\0';
@@ -373,8 +373,8 @@ void normal_title(char *incoming_title, char *outgoing_title) {
     // Truncate the string to eight characters always
     outgoing_title[8] = '\0';
 
-    if (debug_level & 1)
-        fprintf(stderr,"normal_title: Outgoing: %s\n",outgoing_title);
+//    if (debug_level & 2)
+//        fprintf(stderr,"normal_title: Outgoing: %s\n",outgoing_title);
 }
 
 
@@ -394,14 +394,20 @@ void alert_print_list(void) {
     char title[100], *c_ptr;
 
     fprintf(stderr,"Alert counts: %d/%d\n", alert_list_count, alert_max_count);
-    for (i = 0; i < alert_list_count; i++) {
-        strncpy(title, alert_list[i].title, 99);
-        title[99] = '\0';
-        for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
-            *c_ptr = '\0';
+
+    for (i = 0; i < alert_max_count; i++) {
+
+        // Check whether it's an active alert
+        if (alert_list[i].title[0] != '\0') {
+
+            strncpy(title, alert_list[i].title, 99);
+            title[99] = '\0';
+
+            for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
+                *c_ptr = '\0';
 
 // Alert: 10Y, MSPTOR> NWS-TEST, TAG: T  TORNDO, ACTIVITY: 191915z, Expiration: 1019234700, Title: WI_Z003
-        fprintf(stderr,"Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
+            fprintf(stderr,"Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
                 i,                                          // 10
                 alert_list[i].flags[0],                     // Y
                 alert_list[i].from,                         // MSPTOR
@@ -415,6 +421,7 @@ void alert_print_list(void) {
                 (unsigned long)(alert_list[i].expiration),  // 1019234700
 
                 title);                                     // WI_Z003
+        }
     }
 }
 
@@ -425,7 +432,9 @@ void alert_print_list(void) {
 //
 // alert_add_entry()
 //
-// This function adds a new alert to our alert list.
+// This function adds a new alert to our alert list.  It also
+// deletes expires alerts from the list by zero'ing their title.
+//
 // Returns address of entry in alert_list or NULL.
 // Called from alert_build_list() function.
 //
@@ -434,62 +443,102 @@ void alert_print_list(void) {
     int i;
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_add_entry\n");
 
     // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
     // interest us.
     if (strcmp(entry->to, "NWS-SOLAR") == 0) {
-        //fprintf(stderr,"NWS-SOLAR, skipping\n");
-        return (NULL);
+        if (debug_level & 2)
+            fprintf(stderr,"NWS-SOLAR, skipping\n");
+        return(NULL);
     }
     if (strcasecmp(entry->title, "-NoActivationExpected") == 0) {
-        //fprintf(stderr,"NoActivationExpected, skipping\n");
-        return (NULL);
+        if (debug_level & 2)
+            fprintf(stderr,"NoActivationExpected, skipping\n");
+        return(NULL);
+    }
+
+    // Check whether this new alert has aleady expired.  If so,
+    // don't add it.
+    if (entry->expiration < time(NULL)) {
+        if (debug_level & 2) {
+            fprintf(stderr,
+                "Newest Alert Expired->Clearing, current: %lu, alert: %lu\n",
+                time(NULL),
+                entry->expiration );
+        }
+        return(NULL);
+    }
+
+    // Delete stored alerts that have expired (zero the title string)
+    for (i = 0; i < alert_max_count; i++) {
+        if ( (alert_list[i].title[0] != '\0')
+//WE7U
+// Tweaks to test out expiration.  Add 12 hours to expire.
+//                && (alert_list[i].expiration < (time(NULL)) + 60*60*24) ) {
+                && (alert_list[i].expiration < time(NULL)) ) {
+            if (debug_level & 2) {
+                fprintf(stderr,
+                    "Expired Alert->Clearing slot %d, current: %lu, alert: %lu\n",
+                    i,
+                    time(NULL),
+                    alert_list[i].expiration );
+            }
+            alert_list[i].title[0] = '\0'; // Clear this alert
+            alert_list_count--;
+        }
     }
 
     // Allocate more space if we're at our maximum already.
-    // Allocate space for 10 more alerts.
+    // Allocate space for 100 more alerts.
     if (alert_list_count == alert_max_count) {
-        ptr = realloc(alert_list, (alert_max_count+10)*sizeof(alert_entry));
+        ptr = realloc(alert_list, (alert_max_count+100)*sizeof(alert_entry));
         if (ptr) {
+            int ii;
             alert_list = ptr;
-            alert_max_count += 10;
+
+            // Zero out the new added entries
+            for (ii = alert_max_count; ii < alert_max_count+100; ii++) {
+                alert_list[ii].title[0] = '\0';
+            }
+            alert_max_count += 100;
+        }
+        if (debug_level & 2) {
+            fprintf(stderr,"Allocated 100 more slots for alerts, Max=%d\n",
+                alert_max_count);
         }
     }
 
-    // Clear out expired alerts (zero the title string)
-    if (entry->expiration < time(NULL)) {
-        //fprintf(stderr,"Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
-        entry->title[0] = '\0'; // Clear this alert
-    }
-
-    // Check for non-zero alert title, non-expired alert time
+    // Check for non-zero alert title, non-expired alert time in new
+    // alert.
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
-
         // Schedule a screen update 'cuz we have a new alert
         alert_redraw_on_update = redraw_on_new_data = 2;
-
         // Scan for an empty entry, fill it in if found
-        for (i = 0; i < alert_list_count; i++) {
+        for (i = 0; i < alert_max_count; i++) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
                 memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
-                //fprintf(stderr,"Found empty entry, filling it\n");
-                return ( &alert_list[i]);
+                alert_list_count++;
+                if (debug_level & 2) {
+                    fprintf(stderr,"Found empty alert slot %d, filling it\n", i);
+                }
+                return( &alert_list[i]);
             }
-        }
-
-        // Else fill in the entry at the end and bump up the count
-        if (alert_list_count < alert_max_count) {
-            //fprintf(stderr,"Adding new entry\n");
-            memcpy(&alert_list[alert_list_count], entry, sizeof(alert_entry));
-            return (&alert_list[alert_list_count++]);
         }
     }
 
-    // The title was empty or the alert has already expired
-    //fprintf(stderr,"Title empty or alert expired, skipping\n");
-    return (NULL);
+    // If we got to here, the title was empty or the alert has
+    // already expired?  Figure out why we might ever get here.
+//    if (debug_level & 2) {
+        fprintf(stderr,"Exiting alert_add_entry() without actually adding the alert:\n");
+        fprintf(stderr,"%s %s %lu\n",
+            entry->to,
+            entry->title,
+            entry->expiration);
+//    }
+
+    return(NULL);
 }
 
 
@@ -509,7 +558,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     char *ptr, title_e[33], title_m[33], alert_f[33], filename[33];
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_match\n");
  
     // Shorten the title
@@ -532,7 +581,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     while ((ptr = strpbrk(filename, "_ -")))
         memmove(ptr, ptr+1, strlen(ptr)+1);
 
-    for (i = 0; i < alert_list_count; i++) {
+    for (i = 0; i < alert_max_count; i++) {
 
         // Shorten the title
         normal_title(alert_list[i].title, title_m);
@@ -581,7 +630,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
                 && (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0
                     || strcasecmp(title_m, filename) == 0
                     || strcasecmp(alert_f, title_e) == 0))) {
-            if (debug_level & 1)
+            if (debug_level & 2)
                 fprintf(stderr,"Found a cancellation: %s\t%s\n",title_e,title_m);
 
             return (&alert_list[i]);
@@ -611,7 +660,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
                 && (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0
                     || strcasecmp(title_m, filename) == 0
                     || strcasecmp(alert_f, title_e) == 0))) {
-            if (debug_level & 1)
+            if (debug_level & 2)
                 fprintf(stderr,"New alert that matches a cancel: %s\t%s\n",title_e,title_m);
 
             return (&alert_list[i]);
@@ -639,7 +688,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     char title_e[33], title_m[33];
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_update_list\n");
 
     // Find the matching alert in alert_list, copy updated
@@ -663,7 +712,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
         title_e[32] = title_m[32] = '\0';
 
         // Interate through the entire alert_list, checking flags
-        for (i = 0; i < alert_list_count; i++) {
+        for (i = 0; i < alert_max_count; i++) {
 
             // If flag was '?' or has changed, update the alert
             if ((alert_list[i].flags[0] == '?' || alert_list[i].flags[0] != ptr->flags[0])) {
@@ -720,7 +769,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
     time_t now;
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_active\n");
 
     (void)time(&now);
@@ -732,6 +781,9 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
             a_ptr->title[0] = '\0';                     // so delete it from list by clearing
                                                         // out the title.
+            // Knock the active count down by one
+            alert_list_count--;
+
             // Schedule an update 'cuz we need to delete an expired
             // alert from the list.
             alert_redraw_on_update = redraw_on_new_data = 2;
@@ -809,11 +861,15 @@ static int alert_compare(const void *a, const void *b) {
 void alert_sort_active(void) {
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_sort_active\n");
 
-    qsort(alert_list, (size_t)alert_list_count, sizeof(alert_entry), alert_compare);
-    for (; alert_list_count && alert_list[alert_list_count-1].title[0] == '\0'; alert_list_count--);
+    qsort(alert_list, (size_t)alert_max_count, sizeof(alert_entry), alert_compare);
+
+    // Looks like this code was trying to figure out the new
+    // alert_list_count.  We don't need this anymore due to the new
+    // organization.
+    //for (; alert_list_count && alert_list[alert_list_count-1].title[0] == '\0'; alert_list_count--);
 }
 
 
@@ -831,11 +887,11 @@ int alert_display_request(void) {
     static int last_alert_count;
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_display_request\n");
 
     // Iterate through entire alert_list
-    for (i = 0, alert_count = 0; i < alert_list_count; i++) {
+    for (i = 0, alert_count = 0; i < alert_max_count; i++) {
 
         // If it's an active alert (not expired), and flags == 'Y'
         // (meaning it is within our viewport), set the flag to '?'.
@@ -869,10 +925,10 @@ int alert_on_screen(void) {
     int i, alert_count;
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_on_screen\n");
 
-    for (i = 0, alert_count = 0; i < alert_list_count; i++) {
+    for (i = 0, alert_count = 0; i < alert_max_count; i++) {
         if (alert_active(&alert_list[i], ALERT_ALL)
                 && alert_list[i].flags[0] == 'Y') {
             alert_count++;
@@ -965,7 +1021,7 @@ static void alert_build_list(Message *fill) {
 
     //fprintf(stderr,"Message_line:%s\n",fill->message_line);
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_build_list\n");
 
     // Check for "SKY" text in the "call_sign" field.
@@ -998,33 +1054,33 @@ static void alert_build_list(Message *fill) {
 
         // Run through the alert_list looking for a match to the
         // FROM and first four chars of SEQ
-        for (i = 0; i < alert_list_count; i++) {
+        for (i = 0; i < alert_max_count; i++) {
             if ( (strcasecmp(alert_list[i].from, fill->from_call_sign) == 0)
                     && ( strncmp(alert_list[i].seq,fill->seq,4) == 0 ) ) {
 
-                if (debug_level & 1)
+                if (debug_level & 2)
                     fprintf(stderr,"%d:Found a matching alert to a SKY message:\t",i);
 
                 switch (fill->seq[4]) {
                     case 'B':
                         strcpy(alert_list[i].desc0,fill->message_line);
-                        if (debug_level & 1)
+                        if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
                         strcpy(alert_list[i].desc1,fill->message_line);
-                        if (debug_level & 1)
+                        if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
                         strcpy(alert_list[i].desc2,fill->message_line);
-                        if (debug_level & 1)
+                        if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
                         break;
                     case 'E':
                     default:
                         strcpy(alert_list[i].desc3,fill->message_line);
-                        if (debug_level & 1)
+                        if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                         break;
                 }
@@ -1246,7 +1302,7 @@ static void alert_build_list(Message *fill) {
             }
             strncat(date_time,"z",1);   // Add a 'z' on the end.
 
-            if (debug_level & 1)
+            if (debug_level & 2)
                 fprintf(stderr,"Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
 
             xastir_snprintf(entry[0].issue_date_time,
@@ -1422,7 +1478,7 @@ int alert_message_scan(void) {
     int i, j;
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_message_scan\n");
 
     // This is the shorthand way we keep track of which state's we just got alerts for.
@@ -1436,7 +1492,7 @@ int alert_message_scan(void) {
     }
 
     // Mark active/inactive alerts as such
-    for (i = 0; i < alert_list_count; i++)
+    for (i = 0; i < alert_max_count; i++)
         (void)alert_active(&alert_list[i], ALERT_ALL);
 
     // Scan the message list for alerts, add new ones to our alert list.
@@ -1447,7 +1503,7 @@ int alert_message_scan(void) {
     *alert_status = '\0';
 
     // Rebuild the global alert_status string for the current alerts
-    for (j = 0; j < alert_list_count; j++) {
+    for (j = 0; j < alert_max_count; j++) {
 
         if (alert_list[j].flags[0] == '?') {    // On-screen status not known yet
 

@@ -11963,7 +11963,12 @@ void load_alert_maps (Widget w, char *dir) {
         //fprintf(stderr,"Weather Alerts, alert_scan: %s\t\talert_status: %s\n", alert_scan, alert_status);
 
         // Iterate through the weather alerts we currently have.
-        for (i = 0; i < alert_list_count; i++) {
+        for (i = 0; i < alert_max_count; i++) {
+
+            // Check whether alert slot is empty/filled
+            if (alert_list[i].title[0] == '\0') // It's empty
+                continue;
+
             // The last parameter denotes loading into pixmap_alerts instead
             // of pixmap or pixmap_final.  Note that just calling map_search
             // gets the alert areas drawn on the screen via the draw_map()
@@ -11974,7 +11979,8 @@ void load_alert_maps (Widget w, char *dir) {
 // alert struct and to determine whether the alert is within our
 // viewport.  We don't really wish to draw the alerts at this stage.
 // That comes just a bit later in this routine.
-            if (!alert_list[i].filename[0]) {   // If filename is empty
+            if ( (alert_list[i].title[0] != '\0')       // Alert in the slot
+                    && (!alert_list[i].filename[0]) ) { // but filename is empty
                 map_search (w,
                     alert_scan,
                     &alert_list[i],
@@ -11993,48 +11999,15 @@ void load_alert_maps (Widget w, char *dir) {
     if (!alert_count)
         XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
 
-//    for (i = MAX_ALERT - 1; i > alert_count; i--) {
-//        if (alert[i].flags[0] == 'Y' || alert[i].flags[0] == 'N')
-//            alert_update_list (&alert[i], ALERT_TITLE);
-//    }
-
-    // Draw each alert map in the alert_list for which we have a
-    // filename.
-//    for (i = 0; i < alert_list_count; i++) {
-
-//fprintf(stderr,"Title2:%s\n",alert_list[i].title);
-
-//        if (alert_list[i].filename[0]) {    // If filename is non-zero
-//            alert[0] = alert_list[i];       // Reordering the alert_list???
-
-            // The last parameter denotes drawing into pixmap_alerts
-            // instead of pixmap or pixmap_final.
-// Why do we need to draw alerts again here?
-//            draw_map (w,
-//                dir,
-//                alert_list[i].filename,
-//                &alert[0],
-//                '\0',
-//                DRAW_TO_PIXMAP_ALERTS);
-
-//            alert_update_list (&alert[0], ALERT_ALL);
-//fprintf(stderr,"Title3:%s\n",alert_list[i].title);
-//        }
-//    }
-
-    //fprintf(stderr,"Calling alert_sort_active()\n");
-
-    // Mark all of the active alerts in the list
-//    alert_sort_active ();
-
-    //fprintf(stderr,"Drawing all active alerts\n");
-
-    // Run through all the alerts, drawing any that are active
-
 // Are we drawing them in reverse order so that the important 
 // alerts end up drawn on top of the less important alerts?
 
-    for (i = alert_list_count - 1; i >= 0; i--) {
+    for (i = alert_max_count - 1; i >= 0; i--) {
+
+        //  Check whether the alert slot is filled/empty
+        if (alert_list[i].title[0] == '\0') // Empty slot
+            continue;
+
 //        if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
         if ( (level = alert_active(&alert_list[i], ALERT_ALL) ) ) {
             if (level >= (int)sizeof (fill_color))
@@ -12080,8 +12053,11 @@ void load_alert_maps (Widget w, char *dir) {
     }
 
 
-//for (i = 0; i < alert_list_count; i++)
-//    fprintf(stderr,"Title5:%s\n",alert_list[i].title);
+//    for (i = 0; i < alert_max_count; i++) {
+//        if (alert_list[i].title[0] == '\0')
+//            continue;
+//        fprintf(stderr,"Title5:%s\n",alert_list[i].title);
+//    }
 
 
     //fprintf(stderr,"Done drawing all active alerts\n");
