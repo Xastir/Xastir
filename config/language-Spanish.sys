@@ -3,7 +3,7 @@
 #
 # Creador        : por Jose R. Marte A. <hi8gn@amsat.org>
 # Mantenido por  : El Xastir Grupo <xastir@xastir.org>
-# Ult. Revisión  : 04/28/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
+# Ult. Revisión  : 05/13/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
 #
 # Líneas de comentarios con un signo de libra en frente son ignorado
 # El formato del archivo es como sigue:
@@ -78,7 +78,7 @@ PULDNMP020|Activar/Configurar Tigermap||
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
 PULDNMP023|Re-Indezar Mapas|R|
-PULDNMP024|Map Re-Index: ALL Maps|A|
+PULDNMP024|Re-Indezar Mapa: TODOS los Mapas|T|
 #
 # Menú "Configurar Tigermapa"
 MPUPTGR001|Rejilla||
@@ -209,7 +209,7 @@ PULDNTNT02|Propiedades|P|
 PULDNTNT03|Desactivar Transmitir: TODOS||
 PULDNTNT05|Desactivar Transmitir: Mi Posición||
 PULDNTNT06|Desactivar Transmitir: Objetos/Artículos||
-PULDNTNT01|Transmitir Ahora!|T|
+PULDNTNT01|Transmitir Ahora..!|T|
 PULDNTNT07|Coger Huella de GPS|F|
 PULDNTNT08|Coger Rutas de GPS|R|
 PULDNTNT09|Coger VíaPuntos de GPS|W|
