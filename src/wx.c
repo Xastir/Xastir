@@ -1668,15 +1668,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
                 // Check whether field 115 is available at bytes 452
-                // & 453.  If so, that's the one-minute wind speed
-                // average in 0.1kph, which matches the APRS spec
-                // except for the units (which should be MPH).
-                if ((len >= 454) && (data[452]!='-')) {
-                    substr(temp_data1,(char *)(data+452),2);
+                // through 455.  If so, that's the one-minute wind
+                // speed average in 0.1kph, which matches the APRS
+                // spec except for the units (which should be MPH).
+                if ( (len >= 456) && (data[452] != '-') ) {
+                    substr(temp_data1,(char *)(data+452),4);
                     xastir_snprintf(weather->wx_speed,
                         sizeof(weather->wx_speed),
                         "%03d",
-                        (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        (int)(0.5
+                            + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
                     done_with_wx_speed++;
                 }
 
@@ -1719,7 +1720,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 // wind speed is the highest.  Ugh, surely there's a
                 // way to make this pretty. A function might be
                 // better.
-                if( temp1 >= temp2 && temp1 >= temp3 ){
+                if ( temp1 >= temp2 && temp1 >= temp3 ){
                     // fprintf(stderr,"WIND:      ***\n");
 
                     /* wind speed */
@@ -1745,7 +1746,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         weather->wx_course[0]=0;
                     }
                 }
-                else if( temp2 >= temp1 && temp2 >= temp3 ){
+                else if ( temp2 >= temp1 && temp2 >= temp3 ){
                     // fprintf(stderr,"WIND:               ***\n");
 
                     if (!done_with_wx_speed) {
@@ -1771,7 +1772,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         weather->wx_course[0]=0;
                     }
                 }
-                else if( temp3 >= temp2 && temp3 >= temp1 ){
+                else if ( temp3 >= temp2 && temp3 >= temp1 ){
                     // fprintf(stderr,"WIND:                        ***\n");
 
                     if (!done_with_wx_speed) {
@@ -1797,7 +1798,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         weather->wx_course[0]=0;
                     }
                 }
-                else{   /* Or default to the first value */
+                else {  /* Or default to the first value */
                     // fprintf(stderr,"WIND: DEFAULTING!\n");
 
                     if (!done_with_wx_speed) {
