@@ -602,6 +602,14 @@ If you get "cp: cannot stat `.libs/libshp.la': No such file or
 directory", then you forgot to edit the Makefile.  BZZZT!  Please
 start again at step 1) above.  Thank you for playing!
 
+If you get something like: "Makefile:121:  *** Missing separator.
+Stop.", then it's likely that while editing the Makefile you ended
+up with line-wrap on a line (one line broken into two or more lines
+because the editor thought it was too long).  Combine the line into
+one line again and retry.  Make sure not to delete any spaces that
+are there between items on the line, else you'll get different
+errors.
+
 [ ] Now you should be ready to configure and compile Xastir with
 Shapelib support.  Type these commands:
 
