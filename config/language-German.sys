@@ -4,7 +4,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 15. Apr 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 19. Mai 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -81,30 +81,30 @@ PULDNMP011|Mauszeiger-Menu|M|
 PULDNMP008|Intensität|I|
 PULDNMP020|Einstellungen Tigermaps||
 PULDNMP021|Autom. Karten - PixelKarten aus||
-PULDNMP022|Karten beim Start indizieren||
-PULDNMP023|Karten reindizieren|r|
-PULDNMP024|Map Re-Index: ALL Maps|A|
+PULDNMP022|Neue Karten beim Start indizieren||
+PULDNMP023|Index: Neue Karten hinzufügen|N|
+PULDNMP024|Index: ALLE Karten reindizieren|r|
 #
 #
 # PopUp "Einstellungen Tigermaps"
 MPUPTGR001|Gitter||
 MPUPTGR002|Counties||
-MPUPTGR003|Orte beschriften||
+MPUPTGR003|Orts-Beschriftung||
 MPUPTGR004|Urbane Bereiche||
 MPUPTGR005|Übergeordnete Strassen||
 MPUPTGR006|Strassen||
 MPUPTGR007|Eisenbahn||
-MPUPTGR008|State Labels||
-MPUPTGR009|Interstate Labels||
-MPUPTGR010|US Hwy Labels||
-MPUPTGR011|State Hwy Labels||
-MPUPTGR012|Darzustellen:||
+MPUPTGR008|State Beschriftung||
+MPUPTGR009|Interstate Beschr.||
+MPUPTGR010|US Hwy Beschr.||
+MPUPTGR011|State Hwy Beschr.||
+MPUPTGR012|Anzeigen von:||
 MPUPTGR013|Flüsse||
 MPUPTGR014|Seen||
-MPUPTGR015|Flughäfen, parks, etc||
+MPUPTGR015|Flughäfen, Parks, etc||
 MPUPTGR016|Karten Intensität||
 MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
+MPUPTGR018|Tiger Maps erlauben||
 #
 #
 # PopUp "Kartenauswahl"
@@ -129,7 +129,7 @@ PULDNMBC08|Zartes Gelb||
 PULDNMBC09|Rötliches Braun||
 PULDNMBC10|Rot||
 PULDNMBC11|Weiß||
-PULDNMBC12|Schwarzes||
+PULDNMBC12|Schwarze||
 #
 # Karten - Stil der Stationstexte
 PULDNMSL01|Schwarze Umrandung|U|
@@ -237,7 +237,7 @@ POPUPMA017|Ganze Welt||
 POPUPMA016|Letzte Ansicht||
 POPUPMA018|Objekt Neu||
 POPUPMA019|Objekt Ändern||
-POPUPMA025|meine Station hierhin!|h|
+POPUPMA025|Meine Station hierhin!|h|
 POPUPMA011|nach oben||
 POPUPMA012|nach unten||
 POPUPMA013|nach links||
@@ -340,17 +340,17 @@ WPUPCFD025|Alternatives Netz?||
 WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
 WPUPCFD027|PopUp-Fenster für neue Nachrichten||
 WPUPCFD028|Warnung bei Modifikationstasten||
-WPUPCFD029|Anzeige von Nachrichten mi Entfernung Null||
+WPUPCFD029|Anzeige bei Entfernung Null||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Zeitverhalten Einstellungen|||
-WPUPCFTM02|Posit TX Interval (min)||
-WPUPCFTM03|Station Ghosting Time (min)||
-WPUPCFTM04|Object/Item TX Interval (min)||
-WPUPCFTM05|Station Clear Time (hours)||
-WPUPCFTM06|GPS Check Interval (sec)||
-WPUPCFTM07|Station Delete Time (days)||
-WPUPCFTM08|Dead-Reckoning Timeout (min)||
+WPUPCFTM02|Position TX Intervall (Min)||
+WPUPCFTM03|Station Ghosting Time (Min)||
+WPUPCFTM04|Objekt SendeIntervall (Min)||
+WPUPCFTM05|alte Station anzeigen (Std)||
+WPUPCFTM06|GPS Abfrage alle (Sec)||
+WPUPCFTM07|Station löschen nach (Tage)||
+WPUPCFTM08|Voraussage Timeout (Min)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem Einstellungen||
@@ -980,7 +980,7 @@ GAMMA002|Gammakorrektur||
 #
 #
 # Distance/Bearing on status line
-PULDNDB001|Dist/Bearing Status||
+PULDNDB001|Entf./Richtung in Status||
 #
 #
 # GPS Transfer Operations
