@@ -737,13 +737,13 @@ void load_data_or_default(void) {
         sprintf (my_comment, "XASTIR-%s", XASTIR_SYSTEM);
 
     /* default values */
-    if (!get_long ("SCREEN_WIDTH", &screen_width, 0l, 10000l, 640l))
+    if (!get_long ("SCREEN_WIDTH", &screen_width, 100l, 10000l, 640l))
         screen_width = 640;
 
     if (screen_width < 100)
         screen_width = 100;
 
-    if (!get_long ("SCREEN_HEIGHT", &screen_height, 0l, 10000l, 480l))
+    if (!get_long ("SCREEN_HEIGHT", &screen_height, 40l, 10000l, 480l))
         screen_height = 480;
 
     if (screen_height < 40)
