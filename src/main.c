@@ -100,8 +100,9 @@
 #include <curl/curl.h>
 #endif
 
-#ifdef HAVE_GDAL
-#include "ogr_api.h"
+#ifdef HAVE_LIBGDAL
+#include <ogr_api.h>
+#include <gdal.h>
 #endif
 
 #include "xastir.h"
@@ -24896,10 +24897,6 @@ int main(int argc, char *argv[]) {
 
 #ifdef HAVE_LIBCURL
     curl_global_init(CURL_GLOBAL_ALL);
-#endif
-
-#ifdef HAVE_GDAL
-    OGRRegisterAll();
 #endif
 
 #ifdef HAVE_IMAGEMAGICK

@@ -56,7 +56,7 @@
 
 //#include <math.h>
 
-//#include "xastir.h"
+#include "xastir.h"
 #include "maps.h"
 #include "alert.h"
 //#include "util.h"
@@ -165,6 +165,15 @@ void map_gdal_init() {
 
 
 
+/*  TODO: 
+ *    projections
+ *    multiple bands 
+ *    colormaps 
+ *    .geo files vs. .wld
+ *    map index
+ */
+
+
 #ifdef HAVE_LIBGDAL
 
 void draw_gdal_map(Widget w,
@@ -177,108 +186,211 @@ void draw_gdal_map(Widget w,
 
     GDALDatasetH hDataset;
     char file[MAX_FILENAME];    // Complete path/name of image
-
+    GDALDriverH   hDriver;
+    double adfGeoTransform[6];
+    double map_x_mind, map_x_maxd, map_dxd; // decimal degrees
+    double map_y_mind, map_y_maxd, map_dyd; // decimal degrees
+    unsigned long map_x_min, map_x_max; // xastir units
+    unsigned long map_y_min, map_y_max; // xastir units
+    long map_dx, map_dy; // xastir units
+    double scr_m_dx, scr_m_dy; // screen pixels per map pixel
+    unsigned long map_s_x_min, map_s_x_max, map_s_x; // map pixels
+    unsigned long map_s_y_min, map_s_y_max, map_s_y; // map pixels
+    unsigned long scr_s_x_min, scr_s_x_max, scr_s_x; // screen pixels
+    unsigned long scr_s_y_min, scr_s_y_max, scr_s_y; // screen pixels
+        
+    // 
+    GDALRasterBandH hBand = NULL;
+    int numBand, hBandc;
+    int nBlockXSize, nBlockYSize;
+    //    int bGotMin, bGotMax;
+    //    double adfMinMax[2];
+    //
+    const char *pszProjection;
+    float *pafScanline;
+    int nXSize;
+    int width,height;
+    GDALColorTableH hColorTable;
+    GDALColorInterp hColorInterp;
+    GDALPaletteInterp hPalInterp;
+    GDALColorEntry colEntry;
+    GDALDataType hType;
+    double dfNoData;
+    int bGotNodata;
+    int i;
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
-printf("Calling GDALOpen on file: %s\n", file);
+    if ( debug_level & 16 ) 
+        fprintf(stderr,"Calling GDALOpen on file: %s\n", file);
 
     hDataset = GDALOpenShared( file, GA_ReadOnly );
-
-printf("Returned from open\n");
 
     if( hDataset == NULL )
     {
         fprintf(stderr,"GDAL couldn't open file: %s\n", file);
     }
 
-fprintf(stderr,"GDAL opened the file!\n");
+
+    if ( debug_level & 16 ) {
+        hDriver = GDALGetDatasetDriver( hDataset );
+        fprintf( stderr, "Driver: %s/%s\n",
+                 GDALGetDriverShortName( hDriver ),
+                 GDALGetDriverLongName( hDriver ) );
+        
+        fprintf( stderr,"Size is %dx%dx%d\n",
+                 GDALGetRasterXSize( hDataset ), 
+                 GDALGetRasterYSize( hDataset ),
+                 GDALGetRasterCount( hDataset ) );
+    
+        if( GDALGetProjectionRef( hDataset ) != NULL )
+            fprintf( stderr,"Projection is `%s'\n", GDALGetProjectionRef( hDataset ) );
+    
+        if( GDALGetGeoTransform( hDataset, adfGeoTransform ) == CE_None )
+            {
+                fprintf( stderr,"Origin = (%.6f,%.6f)\n",
+                         adfGeoTransform[0], adfGeoTransform[3] );
+            
+                fprintf( stderr,"Pixel Size = (%.6f,%.6f)\n",
+                         adfGeoTransform[1], adfGeoTransform[5] );
+            }
+    }
+    pszProjection = GDALGetProjectionRef( hDataset );
+    GDALGetGeoTransform( hDataset, adfGeoTransform );    
+    numBand = GDALGetRasterCount( hDataset );
+    width = GDALGetRasterXSize( hDataset );
+    height = GDALGetRasterYSize( hDataset );
+    // will have to delay these calcs until after a proj call
+    map_x_min = 64800000l + (360000.0 * adfGeoTransform[0]);
+    map_x_max = 64800000l + (360000.0 * (adfGeoTransform[0] + adfGeoTransform[1] * width));
+    map_y_min = 32400000l + (360000.0 * (-adfGeoTransform[3] ));
+    map_y_max = 32400000l + (360000.0 * (-adfGeoTransform[3] + adfGeoTransform[5] * height));
+    map_dx = adfGeoTransform[1] * 360000.0;
+    map_dy = adfGeoTransform[5] * 360000.0;
+    scr_m_dx = scale_x / map_dx;
+    scr_m_dy = scale_y / map_dy;
+
+    /*
+     * Here are the corners of our viewport, using the Xastir
+     * coordinate system.  Notice that Y is upside down:
+     *
+     *   left edge of view = x_long_offset
+     *  right edge of view = x_long_offset + (screen_width  * scale_x)
+     *    top edge of view =  y_lat_offset
+     * bottom edge of view =  y_lat_offset + (screen_height * scale_y)
+     *
+     * The corners of our map:
+     *
+     *   left edge of map = map_x_min   in Xastir format
+     *  right edge of map = map_x_max
+     *    top edge of map = map_y_min
+     * bottom edge of map = map_y_max
+     * 
+     * Map scale in xastir units per pixel: map_dx and map_dy
+     * Map scale in screen pixels per map pixel: scr_m_dx and scr_m_dy
+     *
+     * map pixel offsets that are on screen:
+     *   left edge of map = map_s_x_min
+     *  right edge of map = map_s_x_max
+     *    top edge of map = map_s_y_min
+     * bottom edge of map = map_s_y_max
+     * 
+     * screen pixel offsets for map edges:
+     *   left edge of map = scr_s_x_min
+     *  right edge of map = scr_s_x_max
+     *    top edge of map = scr_s_y_min
+     * bottom edge of map = scr_s_y_max
+     * 
+     */
+
+    // calculate map range on screen
+    scr_s_x_max = map_s_x_max = 0ul;
+    for ( map_s_x = 0, scr_s_x = 0; map_s_x_min < width; map_s_x_min++, scr_s_x_min += scr_m_dx) {
+        if ((x_long_offset + (scr_s_x_min * scale_x)) > (map_x_min + (map_s_x_min * map_dx))) 
+            map_s_x_min = map_s_x;
+        
+        
+    }
+
+    for (hBandc = 0; hBandc < numBand; hBandc++) {
+        hBand = GDALGetRasterBand( hDataset, hBandc + 1 );
+        dfNoData = GDALGetRasterNoDataValue( hBand, &bGotNodata );
+        GDALGetBlockSize( hBand, &nBlockXSize, &nBlockYSize );
+        hType = GDALGetRasterDataType(hBand);
+        
+        if ( debug_level & 16 ) {
+            fprintf(stderr, "Band %d (/%d):\n", hBandc, numBand); 
+            fprintf( stderr, " Block=%dx%d Type=%s.\n",
+                     nBlockXSize, nBlockYSize,
+                     GDALGetDataTypeName(hType) );
+            if( GDALGetDescription( hBand ) != NULL 
+                && strlen(GDALGetDescription( hBand )) > 0 )
+                fprintf(stderr, " Description = %s\n", GDALGetDescription(hBand) );
+            if( strlen(GDALGetRasterUnitType(hBand)) > 0 )
+                fprintf(stderr, " Unit Type: %s\n", GDALGetRasterUnitType(hBand) );
+            if( bGotNodata )
+                fprintf(stderr, " NoData Value=%g\n", dfNoData );
+        }
+        // handle colormap stuff
+
+        hColorInterp = GDALGetRasterColorInterpretation ( hBand );
+        if ( debug_level & 16 ) 
+            fprintf ( stderr, " Band's Color is interpreted as %s.\n", 
+                      GDALGetColorInterpretationName (hColorInterp));
+
+        if( GDALGetRasterColorInterpretation(hBand) == GCI_PaletteIndex ) {
+
+            hColorTable = GDALGetRasterColorTable( hBand );
+            hPalInterp = GDALGetPaletteInterpretation ( hColorTable );
+
+            if ( debug_level & 16 ) 
+                fprintf( stderr, " Band has a color table (%s) with %d entries.\n", 
+                         GDALGetPaletteInterpretationName( hPalInterp),
+                         GDALGetColorEntryCount( hColorTable ) );
+
+            for( i = 0; i < GDALGetColorEntryCount( hColorTable ); i++ )
+                {
+                    GDALGetColorEntryAsRGB( hColorTable, i, &colEntry );
+                    fprintf( stderr, "  %3d: %d,%d,%d,%d\n", 
+                             i, 
+                             colEntry.c1,
+                             colEntry.c2,
+                             colEntry.c3,
+                             colEntry.c4 );
+                }
+        } // PaletteIndex
+        
+
+    }
+    //
+
+        if ( numBand == 1) { // single band
+
+        }
+        if ( numBand == 3) { // seperate RGB bands
+        
+        }
+
+
+
+
+    
+    nXSize = GDALGetRasterBandXSize( hBand );
+
+    pafScanline = (float *) malloc(sizeof(float)*nXSize);
+    GDALRasterIO( hBand, GF_Read, 0, 0, nXSize, 1, 
+                  pafScanline, nXSize, 1, GDT_Float32, 
+                  0, 0 );
+
+    /* The raster is */
+
+
+
+
+
 
     GDALClose(hDataset);
 }
-
-
-
-
-
-/*
-// Getting Dataset Information, example code:
-
-    GDALDriverH   gDriver;
-    double adfGeoTransform[6];
-
-    gDriver = GDALGetDatasetDriver( hDataset );
-    printf( "Driver: %s/%s\n",
-        GDALGetDriverShortName( gDriver ),
-        GDALGetDriverLongName( gDriver ) );
-
-    printf( "Size is %dx%dx%d\n",
-        GDALGetRasterXSize( hDataset ), 
-        GDALGetRasterYSize( hDataset ),
-        GDALGetRasterCount( hDataset ) );
-
-    if( GDALGetProjectionRef( hDataset ) != NULL )
-        printf( "Projection is `%s'\n", GDALGetProjectionRef( hDataset ) );
-
-    if( GDALGetGeoTransform( hDataset, adfGeoTransform ) == CE_None) {
-        printf( "Origin = (%.6f,%.6f)\n",
-            adfGeoTransform[0], adfGeoTransform[3] );
-
-        printf( "Pixel Size = (%.6f,%.6f)\n",
-            adfGeoTransform[1], adfGeoTransform[5] );
-    }
-*/
-
-
-
-
-
-/*
-// Fetching a raster band, example code:
-
-    GDALRasterBandH hBand;
-    int nBlockXSize, nBlockYSize;
-    int bGotMin, bGotMax;
-    double adfMinMax[2];
-        
-    hBand = GDALGetRasterBand( hDataset, 1 );
-    GDALGetBlockSize( hBand, &nBlockXSize, &nBlockYSize );
-    printf( "Block=%dx%d Type=%s, ColorInterp=%s\n",
-        nBlockXSize, nBlockYSize,
-        GDALGetDataTypeName(GDALGetRasterDataType(hBand)),
-        GDALGetColorInterpretationName(
-            GDALGetRasterColorInterpretation(hBand)) );
-
-    adfMinMax[0] = GDALGetRasterMinimum( hBand, &bGotMin );
-    adfMinMax[1] = GDALGetRasterMaximum( hBand, &bGotMax );
-    if( ! (bGotMin && bGotMax) )
-        GDALComputeRasterMinMax( hBand, TRUE, adfMinMax );
-
-    printf("Min=%.3fd, Max=%.3f\n", adfMinMax[0], adfMinMax[1]);
-        
-    if( GDALGetOverviewCount(hBand) > 0 )
-        printf( "Band has %d overviews.\n", GDALGetOverviewCount(hBand));
-
-    if( GDALGetRasterColorTable( hBand ) != NULL )
-        printf( "Band has a color table with %d entries.\n", 
-            GDALGetColorEntryCount(
-                GDALGetRasterColorTable( hBand ) ) );
-*/
-
-
-
-
-
-/* Reading Raster Data, example code:
-
-    float *pafScanline;
-    int nXSize = GDALGetRasterBandXSize( hBand );
-
-    pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
-    GDALRasterIO( hBand, GF_Read, 0, 0, nXSize, 1, 
-        pafScanline, nXSize, 1, GDT_Float32, 
-        0, 0 );
-*/
 
 
 
