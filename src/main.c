@@ -413,7 +413,7 @@ Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
 Widget Send_gps_track, Send_gps_route, Send_gps_waypoints;
 int gps_got_data_from = 0;
 int gps_operation_pending = 0;
-char gps_filename[100];
+char gps_map_filename[100];
 void check_for_new_gps_map(void);
 #endif  // HAVE_GPSMAN
 
@@ -8614,16 +8614,28 @@ void check_for_new_gps_map(void) {
         // and then re-index maps (so that map may be deselected by
         // the user).
 
+//
+// It would be good to verify that we're not duplicating entries.
+// Add code here to read through the file first looking for a
+// match before attempting to append any new lines.
+//
+
         // Add the new gps map to the list of selected maps
         f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
         if (f!=NULL) {
-            fprintf(f,"Gps/%s\n",gps_filename);
+            fprintf(f,"Gps/%s\n",gps_map_filename);
             (void)fclose(f);
 
             // Reindex maps
             map_indexer();      // Have to have the new map in the index first before we can select it
             map_chooser_init(); // Re-read the selected_maps.sys file
             re_sort_maps = 1;   // Creates a new sorted list from the selected maps
+
+//
+// We should set some flags here instead of doing the map redraw
+// ourselves, so that multiple map reloads don't occur sometimes in
+// UpdateTime().
+//
 
             // Reload maps
             create_image(da);
@@ -8646,9 +8658,15 @@ void check_for_new_gps_map(void) {
 // to/from the GPS.  The thread is started up by the
 // GPS_operations() function below.
 //
+// Note that gps_map_filename could be already set up for us in the
+// global variable at this point, so that we wouldn't have to
+// hard-code it here.  Change GPS_operations() to bring up a dialog
+// so that the filename can be entered/chosen.
+//
 static void* gps_transfer_thread(void *arg) {
     int input_param;
     char temp[500];
+// Hard-coded executable path here!
     char prefix[100] = "cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0";
     char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/Gps/";
 
@@ -8667,8 +8685,9 @@ static void* gps_transfer_thread(void *arg) {
 
             fprintf(stderr,"Fetch track from GPS\n");
 
-            xastir_snprintf(gps_filename,
-                sizeof(gps_filename),
+            xastir_snprintf(gps_map_filename,
+                sizeof(gps_map_filename),
+// Hard-coded filename here!
                 "Team1_Track_Red.shp");
  
             xastir_snprintf(temp,
@@ -8676,7 +8695,7 @@ static void* gps_transfer_thread(void *arg) {
                 "%s getwrite TR %s%s",
                 prefix,
                 postfix,
-                gps_filename);
+                gps_map_filename);
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps track\n");
@@ -8692,8 +8711,9 @@ static void* gps_transfer_thread(void *arg) {
 
             fprintf(stderr,"Fetch routes from GPS\n");
 
-            xastir_snprintf(gps_filename,
-                sizeof(gps_filename),
+            xastir_snprintf(gps_map_filename,
+                sizeof(gps_map_filename),
+// Hard-coded filename here!
                 "Team2_Routes_Green.shp");
  
             xastir_snprintf(temp,
@@ -8701,7 +8721,7 @@ static void* gps_transfer_thread(void *arg) {
                 "%s getwrite RT %s%s",
                 prefix,
                 postfix,
-                gps_filename);
+                gps_map_filename);
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps routes\n");
@@ -8717,8 +8737,9 @@ static void* gps_transfer_thread(void *arg) {
  
             fprintf(stderr,"Fetch waypoints from GPS\n");
 
-            xastir_snprintf(gps_filename,
-                sizeof(gps_filename),
+            xastir_snprintf(gps_map_filename,
+                sizeof(gps_map_filename),
+// Hard-coded filename here!
                 "Team3_Waypoints.shp");
  
             xastir_snprintf(temp,
@@ -8726,7 +8747,7 @@ static void* gps_transfer_thread(void *arg) {
                 "%s getwrite WP %s%s",
                 prefix,
                postfix,
-                gps_filename);
+                gps_map_filename);
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps waypoints\n");
@@ -8784,24 +8805,26 @@ static void* gps_transfer_thread(void *arg) {
 
 
 
-//WE7U
-// GPSMan can't handle multiple '.' in the filename.  It chops at
+// GPSMan can't handle multiple '.'s in the filename.  It chops at
 // the first one.
-//
-// It'd be nice if the GPSMan splash screen had decorations so that
-// it could be moved out of the way.  Need a tweak to GPSman in
-// order to get the decorations.
 //
 // Note that the permissions on the "maps/Gps" directory have to be
 // set so that this user (or the root user?) can create files in
-// that directory, and that the permissions on the resulting files
-// may need to be tweaked.
+// that directory.  The permissions on the resulting files may need
+// to be tweaked.
 //
 // When creating files, we should warn the user of a conflict if the
 // filename already exists, then if the user wishes to overwrite it,
 // delete the old set of files before downloading the new ones.  We
 // should also make sure we're not adding the filename to the
 // selected_maps.sys more than once.
+//
+// Set up default filenames for each, with an autoincrementing
+// number at the end?  That'd be one way of getting a maps
+// downloaded in a hurry.  Could also ask for a filename after the
+// download is complete instead of at the start of the download.  In
+// that case, download to a temporary filename and then rename it
+// later and reload maps.
 //
 void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     pthread_t gps_operations_thread;
@@ -8813,7 +8836,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         // Check whether we're already doing a GPS operation.
         // Return if so.
         if (gps_operation_pending) {
-            fprintf(stderr,"GPS Operation is pending.\n");
+            fprintf(stderr,"GPS Operation is already pending, can't start another one!\n");
             return;
         }
         else {  // We're not, set flags appropriately.
@@ -8835,16 +8858,19 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 // filenames that are already in existence in a special directory?
         }
 
-//-------------------- New Thread -----------------------------------
+        parameter = atoi(clientData);
+ 
 
+//----- Start New Thread -----
+ 
         // Here we start a new thread.  We'll communicate with the
         // main thread via global variables.  Use mutex locks if
         // there might be a conflict as to when/how we're updating
         // those variables.
-
-        parameter = atoi(clientData);
+        //
         if (pthread_create(&gps_operations_thread, NULL, gps_transfer_thread, &parameter)) {
-            fprintf(stderr,"Error creating gps_operations thread\n");
+            fprintf(stderr,"Error creating gps transfer thread\n");
+            gps_got_data_from = 0;      // No data to present
             gps_operation_pending = 0;  // We're done
         }
         else {
