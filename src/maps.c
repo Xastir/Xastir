@@ -10448,7 +10448,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                     ftime = (time_t *)&nfile.st_ctime;
                     switch (nfile.st_mode & S_IFMT) {
                         case (S_IFDIR):     // It's a directory, recurse
-                            /*printf("file %c letter %c\n",dl->d_name[0],letter); */
+                            //printf("file %c letter %c\n",dl->d_name[0],letter);
                             if ((strcmp (dl->d_name, ".") != 0) && (strcmp (dl->d_name, "..") != 0)) {
                                 strcpy (this_time, ctime (ftime));
                                 map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
@@ -10510,6 +10510,107 @@ map_index_record *map_index_head = NULL;
 // to prune old entries out of the index if a full indexing didn't
 // touch a file entry.  Could also delete an entry from the index
 // if/when a file can't be opened?
+
+
+
+
+
+//WE7U
+// This function not fully implemented yet.  Still in development.
+//
+// Function used to add map directories to the in-memory map index.
+// Causes an update of the index list in memory.  Input Records are
+// inserted in alphanumerical order.
+void index_update_directory(char *filename) {
+
+    map_index_record *current = map_index_head;
+    map_index_record *previous = map_index_head;
+    map_index_record *temp_record = map_index_head;
+    int done = 0;
+
+
+printf( "index_update_directory: %s\n", filename );
+
+    //if (map_index_head == NULL)
+    //    printf("Empty list\n");
+
+    // Search for a matching directory name in the linked list
+    while ((current != NULL) && !done) {
+        int test;
+
+        //printf("Comparing %s to\n          %s\n",current->filename,filename);
+
+        test = strcmp(current->filename,filename);
+        if (test == 0) {
+            // Found a match!
+            //printf("Found: Updating entry for %s\n",filename);
+            temp_record = current;
+            done++; // Exit the while loop
+        }
+        else if (test > 0) {    // Found a string past us in the
+                                // alphabet.  Insert ahead of this
+                                // last record.
+
+            //printf("\n%s\n%s\n",current->filename,filename);
+
+            //printf("Not Found: Inserting an index record for %s\n",filename);
+            temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+
+            if (previous == current) {  // Start of list!
+                // Insert new record at head of list
+                temp_record->next = map_index_head;
+                map_index_head = temp_record;
+                //printf("Inserting at head of list\n");
+            }
+            else {
+                // Insert new record before "current"
+                previous->next = temp_record;
+                temp_record->next = current;
+                //printf("Inserting before current\n");
+            }
+            //printf("Adding:%d:%s\n",strlen(filename),filename);
+        
+            //current = current->next;
+            done++;
+        }
+        else {  // Haven't gotten to the correct insertion point yet
+            previous = current; // Save ptr to last record
+            current = current->next;
+        }
+    }
+
+    if (!done) {  // Matching record not found, add a
+        // record to the end of the list
+        //printf("Not Found: Adding an index record for %s\n",filename);
+        temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        temp_record->next = NULL;
+
+        if (previous == NULL) { // Empty list
+            map_index_head = temp_record;
+            //printf("First record in new list\n");
+        }
+        else {  // Else at end of list
+            previous->next = temp_record;
+            //printf("Adding to end of list: %s\n",filename);
+        }
+
+        //printf("Adding:%d:%s\n",strlen(filename),filename);
+    }
+
+    // Update the values.  By this point we have a struct to fill
+    // in, whether it's a new or old struct doesn't matter.  Convert
+    // the values from lat/long to Xastir coordinate system.
+    xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
+    //strncpy(temp_record->filename,filename,MAX_FILENAME-1);
+    //temp_record->filename[MAX_FILENAME-1] = '\0';
+//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
+
+    temp_record->bottom = 0;
+    temp_record->top = 0;
+    temp_record->left = 0;
+    temp_record->right = 0;
+    temp_record->accessed = 1;
+}
 
 
 
