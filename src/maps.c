@@ -3020,7 +3020,6 @@ void clean_string(char *input) {
             j[0] = '\0';    // Terminate the string at the 2nd quote
             // Can't use strcpy here because it can't work with
             // overlapping strings.
-            //strcpy(input,i+1);
             memmove(input, i+1, j-i);
         }
         else {  // We only found one quote character.  What to do?
@@ -3491,18 +3490,24 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                 case 'F':   // 'F' in 4th char means fire alert
                     // Use fire alert file fz_??????
                     //fprintf(stderr,"%c:Fire Alert file\n",alert->title[3]);
-                    strncpy (alert->filename, "fz", sizeof (alert->filename));
+                    xastir_snprintf(alert->filename,
+                        sizeof(alert->filename),
+                        "fz");
                     break;
  
                 case 'C':   // 'C' in 4th char means county
                     // Use County file c_??????
                     //fprintf(stderr,"%c:County file\n",alert->title[3]);
-                    strncpy (alert->filename, "c_", sizeof (alert->filename));
+                    xastir_snprintf(alert->filename,
+                        sizeof(alert->filename),
+                        "c_");
                     break;
                 case 'A':   // 'A' in 4th char means county warning area
                     // Use County warning area w_?????
                     //fprintf(stderr,"%c:County warning area file\n",alert->title[3]);
-                    strncpy (alert->filename, "w_", sizeof (alert->filename));
+                    xastir_snprintf(alert->filename,
+                        sizeof(alert->filename),
+                        "w_");
                     break;
                 case 'Z':
                     // Zone, coastal or offshore marine zone file z_????? or mz?????? or oz??????
@@ -3511,7 +3516,9 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                     // z_: All others
                     if (strncasecmp(alert->title,"AM",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"AN",2) == 0) {
                         // Need to check for Z081-Z086, Z088, if so use
@@ -3524,56 +3531,82 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                 || (strncasecmp(&alert->title[3],"Z086",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z088",4) == 0) ) {
                             //fprintf(stderr,"%c:Offshore marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "oz", sizeof (alert->filename));
+                            xastir_snprintf(alert->filename,
+                                sizeof(alert->filename),
+                                "oz");
                         }
                         else {
                             //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "mz", sizeof (alert->filename));
+                            xastir_snprintf(alert->filename,
+                                sizeof(alert->filename),
+                                "mz");
                         }
                     }
                     else if (strncasecmp(alert->title,"GM",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"LC",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"LE",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"LH",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"LM",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"LO",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"LS",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"PH",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"PK",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"PM",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"PS",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else if (strncasecmp(alert->title,"PZ",2) == 0) {
 // Need to check for PZZ081-085, if so use oz??????, else use mz??????
@@ -3583,22 +3616,30 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                 || (strncasecmp(&alert->title[3],"Z084",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z085",4) == 0) ) {
                             //fprintf(stderr,"%c:Offshore marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "oz", sizeof (alert->filename));
+                            xastir_snprintf(alert->filename,
+                                sizeof(alert->filename),
+                                "oz");
                         }
                         else {
                             //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "mz", sizeof (alert->filename));
+                            xastir_snprintf(alert->filename,
+                                sizeof(alert->filename),
+                                "mz");
                         }
                     }
                     else if (strncasecmp(alert->title,"SL",2) == 0) {
                         //fprintf(stderr,"%c:Coastal marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "mz");
                     }
                     else {
                         // Must be regular zone file instead of coastal
                         // marine zone or offshore marine zone.
                         //fprintf(stderr,"%c:Zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "z_", sizeof (alert->filename));
+                        xastir_snprintf(alert->filename,
+                            sizeof(alert->filename),
+                            "z_");
                     }
                     break;
                 default:
@@ -3690,7 +3731,10 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                                 || dl->d_name[strlen(dl->d_name)-1] == 'P') ) {
                                             // We have an exact match.
                                             // Save the filename in the alert
-                                            strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
+                                            xastir_snprintf(alert->filename,
+                                                sizeof(alert->filename),
+                                                "%s",
+                                                dl->d_name);
                                             done++;
                                             //fprintf(stderr,"%s\n",dl->d_name);
                                         }
@@ -3809,7 +3853,10 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     index_update_directory(temp_dir);
                                 }
 
-//                                strcpy (this_time, ctime (ftime));
+//                                xastir_snprintf(this_time,
+//                                    sizeof(this_time),
+//                                    "%s",
+//                                    ctime(ftime));
                                 map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
                             }
                             break;
@@ -4156,9 +4203,6 @@ static void index_update_directory(char *directory) {
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
     xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",directory);
-    //strncpy(temp_record->filename,directory,MAX_FILENAME-1);
-    //temp_record->filename[MAX_FILENAME-1] = '\0';
-//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",directory);
 
     temp_record->bottom = 0;
     temp_record->top = 0;
@@ -4346,9 +4390,6 @@ void index_update_xastir(char *filename,
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
     xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
-    //strncpy(temp_record->filename,filename,MAX_FILENAME-1);
-    //temp_record->filename[MAX_FILENAME-1] = '\0';
-//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     temp_record->bottom = bottom;
     temp_record->top = top;
@@ -4542,10 +4583,6 @@ void index_update_ll(char *filename,
     // In this case the struct uses MAX_FILENAME for the length of
     // the field, so the below statement is ok.
     xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
-
-    //strncpy(temp_record->filename,filename,MAX_FILENAME-1);
-    //temp_record->filename[MAX_FILENAME-1] = '\0';
-//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     ok = convert_to_xastir_coordinates( &temp_left,
         &temp_top,
@@ -5528,7 +5565,10 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
 
     // Set up our path to the wx alert maps
     memset(alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
-    strncpy(alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
+    xastir_snprintf(alert_scan, // Fetch the base directory
+        MAX_FILENAME-10,
+        "%s",
+        dir);
     strncat(alert_scan, // Complete alert directory is now set up in the string
         "/",
         sizeof(alert_scan) - strlen(alert_scan));
