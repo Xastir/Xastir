@@ -403,7 +403,7 @@ WPUPCFG023|WX Port||
 # Configure TNC (baud/style are also for WX)
 WPUPCFT001|Configure TNC||
 WPUPCFT002|Use TNC?||
-WPUPCFT003|TNC port||
+WPUPCFT003|TNC Port||
 WPUPCFT004|Port Settings||
 WPUPCFT005|300 bps||
 WPUPCFT006|1200 bps||
@@ -441,6 +441,7 @@ WPUPCFT037|SlotTime (10 ms units)||
 WPUPCFT038|TxTail (10 ms units)||
 WPUPCFT039|Full Duplex||
 WPUPCFT040|Configure Multi-Port KISS TNC||
+WPUPCFT041|Radio Port||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||

@@ -447,6 +447,7 @@ WPUPCFT037|SlotTime (in 10 ms Einheiten)||
 WPUPCFT038|TxTail (in 10 ms Einheiten)||
 WPUPCFT039|Voll-Duplex||
 WPUPCFT040|Multi-Port KISS TNC konfigurieren||
+WPUPCFT041|Radio Port||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||

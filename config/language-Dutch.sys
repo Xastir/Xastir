@@ -451,6 +451,7 @@ WPUPCFT037|SlotTime (10 ms stappen)||
 WPUPCFT038|TxTail (10 ms stappen)||
 WPUPCFT039|Vol Duplex||
 WPUPCFT040|Configureer Multi-Port KISS TNC||
+WPUPCFT041|Radio Port||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort Instelling||

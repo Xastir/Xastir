@@ -441,6 +441,7 @@ WPUPCFT037|SlotTime (unità di 10 ms)||
 WPUPCFT038|Coda Tx (unità di 10 ms)||
 WPUPCFT039|Full Duplex||
 WPUPCFT040|Configura TNC Multi-Port KISS||
+WPUPCFT041|Radio Port||
 #
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||
