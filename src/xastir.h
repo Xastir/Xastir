@@ -53,6 +53,7 @@ extern Pixmap  pixmap;
 extern Pixmap  pixmap_final;
 extern Pixmap  pixmap_alerts;
 extern Pixmap  pixmap_stipple;
+extern Pixmap  pixmap_wx_stipple;
 
 
 typedef struct XastirGlobal {

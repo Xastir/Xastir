@@ -433,7 +433,12 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
                         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)fill_color]);
 
                         // This is how we tint it instead of obscuring the whole map
-                        (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
+// N7TAP
+// I'm not sure what this is actually going to draw, now that we use draw_shapefile_map
+// for weather alerts...  But, I don't want GXor for weather alerts anyway since it
+// would change the colors of the alerts, losing that bit of information.
+//                        (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
+                        (void)XSetFunction(XtDisplay(w), gc_tint, GXcopy);
                         /*
                           Options are:
                           GXclear         0                       (Don't use)
@@ -1470,11 +1475,13 @@ void draw_shapefile_map (Widget w,
     (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x00]);
  
     if (weather_alert_flag) {
+        char xbm_path[500];
+        int _w, _h, _xh, _yh;
         // This GC is used only for pixmap_alerts
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
-        // This is how we tint it instead of obscuring the whole map
-        (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
+        // N7TAP: No more tinting as that would change the color of the alert, losing that information.
+        (void)XSetFunction(XtDisplay(w), gc_tint, GXcopy);
         /*
         Options are:
             GXclear         0                       (Don't use)
@@ -1495,10 +1502,26 @@ void draw_shapefile_map (Widget w,
             GXset           1                       (Don't use)
         */
 
-//    if (line_behavior & 0x01)
-        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
-//    else
-//        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
+        if (strncasecmp(alert->alert_tag, "FLOOD", 5) == 0)
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "flood.xbm");
+        else if (strncasecmp(alert->alert_tag, "SNOW", 4) == 0)
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "snow.xbm");
+        else if (strncasecmp(alert->alert_tag, "TORNDO", 6) == 0)
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "tornado.xbm");
+        else if (strncasecmp(alert->alert_tag, "WIND", 4) == 0)
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "wind.xbm");
+        else if (strncasecmp(alert->alert_tag, "WINTER_STORM", 12) == 0)
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "wntr_strm.xbm");
+        else if (strncasecmp(alert->alert_tag, "WINTER_WEATHER", 14) == 0)
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "winter_wx.xbm");
+        else
+            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
+
+        (void)XSetLineAttributes(XtDisplay(w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
+        XFreePixmap(XtDisplay(w), pixmap_wx_stipple);
+        XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+                        xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
+        (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
     } else {
         if (water_flag)
             (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x09]);
@@ -1737,8 +1760,12 @@ void draw_shapefile_map (Widget w,
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
                             //(void)XSetForeground(XtDisplay (w), gc, colors[(int)0x64]);
                             if (map_color_fill || water_flag || weather_alert_flag) {
-                                if (weather_alert_flag)
-                                    (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
+                                if (weather_alert_flag) {
+                                    (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
+                                    (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
+                                    (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
+                                    (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
+                                }
                                 else
                                     (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                             } else {
