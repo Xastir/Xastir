@@ -28,9 +28,14 @@ password combo, or you don't have networking installed at all.
 The following steps direct you through installing Cygwin, Xastir, and
 a few optional map libraries that Xastir can use.  Note that in most
 of the places below where the directions state to type commands, this
-must be done from within a Cygwin bash shell, not a DOS window.
+must be done from within a Cygwin BASH shell, not a DOS window.
 Where you are asked to edit files, it's best to use Wordpad instead
 of Notepad, as Notepad doesn't do nice things to Unix-format files.
+
+Cygwin now allows you to have Xwindows apps and Windows apps all on
+the screen and visible at the same time!  The instructions here set
+it up in that manner, so you can have Xastir as just another app on
+your Windows desktop.
 
 
 Step 1)  Install Cygwin, a free download.
@@ -94,7 +99,6 @@ be selected as well, that's ok and necessary:
     Utils/diff
     Utils/patch
     Web/wget (or can use libcurl instead)
-    XFree86/fvwm
     XFree86/lesstif
     XFree86/XFree86-prog
 
@@ -113,44 +117,26 @@ Step 1e)  At the end of the install it'll ask you if you wish to
 create desktop icons and menu entries.  Definitely select these!
 They will create a Black/Green Cygwin icon on the desktop and a
 menu entry so that you can start Cygwin that way as well.  Click
-"Finish".  Cygwin is now installed.
+"Finish".  Cygwin is now installed.  The Black/Green Cygwin icon
+will start up a BASH window, without starting up Xwindows.  Think of
+it as being similar to a DOS window, but with a lot more power.
 
 
-Step 2)  Create customized startup script for X:
+Step 2)  Create shortcut for starting X:
 
-Using File Explorer, copy
-
-    "C:\cygwin\usr\X11r6\bin\startxwin.bat" to
-    "C:\cygwin\usr\X11r6\bin\startxwin.fvwm2.bat"
-
-(same path, different filename).  Edit this new file
-"startxwin.fvwm2.bat", changing all instances of "twm" to "fvwm2".
+Create a shortcut to C:\cygwin\usr\X11r6\bin\startxwin.bat from your
+desktop.  This shortcut is the method you'll use to start up
+Xwindows.
 
 
 Step 3)  Test Cygwin and create startup shortcuts:
 
-Double-click on the green/black cygwin icon.  You should get a shell
-window that looks very much like a DOS window.
+Double-click on the shortcut you just made.  You should get a shell
+window that looks very much like a DOS window.  It's a BASH shell
+window and understands Unix commands instead of DOS commands.
 
-Inside the Cygwin window, type these commands:
-
-    cd
-    ln -s /usr/X11r6/bin/startxwin.fvwm2.bat go
-
-This creates a shortcut method "go" for starting the graphical
-user environment.  You can name it nearly anything you want as
-long as you don't duplicate any names already used for Cygwin
-programs.
-
-Type "./go &".  You should get a large window with a smaller
-shell window displayed on it.  If you right-click on the background
-(outside the smaller window), you should see a menu.  Select "Exit
-FVWM" to make the large window go away (although that doesn't always
-work for me), or click on the "X" in the upper right corner of the
-window.
-
-Type "exit" and then press <Enter> to make the Cygwin
-window itself disappear.
+Type "exit" and then press <Enter> to make the BASH window
+disappear.
 
 
 Step 4)  Create a file at C:\cygwin\home\<user>\ called ".cvsrc",
@@ -168,11 +154,10 @@ Do not use Notepad or other Windows tools to create the file, as CVS will
 not recognize the contents.  Thanks to Kirk Mefford <kc2elo@softhome.net>
 for noticing this.
 
-Step 5)  Download Xastir sources.  Start up a Cygwin shell (black/
-green icon).  Type the five lines below into the shell exactly as
-shown.
-
-Hit <ENTER> when asked for a password during the last command:
+Step 5)  Download Xastir sources.  Start up Xwindows using your
+shortcut.  Type the five lines below into the shell exactly as
+shown.  Hit <ENTER> when asked for a password during the last
+command:
 
   cd ~
   mkdir src
@@ -199,7 +184,7 @@ developers this way.
 
 
 Step 6)  Configure/compile/install Xastir.  Type these commands into
-the Cygwin shell, waiting until each one completes before typing the
+the BASH shell, waiting until each one completes before typing the
 next command:
 
     cd ~/src/xastir
@@ -218,7 +203,7 @@ give you access to the full mapping capability of Xastir.
 
 
 Step 7)  Create a link to the Xastir executable.  Type the following
-commands in the Cygwin shell:
+commands into the BASH shell:
 
     cd ~
     ln -s /usr/local/bin/xastir xastir
@@ -231,14 +216,12 @@ the long path each time.
 Step 8)  Actually run the darn thing:
 
 Let's start from scratch to make sure it all works.  Close any
-Cygwin and/or X11 windows you may have.
+Cygwin/BASH windows you may have.
 
-Click on the Cygwin icon.
+Click on the shortcut you created to start Xwindows.
 
-From the resulting Cygwin window, type "./go &".
-
-Once the large window with the one small window appears, type
-"xastir &" in the small window.  Xastir should start up shortly.
+From the resulting BASH window, type "xastir &".  Xastir should
+start up shortly.
 
 Note:  Xastir has support for pocketAPRS, dosAPRS, WinAPRS, MacAPRS
 and GNIS maps by default.  For additional types of maps, you'll need
@@ -309,7 +292,7 @@ Allows using many sources of online polygon, polyline, and point
 maps, including ones from NOAA.  This is the only format used for
 weather alert maps.
 
-From a Cygwin bash shell, type:
+From a BASH shell, type:
 
     cd ~/src
     mkdir shapelib
@@ -320,7 +303,7 @@ Fetch "shapelib-1.2.10.tar.gz" from one of these sites:
 or  http://wetnet.net/~we7u/xastir/shapelib/
 
 Put it in the C:\cygwin\home\<user>\src\shapelib directory.  Untar it
-from the Cygwin shell window:
+from the BASH shell:
 
     cd ~/src/shapelib
     tar xzvf shapelib-1.2.10.tar.gz
@@ -347,9 +330,9 @@ then try "make lib" and make "lib_install" again.
 Edit or create your .profile file in your home directory.
 
 NOTE:  Your "home" directory would be at "C:\cygwin\<user>\" if you
-installed Cygwin in the default location.  From inside a Cygwin
-window you can get to your home directory just by typing "cd" and
-then pressing <Enter>.  When you see things like "~/.profile" it is
+installed Cygwin in the default location.  From inside a BASH shell
+you can get to your home directory just by typing "cd" and then
+pressing <Enter>.  When you see things like "~/.profile" it is
 really referring to the file ".profile" in your home directory (~).
 
 It appears that Cygwin uses the PATH variable to look for both
