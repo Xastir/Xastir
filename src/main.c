@@ -9385,7 +9385,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         }
 #endif /* HAVE_FESTIVAL */
                     }
-                    last_alert_on_screen = alert_redraw_on_update;
+                    last_alert_on_screen = temp_alert_count;
                     alert_redraw_on_update = 0;
                 } else {
                     if (!pending_ID_message)
