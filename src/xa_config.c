@@ -248,6 +248,8 @@ char *get_data_base_dir(char *dir) {
     static char base[MAX_VALUE];
     char *env_ptr;
 
+    // Snag this variable from the environment if it exists there,
+    // else grab it from the define in config.h
     strcpy (base, ((env_ptr = getenv ("XASTIR_DATA_BASE")) != NULL) ? env_ptr : XASTIR_DATA_BASE);
     if (base[strlen (base) - 1] != '/')
         strcat (base, "/");
