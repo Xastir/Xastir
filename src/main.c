@@ -7330,6 +7330,7 @@ void quit(int sig) {
 /* handle segfault signal */
 void segfault(/*@unused@*/ int sig) {
     fprintf(stderr, "Caught Segfault! Xastir will terminate\n");
+    fprintf(stderr, "Last incoming line was: %s\n", incoming_data_copy);
     fprintf(stderr, "%02d:%02d:%02d\n", get_hours(), get_minutes(), get_seconds() );
     quit(-1);
 }
