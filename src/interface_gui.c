@@ -4604,9 +4604,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     else
         devices[AGWPE_port].transmit_data=0;
 
-    if(XmToggleButtonGetState(AGWPE_relay_digipeat))
-        devices[AGWPE_port].relay_digipeat=1;
-    else
+//WE7U
+//    if(XmToggleButtonGetState(AGWPE_relay_digipeat))
+//        devices[AGWPE_port].relay_digipeat=1;
+//    else
         devices[AGWPE_port].relay_digipeat=0;
 
     if(XmToggleButtonGetState(AGWPE_reconnect_data))
@@ -5095,6 +5096,12 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             XmTextFieldSetString(AGWPE_unproto3_data,"");
             XmTextFieldSetString(AGWPE_igate_data,"");
             XmTextFieldSetString(AGWPE_radioport_data,"0");
+
+//WE7U
+// Keep this statement until we get relay digipeating functional for
+// this interface.
+XtSetSensitive(AGWPE_relay_digipeat, FALSE);
+
         }
         else {
             /* reconfig */
@@ -5111,15 +5118,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             else
                 XmToggleButtonSetState(AGWPE_transmit_data,FALSE,FALSE);
 
-            if (devices[AGWPE_port].relay_digipeat)
-                XmToggleButtonSetState(AGWPE_relay_digipeat, TRUE, FALSE);
-            else
+//            if (devices[AGWPE_port].relay_digipeat)
+//                XmToggleButtonSetState(AGWPE_relay_digipeat, TRUE, FALSE);
+//            else
                 XmToggleButtonSetState(AGWPE_relay_digipeat, FALSE, FALSE);
 
-            if (devices[AGWPE_port].transmit_data) {
-                XtSetSensitive(AGWPE_relay_digipeat, TRUE);
-            }
-            else
+//            if (devices[AGWPE_port].transmit_data) {
+//                XtSetSensitive(AGWPE_relay_digipeat, TRUE);
+//            }
+//            else
                 XtSetSensitive(AGWPE_relay_digipeat, FALSE);
 
             XmTextFieldSetString(AGWPE_host_data,devices[AGWPE_port].device_host_name);
