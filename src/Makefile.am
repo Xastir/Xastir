@@ -6,8 +6,7 @@
 bin_PROGRAMS = xastir
 noinst_PROGRAMS = testawk
 
-#SUBDIRS = @SUBRTREE@
-SUBDIRS = rtree
+SUBDIRS = @SUBRTREE@
 
 xastir_SOURCES = \
     alert.c alert.h \
