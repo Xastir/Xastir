@@ -216,7 +216,7 @@ To use online maps or findu.com historical data, you'll need wget or
     Wget:
         ftp://ftp.gnu.org/gnu/wget/
     libcurl:
-        Check your operating system distribution.
+	http://curl.haxx.se/
 
 To download GPS tracks/waypoints/routes from a Garmin GPS into Xastir,
 converting to Shapefile format maps as it runs, you'll need gpsmanshp and
