@@ -945,6 +945,7 @@ POPEM00035|Attenzione||
 POPEM00036|Nota||
 POPEM00037|presente interfaccia HSP: l'intervallo di lettura del GPS viene aumentato||
 POPEM00038|Name Conflicts With Existing Object/Item/Station||
+POPEM00039|Illegal characters found, substituting periods in their place||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||

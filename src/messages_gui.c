@@ -330,18 +330,19 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
     char temp1[MAX_CALLSIGN+1];
     char temp2[302];
     char path[200];
-    int i;
+    int ii, jj;
     char *temp_ptr;
+    int substitution_made = 0;
 
 
-    i=atoi((char *)clientData);
+    ii=atoi((char *)clientData);
 
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now" );
 
-    if (mw[i].send_message_dialog) {
+    if (mw[ii].send_message_dialog) {
 
         /* find station and go there */
-        temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
         xastir_snprintf(temp1,
             sizeof(temp1),
             "%s",
@@ -351,16 +352,32 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         (void)remove_trailing_spaces(temp1);
         (void)to_upper(temp1);
 
-        temp_ptr = XmTextFieldGetString(mw[i].send_message_message_data);
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_message_data);
         xastir_snprintf(temp2,
             sizeof(temp2),
             "%s",
             temp_ptr);
         XtFree(temp_ptr);
 
+        // We have the message text now.  Check it for illegal
+        // characters, remove them and substitute spaces if found.
+        // Illegal characters are '|', '{', and '~' for messaging.
+        for (jj = 0; jj < strlen(temp2); jj++) {
+            if (       temp2[jj] == '|'
+                    || temp2[jj] == '{'
+                    || temp2[jj] == '~' ) {
+                temp2[jj] = '.';    // Replace with a dot
+                substitution_made++;
+            }
+        }
+        if (substitution_made) {
+            popup_message_always(langcode("POPEM00022"),
+                langcode("POPEM00039"));
+        }
+
         (void)remove_trailing_spaces(temp2);
 
-        temp_ptr = XmTextFieldGetString(mw[i].send_message_path);
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_path);
         xastir_snprintf(path,
             sizeof(path),
             "%s",
@@ -371,7 +388,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         (void)to_upper(path);
 
         if(debug_level & 2)
-            fprintf(stderr,"Send message to <%s> from <%s> :%s\n",temp1,mw[i].to_call_sign,temp2);
+            fprintf(stderr,
+                "Send message to <%s> from <%s> :%s\n",
+                temp1,
+                mw[ii].to_call_sign,
+                temp2);
 
         if ( (strlen(temp1) != 0)                       // Callsign field is not blank
                 && (strlen(temp2) != 0)                 // Message field is not blank
@@ -380,10 +401,10 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             auto_reply=0;
             XmToggleButtonSetState(auto_msg_toggle,FALSE,FALSE);
             statusline(langcode("BBARSTA011"),0);       // Auto Reply Messages OFF
-            output_message(mw[i].to_call_sign,temp1,temp2,path);
-            XmTextFieldSetString(mw[i].send_message_message_data,"");
-//            if (mw[i].message_group!=1)
-//                XtSetSensitive(mw[i].button_ok,FALSE);
+            output_message(mw[ii].to_call_sign,temp1,temp2,path);
+            XmTextFieldSetString(mw[ii].send_message_message_data,"");
+//            if (mw[ii].message_group!=1)
+//                XtSetSensitive(mw[ii].button_ok,FALSE);
         }
         else {
             // Could add a popup here someday that says something about
