@@ -27,15 +27,28 @@
 #ifndef XASTIR_MAP_CACHE_H
 #define XASTIR_MAP_CACHE_H
 
+// External function declarations
 
+// Saves file and puts entries into cache db
 extern int map_cache_put( char * map_cache_url, char * map_cache_file );
+
+// Retrieves entry from cache db - checks existance of file
 extern int map_cache_get( char * map_cache_url, char * map_cache_file );
+
+// Deletes cached map file and the entry from cache
 extern int map_cache_del( char * map_cache_url );
+
+// Checks to see if map is expired based on date embedded in filename 
 extern int map_cache_expired( char * mc_filename, time_t mc_max_age );
+
+// Generates filename based on current time
 extern char * map_cache_fileid();
 
-// Cache expiration times
 
+// Static variable definitions
+// These should probably be runtime options 
+
+// Cache expiration times
 // about 6mo
 #define MC_MAX_FILE_AGE 6*30*24*60*60
 
