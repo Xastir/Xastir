@@ -385,9 +385,9 @@ int ui_connect( int port, char *to[]) {
 
 static void data_out_ax25(int port, unsigned char *string) {
     static char ui_mycall[10];
-    char       *t;
-    char       *to[10];
-    int         n;
+    char        *temp;
+    char        *to[10];
+    int         quantity;
 
     if (string == NULL)
         return;
@@ -398,45 +398,73 @@ static void data_out_ax25(int port, unsigned char *string) {
     if (begin_critical_section(&port_data_lock, "interface.c:data_out_ax25(1)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
-    /* see if a command is output */
-    if (string[0] == (unsigned char)3) {
-        /* process tnc type commands */
+    // Check for commands (start with Control-C)
+    if (string[0] == (unsigned char)3) { // Yes, process TNC type commands
+
+        // Look for MYCALL command
         if (strncmp((char *)&string[1],"MYCALL", 6) == 0) {
-            /* do MYCALL command */
-            t = strtok((char *)&string[1]," \t\r\n");
-            if (t != NULL) {
-                t = strtok(NULL," \t\r\n");
-                if (t != NULL) {
-                    substr(ui_mycall, t, 9);
+
+            // Found MYCALL.  Snag the callsign and put it into the
+            // structure for the port
+
+            // Look for whitespace/CR/LF (end of "MYCALL")
+            temp = strtok((char *)&string[1]," \t\r\n");
+            if (temp != NULL) {
+
+                // Look for whitespace/CR/LF (after callsign)
+                temp = strtok(NULL," \t\r\n");
+                if (temp != NULL) {
+                    substr(ui_mycall, temp, 9);
                     strcpy(port_data[port].ui_call, ui_mycall);
                     if (debug_level & 2)
                         printf("*** MYCALL %s\n",port_data[port].ui_call);
                 }
             }
-        } else if (strncmp((char *)&string[1],"UNPROTO", 6) == 0) {
-            /* do UNPROTO command */
-            n = 0;
-            t = strtok((char *)&string[1]," \t\r\n");
-            if (t != NULL) {
-                t = strtok(NULL," \t\r\n");
-                if (t != NULL) {
-                    to[n++] = t;
-                    t = strtok(NULL," \t\r\n");
-                    while (t != NULL) {
-                        t = strtok(NULL," ,\t\r\n");
-                        if (t != NULL) {
-                            if (n < 9) {
-                                to[n++] = t;
+        }
+
+        // Look for UNPROTO command
+        else if (strncmp((char *)&string[1],"UNPROTO", 6) == 0) {
+            quantity = 0;   // Number of callsigns found
+
+            // Look for whitespace/CR/LF (end of "UNPROTO")
+            temp = strtok((char *)&string[1]," \t\r\n");
+            if (temp != NULL) { // Found end of "UNPROTO"
+
+                // Find first callsign (destination call)
+                temp = strtok(NULL," \t\r\n");
+                if (temp != NULL) {
+                    to[quantity++] = temp; // Store it
+                    //printf("Destination call: %s\n",temp);
+
+                    // Look for "via" or "v"
+                    temp = strtok(NULL," \t\r\n");
+                    //printf("Via: %s\n",temp);
+
+                    while (temp != NULL) {  // Found it
+                        // Look for the rest of the callsigns (up to
+                        // eight of them)
+                        temp = strtok(NULL," ,\t\r\n");
+                        if (temp != NULL) {
+                            //printf("Call: %s\n",temp);
+                            if (quantity < 9) {
+                                to[quantity++] = temp;
                             }
                         }
                     }
-                    to[n] = NULL;
-                    if (debug_level & 2)
-                        printf("UNPROTO  %s\n",*to);
+                    to[quantity] = NULL;
+
+                    if (debug_level & 2) {
+                        int i = 1;
+
+                        printf("UNPROTO %s VIA ",*to);
+                        while (to[i] != NULL)
+                            printf("%s,",to[i++]);
+                        printf("\n");
+                    }
 
                     if (port_data[port].channel2 != -1) {
                         if (debug_level & 2)
-                            printf("Write DEVICE IS DOWN\n");
+                            printf("Write DEVICE is UP!  Taking it down to reconfigure UI path.\n");
 
                         (void)close(port_data[port].channel2);
                         port_data[port].channel2 = -1;
@@ -444,24 +472,29 @@ static void data_out_ax25(int port, unsigned char *string) {
                     if ((port_data[port].channel2 = ui_connect(port,to)) < 0) {
                         popup_message(langcode("POPEM00004"),langcode("POPEM00012"));
                         port_data[port].errors++;
-                    } else {    /* port reopened */
+                    }
+                    else {    // Port re-opened and re-configured
                         if (debug_level & 2)
-                            printf("WRITE port re-opened after UI\n");
+                            printf("WRITE port re-opened after UI path change\n");
                     }
                 }
             }
         }
-    } else {    /* write out data */
+    }
+
+    // Else not a command, write the data directly out to the port
+    else {
         if (debug_level & 2)
             printf("*** DATA: %s\n",(char *)string);
 
         if (port_data[port].channel2 != -1)
             (void)write(port_data[port].channel2, string, strlen((char *)string));
+        else if (debug_level & 2)
+            printf("\nPort down for writing!\n\n");
     }
 
     if (end_critical_section(&port_data_lock, "interface.c:data_out_ax25(2)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
-
 }
 
 
@@ -3190,7 +3223,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 }
 
 
-                /* Set converse mode */
+                // Set converse mode
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
                 if ( (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
@@ -3483,7 +3516,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 case DEVICE_NET_STREAM:
                     if (debug_level & 1)
                         printf("%d Net\n",i);
-                    xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
+                    xastir_snprintf(output_net,
+                        sizeof(output_net),
+                        "%s>%s,TCPIP*:",
+                        my_callsign,
+                        VERSIONFRM);
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -3497,9 +3534,14 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     if (debug_level & 1)
                         printf("%d AX25 TNC\n",i);
                     strcpy(output_net,"");      // clear this for a TNC
+
                     /* Set my call sign */
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s %s\r",
-                            '\3', "MYCALL", my_callsign);
+                    xastir_snprintf(data_txt,
+                        sizeof(data_txt),
+                        "%c%s %s\r",
+                        '\3',
+                        "MYCALL",
+                        my_callsign);
 
                     if ( (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
@@ -3516,27 +3558,46 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // Set unproto path.  First check whether we're
                     // to use the igate path.  If so and the path
                     // isn't empty, skip the rest of the path selection:
-                    if (use_igate_path) {
-                        if (strlen(devices[i].unproto1) > 0) {
-                            xastir_snprintf(data_txt, sizeof(data_txt),
-                                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
-                                            VERSIONFRM,devices[i].unproto_igate);
-                            xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                                            "%s>%s,%s:", my_callsign,
-                                            VERSIONFRM,devices[i].unproto_igate);
-                            done++;
-                        }
+                    if ( (use_igate_path)
+                            && (strlen(devices[i].unproto_igate) > 0) ) {
+
+                        xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%c%s %s VIA %s\r",
+                            '\3',
+                            "UNPROTO",
+                            VERSIONFRM,
+                            devices[i].unproto_igate);
+
+                        xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "%s>%s,%s:",
+                            my_callsign,
+                            VERSIONFRM,
+                            devices[i].unproto_igate);
+
+                        done++;
                     }
 //WE7U
                     // Check whether a path was passed to us as a
                     // parameter:
                     if ( (path != NULL) && (strlen(path) != 0) ) {
-                        xastir_snprintf(data_txt, sizeof(data_txt),
-                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
-                            VERSIONFRM, path);
-                        xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                            "%s>%s,%s:", my_callsign,
-                            VERSIONFRM, path);
+
+                        xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%c%s %s VIA %s\r",
+                            '\3',
+                            "UNPROTO",
+                            VERSIONFRM,
+                            path);
+
+                        xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "%s>%s,%s:",
+                            my_callsign,
+                            VERSIONFRM,
+                            path);
+
                         done++;
                     }
 
@@ -3547,12 +3608,22 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         switch (temp) {
                             case 0:
                                 if (strlen(devices[i].unproto1) > 0) {
-                                    xastir_snprintf(data_txt, sizeof(data_txt),
-                                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
-                                            VERSIONFRM,devices[i].unproto1);
-                                    xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                                            "%s>%s,%s:", my_callsign,
-                                            VERSIONFRM,devices[i].unproto1);
+
+                                    xastir_snprintf(data_txt,
+                                            sizeof(data_txt),
+                                            "%c%s %s VIA %s\r",
+                                            '\3',
+                                            "UNPROTO",
+                                            VERSIONFRM,
+                                            devices[i].unproto1);
+
+                                    xastir_snprintf(data_txt_save,
+                                            sizeof(data_txt_save),
+                                            "%s>%s,%s:",
+                                            my_callsign,
+                                            VERSIONFRM,
+                                            devices[i].unproto1);
+
                                     done++;
                                 }
                                 else {
@@ -3562,12 +3633,22 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                 break;
                             case 1:
                                 if (strlen(devices[i].unproto2) > 0) {
-                                    xastir_snprintf(data_txt, sizeof(data_txt),
-                                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
-                                            VERSIONFRM,devices[i].unproto2);
-                                    xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                                            "%s>%s,%s:", my_callsign,
-                                            VERSIONFRM, devices[i].unproto2);
+
+                                    xastir_snprintf(data_txt,
+                                        sizeof(data_txt),
+                                        "%c%s %s VIA %s\r",
+                                        '\3',
+                                        "UNPROTO",
+                                        VERSIONFRM,
+                                        devices[i].unproto2);
+
+                                    xastir_snprintf(data_txt_save,
+                                        sizeof(data_txt_save),
+                                        "%s>%s,%s:",
+                                        my_callsign,
+                                        VERSIONFRM,
+                                        devices[i].unproto2);
+
                                     done++;
                                 }
                                 else {
@@ -3577,12 +3658,22 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                 break;
                             case 2:
                                 if (strlen(devices[i].unproto3) > 0) {
-                                    xastir_snprintf(data_txt, sizeof(data_txt),
-                                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
-                                            VERSIONFRM, devices[i].unproto3);
-                                    xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                                            "%s>%s,%s:", my_callsign,
-                                            VERSIONFRM,devices[i].unproto3);
+
+                                    xastir_snprintf(data_txt,
+                                        sizeof(data_txt),
+                                        "%c%s %s VIA %s\r",
+                                        '\3',
+                                        "UNPROTO",
+                                        VERSIONFRM,
+                                        devices[i].unproto3);
+
+                                    xastir_snprintf(data_txt_save,
+                                        sizeof(data_txt_save),
+                                        "%s>%s,%s:",
+                                        my_callsign,
+                                        VERSIONFRM,
+                                        devices[i].unproto3);
+
                                     done++;
                                 }
                                 else {
@@ -3594,8 +3685,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         count++;
                     }   // End of while loop
                     if (!done) {    // We found no entries in the unproto fields for the interface
+
                         xastir_snprintf(data_txt, sizeof(data_txt), "%c%s %s VIA %s\r",
                                 '\3', "UNPROTO", VERSIONFRM, "RELAY,WIDE");
+
                         xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%s>%s,%s:",
                                 my_callsign, VERSIONFRM, "RELAY,WIDE");
                     }
@@ -3611,7 +3704,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     }
                     usleep(100000);  // 100ms
  
-                    /* Set converse mode */
+                    // Set converse mode
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
 
                     if ( (port_data[i].status == DEVICE_UP)
