@@ -10126,6 +10126,7 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 // format.
 //
 // Inputs:  incoming_data       Raw string
+//          length              Length of raw string
 //
 // Outputs: int                 0 if it is a bad packet,
 //                              1 if it is good

@@ -5644,11 +5644,14 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             // bad, break, else continue through to
                             // ASCII logging & decode routines.
                             if ( !decode_ax25_header( (char *)incoming_data, incoming_data_length ) ) {
+                                // Had a problem decoding it.  Drop
+                                // it on the floor.
                                 break;
                             }
                             else {
-                                // Drop through to the next block to
-                                // log and decode the packet.
+                                // Good decode.  Drop through to the
+                                // next block to log and decode the
+                                // packet.
                             }
 
                         case DEVICE_SERIAL_TNC:
