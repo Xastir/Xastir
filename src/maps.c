@@ -2114,6 +2114,9 @@ fprintf(stderr,"map too small for view: %d%%\n",(int)(percentage * 100));
 }
 
 
+
+
+
 // Function which checks whether a map is onscreen, but does so by
 // finding the map boundaries from the map index.  The only input
 // parameter is the complete path/filename.
@@ -3504,13 +3507,13 @@ int index_retrieve(char *filename,
     map_index_record *current = map_index_head;
     int status = 0;
 
-    if (filename == NULL) {
+    if ( (filename == NULL)
+            || (strlen(filename) >= MAX_FILENAME) ) {
         return(status);
     }
 
     // Search for a matching filename in the linked list
-    while ( (current != NULL)
-            && (strlen(filename) < MAX_FILENAME) ) {
+    while (current != NULL) {
 
         if (strcmp(current->filename,filename) == 0) {
             // Found a match!
