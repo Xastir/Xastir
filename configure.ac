@@ -520,6 +520,7 @@ echo Building with GDAL/OGR ............ : $use_gdal
 echo Building with ShapeLib ............ : $use_shapelib 
 echo Building with pcre ................ : $use_pcre
 echo Building with dbfawk .............. : $use_dbfawk
+echo Building with map caching ......... : $use_map_cache
 echo Building with ErrorPopups ......... : $use_err_popups
 echo "Building with libgc (Debug) ....... : $use_libgc"
 echo "Building with profiling (Debug) ... : $use_profiling"
