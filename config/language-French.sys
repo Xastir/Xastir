@@ -459,7 +459,7 @@ WPUPCFT039|Full duplex||
 WPUPCFT040|Configurer TNC Multi-Port KISS||
 WPUPCFT041|Port radio||
 WPUPCFT042|Dubious UNPROTO Path!||
-WPUPCFT043|Please consider a shorter path such as WIDE2-2 or RELAY,WIDE2-2||
+WPUPCFT043|Please consider a shorter path such as WIDE2-2 or WIDE1-1,WIDE2-2||
 WPUPCFT044|Dubious IGATE Path!||
 WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
 WPUPCFT046|Transmitting w/Dubious IGATE Path!||

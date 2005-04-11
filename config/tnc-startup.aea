@@ -13,7 +13,10 @@ HID off
 #CWID off
 EXP on
 ECHO off
-MYAlias RELAY
+#
+# Important!  Only uncomment if really needed as a fill-in digi:
+#MYAlias WIDE1-1
+#
 B E 0
 DIGI on
 FLow off

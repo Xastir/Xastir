@@ -42,7 +42,10 @@ LGETCHAR $05
 #
 HID off
 #CWID every 0
-MYAlias RELAY
+#
+# Important!  Only uncomment if really needed as a fill-in digi:
+#MYAlias WIDE1-1
+#
 B E 0
 DIGI on
 ECho off

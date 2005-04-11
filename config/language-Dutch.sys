@@ -471,7 +471,7 @@ WPUPCFT039|Vol Duplex||
 WPUPCFT040|Configureer Multi-Port KISS TNC||
 WPUPCFT041|Radio poort||
 WPUPCFT042|Twijfelachtige UNPROTO route!||
-WPUPCFT043|Gebruik liever een kortere route zoals WIDE2-2 of RELAY,WIDE2-2||
+WPUPCFT043|Gebruik liever een kortere route zoals WIDE2-2 of WIDE1-1,WIDE2-2||
 WPUPCFT044|Twijfelachtige IGATE route!||
 WPUPCFT045|Uitzenden met twijfelachtige UNPROTO route!||
 WPUPCFT046|Uitzenden met twijfelachtige IGATE route!||

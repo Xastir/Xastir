@@ -5,7 +5,10 @@
 # This is the TNC Startup file for a Kantronics KAM TNC. 
 # lines that begin with a pound sign are comments.
 # Edit this file for your tnc!
-myalias RELAY
+#
+# Important!  Only uncomment if really needed as a fill-in digi:
+#myalias WIDE1-1
+#
 INTF TERM
 txu on
 xflow off

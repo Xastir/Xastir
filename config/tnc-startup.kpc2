@@ -21,7 +21,10 @@ MON ON
 MResp OFF
 MRPt on
 MSTamp off
-MYAlias RELAY
+#
+# Important!  Only uncomment if really needed as a fill-in digi:
+#MYAlias WIDE1-1
+#
 NEWmode off
 SCR 0
 #

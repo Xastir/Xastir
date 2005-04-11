@@ -11,7 +11,10 @@ ECHO off
 HID off
 #CWID off
 #CWID every 0
-MYAlias RELAY
+#
+# Important!  Only uncomment if really needed as a fill-in digi:
+#MYAlias WIDE1-1
+#
 B E 0
 DIGI on
 EXP on
