@@ -57,7 +57,7 @@ The Questions
     4.4 I run Xastir, and get on the air, but nobody else sees me on their screens.
     4.5 I run Xastir, and get on the air, but none of the other stations
         appear on my screen?
-    4.6 Who is this APX110 guy who all my stuff is getting sent to? Who are these
+    4.6 Who is this APX142 guy who all my stuff is getting sent to? Who are these
         RELAY, WIDE and TRACE people digipeating packets, and why are they putting
         different callsigns in the fields where their names used to be? Why
         doesn't anyone answer me when I connect to them? HELP!!!
@@ -91,7 +91,8 @@ The Questions
 
     5.1  Why doesn't Xastir include <insert your feature here>?
 
-    5.2  Why doesn't Xastir digipeat packets sent to the RELAY alias?
+    5.2  Why doesn't Xastir digipeat packets sent to the RELAY or
+         WIDE1-1 aliases?
 
     5.3  How do I take a snapshot of my current view? 
 
@@ -478,7 +479,7 @@ The Answers
 
     Check that ALTNET support in File|Configure|Defaults is disabled.
     If activated, it only shows stations transmitting TO the callsign
-    listed in the box.  I sometimes set it to APX or APX121 in order to
+    listed in the box.  I sometimes set it to APX or APX142 in order to
     see who's running Xastir/who's running the _latest_ Xastir.  Set
     it to "WEIRD" and you'll only see those transmitting to "WEIRD".
 
@@ -489,7 +490,7 @@ The Answers
     invalid. This is a newer addition to APRS(tm), and recent Xastir releases
     decode this correctly.
 
-    4.6 Who is this APX112 guy who all my stuff is getting sent to? Who are
+    4.6 Who is this APX142 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are
         they putting different callsigns in the fields where their names used
         to be? Why doesn't anyone answer me when I connect to them? HELP!!!
@@ -501,15 +502,16 @@ The Answers
     packets to the world. Since these packets aren't directed toward a
     specific user, the TO address of the packet is simply a summary of the
     software you're running. AP=APRS(tm), X=X Windowing System, 110=Version 1.10.
-    RELAY, WIDE, and TRACE are aliases for generic digipeaters. Most base
-    stations have (or should have!) their TNC's configured to digipeat with the
-    call of RELAY. Very large stations should be set up as WIDE's. Newer
-    digipeater software substitutes their own call for the "RELAY" and "WIDE",
-    to enable people to see who digipeated them. TRACE was originally for this
-    purpose, but is now quite often used to avoid "WIDE, WIDE, WIDE" paths,
-    which would cause loops with older digipeaters. Some areas use special
-    flooding protocols to aid packets to get farther, but reduce congestion
-    on the network. Packets of that type will have digipeater paths of WIDEn-N.
+
+    RELAY, WIDE, TRACE, WIDEn-N, and TRACEn-N are aliases for generic
+    digipeaters, although all but the WIDEn-N variants are now deprecated
+    (should no longer be used).  Some base stations have their TNC's configured
+    to digipeat with the call of "WIDE1-1" (we used to use "RELAY" for these,
+    but "WIDE1-1" has now taken its place).  Newer digipeater software
+    substitutes their own call for "WIDEn-N" to enable people to see who
+    digipeated them.  See the README.Getting-Started file for a bit more info
+    on paths, including recommended paths for different types of stations.
+
     To talk to people, you send them messages from within Xastir, you don't
     "call" them like on typical packet. Most TNC's are set up to ignore classic
     packet "calls" so you won't get any response. When sending messages to
@@ -843,7 +845,8 @@ The Answers
     enough people have complained loud enough that it wasn't there.  The
     feature set of Xastir is user/developer driven. So get busy!
 
-    5.2  Why doesn't Xastir digipeat packets sent to the RELAY alias?
+    5.2  Why doesn't Xastir digipeat packets sent to the RELAY or
+    WIDE1-1 aliases?
 
     If you're running serial-port connected TNC's, the "tnc-startup.*"
     files that get installed in /usr/local/share/xastir/config should set up
@@ -853,7 +856,9 @@ The Answers
     is brought up the Setup file will be downloaded to the TNC.
     "myalias RELAY" is the command most TNC's accept for defining a
     RELAY alias.  That command or similar should be in the Setup file
-    that you use.
+    that you use.  Correction:  Use "myalias WIDE1-1" with the new
+    path scheme discussed on APRSSIG during early April, 2005.
+    RELAY/WIDE/TRACE/TRACEn-n are all deprecated now.
 
     If you're running kernel AX.25 interfaces, then you'll need to run
     another package to handle digipeating on these interfaces, perhaps

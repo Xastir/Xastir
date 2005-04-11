@@ -552,15 +552,37 @@ all been there before.
 
 A Note About Paths:
 -------------------
-In most areas of the country, RELAY,WIDE2-2 should suffice for a
-path.  Never put RELAY anywhere but at the beginning of a path.
-Never use anything higher than about WIDE4-4 unless you really know
-what you're doing and are in a very rural area.
+Old path methods:  In most areas of the country, RELAY,WIDE2-2
+should suffice for a path.  Never put RELAY anywhere but at the
+beginning of a path.  Never use anything higher than about WIDE4-4
+unless you really know what you're doing and are in a very rural
+area.
 
 Some areas of the country don't support RELAY on the mountaintops,
 in which case you might want WIDE2-2 or WIDE3-3 as paths.  Some
 areas don't support the WIDEn-N flooding protocol, in which case you
 might want RELAY,WIDE,WIDE or similar.
+
+New path methods, discussed early April, 2005, and beginning to be
+implemented world-wide:
+
+    "WIDE2-2" for fixed stations, balloons, aeronautical-mobile
+    "WIDE2-2" or
+    "WIDE1-1,WIDE2-2" for mobiles/portables
+
+With this system, "WIDE1-1" has replaced "RELAY", so you never want
+to use "WIDE1-1" in anything but the first path slot.  "RELAY",
+"WIDE", "TRACE", and "TRACEn-N" are deprecated and should not be
+used anymore.
+
+If you want to insert a single hop callsign later in the path use
+"WIDE2-1" instead, for example:  "WIDE1-1,WIDE2-1" will go exactly
+two hops and use either the home fill-in digi's or the mountaintop
+digi's for the first hop, mountaintop digi's only for the second
+hop.
+
+Home fill-in digi's (where needed) should be set up to respond to
+"WIDE1-1" now instead of "RELAY".
 
 
 A Note About the Map Directory:
