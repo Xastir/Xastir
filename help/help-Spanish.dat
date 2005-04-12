@@ -907,12 +907,12 @@ permitidas para que su señal sea escuchada si las condiciones son mala.
 Si cualquiera de éstos es llenado en XASTIR ciclará a través de uno de ellos
 a cada intervalo de transmision.
 
-Si usted estás local, sólo un WIDE puede ser una buena opción.
+Si usted estás local, sólo un WIDE2-2 puede ser una buena opción.
 Si usted estás usando baja potencia y/o estás distante de un digi entonces
-RELAY, WIDE puede trabajar mejor.
+WIDE1-1,WIDE2-2 puede trabajar mejor.
 
 O si usted conoces el indicativo de su digi más cercano que usted
-puedes usar XXXCALL, WIDE.
+puedes usar XXXCALL,WIDE2-2.
 La mayoría de ustedes necesitarán sólo una ruta.
 
 Si usted estás en una área remota y su señal es difícil de conseguirla
@@ -921,7 +921,7 @@ usted puedes necesitar más.
 Verifique con un grupo local y pregúntele que ruta 
 puede ser mejor para su área. Algunas areas
 usan el flujo de protocolos más eficientes, en tales caso usted podría usar
-WIDE3-3 o RELAY,WIDE3-3.
+WIDE3-3 o WIDE1-1,WIDE3-3.
 
 Los archivos de Inicio y Salida del TNC. Estos campos especifican a nombre
 de archivo qie es localizado en el directorio /usr/local/share/xastir/config.
@@ -996,17 +996,19 @@ del UNPROTO. Hay tres rutas permitidas para que su señal sea escuchada
 si las condiciones son mala.
 
 Si cualquiera de ésas son llenada en XASTIR ciclará a través de uno de ellos 
-en cada momento de la transmisión. Si usted es local, sólo un WIDE puede ser una buena opción.
+en cada momento de la transmisión. Si usted es local, sólo un
+WIDE2-2 puede ser una buena opción.
 
-Si usted estás usando baja potencia y/o estás distante de un digi entonces RELAY, WIDE pueden trabajar mejor.
+Si usted estás usando baja potencia y/o estás distante de un digi
+entonces WIDE1-1,WIDE2-2 pueden trabajar mejor.
 O si usted sabes el indicativo de su digi más cercano
-a usted puedes usar XXXCALL, WIDE. La mayoría de ustedes necesitarán sólo una ruta.
+a usted puedes usar XXXCALL,WIDE2-2. La mayoría de ustedes necesitarán sólo una ruta.
 
 Si usted estás en una área remota y su señal es difícil de conseguir usted puedes 
 necesitar más. Verifique con un grupo local y pregúntele qué 
 ruta puede ser mejor para su área. Algunas areas
 usan el flujo de protocolos más eficientes, en tales caso usted podría usar
-WIDE3-3 o RELAY,WIDE3-3.
+WIDE3-3 o WIDE1-1,WIDE3-3.
 
     
 NOTA: Para usar dispositivos AX.25 con Xastir usted necesitarás ejecutar el programa como "raíz" ("root").

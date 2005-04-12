@@ -1860,18 +1860,17 @@ running an IGate leave it at the default option of "Disable".
 Enter up to three UNPROTO paths. Xastir will assume the XX VIA part of the
 UNPROTO path. There are three paths allowed so that your signal will be heard
 if conditions are bad. XASTIR will cycle through each one that is filled in,
-one per transmission time.  If you are local to a digi, just a WIDE may be a
+one per transmission time.  If you are local to a digi, just WIDE2-2 may be a
 good choice. If you are using low power and/or are distant from a digi then
-RELAY, WIDE may work better. Or if you know the call of your closest digi you
-may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
+WIDE1-1, WIDE2-2 may work better. Or if you know the call of your closest digi you
+may use XXXCALL, WIDE2-2. Most of you will only need one path. If you are in a
 remote area and your signal is difficult to get out you may need more. Check
-with a local group and ask what path may be best for your area.  Some areas
-use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.  If no paths are entered it will default to RELAY,WIDE.
+with a local group and ask what path may be best for your area.  If no paths are
+entered it will default to WIDE2-2.
 
 If you are IGating to RF, you may enter a specific path to use for the packets
 you send to RF. If you leave this blank, the UNPROTO paths above will be used.
-If the UNPROTO paths are blank, RELAY,WIDE will be used.
+If the UNPROTO paths are blank, WIDE2-2 will be used.
 
 TNC Startup and Shutdown files. These fields specify a filename that is
 located in the /usr/local/share/xastir/config directory. Each file is a
@@ -1904,10 +1903,10 @@ set up communications with it when the program first starts.
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
-Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with either
-your callsign or "RELAY" in the path. This option is only recommended for
-base stations in regions where there are few other RELAY stations in the
-area. Consult with a local group about the best setting for your region. 
+Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with your
+callsign, "RELAY", or "WIDE1-1" in the path. This option is only recommended
+for base stations in regions where there are few other fill-in digipeaters in
+the area. Consult with a local group about the best setting for your region.
 
 The TNC Port is the Unix serial device that the TNC is hooked to.
 Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc.
@@ -1923,18 +1922,17 @@ running an IGate leave it at the default option of "Disable".
 Enter up to three UNPROTO paths. Xastir will assume the XX VIA part of the
 UNPROTO path. There are three paths allowed so that your signal will be heard
 if conditions are bad. Xastir will cycle through each one that is filled in,
-one per transmission time.  If you are local to a digi, just a WIDE may be a
+one per transmission time.  If you are local to a digi, just a WIDE2-2 may be a
 good choice. If you are using low power and/or are distant from a digi then
-RELAY, WIDE may work better. Or if you know the call of your closest digi you
-may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
-remote area and your signal is difficult to get out you may need more. Check
-with a local group and ask what path may be best for your area.  Some areas
-use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.  If no paths are entered it will default to RELAY,WIDE.
+WIDE1-1,WIDE2-2 may work better. Or if you know the call of your closest digi
+you may use XXXCALL,WIDE2-2. Most of you will only need one path. If you are in
+a remote area and your signal is difficult to get out you may need more. Check
+with a local group and ask what path may be best for your area.  If no paths
+are entered it will default to WIDE2-2.
 
 If you are IGating to RF, you may enter a specific path to use for the packets
 you send to RF. If you leave this blank, the UNPROTO paths above will be used.
-If the UNPROTO paths are blank, RELAY,WIDE will be used.
+If the UNPROTO paths are blank, WIDE2-2 will be used.
 
 Next configure the KISS parameters: TXdelay is the time (in 10ms units) needed
 between the keying of the radio and when it is ready to send data. Persistence
@@ -1962,11 +1960,11 @@ Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
 Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with either
-your callsign or "RELAY" in the path. This option is only recommended for
-base stations in regions where there are few other RELAY stations in the
-area.  Consult with a local group about the best setting for your region.
-This is only needed if you are not using any other software that performs
-this function, such as aprsdigi or DIGI_NED.
+your callsign, "RELAY", or "WIDE1-1 in the path. This option is only
+recommended for base stations in regions where there are few other
+fill-in digipeater stations in the area.  Consult with a local group about the
+best setting for your region.  This is only needed if you are not using any
+other software that performs this function, such as aprsdigi or DIGI_NED.
 
 Enter the AX.25 Device name you specified in the axports file for this device.
 
@@ -1979,18 +1977,17 @@ running an IGate leave it at the default option of "Disable".
 Enter in up to three UNPROTO paths. Xastir will assume the XX VIA part of the
 UNPROTO path. There are three paths allowed so that your signal will be heard
 if conditions are bad. Xastir will cycle through each one that is filled in,
-one per transmission time.  If you are local to a digi, just a WIDE may be a
+one per transmission time.  If you are local to a digi, just a WIDE2-2 may be a
 good choice. If you are using low power and/or are distant from a digi then
-RELAY, WIDE may work better. Or if you know the call of your closest digi you
-may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
-remote area and your signal is difficult to get out you may need more. Check
-with a local group and ask what path may be best for your area.  Some areas
-use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.  If no paths are entered it will default to RELAY,WIDE.
+WIDE1-1,WIDE2-2 may work better. Or if you know the call of your closest digi
+you may use XXXCALL,WIDE2-2. Most of you will only need one path. If you are in
+a remote area and your signal is difficult to get out you may need more. Check
+with a local group and ask what path may be best for your area.  If no paths
+are entered it will default to WIDE2-2.
 
 If you are IGating to RF, you may enter a specific path to use for the packets
 you send to RF. If you leave this blank, the UNPROTO paths above will be used.
-If the UNPROTO paths are blank, RELAY,WIDE will be used.
+If the UNPROTO paths are blank, WIDE2-2 will be used.
 
 NOTE: To use AX.25 devices with Xastir you will need to run the program as
 "root". If you want to run Xastir as another user you may want to set the

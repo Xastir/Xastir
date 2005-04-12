@@ -1528,17 +1528,17 @@ Tragen sie bis zu drei UNPROTO Pfade ein, Xastir gibt dabei das
 Zielrufzeichen vor. Falls mehrere Pfade (bis zu drei) eingetragen wurden,
 so verwendet Xastir diese abwechselnd bei jeder Aussendung, um so auch in
 schwierigen Situationen gehört zu werden. Wenn sie nur lokalen Verkehr
-haben, so genügt ein einzelnes WIDE. Bei wenig Leistung oder größerer
-Entfernung von einem Digipeater dürfte "RELAY,WIDE" besser funktionieren.
+haben, so genügt ein einzelnes WIDE2-2. Bei wenig Leistung oder größerer
+Entfernung von einem Digipeater dürfte "WIDE1-1,WIDE2-2" besser funktionieren.
 Wenn sie das Rufzeichen eines benachbarten Digis kennen, können sie auch
 alle Pakete über diesen schicken, indem sie es an erster Stelle nennen,
-also z.B. "DB0XYZ,WIDE". Für die meisten Stationen wird ein Pfad genügen,
+also z.B. "DB0XYZ,WIDE2-2". Für die meisten Stationen wird ein Pfad genügen,
 in abgelegenen Gegenden oder unter schwierigen Bedingungen kann es
 sinnvoll sein, mehrere einzutragen. Am besten läßt es sich mit örtlichen
 Funkamateuren abklären, welcher Pfad geeignet ist, um einerseits gut
 gehört zu werden, andererseits aber die Frequenzen nicht unnötig zu
 belasten. In Gegenden mit intelligenten Digis, die Wiederholungsschleifen
-weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "RELAY,WIDE3-3"
+weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "WIDE1-1,WIDE3-3"
 verwendet werden.
 
 Die TNC Startup und Shutdown Dateien befinden sich im Verzeichnis
@@ -1574,17 +1574,17 @@ Tragen sie bis zu drei UNPROTO Pfade ein, Xastir gibt dabei das
 Zielrufzeichen vor. Falls mehrere Pfade (bis zu drei) eingetragen wurden,
 so verwendet Xastir diese abwechselnd bei jeder Aussendung, um so auch in
 schwierigen Situationen gehört zu werden. Wenn sie nur lokalen Verkehr
-haben, so genügt ein einzelnes WIDE. Bei wenig Leistung oder größerer
-Entfernung von einem Digipeater dürfte "RELAY,WIDE" besser funktionieren.
+haben, so genügt ein einzelnes WIDE2-2. Bei wenig Leistung oder größerer
+Entfernung von einem Digipeater dürfte "WIDE1-1,WIDE2-2" besser funktionieren.
 Wenn sie das Rufzeichen eines benachbarten Digis kennen, können sie auch
 alle Pakete über diesen schicken, indem sie es an erster Stelle nennen,
-also z.B. "DB0XYZ,WIDE". Für die meisten Stationen wird ein Pfad genügen,
+also z.B. "DB0XYZ,WIDE2-2". Für die meisten Stationen wird ein Pfad genügen,
 in abgelegenen Gegenden oder unter schwierigen Bedingungen kann es
 sinnvoll sein, mehrere einzutragen. Am besten läßt es sich mit örtlichen
 Funkamateuren abklären, welcher Pfad geeignet ist, um einerseits gut
 gehört zu werden, andererseits aber die Frequenzen nicht unnötig zu
 belasten. In Gegenden mit intelligenten Digis, die Wiederholungsschleifen
-weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "RELAY,WIDE3-3"
+weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "WIDE1-1,WIDE3-3"
 verwendet werden.
 
 Anmerkung: Um die AX.25 Treiber verwenden zu können, muß Xastir unter

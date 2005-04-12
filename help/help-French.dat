@@ -251,9 +251,9 @@ même dans de mauvaises conditions.
 En fonction des champs remplis Xastir commencera un cycle d'envoi vers
 ces destinations, l'une après l'autre a chaque fois qu'il sera l'heure
 de transmettre.
-Si vous êtes en local sans digi mettez WIDE, si vous etes QRP ou loin 
-d'un digi RELAY, WIDE fonctionnera mieux.
-Si vous êtes près d'un digi vous pouvez mettre INDICATIF, WIDE.
+Si vous êtes en local sans digi mettez WIDE2-2, si vous etes QRP ou loin 
+d'un digi WIDE1-1,WIDE2-2 fonctionnera mieux.
+Si vous êtes près d'un digi vous pouvez mettre INDICATIF,WIDE2-2.
 La plupart d'entre vous n'avez besoin que d'un chemin mais si vous n'etes
 pas bien dégagé mettez en plusieurs, demandez aux stations qui vous 
 entourent.

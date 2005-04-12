@@ -1286,14 +1286,14 @@ running an IGate leave it at the default option of "Disable".
 Enter up to three UNPROTO paths. Xastir will assume the XX VIA part of the
 UNPROTO path. There are three paths allowed so that your signal will be heard
 if conditions are bad. XASTIR will cycle through each one that is filled in,
-one per transmission time.  If you are local to a digi, just a WIDE may be a
+one per transmission time.  If you are local to a digi, just a WIDE2-2 may be a
 good choice. If you are using low power and/or are distant from a digi then
-RELAY, WIDE may work better. Or if you know the call of your closest digi you
-may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
+WIDE1-1,WIDE2-2 may work better. Or if you know the call of your closest digi you
+may use XXXCALL,WIDE2-2. Most of you will only need one path. If you are in a
 remote area and your signal is difficult to get out you may need more. Check
 with a local group and ask what path may be best for your area.  Some areas
 use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.
+or WIDE1-1,WIDE3-3.
 
 TNC Startup and Shutdown files. These fields specify a filename that is
 located in the /usr/local/share/xastir/config directory. Each file is a
@@ -1332,14 +1332,14 @@ Enter the AX.25 Device name you specified in the axports file for this device.
 Enter in up to three UNPROTO paths. Xastir will assume the XX VIA part of the
 UNPROTO path. There are three paths allowed so that your signal will be heard
 if conditions are bad. XASTIR will cycle through each one that is filled in,
-one per transmission time.  If you are local to a digi, just a WIDE may be a
+one per transmission time.  If you are local to a digi, just a WIDE2-2 may be a
 good choice. If you are using low power and/or are distant from a digi then
-RELAY, WIDE may work better. Or if you know the call of your closest digi you
-may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
+WIDE1-1,WIDE2-2 may work better. Or if you know the call of your closest digi you
+may use XXXCALL,WIDE2-2. Most of you will only need one path. If you are in a
 remote area and your signal is difficult to get out you may need more. Check
 with a local group and ask what path may be best for your area.  Some areas
 use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.
+or WIDE1-1,WIDE3-3.
 
 NOTE: To use AX.25 devices with Xastir you will need to run the program as
 "root". If you want to run Xastir as another user you may want to set the

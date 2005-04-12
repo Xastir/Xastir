@@ -7603,7 +7603,7 @@ static char unproto_path_txt[MAX_LINE_SIZE+5];
 // Once we select a path, we save the number selected back to
 // devices[port].unprotonum so that the next time around we select
 // the next in the sequence.  If we don't come up with a valid
-// unproto path, we use the unproto path: "WIDE,WIDE2-2".
+// unproto path, we use the unproto path: "WIDE2-2".
 //
 // Input:  Port number
 // Ouput:  String pointer containing unproto path
@@ -7694,7 +7694,7 @@ unsigned char *select_unproto_path(int port) {
 
         xastir_snprintf(unproto_path_txt,
             sizeof(unproto_path_txt),
-            "WIDE,WIDE2-2");
+            "WIDE2-2");
     }
 
     // Increment the path number for the next round of

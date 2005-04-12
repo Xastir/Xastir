@@ -361,10 +361,10 @@ percorso UNPROTO. è possibile impostare tre percorsi differenti in modo da
  avere alternative nel caso le condizioni non siano buone.  Se uno dei percorsi 
 è occupato allora Xastir passerà al successivo ad ogni trasmissione e così via.
 
-Se sei in una condizione di stazioni locali, semplicemente un WIDE può essere 
+Se sei in una condizione di stazioni locali, semplicemente un WIDE2-2 può essere 
 una buona scelta.  Se stai usando poca potenza e/o sei distante dal digipeater 
-allora RELAY, WIDE potrebbe essere la scelta giusta.  Se conosci il nominativo 
-del tuo più vicino digipeater allora si potrà usare NOMINATIVO_DIGI, WIDE.  La 
+allora WIDE1-1,WIDE2-2 potrebbe essere la scelta giusta.  Se conosci il nominativo 
+del tuo più vicino digipeater allora si potrà usare NOMINATIVO_DIGI,WIDE2-2.  La 
 maggior parte di voi avrà bisogno di un solo percorso.  Se ci si trova in un 
 area remota e il segnale è difficilmente ascoltabile dalle altre stazioni allora 
 potrebbe essere necessario aggiungere dei percorsi.  Una buona norma è quella
@@ -403,10 +403,10 @@ percorso UNPROTO. è possibile impostare tre percorsi differenti in modo da
 avere alternative nel caso le condizioni non siano buone.  Se uno dei percorsi è
 occupato allora Xastir passerà al successivo ad ogni trasmissione e così via.
 
-Se sei in una condizione di stazioni locali, semplicemente un WIDE può essere 
+Se sei in una condizione di stazioni locali, semplicemente un WIDE2-2 può essere 
 una buona scelta.  Se stai usando poca potenza e/o sei distante dal digipeater
-allora RELAY, WIDE potrebbe essere la scelta giusta.  Se conosci il nominativo 
-del tuo più vicino digipeater allora si potrà usare NOMINATIVO_DIGI, WIDE.  La 
+allora WIDE1-1,WIDE2-2 potrebbe essere la scelta giusta.  Se conosci il nominativo 
+del tuo più vicino digipeater allora si potrà usare NOMINATIVO_DIGI,WIDE2-2.  La 
 maggior parte di voi avrà bisogno di un solo percorso.  Se ci si trova in 
 un'area remota e il segnale è difficilmente ascoltabile dalle altre stazioni allora 
 potrebbe essere necessario aggiungere dei percorsi.  Una buona norma è quella 
