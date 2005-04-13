@@ -517,13 +517,22 @@ Of course you can always run callpass again if you forget it!
 
 *) Go to Interface->Properties then click on "Add".  Click "Internet
 Server".  Another dialog will come up that allows you to enter the
-Host (try "firenet.us"), and the Port (try "2023").  Enter your
-Pass-code number here.  People often check the "Activate on
-Startup?" and the "Reconnect on NET failure?" options on this box.
-You may also assign a comment to this interface which describes the
-interface better for you.  Click "OK" to create the interface.  If
-you checked "Activate on Startup?" then the interface will start as
-well and you'll be receiving packets.
+Host, and the Port.  Enter your Pass-code number here.  People often
+check the "Activate on Startup?" and the "Reconnect on NET failure?"
+options on this box.  You may also assign a comment to this
+interface which describes the interface better for you.  Click "OK"
+to create the interface.  If you checked "Activate on Startup?" then
+the interface will start as well and you'll be receiving packets.
+
+Browse "http://www.aprs2.net/" to find a reasonable set of servers
+to start with.  Another possibility is to use "rotate.aprs2.net"
+port 14580, which theoretically should rotate among the available
+second-tier servers.  You'll need to put in a filter string, such as
+"r/35/-106/500" which shows you stations that are within 500km of
+35dN/106dW (Thanks for that one Tom!).  For additional filter
+settings check out:
+
+    http://www.aprs-is.net/javaprssrvr/javaprsfilter.htm
 
 *) Start that interface from the Interface->Start/Stop dialog if
 it's not started already.  You'll see icons in the lower right
