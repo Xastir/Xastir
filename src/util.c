@@ -4359,6 +4359,8 @@ int check_unproto_path ( char *data ) {
             // n is greater than MAX_WIDES
             bad_path = 1;
         }
+        if (debug_level & 1)
+            fprintf(stderr,"n-N wrong\n");
         return(bad_path);
     }
 
@@ -4406,6 +4408,8 @@ int check_unproto_path ( char *data ) {
                 // RELAY should not appear after the first item in a
                 // path!
                 bad_path = 1;
+                if (debug_level & 1)
+                    fprintf(stderr,"RELAY appears later in the path\n");
                 break;
             }
         }
@@ -4418,6 +4422,8 @@ int check_unproto_path ( char *data ) {
                 // WIDE1-1 should not appear after the first item in
                 // a path!
                 bad_path = 1;
+                if (debug_level & 1)
+                    fprintf(stderr,"WIDE1-1 appears later in the path\n");
                 break;
             }
         }
@@ -4441,11 +4447,15 @@ int check_unproto_path ( char *data ) {
                 if (have_widen || have_tracen) {
                     // Already have a large area via
                     bad_path = 1;
+                    if (debug_level & 1)
+                        fprintf(stderr,"Previous WIDEn-N or TRACEn-N\n");
                     break;
                 }
 
                 // Perform WIDEn-N checks
                 if (is_wide) {
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found wideN-n\n");
                     have_widen++;
 
                     // We know its a WIDEn-N, time to find out what n is
@@ -4453,17 +4463,24 @@ int check_unproto_path ( char *data ) {
                         // This should be WIDEn-N and should be
                         // exactly 7 characters
                         bad_path = 1;
+                        if (debug_level & 1)
+                            fprintf(stderr,"String length of widen-N is not 7 characters\n");
                         break;
                     }
 
                     // Check for proper relations between the n-N
                     // numbers.
-                    if ( check_n_N() )
+                    if ( check_n_N() ) {
+                        if (debug_level & 1)
+                            fprintf(stderr,"In WIDEn-N checks\n");
                         break;
+                    }
                 }
 
                 // Perform similar checks for TRACEn-N
                 else {
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found traceN-n\n");
                     have_tracen++;
 
                     // We know its a TRACEn-N time to find out what
@@ -4472,13 +4489,18 @@ int check_unproto_path ( char *data ) {
                         // This should be TRACEn-N and should be
                         // exactly 8 characters
                         bad_path = 1;
+                        if (debug_level & 1)
+                            fprintf(stderr,"String length of tracen-N is not 8 characters\n");
                         break;
                     }
 
                     // Check for proper relations between the n-N
                     // numbers.
-                    if ( check_n_N() )
+                    if ( check_n_N() ) {
+                        if (debug_level & 1)
+                            fprintf(stderr,"In TRACEn-N checks\n");
                         break;
+                    }
                 }
 
             }
@@ -4498,6 +4520,8 @@ int check_unproto_path ( char *data ) {
 // Here we could check have_wide/have_trace to see what the actual
 // count of WIDE/TRACE calls is at this point...
                     bad_path = 1;
+                    if (debug_level & 1)
+                        fprintf(stderr,"Have relay and ii > MAX_WIDES\n");
                     break;
                 }
                 else if (!have_relay && ii > (MAX_WIDES - 1)) {
@@ -4505,11 +4529,16 @@ int check_unproto_path ( char *data ) {
 // Here we could check have_wide/have_trace to see what the actual
 // count of WIDE/TRACE calls is at this point...
                     bad_path = 1;
+                    if (debug_level & 1)
+                        fprintf(stderr,"No relay, but ii > MAX_WIDES-1\n");
                     break;
                 }
                 else if (have_widen || have_tracen) {
                     // WIDE/TRACE after something other than RELAY
+                    // or WIDE1-1
                     bad_path = 1;
+                    if (debug_level & 1)
+                        fprintf(stderr,"WIDE or TRACE after something other than RELAY or WIDE1-1\n");
                     break;
                 }
             }
@@ -4525,6 +4554,8 @@ int check_unproto_path ( char *data ) {
                 // We do not have an SSID, treat it as a RELAY
                 if (have_relay) {
                     bad_path = 1;
+                    if (debug_level & 1)
+                        fprintf(stderr,"No SSID\n");
                     break;
                 }
 */
@@ -4536,26 +4567,35 @@ int check_unproto_path ( char *data ) {
                 // Could be a LAN or LINK or explicit call, check
                 // for a digit preceding the dash
 
-                if (prev > 0) {
+                if (prev > 0 && prev <= 9) {    // Found a digit
                     // We've found an n-N */
                     if (have_widen || have_tracen) {
                         // Already have a previous wide path
                         bad_path = 1;
+                        if (debug_level & 1)
+                            fprintf(stderr,"Found n-N and previous WIDEn-N or TRACEn-N\n");
                         break;
                     }
 
                     // Check for proper relations between the n-N
                     // numbers.
-                    if ( check_n_N() )
+                    if ( check_n_N() ) {
+                        if (debug_level & 1)
+                            fprintf(stderr,"In OTHER checks\n");
                         break;
+                    }
 
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found wideN-n\n");
                     have_widen++;
                 }
                 else {
 /*
                     // Must be an explicit callsign, treat as relay
                     if (have_relay) {
-                       bad_path = 1;
+                        bad_path = 1;
+                        if (debug_level & 1)
+                            fprintf(stderr,"\n");
                         break;
                     }
 */
