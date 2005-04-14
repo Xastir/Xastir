@@ -1,0 +1,60 @@
+
+$Id$
+
+
+Hello possible new developer, and welcome to the Xastir project!
+
+In order to get contributed patches accepted more easily by the
+Xastir developers:
+
+
+*) Read "Developer Guidelines and Notes" in the Docs section of
+Xastir's SourceForge page.  Make sure to follow the formatting and
+indentation rules, and in particular the tab format (spaces, not
+tabs).  If you don't like some of the formatting rules, abide by
+them anyway for consistency (Hey, I don't like some of them either,
+but consistency is more important than ideas I might have of coding
+style!  --we7u).
+
+*) Check with the Xastir-Dev list first to see if anyone else is
+working on that particular idea or section of code.
+
+*) Verify on the Xastir-Dev list that your idea has some merit and
+chance of being accepted before you put your valuable time into the
+patch.
+
+*) Make sure you're willing to abide by the GPL license with respect
+to your patch.
+
+*) Use as generic C as possible, and comment what you've done, in
+English please!
+
+*) Keep in mind that Xastir runs on multiple operating systems, so
+code for that.  Some #ifdef's may be required in order to make it
+work for the various operating systems.
+
+*) Xastir can be run in multiple languages, so code for that.  If
+any user text is added, make sure to add language strings for them
+to the language files.  If you don't know a particular language, add
+it to all of the language files in English.  It will be translated
+by others later.
+
+*) Put your patches into either "context diff" or "unified diff"
+format.  Don't submit complete files.  Make sure your diff is
+against the latest CVS sources, as that is the version that the
+developers work from.
+
+*) Contribute patches either directly to one of the active
+developers or to the Xastir-Dev mailing list.
+
+
+More?
+-----
+Anything else?  Let's hear about what's still confusing or needs to
+be expanded in this document.  Thanks!
+
+
+APRS(tm) is a Trademark of Bob Bruninga
+
+Copyright (C) 2005 The Xastir Group
+
