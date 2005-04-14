@@ -527,10 +527,10 @@ the interface will start as well and you'll be receiving packets.
 Browse "http://www.aprs2.net/" to find a reasonable set of servers
 to start with.  Another possibility is to use "rotate.aprs2.net"
 port 14580, which theoretically should rotate among the available
-second-tier servers.  You'll need to put in a filter string, such as
-"r/35/-106/500" which shows you stations that are within 500km of
-35dN/106dW (Thanks for that one Tom!).  For additional filter
-settings check out:
+second-tier servers.  See "http://www.aprs2.net" for more info.
+You'll need to put in a filter string, such as "r/35/-106/500" which
+shows you stations that are within 500km of 35dN/106dW (Thanks for
+that one Tom!).  For additional filter settings check out:
 
     http://www.aprs-is.net/javaprssrvr/javaprsfilter.htm
 
