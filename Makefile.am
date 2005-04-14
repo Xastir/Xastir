@@ -16,8 +16,8 @@ SUBDIRS = src m4 config help scripts symbols callpass
 
 EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh \
         missing mkinstalldirs placeholder FAQ LICENSE README README.CVS \
-        README.Getting-Started README.MAPS README.win32 DEBUG_LEVELS \
-        bootstrap.sh INSTALL UPGRADE xastir.1 terraserver.geo \
+        README.Getting-Started README.Contributing README.MAPS README.win32 \
+        DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE xastir.1 terraserver.geo \
         toposerver.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
         CanadaTopo50k.geo TXRadar.geo Davis
 
@@ -50,7 +50,7 @@ sound_DATA=placeholder
 docdir=${pkgdatadir}/doc
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
         README.MAPS README.win32 COPYING INSTALL UPGRADE \
-        README.Getting-Started
+        README.Getting-Started README.Contributing
 
 mandir=${prefix}/man
 man_MANS=xastir.1
