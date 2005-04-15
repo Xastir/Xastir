@@ -475,6 +475,7 @@ WPUPCFT043|Gebruik liever een kortere route zoals WIDE2-2 of WIDE1-1,WIDE2-2||
 WPUPCFT044|Twijfelachtige IGATE route!||
 WPUPCFT045|Uitzenden met twijfelachtige UNPROTO route!||
 WPUPCFT046|Uitzenden met twijfelachtige IGATE route!||
+WPUPCFT047|Init KISS-mode on startup||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort instelling||

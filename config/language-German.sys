@@ -208,7 +208,7 @@ PULDNDP048|ObjektHistorie erneut laden||
 PULDNDP049|Löschen aller taktischen Calls||
 PULDNDP050|Löschen Verlauf taktische Calls||
 PULDNDP051|Nur taktische Calls wählen||
-PULDNDP052|- Label Trailpoints||
+PULDNDP052|- Wegpunkte bezeichnen||
 #
 # Maßeinheiten
 PULDNUT001|Englische Maße||
@@ -226,7 +226,7 @@ PULDNMG005|Automatische Antwort|A|
 PULDNMG006|Satelliten ACK Modus|M|
 #
 # Menu "Schnittstellen"
-PULDNTNT04|Interface Control||
+PULDNTNT04|Schnittstellensteuerung||
 PULDNTNT03|Nicht senden: ALLES||
 PULDNTNT05|Nicht senden: Meine Position||
 PULDNTNT06|Nicht senden: Objekte||
@@ -341,7 +341,7 @@ WPUPLSP003|Groß/Klein||# ???
 WPUPLSP004|Exakt||# ???
 WPUPLSP005|Finde jetzt!||
 WPUPLSP006|Notfall-Suche!||
-WPUPLSP007|FCC/RAC Lookup||
+WPUPLSP007|FCC/RAC Suche||
 #
 # PopUp "Einstellungen - Grundeinstellungen"
 WPUPCFD001|Grundeinstellungen||
@@ -465,11 +465,12 @@ WPUPCFT038|TxTail (in 10 ms Einheiten)||
 WPUPCFT039|Voll-Duplex||
 WPUPCFT040|Multi-Port KISS TNC konfigurieren||
 WPUPCFT041|Funkgerät Port||
-WPUPCFT042|Dubious UNPROTO Path!||
-WPUPCFT043|Please consider a shorter path such as WIDE2-2 or WIDE1-1,WIDE2-2||
-WPUPCFT044|Dubious IGATE Path!||
-WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
-WPUPCFT046|Transmitting w/Dubious IGATE Path!||
+WPUPCFT042|Unklarer UNPROTO Pfad!||
+WPUPCFT043|Bitte kuerzeren Pfad eingeben, z.B. WIDE2-2 oder RELAY,WIDE2-2||
+WPUPCFT044|Unklarer IGATE Pfad!||
+WPUPCFT045|Senden eines unklaren/fehlerhaften UNPROTO-Pfades!||
+WPUPCFT046|Senden eines unklaren/fehlerhaften IGATE-Pfades!||
+WPUPCFT047|KISS-Modus beim Start aktivieren||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
@@ -547,7 +548,7 @@ POPUPOB032|Komprimierung einschalten||
 POPUPOB033|Item löschen||
 POPUPOB034|Item ändern||
 POPUPOB035|Höhe [ft]:||
-POPUPOB036|Geschwindigkeit [knots]:||
+POPUPOB036|Geschwindigkeit [Knoten]:||
 POPUPOB037|Kurs:||
 POPUPOB038|als Peil-Objekt||
 POPUPOB039|Leistung - Höhe - Gewinn - Richtung||
@@ -732,9 +733,9 @@ WPUPSTI061|Brennstofftemp.: %s°F   ||
 WPUPSTI062|Brennstofffeuchte: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|NWS Wetterwarnung holen||
-WPUPSTI065|Taktisches Call: %s||
-WPUPSTI066|Assign Tactical Call||
-WPUPSTI067|Current Range: %d miles||
+WPUPSTI065|Taktisches Rufzeichen: %s||
+WPUPSTI066|Taktischen Rufzeichen zuweisen||
+WPUPSTI067|Aktuelle Reichweite: %d Meilen||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Datenbank Abfrage||
@@ -743,9 +744,9 @@ STIFCC0003|Name:||
 STIFCC0004|Straße:||
 STIFCC0005|Stadt:||
 STIFCC0006|Staat:||
-STIFCC0007|ZIP:||
-STIFCC0008|Basic ||
-STIFCC0009|Advanced ||
+STIFCC0007|PLZ:||
+STIFCC0008|Grundeinstellung ||
+STIFCC0009|Erweitert ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
@@ -758,7 +759,7 @@ UNIOP00002|Abbrechen||
 UNIOP00003|Schließen||
 UNIOP00004|Meilen||
 UNIOP00005|km||
-UNIOP00006|Device||
+UNIOP00006|Geraet||
 UNIOP00007|Hinzufügen||
 UNIOP00008|Löschen||
 UNIOP00009|Eigenschaften||
@@ -820,14 +821,14 @@ IFDNL00013|Serieller Multi-Port KISS TNC||
 # Interface device info 
 IFDIN00000|%s %2d %s an ser. Schnittstelle %s   %s||
 IFDIN00001|%s %2d %s verbunden mit %s:%d   %s||
-IFDIN00002|%s %2d %s über Device namens %s   %s||
+IFDIN00002|%s %2d %s über Geraet namens %s   %s||
 IFDIN00003|%s %2d  %s  %s %s   %s||
 IFDIN00004|%s %2d  %s  %s %s:%d   %s||
 IFDIN00005|%s %2d  %s  %s %s   %s||
 IFDIN00006|  INAKTIV  ||
 IFDIN00007|   AKTIV   ||
 IFDIN00008|  FEHLER   ||
-IFDIN00009|UNBEKANNTEN||
+IFDIN00009| UNBEKANNT ||
 #
 # PopUp "Schnittstellen-Steuerung"
 IFPUPCT000|Schnittstellen-Steuerung||
@@ -864,7 +865,7 @@ WXPUPSI016|Qualimetrics Q-Net||
 WXPUPSI017|Peet Bros ULTIMETER 2000 Type (Complete Mode)||
 WXPUPSI018|Taupunkt||
 WXPUPSI019|Wind Spitze||
-WXPUPSI020|Wind Chill||
+WXPUPSI020|Windauskuehlungsfaktor (Windchill)||
 WXPUPSI021|Gefühlte Temp.||
 WXPUPSI022|3 Std. Druck||
 WXPUPSI023|Höchsttemp.||
@@ -878,10 +879,10 @@ LHPUPNI001|Mobile Stationen||
 LHPUPNI002|Wetterstationen||
 LHPUPNI003|Lokale Stationen (über TNC)||
 LHPUPNI004|Letzte Stationen||
-LHPUPNI005|Objekte & Items||
-LHPUPNI006|Eigene Objekte & Items||
+LHPUPNI005|Objekte & Punkte||
+LHPUPNI006|Eigene Objekte & Punkte||
 LHPUPNI010|#||
-LHPUPNI011|Call||
+LHPUPNI011|Rufzeichen||
 LHPUPNI012|Pakete||
 LHPUPNI013|Pos Zeit||
 LHPUPNI014|Pfad||
@@ -949,10 +950,10 @@ POPEM00034|Position wird nicht gesendet bis gültige GPS-Daten!||
 POPEM00035|Warnung||
 POPEM00036|Hinweis||
 POPEM00037|HSP Interface vorhanden: GPS-Abfrageintervalle größer||
-POPEM00038|Name Conflicts With Existing Object/Item/Station||
-POPEM00039|Illegal characters found, substituting periods in their place||
-POPEM00040|Custom outgoing path was lost||
-POPEM00041|Processing another file.  Wait a bit, then try again||
+POPEM00038|Der Name steht im Konflikt mit einem bereits existierenden Objekt, einer Markierung oder Station||
+POPEM00039|Nicht zulaessige Zeichen gefunden||
+POPEM00040|Der nutzerspezifische Pfad ging verloren||
+POPEM00041|Erstelle andere Datei. Bitte etwas warten und danach neu versuchen||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -1015,7 +1016,7 @@ PRINT0015|Drucker Status||
 #
 # Locate Feature Dialog
 FEATURE001|Name:||
-FEATURE002|State/Province:||
+FEATURE002|Bundesland/Provinz:||
 FEATURE003|County:||
 FEATURE004|Map Quad:||
 FEATURE005|Typ:||

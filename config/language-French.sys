@@ -463,6 +463,7 @@ WPUPCFT043|Please consider a shorter path such as WIDE2-2 or WIDE1-1,WIDE2-2||
 WPUPCFT044|Dubious IGATE Path!||
 WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
 WPUPCFT046|Transmitting w/Dubious IGATE Path!||
+WPUPCFT047|Initialize KISS-mode on startup||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||
