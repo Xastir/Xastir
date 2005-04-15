@@ -707,6 +707,13 @@ void save_data(void)  {
                 sizeof(name),
                 "%s",
                 name_temp);
+            strncat (name, "TNC_INIT_KISSMODE", sizeof(name) - strlen(name));
+            store_int (fout, name, devices[i].init_kiss);
+
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
             strncat (name, "SPEED", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].sp);
 
@@ -1510,6 +1517,14 @@ void load_data_or_default(void) {
         strncat (name, "TNC_FULLDUPLEX", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].fullduplex, 0, 1, 0))
             devices[i].fullduplex = 0;
+
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_INIT_KISSMODE", sizeof(name) - strlen(name));
+        if (!get_int (name, &devices[i].init_kiss, 0, 1, 0))
+            devices[i].init_kiss = 0;
 
         xastir_snprintf(name,
             sizeof(name),

@@ -241,6 +241,7 @@ Widget TNC_txdelay;
 Widget TNC_persistence;
 Widget TNC_slottime;
 Widget TNC_txtail;
+Widget TNC_init_kiss;   // Used to initialize KISS-Mode
 Widget TNC_fullduplex;
 Widget TNC_GPS_set_time;
 Widget TNC_relay_digipeat;
@@ -496,6 +497,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         else
             devices[TNC_port].fullduplex=0;
         send_kiss_config(TNC_port,0,0x05,devices[TNC_port].fullduplex);
+
+        // For KISS-mode
+        if (XmToggleButtonGetState(TNC_init_kiss))
+            devices[TNC_port].init_kiss=1;
+        else
+            devices[TNC_port].init_kiss=0;
     }
     else {
         temp_ptr = XmTextFieldGetString(TNC_up_file_data);
@@ -1304,6 +1311,20 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNbackground, colors[0xff],
                                     NULL);
 
+                // Button to enable KISS-mode at startup
+                TNC_init_kiss = XtVaCreateManagedWidget(langcode("WPUPCFT047"),xmToggleButtonWidgetClass,form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
+                                    XmNtopAttachment, XmATTACH_WIDGET,
+                                    XmNtopWidget, setup4,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment, XmATTACH_FORM,
+                                    XmNbottomOffset, 5,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftOffset, 135,
+                                    XmNrightAttachment, XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
                 break;
             default:
                 frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
@@ -1457,8 +1478,9 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                     break;
                 case DEVICE_SERIAL_KISS_TNC:
                 case DEVICE_SERIAL_MKISS_TNC:
-                    XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
+                    XmToggleButtonSetState(TNC_relay_digipeat, FALSE, FALSE);
                     XmToggleButtonSetState(TNC_fullduplex, FALSE, FALSE);
+                    XmToggleButtonSetState(TNC_init_kiss, FALSE, FALSE); // For KISS-Mode
                     break;
                 case DEVICE_SERIAL_TNC:
                 default:
@@ -1547,6 +1569,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                         XmToggleButtonSetState(TNC_fullduplex, TRUE, FALSE);
                     else
                         XmToggleButtonSetState(TNC_fullduplex, FALSE, FALSE);
+
+                    // For KISS-Mode
+                    if (devices[TNC_port].init_kiss)
+                        XmToggleButtonSetState(TNC_init_kiss, TRUE, FALSE);
+                    else
+                        XmToggleButtonSetState(TNC_init_kiss, FALSE, FALSE);
 
                     if (devices[TNC_port].transmit_data) {
 
@@ -4403,7 +4431,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
             /* first time port */
             XmToggleButtonSetState(AX25_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(AX25_transmit_data,TRUE,FALSE);
-            XmToggleButtonSetState(AX25_relay_digipeat,TRUE,FALSE);
+            XmToggleButtonSetState(AX25_relay_digipeat,FALSE,FALSE);
             XmTextFieldSetString(AX25_device_name_data,"");
             XmTextFieldSetString(AX25_comment,"");
             device_igate_options=0;
@@ -6151,7 +6179,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             XmTextFieldSetString(AGWPE_port_data,"8000");
             XmTextFieldSetString(AGWPE_comment,"");
             XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
-            XmToggleButtonSetState(AGWPE_relay_digipeat, TRUE, FALSE);
+            XmToggleButtonSetState(AGWPE_relay_digipeat, FALSE, FALSE);
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
             XmTextFieldSetString(AGWPE_unproto1_data,"WIDE");

@@ -167,6 +167,7 @@ typedef struct {
     char   txtail[4];                             /* KISS parameter */
     int    fullduplex;                            /* KISS parameter */
     int    relay_digipeat;                        /* If 1: interface should RELAY digipeat */
+    int    init_kiss;				              /* Initialize KISS-Mode on startup */
 } ioparam;
 
 

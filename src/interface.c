@@ -6717,6 +6717,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck_p,
         int dev_sp,int dev_sty,int reconnect, char *filter_string) {
     char logon_txt[600];
+    char init_kiss_string[5];   // KISS-mode on startup
     int ok;
     char temp[300];
     char verstr[15];
@@ -7100,6 +7101,16 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     break;
 
                 case DEVICE_SERIAL_KISS_TNC:
+
+                    // Initialize KISS-Mode at startup
+                    if (devices[port_avail].init_kiss) {
+                        xastir_snprintf(init_kiss_string,
+                            sizeof(init_kiss_string),
+                            "\x1B@k\r");    // [ESC@K sets tnc from terminal- into kissmode
+                        port_write_string(port_avail,init_kiss_string);
+                        usleep(100000); // wait a little bit...
+                    }
+
                     // Send the KISS parameters to the TNC
                     send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
                     send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
