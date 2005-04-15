@@ -42,7 +42,9 @@ rm -rf ${RPM_BUILD_ROOT}
 
 # Documents:  Go into special doc area
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
-%doc README README.CVS README.MAPS README.win32 UPGRADE
+%doc README README.CVS README.Getting-Started README.Contributing
+%doc README.MAPS README.win32 UPGRADE
+
 
 %{_prefix}/bin
 %{_prefix}/share/xastir/help
