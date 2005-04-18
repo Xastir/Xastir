@@ -69,9 +69,25 @@ HELP-INDEX>What's new in Xastir BETA
 Optional Rtree shapefile extent caching
 Optional berkelydb-based tigermap caching
 Modifier keys fix
-Improvements to the send message GUI
-Tactical call support re-written
+Improvements to the message GUI
+Tactical call support re-written, hashtable based
 Warnings on crazy paths
+Hashtable weather alert speedups
+Dead-reconing for Objects/items
+Igate of specific stations (in the nws-stations.txt)
+Fixed DF object properties
+Measure function more accurate
+Decoding for "Position with Timestamp no APRS messaging" packets.
+More thorough checking for scanf/sscanf/fscanf function calls
+Fixing 100% humidity for some weather stations, plus added more data for Davis stations
+Changed active internet connection check from 1 min to 5 minutes
+Fixed decoding of compressed DF objects
+Fixes to allow new WHO-IS server to be used from Xastir
+Got rid of extra 0x00 byts between transmitted KISS frames
+Tweak to not start an interface upon changing its properties
+Tweaks to allow use of http proxy servers for online map accesses (.netrc file)
+
+
 
 HELP-INDEX>What's new in Xastir 1.4
 Comment fields for interfaces
