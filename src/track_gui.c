@@ -150,6 +150,10 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
             xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00026"), temp);
             popup_message_always(langcode("POPEM00025"),temp2);
         }
+        if ( track_me & !is_my_call( tracking_station_call, 1) ) {
+            XmToggleButtonSetState( trackme_button, FALSE, FALSE );
+            track_me = 0;
+        }
     } else {
         tracking_station_call[0] = '\0';    // Empty it out again
         track_station_on = 0;
