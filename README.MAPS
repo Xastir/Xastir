@@ -690,8 +690,17 @@ Getting Maps and other Data Files for Xastir:
        dbfadd posts 35 'X\m ' Finish
     ---------
 
+    Splitting large Shapefile maps into regularly-sized tiles:
 
-     GeoTIFF Map files (requires GeoTIFF):
+      Look for "shp2tile" at http://imaptools.com/tools/, it does
+      exactly that.  This can speed up Xastir tremendously if you're
+      zoomed in quite a bit on a large Shapefile map (or maps).  If
+      it is broken into tiles Xastir only has to load the tiles of
+      interest instead of slogging through the entire large file
+      each time.
+
+
+    GeoTIFF Map files (requires GeoTIFF):
 
       If you compiled in geoTIFF support, you can use USGS DRG topographic
       maps. These are primarily useful to U.S. users. DRG topo maps can be
