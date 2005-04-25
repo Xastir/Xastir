@@ -572,7 +572,7 @@ in which case you might want WIDE2-2 or WIDE3-3 as paths.  Some
 areas don't support the WIDEn-N flooding protocol, in which case you
 might want RELAY,WIDE,WIDE or similar.
 
-New path methods, discussed early April, 2005, and beginning to be
+New path methods:  Discussed early April, 2005, and beginning to be
 implemented world-wide:
 
     "WIDE2-2" for fixed stations, balloons, aeronautical-mobile
@@ -590,8 +590,8 @@ two hops and use either the home fill-in digi's or the mountaintop
 digi's for the first hop, mountaintop digi's only for the second
 hop.
 
-Home fill-in digi's (where needed) should be set up to respond to
-"WIDE1-1" now instead of "RELAY".
+Home fill-in digi's (only where absolutely needed) should be set up
+to respond to "WIDE1-1" now instead of "RELAY".
 
 
 A Note About the Map Directory:
