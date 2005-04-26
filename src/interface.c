@@ -5853,6 +5853,18 @@ void port_read(int port) {
                         // statement so that this interface won't go down.  The inactivity
                         // timer solves that issue now anyway.  --we7u.
                         port_data[port].status = DEVICE_ERROR;
+
+                        // If the below statement is enabled, it causes an immediate reconnect
+                        // after one time-period of inactivity, currently 7.5 minutes, as set in
+                        // main.c:UpdateTime().  This means the symbol will never change from green
+                        // to red on the status bar, so the operator might not know about a
+                        // connection that is being constantly reconnected.  By leaving it commented
+                        // out we get one time period of red, and then it will reconnect at the 2nd
+                        // time period.  This means we can reconnect within 15 minutes if a line
+                        // goes dead.
+                        //
+                        port_data[port].reconnects = -1;     // Causes an immediate reconnect
+ 
                         if (debug_level & 2)
                             fprintf(stderr,"end of file on read, or signal interrupted the read, port %d\n",port);
 
@@ -5864,6 +5876,17 @@ void port_read(int port) {
                             /* Should only get this if an real error occurs */
                             port_data[port].status = DEVICE_ERROR;
 
+                            // If the below statement is enabled, it causes an immediate reconnect
+                            // after one time-period of inactivity, currently 7.5 minutes, as set in
+                            // main.c:UpdateTime().  This means the symbol will never change from green
+                            // to red on the status bar, so the operator might not know about a
+                            // connection that is being constantly reconnected.  By leaving it commented
+                            // out we get one time period of red, and then it will reconnect at the 2nd
+                            // time period.  This means we can reconnect within 15 minutes if a line
+                            // goes dead.
+                            //
+                            port_data[port].reconnects = -1;     // Causes an immediate reconnect
+ 
                             // Show the latest status in the
                             // interface control dialog
                             update_interface_list();
@@ -6090,6 +6113,18 @@ void port_write(int port) {
                             /* error of some kind */
                             port_data[port].errors++;
                             port_data[port].status = DEVICE_ERROR;
+
+                            // If the below statement is enabled, it causes an immediate reconnect
+                            // after one time-period of inactivity, currently 7.5 minutes, as set in
+                            // main.c:UpdateTime().  This means the symbol will never change from green
+                            // to red on the status bar, so the operator might not know about a
+                            // connection that is being constantly reconnected.  By leaving it commented
+                            // out we get one time period of red, and then it will reconnect at the 2nd
+                            // time period.  This means we can reconnect within 15 minutes if a line
+                            // goes dead.
+                            //
+                            port_data[port].reconnects = -1;     // Causes an immediate reconnect
+ 
                             if (retval == 0) {
                                 /* Should not get this unless the device is down */
                                 if (debug_level & 2)
@@ -6158,6 +6193,18 @@ void port_write(int port) {
                             /* error of some kind */
                             port_data[port].errors++;
                             port_data[port].status = DEVICE_ERROR;
+
+                            // If the below statement is enabled, it causes an immediate reconnect
+                            // after one time-period of inactivity, currently 7.5 minutes, as set in
+                            // main.c:UpdateTime().  This means the symbol will never change from green
+                            // to red on the status bar, so the operator might not know about a
+                            // connection that is being constantly reconnected.  By leaving it commented
+                            // out we get one time period of red, and then it will reconnect at the 2nd
+                            // time period.  This means we can reconnect within 15 minutes if a line
+                            // goes dead.
+                            //
+                            port_data[port].reconnects = -1;     // Causes an immediate reconnect
+ 
                             if (retval == 0) {
                                 /* Should not get this unless the device is down */
                                 if (debug_level & 2)
@@ -7555,7 +7602,7 @@ void check_ports(void) {
                         // time period.  This means we can reconnect within 15 minutes if a line
                         // goes dead.
                         //
-                        //port_data[i].reconnects = -1;     // Causes an immediate reconnect
+                        port_data[i].reconnects = -1;     // Causes an immediate reconnect
                     }
 
                 }
