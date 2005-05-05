@@ -179,13 +179,16 @@ awk_symbol *awk_find_sym(awk_symtab *this,
                  const char *name,
                  const int len) {
     awk_symbol *s;
-    char c, d;
+    char c;
 
 
-    // Create holding spot for both cases of first character, in
-    // order to speed up the loop below.
-    c = toupper(name[0]);
-    d = name[0];
+    // Create holding spot for first character in order to speed up
+    // the loop below.  Note that "toupper()" is very slow on some
+    // systems so we took it out of this function to speed things
+    // up.  We evidently don't need case insensitive behavior here
+    // anyway.
+    //
+    c = name[0];
 
     // Check through the hash
     //
@@ -194,12 +197,14 @@ awk_symbol *awk_find_sym(awk_symtab *this,
         // Check length first (fast operation)
         if (s->namelen == len) {
 
-            // Check first chars next (fast operation)
-            if (s->name[0] == c || s->name[0] == d) {
+            // Check first char next (fast operation)
+            if (s->name[0] == c) {
 
                 // Ok so far, test the entire string (slow
-                // operation)
-                if (strncmp(s->name,name,len) == 0)
+                // operation, case sensitive)
+                if (len == 1)
+                    return s;
+                if (len > 1 && strncmp(s->name,name+1,len-1) == 0)
                     return s;
             }
         }
