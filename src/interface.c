@@ -7748,7 +7748,7 @@ unsigned char *select_unproto_path(int port) {
     }
     else {
         // We found no entries in the unproto fields for the
-        // interface.
+        // interface.  Set a default path of "WIDE2-2".
 
         xastir_snprintf(unproto_path_txt,
             sizeof(unproto_path_txt),
