@@ -204,7 +204,7 @@ awk_symbol *awk_find_sym(awk_symtab *this,
                 // operation, case sensitive)
                 if (len == 1)
                     return s;
-                if (len > 1 && strncmp(s->name,name+1,len-1) == 0)
+                if (len > 1 && strncmp(s->name+1,name+1,len-1) == 0)
                     return s;
             }
         }
