@@ -65,6 +65,13 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
+
+
+HELP-INDEX>What's new in Xastir BETA
+TBD
+
+
+
 HELP-INDEX>What's new in Xastir 1.5
 Optional Rtree shapefile extent caching
 Optional berkelydb-based tigermap caching
