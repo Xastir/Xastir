@@ -14441,7 +14441,7 @@ int extract_third_party(char *call,
     if (ok) {                                         // check callsign
         (void)remove_trailing_asterisk(p_call);       // is an asterisk valid here ???
         if (valid_inet_name(p_call,(*info),origin,origin_size)) { // accept some of the names used in internet
-            // treat is as object with special origin
+            // Treat it as object with special origin
             xastir_snprintf(call,
                 MAX_CALLSIGN+1,
                 "%s",
