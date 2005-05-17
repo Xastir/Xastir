@@ -3621,7 +3621,8 @@ int valid_item(char *name) {
 
 /*
  *  Check for a valid internet name.
- *  Accept only a few well-formed names...
+ *  Accept darned-near anything here as long as it is the proper
+ *  length and printable.
  */
 int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
     int len, i, ok;
@@ -3636,12 +3637,16 @@ int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
         if (!isprint((int)name[i]))
             return(0);                  // not printable
 
+    // Modifies "origin" if a match found
+    //
     if (len >= 5 && strncmp(name,"aprsd",5) == 0) {
         xastir_snprintf(origin, origin_size, "INET");
         origin[4] = '\0';   // Terminate it
         return(1);                      // aprsdXXXX is ok
     }
 
+    // Modifies "origin" if a match found
+    //
     if (len == 6) {                     // check for NWS
         ok = 1;
         for (i=0;i<6;i++)
@@ -3664,15 +3669,9 @@ int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
         }
     }
 
-    // other acceptable internet names...
-    // don't be too generous here, there is a lot of garbage on the internet
-
-    if (len == 6 && strcasecmp(info,"WHO-IS")) {
-        return(1);
-    }
-
-
-    return(0);                          // ignore all other
+    return(1);  // Accept anything else if we get to this point in
+                // the code.  After all, the message came from the
+                // internet, not from RF.
 }
 
 
