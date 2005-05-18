@@ -9592,6 +9592,9 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 //
 //  Extract data for $GPRMC, it fails if there is no position!!
 //
+// GPRMC,hhmmss[.sss],{A|V},[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},ddd.d,ddd.d,dddddd,ddd.d,{E|W}[*CHK]
+// $GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62
+//
 int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
@@ -9735,9 +9738,9 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
     if (debug_level & 256) {
         if (ok)
-            fprintf(stderr,"extract_RMC succeeded\n");
+            fprintf(stderr,"extract_RMC succeeded: %s\n",data);
         else
-            fprintf(stderr,"extract_RMC failed\n");
+            fprintf(stderr,"extract_RMC failed: %s\n",data);
     }
 
     return(ok);
@@ -9750,12 +9753,13 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 //
 //  Extract data for $GPGGA
 //
-// GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+// GPGGA,hhmmss[.sss],[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},{0|1|2|3|6},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+// $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
 //
 // hhmmss = UTC
-// ddmm.mmm[m] = Degrees(dd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Lattitude (N|S=North/South)
-// dddmm.mmm[m] = Degrees (ddd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Longitude (E|W=East/West)
-// 0|1|2 == invalid/GPS/DGPS
+// ddmm.mmm[m] = Degrees([d]d) Minutes (mm.mm[mm]) (may be 1 to ?? digits of precision) Lattitude (N|S=North/South)
+// dddmm.mmm[m] = Degrees ([dd]d) Minutes (mm.mm[mm]) (may be 1 to ?? digits of precision) Longitude (E|W=East/West)
+// 0|1|2|3 == invalid/GPS/DGPS/WAAS?
 // nsat=Number of Sattelites being tracked
 // mmm.m,M=Meters MSL
 // mm.mM = Meters above GPS Ellipsoid
@@ -9804,7 +9808,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     // the original data string.
 
 
-// GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+// GPGGA,hhmmss[.sss],[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},{0|1|2|3|6},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
 //   0     1        2         3        4         5      6     7    8     9   1  1   1 1 1
 //                                                                           0  1   2 3 4
 
@@ -9916,9 +9920,9 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     if (debug_level & 256) {
         if (ok)
-            fprintf(stderr,"extract_GGA succeeded\n");
+            fprintf(stderr,"extract_GGA succeeded: %s\n",data);
         else
-            fprintf(stderr,"extract_GGA failed\n");
+            fprintf(stderr,"extract_GGA failed: %s\n",data);
     }
 
     return(ok);
