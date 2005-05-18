@@ -73,6 +73,10 @@ int gps_stop_now;
 
 
 // This function is destructive to its first parameter
+//
+// GPRMC,hhmmss[.sss],{A|V},[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},ddd.d,ddd.d,dddddd,ddd.d,{E|W}[*CHK]
+// $GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62
+//
 int decode_gps_rmc( char *data,
                     char *long_pos,
                     int long_pos_length,
@@ -86,8 +90,9 @@ int decode_gps_rmc( char *data,
                     int *status) {
 
     char *temp_ptr;
+    char *temp_ptr2;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
-    char sampletime[7];
+    char sampletime[7]; // We ignore fractional seconds
     char long_pos_x[11];
     char long_ew;
     char lat_pos_y[10];
@@ -149,8 +154,24 @@ int decode_gps_rmc( char *data,
 
     temp_ptr=strtok(NULL,",");  // get latitude
 
-    if (temp_ptr == NULL || temp_ptr[4] != '.')
+    if (temp_ptr == NULL)
         return(0);  // Doesn't look like latitude
+
+    // Newer GPS'es appear not to zero-fill on the left.  Check for
+    // the decimal point in all the possible places.
+    if (temp_ptr[1] != '.'
+            && temp_ptr[2] != '.'
+            && temp_ptr[3] != '.'
+            && temp_ptr[4] != '.') {
+        return(0);  // Doesn't look like latitude
+    }
+
+// Note:  Starlink Invicta shows "lllll.ll" format for latitude in
+// the GPRMC sentence, which would mean we'd need another term in
+// the above, and would need to terminate at [10] below (making sure
+// we extended the field another char as well to handle it).  I'm
+// hoping it was a typo in the Starlink Invicta spec, as latitude
+// never requires three digits for degrees.
 
     xastir_snprintf(lat_pos_y,
         sizeof(lat_pos_y),
@@ -160,9 +181,10 @@ int decode_gps_rmc( char *data,
 
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
 
-    // Check for comma char
-    if (lat_pos_y[8] == ',')
-        lat_pos_y[8] = '\0';
+    // Check for comma char, replace with '\0'
+    temp_ptr2 = strstr(lat_pos_y, ",");
+    if (temp_ptr2)
+        temp_ptr2[0] = '\0';
 
     temp_ptr=strtok(NULL,",");  // get N-S
 
@@ -182,8 +204,19 @@ int decode_gps_rmc( char *data,
 
     temp_ptr=strtok(NULL,",");  // get long
 
-    if (temp_ptr == NULL || temp_ptr[5] != '.')
+    if (temp_ptr == NULL)
         return(0);  // Doesn't look like longitude
+
+    // Newer GPS'es appear not to zero-fill on the left.  Check for
+    // the decimal point in all the possible places.
+    if (temp_ptr[1] != '.'
+            && temp_ptr[2] != '.'
+            && temp_ptr[3] != '.'
+            && temp_ptr[4] != '.'
+            && temp_ptr[5] != '.') {
+        return(0);  // Doesn't look like longitude
+    }
+
 
     xastir_snprintf(long_pos_x,
         sizeof(long_pos_x),
@@ -193,9 +226,10 @@ int decode_gps_rmc( char *data,
 
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
 
-    // Check for comma char
-    if (long_pos_x[9] == ',')
-        long_pos_x[9] = '\0';
+    // Check for comma char, replace with '\0'
+    temp_ptr2 = strstr(long_pos_x, ",");
+    if (temp_ptr2)
+        temp_ptr2[0] = '\0';
 
     temp_ptr=strtok(NULL,",");  // get E-W
 
@@ -289,6 +323,10 @@ int decode_gps_rmc( char *data,
 
 
 // This function is destructive to its first parameter
+//
+// GPGGA,hhmmss[.sss],[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},{0|1|2|3|6},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+// $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
+//
 int decode_gps_gga( char *data,
                     char *long_pos,
                     int long_pos_length,
@@ -300,6 +338,7 @@ int decode_gps_gga( char *data,
                     int *status ) {
 
     char *temp_ptr;
+    char *temp_ptr2;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
     char long_pos_x[11];
     char long_ew;
@@ -342,9 +381,10 @@ int decode_gps_gga( char *data,
 
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
 
-    // Check for comma char
-    if (lat_pos_y[8] == ',')
-        lat_pos_y[8] = '\0';
+    // Check for comma char, replace with '\0'
+    temp_ptr2 = strstr(lat_pos_y, ",");
+    if (temp_ptr2)
+        temp_ptr2[0] = '\0';
 
     temp_ptr = strtok(NULL,",");    // get N-S
 
@@ -375,9 +415,10 @@ int decode_gps_gga( char *data,
 
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
 
-    // Check for comma char
-    if (long_pos_x[9] == ',')
-        long_pos_x[9] = '\0';
+    // Check for comma char, replace with '\0'
+    temp_ptr2 = strstr(long_pos_x, ",");
+    if (temp_ptr2)
+        temp_ptr2[0] = '\0';
 
     temp_ptr = strtok(NULL,",");    // get E-W
 
@@ -406,9 +447,8 @@ int decode_gps_gga( char *data,
         temp_ptr);
     temp_data[1] = '\0';
 
-    if(temp_data[0] != '1'
-            && temp_data[0] != '2'
-            && temp_data[0] != '3')
+    // '0' = bad fix, 1/2/3 are ok
+    if(temp_data[0] == '0')
         return(0);
 
     // Save the fix quality in "status"
