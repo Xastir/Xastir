@@ -406,7 +406,9 @@ int decode_gps_gga( char *data,
         temp_ptr);
     temp_data[1] = '\0';
 
-    if(temp_data[0] != '1' && temp_data[0] != '2' )
+    if(temp_data[0] != '1'
+            && temp_data[0] != '2'
+            && temp_data[0] != '3')
         return(0);
 
     // Save the fix quality in "status"
