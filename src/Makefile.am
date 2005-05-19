@@ -46,6 +46,7 @@ xastir_SOURCES = \
     map_shp.c \
     map_tif.c \
     map_tiger.c \
+    map_WMS.c \
     messages.c messages.h \
     messages_gui.c \
     popup.h \

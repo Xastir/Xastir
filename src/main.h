@@ -339,7 +339,7 @@ extern void busy_cursor(Widget w);
 extern void pos_dialog(Widget w);
 extern int create_image(Widget w);
 extern void draw_tiger_map (Widget w, char *filenm, int destination_pixmap);
-
+extern void draw_WMS_map (Widget w, char *filenm, int destination_pixmap, char *URL);
 
 extern void locate_gui_init(void);
 extern void geocoder_gui_init(void);

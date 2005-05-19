@@ -623,6 +623,7 @@ void draw_geo_image_map (Widget w,
     int toposerver_flag = 0;    // U.S. topo's via terraserver
     int tigerserver_flag = 0;   // U.S. Street maps via census.gov
     int toporama_flag = 0;      // Canadian topo's from mm.aprs.net (originally from Toporama)
+    int WMSserver_flag = 0;     // WMS server
     char map_it[MAX_FILENAME];
     int geo_image_width = 0;    // Image width  from GEO file
     int geo_image_height = 0;   // Image height from GEO file
@@ -735,6 +736,9 @@ void draw_geo_image_map (Widget w,
 
             if (strncasecmp (line, "TIGERMAP", 8) == 0)
                 tigerserver_flag = 1;
+
+            if (strncasecmp (line, "WMSSERVER", 9) == 0)
+                WMSserver_flag = 1;
 
             if (strncasecmp (line, "TOPOSERVER", 10) == 0) {
                 // Set to max brightness as it looks weird when the
@@ -870,6 +874,20 @@ void draw_geo_image_map (Widget w,
 
 #ifdef HAVE_IMAGEMAGICK
         draw_tiger_map(w, filenm, destination_pixmap);
+#endif  // HAVE_IMAGEMAGICK
+
+        return;
+    }
+
+
+    // Check whether a WMS server has been selected.  If so, run off
+    // to another routine to service this request.
+    //
+    if (WMSserver_flag) {
+
+#ifdef HAVE_IMAGEMAGICK
+        // Pass the URL in "fileimg"
+        draw_WMS_map(w, filenm, destination_pixmap, fileimg);
 #endif  // HAVE_IMAGEMAGICK
 
         return;
