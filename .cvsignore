@@ -8,8 +8,16 @@ depcomp
 devel
 install-sh
 Makefile.in
+Makefile
 missing
 mkinstalldirs
 nwr
 stamp-h.in
 SYMBOLS.TXT
+autom4te.cache
+config.h
+config.log
+config.status
+summary.log
+stamp-h1
+xastir.spec
