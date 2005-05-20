@@ -275,13 +275,14 @@ void draw_WMS_map (Widget w,
     tp[0].x_long = x_long_offset;   // Xastir Coordinates
     tp[0].y_lat  = y_lat_offset;    // Xastir Coordinates
 
+
     // Tiepoint for lower right screen corner
     //
     tp[1].img_x =  screen_width - 1; // Pixel Coordinates
     tp[1].img_y = screen_height - 1; // Pixel Coordinates 
-
     tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
     tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
+
 
     left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
     top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
@@ -314,8 +315,14 @@ void draw_WMS_map (Widget w,
     strncat(WMStmp, "&LAYERS=radar", sizeof(WMStmp) - strlen(WMStmp));
 
 
-//    strncat(WMStmp, "&CRS=AUTO2:42004", sizeof(WMStmp) - strlen(WMStmp));
-    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - strlen(WMStmp));
+//                                      factor, lon0, lat0
+//    strncat(WMStmp, "&CRS=AUTO2:42004,1.0,%f,%f", sizeof(WMStmp) - strlen(WMStmp));
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "&CRS=AUTO2:42004,1,%f,%f",
+        long_center,
+        lat_center);
+    strncat(WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+ 
+//    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - strlen(WMStmp));
 //    strncat(WMStmp, "&CRS=CRS:1", sizeof(WMStmp) - strlen(WMStmp));
 
 
@@ -323,15 +330,19 @@ void draw_WMS_map (Widget w,
 
     strncat(WMStmp, "&EXCEPTIONS=INIMAGE", sizeof(WMStmp) - strlen(WMStmp));
 
+    strncat(WMStmp, "&BGCOLOR=0xffffff", sizeof(WMStmp) - strlen(WMStmp));
 
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "&BBOX=%6.3f,%5.3f,%6.3f,%5.3f",
-        left,
-        top,
-        right,
-        bottom);
+
+
+    xastir_snprintf(tmpstr, sizeof(tmpstr),
+        "&BBOX=%8.5f,%7.5f,%8.5f,%7.5f",
+        left,   // Lower left
+        bottom, // Lower left
+        right,  // Upper right
+        top);   // Upper right
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", geo_image_height);    
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", geo_image_height);
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&WIDTH=%d", geo_image_width);    
@@ -339,6 +350,12 @@ void draw_WMS_map (Widget w,
 
     strncat(WMStmp, "&FORMAT=image/png", sizeof(WMStmp) - strlen(WMStmp));
 
+// The image returned from the WMS server appears to have a
+// different pixel aspect ratio than what we require.  We must
+// compensate for our x_scale/y_scale differences.  The image must
+// be stretched in the Y direction via the tiepoints.  It also
+// appears to require a slight rotation, but ignore that for the
+// present.
 
 
 
@@ -459,7 +476,7 @@ void draw_WMS_map (Widget w,
             "%s/map_%s.%s",
             get_user_base_dir("map_cache"),
             map_cache_fileid(),
-            "gif");
+            "png");
 
 #else
 */
@@ -468,7 +485,7 @@ void draw_WMS_map (Widget w,
         sizeof(local_filename),
         "%s/map.%s",
          get_user_base_dir("tmp"),
-        "gif");
+        "png");
 
 /*
 #endif
@@ -572,7 +589,7 @@ void draw_WMS_map (Widget w,
 
 
     // For debugging the MagickError/MagickWarning segfaults.
-    //system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
+    //system("cat /dev/null >/var/tmp/xastir_hacker_map.png");
     
 /*
 #ifdef USE_MAP_CACHE
