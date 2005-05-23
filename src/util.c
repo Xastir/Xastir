@@ -2162,17 +2162,50 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
 
 
 /* convert latitude from string to long with 1/100 sec resolution */
-// Input is in DDMM.MMN, DDMM.MMMN, or DDMM.MMMMN format
-// (degrees/decimal minutes/direction)
+//
+// Input is in [D]DMM.MM[MM]N format (degrees/decimal
+// minutes/direction)
+//
 long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     long centi_sec;
     char copy[11];
     char n[11];
+    char *p;
+    char offset;
 
-    xastir_snprintf(copy,
-        sizeof(copy),
-        "%s",
-        lat);
+
+    // Find the decimal point if present
+    p = strstr(lat, ".");
+
+    if (p == NULL)  // No decimal point found
+        return(0l);
+
+    offset = p - lat;   // Arithmetic on pointers
+    switch (offset) {
+        case 0:     // .MM[MM]N
+            return(0l); // Bad, no degrees or minutes
+            break;
+        case 1:     // M.MM[MM]N
+            return(0l); // Bad, no degrees
+            break;
+        case 2:     // MM.MM[MM]N
+            return(0l); // Bad, no degrees
+            break;
+        case 3:     // DMM.MM[MM]N
+            xastir_snprintf(copy,
+                sizeof(copy),
+                "0%s",  // Add a leading '0'
+                lat);
+            break;
+        case 4:     // DDMM.MM[MM]N
+            xastir_snprintf(copy,
+                sizeof(copy),
+                "%s",   // Copy verbatim
+                lat);
+            break;
+        default:
+            break;
+    }
 
     copy[10] = '\0';
     centi_sec=0l;
@@ -2228,17 +2261,56 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
 
 
 /* convert longitude from string to long with 1/100 sec resolution */
-// Input is in DDDMM.MMW format (degrees/decimal minutes/direction),
-// DDDMM.MMMW, or DDDMM.MMMMW format
+//
+// Input is in [DD]DMM.MM[MM]W format (degrees/decimal
+// minutes/direction).
+//
 long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     long centi_sec;
     char copy[12];
     char n[12];
+    char *p;
+    char offset;
 
-    xastir_snprintf(copy,
-        sizeof(copy),
-        "%s",
-        lon);
+
+    // Find the decimal point if present
+    p = strstr(lon, ".");
+
+    if (p == NULL)  // No decimal point found
+        return(0l);
+
+    offset = p - lon;   // Arithmetic on pointers
+    switch (offset) {
+        case 0:     // .MM[MM]N
+            return(0l); // Bad, no degrees or minutes
+            break;
+        case 1:     // M.MM[MM]N
+            return(0l); // Bad, no degrees
+            break;
+        case 2:     // MM.MM[MM]N
+            return(0l); // Bad, no degrees
+            break;
+        case 3:     // DMM.MM[MM]N
+            xastir_snprintf(copy,
+                sizeof(copy),
+                "00%s",  // Add two leading zeroes
+                lon);
+            break;
+        case 4:     // DDMM.MM[MM]N
+            xastir_snprintf(copy,
+                sizeof(copy),
+                "0%s",   // Add leading '0'
+                lon);
+            break;
+        case 5:     // DDDMM.MM[MM]N
+            xastir_snprintf(copy,
+                sizeof(copy),
+                "%s",   // Copy verbatim
+                lon);
+            break;
+        default:
+            break;
+    }
 
     copy[11] = '\0';
     centi_sec=0l;
