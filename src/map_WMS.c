@@ -146,8 +146,6 @@ void draw_WMS_map (Widget w,
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
     char WMStmp[MAX_FILENAME*2];  // Used for putting together the WMS map query
     int width, height;
-    int extra_height;
-    int crop_rows;
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
     register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
@@ -280,6 +278,9 @@ void draw_WMS_map (Widget w,
 
     // Tiepoint for lower right screen corner
     //
+    // Here we must use scale_x for both directions because we have
+    // square pixels returned by the WMS server.
+    //
     tp[1].img_x =  screen_width - 1; // Pixel Coordinates
     tp[1].img_y = screen_height - 1; // Pixel Coordinates 
     tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
@@ -287,7 +288,9 @@ void draw_WMS_map (Widget w,
     tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_x); // Xastir Coordinates
 
 
-
+    // Again, use scale_x for both directions due to the square
+    // pixels returned from the WMS server.
+    //
     left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
     top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
     right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
@@ -337,7 +340,6 @@ void draw_WMS_map (Widget w,
     strncat(WMStmp, "&BGCOLOR=0xffffff", sizeof(WMStmp) - strlen(WMStmp));
 
 
-
     xastir_snprintf(tmpstr, sizeof(tmpstr),
         "&BBOX=%8.5f,%7.5f,%8.5f,%7.5f",
         left,   // Lower left
@@ -347,19 +349,7 @@ void draw_WMS_map (Widget w,
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
 
-
-// The image returned from the WMS server appears to have a
-// different pixel aspect ratio than what we require.  We must
-// compensate for our x_scale/y_scale differences.  The image must
-// be stretched in the Y direction via the tiepoints.
-
-
-    extra_height = (int)((float)scale_x/(float)scale_y * geo_image_height);
-    extra_height = geo_image_height + 50;
-    crop_rows = (extra_height - geo_image_height) / 2;
-
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", geo_image_height);
-//    xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", extra_height);
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&WIDTH=%d", geo_image_width);    
@@ -451,7 +441,7 @@ void draw_WMS_map (Widget w,
 
     xastir_snprintf(fileimg, sizeof(fileimg), WMStmp);
 
-//    if (debug_level & 512) {
+    if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);
           fprintf(stderr,"right side is %f\n", right);
           fprintf(stderr,"top  is %f\n", top);
@@ -464,7 +454,7 @@ void draw_WMS_map (Widget w,
           fprintf(stderr,"map height is %f\n", map_height);
           fprintf(stderr,"fileimg is %s\n", fileimg);
           fprintf(stderr,"ftp or http file: %s\n", fileimg);
-//    }
+    }
 
     if (debug_level & 512) {
         query_start_time=time(&query_start_time); 
@@ -600,43 +590,6 @@ void draw_WMS_map (Widget w,
 
     // For debugging the MagickError/MagickWarning segfaults.
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.png");
-
-/*
-// Crop the image
-    xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s -crop %dx%d+0+%d %s %s\n",
-        CONVERT_PATH,
-        geo_image_width,
-        geo_image_height,
-        crop_rows,
-        local_filename,
-        "/var/tmp/junk.png");
-
-    if (debug_level & 512)
-       fprintf(stderr,"%s",tempfile);
-
-    if (system(tempfile)) {   // Go get the file
-       fprintf(stderr,"Couldn't crop the WMS image\n");
-       return;
-    }
-
-// Copy the cropped image back over the original download
-    xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s %s %s\n",
-        CP_PATH,
-        "/var/tmp/junk.png",
-        local_filename);
-
-    if (debug_level & 512)
-       fprintf(stderr,"%s",tempfile);
-
-    if (system(tempfile)) {   // Go get the file
-       fprintf(stderr,"Couldn't copy the cropped WMS image\n");
-       return;
-    }
-*/
-
-
 
     
 /*
