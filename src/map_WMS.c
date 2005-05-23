@@ -146,6 +146,8 @@ void draw_WMS_map (Widget w,
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
     char WMStmp[MAX_FILENAME*2];  // Used for putting together the WMS map query
     int width, height;
+    int extra_height;
+    int crop_rows;
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
     register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
@@ -195,9 +197,9 @@ void draw_WMS_map (Widget w,
     char curlerr[CURL_ERROR_SIZE];
     struct FtpFile ftpfile;
 #else   // HAVE_LIBCURL
-#ifdef HAVE_WGET
+  #ifdef HAVE_WGET
     char tempfile[MAX_FILENAME];
-#endif  // HAVE_WGET
+  #endif  // HAVE_WGET
 #endif  // HAVE_LIBCURL
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
@@ -211,7 +213,7 @@ void draw_WMS_map (Widget w,
     time_t query_start_time, query_end_time; 
 
 #ifdef USE_MAP_CACHE 
-	int map_cache_return; 
+//	int map_cache_return; 
 #endif  // USE_MAP_CACHE
 
 
@@ -281,13 +283,17 @@ void draw_WMS_map (Widget w,
     tp[1].img_x =  screen_width - 1; // Pixel Coordinates
     tp[1].img_y = screen_height - 1; // Pixel Coordinates 
     tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
-    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
+//    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
+    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_x); // Xastir Coordinates
+
 
 
     left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
     top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
     right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
-    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
+//    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
+    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_x) ) - 32400000l)/360000.0));//Lat/long Coordinates
+
 
     map_width = right - left;   // Lat/long Coordinates
     map_height = top - bottom;  // Lat/long Coordinates
@@ -308,21 +314,19 @@ void draw_WMS_map (Widget w,
 //        "http://mesonet.tamu.edu/cgi-bin/p-warn?SERVICE=WMS&VERSION=1.1.1&REQUEST=getmap");
     xastir_snprintf(WMStmp, sizeof(WMStmp), URL);
 
-    strncat(WMStmp, "&VERSION=1.3.0", sizeof(WMStmp) - strlen(WMStmp));
+    strncat(WMStmp, "&VERSION=1.1.1", sizeof(WMStmp) - strlen(WMStmp));
 
     strncat(WMStmp, "&REQUEST=getmap", sizeof(WMStmp) - strlen(WMStmp));
-
-    strncat(WMStmp, "&LAYERS=radar", sizeof(WMStmp) - strlen(WMStmp));
 
 
 //                                      factor, lon0, lat0
 //    strncat(WMStmp, "&CRS=AUTO2:42004,1.0,%f,%f", sizeof(WMStmp) - strlen(WMStmp));
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "&CRS=AUTO2:42004,1,%f,%f",
-        long_center,
-        lat_center);
-    strncat(WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+//    xastir_snprintf(tmpstr, sizeof(tmpstr), "&CRS=AUTO2:42004,1,%f,%f",
+//        long_center,
+//        lat_center);
+//    strncat(WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
  
-//    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - strlen(WMStmp));
+    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - strlen(WMStmp));
 //    strncat(WMStmp, "&CRS=CRS:1", sizeof(WMStmp) - strlen(WMStmp));
 
 
@@ -342,20 +346,26 @@ void draw_WMS_map (Widget w,
         top);   // Upper right
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
+
+
+// The image returned from the WMS server appears to have a
+// different pixel aspect ratio than what we require.  We must
+// compensate for our x_scale/y_scale differences.  The image must
+// be stretched in the Y direction via the tiepoints.
+
+
+    extra_height = (int)((float)scale_x/(float)scale_y * geo_image_height);
+    extra_height = geo_image_height + 50;
+    crop_rows = (extra_height - geo_image_height) / 2;
+
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", geo_image_height);
+//    xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", extra_height);
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&WIDTH=%d", geo_image_width);    
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
 
     strncat(WMStmp, "&FORMAT=image/png", sizeof(WMStmp) - strlen(WMStmp));
-
-// The image returned from the WMS server appears to have a
-// different pixel aspect ratio than what we require.  We must
-// compensate for our x_scale/y_scale differences.  The image must
-// be stretched in the Y direction via the tiepoints.  It also
-// appears to require a slight rotation, but ignore that for the
-// present.
 
 
 
@@ -590,6 +600,44 @@ void draw_WMS_map (Widget w,
 
     // For debugging the MagickError/MagickWarning segfaults.
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.png");
+
+/*
+// Crop the image
+    xastir_snprintf(tempfile, sizeof(tempfile),
+        "%s -crop %dx%d+0+%d %s %s\n",
+        CONVERT_PATH,
+        geo_image_width,
+        geo_image_height,
+        crop_rows,
+        local_filename,
+        "/var/tmp/junk.png");
+
+    if (debug_level & 512)
+       fprintf(stderr,"%s",tempfile);
+
+    if (system(tempfile)) {   // Go get the file
+       fprintf(stderr,"Couldn't crop the WMS image\n");
+       return;
+    }
+
+// Copy the cropped image back over the original download
+    xastir_snprintf(tempfile, sizeof(tempfile),
+        "%s %s %s\n",
+        CP_PATH,
+        "/var/tmp/junk.png",
+        local_filename);
+
+    if (debug_level & 512)
+       fprintf(stderr,"%s",tempfile);
+
+    if (system(tempfile)) {   // Go get the file
+       fprintf(stderr,"Couldn't copy the cropped WMS image\n");
+       return;
+    }
+*/
+
+
+
     
 /*
 #ifdef USE_MAP_CACHE
