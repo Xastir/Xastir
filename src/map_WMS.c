@@ -289,15 +289,23 @@ void draw_WMS_map (Widget w,
 // servers should be capable of sending back rectangular pixels, so
 // the images we get back may change if we don't request square
 // pixels each time.
+//
 // TODO:  Change our imagesize, bounding rectangle requested, and
 // tiepoints to fit square pixels and to use scale_x for both
 // dimensions.
+//
+// Actually, looking at the changes that were made, it looks like we
+// _are_ using square pixels and requesting a bounding box based on
+// scale_x for both dimensions, so we might be good to go as-is.
 
 
     //
     tp[1].img_x =  screen_width - 1; // Pixel Coordinates
     tp[1].img_y = screen_height - 1; // Pixel Coordinates 
     tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
+
+// Modified to use same scale (scale_x) for both dimensions, square
+// pixels.
 //    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
     tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_x); // Xastir Coordinates
 
@@ -308,6 +316,9 @@ void draw_WMS_map (Widget w,
     left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
     top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
     right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
+
+// Modified to use same scale (scale_x) for both dimensions, square
+// pixels.
 //    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
     bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_x) ) - 32400000l)/360000.0));//Lat/long Coordinates
 
@@ -336,6 +347,7 @@ void draw_WMS_map (Widget w,
     strncat(WMStmp, "&REQUEST=getmap", sizeof(WMStmp) - strlen(WMStmp));
     strncat(WMStmp, "&EXCEPTIONS=INIMAGE", sizeof(WMStmp) - strlen(WMStmp));
 
+// This specifies a bounding box based on square pixels.
     xastir_snprintf(tmpstr, sizeof(tmpstr),
         "&BBOX=%8.5f,%7.5f,%8.5f,%7.5f",
         left,   // Lower left
