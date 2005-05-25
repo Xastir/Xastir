@@ -343,7 +343,6 @@ void draw_WMS_map (Widget w,
 
 
     xastir_snprintf(WMStmp, sizeof(WMStmp), URL);
-    strncat(WMStmp, "&VERSION=1.0.0", sizeof(WMStmp) - strlen(WMStmp));
     strncat(WMStmp, "&REQUEST=getmap", sizeof(WMStmp) - strlen(WMStmp));
     strncat(WMStmp, "&EXCEPTIONS=INIMAGE", sizeof(WMStmp) - strlen(WMStmp));
 
@@ -365,6 +364,7 @@ void draw_WMS_map (Widget w,
 
 // These should be specified in the .geo file instead of hard-coded:
 //
+//    strncat(WMStmp, "&VERSION=1.0.0", sizeof(WMStmp) - strlen(WMStmp));
 //    strncat(WMStmp, "&FORMAT=image/png", sizeof(WMStmp) - strlen(WMStmp));
 //    strncat(WMStmp, "&TRANSPARENT=TRUE", sizeof(WMStmp) - strlen(WMStmp));
 //    strncat(WMStmp, "&BGCOLOR=0xffffff", sizeof(WMStmp) - strlen(WMStmp));

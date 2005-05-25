@@ -1,6 +1,6 @@
 WMSSERVER
 #URL http://mesonet.tamu.edu/cgi-bin/CONUSradar?SERVICE=WMS&LAYERS=radar,nwscounties
-URL http://mesonet.tamu.edu/cgi-bin/CONUSradar?SERVICE=WMS&LAYERS=radar&FORMAT=image/png&TRANSPARENT=TRUE&CRS=CRS:84&BGCOLOR=0x000000
+URL http://mesonet.tamu.edu/cgi-bin/CONUSradar?SERVICE=WMS&LAYERS=radar&FORMAT=image/png&TRANSPARENT=TRUE&CRS=CRS:84&BGCOLOR=0x000000&VERSION=1.1.0
 #
 #
 # REFRESH tells your program just how often to retrieve the radar
