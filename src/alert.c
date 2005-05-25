@@ -898,7 +898,7 @@ int alert_expire(void) {
         return(NULL);
     }
 
-    // Check whether this new alert has aleady expired.  If so,
+    // Check whether this new alert has already expired.  If so,
     // don't add it.
     if (entry->expiration < time(NULL)) {
         if (debug_level & 2) {
