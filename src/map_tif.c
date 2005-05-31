@@ -2233,8 +2233,22 @@ right_crop = width - 1;
     // probably).  A higher number means less rows skipped,
     // which improves the look but slows the map drawing down.
     //
-    if (have_PixelScale && !proj_is_latlong) {
-        SkipRows = (int)( ( scale_y / ( *PixelScale * 3.15 ) ) + 0.5 );
+    // This needs modification somewhat when the raster is already in 
+    // lat/long, and the PixelScale is already in degrees per pixel.
+    // The scale_y is the integer number of hundredths of seconds per pixel.
+    // The decision of how many rows to skip can simply be made by converting
+    // the PixelScale to the same units as scale_y, and skipping accordingly.
+
+    if (have_PixelScale) {
+        double coef;
+        if (!proj_is_latlong) {
+            coef = 3.15;
+        } 
+        else {
+            coef=100*60*60;  // xastir coords are in 1/100 of a second,
+                             // and lat/lon pixel scales will be in degrees
+        }
+        SkipRows = (int)( ( scale_y / ( *PixelScale * coef ) ) + 0.5 );
         if (SkipRows < 1)
             SkipRows = 1;
         if (SkipRows > (int)(height / 10) )
