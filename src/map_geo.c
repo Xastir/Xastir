@@ -887,7 +887,8 @@ void draw_geo_image_map (Widget w,
 
 #ifdef HAVE_IMAGEMAGICK
         // Pass the URL in "fileimg"
-        draw_WMS_map(w, filenm, destination_pixmap, fileimg);
+        draw_WMS_map(w, filenm, destination_pixmap, fileimg, do_check_trans, trans_color);
+
 #endif  // HAVE_IMAGEMAGICK
 
         return;
@@ -2119,8 +2120,9 @@ fprintf(stderr,"2 ");
                         if (image->storage_class == PseudoClass) {
                             if ( do_check_trans && 
                                     check_trans(my_colors[index_pack[l]],trans_color) ) {
-                                trans_skip = 1;
-                            } else {
+                                trans_skip = 1; // skip it
+                            }
+                            else {
                                 XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
                                 trans_skip = 0; // draw it
                             }
@@ -2131,8 +2133,9 @@ fprintf(stderr,"2 ");
                                             &my_colors[0].pixel);
                             if ( do_check_trans && 
                                     check_trans(my_colors[0],trans_color) ) {
-                                trans_skip = 1;
-                            } else {
+                                trans_skip = 1; // skip it
+                            }
+                            else {
                                 XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
                                 trans_skip = 0; // draw it
                             }
@@ -2142,6 +2145,7 @@ fprintf(stderr,"2 ");
 #endif  // HAVE_IMAGEMAGICK
 
 
+                        // Skip drawing if a transparent pixel
 #ifdef HAVE_IMAGEMAGICK
                         if ( pixel_pack[l].opacity == 0 && !trans_skip  ) // skip transparent
 #else   // HAVE_IMAGEMAGICK

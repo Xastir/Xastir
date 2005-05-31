@@ -138,7 +138,10 @@ extern int mag;
 void draw_WMS_map (Widget w,
         char *filenm,
         int destination_pixmap,
-        char *URL) {
+        char *URL,
+        int do_check_trans,
+        unsigned long trans_color) {
+
 
     char file[MAX_FILENAME];        // Complete path/name of image file
     char short_filenm[MAX_FILENAME];
@@ -189,6 +192,7 @@ void draw_WMS_map (Widget w,
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
+    int trans_skip = 0;             // skip transparent pixel
 #ifdef HAVE_LIBCURL
     CURL *curl;
     CURLcode res;
@@ -951,17 +955,37 @@ void draw_WMS_map (Widget w,
 
                         // now copy a pixel from the map image to the screen
                         l = map_x + map_y * image->columns;
+                        trans_skip = 1; // possibily transparent
                         if (image->storage_class == PseudoClass) {
-                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                            if ( do_check_trans &&
+                                    check_trans(my_colors[index_pack[l]],trans_color)) {
+                                trans_skip = 1; // skip it
+                            }
+                            else {
+                                XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                                trans_skip = 0; // draw it
+                            }
                         }
                         else {
                             pack_pixel_bits(pixel_pack[l].red * raster_map_intensity,
                                             pixel_pack[l].green * raster_map_intensity,
                                             pixel_pack[l].blue * raster_map_intensity,
                                             &my_colors[0].pixel);
-                            XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                            if ( do_check_trans &&
+                                    check_trans(my_colors[0],trans_color)) {
+                                trans_skip = 1; // skip it
+                            }
+                            else {
+                                XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                                trans_skip = 0; // draw it
+                            }
                         }
-                        (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
+
+                        // Skip drawing if a transparent pixel
+                        if (!trans_skip) {
+                            (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
+                        }
+
                     } // check map boundaries in y direction
                 }
             } // loop over map pixel columns
