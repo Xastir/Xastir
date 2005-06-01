@@ -8,6 +8,7 @@ pkglib_SCRIPTS = \
     coord-convert.pl \
     fcc-get \
     get-gnis \
+    get_shapelib.sh \
     icontable.pl \
     inf2geo.pl \
     kiss-off.pl \
