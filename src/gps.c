@@ -74,8 +74,24 @@ int gps_stop_now;
 
 // This function is destructive to its first parameter
 //
-// GPRMC,hhmmss[.sss],{A|V},[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},ddd.d,ddd.d,dddddd,ddd.d,{E|W}[*CHK]
+// GPRMC,UTC-Time,status(A/V),lat,N/S,lon,E/W,SOG,COG,UTC-Date,Mag-Var,E/W[*CHK]
+// GPRMC,hhmmss[.sss],{A|V},ddmm.mm[mm],{N|S},dddmm.mm[mm],{E|W},[dd]d.d[ddddd],[dd]d.d[d],ddmmyy,[ddd.d],[{E|W}][,A|D|E|N|S][*CHK]
+//
+// The last field before the checksum is entirely optional, and in
+// fact first appeared in NMEA 2.3 (fairly recently).  Most GPS's do
+// not currently put out that field.  The field may be null or
+// nonexistent including the comma.  Only "A" or "D" are considered
+// to be active and reliable fixes if this field is present.
+// Fix-Quality:
+//  A: Autonomous
+//  D: Differential
+//  E: Estimated
+//  N: Not Valid
+//  S: Simulator
+//
 // $GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62
+// $GPRMC,104748.821,A,4301.1492,N,08803.0374,W,0.085048,102.36,010605,,*1A
+// $GPRMC,104749.821,A,4301.1492,N,08803.0377,W,0.054215,74.60,010605,,*2D
 //
 int decode_gps_rmc( char *data,
                     char *long_pos,
@@ -324,8 +340,22 @@ int decode_gps_rmc( char *data,
 
 // This function is destructive to its first parameter
 //
-// GPGGA,hhmmss[.sss],[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},{0|1|2|3|6},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+// GPGGA,UTC-Time,lat,N/S,long,E/W,GPS-Quality,nsat,HDOP,MSL-Meters,M,Geoidal-Meters,M,DGPS-Data-Age(seconds),DGPS-Ref-Station-ID[*CHK]
+// GPGGA,hhmmss[.sss],ddmm.mm[mm],{N|S},dddmm.mm[mm],{E|W},{0-8},dd,[d]d.d,[-dddd]d.d,M,[-ddd]d.d,M,[dddd.d],[dddd][*CHK]
+//
+// GPS-Quality:
+//  0: Invalid Fix
+//  1: GPS Fix
+//  2: DGPS Fix
+//  3: PPS Fix
+//  4: RTK Fix
+//  5: Float RTK Fix
+//  6: Estimated (dead-reckoning) Fix
+//  7: Manual Input Mode
+//  8: Simulation Mode
+//
 // $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
+// $GPGGA,104438.833,4301.1439,N,08803.0338,W,1,05,1.8,185.8,M,-34.2,M,0.0,0000*40
 //
 int decode_gps_gga( char *data,
                     char *long_pos,
@@ -447,7 +477,7 @@ int decode_gps_gga( char *data,
         temp_ptr);
     temp_data[1] = '\0';
 
-    // '0' = bad fix, 1/2/3 are ok
+    // '0' = bad fix, positive numbers = ok
     if(temp_data[0] == '0')
         return(0);
 

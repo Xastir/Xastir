@@ -9592,8 +9592,24 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 //
 //  Extract data for $GPRMC, it fails if there is no position!!
 //
-// GPRMC,hhmmss[.sss],{A|V},[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},ddd.d,ddd.d,dddddd,ddd.d,{E|W}[*CHK]
+// GPRMC,UTC-Time,status(A/V),lat,N/S,lon,E/W,SOG,COG,UTC-Date,Mag-Var,E/W,Fix-Quality[*CHK]
+// GPRMC,hhmmss[.sss],{A|V},ddmm.mm[mm],{N|S},dddmm.mm[mm],{E|W},[dd]d.d[ddddd],[dd]d.d[d],ddmmyy,[ddd.d],[{E|W}][,A|D|E|N|S][*CHK]
+//
+// The last field before the checksum is entirely optional, and in
+// fact first appeared in NMEA 2.3 (fairly recently).  Most GPS's do
+// not currently put out that field.  The field may be null or
+// nonexistent including the comma.  Only "A" or "D" are considered
+// to be active and reliable fixes if this field is present.
+// Fix-Quality:
+//  A: Autonomous
+//  D: Differential
+//  E: Estimated
+//  N: Not Valid
+//  S: Simulator
+//
 // $GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62
+// $GPRMC,104748.821,A,4301.1492,N,08803.0374,W,0.085048,102.36,010605,,*1A
+// $GPRMC,104749.821,A,4301.1492,N,08803.0377,W,0.054215,74.60,010605,,*2D
 //
 int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
@@ -9753,16 +9769,24 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 //
 //  Extract data for $GPGGA
 //
-// GPGGA,hhmmss[.sss],[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},{0|1|2|3|6},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
-// $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
+// GPGGA,UTC-Time,lat,N/S,long,E/W,GPS-Quality,nsat,HDOP,MSL-Meters,M,Geoidal-Meters,M,DGPS-Data-Age(seconds),DGPS-Ref-Station-ID[*CHK]
+// GPGGA,hhmmss[.sss],ddmm.mm[mm],{N|S},dddmm.mm[mm],{E|W},{0-8},dd,[d]d.d,[-dddd]d.d,M,[-ddd]d.d,M,[dddd.d],[dddd][*CHK]
 //
-// hhmmss = UTC
-// ddmm.mmm[m] = Degrees([d]d) Minutes (mm.mm[mm]) (may be 1 to ?? digits of precision) Lattitude (N|S=North/South)
-// dddmm.mmm[m] = Degrees ([dd]d) Minutes (mm.mm[mm]) (may be 1 to ?? digits of precision) Longitude (E|W=East/West)
-// 0|1|2|3 == invalid/GPS/DGPS/WAAS?
-// nsat=Number of Sattelites being tracked
-// mmm.m,M=Meters MSL
-// mm.mM = Meters above GPS Ellipsoid
+// GPS-Quality:
+//  0: Invalid Fix
+//  1: GPS Fix
+//  2: DGPS Fix
+//  3: PPS Fix
+//  4: RTK Fix
+//  5: Float RTK Fix
+//  6: Estimated (dead-reckoning) Fix
+//  7: Manual Input Mode
+//  8: Simulation Mode
+//
+// $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
+// $GPGGA,104438.833,4301.1439,N,08803.0338,W,1,05,1.8,185.8,M,-34.2,M,0.0,0000*40
+//
+// nsat=Number of Satellites being tracked
 //
 //
 int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
@@ -9808,9 +9832,9 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     // the original data string.
 
 
-// GPGGA,hhmmss[.sss],[d]dmm.mm[mm],{N|S},[dd]dmm.mm[mm],{E|W},{0|1|2|3|6},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
-//   0     1        2         3        4         5      6     7    8     9   1  1   1 1 1
-//                                                                           0  1   2 3 4
+// GPGGA,hhmmss[.sss],ddmm.mm[mm],{N|S},dddmm.mm[mm],{E|W},{0-8},dd,[d]d.d,[-dddd]d.d,M,[-ddd]d.d,M,[dddd.d],[dddd][*CHK]
+//   0     1              2         3        4         5        6      7     8        9     1     1     1    1        1
+//                                                                                          0     1     2    3        4
 
     if (Substring[0] == NULL)  // No GPGGA string
         return(ok);
@@ -9869,8 +9893,6 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     // can be parsed from the packet.  The rest of it can still be
     // corrupt, so we're proceeding carefully under yellow alert on
     // impulse engines only.
-
-// What are the possible values for fix quality anyway?
 
     // Check for valid fix {
     if (Substring[6] == NULL
