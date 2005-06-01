@@ -760,6 +760,9 @@ Dan Brown, n8ysz, responded:
 > or
 > http://brauhaus.org/xastir/get_shapelib.sh.txt
 
+This script is now also in the Xastir sources as
+"xastir/scripts/get_shapelib.sh".
+
 
 
 OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3 &

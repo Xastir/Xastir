@@ -464,6 +464,10 @@ First Time Install:
     > or
     > http://brauhaus.org/xastir/get_shapelib.sh.txt
 
+    This script is now also in the Xastir sources as
+    "xastir/scripts/get_shapelib.sh".
+
+
 
 
    5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
