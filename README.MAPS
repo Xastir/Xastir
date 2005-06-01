@@ -775,10 +775,7 @@ Getting Maps and other Data Files for Xastir:
       Depending on the source projection, you might get a map that
       doesn't tile well with other maps due to the inclusion of opaque
       border material, but it can sometimes be the only way to import
-      a map you need to use.  Furthermore, geotiff files in lat/lon
-      format take longer to load in xastir because the optimized file
-      access that works for USGS maps doesn't work with the lat/lon
-      files.
+      a map you need to use.  
 
       Maps that require gdalwarp include the FAA sectionals mentioned above,
       and some topo maps in obscure state plane coordinates from various state
