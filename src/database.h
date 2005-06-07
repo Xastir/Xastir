@@ -596,8 +596,10 @@ extern void set_map_position(Widget w, long lat, long lon);
 // just used for aloha calcs
 typedef struct {
     double distance;
+#ifdef DEBUG_ALOHA
     char call_sign[MAX_CALLSIGN+1]; // call sign or name index or object/item
                                     // name
+#endif
     char is_mobile;
     char is_other_mobile;
     char is_wx;
