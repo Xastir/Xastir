@@ -3198,7 +3198,7 @@ void display_file(Widget w) {
     }
 
     // And last, draw the ALOHA circle
-    if (Display_.ambiguity) {
+    if (Display_.aloha_circle) {
         if (aloha_radius != -1) {
               // if we actually have an aloha radius calculated already
             long l_lat,l_lon;

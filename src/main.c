@@ -495,7 +495,7 @@ Widget display_weather_text_button;
 Widget display_temperature_only_button;
 Widget display_wind_barb_button;
 
-Widget disable_aloha_circle_button;
+Widget display_aloha_circle_button;
 Widget display_ambiguity_button;
 Widget display_phg_button;
 Widget display_default_phg_button;
@@ -547,7 +547,7 @@ static void Display_weather_text_toggle(Widget w, XtPointer clientData, XtPointe
 static void Display_temperature_only_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_wind_barb_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
-static void Disable_aloha_circle_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_aloha_circle_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_ambiguity_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_default_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -6446,7 +6446,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
-    disable_aloha_circle_button = XtVaCreateManagedWidget(langcode("PULDNDP054"),
+    display_aloha_circle_button = XtVaCreateManagedWidget(langcode("PULDNDP054"),
             xmToggleButtonGadgetClass,
             filter_display_pane,
             XmNvisibleWhenOff, TRUE,
@@ -6454,11 +6454,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(disable_aloha_circle_button, XmNvalueChangedCallback, Disable_aloha_circle_toggle, "1");
+    XtAddCallback(display_aloha_circle_button, XmNvalueChangedCallback, Display_aloha_circle_toggle, "1");
     if (Display_.aloha_circle)
-        XmToggleButtonSetState(disable_aloha_circle_button, FALSE, FALSE);
-    else
-        XmToggleButtonSetState(disable_aloha_circle_button, TRUE, FALSE);
+        XmToggleButtonSetState(display_aloha_circle_button, TRUE, FALSE);
 
 
     display_ambiguity_button = XtVaCreateManagedWidget(langcode("PULDNDP013"),
@@ -15052,7 +15050,7 @@ void Display_wind_barb_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPo
 
 
 
-void Disable_aloha_circle_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void Display_aloha_circle_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
