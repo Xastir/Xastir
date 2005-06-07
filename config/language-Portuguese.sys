@@ -187,6 +187,7 @@ PULDNDP009|Mostrar info do tempo|t|
 PULDNDP046|- Mostrar texto do tempo||
 PULDNDP018|-- Mostrar so a temperatura||
 PULDNDP047|- Mostrar intensidade do vento||
+PULDNDP054|Disable Aloha Circle||
 PULDNDP013|Ambiguidade de posicao||
 PULDNDP008|Estacao potencia/ganho|p|
 PULDNDP021|- Activar por defeito pot/ganho||

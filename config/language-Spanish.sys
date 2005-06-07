@@ -186,6 +186,7 @@ PULDNDP009|Mostrar Informe del Tiempo|T|
 PULDNDP046|- Mostrar Texto||
 PULDNDP018|- Sólo la Temperatura||
 PULDNDP047|- Mostrar Indicación de Viento||
+PULDNDP054|Disable Aloha Circle||
 PULDNDP013|Mostrar Ambigüedad de Posición||
 PULDNDP008|Mostrar Potencia/Ganancia|P|
 PULDNDP021|- Usar Pot/Ganancia por Defecto||

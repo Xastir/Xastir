@@ -195,6 +195,7 @@ PULDNDP009|Weer informatie|W|
 PULDNDP046|- Weer tekst||
 PULDNDP018|-- Geef alleen temperatuur weer||
 PULDNDP047|- Wind indicator||
+PULDNDP054|Disable Aloha Circle||
 PULDNDP013|Zet stations nadering aan||
 PULDNDP008|Stations Vermogen/Winst|V|
 PULDNDP021|- Activeer standaard vermogen/winst||

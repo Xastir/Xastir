@@ -207,6 +207,7 @@ typedef struct _what_to_display {
     int temperature_only;
     int wind_barb;
 
+    int aloha_circle;
     int ambiguity;
     int phg;
     int default_phg;

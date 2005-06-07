@@ -183,6 +183,7 @@ PULDNDP009|Afficher info météo|I|
 PULDNDP046|- Afficher texte||
 PULDNDP018|-- Seulement la température||
 PULDNDP047|- Afficher indicateur de vent||
+PULDNDP054|Disable Aloha Circle||
 PULDNDP013|Afficher ambiguïté de position|b|
 PULDNDP008|Afficher puissance/gain|g|
 PULDNDP021|- Activer puissance/gain défaut||

@@ -184,6 +184,7 @@ PULDNDP009|Display Weather Info||
 PULDNDP046|- Display Weather Text||
 PULDNDP018|-- Temperature Only||
 PULDNDP047|- Display Wind Barb||
+PULDNDP054|Disable Aloha Circle||
 PULDNDP013|Display Position Ambiguity||
 PULDNDP008|Display Power/Gain||
 PULDNDP021|- Use Default Power/Gain||

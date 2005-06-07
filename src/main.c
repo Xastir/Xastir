@@ -495,6 +495,7 @@ Widget display_weather_text_button;
 Widget display_temperature_only_button;
 Widget display_wind_barb_button;
 
+Widget disable_aloha_circle_button;
 Widget display_ambiguity_button;
 Widget display_phg_button;
 Widget display_default_phg_button;
@@ -546,6 +547,7 @@ static void Display_weather_text_toggle(Widget w, XtPointer clientData, XtPointe
 static void Display_temperature_only_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_wind_barb_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
+static void Disable_aloha_circle_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_ambiguity_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_default_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -6444,6 +6446,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
+    disable_aloha_circle_button = XtVaCreateManagedWidget(langcode("PULDNDP054"),
+            xmToggleButtonGadgetClass,
+            filter_display_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(disable_aloha_circle_button, XmNvalueChangedCallback, Disable_aloha_circle_toggle, "1");
+    if (Display_.aloha_circle)
+        XmToggleButtonSetState(disable_aloha_circle_button, FALSE, FALSE);
+    else
+        XmToggleButtonSetState(disable_aloha_circle_button, TRUE, FALSE);
+
+
     display_ambiguity_button = XtVaCreateManagedWidget(langcode("PULDNDP013"),
             xmToggleButtonGadgetClass,
             filter_display_pane,
@@ -10354,7 +10371,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #ifdef USE_RTREE
             purge_shp_hash();                   // purge stale rtrees
 #endif
-            calc_aloha();
+
+            if (Display_.aloha_circle)
+                calc_aloha();
 
             //if ( (new_message_data > 0) && ( (delay_time % 2) == 0) )
             //update_messages(0);                 // Check Messages, no forced update
@@ -15025,6 +15044,22 @@ void Display_wind_barb_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPo
         Display_.wind_barb = atoi(which);
     else
         Display_.wind_barb = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Disable_aloha_circle_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Display_.aloha_circle = atoi(which);
+    else
+        Display_.aloha_circle = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

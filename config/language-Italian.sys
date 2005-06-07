@@ -184,6 +184,7 @@ PULDNDP009|Informazioni Meteo|W|
 PULDNDP046|- Visualizza Testo Meteo||
 PULDNDP018|-- Visualizza solo Temperatura||
 PULDNDP047|- Visualizza Vento||
+PULDNDP054|Disable Aloha Circle||
 PULDNDP013|Ambiguità di posizione|
 PULDNDP008|Potenza/Guadagno|P|
 PULDNDP021|- Potenza/Guadagno - default||
