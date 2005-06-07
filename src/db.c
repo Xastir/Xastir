@@ -148,8 +148,9 @@ int st_direct_timeout = 60 * 60;        // 60 minutes.
 // two letters of the callsign/object name.
 DataRow *station_shortcuts[16384];
 
-
-
+// used to time aloha calculations
+static time_t aloha_time = 0;
+static double aloha_radius=-1;
 
 
 void db_init(void)
@@ -3065,7 +3066,6 @@ void display_file(Widget w) {
     time_t temp_sec_heard;      // time last heard
     time_t t_clr, t_old;
 
-
     if(debug_level & 1)
         fprintf(stderr,"Display File Start\n");
 
@@ -3197,6 +3197,18 @@ void display_file(Widget w) {
             pixmap_final);
     }
 
+    // And last, draw the ALOHA circle
+    if (aloha_radius != -1) {
+          // if we actually have an aloha radius calculated already
+        long l_lat,l_lon;
+        double distance=aloha_radius;
+
+        l_lat = convert_lat_s2l(my_lat);
+        l_lon = convert_lon_s2l(my_long);
+        if (!english_units)
+            distance *= 0.62137119; // convert to miles for draw routine
+        draw_aloha_circle(l_lon,l_lat,distance,colors[0x0e], pixmap_final);
+    }
 
     // Check whether currently_selected_stations has changed.  If
     // so, set station_count_save to 0 so that main.c will come
@@ -17068,4 +17080,218 @@ void check_and_transmit_objects_items(time_t time) {
 //fprintf(stderr,"Exiting check_and_transmit_objects_items\n");
 }
 
+
+// ********************************************************************
+// calc aloha_distance()
+// calculate and return alhoa circle radius in current distance units
+// The ALOHA radius is computed according to the algorithm described by
+// Bob Bruninga at http://web.usna.navy.mil/~bruninga/aprs/ALOHAcir.txt
+// with some clarification provided py private email.
+//
+// The gist of it is that we grab a list of all stations heard via TNC
+// and sort it b distance from our station.  We then accumulate a 
+// count of how many theoretical packets would be introduced into the local 
+// area in 30 minutes from these stations, and stop when we hit 1800 
+// (the supposed limit of the channel capacity).  The distance to the last
+// station we counted is our ALOHA limit.  Per Bob B., this should be plotted
+// on the  map as a circle with no user-selectable way of turning it off.
+
+double calc_aloha_distance() {
+    DataRow *p_station = n_first;  // walk in alphabetical order
+    aloha_entry *aloha_array;
+    aloha_entry *temp_aloha_array;
+
+    int num_aloha_alloc=1000;
+    int num_aloha_entries=0;
+    int digi_copies=1;
+    char temp[10]; // needed for course_deg argument of 
+                   // distance_from_my_station
+
+    int sum;
+    double distance;
+    int ii;
+
+    // This should be enough, though we'll realloc if necessary
+    aloha_array = (aloha_entry *)malloc (num_aloha_alloc*sizeof(aloha_entry));
+    CHECKMALLOC(aloha_array);
+
+    // We need a list of all stations that were heard via tnc:
+    while (p_station != NULL) {
+        if (num_aloha_entries == num_aloha_alloc) { 
+            num_aloha_alloc *= 2;
+            temp_aloha_array=realloc(aloha_array,num_aloha_alloc);
+            if (temp_aloha_array) {
+                aloha_array=temp_aloha_array;
+            }
+            else {
+                fprintf(stderr,"***** Realloc failed *****\n");
+                exit(1);
+            }
+        }
+        if ( (p_station->flag & ST_VIATNC) != 0 && 
+             (p_station->flag & ST_ACTIVE) != 0 ) {
+            if (position_defined(p_station->coord_lat,p_station->coord_lon,1)){
+#ifdef DEBUG_ALOHA
+                strncpy(aloha_array[num_aloha_entries].call_sign,
+                        p_station->call_sign,MAX_CALLSIGN+1);
+#endif
+                aloha_array[num_aloha_entries].is_digi = 
+                    aloha_array[num_aloha_entries].is_mobile = 
+                    aloha_array[num_aloha_entries].is_other_mobile = 
+                    aloha_array[num_aloha_entries].is_home = 
+                    aloha_array[num_aloha_entries].is_wx = (char) FALSE;
+                aloha_array[num_aloha_entries].distance = 
+                    distance_from_my_station(p_station->call_sign,temp);
+
+                if ( p_station->newest_trackpoint != NULL ) {
+                    if ( strlen(p_station->speed) > 0) {// has a speed
+                        // If the station has a track and a speed of any value 
+                        // (even zero), it's a mobile.
+                        aloha_array[num_aloha_entries].is_mobile = (char) TRUE;
+                    }
+                } 
+                else if  ( (p_station->aprs_symbol.aprs_type=='/' 
+                            && (strchr("'<=>()*0COPRSUXY[^abefgjkpsuv",
+                                       p_station->aprs_symbol.aprs_symbol) 
+                                != NULL))
+                            || (p_station->aprs_symbol.aprs_type=='\\' 
+                                && (strchr("/0>AKOS^knsuv",
+                                           p_station->aprs_symbol.aprs_symbol) 
+                                    != NULL))) {
+                    // 
+                    // Per private email exchange with Bob Bruninga:
+                    // If the station has one of these symbols, 
+                    //  it's "other mobile"
+                    // these are also listed on
+                    // web.usna.navy.mil/~bruninga/aprs/aprs11.html
+                    //
+                    aloha_array[num_aloha_entries].is_other_mobile =(char)TRUE;
+                }
+                else if ( p_station-> record_type == APRS_WX1 ||
+                          p_station-> record_type == APRS_WX2 ||
+                          p_station-> record_type == APRS_WX3 ||
+                          p_station-> record_type == APRS_WX4 ||
+                          p_station-> record_type == APRS_WX5 ||
+                          p_station-> record_type == APRS_WX6 ) {
+                    // Bob B. uses the station symbol "_" to select this, but
+                    // agrees that if we do it this way it's probably better
+                    // -- this says if we've gotten any WX data, it's a WX 
+                    // station
+                    aloha_array[num_aloha_entries].is_wx = (char) TRUE;
+                } 
+                else {
+                    // Anything that hasn't gotten selected yet is just a home
+                    aloha_array[num_aloha_entries].is_home = (char) TRUE;
+                }
+                
+                if (p_station->aprs_symbol.aprs_symbol=='#') { 
+                    // Per Bob B., if it has "#" as its symbol, it's
+                    // assumed to be a digi.
+                    aloha_array[num_aloha_entries].is_digi = (char) TRUE;
+                }
+                num_aloha_entries++;
+            }
+        }
+        p_station = p_station-> n_next;
+    }
+
+#ifdef DEBUG_ALOHA
+    fprintf (stderr,"aloha_distance: Found %d local stations\n",
+             num_aloha_entries);
+#endif
+    
+    // we now have all the stations heard via TNC.  Now sort it by distance
+    qsort((void *) aloha_array,num_aloha_entries,sizeof(aloha_entry),
+          comp_by_dist);
+
+    // Starting from the closest, working outward, accumulate
+    sum=0;
+    for (ii=0;(ii<num_aloha_entries && sum < 1800);ii++) {
+        if (aloha_array[ii].is_digi) {
+            sum += digi_copies*3;
+            digi_copies++; // per Bob's web page.  Makes more distant
+                           // stations than this digi count for more, since
+                           // they have been digipeated.
+        }
+        else if (aloha_array[ii].is_home) {
+            sum += digi_copies*2; 
+        }
+        else if (aloha_array[ii].is_wx) {
+            sum += digi_copies*6;
+        }
+        else if (aloha_array[ii].is_mobile) {
+            sum += digi_copies*15;
+        }
+        else if (aloha_array[ii].is_other_mobile) {
+            sum += digi_copies*7;
+        }
+#ifdef DEBUG_ALOHA
+        fprintf(stderr,"  %d:%s: d=%lf, digi=%c, mobile=%c, motion=%c, home=%c, wx=%c (cum=%d)\n",
+                ii,
+                aloha_array[ii].call_sign,
+                aloha_array[ii].distance,
+                (aloha_array[ii].is_digi)?'y':'n',
+                (aloha_array[ii].is_other_mobile)?'y':'n',
+                (aloha_array[ii].is_mobile)?'y':'n',
+                (aloha_array[ii].is_home)?'y':'n',
+                (aloha_array[ii].is_wx)?'y':'n',sum);
+#endif
+    }
+    
+    if (ii>0 && ii < num_aloha_entries && sum >= 1800) { // we hit the limit
+        distance = aloha_array[ii-1].distance;
+    }
+    else {
+        distance = -1; // indeterminate, not enough data yet
+    }
+
+    free (aloha_array); // make sure we don't leak
+    return distance;
+    
+}
+
+// Used by qsort to sort the aloha entries
+int comp_by_dist(const void *av,const void *bv) {
+    aloha_entry *a = (aloha_entry *) av;
+    aloha_entry *b = (aloha_entry *) bv;
+     if (a->distance < b->distance)
+         return -1;
+     if (a->distance > b->distance)
+         return 1;
+
+     return 0;
+}
+
+// Called periodically by UpdateTime, we calculate our aloha radius every
+// so often.  (Bob B. recommends every 30 minutes)
+void calc_aloha()    {
+    time_t secs_now;
+
+    if (aloha_time == 0) { // first call
+        aloha_time = sec_now()+1800; 
+        aloha_radius = -1.0;
+        //fprintf(stderr,"Initialized aloha radius time\n");
+    } 
+    else {
+        secs_now = sec_now();
+        if (secs_now > aloha_time) {
+            aloha_radius = calc_aloha_distance(); 
+            aloha_time = secs_now + 1800;
+#ifdef DEBUG_ALOHA
+            if (aloha_radius < 0) {
+                fprintf(stderr,"Aloha distance indeterminate\n");
+            }
+            else {
+                fprintf(stderr,"Aloha distance is %lf",aloha_radius);
+                if (english_units) {
+                    fprintf(stderr," miles.\n");
+                } 
+                else {
+                    fprintf(stderr," km.\n");
+                }
+            }
+#endif
+        }
+    }
+}
 

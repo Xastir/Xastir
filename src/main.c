@@ -10354,6 +10354,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #ifdef USE_RTREE
             purge_shp_hash();                   // purge stale rtrees
 #endif
+            calc_aloha();
 
             //if ( (new_message_data > 0) && ( (delay_time % 2) == 0) )
             //update_messages(0);                 // Check Messages, no forced update

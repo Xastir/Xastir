@@ -96,6 +96,7 @@ The Questions
 
     5.3  How do I take a snapshot of my current view? 
 
+    5.4  What is that yellow circle on my map?
 
 The Answers
 -----------
@@ -880,6 +881,24 @@ The Answers
         kill -SIGUSR1 `cat ~/.xastir/xastir.pid`
 
     Snapshots will are stored under ~/.xastir/tmp/
+
+
+    5.3 What is that yellow circle on my map?
+
+    Somewhere around a half-hour or an hour after you start Xastir with 
+    a connected TNC, you will begin to see a yellow circle surrounding your 
+    station at some zoom levels.  This is your "ALOHA Circle,"
+    the circle containing approximately the number of stations that should 
+    saturate your local APRS channel.  See 
+    http://web.usna.navy.mil/~bruninga/aprs/ALOHAcir.txt for details.
+    The short story is you should set your path so your packets don't
+    travel farther than this circle's radius.  
+
+    This circle is always shown when your station is in view and you are
+    zoomed out far enough to contain the circle in the viewport.  Its
+    radius is recalculated once every half an hour from the stations
+    you've heard on RF.  Stations you hear from internet servers or
+    other non-RF sources are not included in the calculation.
 
 ----------------------------------------------------------------
 
