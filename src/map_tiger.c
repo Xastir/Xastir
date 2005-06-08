@@ -357,7 +357,6 @@ void draw_tiger_map (Widget w,
     long scale_x0;                  // at widest map area
 
     char local_filename[MAX_FILENAME];
-    local_filename[0]='\0';
     
     ExceptionInfo exception;
     Image *image;
@@ -376,6 +375,8 @@ void draw_tiger_map (Widget w,
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
 
+    // initialize this
+    local_filename[0]='\0';
 
     // Create a shorter filename for display (one that fits the
     // status line more closely).  Subtract the length of the
