@@ -894,11 +894,13 @@ The Answers
     The short story is you should set your path so your packets don't
     travel farther than this circle's radius.  
 
-    This circle is always shown when your station is in view and you are
+    This circle is shown when your station is in view and you are
     zoomed out far enough to contain the circle in the viewport.  Its
     radius is recalculated once every half an hour from the stations
     you've heard on RF.  Stations you hear from internet servers or
-    other non-RF sources are not included in the calculation.
+    other non-RF sources are not included in the calculation.  The
+    circle can be turned off from the Station->Filter Display menu
+    but it will be enabled again each time you restart Xastir.
 
 ----------------------------------------------------------------
 
