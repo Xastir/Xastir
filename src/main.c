@@ -10370,8 +10370,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             purge_shp_hash();                   // purge stale rtrees
 #endif
 
-            if (Display_.aloha_circle)
-                calc_aloha();
+
+            // We need to always calculate the Aloha circle so that
+            // if it is turned on by the user it will be accurate.
+            calc_aloha();
+
 
             //if ( (new_message_data > 0) && ( (delay_time % 2) == 0) )
             //update_messages(0);                 // Check Messages, no forced update
