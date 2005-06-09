@@ -52,6 +52,7 @@ PULDNVI011|Tráficos de Mensajes|f|
 PULDNVI013|Tiempo de Inicio|I|
 PULDNVI014|Tiempo Transcurrido||
 PULDNVI015|GPS Status||
+PULDNVI016|ALOHA Statistics||
 #
 # Menú de Configuración
 PULDNCF004|Estación|E|
@@ -323,6 +324,7 @@ BBARSTA040|Estación de Aficionado APRS(tm) %s||
 BBARSTA041|Esperando por GPS data..||
 BBARSTA042|Transmitiendo objetos/articulos||
 BBARSTA043|Anotando||
+BBARSTA044|ALOHA distance is %d%s||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||
@@ -734,6 +736,18 @@ WPUPSTI064|Fetch NWS Alert||
 WPUPSTI065|Tactical Call: %s||
 WPUPSTI066|Assign Tactical Call||
 WPUPSTI067|Current Range: %d miles||
+#
+#
+# PopUp "ALOHA Statistics"
+WPUPALO001|ALOHA radius: %d %s||
+WPUPALO002|Stations inside ALOHA circle: %d||
+WPUPALO003| Digis:               %d||
+WPUPALO004| Mobiles (in motion): %d||
+WPUPALO005| Mobiles (other):     %d||
+WPUPALO006| WX stations:         %d||
+WPUPALO007| Home stations:       %d||
+WPUPALO008|Last calculated %d %s %d %s ago.||
+WPUPALO666|ALOHA radius not calculated yet||
 #
 # FCC-RAC buscar Indicativo
 STIFCC0001|Buscar en Base de datos FCC||

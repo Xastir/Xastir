@@ -4766,7 +4766,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         track_button, download_trail_button, station_clear_button,
         tracks_clear_button, object_history_refresh_button,
         object_history_clear_button, tactical_clear_button,
-        tactical_history_clear_button, uptime_button, save_button,
+        tactical_history_clear_button, uptime_button, aloha_button,
+        save_button,
         file_button, open_file_button, exit_button,
         view_button, view_messages_button, gps_status_button,
         bullet_button, packet_data_button, mobile_button,
@@ -5205,6 +5206,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             xmPushButtonWidgetClass,
             viewpane,
             XmNmnemonic, langcode_hotkey("PULDNVI013"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    aloha_button = XtVaCreateManagedWidget(langcode("PULDNVI016"),
+            xmPushButtonWidgetClass,
+            viewpane,
+            XmNmnemonic, langcode_hotkey("PULDNVI016"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -7057,6 +7065,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //    XtSetSensitive(debug_level_button, False);
 
     XtAddCallback(uptime_button,   XmNactivateCallback, Compute_Uptime,NULL);
+    XtAddCallback(aloha_button,   XmNactivateCallback, Show_Aloha_Stats,NULL);
     //XtSetSensitive(uptime_button, False);
 
 

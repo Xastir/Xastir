@@ -23,8 +23,9 @@ New Scheme:
 256     station and trail display detailed debugging
 512     Map import/export function debugging
 1024    Internet Transaction debugging
+2048    ALOHA radius debugging
 
-2048    Levels 2048 and above will require modification to the
+4096    Levels 4096 and above will require modification to the
         main.c file to change the bounds checking, and are
         available for future use.
 

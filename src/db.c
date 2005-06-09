@@ -150,8 +150,12 @@ DataRow *station_shortcuts[16384];
 
 // used to time aloha calculations
 static time_t aloha_time = 0;
+static time_t aloha_status_time = 0;
 static double aloha_radius=-1;
-
+static aloha_stats the_aloha_stats;
+// calculate every half hour, display in status line every 5 minutes
+#define ALOHA_CALC_INTERVAL 1800 
+#define ALOHA_STATUS_INTERVAL 300
 
 void db_init(void)
 {
@@ -17133,10 +17137,8 @@ double calc_aloha_distance() {
         if ( (p_station->flag & ST_VIATNC) != 0 && 
              (p_station->flag & ST_ACTIVE) != 0 ) {
             if (position_defined(p_station->coord_lat,p_station->coord_lon,1)){
-#ifdef DEBUG_ALOHA
                 strncpy(aloha_array[num_aloha_entries].call_sign,
                         p_station->call_sign,MAX_CALLSIGN+1);
-#endif
                 aloha_array[num_aloha_entries].is_digi = 
                     aloha_array[num_aloha_entries].is_mobile = 
                     aloha_array[num_aloha_entries].is_other_mobile = 
@@ -17180,26 +17182,26 @@ double calc_aloha_distance() {
                     // station
                     aloha_array[num_aloha_entries].is_wx = (char) TRUE;
                 } 
-                else {
-                    // Anything that hasn't gotten selected yet is just a home
-                    aloha_array[num_aloha_entries].is_home = (char) TRUE;
-                }
-                
-                if (p_station->aprs_symbol.aprs_symbol=='#') { 
+                else if (p_station->aprs_symbol.aprs_symbol=='#') { 
                     // Per Bob B., if it has "#" as its symbol, it's
                     // assumed to be a digi.
                     aloha_array[num_aloha_entries].is_digi = (char) TRUE;
                 }
+                else {
+                    // Anything that hasn't gotten selected yet is just a home
+                    aloha_array[num_aloha_entries].is_home = (char) TRUE;
+                }
+
                 num_aloha_entries++;
             }
         }
         p_station = p_station-> n_next;
     }
 
-#ifdef DEBUG_ALOHA
-    fprintf (stderr,"aloha_distance: Found %d local stations\n",
+    if (debug_level & 2048) {
+        fprintf (stderr,"aloha_distance: Found %d local stations\n",
              num_aloha_entries);
-#endif
+    }
     
     // we now have all the stations heard via TNC.  Now sort it by distance
     qsort((void *) aloha_array,num_aloha_entries,sizeof(aloha_entry),
@@ -17207,36 +17209,49 @@ double calc_aloha_distance() {
 
     // Starting from the closest, working outward, accumulate
     sum=0;
+    the_aloha_stats.digis=0;
+    the_aloha_stats.wxs = 0;
+    the_aloha_stats.other_mobiles = 0;
+    the_aloha_stats.mobiles_in_motion = 0;
+    the_aloha_stats.homes = 0;
+    the_aloha_stats.total = 0;
+
     for (ii=0;(ii<num_aloha_entries && sum < 1800);ii++) {
+        the_aloha_stats.total++;
         if (aloha_array[ii].is_digi) {
             sum += digi_copies*3;
             digi_copies++; // per Bob's web page.  Makes more distant
                            // stations than this digi count for more, since
                            // they have been digipeated.
+            the_aloha_stats.digis++;
         }
         else if (aloha_array[ii].is_home) {
             sum += digi_copies*2; 
+            the_aloha_stats.homes++;
         }
         else if (aloha_array[ii].is_wx) {
             sum += digi_copies*6;
+            the_aloha_stats.wxs++;
         }
         else if (aloha_array[ii].is_mobile) {
             sum += digi_copies*15;
+            the_aloha_stats.mobiles_in_motion++;
         }
         else if (aloha_array[ii].is_other_mobile) {
             sum += digi_copies*7;
+            the_aloha_stats.other_mobiles++;
         }
-#ifdef DEBUG_ALOHA
-        fprintf(stderr,"  %d:%s: d=%lf, digi=%c, mobile=%c, motion=%c, home=%c, wx=%c (cum=%d)\n",
-                ii,
-                aloha_array[ii].call_sign,
-                aloha_array[ii].distance,
-                (aloha_array[ii].is_digi)?'y':'n',
-                (aloha_array[ii].is_other_mobile)?'y':'n',
-                (aloha_array[ii].is_mobile)?'y':'n',
-                (aloha_array[ii].is_home)?'y':'n',
-                (aloha_array[ii].is_wx)?'y':'n',sum);
-#endif
+        if (debug_level & 2048) {
+            fprintf(stderr,"  %d:%s: d=%lf, digi=%c, mobile=%c, motion=%c, home=%c, wx=%c (cum=%d)\n",
+                    ii,
+                    aloha_array[ii].call_sign,
+                    aloha_array[ii].distance,
+                    (aloha_array[ii].is_digi)?'y':'n',
+                    (aloha_array[ii].is_other_mobile)?'y':'n',
+                    (aloha_array[ii].is_mobile)?'y':'n',
+                    (aloha_array[ii].is_home)?'y':'n',
+                    (aloha_array[ii].is_wx)?'y':'n',sum);
+        }
     }
     
     if (ii>0 && ii < num_aloha_entries && sum >= 1800) { // we hit the limit
@@ -17267,33 +17282,132 @@ int comp_by_dist(const void *av,const void *bv) {
 // so often.  (Bob B. recommends every 30 minutes)
 void calc_aloha()    {
     time_t secs_now;
+    char status_text[100];
 
     if (aloha_time == 0) { // first call
-        aloha_time = sec_now()+1800; 
+        aloha_time = sec_now()+ALOHA_CALC_INTERVAL; 
+        aloha_status_time = sec_now()+ALOHA_STATUS_INTERVAL;
         aloha_radius = -1.0;
+        the_aloha_stats.digis=0;
+        the_aloha_stats.wxs = 0;
+        the_aloha_stats.other_mobiles = 0;
+        the_aloha_stats.mobiles_in_motion = 0;
+        the_aloha_stats.homes = 0;
+        the_aloha_stats.total = 0;
         //fprintf(stderr,"Initialized aloha radius time\n");
     } 
     else {
         secs_now = sec_now();
         if (secs_now > aloha_time) {
             aloha_radius = calc_aloha_distance(); 
-            aloha_time = secs_now + 1800;
-#ifdef DEBUG_ALOHA
-            if (aloha_radius < 0) {
-                fprintf(stderr,"Aloha distance indeterminate\n");
-            }
-            else {
-                fprintf(stderr,"Aloha distance is %lf",aloha_radius);
-                if (english_units) {
-                    fprintf(stderr," miles.\n");
-                } 
+            aloha_time = secs_now + ALOHA_CALC_INTERVAL;
+            if (debug_level & 2048) {
+                if (aloha_radius < 0) {
+                    fprintf(stderr,"Aloha distance indeterminate\n");
+                }
                 else {
-                    fprintf(stderr," km.\n");
+                    fprintf(stderr,"Aloha distance is %lf",aloha_radius);
+                    if (english_units) {
+                        fprintf(stderr," miles.\n");
+                    } 
+                    else {
+                        fprintf(stderr," km.\n");
+                    }
                 }
             }
-#endif
+        }
+        if (secs_now > aloha_status_time) {
+            if ( aloha_radius != -1 ) {
+                xastir_snprintf(status_text,sizeof(status_text),
+                                langcode("BBARSTA044"),(int)aloha_radius,
+                                (english_units)?" miles":" km");
+                statusline(status_text,1);
+            }
+            aloha_status_time = secs_now + ALOHA_STATUS_INTERVAL;
         }
     }
 }
 
 
+// popup window on menu request
+void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
+
+    char temp[2000];
+    char format[1000];
+
+    unsigned long time_since_aloha_update;
+    int minutes, hours;
+    char Hours[7];
+    char Minutes[9];
+
+    if (aloha_radius != -1) {
+        // we've done at least one interval, and aloha_time is the time
+        // for the *next* one.  We want the time since the last one.
+        time_since_aloha_update = sec_now()-(aloha_time-ALOHA_CALC_INTERVAL); 
+        
+
+        hours = time_since_aloha_update/3600;
+        time_since_aloha_update -= hours*3600;
+        minutes = time_since_aloha_update/60;
+
+        if (hours == 1)
+            xastir_snprintf(Hours,sizeof(Hours),"%s",
+                            langcode("TIME003")); // Hour
+        else
+            xastir_snprintf(Hours,sizeof(Hours),"%s",
+                            langcode("TIME004")); // Hours
+        
+        
+        if (minutes == 1)
+            xastir_snprintf(Minutes,sizeof(Minutes),"%s",
+                            langcode("TIME005")); // Minute
+        else
+            xastir_snprintf(Minutes,sizeof(Minutes),"%s",
+                            langcode("TIME006")); // Minutes
+
+        // Build up the whole format string
+        // "Aloha radius %d"
+        strncpy(format,langcode("WPUPALO001"),sizeof(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        // "Stations inside...: %d"
+        strncat(format,langcode("WPUPALO002"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        //" Digis:               %d"
+        strncat(format,langcode("WPUPALO003"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        //" Mobiles (in motion): %d"
+        strncat(format,langcode("WPUPALO004"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        //" Mobiles (other):     %d"
+        strncat(format,langcode("WPUPALO005"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        //" WX stations:         %d"
+        strncat(format,langcode("WPUPALO006"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        //" Home stations:       %d"
+        strncat(format,langcode("WPUPALO007"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+        //"Last calculated %s ago."
+        strncat(format,langcode("WPUPALO008"),sizeof(format) - strlen(format));
+        strncat(format,"\n",sizeof(format)-strlen(format));
+
+        // We now have the whole format string, now print using it:
+        xastir_snprintf(temp,sizeof(temp),format,(int)aloha_radius,
+                        (english_units)?" miles":" km",
+                        the_aloha_stats.total,
+                        the_aloha_stats.digis,
+                        the_aloha_stats.mobiles_in_motion,
+                        the_aloha_stats.other_mobiles,
+                        the_aloha_stats.wxs,
+                        the_aloha_stats.homes,
+                        hours, Hours,
+                        minutes, Minutes);
+
+        popup_message_always(langcode("PULDNVI016"),temp);
+    }
+    else {
+        // Not calculated yet
+        popup_message_always(langcode("PULDNVI016"),langcode("WPUPALO666"));
+    }
+}        
+                        
