@@ -7932,7 +7932,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 //                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
 //                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "k");
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', CONVERSE_MODE);
-fprintf(stderr,"%s\n", header_txt);
+//fprintf(stderr,"%s\n", header_txt);
  
                 if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
                         && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
