@@ -30,6 +30,17 @@
 #include "util.h"
 #include "xastir.h"
 
+
+// User configurable text for taking a TNC into converse mode.
+// Uncomment only one of the below two lines.
+//
+// Works for most TNC's, including tnc2-ui
+#define CONVERSE_MODE "k"
+//
+// Works for Kantronics KPC-2
+//#define CONVERSE_MODE "conv"
+
+
 #define MAX_DEVICE_NAME 128
 #define MAX_DEVICE_BUFFER 4096
 #define MAX_DEVICE_BUFFER_UNTIL_BINARY_SWITCH 700
