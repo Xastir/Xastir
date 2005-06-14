@@ -41,6 +41,7 @@ EXTRA_DIST = \
     tnc-startup.pico \
     tnc-startup.sys \
     tnc-startup.thd7 \
+    tnc-startup.tnc2 \
     tnc-startup.tnc2-ui \
     tnc-stop.d700 \
     tnc-stop.sys \

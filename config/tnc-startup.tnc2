@@ -1,0 +1,48 @@
+# $Id$
+#
+# Copyright (C) 2005  The Xastir Group
+#
+# This is the TNC Startup file for a TAPR TNC2 style of TNC.  This
+# includes many TNC's from TAPR, Paccomm, MFJ, AEA, etc that were
+# based on the original TAPR-2 design.
+
+# lines that begin with a pound sign are comments.
+
+HID off
+#CWID every 0
+MON 0
+ECHO off
+#MYCall WB5BBW
+#
+# Important!  Only uncomment if really needed as a fill-in digi:
+#MYAlias WIDE1-1
+#
+#MY1Alias WIDE
+#MY2Alias REGION
+#MY3Alias WORLD
+# B E 0 must be set to 0 or both APRS and your TNC will send BCNS
+# Which will alternate in everyones L and A lists and fill up
+# their logs.  Do NOT set B E to anything other than 0 while APRS
+# is running.
+B E 0
+# This enables DIGI On and DIGI-SWAP,DIGI-NOT-OWN, DIGI-ONCE enabled.
+DIGI 7
+FLow off
+FUll off
+HEA off
+LFadd off
+AUTOLF off
+MCOM off
+MFILT $00
+MRPt on
+MSTamp off
+NEWmode off
+PASSALL off
+SCR 0
+MON 1
+#
+# Important!  Monitor only PID 0xf0 packets:
+PIDCHECK on
+#
+# End of tnc-startup.tnc2
+#
