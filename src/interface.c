@@ -7923,8 +7923,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
 
                 // Set converse mode.  We don't need to do this for
-                // KISS TNC interfaces.  One european TNC doesn't
-                // accept "conv" but does accept the 'k' command.
+                // KISS TNC interfaces.  One european TNC (tnc2-ui)
+                // doesn't accept "conv" but does accept the 'k'
+                // command.  A Kantronics KPC-2 v2.71 TNC accepts
+                // the "conv" command but not the 'k' command.
+                // Figures!
                 // 
 //                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "k");
@@ -8579,9 +8582,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         usleep(10000);  // 10ms
                     }
  
-                    // Set converse mode.  One european TNC doesn't
-                    // accept "conv" but does accept the 'k'
-                    // command.
+                    // Set converse mode.  One european TNC
+                    // (tnc2-ui) doesn't accept "conv" but does
+                    // accept the 'k' command.  A Kantronics  KPC-2
+                    // v2.71 TNC accepts the "conv" command but not
+                    // the 'k' command.  Figures!
                     //
 //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "k");
