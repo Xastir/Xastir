@@ -558,12 +558,14 @@ int map_cache_del( char * map_cache_url ){
 
 // check "CACHE_SPACE_USED" record in db
 	
-            if (((mc_ret = dbp->get(dbp, NULL, &mc_size_key, &mc_size_data, 0)) == 0) &&  ( mc_size_data.data != NULL ) ) {
-                    if ( debug_level & 512 ) {
-                        fprintf(stderr, "map_cache_del: %s: key retrieved: data was %s.\n",
-                                (char *)mc_size_key.data,
-                                (char *)mc_size_data.data);
-                    }
+            if (((mc_ret = dbp->get(dbp, NULL, &mc_size_key, &mc_size_data, 0)) == 0)
+                    && ( mc_size_data.data != NULL )
+                    && ( strlen(mc_size_data.data) != 0 ) ) {
+                if ( debug_level & 512 ) {
+                    fprintf(stderr, "map_cache_del: %s: key retrieved: data was %s.\n",
+                        (char *)mc_size_key.data,
+                        (char *)mc_size_data.data);
+                }
 
 // this pukes if mc_size_data.data is null
 
