@@ -35,8 +35,7 @@ dbffields="STATE_ZONE:NAME"}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
-BEGIN_RECORD {key="BOGUS"; lanes=2; fill_color=7; color=8; name="";
-filled=1; fill_style=0; pattern=0; display_level=65536; label_level=512; label_color=20; font_size=2; symbol=""}
+BEGIN_RECORD {key="BOGUS"; lanes=2; fill_color=7; color=8; name=""; filled=0; fill_style=0; pattern=0; display_level=65536; label_level=512; label_color=20; font_size=2; symbol=""}
 
 # Fire Zones
 /^STATE_ZONE=(..)(.*)$/ {key="$1_F$2"; next}
