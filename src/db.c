@@ -14931,11 +14931,6 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
         }
     }
 
-    if (Substring[ii] == NULL) {    // No unused digi's found.
-                                    // We're done here.
-//fprintf(stderr, "\t\tPath used up: %s\n", path);
-        return;
-    }
 
     if (ii == 0) {  // No asterisks found.  Entire path unused?
         // Set ii to first actual digi field instead of the
@@ -14945,10 +14940,18 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
     else {  // ii points to first unused digi field.
     }
 
+
+    if (Substring[ii] == NULL) {    // No unused digi's found.
+                                    // We're done here.
+//fprintf(stderr, "\t\tPath used up: %s\n", path);
+        return;
+    }
+
+ 
 //fprintf(stderr,"\t\tUnused digi: %s\tPath: %s\n", Substring[ii], path);
 
     // Check for RELAY, WIDE1-1 (the new relay) or my_callsign in
-    // the strings.  If neither found then exit this routine.
+    // the strings.  If none of these found then exit this routine.
     if (       (strcmp(Substring[ii], "RELAY")     != 0)
             && (strcmp(Substring[ii], "WIDE1-1")   != 0)
             && (strcmp(Substring[ii], my_callsign) != 0) ) {
