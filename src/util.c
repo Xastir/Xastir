@@ -4359,7 +4359,7 @@ int curl_getfile(char *fileimg, char *local_filename) {
 // Makes each entry in the array of char ptrs point to one
 // substring.  Modifies incoming string and cptr[] array.  Send a
 // character constant string to it and you'll get an instant
-// segfault (can't modify it).
+// segfault (the function can't modify a char constant string).
 //
 void split_string( char *data, char *cptr[], int max ) {
   int ii;
@@ -4403,6 +4403,10 @@ void split_string( char *data, char *cptr[], int max ) {
 //
 // "MAX_WIDES" is defined in util.h
 //
+// Returns:
+//  1 = bad path
+//  0 = good path
+//
 int check_unproto_path ( char *data ) {
     char *tmpdata;
     char *ViaCalls[10];
@@ -4412,6 +4416,8 @@ int check_unproto_path ( char *data ) {
     int prevp = 0;
     int last = 0;
     int prev = 0;
+    int total_digi_length = 0;
+
 
 
     // Function to check for proper relations between the n-N
@@ -4430,11 +4436,19 @@ int check_unproto_path ( char *data ) {
             // n is greater than MAX_WIDES
             bad_path = 1;
         }
-        if (debug_level & 1)
+        else if (last == 0) {
+            // N is 0, it's a used-up digipeater slot
+            bad_path = 1;
+        }
+        if (debug_level & 1 && bad_path)
             fprintf(stderr,"n-N wrong\n");
+
         return(bad_path);
     }
 
+
+    if (debug_level & 1)
+        fprintf(stderr, "Input string: %s\n", data);
 
     bad_path = ii = have_relay = have_wide = 0;
     have_widen = have_trace = have_tracen = 0;
@@ -4459,7 +4473,14 @@ int check_unproto_path ( char *data ) {
         if (ViaCalls[ii] == NULL) {
             // We're done.  Exit the loop with whatever flags were
             // set in previous iterations.
+            if (debug_level & 1) {
+                fprintf(stderr,"NULL string, slot %d\n", ii);
+            }
             break;
+        }
+        else {
+            if (debug_level & 1)
+                fprintf(stderr,"%s string, slot %d\n", ViaCalls[ii], ii);
         }
 
         lastp = strlen(ViaCalls[ii]) - 1;
@@ -4475,6 +4496,7 @@ int check_unproto_path ( char *data ) {
         // Check whether RELAY appears later in the path
         if (!strncmp(ViaCalls[ii], "RELAY", 5)) {
             have_relay++;
+            total_digi_length++;
             if (ii != 0) {
                 // RELAY should not appear after the first item in a
                 // path!
@@ -4489,6 +4511,7 @@ int check_unproto_path ( char *data ) {
         // "RELAY")
         else if (!strncmp(ViaCalls[ii], "WIDE1-1", 7)) {
             have_relay++;
+            total_digi_length++;
             if (ii != 0) {
                 // WIDE1-1 should not appear after the first item in
                 // a path!
@@ -4514,6 +4537,21 @@ int check_unproto_path ( char *data ) {
             if (strstr(ViaCalls[ii], "-")) {
                 // This is a WIDEn-N or TRACEn-N callsign
 
+
+                // Here we are adding the unused portion of the
+                // WIDEn-N/TRACEn-N to the total_digi_length
+                // variable.  We use the unused portion because that
+                // way we're not fooled if people start with a
+                // number for N that is higher/lower than n.  The
+                // initial thought was to grab the higher of n or N,
+                // but those lines are commented out here.
+                //
+                //if (last > prev)
+                    total_digi_length += last;
+                //else
+                //    total_digi_length += prev;
+
+
                 // Check for previous WIDEn-N/TRACEn-N
                 if (have_widen || have_tracen) {
                     // Already have a large area via
@@ -4526,7 +4564,7 @@ int check_unproto_path ( char *data ) {
                 // Perform WIDEn-N checks
                 if (is_wide) {
                     if (debug_level & 1)
-                        fprintf(stderr,"Found wideN-n\n");
+                        fprintf(stderr,"Found wideN-n at slot %d\n", ii);
                     have_widen++;
 
                     // We know its a WIDEn-N, time to find out what n is
@@ -4535,7 +4573,7 @@ int check_unproto_path ( char *data ) {
                         // exactly 7 characters
                         bad_path = 1;
                         if (debug_level & 1)
-                            fprintf(stderr,"String length of widen-N is not 7 characters\n");
+                            fprintf(stderr,"String length of widen-N is not 7 characters, slot %d\n", ii);
                         break;
                     }
 
@@ -4543,7 +4581,7 @@ int check_unproto_path ( char *data ) {
                     // numbers.
                     if ( check_n_N() ) {
                         if (debug_level & 1)
-                            fprintf(stderr,"In WIDEn-N checks\n");
+                            fprintf(stderr,"In WIDEn-N checks, slot %d\n", ii);
                         break;
                     }
                 }
@@ -4551,7 +4589,7 @@ int check_unproto_path ( char *data ) {
                 // Perform similar checks for TRACEn-N
                 else {
                     if (debug_level & 1)
-                        fprintf(stderr,"Found traceN-n\n");
+                        fprintf(stderr,"Found traceN-n, slot %d\n", ii);
                     have_tracen++;
 
                     // We know its a TRACEn-N time to find out what
@@ -4561,7 +4599,7 @@ int check_unproto_path ( char *data ) {
                         // exactly 8 characters
                         bad_path = 1;
                         if (debug_level & 1)
-                            fprintf(stderr,"String length of tracen-N is not 8 characters\n");
+                            fprintf(stderr,"String length of tracen-N is not 8 characters, slot %d\n", ii);
                         break;
                     }
 
@@ -4569,7 +4607,7 @@ int check_unproto_path ( char *data ) {
                     // numbers.
                     if ( check_n_N() ) {
                         if (debug_level & 1)
-                            fprintf(stderr,"In TRACEn-N checks\n");
+                            fprintf(stderr,"In TRACEn-N checks, slot %d\n", ii);
                         break;
                     }
                 }
@@ -4578,7 +4616,7 @@ int check_unproto_path ( char *data ) {
 
             else {
                 // We know we have a WIDE or TRACE in this callsign slot
- 
+                total_digi_length++;
                 if (is_wide) {
                     have_wide++;
                 }
@@ -4657,7 +4695,7 @@ int check_unproto_path ( char *data ) {
                     }
 
                     if (debug_level & 1)
-                        fprintf(stderr,"Found wideN-n\n");
+                        fprintf(stderr,"Found wideN-n, slot %d\n", ii);
                     have_widen++;
                 }
                 else {
@@ -4676,11 +4714,21 @@ int check_unproto_path ( char *data ) {
         }
     }   // End of for loop
 
+    if (debug_level & 1)
+        fprintf(stderr,"Total digi length: %d\n", total_digi_length);
+
+    if (total_digi_length > MAX_WIDES + 1) {
+
+        if (debug_level & 1)
+            fprintf(stderr,"Total digi count is too high!\n");
+
+        bad_path = 1;
+    }
+
     // Free the memory we allocated with strndup()
     free(tmpdata);
     return(bad_path);
 
 }   // End of check_unproto_path
-
 
 
