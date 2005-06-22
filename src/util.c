@@ -4732,3 +4732,24 @@ int check_unproto_path ( char *data ) {
 }   // End of check_unproto_path
 
 
+
+
+
+// Set string printed out by segfault handler
+void set_dangerous( char *ptr ) {
+    xastir_snprintf(dangerous_operation,
+        sizeof(dangerous_operation),
+        "%s",
+        ptr);
+}
+
+
+
+
+
+// Clear string printed out by segfault handler
+void clear_dangerous(void) {
+    dangerous_operation[0] = '\0';
+}
+
+

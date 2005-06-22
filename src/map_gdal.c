@@ -2260,27 +2260,6 @@ fprintf(stderr,"Vector %d: %7.5f %8.5f  %7.5f %8.5f\n",
 
 
 
-// Set string printed out by segfault handler
-void set_dangerous( char *ptr ) {
-    xastir_snprintf(dangerous_operation,
-        sizeof(dangerous_operation),
-        "%s",
-        ptr);
-}
-
-
-
-
-
-// Clear string printed out by segfault handler
-void clear_dangerous(void) {
-    dangerous_operation[0] = '\0';
-}
-
-
-
-
-
 // Set up coordinate translation:  We need it for indexing and
 // drawing so we do it first and keep pointers to our transforms.
 //
