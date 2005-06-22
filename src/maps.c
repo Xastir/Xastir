@@ -4397,11 +4397,10 @@ void index_update_xastir(char *filename,
             // Fill in some default values for the new record
 //WE7U
 // Here's where we might look at the file extension and assign
-// default map_layer/draw_filled fields based on that.
+// default map_layer fields based on that.
             temp_record->max_zoom = 0;
             temp_record->min_zoom = 0;
             temp_record->map_layer = default_map_layer;
-            temp_record->draw_filled = 0;
             temp_record->selected = 0;
             temp_record->XmStringPtr = NULL;
  
@@ -4413,7 +4412,16 @@ void index_update_xastir(char *filename,
             else {
                 temp_record->auto_maps = 1;
             }
-         
+
+            if (       strstr(filename,".shp")
+                    || strstr(filename,".SHP")
+                    || strstr(filename,".Shp") ) {
+                temp_record->draw_filled = 2; // Auto
+            }
+            else {
+                temp_record->draw_filled = 0; // No-Fill
+            }
+ 
             //current = current->next;
             done++;
         }
@@ -4445,11 +4453,10 @@ void index_update_xastir(char *filename,
         // Fill in some default values for the new record
 //WE7U
 // Here's where we might look at the file extension and assign
-// default map_layer/draw_filled fields based on that.
+// default map_layer fields based on that.
         temp_record->max_zoom = 0;
         temp_record->min_zoom = 0;
         temp_record->map_layer = default_map_layer;
-        temp_record->draw_filled = 0;
         temp_record->selected = 0;
         temp_record->XmStringPtr = NULL;
 
@@ -4460,6 +4467,15 @@ void index_update_xastir(char *filename,
         }
         else {
             temp_record->auto_maps = 1;
+        }
+
+        if (       strstr(filename,".shp")
+                || strstr(filename,".SHP")
+                || strstr(filename,".Shp") ) {
+            temp_record->draw_filled = 2; // Auto
+        }
+        else {
+            temp_record->draw_filled = 0; // No-Fill
         }
 
     }
@@ -4586,11 +4602,10 @@ void index_update_ll(char *filename,
             // Fill in some default values for the new record
 //WE7U
 // Here's where we might look at the file extension and assign
-// default map_layer/draw_filled fields based on that.
+// default map_layer fields based on that.
             temp_record->max_zoom = 0;
             temp_record->min_zoom = 0;
             temp_record->map_layer = default_map_layer;
-            temp_record->draw_filled = 0;
             temp_record->selected = 0;
             temp_record->XmStringPtr = NULL;
 
@@ -4601,6 +4616,15 @@ void index_update_ll(char *filename,
             }
             else {
                 temp_record->auto_maps = 1;
+            }
+ 
+            if (       strstr(filename,".shp")
+                    || strstr(filename,".SHP")
+                    || strstr(filename,".Shp") ) {
+                temp_record->draw_filled = 2; // Auto
+            }
+            else {
+                temp_record->draw_filled = 0; // No-Fill
             }
  
             //current = current->next;
@@ -4636,11 +4660,10 @@ void index_update_ll(char *filename,
         // Fill in some default values for the new record
 //WE7U
 // Here's where we might look at the file extension and assign
-// default map_layer/draw_filled fields based on that.
+// default map_layer fields based on that.
         temp_record->max_zoom = 0;
         temp_record->min_zoom = 0;
         temp_record->map_layer = default_map_layer;
-        temp_record->draw_filled = 0;
         temp_record->selected = 0;
         temp_record->XmStringPtr = NULL;
 
@@ -4651,6 +4674,15 @@ void index_update_ll(char *filename,
         }
         else {
             temp_record->auto_maps = 1;
+        }
+
+        if (       strstr(filename,".shp")
+                || strstr(filename,".SHP")
+                || strstr(filename,".Shp") ) {
+            temp_record->draw_filled = 2; // Auto
+        }
+        else {
+            temp_record->draw_filled = 0; // No-Fill
         }
 
     }
@@ -5457,7 +5489,7 @@ void index_restore_from_file(void) {
                 }
 
                 if ( (temp_record->draw_filled < 0)
-                        || (temp_record->draw_filled > 1) ) {
+                        || (temp_record->draw_filled > 2) ) {
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: draw_filled field incorrect %d in map name:\n%s\n",
                             temp_record->draw_filled,

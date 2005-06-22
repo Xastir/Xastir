@@ -1099,6 +1099,7 @@ MAPP007|No||
 MAPP008|Automapas->||
 MAPP009|Max Zoom->||
 MAPP010|Min Zoom->||
+MAPP011|Auto||
 #
 # Cadenas del Tiempo
 TIME001|Día||

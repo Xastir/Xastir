@@ -16344,6 +16344,8 @@ if (current->temp_select) {
                 char temp_min_zoom[10];
                 char temp_filled[20];
                 char temp_auto[20];
+                int len, start;
+
 
                 // We have a file.  Construct the line that we wish
                 // to place in the list
@@ -16389,26 +16391,67 @@ if (current->temp_select) {
                     sizeof(temp_filled),
                     "     ");
 
-                if (current->draw_filled) {
-                    int len, start;
+                switch (current->draw_filled) {
 
-                    // Center the string in the column
-                    len = strlen(langcode("MAPP006"));
-                    start = (int)( (5 - len) / 2 + 0.5);
+                    case 0: // Global No-Fill (vector)
 
-                    if (start < 0)
-                        start = 0;
+                        // Center the string in the column
+                        len = strlen(langcode("MAPP007"));
+                        start = (int)( (5 - len) / 2 + 0.5);
 
-                    // Insert the string.  Fill with spaces on the
-                    // end.
-                    xastir_snprintf(&temp_filled[start],
-                        sizeof(temp_filled)-start,
-                        "%s     ",
-                        langcode("MAPP006"));
+                        if (start < 0)
+                            start = 0;
+
+                        // Insert the string.  Fill with spaces
+                        // on the end.
+                        xastir_snprintf(&temp_filled[start],
+                            sizeof(temp_filled)-start,
+                            "%s     ",
+                            langcode("MAPP007"));   // "No"
+
+                        break;
+
+                    case 1: // Global Fill
+
+                        // Center the string in the column
+                        len = strlen(langcode("MAPP006"));
+                        start = (int)( (5 - len) / 2 + 0.5);
+
+                        if (start < 0)
+                            start = 0;
+
+                        // Insert the string.  Fill with spaces
+                        // on the end.
+                        xastir_snprintf(&temp_filled[start],
+                            sizeof(temp_filled)-start,
+                            "%s     ",
+                            langcode("MAPP006"));   // "Yes"
+
+                        break;
+
+                    case 2: // Auto
+                    default:
+
+                        // Center the string in the column
+                        len = strlen(langcode("MAPP011"));
+                        start = (int)( (5 - len) / 2 + 1.5);
+
+                        if (start < 0)
+                            start = 0;
+
+                        // Insert the string.  Fill with spaces
+                        // on the end.
+                        xastir_snprintf(&temp_filled[start],
+                            sizeof(temp_filled)-start,
+                            "%s     ",
+                            langcode("MAPP011"));   // "Auto"
+
+                        break;
+
+                    }   // End of switch
 
                     // Truncate it so it fits our column width.
                     temp_filled[5] = '\0';
-                }
 
                 xastir_snprintf(temp_auto,
                     sizeof(temp_auto),
@@ -16531,6 +16574,25 @@ void map_properties_select_all_maps(Widget widget, XtPointer clientData, XtPoint
 
 
 // Change the "draw_filled" field in the in-memory map_index to a
+// two.
+void map_index_update_filled_auto(char *filename) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->draw_filled = 2;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+// Change the "draw_filled" field in the in-memory map_index to a
 // one.
 void map_index_update_filled_yes(char *filename) {
     map_index_record *current = map_index_head;
@@ -16562,6 +16624,58 @@ void map_index_update_filled_no(char *filename) {
         }
         current = current->next;
     }
+}
+
+
+
+
+
+void map_properties_filled_auto(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    XmString *list;
+    char *temp;
+
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the filled field on
+    // every one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
+                temp2 = temp + 31;
+
+//fprintf(stderr,"New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting the "draw_filled" field to 2.
+                map_index_update_filled_auto(temp2);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
 }
 
 
@@ -17081,7 +17195,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 //    XmString *list;
     static Widget pane, my_form, button_clear, button_close,
         rowcol1, rowcol2, label1, label2, label3, label4,
-        button_filled_yes, button_filled_no, button_layer_change,
+        button_filled_auto, button_filled_yes, button_filled_no,
+        button_layer_change,
         button_auto_maps_yes, button_auto_maps_no,
         button_max_zoom_change, button_min_zoom_change,
         button_select_all;
@@ -17299,6 +17414,15 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+// "Filled-Auto"
+        button_filled_auto = XtVaCreateManagedWidget(langcode("MAPP011"),
+                xmPushButtonGadgetClass, 
+                rowcol2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 // "Filled-Yes"
         button_filled_yes = XtVaCreateManagedWidget(langcode("MAPP006"),
                 xmPushButtonGadgetClass, 
@@ -17373,6 +17497,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtAddCallback(button_close, XmNactivateCallback, map_properties_destroy_shell, map_properties_dialog);
         XtAddCallback(button_clear, XmNactivateCallback, map_properties_deselect_maps, map_properties_dialog);
         XtAddCallback(button_select_all, XmNactivateCallback, map_properties_select_all_maps, map_properties_dialog);
+        XtAddCallback(button_filled_auto, XmNactivateCallback, map_properties_filled_auto, map_properties_dialog);
         XtAddCallback(button_filled_yes, XmNactivateCallback, map_properties_filled_yes, map_properties_dialog);
         XtAddCallback(button_filled_no, XmNactivateCallback, map_properties_filled_no, map_properties_dialog);
         XtAddCallback(button_max_zoom_change, XmNactivateCallback, map_properties_max_zoom_change, map_properties_dialog);

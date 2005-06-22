@@ -153,7 +153,13 @@ Getting Maps and other Data Files for Xastir:
       now. Use the map layering facilities (Map Chooser->Properties) to
       determine the order in which they will be drawn, and to determine
       which will draw filled areas.  Note that raster maps will always draw
-      filled, not matter what the setting suggests.
+      filled, not matter what the setting suggests.  For vector maps, you
+      have a choice of:
+
+            Fill = No       Polygons will never be filled
+            Fill = Yes      Polygons will always be filled
+            Fill = Auto     Polygon fill is determined by map (or if it's a
+                            Shapefile, by any associated dbfawk file).
 
       Map types available by extension:
 
@@ -498,10 +504,12 @@ Getting Maps and other Data Files for Xastir:
         lanes:     width of the shape.
         name:      name of the shape.
         key:       search key (used for WX alerts to find the shape)
-	symbol:	   symbol for landmarks, etc.
-	filled:	   draw polygons filled.
+        symbol:	   symbol for landmarks, etc.
+        filled:	   draw polygons filled.  Filled="Yes" or "No" in the Map
+                   Properties dialog will override this option.  Set to "Auto"
+                   in that dialog to have the dbfawk file control this.
         fill_style: style of fill (0=solid, 1=FillTiled, 2=FillStippled, etc.)
-	fill_color: color of fill
+        fill_color: color of fill
         fill_stipple: stipple pattern if fill_style=2 ("FillStipple")
                       0=13 percent, 1=25 percent, 2=50 percent.
         pattern:   solid or dashed lines.
