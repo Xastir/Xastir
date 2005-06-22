@@ -14792,20 +14792,20 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 //
 // Adding asterisks:
 // Keep whatever digipeated fields have already been set.  If
-// there's a "RELAY" or my_callsign entry that hasn't been
-// digipeated yet, change it to my_callsign*.
+// there's a "RELAY", "WIDE1-1", or "my_callsign" entry that hasn't
+// been digipeated yet, change it to "my_callsign*".
 //
 // This might be much easier to code into the routine that first
 // receives the packet (for Serial KISS TNC's).  There we'd have
 // access to every digipeated bit directly instead of parsing
 // asterisks out of a string.
 //
-// NOTE:  We don't handle this case properly:  Multiple RELAY's or
-// multiple my_callsign's in the path, where one of the earlier
-// matching callsigns has been digipeated, but a later one has not.
-// We'll find the first matching callsign and the last digi, and we
-// won't relay the packet.  This probably won't happen much in the
-// real world.
+// NOTE:  We don't handle this case properly:  Multiple
+// RELAY's/WIDE1-1's or my_callsign's in the path, where one of the
+// earlier matching callsigns has been digipeated, but a later one
+// has not.  We'll find the first matching callsign and the last
+// digi, and we won't relay the packet.  This probably won't happen
+// much in the real world.
 //
 // We could also do premptive digipeating here and skip over
 // callsigns that haven't been digipeated yet.  Should we set the
@@ -14951,7 +14951,8 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 //fprintf(stderr,"\t\tUnused digi: %s\tPath: %s\n", Substring[ii], path);
 
     // Check for RELAY, WIDE1-1 (the new relay) or my_callsign in
-    // the strings.  If none of these found then exit this routine.
+    // this digipeater slot.  If none of these found then exit this
+    // routine.
     if (       (strcmp(Substring[ii], "RELAY")     != 0)
             && (strcmp(Substring[ii], "WIDE1-1")   != 0)
             && (strcmp(Substring[ii], my_callsign) != 0) ) {
