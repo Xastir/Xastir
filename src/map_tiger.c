@@ -160,21 +160,26 @@ void get_tiger_local_file(char * local_filename, char * fileimg){
 
 #ifdef USE_MAP_CACHE 
 
+set_dangerous("map_tiger: map_cache_get");
 	map_cache_return = map_cache_get(fileimg,local_filename); 
-	if (debug_level & 512) {
+clear_dangerous();
+
+    if (debug_level & 512) {
             fprintf(stderr,"map_cache_return: <%d> bytes returned: %d\n",
                 map_cache_return,
                 (int) strlen(local_filename));
-	}
+    }
    
     if (map_cache_return != 0 ) {
 
+set_dangerous("map_tiger: map_cache_fileid");
         xastir_snprintf(local_filename,
             MAX_FILENAME,           // hardcoded to avoid sizeof()
             "%s/map_%s.%s",
             get_user_base_dir("map_cache"),
             map_cache_fileid(),
             "gif");
+clear_dangerous();
 
 #else
 
@@ -291,7 +296,9 @@ void get_tiger_local_file(char * local_filename, char * fileimg){
     
 #ifdef USE_MAP_CACHE
 
+set_dangerous("map_tiger: map_cache_put");
 	map_cache_put(fileimg,local_filename); 
+clear_dangerous();
 
         } // end if is cached  DHBROWN
 #endif // MAP_CACHE
