@@ -726,6 +726,9 @@ void draw_shapefile_map (Widget w,
     //static int layer;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
+
+
+    int draw_filled_orig;
 #endif
     static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
     static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
@@ -750,6 +753,7 @@ void draw_shapefile_map (Widget w,
     int nhits;
 #endif // USE_RTREE
 
+
     // Initialize the hash table label pointers
     for (i = 0; i < 256; i++) {
         label_hash[i] = NULL;
@@ -757,6 +761,10 @@ void draw_shapefile_map (Widget w,
 
 
 #ifdef WITH_DBFAWK
+    // We're going to change draw_filled a bunch if we've got Auto turned
+    // on, but we have to check --- save this!
+    draw_filled_orig=draw_filled;
+
     // Re-initialize these static variables every time through here.
     // Otherwise, if a dbfawk file forgets to set one, we'd use what the
     // last map used.  Sometimes that's ugly.
@@ -1870,7 +1878,10 @@ void draw_shapefile_map (Widget w,
                 // 1: Global Fill.  Fill all polygons.
                 // 2: Auto.  dbfawk file, if present, takes over control.
                 //
-                switch (draw_filled) {
+                if (debug_level & 16) {
+                    fprintf(stderr," draw_filled is %d\n",draw_filled_orig);
+                }
+                switch (draw_filled_orig) {
 
                     case 0: // Global No-Fill (Vector)
                         // Do nothing, user has chosen Global
