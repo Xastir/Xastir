@@ -14821,7 +14821,7 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     char destination[MAX_CALLSIGN+1];
 #define MAX_RELAY_SUBSTRINGS 10
     char *Substring[MAX_RELAY_SUBSTRINGS];  // Pointers to substrings parsed by split_string()
-    char temp_string[MAX_MESSAGE_LENGTH+1];
+    char temp_string[MAX_LINE_SIZE+1];
 
     // These strings are debugging tools
     char small_string[200];
