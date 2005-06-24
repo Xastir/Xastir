@@ -59,6 +59,8 @@
 
 
 
+
+
 int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
 // Puts an entry into the url->filename database
@@ -170,13 +172,15 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
                             (mc_space_used/1024/1024.0));
         }
 
-    } else {
+    }
+    else {
 
         if (mc_data.data == NULL) {
             if ( debug_level & 512 ) {
                 printf ("map_cache_put: CACHE_SPACE_USED get returned null \n"); 
             }
-        } else { 
+        }
+        else { 
             if ( debug_level & 512 ) {
                 printf ("map_cache_put: Unable to check CACHE_SPACE_USED: %s\n",
                             db_strerror(mc_ret)); 
@@ -215,7 +219,8 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 // The warning is nice, but we should do something here
 // Needs LRU and or FIFO db structures
 
-    } else {
+    }
+    else {
 
 // else put cache_space_used
 
@@ -247,7 +252,8 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
                 fprintf(stderr, "map_cache_put: %s: key stored.\n", (char *)mc_key.data);
             }
 
-        } else {
+        }
+        else {
 
             if ( debug_level & 512 ) {
                  dbp->err(dbp, mc_ret, "DB->put");
@@ -278,7 +284,8 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
         if ( debug_level & 512 ) {
             fprintf(stderr, "map_cache_put: %s: key stored.\n", (char *)mc_key.data);
         }
-    } else {
+    }
+    else {
         if ( debug_level & 512 ) {
             dbp->err(dbp, mc_ret, "DB->put") ;
         }
@@ -314,34 +321,42 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
     struct stat file_status;
 
 
+set_dangerous("map_cache_get: xastir_snprintf 1");
     xastir_snprintf(mc_database_filename,
         sizeof(mc_database_filename),   // change to max_filename?
         "%s/map_cache.db",
         get_user_base_dir("map_cache"));
-    
+clear_dangerous();
+ 
+set_dangerous("map_cache_get: db_create");
     if ((mc_ret = db_create(&dbp, NULL, 0)) != 0) {
         fprintf(stderr, "map_cache_get db_create:%s\n", db_strerror(mc_ret)); 
         return(1);
     }
+clear_dangerous();
 
 #if  (DB_VERSION_MAJOR<4)   /** DB_VERSION Check **/
 #error DB_VERSION_MAJOR < 4 
 
 #elif (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR<=0 )
 
+set_dangerous("map_cache_get:dbp->open 1");
     if ((mc_ret = dbp->open(dbp,
         mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
         ( debug_level & 512 ) ?  dbp->err(dbp, mc_ret, "%s", mc_database_filename):0;
         // db_strerror(mc_ret);
     }
+clear_dangerous();
 
 #elif	 (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR>=1 )
-	
+
+set_dangerous("map_cache_get:dbp->open 2");
     if ((mc_ret = dbp->open(dbp,
         NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
         ( debug_level & 512 ) ? dbp->err(dbp, mc_ret, "%s", mc_database_filename) : 0 ;
         // db_strerror(mc_ret);
     }
+clear_dangerous();
 
 #endif  /** DB_VERSION Check **/
 
@@ -356,19 +371,22 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
         fprintf(stderr, "map_cache_get: Checking Map Cache\n");
     }
 
-	
+
+set_dangerous("map_cache_get:dbp->get");
     if ((mc_ret = dbp->get(dbp, NULL, &mc_key, &mc_data, 0)) == 0) {
         if ( debug_level & 512 ) {
              fprintf(stderr, "map_cache_get: %s: key retrieved: data was %s.\n",
                             (char *)mc_key.data, (char *)mc_data.data);
         }
+set_dangerous("map_cache_get: xastir_snprintf 2");
         xastir_snprintf(map_cache_file, MAX_FILENAME, "%s",(char *)mc_data.data);
+clear_dangerous();
 
     // check for reasonable filename
     // expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
     //                                   1234567890123456789012345678901234567
 
-	mc_ret=strlen(map_cache_file);
+    	mc_ret=strlen(map_cache_file);
 	
         if ( mc_ret < 37 ) { 
  
@@ -377,7 +395,9 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
                     "map_cache_get: Unusable filename: %s. Deleting key %s from cache\n",
                     map_cache_file,map_cache_url);
             }
+set_dangerous("map_cache_get: map_cache_del 1");
             map_cache_del(map_cache_url);
+clear_dangerous();
   
             return (-1 * mc_ret); 
         } 
@@ -388,15 +408,19 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
         if (debug_level & 512 ) {
             fprintf(stderr, "map_cache_get: Checking age\n");
         }
-   
+
+set_dangerous("map_cache_get: map_cache_expired");   
         if ( (mc_ret=map_cache_expired(map_cache_file, (MC_MAX_FILE_AGE)))){
             if ( debug_level & 512 ) {
                 fprintf(stderr, "map_cache_get: deleting expired key: %s.\n",
                                (char *)mc_key.data); 
             }
+set_dangerous("map_cache_get: map_cache_del 2");
             map_cache_del(map_cache_url);
+clear_dangerous();
             return (mc_ret);
         } 
+clear_dangerous();
 
     // check if the file exists 
         if ( debug_level & 512 ) {
@@ -418,6 +442,8 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
                 fprintf(stderr,"map_cache_get: attempting delete map_cache_file %s \n",
                                 map_cache_file);
             }
+
+set_dangerous("map_cache_get: dbp->del");
             if ((mc_ret = dbp->del(dbp, NULL, &mc_key, 0)) == 0) {
                 if ( debug_level & 512 ) {
                     fprintf(stderr, "map_cache_get: File stat failed %s: key was deleted.\n",
@@ -429,26 +455,35 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
                     dbp->err(dbp, mc_ret, "DB->del");
                 }
                 // db_strerror(mc_ret);
-            }		
+            }
+clear_dangerous();
+
+set_dangerous("map_cache_get: dbp->close 1");
             if ((mc_t_ret = dbp->close(dbp, 0)) != 0 && mc_ret == 0){
                 mc_ret = mc_t_ret;
                // db_strerror(mc_ret);
             }
+clear_dangerous();
   
             // db_strerror(mc_ret);
             // Return the file stat if there was a file problem
             return (mc_file_stat);
-        } else {
+        }
+        else {
+
+set_dangerous("map_cache_get: dbp->close 2");
             if ((mc_t_ret = dbp->close(dbp, 0)) != 0 && mc_ret == 0){
                 mc_ret = mc_t_ret;
                 // db_strerror(mc_ret);
             }
+clear_dangerous();
             // If we made it here all is good
             statusline("Loading Cached Map",1);
             return (0); 
         }
 		
-    } else {
+    }
+    else {
         if ( debug_level & 512 ) {
             fprintf(stderr, "map_cache_get: Get failed. Key was: %s.\n",
                 (char *)mc_key.data);
@@ -463,6 +498,9 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
         statusline("Map not found in cache...",1);        
         return (mc_ret); 
     }
+
+clear_dangerous();
+
 /** end map_cache_get **/  
 }
 
@@ -575,13 +613,15 @@ int map_cache_del( char * map_cache_url ){
                     fprintf (stderr, "map_cache_del: CACHE_SPACE_USED = %.2f mb\n",
                                 (mc_space_used/1024/1024.0));
                 }
-            } else {
+            }
+            else {
 
                 if (mc_size_data.data == NULL) {
                     if ( debug_level & 512 ) {
                         fprintf (stderr, "map_cache_del: CACHE_SPACE_USED get returned null \n"); 
                     }
-                } else { 
+                }
+                else { 
                     if ( debug_level & 512 ) {
                         fprintf (stderr, "map_cache_del: Unable to check CACHE_SPACE_USED: %s\n",
                             db_strerror(mc_ret)); 
@@ -643,7 +683,8 @@ int map_cache_del( char * map_cache_url ){
                         printf("map_cache_del: %s: key stored.\n",
                                     (char *)mc_size_key.data);
                     }
-                } else {
+                }
+                else {
                     if ( debug_level & 512 ) {
                         dbp->err(dbp, mc_ret, "DB->put");
                     }
@@ -651,7 +692,8 @@ int map_cache_del( char * map_cache_url ){
                     // db_strerror(mc_ret); 
                 } 
 
-    } else  {
+    }
+    else  {
 
         if ( debug_level & 512 ) { 
             fprintf (stderr, "map_cache_del: unlink failed mc_space_used = %d bytes \n",
@@ -660,7 +702,8 @@ int map_cache_del( char * map_cache_url ){
         return(mc_ret) ; 
     }
 
-        } else {
+        }
+        else {
 
             // file stat was not good - do something
 
@@ -691,7 +734,8 @@ int map_cache_del( char * map_cache_url ){
 
     return (0); 
 		
-    } else {
+    }
+    else {
         if ( debug_level & 512 ) {
             dbp->err(dbp, mc_ret, "DB->del");
         }
@@ -767,7 +811,8 @@ int map_cache_expired( char * mc_filename, time_t mc_max_age ){
         }
         free(mc_time_buf); 
         return (0); 
-    } else {
+    }
+    else {
         if ( debug_level & 512 ) {
             fprintf(stderr, "map_cache_expired: mc_filename %s IS expired. mc_time_buf is: %s.\n",
                             mc_filename,
@@ -785,6 +830,8 @@ int map_cache_expired( char * mc_filename, time_t mc_max_age ){
 
 
 
+
+
 // Functions that need writing 
 
 int mc_check_space_used () {
@@ -792,6 +839,10 @@ int mc_check_space_used () {
    return(0); 
 
 }
+
+
+
+
 
 int mc_update_space_used () {
     
@@ -801,3 +852,5 @@ int mc_update_space_used () {
 
 
 #endif // USE_MAP_CACHE
+
+
