@@ -3478,17 +3478,24 @@ int valid_path(char *path) {
     if (allast < 1) {                   // try to insert a missing asterisk
         ins  = 0;
         hops = 0;
+
         for (i=0; i<len; i++) {
+
             for (j=i; j<len; j++) {             // search for separator
                 if (path[j] == ',')
                     break;
             }
+
             if (hops > 0 && (j - i) == 5) {     // WIDE3
                 if (  path[ i ] == 'W' && path[i+1] == 'I' && path[i+2] == 'D' 
                    && path[i+3] == 'E' && path[i+4] >= '0' && path[i+4] <= '9') {
                     ins = j;
                 }
             }
+
+/*
+Don't do this!  It can mess up relay/wide1-1 digipeating by adding
+an asterisk later in the path than the first unused digi.
             if (hops > 0 && (j - i) == 7) {     // WIDE3-2
                 if (  path[ i ] == 'W' && path[i+1] == 'I' && path[i+2] == 'D' 
                    && path[i+3] == 'E' && path[i+4] >= '0' && path[i+4] <= '9'
@@ -3497,6 +3504,8 @@ int valid_path(char *path) {
                     ins = j;
                 }
             }
+*/
+
             if (hops > 0 && (j - i) == 6) {     // TRACE3
                 if (  path[ i ] == 'T' && path[i+1] == 'R' && path[i+2] == 'A' 
                    && path[i+3] == 'C' && path[i+4] == 'E'
@@ -3507,6 +3516,10 @@ int valid_path(char *path) {
                         ins = i-1;
                 }
             }
+
+/*
+Don't do this!  It can mess up relay/wide1-1 digipeating by adding
+an asterisk later in the path than the first unused digi.
             if (hops > 0 && (j - i) == 8) {     // TRACE3-2
                 if (  path[ i ] == 'T' && path[i+1] == 'R' && path[i+2] == 'A' 
                    && path[i+3] == 'C' && path[i+4] == 'E' && path[i+5] >= '0'
@@ -3518,6 +3531,8 @@ int valid_path(char *path) {
                         ins = i-1;
                 }
             }
+*/
+
             hops++;
             i = j;                      // skip to start of next call
         }
