@@ -5332,7 +5332,6 @@ void index_restore_from_file(void) {
                                             // line.
                 char scanf_format[50];
                 char old_scanf_format[50];
-                char very_old_scanf_format[50];
                 int processed;
                 int i, jj;
 
@@ -5350,21 +5349,10 @@ void index_restore_from_file(void) {
                     "c");
                 //fprintf(stderr,"%s\n",scanf_format);
 
-                // this one is for map_index.sys prior to implementation
-                // of auto_fill for shapefiles.
                 xastir_snprintf(old_scanf_format,
                     sizeof(old_scanf_format),
                     "%s%d%s",
-                    "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%",
-                    MAX_FILENAME,
-                    "c");
-
-                // this one is for extremely old indices --- the ones
-                // before min/max zoom existed.
-                xastir_snprintf(very_old_scanf_format,
-                    sizeof(very_old_scanf_format),
-                    "%s%d%s",
-                    "%lu,%lu,%lu,%lu,%d,%d,%",
+                    "%lu,%lu,%lu,%lu,%d,%d,%d,%",
                     MAX_FILENAME,
                     "c");
  
@@ -5400,42 +5388,25 @@ void index_restore_from_file(void) {
                     temp_record->filename);
 
                 if (processed < 10) {
-                    // We're upgrading from really old format index file
-                    // that either has no min/max zoom and no draw_filled  
-                    // or a slightly old one that has no draw_filled.  Try the
+                    // We're upgrading from an old format index file
+                    // that doesn't have min/max zoom.  Try the
                     // old_scanf_format string instead.
 
                     doing_migration = 1;
 
-                    // see if it's one that has min/max, no draw_filled
+                    temp_record->max_zoom = -1;     // Too low
+                    temp_record->min_zoom = -1;     // Too low
+ 
                     processed = sscanf(in_string,
-                                       old_scanf_format,
-                                       &temp_record->bottom,
-                                       &temp_record->top,
-                                       &temp_record->left,
-                                       &temp_record->right,
-                                       &temp_record->map_layer,
-                                       &temp_record->auto_maps,
-                                       &temp_record->max_zoom,
-                                       &temp_record->min_zoom,
-                                       temp_record->filename);
-                    temp_record->draw_filled = -1; // invalid
-
-                    if (processed < 8) {
-                        // no, it's older still
-                        processed = sscanf(in_string,
-                                           very_old_scanf_format,
-                                           &temp_record->bottom,
-                                           &temp_record->top,
-                                           &temp_record->left,
-                                           &temp_record->right,
-                                           &temp_record->map_layer,
-                                           &temp_record->auto_maps,
-                                           temp_record->filename);
-                        temp_record->max_zoom = -1;     // Too low
-                        temp_record->min_zoom = -1;     // Too low
-                    }
-
+                        old_scanf_format,
+                        &temp_record->bottom,
+                        &temp_record->top,
+                        &temp_record->left,
+                        &temp_record->right,
+                        &temp_record->map_layer,
+                        &temp_record->draw_filled,
+                        &temp_record->auto_maps,
+                        temp_record->filename);
                 }
 
                 temp_record->XmStringPtr = NULL;
@@ -5519,15 +5490,10 @@ void index_restore_from_file(void) {
 
                 if ( (temp_record->draw_filled < 0)
                         || (temp_record->draw_filled > 2) ) {
-                    // Assign a reasonable value:
-                    if (       strstr(temp_record->filename,".shp")
-                               || strstr(temp_record->filename,".SHP")
-                               || strstr(temp_record->filename,".Shp") ) {
-                        temp_record->draw_filled = 2; // Auto
-                    }
-                    else {
-                        temp_record->draw_filled = 0; // No-Fill
-                    }
+                    processed = 0;  // Reject this record
+                    fprintf(stderr,"\nindex_restore_from_file: draw_filled field incorrect %d in map name:\n%s\n",
+                            temp_record->draw_filled,
+                            temp_record->filename);
                 }
 
                 if ( (temp_record->auto_maps < 0)
@@ -5575,7 +5541,7 @@ void index_restore_from_file(void) {
 
                 // If correct number of parameters for either old or
                 // new format
-                if (processed == 10 || processed==9 || processed == 8) {
+                if (processed == 10 || processed == 8) {
 
                     //fprintf(stderr,"Restored: %s\n",temp_record->filename);
  
