@@ -2723,6 +2723,9 @@ void draw_ogr_map( Widget w,
 // alerts in this code natively.
 //
 if (alert) {
+
+#ifdef HAVE_LIBSHP
+
     // We have a weather alert, call the original function instead.
     draw_shapefile_map(w,
         dir,
@@ -2731,6 +2734,9 @@ if (alert) {
         alert_color,
         destination_pixmap,
         draw_filled);
+
+#endif  // HAVE_LIBSHP
+
     return;
 }
 /******************************************************************/
