@@ -84,6 +84,7 @@ The Questions
     4.23 How do I get through an http proxy server with Xastir in
          order to fetch maps?
     4.24 Can I run multiple copies of Xastir at once?
+    4.25 Why doesn't Terraserver work for some locations?
 
 
 5.  Features
@@ -835,6 +836,13 @@ The Answers
     Many Xastir sessions can all get their feed from one Xastir
     session, or they can be connected to different TNC's or server
     ports.
+
+    4.25 Why doesn't Terraserver work for some locations?
+
+    Terraserver is based on the UTM coordinate system.  If you're trying
+    to request map images that cross a UTM zone boundary, Terraserver
+    may not work at that location.  Zoom in closer or pan left/right
+    in order to avoid this problem.
 
 
 5.  Features
