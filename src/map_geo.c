@@ -619,8 +619,8 @@ void draw_geo_image_map (Widget w,
     XImage *xi;                 // Temp XImage used for reading in current image
 #endif // HAVE_IMAGEMAGICK
 
-    int terraserver_flag = 0;   // U.S. satellite images via terraserver
-    int toposerver_flag = 0;    // U.S. topo's via terraserver
+    int terraserver_flag = 0;   // U.S. satellite images/topo/reflectivity/urban
+                                // areas via terraserver
     int tigerserver_flag = 0;   // U.S. Street maps via census.gov
     int toporama_flag = 0;      // Canadian topo's from mm.aprs.net (originally from Toporama)
     int WMSserver_flag = 0;     // WMS server
@@ -731,7 +731,23 @@ void draw_geo_image_map (Widget w,
                     fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
                 }
 
-            if (strncasecmp (line, "TERRASERVER", 11) == 0)
+            if (strncasecmp (line, "TERRASERVER-URBAN", 17) == 0)
+                terraserver_flag = 4;
+
+            if (strncasecmp (line, "TERRASERVER-REFLECTIVITY", 24) == 0)
+                terraserver_flag = 3;
+
+            if (strncasecmp (line, "TERRASERVER-TOPO", 16) == 0) {
+                // Set to max brightness as it looks weird when the
+                // intensity variable comes into play.
+#ifdef HAVE_IMAGEMAGICK
+// This one causes problems now.  Not sure why.
+//                xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
+#endif  // HAVE_IMAGEMAGICK
+                terraserver_flag = 2;
+            }
+
+            if (strncasecmp (line, "TERRASERVER-SATELLITE", 21) == 0)
                 terraserver_flag = 1;
 
             if (strncasecmp (line, "TIGERMAP", 8) == 0)
@@ -739,16 +755,6 @@ void draw_geo_image_map (Widget w,
 
             if (strncasecmp (line, "WMSSERVER", 9) == 0)
                 WMSserver_flag = 1;
-
-            if (strncasecmp (line, "TOPOSERVER", 10) == 0) {
-                // Set to max brightness as it looks weird when the
-                // intensity variable comes into play.
-#ifdef HAVE_IMAGEMAGICK
-// This one causes problems now.  Not sure why.
-//                xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
-#endif  // HAVE_IMAGEMAGICK
-                toposerver_flag = 1;
-            }
 
             // Check for Canadian topo map request
             if (strncasecmp (line, "TOPORAMA-50k", 12) == 0) {
@@ -947,54 +953,136 @@ void draw_geo_image_map (Widget w,
         map_proj = 0;           // Lat/Lon, default
 
 #ifdef HAVE_IMAGEMAGICK
-    if (terraserver_flag || toposerver_flag) {
+    if (terraserver_flag) {
 //http://terraservice.net/download.ashx?t=1&s=10&x=2742&y=26372&z=10&w=820&h=480
         if (scale_y <= 4) {
-                t_zoom  = 10; // 1m
+                t_zoom  = 10; // 1m/pixel
                 t_scale = 200;
         }
         else if (scale_y <= 8) {
-             t_zoom  = 11; // 2m
+             t_zoom  = 11; // 2m/pixel
              t_scale = 400;
         }
         else if (scale_y <= 16) {
-            t_zoom  = 12; // 4m
+            t_zoom  = 12; // 4m/pixel
             t_scale = 800;
         }
         else if (scale_y <= 32) {
-            t_zoom  = 13; // 8m
+            t_zoom  = 13; // 8m/pixel
             t_scale = 1600;
         }
         else if (scale_y <= 64) {
-            t_zoom  = 14; // 16m
+            t_zoom  = 14; // 16m/pixel
             t_scale = 3200;
         }
         else if (scale_y <= 128) {
-            t_zoom  = 15; // 32m
+            t_zoom  = 15; // 32m/pixel
             t_scale = 6400;
         }
         else {
-            t_zoom  = 16; // 64m
+            t_zoom  = 16; // 64m/pixel
             t_scale = 12800;
         }
 
         top  = -((y_lat_offset - 32400000l) / 360000.0);
         left =  (x_long_offset - 64800000l) / 360000.0;
-        ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid, top, left, &top_n, &left_e, zstr, sizeof(zstr) );
+        ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid,
+            top,
+            left,
+            &top_n,
+            &left_e,
+            zstr,
+            sizeof(zstr) );
         if (1 != sscanf(zstr, "%d", &z)) {
             fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
         }
 
         bottom = -(((y_lat_offset + (screen_height * scale_y)) - 32400000l) / 360000.0);
         right  =   ((x_long_offset + (screen_width * scale_x)) - 64800000l) / 360000.0;
-        ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid, bottom, right, &bottom_n, &right_e, zstr, sizeof(zstr) );
+        ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid,
+            bottom,
+            right,
+            &bottom_n,
+            &right_e,
+            zstr,
+            sizeof(zstr) );
 
         map_top_n  = (int)((top_n  / t_scale) + 1) * t_scale;
         map_left_e = (int)((left_e / t_scale) + 0) * t_scale;
-        utm_ups_to_ll(gDatum[D_NAD_83_CONUS].ellipsoid, map_top_n, map_left_e, zstr, &top, &left);
+        utm_ups_to_ll(gDatum[D_NAD_83_CONUS].ellipsoid,
+            map_top_n,
+            map_left_e,
+            zstr,
+            &top,
+            &left);
 
-        geo_image_height = (map_top_n - bottom_n) * 200 / t_scale;
-        geo_image_width  = (right_e - map_left_e) * 200 / t_scale;
+
+
+// Below here things can get messed up.  We can end up with very
+// large and/or negative values for geo_image_width and/or
+// geo_image_height.  Usually happens around UTM zone boundaries.
+//
+// Terraserver uses UTM coordinates for specifying the maps instead
+// of lat/long.  Note that we're also not supposed to cross UTM
+// zones in our requests.
+//
+// t = 1 - 4, theme.  1=DOQ (aerial photo)
+//                    2=DRG (topo)
+//                    3=shaded relief
+//                    4=Color photos/Urban areas
+// s = 10 - 16, scale.  10=1 meter/pixel.  11=2 meters/pixel.
+// x = UTM easting, center of image
+// y = UTM northing, center of image
+// z = 1 - 60, UTM zone, center of image
+// w = 50 - 2000, width in pixels
+// h = 50 - 2000, height in pixels
+// logo = 0/1, USGS logo in image if 1
+//
+
+        // This number gets messed up if we cross zones.  UTM lines
+        // are slanted, so we _can_ cross zones vertically!
+        geo_image_height = abs(map_top_n - bottom_n) * 200 / t_scale;
+
+        // This number gets messed up if we cross zones
+        geo_image_width  = abs(right_e - map_left_e) * 200 / t_scale;
+
+ 
+//fprintf(stderr,"\ngeo_image_height:%d\tmap_top_n:%0.1f\tbottom_n:%0.1f\tt_scale:%d\n",
+//geo_image_height,
+//map_top_n,
+//bottom_n,
+//t_scale);
+// map_top_n is the one that goes whacko, throwing off the height.
+// Check whether this is because we're crossing a UTM zone.  We
+// _can_ cross zones vertically because the UTM lines are slanted.
+
+//fprintf(stderr,"geo_image_width:%d\tright_e:%0.1f\tmap_left_e:%0.1f\tt_scale:%d\n",
+//geo_image_width,
+//right_e,
+//map_left_e,
+//t_scale);
+// right_e is the one that goes whacko, throwing off the width.
+// Check whether this is because we're crossing a UTM zone.
+
+
+        if (geo_image_height < 50)
+            geo_image_height = 50;
+
+        if (geo_image_width < 50)
+            geo_image_width = 50;
+
+        if (geo_image_height > 2000)
+            geo_image_height = geo_image_width;
+ 
+        if (geo_image_width > 2000)
+            geo_image_width = geo_image_height;
+
+        if (geo_image_height > 2000)
+            geo_image_height = geo_image_width;
+         if (geo_image_width > 2000)
+            geo_image_width = geo_image_height;
+
+
         map_width  = right - left;
         map_height = top - bottom;
 
@@ -1008,21 +1096,27 @@ void draw_geo_image_map (Widget w,
         tp[1].x_long = 64800000l + (360000.0 * right);
         tp[1].y_lat  = 32400000l + (360000.0 * (-bottom));
 
+
         url_n = (int)(top_n  / t_scale); // The request URL does not use the
         url_e = (int)(left_e / t_scale); // N/E of the map corner
+
 
         xastir_snprintf(fileimg, sizeof(fileimg),
             "http://terraservice.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
 //            "http://terraserver-usa.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
-            (toposerver_flag) ? 2 : 1,
+            terraserver_flag,   // 1, 2, 3, or 4
             t_zoom,
-            url_e,
-            url_n,
+            url_e,  // easting, center of map
+            url_n,  // northing, center of map
             z,
             geo_image_width,
             geo_image_height);
 //http://terraservice.net/download.ashx?t=1&s=11&x=1384&y=13274&z=10&w=1215&h=560
 //fprintf(stderr,"%s\n",fileimg);
+
+        if (debug_level & 16) {
+            fprintf(stderr,"URL: %s\n", fileimg);
+        }
     }
 #endif // HAVE_IMAGEMAGICK
 
@@ -1182,7 +1276,7 @@ fprintf(stderr,"1 ");
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         // We're indexing only.  Save the extents in the index.
-        if (terraserver_flag || toposerver_flag) {
+        if (terraserver_flag) {
             // Force the extents to the edges of the earth for the
             // index file.
             index_update_xastir(filenm, // Filename only
@@ -1272,15 +1366,14 @@ fprintf(stderr,"1 ");
     // Check to see if we have to use "wget" to go get an internet map
     if ( (strncasecmp ("http", fileimg, 4) == 0)
             || (strncasecmp ("ftp", fileimg, 3) == 0)
-            || (terraserver_flag)
-            || (toposerver_flag) ) {
+            || (terraserver_flag) ) {
 #ifdef HAVE_IMAGEMAGICK
         char *ext;
 
         if (debug_level & 16)
             fprintf(stderr,"ftp or http file: %s\n", fileimg);
 
-        if (terraserver_flag || toposerver_flag)
+        if (terraserver_flag)
             ext = "jpg";
         else
             ext = get_map_ext(fileimg); // Use extension to determine image type
