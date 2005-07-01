@@ -1101,20 +1101,22 @@ place in the world. A tigermap.geo is automatically installed in the maps
 directory.
 
 TERRASERVER
-A file with just the word "TERRASERVER" will cause Xastir to retrieve a
-Terraserver satellite photo of the area on screen. Those services are not
-available for every place in the world. Note that using the Terraserver
-maps at any zoom above 256 will probably take a long time to load, won't
-show much detail, and probably won't display correctly. This is a limit
-of Microsoft's Terraserver, not Xastir.
+A file with just the word "TERRASERVER-SATELLITE" will cause Xastir to
+retrieve a Terraserver satellite photo of the area on screen. Those
+services are not available for every place in the world. Note that using
+the Terraserver maps at any zoom above 256 will probably take a long time
+to load, won't show much detail, and probably won't display correctly. This
+is a limit of Microsoft's Terraserver, not Xastir.  Also note that
+crossing UTM zone boundaries is not supported by Terraserver.
 
-TOPOSERVER
-A file with just the word "TOPOSERVER" will cause Xastir to retrieve a
+TERRASERVER-TOPO
+A file with just the word "TERRASERVER-TOPO" will cause Xastir to retrieve a
 topographic map of the area on screen. Those services are not available for
 every place in the world. Note that using the maps at any zoom above 256
 will probably take a long time to load, won't show much detail, and
 probably won't display correctly. This is a limit of Microsoft's
-Terraserver, not Xastir.
+Terraserver, not Xastir.  Also note that crossing UTM zone boundaries is not
+supported by Terraserver.
 
 
 

@@ -901,14 +901,18 @@ MAGICK_HOME=/usr" at the top of the bat file.
 
 HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
 in the /usr/local/share/xastir/maps directory, containing the single line
-"TERRASERVER", and select it with the Map Chooser, you should see
-satellite images on the map screen.  This is assuming that you have
+"TERRASERVER-SATELLITE", and select it with the Map Chooser, you should
+see satellite images on the map screen.  This is assuming that you have
 an Internet connection up and running of course.  It fetches the
 images from the Microsoft Terraserver.
 
-Also create a "toposerver.geo" file in the same area somewhere.
-Inside that file put the keyword "TOPOSERVER".  Selecting this map
-will fetch topo maps from the Microsoft Terraserver.
+Also create a "terraserver-topo.geo" file in the same area somewhere.
+Inside that file put the keyword "TERRASERVER-TOPO".  Selecting this map
+will fetch topo maps from the Microsoft Terraserver.  More interesting
+keywords that can be used in other files are "TERRASERVER-REFLECTIVITY"
+and "TERRASERVER-URBAN".  There should be files for all four Terraserver
+options installed in your /usr/local/share/xastir/maps/Online directory
+once you install Xastir.
 
 This means if you're online, you can have access to street maps
 (Tigermap server), satellite images (Terraserver), and topo maps

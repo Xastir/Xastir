@@ -85,6 +85,7 @@ The Questions
          order to fetch maps?
     4.24 Can I run multiple copies of Xastir at once?
     4.25 Why doesn't Terraserver work for some locations?
+    4.26 Some station or config settings are not getting saved, why?
 
 
 5.  Features
@@ -843,6 +844,13 @@ The Answers
     to request map images that cross a UTM zone boundary, Terraserver
     may not work at that location.  Zoom in closer or pan left/right
     in order to avoid this problem.
+
+    4.26 Some station or config settings are not getting saved, why?
+
+    A few of the menu settings do not get saved.  This is on purpose.
+    If you are having more serious troubles, like for instance your
+    station location setting isn't getting saved between Xastir runs,
+    check your LANG setting (see question 4.13 above).
 
 
 5.  Features

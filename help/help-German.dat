@@ -1000,10 +1000,10 @@ o Eine Datei, die nur das Wort "TIGERMAP" enthält, veranlaßt Xastir,
   Tiger Karten im passenden Ausschnitt aus dem Internet zu laden und auf
   dem Bildschirm darzustellen.
 
-o Eine Datei, die nur das Wort "TERRASERVER" enthält, veranlaßt Xastir,
-  Terraserver Satellitenfotos des gewählten Ausschnitts darzustellen.
-  Dies funktioniert allerdings nicht in allen Gegenden der Welt.
-  Beachten Sie, daß bei einem Zoom-Faktor größer als 256 Terraserver
+o Eine Datei, die nur das Wort "TERRASERVER-SATELLITE" enthält, veranlaßt
+  Xastir, Terraserver Satellitenfotos des gewählten Ausschnitts
+  darzustellen.  Dies funktioniert allerdings nicht in allen Gegenden der
+  Welt.  Beachten Sie, daß bei einem Zoom-Faktor größer als 256 Terraserver
   Karten zum Laden vermutlich sehr lange brauchen und möglicherweise auch
   nicht korrekt dargestellt werden. Dies ist eine Limitierung von
   Terraserver, nicht von Xastir.
