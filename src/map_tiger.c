@@ -128,7 +128,11 @@ extern int npoints;		/* tsk tsk tsk -- globals */
 extern int mag;
 
 
+
+
+
 void get_tiger_local_file(char * local_filename, char * fileimg){
+#ifdef HAVE_IMAGEMAGICK
 
 //  char local_filename[MAX_FILENAME];
 
@@ -311,7 +315,11 @@ clear_dangerous();
     // Set permissions on the file so that any user can overwrite it.
     chmod(local_filename, 0666);
 
+#endif  //HAVE_IMAGEMAGICK
+
 } // end get_tiger_local_file
+
+
 
 
 
