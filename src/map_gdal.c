@@ -3399,7 +3399,7 @@ clear_dangerous();
         // We perform the modulus function on it with the size of
         // our hash to derive the hash key.
         //
-        static unsigned int landmark_hash_from_key(void *key) {
+        unsigned int landmark_hash_from_key(void *key) {
             landmarkinfo *temp = key;
 
             return(temp->LAND % LAND_HASH_SIZE);
@@ -3409,7 +3409,7 @@ clear_dangerous();
         // Test equality of hash keys.  In this case LAND is the key
         // we care about.
         //
-        static int landmark_keys_equal(void *key1, void *key2) {
+        int landmark_keys_equal(void *key1, void *key2) {
             landmarkinfo *temp1 = key1;
             landmarkinfo *temp2 = key2;
 
@@ -3424,7 +3424,7 @@ clear_dangerous();
         // CENID.  We perform the modulus function on it with the
         // size of our hash to derive the hash key.
         //
-        static unsigned int polyid_hash_from_key(void *key) {
+        unsigned int polyid_hash_from_key(void *key) {
             polyinfo *temp = key;
 
             return(temp->POLYID % POLYID_HASH_SIZE);
@@ -3434,7 +3434,7 @@ clear_dangerous();
         // Test equality of hash keys.  In this case POLYID (and
         // CENID?) are the keys we care about.
         //
-        static int polyid_keys_equal(void *key1, void *key2) {
+        int polyid_keys_equal(void *key1, void *key2) {
             polyinfo *temp1 = key1;
             polyinfo *temp2 = key2;
 
@@ -3449,7 +3449,7 @@ clear_dangerous();
         // perform the modulus function on it with the size of our
         // hash to derive the hash key.
         //
-        static unsigned int tlid_hash_from_key(void *key) {
+        unsigned int tlid_hash_from_key(void *key) {
             tlidinfo *temp = key;
 
             return(temp->TLID % TLID_HASH_SIZE);
@@ -3459,7 +3459,7 @@ clear_dangerous();
         // Test equality of hash keys.  In this case TLID is the
         // absolute key that we care about.
         //
-        static int tlid_keys_equal(void *key1, void *key2) {
+        int tlid_keys_equal(void *key1, void *key2) {
             tlidinfo *temp1 = key1;
             tlidinfo *temp2 = key2;
 
