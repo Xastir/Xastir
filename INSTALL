@@ -199,6 +199,7 @@ features, you can add any of the following flags to configure:
     --without-gdal
     --without-pcre
     --without-dbfawk
+    --without-map-cache
     --with-errorpopups
     --with-rtree
 

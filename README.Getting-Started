@@ -229,14 +229,17 @@ are:
     --without-ax25
     --without-festival
     --without-gpsman
+    --without-shapelib
     --without-imagemagick
     --without-libproj
     --without-geotiff
     --without-gdal
-    --without-shapelib
     --without-pcre
     --without-dbfawk
+    --without-map-cache
     --with-errorpopups
+    --with-rtree
+
 
 That said, you probably won't have to use any of these!  Type
 "./configure" all by itself and the script should eventually give

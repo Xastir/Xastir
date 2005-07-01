@@ -358,7 +358,11 @@ fi
 
 
 # Check for Berkeley DB.
-XASTIR_BERKELEY_DB_CHK
+use_map_cache=yes
+AC_ARG_WITH(map_cache,[  --without-map-cache       Disable Map Caching.],use_map_cache=$withval)
+if test "${use_map_cache}" = "yes"; then
+  XASTIR_BERKELEY_DB_CHK
+fi
 
 
 
