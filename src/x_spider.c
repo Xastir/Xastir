@@ -167,9 +167,11 @@
 #endif  // SIGRET
 
 
-// This is from util.h/util.c.  We can't include util.h here because
-// it causes other problems.
+// These are from util.h/util.c.  We can't include util.h here
+// because it causes other problems.
 extern short checkHash(char *theCall, short theHash);
+extern void get_timestamp(char *timestring);
+
 
 
 typedef struct _pipe_object {
@@ -472,17 +474,22 @@ int pipe_check(char *client_address) {
         //
         n = readline(p->to_parent[0], line, MAXLINE);
         if (n == 0) {
+            char timestring[101];
             pipe_object *q = pipe_head;
+
+            get_timestamp(timestring);
 
             if (p->authenticated) { 
                 fprintf(stderr,
-                    "X_spider session terminated, callsign: %s, address: %s\n",
+                    "%s X_spider session terminated, callsign: %s, address: %s\n",
+                    timestring,
                     p->callsign,
                     client_address);
             }
             else {
                 fprintf(stderr,
-                    "X_spider session terminated, unauthenticated user, address %s\n",
+                    "%s X_spider session terminated, unauthenticated user, address %s\n",
+                    timestring,
                     client_address);
             }
 
@@ -802,18 +809,18 @@ void set_proc_title(char *fmt,...) {
     char *p;
     int i,maxlen = (LastArgv - Argv[0]) - 2;
 
-    //printf("DEBUG: maxlen: %i\n", maxlen);
+    //fprintf(stderr,"DEBUG: maxlen: %i\n", maxlen);
 
     va_start(msg,fmt);
 
     memset(statbuf, 0, sizeof(statbuf));
-    vsnprintf(statbuf, sizeof(statbuf), fmt, msg);
+    xastir_vsnprintf(statbuf, sizeof(statbuf), fmt, msg);
 
     va_end(msg);
 
     i = strlen(statbuf);
 
-    snprintf(Argv[0], maxlen, "%s", statbuf);
+    xastir_snprintf(Argv[0], maxlen, "%s", statbuf);
     p = &Argv[0][i];
   
     while(p < LastArgv)
@@ -860,6 +867,7 @@ void Server(int argc, char *argv[], char *envp[]) {
     int sendbuff;
     int pipe_to_parent; /* symbolic names to reduce confusion */
     int pipe_from_parent;
+    char timestring[101];
 
     
     // Open a TCP listening socket
@@ -970,7 +978,10 @@ void Server(int argc, char *argv[], char *envp[]) {
         p->authenticated = 0;
         p->callsign[0] = '\0';
 
-        fprintf(stderr,"X_spider client connected from address %s\n",
+        get_timestamp(timestring);
+
+        fprintf(stderr,"%s X_spider client connected from address %s\n",
+            timestring,
             inet_ntoa(cli_addr.sin_addr));
  
         // Link it into the head of the chain.
@@ -1029,7 +1040,7 @@ void Server(int argc, char *argv[], char *envp[]) {
                 "x-spider client @",
                 inet_ntoa(cli_addr.sin_addr),
                 "(xastir)");
-            //printf("DEBUG: %s\n", Argv[0]);
+            //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
 
 // It'd be very cool here to include the IP address of the remote
@@ -1146,7 +1157,7 @@ int Fork_server(int argc, char *argv[], char *envp[]) {
 #ifdef __linux__
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider daemon (xastir)");
-        //printf("DEBUG: %s\n", Argv[0]);
+        //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
  
 

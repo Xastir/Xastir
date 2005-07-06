@@ -145,7 +145,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
 #ifdef __linux__
                 init_set_proc_title(my_argc, my_argv, my_envp);
                 set_proc_title("%s", "hostname lookup (xastir)");
-                //printf("DEBUG: %s\n", Argv[0]);
+                //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
 
 

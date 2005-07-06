@@ -192,7 +192,11 @@ void group_build_list(char *filename) {
     }
     (void)fclose(f);
     qsort(group_data_list, (size_t)group_data_count, 10, group_comp);
-    if (debug_level & 2) for (i = 0; i < group_data_count; i++) printf("Group %2d: %s\n", i, &group_data_list[i*10]);
+
+    if (debug_level & 2) {
+        for (i = 0; i < group_data_count; i++)
+            fprintf(stderr,"Group %2d: %s\n", i, &group_data_list[i*10]);
+    }
 }
 
 

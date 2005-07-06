@@ -8375,7 +8375,7 @@ void CAD_object_allocate(long latitude, long longitude) {
     CADRow *p_new;
 
 #ifdef CAD_DEBUG
-    printf(stderr,"Allocating a new CAD object\n");
+    fprintf(stderr,"Allocating a new CAD object\n");
 #endif
 
     // Allocate memory and link it to the top of the singly-linked

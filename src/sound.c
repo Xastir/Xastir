@@ -60,7 +60,7 @@ pid_t play_sound(char *sound_cmd, char *soundfile) {
 #ifdef __linux__
                     init_set_proc_title(my_argc, my_argv, my_envp);
                     set_proc_title("%s", "festival process (xastir)");
-                    //printf("DEBUG: %s\n", Argv[0]);
+                    //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
 
 
