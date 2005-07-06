@@ -60,6 +60,7 @@
 
 #include "xastir.h"
 #include "maps.h"
+#include "map_cache.h"
 #include "alert.h"
 #include "util.h"
 #include "main.h"
@@ -630,7 +631,8 @@ void draw_geo_image_map (Widget w,
     char geo_datum[8+1];        // WGS-84 etc.
     char geo_projection[256+1];   // TM, UTM, GK, LATLON etc.
     int map_proj=0;
-    int map_refresh_interval_temp;
+    int map_refresh_interval_temp = 0;
+    int nocache = 0;            // Don't cache the file if non-zero
 #ifdef FUZZYRASTER
     int rasterfuzz = 3;    // ratio to skip 
 #endif //FUZZYRASTER
@@ -643,6 +645,13 @@ void draw_geo_image_map (Widget w,
 #ifdef TIMING_DEBUG
     time_mark(1);
 #endif  // TIMING_DEBUG
+
+    time_t query_start_time, query_end_time;
+
+#ifdef USE_MAP_CACHE 
+    int map_cache_return;
+#endif  // USE_MAP_CACHE
+
 
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
@@ -782,6 +791,7 @@ void draw_geo_image_map (Widget w,
                         map_refresh_time = sec_now() + map_refresh_interval;
                         fprintf(stderr, "Map Refresh set to %d.\n", (int) map_refresh_interval);
                     }
+                    nocache = map_refresh_interval_temp;
                 }
             }
 
@@ -893,7 +903,13 @@ void draw_geo_image_map (Widget w,
 
 #ifdef HAVE_IMAGEMAGICK
         // Pass the URL in "fileimg"
-        draw_WMS_map(w, filenm, destination_pixmap, fileimg, do_check_trans, trans_color);
+        draw_WMS_map(w,
+            filenm,
+            destination_pixmap,
+            fileimg,
+            do_check_trans,
+            trans_color,
+            nocache); // Don't use cached version if non-zero
 
 #endif  // HAVE_IMAGEMAGICK
 
@@ -1378,10 +1394,58 @@ fprintf(stderr,"1 ");
         else
             ext = get_map_ext(fileimg); // Use extension to determine image type
 
+        if (debug_level & 512) {
+            query_start_time=time(&query_start_time);
+        }
+
+#ifdef USE_MAP_CACHE
+
+        if (nocache) {
+            // Simulate a cache miss
+            map_cache_return = 1;
+        }
+        else {
+            // Look for the file in the cache
+            map_cache_return = map_cache_get(fileimg,local_filename);
+        }
+
+        if (debug_level & 512) {
+            fprintf(stderr,"map_cache_return: %d\n", map_cache_return);
+        }
+
+        // If nocache is non-zero, we're supposed to refresh the map
+        // at intervals.  Don't use a cached version of the map in
+        // that case.
+        //
+        if (nocache || map_cache_return != 0 ) {
+
+            // Caching not requested or cached file not found.  We
+            // must snag the remote file via libcurl or wget.
+
+            if (nocache) {
+                xastir_snprintf(local_filename,
+                    sizeof(local_filename),
+                    "%s/map.%s",
+                    get_user_base_dir("tmp"),ext);
+            }
+            else {
+                xastir_snprintf(local_filename,
+                    sizeof(local_filename),
+                    "%s/map_%s.%s",
+                    get_user_base_dir("map_cache"),
+                    map_cache_fileid(),
+                    ext);
+            }
+
+#else   // USE_MAP_CACHE
+
         xastir_snprintf(local_filename,
             sizeof(local_filename),
             "%s/map.%s",
             get_user_base_dir("tmp"),ext);
+
+#endif  // USE_MAP_CACHE
+
 
         // Erase any previously existing local file by the same
         // name.  This avoids the problem of having an old map image
@@ -1473,6 +1537,20 @@ fprintf(stderr,"1 ");
         fprintf(stderr,"libcurl or 'wget' not installed.  Can't download image\n");
 #endif  // HAVE_WGET
 #endif  // HAVE_LIBCURL
+
+
+#ifdef USE_MAP_CACHE
+
+        // Cache the map only if map_refresh_interval_temp is zero
+        if (!map_refresh_interval_temp) {
+            map_cache_put(fileimg,local_filename);
+        }
+
+        } // end if is cached
+#endif // MAP_CACHE
+
+        (debug_level & 512) && fprintf (stderr, "Fetch or query took %d seconds\n", 
+                            (int) (time(&query_end_time) - query_start_time)); 
 
         // Set permissions on the file so that any user can overwrite it.
         chmod(local_filename, 0666);

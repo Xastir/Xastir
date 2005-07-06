@@ -140,7 +140,8 @@ void draw_WMS_map (Widget w,
         int destination_pixmap,
         char *URL,
         int do_check_trans,
-        unsigned long trans_color) {
+        unsigned long trans_color,
+        int nocache) {  // If non-zero, don't use cached version
 
 
     char file[MAX_FILENAME];        // Complete path/name of image file
@@ -215,10 +216,16 @@ void draw_WMS_map (Widget w,
     time_t query_start_time, query_end_time; 
 
 #ifdef USE_MAP_CACHE 
-//	int map_cache_return; 
+	int map_cache_return; 
 #endif  // USE_MAP_CACHE
 
 
+    if (debug_level & 512) {
+        if (nocache)
+            fprintf(stderr,"draw_WMS_map: NOCACHE selected\n");
+        else
+            fprintf(stderr,"draw_WMS_map: CACHING if enabled\n");
+    }
 
     // Create a shorter filename for display (one that fits the
     // status line more closely).  Subtract the length of the
@@ -480,26 +487,46 @@ void draw_WMS_map (Widget w,
         query_start_time=time(&query_start_time); 
     }
 
-/*
+
 #ifdef USE_MAP_CACHE 
 
-	map_cache_return = map_cache_get(fileimg,local_filename); 
+    if (nocache) {
+        // Simulate a cache miss
+        map_cache_return = 1;
+    }
+    else {
+        // Else look for the file in the cache
+    	map_cache_return = map_cache_get(fileimg,local_filename); 
+    }
+
 	if (debug_level & 512) {
 		fprintf(stderr,"map_cache_return: %d\n", map_cache_return);
 	}
-   		   
-   
-    if (map_cache_return != 0 ) {
+ 
 
-        xastir_snprintf(local_filename,
-            sizeof(local_filename),
-            "%s/map_%s.%s",
-            get_user_base_dir("map_cache"),
-            map_cache_fileid(),
-            "png");
+    // Don't use cached version if "nocache" is non-zero
+    //	   
+    if (nocache || map_cache_return != 0 ) {
+        // Caching has not been requested or cached file not found.
+        // We must snag the remote file via libcurl or wget.
 
-#else
-*/
+        if (nocache) {
+            xastir_snprintf(local_filename,
+                sizeof(local_filename),
+                "%s/map.%s",
+                 get_user_base_dir("tmp"),
+                "png");
+        }
+        else {
+            xastir_snprintf(local_filename,
+                sizeof(local_filename),
+                "%s/map_%s.%s",
+                get_user_base_dir("map_cache"),
+                map_cache_fileid(),
+                "png");
+        }
+
+#else   // USE_MAP_CACHE
 
     xastir_snprintf(local_filename,
         sizeof(local_filename),
@@ -507,9 +534,8 @@ void draw_WMS_map (Widget w,
          get_user_base_dir("tmp"),
         "png");
 
-/*
-#endif
-*/
+#endif  // USE_MAP_CACHE
+
 
     // Erase any previously existing local file by the same name.
     // This avoids the problem of having an old map image here and
@@ -612,16 +638,18 @@ void draw_WMS_map (Widget w,
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.png");
 
     
-/*
 #ifdef USE_MAP_CACHE
 
-	map_cache_put(fileimg,local_filename); 
+    // Cache this map only if nocache is zero
+    if (!nocache) {
+        map_cache_put(fileimg,local_filename);
+    }
 
         } // end if is cached  DHBROWN
-#endif // MAP_CACHE
-*/
+#endif // USE_MAP_CACHE
 
-    (debug_level & 512) && fprintf (stderr, "Query took %d seconds\n", 
+
+    (debug_level & 512) && fprintf (stderr, "Fetch or query took %d seconds\n", 
                             (int) (time(&query_end_time) - query_start_time)); 
 
     // Set permissions on the file so that any user can overwrite it.
