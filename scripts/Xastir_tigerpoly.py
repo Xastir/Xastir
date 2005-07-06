@@ -263,17 +263,18 @@ while feat is not None:
     lpoly_id = feat.GetField( lpoly_field )
     rpoly_id = feat.GetField( rpoly_field )
 
-    try:
-        module.poly_line_links[lpoly_id].append( tlid )
-    except:
-        module.poly_line_links[lpoly_id] = [ tlid ]
-
-    try:
-        module.poly_line_links[rpoly_id].append( tlid )
-    except:
-        module.poly_line_links[rpoly_id] = [ tlid ]
-
-    link_count = link_count + 1
+    if lpoly_id != rpoly_id :
+      try:
+          module.poly_line_links[lpoly_id].append( tlid )
+      except:
+          module.poly_line_links[lpoly_id] = [ tlid ]
+  
+      try:
+          module.poly_line_links[rpoly_id].append( tlid )
+      except:
+          module.poly_line_links[rpoly_id] = [ tlid ]
+  
+      link_count = link_count + 1
 
     feat.Destroy()
 
