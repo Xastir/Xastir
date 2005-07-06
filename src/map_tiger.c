@@ -153,14 +153,15 @@ void get_tiger_local_file(char * local_filename, char * fileimg){
 #endif  // HAVE_LIBCURL
 
 
-
 #ifdef USE_MAP_CACHE 
     int map_cache_return; 
 #endif  // USE_MAP_CACHE
 
+
     if (debug_level & 512) {
         query_start_time=time(&query_start_time); 
     }
+
 
 #ifdef USE_MAP_CACHE 
 
@@ -185,7 +186,7 @@ set_dangerous("map_tiger: map_cache_fileid");
             "gif");
 clear_dangerous();
 
-#else
+#else   // USE_MAP_CACHE
 
     xastir_snprintf(local_filename,
         MAX_FILENAME,               // hardcoded to avoid sizeof()
@@ -193,7 +194,8 @@ clear_dangerous();
          get_user_base_dir("tmp"),
         "gif");
 
-#endif
+#endif  // USE_MAP_CACHE
+
 
     // Erase any previously existing local file by the same name.
     // This avoids the problem of having an old map image here and
@@ -297,7 +299,8 @@ clear_dangerous();
 
     // For debugging the MagickError/MagickWarning segfaults.
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
-    
+   
+ 
 #ifdef USE_MAP_CACHE
 
 set_dangerous("map_tiger: map_cache_put");
@@ -305,7 +308,9 @@ set_dangerous("map_tiger: map_cache_put");
 clear_dangerous();
 
         } // end if is cached  DHBROWN
+
 #endif // MAP_CACHE
+
 
     if (debug_level & 512) {
         fprintf (stderr, "Query took %d seconds\n", 
