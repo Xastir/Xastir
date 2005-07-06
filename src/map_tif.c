@@ -705,7 +705,7 @@ void draw_geotiff_image_map (Widget w,
     proj_is_latlong=FALSE;
     if( !GTIFKeyGet(gtif,ProjectedCSTypeGeoKey, &PCS,0,1))
       {
-          //printf(stderr,"Warning: no PCS in geotiff file %s, assuming map is in lat/lon!\n", filenm);
+          //fprintf(stderr,"Warning: no PCS in geotiff file %s, assuming map is in lat/lon!\n", filenm);
 	proj_is_latlong=TRUE;
       }
 
