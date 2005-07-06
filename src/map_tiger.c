@@ -313,7 +313,7 @@ clear_dangerous();
 
 
     if (debug_level & 512) {
-        fprintf (stderr, "Query took %d seconds\n", 
+        fprintf (stderr, "Fetch or query took %d seconds\n", 
             (int) (time(&query_end_time) - query_start_time)); 
     }
 
