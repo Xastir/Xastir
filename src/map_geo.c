@@ -889,7 +889,14 @@ void draw_geo_image_map (Widget w,
     if (tigerserver_flag) {
 
 #ifdef HAVE_IMAGEMAGICK
-        draw_tiger_map(w, filenm, destination_pixmap);
+
+        // We need to send the "nocache" parameter to this function
+        // for those instances when the tigermap received is bad.
+        // Later the GUI can implement a method for refreshing the
+        // latest map and replacing the bad map in the cache.
+        //
+        draw_tiger_map(w, filenm, destination_pixmap, nocache);
+
 #endif  // HAVE_IMAGEMAGICK
 
         return;

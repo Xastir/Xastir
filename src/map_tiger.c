@@ -335,7 +335,8 @@ clear_dangerous();
 #ifdef HAVE_IMAGEMAGICK
 void draw_tiger_map (Widget w,
         char *filenm,
-        int destination_pixmap) {
+        int destination_pixmap,
+        int nocache) {  // For future implementation of a "refresh cached map" option
     char file[MAX_FILENAME];        // Complete path/name of image file
     char short_filenm[MAX_FILENAME];
     FILE *f;                        // Filehandle of image file

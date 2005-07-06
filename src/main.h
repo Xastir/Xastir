@@ -339,7 +339,7 @@ extern void on_off_switch(int switchpos, Widget first, Widget second);
 extern void busy_cursor(Widget w);
 extern void pos_dialog(Widget w);
 extern int create_image(Widget w);
-extern void draw_tiger_map (Widget w, char *filenm, int destination_pixmap);
+extern void draw_tiger_map (Widget w, char *filenm, int destination_pixmap, int nocache);
 extern void draw_WMS_map (Widget w, char *filenm, int destination_pixmap, char *URL, int do_check_trans, unsigned long trans_color, int nocache);
 
 extern void locate_gui_init(void);
