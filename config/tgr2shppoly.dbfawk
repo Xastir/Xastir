@@ -41,7 +41,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 #Perennial water
 /^WATER=1$/ {filled=1; fill_style=2; fill_stipple=2; color=117; fill_color=117; label_color=26; display_level=1024;}
 #intermittent water
-/^WATER=2$/ {filled=1; color=117; fill_color=117; label_color=26; display_level=512;pattern=1;}
+/^WATER=2$/ {filled=1; fill_style=2; fill_stipple=0; color=117; fill_color=117; label_color=26; display_level=512;pattern=1;}
 
 # These are *all* the allowed feature classes, even those that aren't
 # polygon types.  We won't actually bother testing for anything other 
