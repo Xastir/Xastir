@@ -379,8 +379,8 @@ void draw_toporama_map (Widget w,
         //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
 
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)tigermap_timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(tigermap_timeout/2));
 
         // Added in libcurl 7.9.8
 #if (LIBCURL_VERSION_NUM >= 0x070908)
@@ -1483,8 +1483,8 @@ fprintf(stderr,"1 ");
           //            curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
             curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
 
-            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
-            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)tigermap_timeout);
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(tigermap_timeout/2));
 
             // Added in libcurl 7.9.8
 #if (LIBCURL_VERSION_NUM >= 0x070908)
