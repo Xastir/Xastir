@@ -176,6 +176,18 @@ int check_trans (XColor c, unsigned long c_trans_color) {
 
 
 
+// Regarding MAP CACHING for toporama maps:  Here we are only
+// snagging a .geo file for toporama from findu.com:  We send the
+// parameters off to findu.com, it computes the .geo file, we
+// download it, then we call draw_geo_image_map() with it.  We would
+// have to cache the .geo files from findu, we'd have to modify them
+// to point to our local cached map file, and we'd of course have to
+// cache that map image as well.  The image filename on findu
+// changes each time we call with the same parameters, so we'd have
+// to give the image file our own name based on the parameters and
+// write that same name into the cached .geo file.  A bit of work,
+// but it _could_ be done.
+//
 // For this particular case we need to snag a remote .geo file and
 // then start the process all over again.  The URL we'll need to use
 // looks something like this:
@@ -789,7 +801,9 @@ void draw_geo_image_map (Widget w,
                            map_refresh_interval_temp < map_refresh_interval) ) {
                         map_refresh_interval = (time_t) map_refresh_interval_temp;
                         map_refresh_time = sec_now() + map_refresh_interval;
-                        fprintf(stderr, "Map Refresh set to %d.\n", (int) map_refresh_interval);
+
+                        if (debug_level & 512)
+                            fprintf(stderr, "Map Refresh set to %d.\n", (int) map_refresh_interval);
                     }
                     nocache = map_refresh_interval_temp;
                 }
