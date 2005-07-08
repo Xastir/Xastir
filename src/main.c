@@ -1750,23 +1750,21 @@ void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-//WE7U
-// Removes the entire contents of the ~/.xastir/map_cache directory.
+// Removes all files in the ~/.xastir/map_cache directory.  Does not
+// recurse down into subdirectories, but it shouldn't have to.
 //
 void Flush_Entire_Map_Queue(Widget w, XtPointer clientData, XtPointer callData) {
-/*
     struct dirent *dl = NULL;
     DIR *dm;
     char fullpath[MAX_FILENAME];
     char dir[MAX_FILENAME];
-*/
+    struct stat nfile;
 
-    fprintf(stderr,"Flush Entire Map Cache, not implemented yet\n");
 
-/*
-xastir_snprintf(dir,
-sizeof(dir),
-"/home/archer/.xastir/map_cache");
+    xastir_snprintf(dir,
+        sizeof(dir),
+        "%s",
+        get_user_base_dir("map_cache"));
 
     dm = opendir(dir);
     if (!dm) {  // Couldn't open directory
@@ -1774,7 +1772,9 @@ sizeof(dir),
         return;
     }
 
-    // Read the directory contents, delete each file found
+    // Read the directory contents, delete each file found, skip
+    // directories.
+    //
     while ((dl = readdir(dm))) {
 
         //Construct the entire path/filename
@@ -1784,11 +1784,19 @@ sizeof(dir),
             dir,
             dl->d_name);
 
-        // Remove the file
-fprintf(stderr,"\tWould have removed:  %s\n", fullpath);
-        //unlink(fullpath);
+        if (stat(fullpath, &nfile) == 0) {
+            if ((nfile.st_mode & S_IFMT) == S_IFREG) {
+                // It's a regular file
+
+                // Remove the file
+                if (debug_level & 512)                
+                    fprintf(stderr,"Deleting file:  %s\n", fullpath);
+
+                unlink(fullpath);
+            }
+        }
     }
-*/
+    (void)closedir(dm);
 }
 
 
@@ -5588,7 +5596,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 // Re-download Maps (Not from cache)
-        redownload_maps_button = XtVaCreateManagedWidget(langcode("PULDNMP027"),
+    redownload_maps_button = XtVaCreateManagedWidget(langcode("PULDNMP027"),
           xmPushButtonGadgetClass,
           mappane,
           XmNmnemonic,langcode_hotkey("PULDNMP027"),
@@ -5596,10 +5604,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
           MY_BACKGROUND_COLOR,
           NULL);
     XtAddCallback(redownload_maps_button, XmNactivateCallback,Re_Download_Maps_Now,NULL);
-
+XtSetSensitive(redownload_maps_button,FALSE);
+ 
 
 // Flush Entire Map Cache!
-        flush_map_cache_button = XtVaCreateManagedWidget(langcode("PULDNMP028"),
+    flush_map_cache_button = XtVaCreateManagedWidget(langcode("PULDNMP028"),
           xmPushButtonGadgetClass,
           mappane,
           XmNmnemonic,langcode_hotkey("PULDNMP028"),
