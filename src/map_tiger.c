@@ -218,8 +218,8 @@ clear_dangerous();
       //        curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
 
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)tigermap_timeout);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(tigermap_timeout/2));
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
 
         // Added in libcurl 7.9.8
 #if (LIBCURL_VERSION_NUM >= 0x070908)
@@ -280,7 +280,7 @@ clear_dangerous();
     xastir_snprintf(tempfile, sizeof(tempfile),
         "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s \'%s\' 2> /dev/null\n",
         WGET_PATH,
-        tigermap_timeout,
+        net_map_timeout,
         local_filename,
         fileimg);
 

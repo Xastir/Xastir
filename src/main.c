@@ -725,8 +725,7 @@ Widget tiger_cities,
        tiger_ushwy,
        tiger_water,
        tiger_lakes,
-       tiger_misc,
-       tiger_timeout;
+       tiger_misc;
 
 int tiger_show_grid = TRUE;
 int tiger_show_counties = TRUE;
@@ -742,7 +741,6 @@ int tiger_show_statehwy = TRUE;
 int tiger_show_water = TRUE;
 int tiger_show_lakes = TRUE;
 int tiger_show_misc = TRUE;
-int tigermap_timeout = 90;
 
 #endif  // HAVE_IMAGEMAGICK
 
@@ -978,6 +976,9 @@ Widget serial_pacing_time = (Widget)NULL;
 Widget trail_segment_timeout = (Widget)NULL;
 Widget trail_segment_distance_max = (Widget)NULL;
 Widget RINO_download_timeout = (Widget)NULL;
+Widget net_map_slider = (Widget)NULL;
+int net_map_timeout = 120;
+
 
 
 time_t GPS_time;                /* gps time out */
@@ -1717,6 +1718,78 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 /////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+//WE7U
+// Causes the current set of internet-based maps to be snagged from
+// the 'net instead of from cache.  Once downloaded they will get
+// written to the cache, therefore overwriting possibly corrupted
+// maps already in the cache.  This is used to get rid of corrupted
+// maps in the cache without having to wipe out the entire cache.
+//
+void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
+    fprintf(stderr,"Re-download Maps (Not from cache), not implemented yet\n");
+
+    // Request that maps be redone with the "nocache" option passed
+    // down to the map draw routines.  Actually, we want to put
+    // things _into_ the cache, so we might need to define yet
+    // another flag or global variable to get this feature
+    // implemented properly.
+
+    // Another way to implement this would be to unlink any cached
+    // versions of these files and then reload the maps.  Might be
+    // easier.
+
+    //unlink( local_filename );
+}
+
+
+
+
+
+//WE7U
+// Removes the entire contents of the ~/.xastir/map_cache directory.
+//
+void Flush_Entire_Map_Queue(Widget w, XtPointer clientData, XtPointer callData) {
+/*
+    struct dirent *dl = NULL;
+    DIR *dm;
+    char fullpath[MAX_FILENAME];
+    char dir[MAX_FILENAME];
+*/
+
+    fprintf(stderr,"Flush Entire Map Cache, not implemented yet\n");
+
+/*
+xastir_snprintf(dir,
+sizeof(dir),
+"/home/archer/.xastir/map_cache");
+
+    dm = opendir(dir);
+    if (!dm) {  // Couldn't open directory
+        fprintf(stderr,"Flush_Entire_Map_Queue: Couldn't open directory\n");
+        return;
+    }
+
+    // Read the directory contents, delete each file found
+    while ((dl = readdir(dm))) {
+
+        //Construct the entire path/filename
+        xastir_snprintf(fullpath,
+            sizeof(fullpath),
+            "%s/%s",
+            dir,
+            dl->d_name);
+
+        // Remove the file
+fprintf(stderr,"\tWould have removed:  %s\n", fullpath);
+        //unlink(fullpath);
+    }
+*/
+}
 
 
 
@@ -4792,6 +4865,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         Map_station_label_Pane, map_station_label_button,
         Map_icon_outline_Pane, map_icon_outline_button,
         map_wx_alerts_button, index_maps_on_startup_button,
+        redownload_maps_button, flush_map_cache_button,
         units_choice_button, dbstatus_choice_button,
         iface_button, iface_connect_button,
         tnc_logging, transmit_disable_toggle, net_logging,
@@ -5505,6 +5579,35 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (!wx_alert_style)
         XmToggleButtonSetState(map_wx_alerts_button,TRUE,FALSE);
 
+    (void)XtVaCreateManagedWidget("create_appshell sep2b",
+            xmSeparatorGadgetClass,
+            mappane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+
+// Re-download Maps (Not from cache)
+        redownload_maps_button = XtVaCreateManagedWidget(langcode("PULDNMP027"),
+          xmPushButtonGadgetClass,
+          mappane,
+          XmNmnemonic,langcode_hotkey("PULDNMP027"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+    XtAddCallback(redownload_maps_button, XmNactivateCallback,Re_Download_Maps_Now,NULL);
+
+
+// Flush Entire Map Cache!
+        flush_map_cache_button = XtVaCreateManagedWidget(langcode("PULDNMP028"),
+          xmPushButtonGadgetClass,
+          mappane,
+          XmNmnemonic,langcode_hotkey("PULDNMP028"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+    XtAddCallback(flush_map_cache_button, XmNactivateCallback,Flush_Entire_Map_Queue,NULL);
+ 
 
     //Index Maps on startup
     index_maps_on_startup_button = XtVaCreateManagedWidget(langcode("PULDNMP022"),
@@ -5876,7 +5979,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep2b",
+    (void)XtVaCreateManagedWidget("create_appshell sep2c",
             xmSeparatorGadgetClass,
             mappane,
             MY_FOREGROUND_COLOR,
@@ -16326,7 +16429,7 @@ void map_properties_fill_in (void) {
 
         // We should now have all of the files/directories marked in
         // the in-memory map index.  Files underneath selected
-        // directores should also be marked by this point, as the
+        // directories should also be marked by this point, as the
         // map_index_update_temp_select() routine should assure
         // this.
 
@@ -18370,8 +18473,6 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
     else
         tiger_show_statehwy=FALSE;
 
-    XmScaleGetValue(tiger_timeout, &tigermap_timeout);
-
     Configure_tiger_destroy_shell(widget,clientData,callData);
 
     // Reload maps
@@ -18399,7 +18500,6 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
 void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_label1, sep;
     int intensity_length;
-    int timeout_length;
 
     Atom delw;
 
@@ -18661,39 +18761,12 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
        intensity_length = strlen(langcode("MPUPTGR016")) + 1;
 
-       timeout_length = strlen(langcode("MPUPTGR017")) + 1;
-
-       tiger_timeout  = XtVaCreateManagedWidget("Timeout", 
-                xmScaleWidgetClass,
-                tiger_form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, tiger_lakes,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 0,
-                XmNleftOffset, 20,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 3,
-                XmNrightOffset, 20,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 10,
-                XmNmaximum, 300,
-                XmNshowValue, TRUE,
-                XmNvalue, tigermap_timeout,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
         sep = XtVaCreateManagedWidget("Config Tigermap sep", 
                 xmSeparatorGadgetClass,
                 tiger_form,
                 XmNorientation, XmHORIZONTAL,
                 XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, tiger_timeout,
+                XmNtopWidget, tiger_lakes,
                 XmNtopOffset, 10,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -19984,6 +20057,8 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
     RINO_download_interval = (int)value;
 #endif  // HAVE_GPSMAN
 
+    XmScaleGetValue(net_map_slider, &net_map_timeout);
+
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
 }
@@ -19996,6 +20071,8 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     static Widget  pane, my_form, button_ok, button_cancel;
     Atom delw;
     int length;
+    int timeout_length;
+
 
     if (!configure_timing_dialog) {
         configure_timing_dialog = XtVaCreatePopupShell(langcode("WPUPCFTM01"),
@@ -20316,7 +20393,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNleftPosition, 0,
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 2,
+                XmNrightPosition, 1,
                 XmNrightOffset, 5,
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
@@ -20330,6 +20407,33 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 #endif  // HAVE_GPSMAN
+
+       timeout_length = strlen(langcode("MPUPTGR017")) + 1;
+
+       net_map_slider  = XtVaCreateManagedWidget("Net Map Timeout",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, trail_segment_timeout,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 10,
+                XmNmaximum, 300,
+                XmNshowValue, TRUE,
+                XmNvalue, net_map_timeout,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 

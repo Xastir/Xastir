@@ -500,7 +500,7 @@ void save_data(void)  {
         store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT]);
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
-        store_int (fout, "TIGERMAP_TIMEOUT", tigermap_timeout);
+        store_int (fout, "NET_MAP_TIMEOUT", net_map_timeout);
         store_int (fout, "TIGERMAP_SHOW_GRID", tiger_show_grid);
         store_int (fout, "TIGERMAP_SHOW_COUNTIES", tiger_show_counties);
         store_int (fout, "TIGERMAP_SHOW_CITIES", tiger_show_cities);
@@ -1209,8 +1209,8 @@ void load_data_or_default(void) {
 
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
-    if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 300, 90))
-        tigermap_timeout = 90;
+    if (!get_int ("NET_MAP_TIMEOUT", &net_map_timeout, 10, 300, 120))
+        net_map_timeout = 90;
 
     if (!get_int ("TIGERMAP_SHOW_GRID", &tiger_show_grid, 0, 1, 0))
         tiger_show_grid = 0;

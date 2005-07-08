@@ -4302,6 +4302,9 @@ int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
 
 
 
+// Returns: 0 If file retrieved
+//          1 If there was a problem getting the file
+//
 int curl_getfile(char *fileimg, char *local_filename) {
     CURL *curl;
     CURLcode res;
@@ -4316,8 +4319,8 @@ int curl_getfile(char *fileimg, char *local_filename) {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
         curl_easy_setopt(curl, CURLOPT_URL, fileimg);
 
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)tigermap_timeout);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(tigermap_timeout/2));
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
 
         // Added in libcurl 7.9.8
 #if (LIBCURL_VERSION_NUM >= 0x070908)
