@@ -86,6 +86,8 @@ PULDNMP023|Indice: Agregar Nuevos Mapas|A|
 PULDNMP024|Indice: Reindezar TODOS los Mapas|T|
 PULDNMP025|Map labels font||
 PULDNMP015|Xfontsel||
+PULDNMP027|Re-download Maps (Not from cache)||
+PULDNMP028|Flush Entire Map Cache!||
 #
 # Menú "Configurar Tigermapa"
 MPUPTGR001|Rejilla||
@@ -104,7 +106,7 @@ MPUPTGR013|Rios||
 MPUPTGR014|Lagos||
 MPUPTGR015|Aereopuertos, Parqueos, etc||
 MPUPTGR016|Intensidad de Mapa||
-MPUPTGR017|Descanso (segundo)||
+MPUPTGR017|Internet Map Timeout (segundo)||
 MPUPTGR018|Activar Tiger Mapas||
 #
 # Seleccion de Mapas

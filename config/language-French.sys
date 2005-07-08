@@ -86,6 +86,8 @@ PULDNMP023|Index: Ajouter nouvelles cartes|R|
 PULDNMP024|Index: Re-indexer toutes cartes|A|
 PULDNMP025|Police d'annotation des cartes||
 PULDNMP015|Xfontsel||
+PULDNMP027|Re-download Maps (Not from cache)||
+PULDNMP028|Flush Entire Map Cache!||
 #
 #
 # PopUp "Configure Tigermap"
@@ -105,7 +107,7 @@ MPUPTGR013|Rivières||
 MPUPTGR014|Lacs||
 MPUPTGR015|Aéroports, parcs, etc||
 MPUPTGR016|Intensité de la carte||
-MPUPTGR017|Dépassement de temps (sec)||
+MPUPTGR017|Internet Map Timeout (sec)||
 MPUPTGR018|Activer cartes Tiger||
 #
 # PopUp "Map Chooser"

@@ -84,9 +84,11 @@ PULDNMP020|Configure Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
 PULDNMP022|Index New Maps on Startup||
 PULDNMP023|Index: Add New Maps|N|
-PULDNMP024|Index: Reindex ALL Maps|R|
+PULDNMP024|Index: Reindex ALL Maps!|R|
 PULDNMP025|Map labels font||
 PULDNMP015|Xfontsel||
+PULDNMP027|Re-download Maps (Not from cache)||
+PULDNMP028|Flush Entire Map Cache!||
 #
 #
 # PopUp "Configure Tigermap"
@@ -106,7 +108,7 @@ MPUPTGR013|Rivers||
 MPUPTGR014|Lakes||
 MPUPTGR015|Airports, Parks, etc||
 MPUPTGR016|Map Intensity||
-MPUPTGR017|Timeout (sec)||
+MPUPTGR017|Internet Map Timeout (sec)||
 MPUPTGR018|Enable Tiger Maps||
 #
 # PopUp "Map Chooser"

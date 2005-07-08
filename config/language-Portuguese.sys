@@ -86,6 +86,8 @@ PULDNMP023|Index: Acrescentar mapas novos|A|
 PULDNMP024|Index: Reindexar os mapas TODOS|R|
 PULDNMP025|Fonte das etiquetas do mapa||
 PULDNMP015|Seleccionar a fonte do X||
+PULDNMP027|Re-download Maps (Not from cache)||
+PULDNMP028|Flush Entire Map Cache!||
 #
 # PopUp "Configurar tigermap"
 MPUPTGR001|Grelha||
@@ -104,7 +106,7 @@ MPUPTGR013|Rios||
 MPUPTGR014|Lagos||
 MPUPTGR015|Aeroportos, parques, etc||
 MPUPTGR016|Intensidade do mapa||
-MPUPTGR017|Tempo esgotado (sec)||
+MPUPTGR017|Internet Map Timeout (sec)||
 MPUPTGR018|Activar Tiger Maps||
 #
 #

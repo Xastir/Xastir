@@ -92,6 +92,8 @@ PULDNMP023|Index: Neue Karten hinzufügen|N|
 PULDNMP024|Index: ALLE Karten reindizieren|r|
 PULDNMP025|Font Kartenbeschriftung||
 PULDNMP015|Xfontsel||
+PULDNMP027|Re-download Maps (Not from cache)||
+PULDNMP028|Flush Entire Map Cache!||
 #
 #
 # PopUp "Einstellungen Tigermaps"
@@ -111,7 +113,7 @@ MPUPTGR013|Flüsse||
 MPUPTGR014|Seen||
 MPUPTGR015|Flughäfen, Parks, etc||
 MPUPTGR016|Karten Intensität||
-MPUPTGR017|Timeout [Sek]||
+MPUPTGR017|Internet Map Timeout [Sek]||
 MPUPTGR018|Tiger Maps erlauben||
 #
 #

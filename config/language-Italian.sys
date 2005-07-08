@@ -86,6 +86,8 @@ PULDNMP023|Indice: Aggiungi Nuove Mappe|N|
 PULDNMP024|Indice: Riordina Tutte le Mappe|R|
 PULDNMP025|Carattere etichette||
 PULDNMP015|Xfontsel||
+PULDNMP027|Re-download Maps (Not from cache)||
+PULDNMP028|Flush Entire Map Cache!||
 #
 #
 # PopUp "Configure Tigermap"
@@ -105,7 +107,7 @@ MPUPTGR013|Fiumi||
 MPUPTGR014|Laghi||
 MPUPTGR015|Aereoporti, Parchi, ecc||
 MPUPTGR016|Intensità Mappa||
-MPUPTGR017||Fuori tempo (sec)||
+MPUPTGR017|Internet Map Timeout (sec)||
 MPUPTGR018|Abilita Mappe Tiger||
 #
 #
