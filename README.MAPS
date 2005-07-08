@@ -120,7 +120,7 @@ Getting Maps and other Data Files for Xastir:
       exclusively. However, having maps on your computer is often faster
       than transferring images over a modem, and is not subject to the
       failures of your Internet connection.  See the section below on map
-      caching for an exciting feature that works with online Tigermaps to
+      caching for an exciting feature that works with most online maps to
       really speed things up!
 
       You can have any number of maps in the /usr/local/share/xastir/maps
@@ -206,7 +206,7 @@ Getting Maps and other Data Files for Xastir:
        WORLDHI.MAP is suggested as a basic view of the world map.
 
       You can use any of the other maps available from this site. Many of
-      them were created from tiger line maps, but they are several years out of
+      them were created from Tiger/Line maps, but they are several years out of
       date. It is suggested that you don't use these as your primary
       street-level maps; the newer shapefile-based maps are usually preferable.
       In cases where you cannot compile shapefile support, these maps suffice.
@@ -1038,17 +1038,17 @@ WHERE TO FIND MORE INFO ON MAP DATUMS, ETC:
     
 
 
-MAP CACHING (WORKS WITH ONLINE TIGERMAPS):
+MAP CACHING (WORKS WITH MOST ONLINE MAPS):
 
-    Map caching works in conjunction with the Tiger map download routines,
-    which fetch GIF formatted maps from http://tiger.census.gov.  The map
-    caching features use functions found in Berkeley DB 4.0 library, AKA
-    libdb (version 4.0 or better), to create and manage a cache directory
-    and a persistent database of information about the files in the cache
-    directory.  This directory defaults to ~/.xastir/map_cache.  The files
-    under this directory can be cleaned up or removed by hand at any time
-    - the caching routines will simply download the maps and put a new
-    entry into the .db file.
+    Map caching works in conjunction with the map download routines,
+    which fetch maps from http or ftp addresses.  The map caching features
+    use functions found in Berkeley DB 4.0 library, AKA libdb (version 4.0
+    or better), to create and manage a cache directory and a persistent
+    database of information about the files in the cache directory.  This
+    directory defaults to ~/.xastir/map_cache.  The files under this
+    directory can be cleaned up or removed by hand at any time - the
+    caching routines will simply download the maps and put new entries
+    into the .db file.
 
     Map files are saved with filenames that include the number of seconds
     since the Unix epoch.  This allows the caching routines to easily
