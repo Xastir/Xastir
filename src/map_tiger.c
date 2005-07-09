@@ -154,7 +154,7 @@ void get_tiger_local_file(char * local_filename, char * fileimg){
 
 
 #ifdef USE_MAP_CACHE 
-    int map_cache_return; 
+    int map_cache_return = 1; // Default = cache miss
 #endif  // USE_MAP_CACHE
 
 
@@ -165,9 +165,21 @@ void get_tiger_local_file(char * local_filename, char * fileimg){
 
 #ifdef USE_MAP_CACHE 
 
+    if (!map_cache_fetch_disable) {
+
+        // Delete old copy from the cache
+        if (map_cache_fetch_disable && fileimg[0] != '\0') {
+            if (map_cache_del(fileimg)) {
+                if (debug_level & 512) {
+                    fprintf(stderr,"Couldn't delete old map from cache\n");
+                }
+            }
+        }
+
 set_dangerous("map_tiger: map_cache_get");
 	map_cache_return = map_cache_get(fileimg,local_filename); 
 clear_dangerous();
+    }
 
     if (debug_level & 512) {
             fprintf(stderr,"map_cache_return: <%d> bytes returned: %d\n",

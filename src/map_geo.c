@@ -181,12 +181,16 @@ int check_trans (XColor c, unsigned long c_trans_color) {
 // parameters off to findu.com, it computes the .geo file, we
 // download it, then we call draw_geo_image_map() with it.  We would
 // have to cache the .geo files from findu, we'd have to modify them
-// to point to our local cached map file, and we'd of course have to
-// cache that map image as well.  The image filename on findu
-// changes each time we call with the same parameters, so we'd have
-// to give the image file our own name based on the parameters and
-// write that same name into the cached .geo file.  A bit of work,
-// but it _could_ be done.
+// to point to our local cached map file (maybe), and we'd of course
+// have to cache that map image as well.  The image filename on
+// findu changes each time we call with the same parameters, so we'd
+// have to give the image file our own name based on the parameters
+// and write that same name into the cached .geo file.  A bit of
+// work, but it _could_ be done.  Actually, we should be able to map
+// between the original URL we use to request the .GEO file and the
+// final image we received.  That way the name would stay the same
+// each time we made the request.  There may be other things we need
+// from the generated .GEO file though.
 //
 // For this particular case we need to snag a remote .geo file and
 // then start the process all over again.  The URL we'll need to use
@@ -1421,7 +1425,17 @@ fprintf(stderr,"1 ");
 
 #ifdef USE_MAP_CACHE
 
-        if (nocache) {
+        if (nocache || map_cache_fetch_disable) {
+
+            // Delete old copy from the cache
+            if (map_cache_fetch_disable && fileimg[0] != '\0') {
+                if (map_cache_del(fileimg)) {
+                    if (debug_level & 512) {
+                        fprintf(stderr,"Couldn't delete old map from cache\n");
+                    }
+                }
+            }
+
             // Simulate a cache miss
             map_cache_return = 1;
         }

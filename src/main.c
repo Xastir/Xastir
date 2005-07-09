@@ -153,6 +153,7 @@
 #include "igate.h"
 #include "shp_hash.h"
 #include "x_spider.h"
+#include "map_cache.h"
 
 
 #include <Xm/XmAll.h>
@@ -1723,7 +1724,6 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-//WE7U
 // Causes the current set of internet-based maps to be snagged from
 // the 'net instead of from cache.  Once downloaded they get written
 // to the cache, overwriting possibly corrupted maps already in the
@@ -1733,39 +1733,17 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 //
 void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
 
-    fprintf(stderr,"Re-download Maps (Not from cache), not implemented yet\n");
+    // Disable reads from the map cache
+    map_cache_fetch_disable = 1;
 
+    // Show a busy cursor while the map is being downloaded
+    busy_cursor(appshell);
 
-// Option A:  Request that maps be redrawn with the "nocache" option
-// passed down to the map draw routines.  Actually, we want to put
-// things _into_ the cache, so we might need to define yet another
-// flag or global variable to get this feature implemented properly,
-// or redefine the nocache variable so that it has more states.
-//
-// Option B:  Unlink any cached versions of these files and then
-// reload the maps.  Depending on how/where we figure out the names
-// of the cached files, we might still have to pass a flag down to
-// the draw_* routines to get this done properly.  We'd have to call
-// map_cache.c:map_cache_del() for each URL.  The URL's are buried
-// inside the .geo's or computed on-the-fly in the map code.  We'll
-// have to pass a flag to the draw_* routines to have them do this
-// for us.
-//
-// Option C:  Pass a flag down to map_cache_get() to make it skip
-// checking for a cache hit, causing the map to be downloaded anew.
-// This seems to be the simplest option to implement so far.
-//
-// Functions which might be affected:
-//
-//   map_cache.c:map_cache_del(), map_cache_put(), map_cache_get()
-//   map_geo.c:draw_geo_image_map(), draw_toporama_map()
-//   map_tiger.c:draw_tiger_map()
-//   map_WMS.c:draw_WMS_map()
+    // Cause maps to be refreshed
+    new_image(da);
 
-
-    // This function isn't implemented yet.  Remove the
-    // XtSetSensitive(FALSE) call for redownload_maps_button when
-    // this function is fully implemented.
+    //Enable reads from the map cache
+    map_cache_fetch_disable = 0;
 }
 
 
@@ -5626,7 +5604,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
           MY_BACKGROUND_COLOR,
           NULL);
     XtAddCallback(redownload_maps_button, XmNactivateCallback,Re_Download_Maps_Now,NULL);
-XtSetSensitive(redownload_maps_button,FALSE);
  
 
 // Flush Entire Map Cache!

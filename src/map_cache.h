@@ -27,6 +27,10 @@
 #ifndef XASTIR_MAP_CACHE_H
 #define XASTIR_MAP_CACHE_H
 
+// Global variable declarations
+extern int map_cache_fetch_disable;
+
+
 // External function declarations
 
 // Saves file and puts entries into cache db
