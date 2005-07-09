@@ -58,7 +58,9 @@
 #include "awk.h"
 #include "dbfawk.h"
 #include "snprintf.h"
+#include "maps.h"
 
+#include <sys/stat.h>
 
 
 
@@ -161,9 +163,11 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
 // Malloc's dbfawk_sig_info and returns a filled-in list
 
 dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
-                                  const char *ftype) /* filetype */ {
+                                  const char *ftype) /* filetype */ { 
     DIR *d;
     struct dirent *e;
+    struct stat nfile;
+    char fullpath[MAX_FILENAME];
     int ftlen;
     dbfawk_sig_info *i = NULL, *head = NULL;
     awk_symtab *symtbl;
@@ -188,6 +192,30 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
     while ((e = readdir(d)) != NULL) {
         int len = strlen(e->d_name);
         char *path = calloc(1,len+strlen(dir)+2);
+
+        // Check for hidden files or directories
+        if (e->d_name[0] == '.') {
+            // Hidden, skip it
+            continue;
+        }
+
+        // Check for regular files
+
+        xastir_snprintf(fullpath,
+            sizeof(fullpath),
+            "%s/%s",
+            dir,
+            e->d_name);
+
+        if (stat(fullpath, &nfile) != 0) {
+            // Couldn't stat file
+            continue;
+        }
+
+        if ((nfile.st_mode & S_IFMT) != S_IFREG) {
+            // Not a regular file
+            continue;
+        }
  
         if (!path) {
             if (symtbl)
