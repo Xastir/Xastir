@@ -6,12 +6,28 @@
 #
 # Modified version of GDAL/OGR "tigerpoly.py" script (as described below)
 # adapted to assemble information from more tables of the TIGER/Line data
-# than had been done by the original
+# than had been done by the original, and with the option of dissolving
+# common boundaries between areas with identical landmark values.
+#
 # You must have installed GDAL/OGR, configured to use python in order to use 
 # this script
 ###############################################################################
 # 
 # Adapted for Xastir use by Tom Russo
+#
+# NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE
+#  When run with the "-d" option, this script changes the topology of 
+#  TIGER/Line polygons by dissolving common bounaries between adjacent 
+#  polygons with identical Landmark values.  This is done SOLELY for 
+#  improvement of on-screen presentation of the shapefiles, and the resulting 
+#  files have too much information removed to make them useful for any other 
+#  purpose but display in Xastir.
+#
+#  If any shapefile data produced by this script with the -d option are 
+#  distributed publicly, they should have a prominent disclaimer to this 
+#  effect.  The data produced by this script with that option bear only a 
+#  superficial, graphical resemblence to the  TIGER/Line data from which they 
+#  were created.
 #
 ####################Original comments follow
 ###############################################################################
@@ -66,6 +82,14 @@ class Field:
         self.fld_index = ''
 
 #############################################################################
+# We'll use this class to keep track of polygons that get mapped into each 
+# other
+class PolyMap:
+    def __init__( self ):
+      self.polyid=''
+      self.mappedlist=[]
+
+#############################################################################
 def Usage():
     print 'Usage: tigerpoly.py infile [outfile].shp'
     print
@@ -76,12 +100,16 @@ def Usage():
 
 infile = None
 outfile = None
+dissolve=0
 
 i = 1
 while i < len(sys.argv):
     arg = sys.argv[i]
 
-    if infile is None:
+    if arg == "-d":
+        dissolve=1
+    
+    elif infile is None:
 	infile = arg
 
     elif outfile is None:
@@ -97,6 +125,17 @@ if outfile is None:
 
 if infile is None:
     Usage()
+
+if dissolve == 1:
+   print '*******************************************************************'
+   print 'WARNING!  WARNING! WARNING!'
+   print 'You have chosen to dissolve polygons with identical landmark names/types.'
+   print ' Doing this changes the topology of the TIGER/Line data, and renders'
+   print ' the resulting shapefiles useful only for display purposes.'
+   print ' IF YOU DISTRIBUTE THIS DATA, PLEASE INCLUDE A DISCLAIMER THAT'
+   print ' THE DATA HAVE BEEN MODIFIED AND THAT THEIR USE FOR PURPOSES OTHER'
+   print ' DISPLAY IS NOT RECOMMENDED!'
+   print '*******************************************************************'
 
 #############################################################################
 # Open the datasource to operate on.
@@ -210,6 +249,7 @@ for field_name in (field_names):
   fd.SetPrecision( src_fd.GetPrecision() )
   shp_layer.CreateField(fd)
 
+print 'Reading Lines'
 #############################################################################
 # Read all features in the line layer, holding just the geometry in a hash
 # for fast lookup by TLID.
@@ -242,57 +282,21 @@ while feat is not None:
 print 'Got %d lines in %d modules.' % (line_count,len(modules_hash))
 
 #############################################################################
-# Read all polygon/chain links and build a hash keyed by POLY_ID listing
-# the chains (by TLID) attached to it. 
-
-link_layer = ds.GetLayerByName( 'PolyChainLink' )
-
-feat = link_layer.GetNextFeature()
-geom_id_field = feat.GetFieldIndex( 'TLID' )
-tile_ref_field = feat.GetFieldIndex( 'MODULE' )
-lpoly_field = feat.GetFieldIndex( 'POLYIDL' )
-rpoly_field = feat.GetFieldIndex( 'POLYIDR' )
-
-link_count = 0
-
-while feat is not None:
-    module = modules_hash[feat.GetField( tile_ref_field )]
-
-    tlid = feat.GetField( geom_id_field )
-
-    lpoly_id = feat.GetField( lpoly_field )
-    rpoly_id = feat.GetField( rpoly_field )
-
-    if lpoly_id != rpoly_id :
-      try:
-          module.poly_line_links[lpoly_id].append( tlid )
-      except:
-          module.poly_line_links[lpoly_id] = [ tlid ]
-  
-      try:
-          module.poly_line_links[rpoly_id].append( tlid )
-      except:
-          module.poly_line_links[rpoly_id] = [ tlid ]
-  
-      link_count = link_count + 1
-
-    feat.Destroy()
-
-    feat = link_layer.GetNextFeature()
-
-print 'Processed %d links.' % link_count
-
 # Now we need to pull in all the PIP, AreaLandmarks and Landmarks features
-# and keep them in a hash based on POLYID
+# and keep them in hashes based on POLYID
 
 #PIP:
 feat = pip_layer.GetNextFeature()
 polyid_field = feat.GetFieldIndex( 'POLYID' )
 pip_hash={}
+dest_polyid_hash={}
 
 while feat is not None:
    poly_id = feat.GetField( polyid_field )
    pip_hash[poly_id] = feat
+   # initially, every polygon is distinct, with no list of polys mapped into it
+   dest_polyid_hash[poly_id]=PolyMap()
+   dest_polyid_hash[poly_id].polyid=poly_id
    feat = pip_layer.GetNextFeature()   
 
 print 'Processed %d PIP records.' % len(pip_hash)
@@ -321,6 +325,144 @@ while feat is not None:
    feat = Landmarks_layer.GetNextFeature()   
 print 'Processed %d Landmarks records.' % len(Landmarks_hash)
 
+if dissolve == 1:
+  print 'Scanning PolyChains for polygons to dissolve.'
+  #############################################################################
+  #
+  # Now we sift through all the PolyChainLink records, find the ones that have
+  # distinct left and right polyids, but for which the associated landmark
+  # is identical.  We will dissolve those polygons by mapping their polyids
+  link_layer = ds.GetLayerByName( 'PolyChainLink' )
+
+  feat = link_layer.GetNextFeature()
+  lpoly_field = feat.GetFieldIndex( 'POLYIDL' )
+  rpoly_field = feat.GetFieldIndex( 'POLYIDR' )
+  
+  link_count=0
+  ndissolved=0
+  
+  while feat is not None: 
+      link_count = link_count+1
+  
+      orig_lpoly_id=feat.GetField( lpoly_field )
+      orig_rpoly_id=feat.GetField( rpoly_field )
+      try:
+        lpoly_id = dest_polyid_hash[orig_lpoly_id].polyid
+      except:
+        lpoly_id = 0
+  
+      try:
+        rpoly_id = dest_polyid_hash[orig_rpoly_id].polyid
+      except:
+        rpoly_id= 0
+   
+      #if not already identical (either because already dissolved, or because
+      #internal
+      if lpoly_id != rpoly_id:
+         #find the left and right areaLandmark, if there are any      
+         try:
+           left_areaLandmark=areaLandmarks_hash[lpoly_id]
+           l_landidx=left_areaLandmark.GetFieldIndex('LAND')      
+           l_land=left_areaLandmark.GetField(l_landidx)
+         except:
+           left_areaLandmark=None
+  
+         try:
+           right_areaLandmark=areaLandmarks_hash[rpoly_id]
+           r_landidx=right_areaLandmark.GetFieldIndex('LAND')      
+           r_land=right_areaLandmark.GetField(r_landidx)
+         except:
+           right_areaLandmark=None
+  
+         if left_areaLandmark is not None and right_areaLandmark is not None:
+           if l_land == r_land:
+              ndissolved = ndissolved+1
+              # we have two polys that need to be dissolved
+              # we will always do this by copying the left polygon's
+              # ID into the right base polygon and every polygon that was
+              # mapped to it, then adding the right polygon's
+              # ID and any IDs in its map list to the base polygon on the 
+              # left.  
+              dest_polyid_hash[rpoly_id].polyid=lpoly_id
+              for i in dest_polyid_hash[rpoly_id].mappedlist:
+                 dest_polyid_hash[i].polyid=lpoly_id
+                
+              dest_polyid_hash[lpoly_id].mappedlist.append(rpoly_id)
+              dest_polyid_hash[lpoly_id].mappedlist.extend(dest_polyid_hash[rpoly_id].mappedlist)
+              dest_polyid_hash[rpoly_id].mappedlist=[]
+  
+      feat.Destroy()
+  
+      feat = link_layer.GetNextFeature()
+
+  print 'Scanned %d links for polygon dissolve, dissolved %d boundaries.' % (link_count,ndissolved)
+
+
+
+#############################################################################
+# Read all polygon/chain links and build a hash keyed by POLY_ID listing
+# the chains (by TLID) attached to it. 
+
+link_layer = ds.GetLayerByName( 'PolyChainLink' )
+link_layer.ResetReading()
+
+feat = link_layer.GetNextFeature()
+geom_id_field = feat.GetFieldIndex( 'TLID' )
+tile_ref_field = feat.GetFieldIndex( 'MODULE' )
+lpoly_field = feat.GetFieldIndex( 'POLYIDL' )
+rpoly_field = feat.GetFieldIndex( 'POLYIDR' )
+
+link_count = 0
+
+while feat is not None:
+    module = modules_hash[feat.GetField( tile_ref_field )]
+
+    tlid = feat.GetField( geom_id_field )
+
+    orig_lpoly_id=feat.GetField( lpoly_field )
+    orig_rpoly_id=feat.GetField( rpoly_field )
+    try:
+      lpoly_id = dest_polyid_hash[orig_lpoly_id].polyid
+    except: 
+      lpoly_id = 0
+
+    try:
+      rpoly_id = dest_polyid_hash[orig_rpoly_id].polyid
+    except:
+      rpoly_id = 0
+
+    # sanity checking:
+    if lpoly_id != 0:
+      if lpoly_id != orig_lpoly_id and len(dest_polyid_hash[orig_lpoly_id].mappedlist) != 0:
+         print 'Arrgh --- found a left polygon mapped into another with a non-null list!'
+         sys.exit(1)
+
+    if rpoly_id != 0:
+      if rpoly_id != orig_rpoly_id and len(dest_polyid_hash[orig_rpoly_id].mappedlist) != 0:
+         print 'Arrgh --- found a right polygon mapped into another with a non-null list!'
+         sys.exit(1)
+
+    if lpoly_id != rpoly_id :
+      if lpoly_id != 0:
+        try:
+            module.poly_line_links[lpoly_id].append( tlid )
+        except:
+            module.poly_line_links[lpoly_id] = [ tlid ]
+  
+      if rpoly_id != 0:
+        try:
+            module.poly_line_links[rpoly_id].append( tlid )
+        except:
+            module.poly_line_links[rpoly_id] = [ tlid ]
+  
+      link_count = link_count + 1
+
+    feat.Destroy()
+
+    feat = link_layer.GetNextFeature()
+
+print 'Processed %d links.' % link_count
+
 
 # Boy, what a mess.  But we now have all the data we need in hashes, so we
 # can loop over POLYGON records and extract data as we need it.
@@ -336,68 +478,76 @@ poly_count = 0
 
 while feat is not None:
     module = modules_hash[feat.GetField( tile_ref_field )]
-    polyid = feat.GetField( polyid_field )
-
-    tlid_list = module.poly_line_links[polyid]
-
-    link_coll = ogr.Geometry( type = ogr.wkbGeometryCollection )
-    for tlid in tlid_list:
-        geom = module.lines[tlid]
-        link_coll.AddGeometry( geom )
+    orig_polyid = feat.GetField( polyid_field )
 
     try:
-        poly = ogr.BuildPolygonFromEdges( link_coll )
-
-        #print poly.ExportToWkt()
-        #feat.SetGeometryDirectly( poly )
-
-        feat2 = ogr.Feature(feature_def=shp_layer.GetLayerDefn())
-
-        for fld_index in range(len(field_names)):
-           theFieldName = field_names[fld_index]
-           layerName = fields_hash[theFieldName].layerName
-           theFieldIdx = fields_hash[theFieldName].fld_index
-#           print 'fetching field %s from layer %s' % (theFieldName, layerName)
-           # if it's from Polygon just pop it in because we have it now:
-           if layerName == 'Polygon':
-              feat2.SetField( fld_index, feat.GetField(theFieldIdx) )
-           # If it's from PIP, we definitely have one
-           elif layerName == 'PIP':
-              feat2.SetField(fld_index, pip_hash[polyid].GetField(theFieldIdx))
-           # this could be a problem, coz there might not be one
-           elif layerName == 'AreaLandmarks':
-              try:
-                feat3 = areaLandmarks_hash[polyid]
-#                print ' found feature with polyid %d in AreaLandmarks' % polyid
-                feat2.SetField(fld_index, feat3.GetField(theFieldIdx))
-              except:
-                feat2.UnsetField(fld_index)
-           # this one's mega tricky, coz it depends on there being
-           # an AreaLandmarks first
-           elif layerName == 'Landmarks':
-              try:
-                feat3 = areaLandmarks_hash[polyid]
-#                print ' found feature with polyid %d in AreaLandmarks' % polyid
-                landidx1 = feat3.GetFieldIndex('LAND')
-#                print '  LAND is field %d in AreaLandmarks' % landidx1
-#                print '   LAND field in this record is %d.' % feat3.GetField(landidx1)
-                feat4 = Landmarks_hash[feat3.GetField(landidx1)]
-#                print ' found feature with LAND %d in Landmarks' % feat3.GetField(landidx1)
-                feat2.SetField(fld_index, feat4.GetField(theFieldIdx))
-              except:
-                feat2.UnsetField(fld_index)
-           else:
-              print 'unknown layer %s referenced.' % layerName
-
-        feat2.SetGeometryDirectly( poly )
-
-        shp_layer.CreateFeature( feat2 )
-        feat2.Destroy()
-
-        poly_count = poly_count + 1
+      polyid=dest_polyid_hash[orig_polyid].polyid
     except:
-        print 'BuildPolygonFromEdges failed.'
+      polyid=0
 
+    # we must only do those polygons that have not been mapped to others, or
+    # we'll be doing them multiple times
+    if polyid != 0 and polyid == orig_polyid:
+      tlid_list = module.poly_line_links[polyid]
+  
+      link_coll = ogr.Geometry( type = ogr.wkbGeometryCollection )
+      for tlid in tlid_list:
+          geom = module.lines[tlid]
+          link_coll.AddGeometry( geom )
+  
+      try:
+          poly = ogr.BuildPolygonFromEdges( link_coll )
+  
+          #print poly.ExportToWkt()
+          #feat.SetGeometryDirectly( poly )
+  
+          feat2 = ogr.Feature(feature_def=shp_layer.GetLayerDefn())
+  
+          for fld_index in range(len(field_names)):
+             theFieldName = field_names[fld_index]
+             layerName = fields_hash[theFieldName].layerName
+             theFieldIdx = fields_hash[theFieldName].fld_index
+#             print 'fetching field %s from layer %s' % (theFieldName, layerName)
+             # if it's from Polygon just pop it in because we have it now:
+             if layerName == 'Polygon':
+                feat2.SetField( fld_index, feat.GetField(theFieldIdx) )
+             # If it's from PIP, we definitely have one
+             elif layerName == 'PIP':
+                feat2.SetField(fld_index, pip_hash[polyid].GetField(theFieldIdx))
+             # this could be a problem, coz there might not be one
+             elif layerName == 'AreaLandmarks':
+                try:
+                  feat3 = areaLandmarks_hash[polyid]
+#                  print ' found feature with polyid %d in AreaLandmarks' % polyid
+                  feat2.SetField(fld_index, feat3.GetField(theFieldIdx))
+                except:
+                  feat2.UnsetField(fld_index)
+             # this one's mega tricky, coz it depends on there being
+             # an AreaLandmarks first
+             elif layerName == 'Landmarks':
+                try:
+                  feat3 = areaLandmarks_hash[polyid]
+#                  print ' found feature with polyid %d in AreaLandmarks' % polyid
+                  landidx1 = feat3.GetFieldIndex('LAND')
+#                  print '  LAND is field %d in AreaLandmarks' % landidx1
+#                  print '   LAND field in this record is %d.' % feat3.GetField(landidx1)
+                  feat4 = Landmarks_hash[feat3.GetField(landidx1)]
+#                  print ' found feature with LAND %d in Landmarks' % feat3.GetField(landidx1)
+                  feat2.SetField(fld_index, feat4.GetField(theFieldIdx))
+                except:
+                  feat2.UnsetField(fld_index)
+             else:
+                print 'unknown layer %s referenced.' % layerName
+  
+          feat2.SetGeometryDirectly( poly )
+  
+          shp_layer.CreateFeature( feat2 )
+          feat2.Destroy()
+  
+          poly_count = poly_count + 1
+      except:
+          print 'BuildPolygonFromEdges failed.'
+  
     feat.Destroy()
 
     feat = poly_layer.GetNextFeature()
