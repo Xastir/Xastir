@@ -91,7 +91,7 @@ class PolyMap:
 
 #############################################################################
 def Usage():
-    print 'Usage: tigerpoly.py infile [outfile].shp'
+    print 'Usage: tigerpoly.py [-d] infile [outfile].shp'
     print
     sys.exit(1)
 
