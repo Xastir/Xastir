@@ -273,6 +273,8 @@ LIBS="$LIBS -ltiff"
                AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
         fi
     fi
+else
+  use_geotiff=no
 fi 
 
 # Check for AX.25 library 
