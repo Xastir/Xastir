@@ -601,6 +601,7 @@ void draw_geo_image_map (Widget w,
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
+    time_t query_start_time, query_end_time;
 #ifdef HAVE_LIBCURL
     CURL *curl;
     CURLcode res;
@@ -661,9 +662,6 @@ void draw_geo_image_map (Widget w,
 #ifdef TIMING_DEBUG
     time_mark(1);
 #endif  // TIMING_DEBUG
-
-    time_t query_start_time, query_end_time;
-
 #ifdef USE_MAP_CACHE 
     int map_cache_return;
 #endif  // USE_MAP_CACHE
