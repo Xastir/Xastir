@@ -1733,8 +1733,10 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 //
 void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
 
+#ifdef USE_MAP_CACHE
     // Disable reads from the map cache
     map_cache_fetch_disable = 1;
+#endif
 
     // Show a busy cursor while the map is being downloaded
     busy_cursor(appshell);
@@ -1742,8 +1744,10 @@ void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
     // Cause maps to be refreshed
     new_image(da);
 
+#ifdef USE_MAP_CACHE
     //Enable reads from the map cache
     map_cache_fetch_disable = 0;
+#endif
 }
 
 
