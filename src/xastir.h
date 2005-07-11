@@ -212,8 +212,9 @@ extern int tiger_show_statehwy;
 extern int tiger_show_water;
 extern int tiger_show_lakes;
 extern int tiger_show_misc;
-extern int net_map_timeout;
 #endif  // HAVE_IMAGEMAGICK
+
+extern int net_map_timeout;
 
 extern void sort_list(char *filename,int size, Widget list, int *item);
 extern void redraw_symbols(Widget w);
