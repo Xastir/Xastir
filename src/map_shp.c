@@ -3636,6 +3636,7 @@ if (on_screen) {
                                 }
                                 /* draw the polygon border */
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+                                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (weather_alert_flag) {
@@ -3735,12 +3736,14 @@ if (on_screen) {
                                 }
 #else
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border
+                                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
 #endif /* WITH_DBFAWK */
 
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else {  // Use whatever color is defined by this point.
                                 (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
+                                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                         }
