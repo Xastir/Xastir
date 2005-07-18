@@ -1022,7 +1022,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
     int width = 0;
     long x_long2, x_long3, y_lat2, y_lat3;
     long x1, y1, x2, y2, x3, y3;
-
+    double screen_miles;
 
     // Check for a zero value for N.  If found, the NRQ value is meaningless
     // and we need to assume some working default values.
@@ -1093,6 +1093,13 @@ void draw_bearing(long x_long, long y_lat, char *course,
     while (real_bearing_max > 360.0)
         real_bearing_max -= 360.0;
 
+    // want this in nautical miles
+    screen_miles = scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) 
+      * .5400;
+
+    // Shorten range to more closely fit the screen
+    if ( range > (3.0 * screen_miles) )
+      range = 3.0 * screen_miles;
 
     // We now have a distance and a bearing for each vector.
     // Compute the end points via dead-reckoning here.  It will give
