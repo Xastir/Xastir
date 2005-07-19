@@ -26796,7 +26796,7 @@ else if (DF_object_enabled) {
 
 
         // "Bearing"
-        ob_bearing = XtVaCreateManagedWidget(langcode("WPUPSTI058"),
+        ob_bearing = XtVaCreateManagedWidget(langcode("POPUPOB046"),
                 xmLabelWidgetClass, 
                 formbeam,
                 XmNtopAttachment,           XmATTACH_WIDGET,
