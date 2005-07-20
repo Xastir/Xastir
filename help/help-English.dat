@@ -1218,7 +1218,11 @@ See the help topic "Tracking a Station"
 
 Fetch Findu Trail
 Downloads historic trail data from findu.com. Slider bars control the starting
-point and duration of data downloaded.
+point and duration of data downloaded.  For an example, if you wished to see
+the track that happened two days ago, all day long, you might set the first
+slider to 48 hours (start time of two days ago) and the second slider to 24
+hours to snag exactly one day's worth of data, from the start until 24 hours
+later.
 
 Filter Data
 This sub-menu allows filtering of the displayed symbols:
