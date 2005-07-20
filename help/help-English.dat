@@ -815,11 +815,13 @@ button will display the selected maps. Cancel will abandon any changes.
   numbers widely to allow later insertion of additional map layers. From this
   dialog you may specify whether a vector map is drawn with color fills. This
   is a per-map setting; the global disable option on the Maps menu can override
-  this. The Filled setting is ignored for raster maps (images). You can also
-  select whether a map is considered by the "Auto maps" feature here. Finally,
-  you can specify the minimum and maximum zoom levels at which a map is
-  displayed. This is useful to prevent very detailed local maps from loading at
-  very wide zoom positions, and visa-versa. A minimum zoom of 10 means a map
+  this. The Filled setting is ignored for raster maps (images). A setting of
+  "auto" allows a dbfawk file to control this parameter directly (usable only
+  if dbfawk is compiled in and the map in question is a Shapefile). You can
+  also select whether a map is considered by the "Auto maps" feature here.
+  Finally, you can specify the minimum and maximum zoom levels at which a map
+  is displayed. This is useful to prevent very detailed local maps from loading
+  at very wide zoom positions, and visa-versa. A minimum zoom of 10 means a map
   will be displayed at all zooms including and above 10. Likewise, a maximum
   zoom of 256 means a map will be displayed at all zooms below and including
   256.
@@ -1954,10 +1956,15 @@ set up communications with it when the program first starts.
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
-Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with your
-callsign, "RELAY", or "WIDE1-1" in the path. This option is only recommended
-for base stations in regions where there are few other fill-in digipeaters in
-the area. Consult with a local group about the best setting for your region.
+Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic.  It will do
+this if the first unused digipeater call in the path matches your callsign or a
+callsign listed in your Xastir config file ("RELAY_DIGIPEAT_CALLS" line,
+default is "WIDE1-1"). This option is only recommended for base stations in
+regions where there are few other fill-in digipeaters in the area. Consult with
+a local group about the best setting for your region. You may hand-edit the
+Xastir config file when Xastir is not running in order to change this string to
+match your local recommendations. In the U.S., "WIDE1-1" is the recommended
+setting.
 
 The TNC Port is the Unix serial device that the TNC is hooked to.
 Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc.
@@ -2010,12 +2017,16 @@ set up communications with it when the program first starts.
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
-Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with either
-your callsign, "RELAY", or "WIDE1-1 in the path. This option is only
-recommended for base stations in regions where there are few other
-fill-in digipeater stations in the area.  Consult with a local group about the
-best setting for your region.  This is only needed if you are not using any
-other software that performs this function, such as aprsdigi or DIGI_NED.
+Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic. It will do
+this if the first unused digipeater call in the path matches your callsign or a
+callsign listed in your Xastir config file ("RELAY_DIGIPEAT_CALLS" line,
+default is "WIDE1-1"). This option is only recommended for base stations in
+regions where there are few other fill-in digipeater stations in the area.
+Consult with a local group about the best setting for your region.  This is
+only needed if you are not using any other software that performs this
+function, such as aprsdigi or DIGI_NED. You may hand-edit the Xastir config
+file when Xastir is not running in order to change this string to match your
+local recommendations. In the U.S., "WIDE1-1" is the recommended setting.
 
 Enter the AX.25 Device name you specified in the axports file for this device.
 
