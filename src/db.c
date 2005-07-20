@@ -85,6 +85,11 @@ Widget  station_list;
 Widget  button_store_track;
 int station_data_auto_update = 0;
 
+// Used to store all the calls we might "relay" digipeat by.
+// Separated by commas.  Up to 50 callsigns of 9 chars each plus
+// comma delimiters.
+char relay_digipeater_calls[10*MAX_RELAY_DIGIPEATER_CALLS];
+
 Widget si_text;
 Widget db_station_info  = (Widget)NULL;
 
@@ -14816,11 +14821,16 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 void relay_digipeat(char *call, char *path, char *info, int port) {
     char new_path[110+1];
     char new_digi[MAX_CALLSIGN+2];  // Need extra for '*' storage
-    int  ii;
+    int  ii, jj;
     int  done;
     char destination[MAX_CALLSIGN+1];
+
 #define MAX_RELAY_SUBSTRINGS 10
     char *Substring[MAX_RELAY_SUBSTRINGS];  // Pointers to substrings parsed by split_string()
+
+    // Pointers to all of the possible calls we with to digipeat by
+    char *Relay_Calls[MAX_RELAY_DIGIPEATER_CALLS];
+
     char temp_string[MAX_LINE_SIZE+1];
 
     // These strings are debugging tools
@@ -14950,6 +14960,68 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
  
 //fprintf(stderr,"\t\tUnused digi: %s\tPath: %s\n", Substring[ii], path);
 
+
+    // Split the relay digipeater calls into separate substrings.
+    // Split on comma delimiters.  We don't get rid of extra spaces
+    // here, so the original string needs to be free of them.
+    split_string(relay_digipeater_calls, Relay_Calls, MAX_RELAY_DIGIPEATER_CALLS);
+
+    // Check for match against my_callsign in this digipeater slot
+    done = 0;
+    if (strcmp(Substring[ii], my_callsign) == 0) {
+        // It's our callsign.  Digipeat using this call slot.
+        done++;
+    }
+    else {  // Not my_callsign.  Check every non-empty string in
+            // Relay_Calls[] for a match.
+
+        jj = 0;
+        while (!done && jj < MAX_RELAY_DIGIPEATER_CALLS) {
+
+            // Check for ending conditions
+            if (Relay_Calls[jj] == NULL || Relay_Calls[jj][0] == '\0') {
+                // We hit the end of the array of possible
+                // digipeater calls and had no match.  Exit from
+                // this routine as we're not going to digipeat on
+                // this callsign slot.
+
+// Later we could add the option of "preemptive digipeating", where
+// we look further down the path for a possible match.  We're not
+// doing that now.
+
+//                fprintf(stderr,"End of Relay_Calls array: %d\n",jj);
+                return;
+            }
+
+            // If we made it to here, we should have a valid
+            // digipeater callsign in the Relay_Calls[jj] slot to
+            // compare against.
+
+            if (debug_level & 1) {
+                fprintf(stderr,"\tComparing %s to %s\n",
+                    Substring[ii],
+                    Relay_Calls[jj]);
+            }
+
+            if (strcmp(Substring[ii], Relay_Calls[jj]) == 0) {
+                done++;
+//                fprintf(stderr,"match, done++\n");
+            }
+            else {
+                jj++;
+//                fprintf(stderr,"incrementing jj: %d\n", jj);
+            }
+        }
+    }
+    if (!done) {
+        // No valid digipeating callsign found in this slot, exit
+        // this routine as we're not going to digipeat this packet.
+        return;
+    }
+
+
+/*
+OLD CODE:
     // Check for RELAY, WIDE1-1 (the new relay) or my_callsign in
     // this digipeater slot.  If none of these found then exit this
     // routine.
@@ -14961,6 +15033,7 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 //fprintf(stderr,"Not relay, wide1-1, or %s, skipping\n", my_callsign);
         return;
     }
+*/
 
 
     // Ok, we made it!  We have RELAY, WIDE1-1, or my_callsign that

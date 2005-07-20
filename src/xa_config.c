@@ -444,6 +444,8 @@ void save_data(void)  {
         store_long (fout, "SCREEN_LAT", mid_y_lat_offset);
         store_long (fout, "SCREEN_LONG", mid_x_long_offset);
 
+        store_string(fout, "RELAY_DIGIPEAT_CALLS", relay_digipeater_calls);
+
         store_int (fout, "COORDINATE_SYSTEM", coordinate_system);
 
         store_int (fout, "STATION_TRANSMIT_AMB", position_amb_chars);
@@ -1044,6 +1046,13 @@ void load_data_or_default(void) {
 
     if (!get_long ("SCREEN_LONG", &mid_x_long_offset, 0l, 129600000l, 64800000l))
         mid_x_long_offset = 64800000l;
+
+
+    if (!get_string("RELAY_DIGIPEAT_CALLS", relay_digipeater_calls, sizeof(relay_digipeater_calls)))
+        sprintf (relay_digipeater_calls, "WIDE1-1");
+    // Make them all upper-case.
+    (void)to_upper(relay_digipeater_calls);
+
 
     if (!get_int ("COORDINATE_SYSTEM", &coordinate_system, 0, 5, USE_DDMMMM))
         coordinate_system = USE_DDMMMM;

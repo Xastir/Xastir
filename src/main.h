@@ -112,8 +112,8 @@ extern void *my_argv;
 extern void *my_envp;
 //////////////////////////////////////////////////////////////////////
 
-
-
+#define MAX_RELAY_DIGIPEATER_CALLS 50
+extern char relay_digipeater_calls[10*MAX_RELAY_DIGIPEATER_CALLS];
 extern int skip_dupe_checking;
 extern int serial_char_pacing;  // Inter-character delay in ms.
 extern int disable_all_maps;
