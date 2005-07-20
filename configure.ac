@@ -467,9 +467,6 @@ fi
 if test "${use_gpsman}" = "yes"; then
   ILIBS="$ILIBS GPSMan"
 fi
-if test "${use_shapelib}" = "yes"; then
-  ILIBS="$ILIBS ShapeLib"
-fi
 if test "${use_imagemagick}" = "yes"; then
   ILIBS="$ILIBS ImageMagick"
 fi
@@ -482,11 +479,20 @@ fi
 if test "${use_gdal}" = "yes"; then
   ILIBS="$ILIBS GDAL/OGR"
 fi
+if test "${use_shapelib}" = "yes"; then
+  ILIBS="$ILIBS ShapeLib"
+fi
 if test "${use_pcre}" = "yes"; then
   ILIBS="$ILIBS PCRE"
 fi
 if test "${use_dbfawk}" = "yes"; then
   ILIBS="$ILIBS Dbfawk"
+fi
+if test "${use_map_cache}" = "yes"; then
+  ILIBS="$ILIBS map_caching"
+fi
+if test "${use_err_popups}" = "yes"; then
+  ILIBS="$ILIBS error_popups"
 fi
 if test "${use_libgc}" = "yes"; then
   ILIBS="$ILIBS libgc"
@@ -494,8 +500,8 @@ fi
 if test "${use_profiling}" = "yes"; then
   ILIBS="$ILIBS profiling"
 fi
-if test "${use_err_popups}" = "yes"; then
-  ILIBS="$ILIBS error_popups"
+if test "${use_rtree}" = "yes"; then
+  ILIBS="$ILIBS rtree"
 fi
 AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
 
