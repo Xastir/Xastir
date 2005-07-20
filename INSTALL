@@ -659,7 +659,57 @@ First Time Install:
       GDAL/OGR that is newer than that date (or use the CVS version as
       described above).
 
-   10. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   10. OPTIONAL:  Install Berkely DB Library to enable map caching
+      of internet maps.
+
+      Please note that segfaults (crashes) in Berkeley DB calls can be caused
+      by having multiple versions of the library installed.  The programming
+      interface has changed between the versions.  If you compile Xastir with
+      one version's header files but Xastir links to another version's
+      library, you can easily end up with segfaults when Xastir runs.  SuSE
+      Linux for instance has these available which you _should_ install:
+
+            db 
+            db-devel
+
+      Plus SuSE has these additional packages available which you should _not_
+      install.  Remove them if they're on your system (using YaST or rpm):
+
+            db-40
+            db42
+
+      Xastir will normally try to use /usr/include/db.h as the header file,
+      and /usr/lib/libdb.so as the library it will link to (which is usually
+      a symlink to something else, like /usr/lib/libdb-4.1.so).  If the
+      header file and the library file don't match, a segfault often occurs.
+      The easiest way to avoid problems is to keep one and only one version
+      of the Berkeley DB library on your system.
+
+      Here's how to test what version of include file and library file you're
+      using:  Find the db.h file.  It's usually in /usr/include/db.h.
+
+            grep DB_VERSION db.h
+
+      Mine shows this:
+
+        #define DB_VERSION_MAJOR        4
+        #define DB_VERSION_MINOR        1
+        #define DB_VERSION_PATCH        25
+        #define DB_VERSION_STRING       "Sleepycat Software: Berkeley DB 4.1.25: (October  2, 2003)"
+
+      Now do this:
+
+        ldd /usr/local/bin/xastir | grep libdb
+
+      Mine shows this:
+
+        libdb-4.1.so => /usr/lib/libdb-4.1.so (0x40680000)
+
+      In this case, version 4.1 of the include file matches 4.1 of the library
+      file, so it works fine.  A mismatch in the first two numbers can cause
+      segfaults when Xastir tries to do map caching.
+ 
+   11. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using CVS)
@@ -760,7 +810,7 @@ First Time Install:
      see the notes above about /sbin/ldconfig.
 
 
-   11. Kernel AX.25 Interfaces
+   12. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -824,7 +874,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   12. Serially-Connected TNC's
+   13. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -948,7 +998,7 @@ First Time Install:
      >    being yet another root exploit-in-waiting.
 
 
-   13. Serially-Connected Garmin RINO Radio/GPS
+   14. Serially-Connected Garmin RINO Radio/GPS
 
      If you have a Garmin RINO attached to a serial port, have GPSMan
      installed, and have support for GPSMan compiled into Xastir, then Xastir
@@ -988,7 +1038,7 @@ First Time Install:
      (ie kerchunk) to send a position."
 
 
-   14. Start up XASTIR and read the help files to configure it. If you have 
+   15. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in
