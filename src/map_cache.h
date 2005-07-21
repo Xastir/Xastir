@@ -33,6 +33,8 @@ extern int map_cache_fetch_disable;
 
 // External function declarations
 
+extern void map_cache_init(void);
+
 // Saves file and puts entries into cache db
 extern int map_cache_put( char * map_cache_url, char * map_cache_file );
 

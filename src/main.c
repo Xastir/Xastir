@@ -29760,6 +29760,11 @@ int main(int argc, char *argv[], char *envp[]) {
 #endif  // USING_LIBGC
 
 
+#ifdef USE_MAP_CACHE
+    map_cache_init();
+#endif  // USE_MAP_CACHE
+ 
+
     my_argc = argc;
     my_argv = (void *)&argv[0];
     my_envp = (void *)&envp[0];
@@ -30252,3 +30257,5 @@ int main(int argc, char *argv[], char *envp[]) {
     quit(0);
     return 0;
 }
+
+

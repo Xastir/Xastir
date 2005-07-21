@@ -64,6 +64,51 @@ int map_cache_fetch_disable = 0;
 
 
 
+
+
+// Here we do a run-time check to verify that the header file we
+// used to compile with is the same version as the shared library
+// we're currently linked with.  To do otherwise often results in
+// segfaults.
+//
+void map_cache_init(void) {
+    int warn_now = 0;
+
+    if (strcmp( DB_VERSION_STRING, db_version(NULL,NULL,NULL) ) != 0) {
+        fprintf(stderr,
+            "\n\n***** WARNING *****\n");
+        fprintf(stderr,
+            "Berkeley DB header files/shared library file do NOT match!\n");
+        warn_now++;
+    }
+
+    if (debug_level & 5 || warn_now) {
+
+        //fprintf(stderr,
+        //    "Berkeley DB Library Header File Version %d.%d.%d\n",
+        //    DB_VERSION_MAJOR,
+        //    DB_VERSION_MINOR,
+        //    DB_VERSION_PATCH);
+
+        fprintf(stderr,
+            " Header file: %s\n",
+            DB_VERSION_STRING);
+
+        fprintf(stderr,
+            "Library file: %s\n",
+            db_version(NULL,NULL,NULL) );
+    }
+
+    if (warn_now) {
+        fprintf(stderr,
+            "***** WARNING *****\n");
+    }
+}
+
+
+
+
+
 // map_cache_put()
 //
 // Inputs:
