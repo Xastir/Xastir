@@ -79,6 +79,52 @@ U.S.
 Adding other libraries gives you the additional capabilities listed
 above.
 
+For those who would like to see the full list of libraries Xastir
+might use (to decide what packages to install), here's the ldd
+command run against a pretty much fully-loaded Xastir.  Note that
+quite a few of these libraries are pulled in by the ImageMagick
+library, and your library list may look little like it due to
+differences in how ImageMagick was compiled:
+
+  > ldd /usr/local/bin/xastir
+    libXm.so.3 => /usr/X11R6/lib/libXm.so.3 (0x40030000)
+    libXt.so.6 => /usr/X11R6/lib/libXt.so.6 (0x40287000)
+    libX11.so.6 => /usr/X11R6/lib/libX11.so.6 (0x402db000)
+    libMagick.so.0 => /usr/lib/libMagick.so.0 (0x403d7000)
+    liblcms.so.1 => /usr/lib/liblcms.so.1 (0x4052f000)
+    libfreetype.so.6 => /usr/lib/libfreetype.so.6 (0x40553000)
+    libexif.so.9 => /usr/lib/libexif.so.9 (0x405a9000)
+    libXext.so.6 => /usr/X11R6/lib/libXext.so.6 (0x405be000)
+    libSM.so.6 => /usr/X11R6/lib/libSM.so.6 (0x405cc000)
+    libICE.so.6 => /usr/X11R6/lib/libICE.so.6 (0x405d5000)
+    libbz2.so.1 => /usr/lib/libbz2.so.1 (0x405ed000)
+    libz.so.1 => /usr/lib/libz.so.1 (0x405fd000)
+    libpthread.so.0 => /lib/i686/libpthread.so.0 (0x4060c000)
+    libm.so.6 => /lib/i686/libm.so.6 (0x4065d000)
+    libdb-4.1.so => /usr/lib/libdb-4.1.so (0x40680000)
+    libXpm.so.4 => /usr/X11R6/lib/libXpm.so.4 (0x40744000)
+    librt.so.1 => /lib/librt.so.1 (0x40755000)
+    libcurl.so.2 => /usr/lib/libcurl.so.2 (0x40768000)
+    libXp.so.6 => /usr/X11R6/lib/libXp.so.6 (0x4078f000)
+    libshp.so.1 => /usr/local/lib/libshp.so.1 (0x40797000)
+    libpcre.so.0 => /usr/lib/libpcre.so.0 (0x4079f000)
+    libproj.so.0 => /usr/local/lib/libproj.so.0 (0x407ab000)
+    libtiff.so.3 => /usr/lib/libtiff.so.3 (0x407e2000)
+    libgeotiff.so => /usr/local/lib/libgeotiff.so (0x4082b000)
+    libax25.so.0 => /usr/lib/libax25.so.0 (0x4084d000)
+    libgdal.so.1 => /usr/local/lib/libgdal.so.1 (0x40856000)
+    libc.so.6 => /lib/i686/libc.so.6 (0x40b64000)
+    libdl.so.2 => /lib/libdl.so.2 (0x40c97000)
+    /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+    libssl.so.0.9.7 => /usr/lib/libssl.so.0.9.7 (0x40c9b000)
+    libcrypto.so.0.9.7 => /usr/lib/libcrypto.so.0.9.7 (0x40ccb000)
+    libjpeg.so.62 => /usr/lib/libjpeg.so.62 (0x40dbd000)
+    libjasper-1.700.so.2 => /usr/lib/libjasper-1.700.so.2 (0x40ddd000)
+    libpng.so.3 => /usr/lib/libpng.so.3 (0x40e2c000)
+    libstdc++.so.5 => /usr/lib/libstdc++.so.5 (0x40e5b000)
+    libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x40f1b000)
+
+
 
 Things you need for this version:
 ---------------------------------
