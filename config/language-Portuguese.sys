@@ -88,6 +88,7 @@ PULDNMP025|Fonte das etiquetas do mapa||
 PULDNMP015|Seleccionar a fonte do X||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
+PULDNMP029|Find Address||
 #
 # PopUp "Configurar tigermap"
 MPUPTGR001|Grelha||

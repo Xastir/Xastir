@@ -5448,11 +5448,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-//    geocode_place_button = XtVaCreateManagedWidget(langcode("PULDNMP014"),
-    geocode_place_button = XtVaCreateManagedWidget("Find Address",
+    geocode_place_button = XtVaCreateManagedWidget(langcode("PULDNMP029"),
             xmPushButtonGadgetClass,
             mappane,
-            XmNmnemonic,langcode_hotkey("PULDNMP014"),
+            XmNmnemonic,langcode_hotkey("PULDNMP029"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);

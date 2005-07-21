@@ -266,7 +266,7 @@ void Geocoder_place(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
 begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_place" );
 
-        geocoder_place_dialog = XtVaCreatePopupShell(langcode("PULDNMP014"),
+        geocoder_place_dialog = XtVaCreatePopupShell(langcode("PULDNMP029"),
                 xmDialogShellWidgetClass,Global.top,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,

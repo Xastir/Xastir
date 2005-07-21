@@ -94,6 +94,7 @@ PULDNMP025|Font Kartenbeschriftung||
 PULDNMP015|Xfontsel||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
+PULDNMP029|Find Address||
 #
 #
 # PopUp "Einstellungen Tigermaps"
