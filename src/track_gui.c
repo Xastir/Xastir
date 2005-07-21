@@ -525,6 +525,7 @@ void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) 
         XtVaSetValues(posit_length_value,
             XmNvalue, posit_start,
             NULL);
+        posit_length = temp;
     }
     XtVaSetValues(posit_length_value,
         XmNmaximum, posit_start,
