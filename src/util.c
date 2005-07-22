@@ -69,6 +69,12 @@ extern int pthread_mutexattr_setkind_np(pthread_mutexattr_t *attr, int kind);
 #endif  // MUTEX_DEBUG
 
 
+#ifdef HAVE_LIBCURL
+#include <curl/curl.h>
+#endif  // HAVE_LIBCURL
+
+
+
 int position_amb_chars;
 char echo_digis[6][MAX_CALLSIGN+1];
 
@@ -4274,10 +4280,6 @@ short checkHash(char *theCall, short theHash) {
 
 /* curl routines */
 #ifdef HAVE_LIBCURL
-
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
 
 struct FtpFile {
   char *filename;
