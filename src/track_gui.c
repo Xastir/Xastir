@@ -399,12 +399,6 @@ end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail_de
 void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[MAX_CALLSIGN+1];
     char fileimg[400];
-#ifdef HAVE_LIBCURL
-#else
-#ifdef HAVE_WGET
-    char tempfile[500];
-#endif  // HAVE_WGET
-#endif
     char log_filename[200];
     char *temp_ptr;
 
@@ -467,30 +461,11 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",         // Old
 //        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1",// New
         download_trail_station_call,posit_start,posit_length);
-#ifdef HAVE_LIBCURL
-    if (curl_getfile(fileimg, log_filename)) {
+
+    if (fetch_remote_file(fileimg, log_filename)) {
         // Had trouble getting the file.  Abort.
         return;
     }
-#else
-#ifdef HAVE_WGET
-    xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s \'%s\' 2> /dev/null\n",
-        WGET_PATH,
-        log_filename,
-        fileimg);
-
-    if (debug_level & 2)
-        fprintf(stderr,"%s",tempfile);
-
-    if ( system(tempfile) ) {   // Go get the file
-        fprintf(stderr,"Couldn't download the trail\n");
-        return;
-    }
-#else   // HAVE_WGET
-    fprintf(stderr,"libcurl or 'wget' not installed.  Can't download trail\n");
-#endif  // HAVE_WGET
-#endif
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);

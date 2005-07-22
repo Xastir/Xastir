@@ -4297,6 +4297,7 @@ int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
   }
   return fwrite(buffer, size, nmemb, out->stream);
 }
+#endif  // HAVE_LIBCURL
 
 
 
@@ -4305,26 +4306,10 @@ int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
 // Returns: 0 If file retrieved
 //          1 If there was a problem getting the file
 //
-// Currently these files use curl functions and could be modified to
-// use curl_getfile() instead:
-//
-//      map_geo.c
-//      map_geo-center.c
-//      map_tiger.c
-//      map_WMS.c
-//      util.c
-//
-// These files use wget functions and could be modifed to use
-// curl_getfile() instead (with a new name and wget functionality
-// included):
-//
-//      map_geo.c
-//      map_geo-center.c
-//      map_tiger.c
-//      map_WMS.c
-//      track_gui.c
-//
-int curl_getfile(char *fileimg, char *local_filename) {
+int fetch_remote_file(char *fileimg, char *local_filename) {
+
+#ifdef HAVE_LIBCURL
+
     CURL *curl;
     CURLcode res;
     char curlerr[CURL_ERROR_SIZE];
@@ -4334,8 +4319,15 @@ int curl_getfile(char *fileimg, char *local_filename) {
 
     if (curl) { 
 
+        // verbose debug is keen
+        //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
+
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+
+        // write function
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+
+        // download from fileimg
         curl_easy_setopt(curl, CURLOPT_URL, fileimg);
 
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
@@ -4384,9 +4376,39 @@ int curl_getfile(char *fileimg, char *local_filename) {
         fprintf(stderr,"Couldn't download the file %s\n", fileimg);
         return(1);
     }
-    return(0);
+    return(0);  // Success!
+
+#else   // HAVE_LIBCURL
+
+#ifdef HAVE_WGET
+
+    char tempfile[500];
+
+    xastir_snprintf(tempfile, sizeof(tempfile),
+        "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s \'%s\' 2> /dev/null\n",
+        WGET_PATH,
+        net_map_timeout,
+        local_filename,
+        fileimg);
+
+    if (debug_level & 2)
+        fprintf(stderr,"%s",tempfile);
+
+    if ( system(tempfile) ) {   // Go get the file
+        fprintf(stderr,"Couldn't download the file\n");
+        return(1);
+    }
+    return(0);  // Success!
+
+#else // HAVE_WGET
+
+    fprintf(stderr,"libcurl or 'wget' not installed.  Can't download file\n");
+    return(1);
+
+#endif  // HAVE_WGET
+#endif  // HAVE_LIBCURL
+
 }        
-#endif  //HAVE_LIBCURL
 
 
 

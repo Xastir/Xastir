@@ -113,16 +113,7 @@
 #undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_IMAGEMAGICK
 
-#ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
 
-struct FtpFile {
-  char *filename;
-  FILE *stream;
-};
-#endif  // HAVE_LIBCURL
 
 extern int npoints;		/* tsk tsk tsk -- globals */
 extern int mag;
@@ -194,16 +185,6 @@ void draw_WMS_map (Widget w,
     int l;
     XColor my_colors[256];
     int trans_skip = 0;             // skip transparent pixel
-#ifdef HAVE_LIBCURL
-    CURL *curl;
-    CURLcode res;
-    char curlerr[CURL_ERROR_SIZE];
-    struct FtpFile ftpfile;
-#else   // HAVE_LIBCURL
-  #ifdef HAVE_WGET
-    char tempfile[MAX_FILENAME];
-  #endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
@@ -560,89 +541,10 @@ void draw_WMS_map (Widget w,
         return;
     }
 
-#ifdef HAVE_LIBCURL
-    curl = curl_easy_init();
-
-    if (curl) { 
-
-        /* verbose debug is keen */
-      //        curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
-        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
-
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
-
-        // Added in libcurl 7.9.8
-#if (LIBCURL_VERSION_NUM >= 0x070908)
-        curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10.6
-#if (LIBCURL_VERSION_NUM >= 0x071006)
-        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10.7
-#if (LIBCURL_VERSION_NUM >= 0x071007)
-        curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-// Only included in newer libcurl?
-//        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-
-        /* write function */
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
-
-        /* download from fileimg */
-        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
-
-        /* save as local_filename */
-        ftpfile.filename = local_filename;
-        ftpfile.stream = NULL;
-        curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
-         
-        res = curl_easy_perform(curl);
-
-        curl_easy_cleanup(curl);
-
-        if (CURLE_OK != res) {
-            fprintf(stderr, "curl told us %d\n", res);
-            fprintf(stderr, "curlerr: %s\n", curlerr);
-        }
-
-        if (ftpfile.stream)
-            fclose(ftpfile.stream);
-
-        // Return if we had trouble
-        if (CURLE_OK != res) {
-            return;
-        }
-
-    } else { 
-        fprintf(stderr,"Couldn't download the WMS image\n");
+    if (fetch_remote_file(fileimg, local_filename)) {
+        // Had trouble getting the file.  Abort.
         return;
     }
-#else   // HAVE_LIBCURL
-#ifdef HAVE_WGET
-    xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s \'%s\' 2> /dev/null\n",
-        WGET_PATH,
-        net_map_timeout,
-        local_filename,
-        fileimg);
-
-    if (debug_level & 512)
-       fprintf(stderr,"%s",tempfile);
-
-    if (system(tempfile)) {   // Go get the file
-       fprintf(stderr,"Couldn't download the WMS image\n");
-       return;
-    }
-#else   // HAVE_WGET
-        fprintf(stderr,"libcurl or 'wget' not installed.  Can't download image\n");
-#endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
-
 
     // For debugging the MagickError/MagickWarning segfaults.
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.png");

@@ -101,17 +101,6 @@
 
 #include <math.h>
 
-#ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
-
-struct FtpFile {
-  char *filename;
-  FILE *stream;
-};
-#endif
-
 #include "xastir.h"
 #include "maps.h"
 #include "alert.h"

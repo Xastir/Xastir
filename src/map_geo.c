@@ -126,16 +126,7 @@
 #undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_IMAGEMAGICK
 
-#ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
 
-struct FtpFile {
-  char *filename;
-  FILE *stream;
-};
-#endif
 
 extern int npoints;		/* tsk tsk tsk -- globals */
 extern int mag;
@@ -224,16 +215,6 @@ void draw_toporama_map (Widget w,
     double left, right, top, bottom;
     int my_screen_width, my_screen_height;
     float my_zoom = 1.0;
-#ifdef HAVE_LIBCURL
-    CURL *curl;
-    CURLcode res;
-    char curlerr[CURL_ERROR_SIZE];
-    struct FtpFile ftpfile;
-#else
-#ifdef HAVE_WGET
-    char tempfile[MAX_FILENAME];
-#endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
 
 
     // Create a shorter filename for display (one that fits the
@@ -374,90 +355,10 @@ void draw_toporama_map (Widget w,
     // remote file, then go back and rework all of the various map
     // routines to use it.
 
-#ifdef HAVE_LIBCURL
-    curl = curl_easy_init();
-
-    if (curl) { 
-
-        /* verbose debug is keen */
-        //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
-        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
-
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
-
-        // Added in libcurl 7.9.8
-#if (LIBCURL_VERSION_NUM >= 0x070908)
-        curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10.6
-#if (LIBCURL_VERSION_NUM >= 0x071006)
-        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10.7
-#if (LIBCURL_VERSION_NUM >= 0x071007)
-        curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-// This is only available in later versions of libcurl?
-// curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-
-        /* write function */
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
-
-        /* download from fileimg */
-        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
-
-        /* save as local_filename */
-        ftpfile.filename = local_filename;
-        ftpfile.stream = NULL;
-        curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
-
-        res = curl_easy_perform(curl);
-
-        curl_easy_cleanup(curl);
-
-        if (CURLE_OK != res) {
-            fprintf(stderr, "curl told us %d\n", res);
-            fprintf(stderr, "curlerr: %s\n", curlerr);
-        }
-
-        if (ftpfile.stream)
-            fclose(ftpfile.stream);
-
-        // Return if we had trouble
-        if (CURLE_OK != res) {
-            return;
-        }
-
-    } else { 
-        fprintf(stderr,"Couldn't download the toporama .geo file\n");
+    if (fetch_remote_file(fileimg, local_filename)) {
+        // Had trouble getting the file.  Abort.
         return;
     }
-
-
-#else
-#ifdef HAVE_WGET
-    xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s \'%s\' 2> /dev/null\n",
-        WGET_PATH,
-        local_filename,
-        fileimg);
-
-    if (debug_level & 16)
-        fprintf(stderr,"%s",tempfile);
-
-//fprintf(stderr,"Getting file\n");
-    if ( system(tempfile) ) {   // Go get the file
-        fprintf(stderr,"Couldn't download the toporama geo file\n");
-        return;
-    }
-#else   // HAVE_WGET
-    fprintf(stderr,"libcurl or 'wget' not installed.  Can't download toporama .geo file\n");
-#endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(local_filename, 0666);
@@ -602,16 +503,6 @@ void draw_geo_image_map (Widget w,
     int l;
     XColor my_colors[256];
     time_t query_start_time, query_end_time;
-#ifdef HAVE_LIBCURL
-    CURL *curl;
-    CURLcode res;
-    char curlerr[CURL_ERROR_SIZE];
-    struct FtpFile ftpfile;
-#else
-#ifdef HAVE_WGET
-    char tempfile[MAX_FILENAME];
-#endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
     char gamma[16];
     struct {
         float r_gamma;
@@ -1486,92 +1377,11 @@ fprintf(stderr,"1 ");
         // fails.
         unlink( local_filename );
 
-#ifdef HAVE_LIBCURL
-        curl = curl_easy_init();
-
-        if (curl) { 
-
-            /* verbose debug is keen */
-          //            curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
-            curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
-
-            curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
-            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
-
-            // Added in libcurl 7.9.8
-#if (LIBCURL_VERSION_NUM >= 0x070908)
-            curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
-#endif  // LIBCURL_VERSION_NUM
-
-            // Added in libcurl 7.10.6
-#if (LIBCURL_VERSION_NUM >= 0x071006)
-            curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-            // Added in libcurl 7.10.7
-#if (LIBCURL_VERSION_NUM >= 0x071007)
-            curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-// This is only available in later versions of libcurl?
-// curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-
-            /* write function */
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
-
-            /* download from fileimg */
-            curl_easy_setopt(curl, CURLOPT_URL, fileimg);
-
-            /* save as local_filename */
-            ftpfile.filename = local_filename;
-            ftpfile.stream = NULL;
-            curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
-
-            res = curl_easy_perform(curl);
-
-            curl_easy_cleanup(curl);
-
-            if (CURLE_OK != res) {
-                fprintf(stderr, "curl told us %d\n", res);
-                fprintf(stderr, "curlerr: %s\n", curlerr);
-            }
-
-            if (ftpfile.stream)
-                fclose(ftpfile.stream);
-
-            // Return if we had trouble
-            if (CURLE_OK != res) {
-                return;
-            }
-
-        } else { 
-            fprintf(stderr,"Couldn't download the geo or Terraserver image\n");
+        if (fetch_remote_file(fileimg, local_filename)) {
+            // Had trouble getting the file.  Abort.
             return;
         }
-
-
-#else
-#ifdef HAVE_WGET
-        xastir_snprintf(tempfile, sizeof(tempfile),
-                "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s \'%s\' 2> /dev/null\n",
-                WGET_PATH,
-                local_filename,
-                fileimg);
-
-        if (debug_level & 16)
-            fprintf(stderr,"%s",tempfile);
-
-//fprintf(stderr,"Getting file\n");
-        if ( system(tempfile) ) {   // Go get the file
-            fprintf(stderr,"Couldn't download the geo or Terraserver image\n");
-            return;
-        }
-#else   // HAVE_WGET
-        fprintf(stderr,"libcurl or 'wget' not installed.  Can't download image\n");
-#endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
-
-
+    
 #ifdef USE_MAP_CACHE
 
         // Cache the map only if map_refresh_interval_temp is zero

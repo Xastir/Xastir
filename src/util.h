@@ -129,10 +129,7 @@ extern char *sec_to_loc(long longitude, long latitude);
 
 extern short checkHash(char *theCall, short theHash);
 
-#ifdef HAVE_LIBCURL
-int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream);
-int curl_getfile(char *fileimg, char *local_filename);
-#endif
+int fetch_remote_file(char *fileimg, char *local_filename);
 
 extern void split_string( char *data, char *cptr[], int max );
 extern int check_unproto_path( char *data );
