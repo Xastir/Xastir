@@ -754,6 +754,27 @@ First Time Install:
       In this case, version 4.1 of the include file matches 4.1 of the library
       file, so it works fine.  A mismatch in the first two numbers can cause
       segfaults when Xastir tries to do map caching.
+
+      If you install the Berkeley DB library in an unusual place (something
+      other than /usr/lib and /usr/include), you should still be able to tell
+      configure where to find it.  This comes courtesy of Tom Russo:
+
+      > > Someone installed Berkeley DB Library here:
+      > > 
+      > >     /user/local/BerkeleyDB.4.3/include/db.h
+      > > 
+      > > Perhaps I can assume that the library would be located here:
+      > > 
+      > >     /usr/local/BerkeleyDB.4.3/lib/libdb.so
+      > > 
+      > > How does one go about specifying the location of the db.h file and
+      > > the libdb.so file so that configure/compile/loading of Xastir work
+      > > properly?
+
+      > --with-bdb-libdir=/usr/local/BerkeleyDB.4.3/lib
+      > and
+      > --with-bdb-incdir=/usr/local/BerkeleyDB4.3/include
+
  
    11. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
