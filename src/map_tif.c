@@ -23,6 +23,22 @@
  */
 
 
+
+
+
+// Uncomment if you wish to only see the contour lines from USGS DRG
+// geoTIFF topo maps, in yellow:
+//
+//#define TOPO_CONTOURS
+//
+// Uncomment this as well if you want the topo colors to follow the
+// selected map background color.
+//#define TOPO_CONTOURS_BACKGROUND_COLOR
+
+
+
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -169,6 +185,8 @@ void get_alt_fgd_path2(char *fullpath, int fullpath_length) {
     // Add "Metadata/" into the path
     xastir_snprintf(dir, fullpath_length, "Metadata/%s", fname);
 }
+
+
 
 
 
@@ -322,6 +340,9 @@ int read_fgd_file ( char* tif_filename,
 
     return(1);    /* Successful */
 }
+
+
+
 
 
 // Check the "GTIFProj4*" functions to see if we can use
@@ -1235,17 +1256,37 @@ Samples Per Pixel: 1
 
 
     /* Print out the colormap info */
-    //    if (debug_level & 16) {
-    //        int l;
+    //if (debug_level & 16) {
+    //    int l;
     //
-    //        for (l = 0; l < num_colors; l++)
-    //            fprintf(stderr,"   %5u: %5u %5u %5u\n",
-    //                        l,
-    //                        red_orig[l],
-    //                        green_orig[l],
-    //                        blue_orig[l]);
-    //    }
-
+    //    for (l = 0; l < num_colors; l++)
+    //    fprintf(stderr,"   %5u: %5u %5u %5u\n",
+    //    l,
+    //    red_orig[l],
+    //    green_orig[l],
+    //    blue_orig[l]);
+    //}
+    // Example output from a USGS 7.5' map:
+    //
+    //   0:     0     0     0   black
+    //   1: 65280 65280 65280   light grey
+    //   2:     0 38656 41984
+    //   3: 51968     0  5888
+    //   4: 33536 16896  9472   contour lines, brownish-red
+    //   5: 51456 59904 40192   green
+    //   6: 35072 13056 32768   purple?  freeways, some roads
+    //   7: 65280 59904     0
+    //   8: 42752 57856 57856   blue, bodies of water
+    //   9: 65280 47104 47104   red brick color, cities?
+    //  10: 55808 45824 54784   purple.  freeways, some roads
+    //  11: 53504 53504 53504   grey
+    //  12: 52992 41984 36352   contour lines, tan, more dots/less lines
+    //  13:     0     0     0   black, unused slot?
+    //  14:     0     0     0   black, unused slot?
+    //  15:     0     0     0   black, unused slot?
+    //  16:     0     0     0   black, unused slot?
+    // The rest are all 0's.
+    
 
     if (crop_it)    // USGS geoTIFF map
     {
@@ -2506,11 +2547,59 @@ if (current_right >= width)
                     sxx = (xastir_current_x - x_long_offset) / scale_x;
                     syy = (xastir_total_y   - y_lat_offset ) / scale_y;
 
+
+
+// If we wish some colors to be transparent, we could check for a
+// color match here and refuse to draw those that are on our list of
+// transparent colors.  Might be useful for drawing say contour
+// lines on top of satellite images.  Since the USGS topo's use the
+// same colormap for all of the topo's (I believe that is true) then
+// we could just compare on the index into the array instead of the
+// color contents in the array.
+//
+    // Example output from a USGS 7.5' map:
+    //
+    //   0:     0     0     0   black
+    //   1: 65280 65280 65280   light grey
+    //   2:     0 38656 41984
+    //   3: 51968     0  5888
+    //   4: 33536 16896  9472   contour lines, brownish-red
+    //   5: 51456 59904 40192   green
+    //   6: 35072 13056 32768   purple?  freeways, some roads
+    //   7: 65280 59904     0
+    //   8: 42752 57856 57856   blue, bodies of water
+    //   9: 65280 47104 47104   red brick color, cities?
+    //  10: 55808 45824 54784   purple.  freeways, some roads
+    //  11: 53504 53504 53504   grey
+    //  12: 52992 41984 36352   contour lines, tan, more dots/less lines
+    //  13:     0     0     0   black, unused slot?
+    //  14:     0     0     0   black, unused slot?
+    //  15:     0     0     0   black, unused slot?
+    //  16:     0     0     0   black, unused slot?
+    // The rest are all 0's.
+ 
+// Test code to prove the concept is between the #ifdef's:
+//
+#ifdef TOPO_CONTOURS 
+//if ( (*(imageMemory + column) == 4) || (*(imageMemory + column) == 12) ) {
+if ( *(imageMemory + column) == 4) {
+#endif  // TOPO_CONTOURS
+
                     // Set the color for the pixel
+                    //
+#if (defined(TOPO_CONTOURS) && defined(TOPO_CONTOURS_BACKGROUND_COLOR))
+                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0xfd]);
+#else   // defined(TOPO_CONTOURS) && defined(TOPO_CONTOURS_BACKGROUND_COLOR)
                     XSetForeground (XtDisplay (w), gc, my_colors[*(imageMemory + column)].pixel);
+#endif  // defined(TOPO_CONTOURS) && defined(TOPO_CONTOURS_BACKGROUND_COLOR)
 
                     // And draw the pixel
                     XFillRectangle (XtDisplay (w), pixmap, gc, sxx, syy, stepwc, stephc);
+#ifdef TOPO_CONTOURS
+}
+#endif  // TOPO_CONTOURS
+
+
                 }
             }
         }
