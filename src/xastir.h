@@ -214,6 +214,12 @@ extern int tiger_show_lakes;
 extern int tiger_show_misc;
 #endif  // HAVE_IMAGEMAGICK
 
+#ifdef HAVE_LIBGEOTIFF
+extern int DRG_XOR_colors;
+extern int DRG_show_colors[13];
+#endif  // HAVE_LIBGEOTIFF
+
+
 extern int net_map_timeout;
 
 extern void sort_list(char *filename,int size, Widget list, int *item);

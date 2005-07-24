@@ -100,6 +100,7 @@ PULDNMP015|Xfont selectie||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Zoek Adres||
+PULDNMP030|Configure USGS DRG||
 #
 #
 # PopUp "Configure Tigermap"
@@ -121,6 +122,23 @@ MPUPTGR015|Vliegvelden, Parken, enz||
 MPUPTGR016|Kaart Intensiteit||
 MPUPTGR017|Internet Map Timeout (sec)||
 MPUPTGR018|Zet Tiger Kaarten aan||
+#
+# PopUp "Configure USGS DRG"
+MPUPDRG001|Select items to be displayed:||
+MPUPDRG002|XOR?||
+MPUPDRG003|Color 0||
+MPUPDRG004|Color 1||
+MPUPDRG005|Color 2||
+MPUPDRG006|Color 3||
+MPUPDRG007|Color 4||
+MPUPDRG008|Color 5||
+MPUPDRG009|Color 6||
+MPUPDRG010|Color 7||
+MPUPDRG011|Color 8||
+MPUPDRG012|Color 9||
+MPUPDRG013|Color 10||
+MPUPDRG014|Color 11||
+MPUPDRG015|Color 12||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Kaart Kiezer||

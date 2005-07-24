@@ -349,6 +349,10 @@ int re_sort_maps = 1;
 static void Config_tiger(Widget w, XtPointer clientData, XtPointer callData);
 #endif  // HAVE_IMAGEMAGICK
 
+#ifdef HAVE_LIBGEOTIFF
+static void Config_DRG(Widget w, XtPointer clientData, XtPointer callData);
+#endif  // HAVE_LIBGEOTIFF
+
 Widget grid_on, grid_off;
 static void Grid_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int long_lat_grid;              // Switch for Map Lat and Long grid display
@@ -742,8 +746,29 @@ int tiger_show_statehwy = TRUE;
 int tiger_show_water = TRUE;
 int tiger_show_lakes = TRUE;
 int tiger_show_misc = TRUE;
-
 #endif  // HAVE_IMAGEMAGICK
+
+
+#ifdef HAVE_LIBGEOTIFF
+Widget configure_DRG_dialog = (Widget) NULL;
+Widget DRG_XOR,
+       DRG_color0,
+       DRG_color1,
+       DRG_color2,
+       DRG_color3,
+       DRG_color4,
+       DRG_color5,
+       DRG_color6,
+       DRG_color7,
+       DRG_color8,
+       DRG_color9,
+       DRG_color10,
+       DRG_color11,
+       DRG_color12;
+
+int DRG_XOR_colors = 0;
+int DRG_show_colors[13];
+#endif  // HAVE_LIBGEOTIFF
 
 
 // -------------------------------------------------------------------
@@ -4872,6 +4897,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #if defined(HAVE_IMAGEMAGICK)
         gamma_adjust_button, tiger_config_button,
 #endif  // HAVE_IMAGEMAGICK
+#ifdef HAVE_LIBGEOTIFF
+        drg_config_button,
+#endif  // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
         map_font_button,
         Map_station_label_Pane, map_station_label_button,
@@ -5988,6 +6016,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
 #endif  // HAVE_IMAGEMAGICK
 
+#ifdef HAVE_LIBGEOTIFF
+    drg_config_button= XtVaCreateManagedWidget(langcode("PULDNMP030"),
+            xmPushButtonGadgetClass,
+            map_config_pane,
+            XmNmnemonic,langcode_hotkey("PULDNMP030"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(drg_config_button, XmNactivateCallback,Config_DRG,NULL);
+#endif  // HAVE_LIBGEOTIFF
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep2c",
@@ -18510,7 +18548,6 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
 //
 void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_label1, sep;
-    int intensity_length;
 
     Atom delw;
 
@@ -18770,8 +18807,6 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-       intensity_length = strlen(langcode("MPUPTGR016")) + 1;
-
         sep = XtVaCreateManagedWidget("Config Tigermap sep", 
                 xmSeparatorGadgetClass,
                 tiger_form,
@@ -18916,6 +18951,540 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         (void)XRaiseWindow(XtDisplay(configure_tiger_dialog), XtWindow(configure_tiger_dialog));
 }
 #endif // HAVE_IMAGEMAGICK
+///////////////////////// End of Configure Tiger code ///////////////////////////////////
+
+
+
+
+
+///////////////////////////////////////  Configure DRG Dialog //////////////////////////////////////////////
+#if defined(HAVE_LIBGEOTIFF)
+void Configure_DRG_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    configure_DRG_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void Configure_DRG_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    if(XmToggleButtonGetState(DRG_XOR))
+        DRG_XOR_colors=TRUE;
+    else
+        DRG_XOR_colors=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color0))
+        DRG_show_colors[0]=TRUE;
+    else
+        DRG_show_colors[0]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color1))
+        DRG_show_colors[1]=TRUE;
+    else
+        DRG_show_colors[1]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color2))
+        DRG_show_colors[2]=TRUE;
+    else
+        DRG_show_colors[2]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color3))
+        DRG_show_colors[3]=TRUE;
+    else
+        DRG_show_colors[3]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color4))
+        DRG_show_colors[4]=TRUE;
+    else
+        DRG_show_colors[4]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color5))
+        DRG_show_colors[5]=TRUE;
+    else
+        DRG_show_colors[5]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color6))
+        DRG_show_colors[6]=TRUE;
+    else
+        DRG_show_colors[6]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color7))
+        DRG_show_colors[7]=TRUE;
+    else
+        DRG_show_colors[7]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color8))
+        DRG_show_colors[8]=TRUE;
+    else
+        DRG_show_colors[8]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color9))
+        DRG_show_colors[9]=TRUE;
+    else
+        DRG_show_colors[9]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color10))
+        DRG_show_colors[10]=TRUE;
+    else
+        DRG_show_colors[10]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color11))
+        DRG_show_colors[11]=TRUE;
+    else
+        DRG_show_colors[11]=FALSE;
+
+    if(XmToggleButtonGetState(DRG_color12))
+        DRG_show_colors[12]=TRUE;
+    else
+        DRG_show_colors[12]=FALSE;
+
+    Configure_DRG_destroy_shell(widget,clientData,callData);
+
+    // Reload maps
+    // Set interrupt_drawing_now because conditions have
+    // changed.
+    interrupt_drawing_now++;
+
+    // Request that a new image be created.  Calls
+    // create_image,
+    // XCopyArea, and display_zoom_status.
+    request_new_image++;
+
+//    if (create_image(da)) {
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    }
+}
+
+
+
+
+
+void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    static Widget DRG_pane, DRG_form, button_ok, button_cancel, DRG_label1, sep;
+
+    Atom delw;
+
+    if (!configure_DRG_dialog) {
+
+        configure_DRG_dialog = XtVaCreatePopupShell(langcode("PULDNMP030"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+
+        DRG_pane = XtVaCreateWidget("Configure_DRG pane",
+                xmPanedWindowWidgetClass, 
+                configure_DRG_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_form =  XtVaCreateWidget("Configure_DRG DRG_form",
+                xmFormWidgetClass, 
+                DRG_pane,
+                XmNfractionBase, 3,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_label1  = XtVaCreateManagedWidget(langcode("MPUPDRG001"),
+                xmLabelWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_XOR  = XtVaCreateManagedWidget(langcode("MPUPDRG002"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_label1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+// Function not implemented yet, so make it insensitive
+XtSetSensitive(DRG_XOR, FALSE);
+
+        DRG_color0  = XtVaCreateManagedWidget(langcode("MPUPDRG003"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_XOR,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color1  = XtVaCreateManagedWidget(langcode("MPUPDRG004"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color0,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color2  = XtVaCreateManagedWidget(langcode("MPUPDRG005"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color3  = XtVaCreateManagedWidget(langcode("MPUPDRG006"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color2,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// Column 2
+        DRG_color4  = XtVaCreateManagedWidget(langcode("MPUPDRG007"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_label1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color5  = XtVaCreateManagedWidget(langcode("MPUPDRG008"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color4,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color6  = XtVaCreateManagedWidget(langcode("MPUPDRG009"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color5,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color7  = XtVaCreateManagedWidget(langcode("MPUPDRG010"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color6,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color8  = XtVaCreateManagedWidget(langcode("MPUPDRG011"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color7,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// Column 3
+        DRG_color9  = XtVaCreateManagedWidget(langcode("MPUPDRG012"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_label1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        DRG_color10  = XtVaCreateManagedWidget(langcode("MPUPDRG013"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color9,
+                XmNtopOffset, 4,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+       DRG_color11  = XtVaCreateManagedWidget(langcode("MPUPDRG014"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color10,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+       DRG_color12  = XtVaCreateManagedWidget(langcode("MPUPDRG015"),
+                xmToggleButtonWidgetClass,
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color11,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        sep = XtVaCreateManagedWidget("Config Tigermap sep", 
+                xmSeparatorGadgetClass,
+                DRG_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, DRG_color3,
+                XmNtopOffset, 10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment,XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 0,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                DRG_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNleftOffset, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_ok,
+            XmNactivateCallback,
+            Configure_DRG_change_data,
+            configure_DRG_dialog);
+
+        XtAddCallback(button_cancel,
+            XmNactivateCallback,
+            Configure_DRG_destroy_shell,
+            configure_DRG_dialog);
+
+        pos_dialog(configure_DRG_dialog);
+
+        delw = XmInternAtom(XtDisplay(configure_DRG_dialog),
+            "WM_DELETE_WINDOW",
+            FALSE);
+        XmAddWMProtocolCallback(configure_DRG_dialog,
+            delw,
+            Configure_DRG_destroy_shell,
+            (XtPointer)configure_DRG_dialog);
+
+        if(DRG_XOR_colors)
+            XmToggleButtonSetState(DRG_XOR,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_XOR,FALSE,FALSE);
+
+        if(DRG_show_colors[0])
+            XmToggleButtonSetState(DRG_color0,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color0,FALSE,FALSE);
+
+        if(DRG_show_colors[1])
+            XmToggleButtonSetState(DRG_color1,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color1,FALSE,FALSE);
+
+        if(DRG_show_colors[2])
+            XmToggleButtonSetState(DRG_color2,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color2,FALSE,FALSE);
+
+        if(DRG_show_colors[3])
+            XmToggleButtonSetState(DRG_color3,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color3,FALSE,FALSE);
+
+        if(DRG_show_colors[4])
+            XmToggleButtonSetState(DRG_color4,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color4,FALSE,FALSE);
+
+        if(DRG_show_colors[5])
+            XmToggleButtonSetState(DRG_color5,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color5,FALSE,FALSE);
+
+        if(DRG_show_colors[6])
+            XmToggleButtonSetState(DRG_color6,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color6,FALSE,FALSE);
+
+        if(DRG_show_colors[7])
+            XmToggleButtonSetState(DRG_color7,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color7,FALSE,FALSE);
+
+        if(DRG_show_colors[8])
+            XmToggleButtonSetState(DRG_color8,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color8,FALSE,FALSE);
+
+        if(DRG_show_colors[9])
+            XmToggleButtonSetState(DRG_color9,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color9,FALSE,FALSE);
+
+        if(DRG_show_colors[10])
+            XmToggleButtonSetState(DRG_color10,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color10,FALSE,FALSE);
+
+        if(DRG_show_colors[11])
+            XmToggleButtonSetState(DRG_color11,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color11,FALSE,FALSE);
+
+        if(DRG_show_colors[12])
+            XmToggleButtonSetState(DRG_color12,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(DRG_color12,FALSE,FALSE);
+
+        XtManageChild(DRG_form);
+        XtManageChild(DRG_pane);
+
+        XtPopup(configure_DRG_dialog,XtGrabNone);
+        fix_dialog_size(configure_DRG_dialog);
+
+        XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
+
+    } else
+        (void)XRaiseWindow(XtDisplay(configure_DRG_dialog),
+            XtWindow(configure_DRG_dialog));
+}
+#endif // HAVE_LIBGEOTIFF
+///////////////////////// End of Configure DRG code ///////////////////////////////////
 
 
 
