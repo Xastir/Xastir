@@ -2569,7 +2569,7 @@ extern void draw_shapefile_map (Widget w,
                                 alert_entry *alert,
                                 u_char alert_color,
                                 int destination_pixmap,
-                                int draw_filled);
+                                map_draw_flags *mdf);
 #endif /* HAVE_LIBSHP */
 
 
