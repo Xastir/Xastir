@@ -16708,6 +16708,10 @@ if (current->temp_select) {
                     temp_auto[5] = '\0';
                 }
 
+                //WARNING WARNING WARNING --- changing this format string
+                // REQUIRES changing the defined constant MPD_FILENAME_OFFSET
+                // at the top of this file, or all the routines that try
+                // to decode the string will be wrong!
                 xastir_snprintf(temp,
                     sizeof(temp),
                     "%s %s %s %s %s %s  %s",
