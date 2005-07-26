@@ -114,19 +114,19 @@ MPUPTGR018|Activar Tiger Maps||
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Select items to be displayed:||
 MPUPDRG002|XOR?||
-MPUPDRG003|Color 0||
-MPUPDRG004|Color 1||
-MPUPDRG005|Color 2||
-MPUPDRG006|Color 3||
-MPUPDRG007|Color 4||
-MPUPDRG008|Color 5||
-MPUPDRG009|Color 6||
-MPUPDRG010|Color 7||
-MPUPDRG011|Color 8||
-MPUPDRG012|Color 9||
-MPUPDRG013|Color 10||
-MPUPDRG014|Color 11||
-MPUPDRG015|Color 12||
+MPUPDRG003|Black||
+MPUPDRG004|White||
+MPUPDRG005|Blue||
+MPUPDRG006|Red||
+MPUPDRG007|Brown||
+MPUPDRG008|Green||
+MPUPDRG009|Purple||
+MPUPDRG010|Yellow||
+MPUPDRG011|Light Blue||
+MPUPDRG012|Light Red||
+MPUPDRG013|Light Purple||
+MPUPDRG014|Light Gray||
+MPUPDRG015|Light Brown||
 #
 #
 # Selecao de mapas
