@@ -81,6 +81,11 @@ typedef struct _map_index_record{
                         // 0 = Global No-Fill (Vector)
                         // 1 = Global Fill
                         // 2 = Auto (dbfawk controls it if present)
+    int usgs_drg;       // Specify whether the map has USGS DRG colormap
+                        // and should have color configuration applied
+                        // 0 = No
+                        // 1 = Yes
+                        // 2 = Auto (detect from TIFFTAG_IMAGEDESCRIPTION)
     int selected;       // Specifies if map is currently selected
     int temp_select;    // Temporary selection used in map properties dialog
     int auto_maps;      // Specifies if map included in automaps function
@@ -136,7 +141,7 @@ void Snapshot(void);
 extern int index_retrieve(char *filename, unsigned long *bottom,
     unsigned long *top, unsigned long *left, unsigned long *right,
     int *max_zoom, int *min_zoom, int *map_layer, int *draw_filled, 
-    int *automaps);
+    int *usgs_drg, int *automaps);
 extern void index_restore_from_file(void);
 extern void index_save_to_file(void);
 extern void map_indexer(int parameter);
@@ -201,6 +206,14 @@ extern void map_gdal_init(void);
 
 extern int check_trans (XColor c, unsigned long c_trans_color);
 
+// A struct to pass down in to map driver functions so they can have 
+// driver-specific flags.  Most drivers won't care about any (or even all)
+// of the flags, but this way we can just pass a single pointer rather than
+// adding new arguments to the generic interface each time we want new flags
+typedef struct {
+    int draw_filled;
+    int usgs_drg;
+} map_draw_flags;
 
 #endif /* __XASTIR_MAPS_H */
 

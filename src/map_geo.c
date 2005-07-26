@@ -133,7 +133,7 @@ extern int mag;
 
 void draw_geo_image_map (Widget w, char *dir, char *filenm, 
     alert_entry *alert, u_char alert_color, int destination_pixmap,
-    int draw_filled);
+    map_draw_flags *mdf);
 
 
 
@@ -199,7 +199,7 @@ void draw_toporama_map (Widget w,
         alert_entry *alert,
         u_char alert_color,
         int destination_pixmap,
-        int draw_filled,
+        map_draw_flags *mdf,
         int toporama_flag) {    // 50 or 250
 
 #ifdef HAVE_IMAGEMAGICK
@@ -408,7 +408,7 @@ void draw_toporama_map (Widget w,
         alert,
         alert_color,
         destination_pixmap,
-        draw_filled);
+        mdf);
 
 #endif  // HAVE_IMAGEMAGICK
 }
@@ -434,7 +434,7 @@ void draw_geo_image_map (Widget w,
 			 alert_entry *alert,
 			 u_char alert_color,
 			 int destination_pixmap,
-			 int draw_filled) {
+			 map_draw_flags *mdf) {
 #ifdef NO_GRAPHICS
     fprintf(stderr,"XPM and/or ImageMagick support have not been compiled in.");
 #else   // NO_GRAPHICS
@@ -844,7 +844,7 @@ void draw_geo_image_map (Widget w,
             alert,
             alert_color,
             destination_pixmap,
-            draw_filled,
+            mdf,
             toporama_flag);
 #endif  // HAVE_IMAGEMAGICK
 

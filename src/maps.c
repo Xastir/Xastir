@@ -3206,11 +3206,12 @@ enum map_onscreen_enum map_onscreen_index(char *filename) {
     unsigned long top, bottom, left, right;
     enum map_onscreen_enum onscreen = MAP_NOT_INDEXED;
     int max_zoom, min_zoom;
-    int map_layer, draw_filled, auto_maps;     // Unused in this function
+    int map_layer, draw_filled, usgs_drg, auto_maps; // Unused in this function
 
 
     if (index_retrieve(filename, &bottom, &top, &left, &right,
-            &max_zoom, &min_zoom, &map_layer, &draw_filled, &auto_maps) ) {
+                       &max_zoom, &min_zoom, &map_layer, 
+                       &draw_filled, &usgs_drg, &auto_maps) ) {
 
         //fprintf(stderr, "Map found in index: %s\n", filename);
 
@@ -3278,7 +3279,7 @@ extern void draw_dos_map(Widget w,
                          alert_entry *alert,
                          u_char alert_color,
                          int destination_pixmap,
-                         int draw_filled);
+                         map_draw_flags *draw_flags);
 
 extern void draw_palm_image_map(Widget w,
                          char *dir,
@@ -3286,7 +3287,7 @@ extern void draw_palm_image_map(Widget w,
                          alert_entry *alert,
                          u_char alert_color,
                          int destination_pixmap,
-                         int draw_filled);
+                         map_draw_flags *draw_flags);
 
 #ifdef HAVE_LIBSHP
 extern void draw_shapefile_map (Widget w, 
@@ -3295,7 +3296,7 @@ extern void draw_shapefile_map (Widget w,
                                 alert_entry *alert,
                                 u_char alert_color, 
                                 int destination_pixmap,
-                                int draw_filled);
+                                map_draw_flags *draw_flags);
 #ifdef WITH_DBFAWK
 extern void clear_dbfawk_sigs();
 #endif /* WITH_DBFAWK */
@@ -3307,7 +3308,7 @@ extern void draw_geotiff_image_map(Widget w,
                                    alert_entry *alert,
                                    u_char alert_color,
                                    int destination_pixmap,
-                                   int draw_filled);
+                                   map_draw_flags *draw_flags);
 #endif /* HAVE_LIBGEOTIFF */
 extern void draw_geo_image_map(Widget w,
                                char *dir,
@@ -3315,7 +3316,7 @@ extern void draw_geo_image_map(Widget w,
                                alert_entry *alert,
                                u_char alert_color,
                                int destination_pixmap,
-                               int draw_filled);
+                               map_draw_flags *draw_flags);
 
 extern void draw_gnis_map(Widget w,
                           char *dir,
@@ -3323,7 +3324,7 @@ extern void draw_gnis_map(Widget w,
                           alert_entry *alert,
                           u_char alert_color,
                           int destination_pixmap,
-                          int draw_filled);
+                          map_draw_flags *draw_flags);
 
 #ifdef HAVE_LIBGDAL
 extern void draw_gdal_map(Widget w,
@@ -3332,7 +3333,7 @@ extern void draw_gdal_map(Widget w,
                    alert_entry *alert,
                    u_char alert_color,
                    int destination_pixmap,
-                   int draw_filled);
+                   map_draw_flags *draw_flags);
 
 extern void draw_ogr_map(Widget w,
                    char *dir,
@@ -3340,7 +3341,7 @@ extern void draw_ogr_map(Widget w,
                    alert_entry *alert,
                    u_char alert_color,
                    int destination_pixmap,
-                   int draw_filled);
+                   map_draw_flags *draw_flags);
 #endif /* HAVE_LIBGDAL */
 
 struct {
@@ -3352,7 +3353,7 @@ struct {
                alert_entry *alert,
                u_char alert_color,
                int destination_pixmap,
-               int draw_filled);
+               map_draw_flags *draw_flags);
 } map_driver[] = {
   {"map",map,draw_dos_map},
   {"pdb",pdb,draw_palm_image_map},
@@ -3409,7 +3410,7 @@ struct {
 
 void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
                 u_char alert_color, int destination_pixmap,
-                int draw_filled) {
+                map_draw_flags *draw_flags) {
   enum map_onscreen_enum onscreen;
   char *ext;
   char file[MAX_FILENAME];
@@ -3483,7 +3484,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
                              alert,
                              alert_color,
                              destination_pixmap,
-                             draw_filled);
+                             draw_flags);
     }
         
     XmUpdateDisplay (XtParent (da));
@@ -3540,6 +3541,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
     char *ptr;
     char *map_dir;
     int map_dir_length;
+    map_draw_flags mdf;
 
     // We'll use the weather alert directory if it's an alert
     map_dir = alert ? ALERT_MAP_DIR : SELECTED_MAP_DIR;
@@ -3819,13 +3821,16 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
             if (done) {    // We found a filename match for the alert
                 // Go draw the weather alert (kind'a)
 //WE7U
+                mdf.draw_filled=1;
+                mdf.usgs_drg=0;
+
                 draw_map (w,
                     dir,                // Alert directory
                     alert->filename,    // Shapefile filename
                     alert,
                     -1,                 // Signifies "DON'T DRAW THE SHAPE"
                     destination_pixmap,
-                    1 /* draw_filled */ );
+                    &mdf );
             }
             else {      // No filename found that matches the first two
                         // characters that we already computed.
@@ -3985,13 +3990,15 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                 if (debug_level & 16) {
                                     fprintf(stderr,"Calling draw_map\n");
                                 }
+                                mdf.draw_filled=1;
+                                mdf.usgs_drg=0;
                                 draw_map (w,
                                     dir,
                                     dl->d_name,
                                     alert ? &alert[*alert_count] : NULL,
                                     '\0',
                                     destination_pixmap,
-                                    1 /* draw_filled */ );
+                                    &mdf );
                                 if (debug_level & 16) {
                                     fprintf(stderr,"Returned from draw_map\n");
                                 }
@@ -4002,13 +4009,15 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                 // File is in the main map directory
                                 // Find the '/' character
                                 for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
+                                mdf.draw_filled=1;
+                                mdf.usgs_drg=0;
                                 draw_map (w,
                                     map_dir,
                                     ptr,
                                     alert ? &alert[*alert_count] : NULL,
                                     '\0',
                                     destination_pixmap,
-                                    1 /* draw_filled */ );
+                                    &mdf );
                                 if (alert_count && *alert_count)
                                     (*alert_count)--;
                             }
@@ -4108,6 +4117,7 @@ static void map_index_copy_properties(map_index_record *primary_index_head,
                 primary->min_zoom    = backup->min_zoom;
                 primary->map_layer   = backup->map_layer;
                 primary->draw_filled = backup->draw_filled;
+                primary->usgs_drg    = backup->usgs_drg;
                 primary->auto_maps   = backup->auto_maps;
                 primary->selected    = backup->selected;
 
@@ -4279,6 +4289,7 @@ static void index_update_directory(char *directory) {
     temp_record->min_zoom = 0;
     temp_record->map_layer = 0;
     temp_record->draw_filled = 0;
+    temp_record->usgs_drg = 2;
 }
 
 
@@ -4410,6 +4421,15 @@ void index_update_xastir(char *filename,
             else {
                 temp_record->draw_filled = 0; // No-Fill
             }
+
+            if (       strstr(filename,".tif")
+                    || strstr(filename,".TIF")
+                    || strstr(filename,".Tif") ) {
+                temp_record->usgs_drg = 2; // Auto
+            }
+            else {
+                temp_record->usgs_drg = 0; // No
+            }
  
             //current = current->next;
             done++;
@@ -4465,6 +4485,15 @@ void index_update_xastir(char *filename,
         }
         else {
             temp_record->draw_filled = 0; // No-Fill
+        }
+
+        if (       strstr(filename,".tif")
+                || strstr(filename,".TIF")
+                || strstr(filename,".Tif") ) {
+            temp_record->usgs_drg = 2; // Auto
+        }
+        else {
+            temp_record->usgs_drg = 0; // No
         }
 
     }
@@ -4615,6 +4644,15 @@ void index_update_ll(char *filename,
             else {
                 temp_record->draw_filled = 0; // No-Fill
             }
+
+            if (       strstr(filename,".tif")
+                    || strstr(filename,".TIF")
+                    || strstr(filename,".Tif") ) {
+                temp_record->usgs_drg = 2; // Auto
+            }
+            else {
+                temp_record->usgs_drg = 0; // No
+            }
  
             //current = current->next;
             done++;
@@ -4672,6 +4710,15 @@ void index_update_ll(char *filename,
         }
         else {
             temp_record->draw_filled = 0; // No-Fill
+        }
+
+        if (       strstr(filename,".tif")
+                || strstr(filename,".TIF")
+                || strstr(filename,".Tif") ) {
+            temp_record->usgs_drg = 2; // Auto
+        }
+        else {
+            temp_record->usgs_drg = 0; // No
         }
 
     }
@@ -4813,6 +4860,7 @@ int index_retrieve(char *filename,
                    int *min_zoom,
                    int *map_layer,
                    int *draw_filled,
+                   int *usgs_drg,
                    int *auto_maps) {
 
     map_index_record *current;
@@ -4891,6 +4939,7 @@ int index_retrieve(char *filename,
             *min_zoom = current->min_zoom;
             *map_layer = current->map_layer;
             *draw_filled = current->draw_filled;
+            *usgs_drg = current->usgs_drg;
             *auto_maps = current->auto_maps;
 //fprintf(stderr," Found it\n");
             return(status);
@@ -4980,13 +5029,14 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%01d,%05d,%05d,%s\n",
+                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%01d,%01d,%05d,%05d,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
                 current->right,
                 current->map_layer,
                 current->draw_filled,
+                current->usgs_drg,
                 current->auto_maps,
                 current->max_zoom,
                 current->min_zoom,
@@ -5132,6 +5182,7 @@ static void index_insert_sorted(map_index_record *new_record) {
             current->min_zoom = new_record->min_zoom;
             current->map_layer = new_record->map_layer;
             current->draw_filled = new_record->draw_filled;
+            current->usgs_drg = new_record->usgs_drg;
             current->selected = selected;   // Restore it
             current->auto_maps = new_record->auto_maps;
 
@@ -5321,6 +5372,7 @@ void index_restore_from_file(void) {
                                             // line.
                 char scanf_format[50];
                 char old_scanf_format[50];
+                char older_scanf_format[50];
                 int processed;
                 int i, jj;
 
@@ -5333,13 +5385,22 @@ void index_restore_from_file(void) {
                 xastir_snprintf(scanf_format,
                     sizeof(scanf_format),
                     "%s%d%s",
-                    "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%",
+                    "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d,%",
                     MAX_FILENAME,
                     "c");
                 //fprintf(stderr,"%s\n",scanf_format);
 
+                // index predates addition of usgs_drg flag (26 Jul 2005)
                 xastir_snprintf(old_scanf_format,
                     sizeof(old_scanf_format),
+                    "%s%d%s",
+                    "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%",
+                    MAX_FILENAME,
+                    "c");
+
+                // index predates addition of min/max zoom (29 Oct 2003)
+                xastir_snprintf(older_scanf_format,
+                    sizeof(older_scanf_format),
                     "%s%d%s",
                     "%lu,%lu,%lu,%lu,%d,%d,%d,%",
                     MAX_FILENAME,
@@ -5358,6 +5419,7 @@ void index_restore_from_file(void) {
                 temp_record->right = 129600001l;// Too high
                 temp_record->map_layer = -1;    // Too low
                 temp_record->draw_filled = -1;  // Too low
+                temp_record->usgs_drg = -1;     // Too low
                 temp_record->auto_maps = -1;    // Too low
                 temp_record->max_zoom = -1;     // Too low
                 temp_record->min_zoom = -1;     // Too low
@@ -5371,21 +5433,19 @@ void index_restore_from_file(void) {
                     &temp_record->right,
                     &temp_record->map_layer,
                     &temp_record->draw_filled,
+                    &temp_record->usgs_drg,
                     &temp_record->auto_maps,
                     &temp_record->max_zoom,
                     &temp_record->min_zoom,
                     temp_record->filename);
 
-                if (processed < 10) {
+                if (processed < 11) {
                     // We're upgrading from an old format index file
-                    // that doesn't have min/max zoom.  Try the
+                    // that doesn't have usgs_drg.  Try the
                     // old_scanf_format string instead.
 
                     doing_migration = 1;
 
-                    temp_record->max_zoom = -1;     // Too low
-                    temp_record->min_zoom = -1;     // Too low
- 
                     processed = sscanf(in_string,
                         old_scanf_format,
                         &temp_record->bottom,
@@ -5395,7 +5455,35 @@ void index_restore_from_file(void) {
                         &temp_record->map_layer,
                         &temp_record->draw_filled,
                         &temp_record->auto_maps,
+                        &temp_record->max_zoom,
+                        &temp_record->min_zoom,
                         temp_record->filename);
+                    if (processed < 10) {
+                        // It's really old, doesn't have min/max zoom either
+                        temp_record->max_zoom = -1;     // Too low
+                        temp_record->min_zoom = -1;     // Too low
+
+                        processed = sscanf(in_string,
+                                           older_scanf_format,
+                                           &temp_record->bottom,
+                                           &temp_record->top,
+                                           &temp_record->left,
+                                           &temp_record->right,
+                                           &temp_record->map_layer,
+                                           &temp_record->draw_filled,
+                                           &temp_record->auto_maps,
+                                           temp_record->filename);
+                    }
+                    // either way, it doesn't have usgs_drg, so add one
+                    // defaulting to Auto if it's a tif file, no if not
+                    if (       strstr(temp_record->filename,".tif")
+                               || strstr(temp_record->filename,".TIF")
+                               || strstr(temp_record->filename,".Tif") ) {
+                        temp_record->usgs_drg = 2; // Auto
+                    }
+                    else {
+                        temp_record->usgs_drg = 0; // No
+                    }
                 }
 
                 temp_record->XmStringPtr = NULL;
@@ -5485,6 +5573,14 @@ void index_restore_from_file(void) {
                             temp_record->filename);
                 }
 
+                if ( (temp_record->usgs_drg < 0)
+                        || (temp_record->usgs_drg > 2) ) {
+                    processed = 0;  // Reject this record
+                    fprintf(stderr,"\nindex_restore_from_file: usgs_drg field incorrect %d in map name:\n%s\n",
+                            temp_record->usgs_drg,
+                            temp_record->filename);
+                }
+
                 if ( (temp_record->auto_maps < 0)
                         || (temp_record->auto_maps > 1) ) {
                     processed = 0;  // Reject this record
@@ -5530,7 +5626,7 @@ void index_restore_from_file(void) {
 
                 // If correct number of parameters for either old or
                 // new format
-                if (processed == 10 || processed == 8) {
+                if (processed == 11 || processed == 10 || processed == 8) {
 
                     //fprintf(stderr,"Restored: %s\n",temp_record->filename);
  
@@ -5818,7 +5914,7 @@ void load_alert_maps (Widget w, char *dir) {
 
     struct hashtable_itr *iterator;
     alert_entry *temp;
-
+    map_draw_flags mdf;
 
 
 // TODO:
@@ -5894,13 +5990,15 @@ void load_alert_maps (Widget w, char *dir) {
                         temp->right_boundary,
                         temp->title) ) {    // Error text if failure
 
+                    mdf.draw_filled=1; 
+                    mdf.usgs_drg=0;
                     draw_map (w,
                         dir,
                         temp->filename,
                         temp,
                         fill_color[level],
                         DRAW_TO_PIXMAP_ALERTS,
-                        1);  // draw filled
+                        &mdf);  // draw filled
                 }
                 else {
 //                    fprintf(stderr,"load_alert_maps() Alert not visible\n");
@@ -5968,6 +6066,7 @@ static void insert_map_sorted(char *filename){
     int min_zoom;
     int map_layer;
     int draw_filled;
+    int usgs_drg;
     int auto_maps;
     int done;
 
@@ -5981,6 +6080,7 @@ static void insert_map_sorted(char *filename){
             &min_zoom,
             &map_layer,
             &draw_filled,
+            &usgs_drg,
             &auto_maps)) {    // Found a match
 
         // Allocate a new record
@@ -5997,6 +6097,7 @@ static void insert_map_sorted(char *filename){
         temp_record->min_zoom = min_zoom;
         temp_record->map_layer = map_layer;
         temp_record->draw_filled = draw_filled;
+        temp_record->usgs_drg = usgs_drg;
         temp_record->auto_maps = auto_maps;
         temp_record->selected = 1;  // Always, we already know this!
         temp_record->accessed = 0;
@@ -6064,7 +6165,7 @@ static void insert_map_sorted(char *filename){
  **********************************************************/
 void load_auto_maps (Widget w, char *dir) {
     map_index_record *current = map_index_head;
-
+    map_draw_flags mdf;
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
@@ -6140,13 +6241,16 @@ void load_auto_maps (Widget w, char *dir) {
 
         // Draw the maps in sorted-by-layer order
         if (current->auto_maps) {
+            mdf.draw_filled = current->draw_filled;
+            mdf.usgs_drg = current->usgs_drg;
+            
             draw_map (w,
                 SELECTED_MAP_DIR,
                 current->filename,
                 NULL,
                 '\0',
                 DRAW_TO_PIXMAP,
-                current->draw_filled);
+                &mdf);
         }
 
         current = current->next;
@@ -6175,7 +6279,7 @@ void load_maps (Widget w) {
     int i;
     char selected_dir[MAX_FILENAME];
     map_index_record *current;
-
+    map_draw_flags mdf;
 
     if (debug_level & 16)
         fprintf(stderr,"Load maps start\n");
@@ -6351,13 +6455,15 @@ void load_maps (Widget w) {
 //            current->filename);
 
         // Draw the maps in sorted-by-layer order
+        mdf.draw_filled = current->draw_filled;
+        mdf.usgs_drg = current->usgs_drg;
         draw_map (w,
             SELECTED_MAP_DIR,
             current->filename,
             NULL,
             '\0',
             DRAW_TO_PIXMAP,
-            current->draw_filled);
+            &mdf);
  
 
         current = current->next;

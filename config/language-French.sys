@@ -1114,8 +1114,8 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Caractéristiques des cartes||
-MAPP002|Max   Min   Carte  Afficher Auto||
-MAPP003|Zoom  Zoom  Couche Remplie Cartes Voie/Fichier||
+MAPP002|Max   Min   Carte  Afficher USGS Auto||
+MAPP003|Zoom  Zoom  Couche Remplie  DRG  Cartes Voie/Fichier||
 MAPP004|Modifier Couche->||
 MAPP005|Remplie->||
 MAPP006|Oui||
@@ -1124,6 +1124,7 @@ MAPP008|AutoCartes->||
 MAPP009|Max Zoom->||
 MAPP010|Min Zoom->||
 MAPP011|Auto||
+MAPP012|USGS DRG->||
 #
 #
 # Time Strings

@@ -310,12 +310,12 @@ void draw_dos_map(Widget w,
              alert_entry *alert,
              u_char alert_color,
              int destination_pixmap,
-             int draw_filled) {  
+             map_draw_flags *mdf) {  
   FILE *f;
   char file[MAX_FILENAME];
   char short_filenm[MAX_FILENAME];
   char map_it[MAX_FILENAME];
-  
+
   /* map header info */
   char map_type[5];
   char map_version[5];
@@ -377,7 +377,11 @@ void draw_dos_map(Widget w,
   char symbol_id;
   char symbol_color;
   int embedded_object;
+
+  int draw_filled;
   
+  draw_filled=mdf->draw_filled;
+
   x = 0;
   y = 0;
   color = -1;

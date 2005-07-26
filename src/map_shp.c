@@ -655,7 +655,7 @@ void draw_shapefile_map (Widget w,
                         alert_entry * alert,
                         u_char alert_color,
                         int destination_pixmap,
-                        int draw_filled) {
+                        map_draw_flags *mdf) {
 
     DBFHandle       hDBF;
     SHPObject       *object;
@@ -728,6 +728,7 @@ void draw_shapefile_map (Widget w,
     dbfawk_field_info *fld_info = NULL;
 
 
+    int draw_filled;
     int draw_filled_orig;
 #endif
     static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
@@ -753,6 +754,8 @@ void draw_shapefile_map (Widget w,
     int nhits;
 #endif // USE_RTREE
 
+    // pull this out of the map_draw_flags
+    draw_filled = mdf->draw_filled;
 
     // Initialize the hash table label pointers
     for (i = 0; i < 256; i++) {

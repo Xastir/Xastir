@@ -1130,8 +1130,8 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Kaart eigenschappen||
-MAPP002|Max   Min   Kaart  Teken Auto||
-MAPP003|Zoom  Zoom  Laag Vulling Kaart Path/Bestandsnaam||
+MAPP002|Max   Min   Kaart  Teken USGS Auto||
+MAPP003|Zoom  Zoom  Laag Vulling DRG  Kaart Path/Bestandsnaam||
 MAPP004|Verander Laag->||
 MAPP005|Vulling->||
 MAPP006|Ja||
@@ -1140,6 +1140,7 @@ MAPP008|AutoKaart->||
 MAPP009|Max Zoom->||
 MAPP010|Min Zoom->||
 MAPP011|Auto||
+MAPP012|USGS DRG->||
 #
 #
 # Time Strings

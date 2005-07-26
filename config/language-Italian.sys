@@ -1115,8 +1115,8 @@ GPS011|Viola||
 #
 # Map Properties Dialog
 MAPP001|Proprietà Mappa||
-MAPP002|Max   Min  Disegna Mappa Auto||
-MAPP003|Zoom  Zoom Livello Riempi Map  Percorso/Nome File||
+MAPP002|Max   Min  Disegna Mappa USGS Auto||
+MAPP003|Zoom  Zoom Livello Riempi DRG Map  Percorso/Nome File||
 MAPP004|Cambia Livello->||
 MAPP005|Riempito->||
 MAPP006|Si||
@@ -1125,6 +1125,7 @@ MAPP008|Automappe->||
 MAPP009|Max Zoom->||
 MAPP010|Min Zoom->||
 MAPP011|Auto||
+MAPP012|USGS DRG->||
 #
 #
 # Time Strings

@@ -371,7 +371,7 @@ void draw_geotiff_image_map (Widget w,
 			     alert_entry *alert,
 			     u_char alert_color,
 			     int destination_pixmap,
-			     int draw_filled) {
+			     map_draw_flags *mdf) {
     char file[MAX_FILENAME];    /* Complete path/name of image file */
     char short_filenm[MAX_FILENAME];
     TIFF *tif = (TIFF *) 0;     /* Filehandle for tiff image file */
@@ -506,6 +506,10 @@ void draw_geotiff_image_map (Widget w,
     unsigned long view_top_minus_pixel_height;
     int proj_is_latlong;
     short PCS;
+    int usgs_drg;
+    char *imagedesc;
+
+    usgs_drg = mdf->usgs_drg;              // yes, no, or auto
 
     if (debug_level & 16)
         fprintf(stderr,"%s/%s\n", dir, filenm);
@@ -726,6 +730,23 @@ void draw_geotiff_image_map (Widget w,
         fprintf(stderr,"No height tag found in file, setting it to 6840\n");
     }
 
+    // If we're autodetecting usgs_drg, check the image description tag
+    // Note, the TIFFGetField doesn't allocate a string, it returns a pointer
+    // to an existing one.  Don't free it!
+    if (usgs_drg == 2) {
+        if ( TIFFGetField (tif, TIFFTAG_IMAGEDESCRIPTION, &imagedesc)) {
+            if (strncasecmp(imagedesc,"USGS GeoTIFF DRG",16) == 0) {
+                usgs_drg = 1;   // Yes
+            } 
+            else {
+                usgs_drg = 0;  // No
+            }
+        }
+        else {
+                usgs_drg = 0;  // No tag, assume not a usgs topo 
+        }
+            
+    }
 
     /*
      * If we don't have an associated .fgd file for this map,
@@ -2562,9 +2583,11 @@ if (current_right >= width)
     //  15:     0     0     0   black, unused slot?
     //  16:     0     0     0   black, unused slot?
     // The rest are all 0's.
- 
-                    if ( *(imageMemory + column) >= 13
-                            || DRG_show_colors[*(imageMemory + column)] == 1 ) {
+                    // either show all colors (usgs_drg==0) or show selected
+                    // colors (usgs_drg == 1) 
+                    if ( usgs_drg == 0 ||
+                         (usgs_drg ==1 && (*(imageMemory + column) >= 13
+                          || DRG_show_colors[*(imageMemory + column)] == 1))) {
 
                         // Set the color for the pixel
                         //

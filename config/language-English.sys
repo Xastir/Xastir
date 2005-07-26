@@ -1120,8 +1120,8 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Map Properties||
-MAPP002|Max   Min    Map         Auto||
-MAPP003|Zoom  Zoom  Layer  Fill  Map   Path/Filename||
+MAPP002|Max   Min    Map         USGS  Auto||
+MAPP003|Zoom  Zoom  Layer  Fill  DRG   Map   Path/Filename||
 MAPP004|Change Layer->||
 MAPP005|Filled->||
 MAPP006|Yes||
@@ -1130,6 +1130,7 @@ MAPP008|Automaps->||
 MAPP009|Max Zoom->||
 MAPP010|Min Zoom->||
 MAPP011|Auto||
+MAPP012|USGS DRG->||
 #
 #
 # Time Strings

@@ -95,7 +95,7 @@ void draw_gnis_map (Widget w,
 		    alert_entry *alert,
 		    u_char alert_color,
 		    int destination_pixmap,
-		    int draw_filled)
+		    map_draw_flags *mdf)
 {
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
     char short_filenm[MAX_FILENAME];

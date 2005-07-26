@@ -217,6 +217,17 @@
 
 #define ARROWS     1            // Arrow buttons on menubar
 
+// TVR 26 July 2005
+// Moved this magic number to a #define --- there were numerous places 
+// where this constant was hard coded, making it difficult to change the
+// map properties line format without breaking something.  Now it can live
+// in one place that needs to be updated when the properties line is changed.
+// At the time of writing, the properties line had the followign format:
+// min max lyr fil drg amap name
+// %5d %5d %5d %5c %5c %5c  %s
+// placing the name at offset 37
+#define MPD_FILENAME_OFFSET 37
+
 /* JMT - works under FreeBSD */
 uid_t euid;
 gid_t egid;
@@ -16495,6 +16506,7 @@ if (current->temp_select) {
                 char temp_max_zoom[10];
                 char temp_min_zoom[10];
                 char temp_filled[20];
+                char temp_drg[20];
                 char temp_auto[20];
                 int len, start;
 
@@ -16605,6 +16617,72 @@ if (current->temp_select) {
                     // Truncate it so it fits our column width.
                     temp_filled[5] = '\0';
 
+                xastir_snprintf(temp_drg,
+                    sizeof(temp_drg),
+                    "     ");
+
+                switch (current->usgs_drg) {
+
+                    case 0: // No
+
+                        // Center the string in the column
+                        len = strlen(langcode("MAPP007"));
+                        start = (int)( (5 - len) / 2 + 0.5);
+
+                        if (start < 0)
+                            start = 0;
+
+                        // Insert the string.  Fill with spaces
+                        // on the end.
+                        xastir_snprintf(&temp_drg[start],
+                            sizeof(temp_drg)-start,
+                            "%s     ",
+                            langcode("MAPP007"));   // "No"
+
+                        break;
+
+                    case 1: // Yes
+
+                        // Center the string in the column
+                        len = strlen(langcode("MAPP006"));
+                        start = (int)( (5 - len) / 2 + 0.5);
+
+                        if (start < 0)
+                            start = 0;
+
+                        // Insert the string.  Fill with spaces
+                        // on the end.
+                        xastir_snprintf(&temp_drg[start],
+                            sizeof(temp_drg)-start,
+                            "%s     ",
+                            langcode("MAPP006"));   // "Yes"
+
+                        break;
+
+                    case 2: // Auto
+                    default:
+
+                        // Center the string in the column
+                        len = strlen(langcode("MAPP011"));
+                        start = (int)( (5 - len) / 2 + 1.5);
+
+                        if (start < 0)
+                            start = 0;
+
+                        // Insert the string.  Fill with spaces
+                        // on the end.
+                        xastir_snprintf(&temp_drg[start],
+                            sizeof(temp_drg)-start,
+                            "%s     ",
+                            langcode("MAPP011"));   // "Auto"
+
+                        break;
+
+                    }   // End of switch
+
+                    // Truncate it so it fits our column width.
+                    temp_drg[5] = '\0';
+
                 xastir_snprintf(temp_auto,
                     sizeof(temp_auto),
                     "     ");
@@ -16632,11 +16710,12 @@ if (current->temp_select) {
 
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "%s %s %s %s %s  %s",
+                    "%s %s %s %s %s %s  %s",
                     temp_max_zoom,
                     temp_min_zoom,
                     temp_layer,
                     temp_filled,
+                    temp_drg,
                     temp_auto,
                     current->filename);
 
@@ -16811,7 +16890,7 @@ void map_properties_filled_auto(Widget widget, XtPointer clientData, XtPointer c
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -16863,7 +16942,7 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -16915,7 +16994,7 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -16934,6 +17013,85 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
     index_save_to_file();
 }
 
+
+
+// Change the "usgs_drg" field in the in-memory map_index to a
+// specified value.
+void map_index_update_usgs_drg(char *filename, int drg_setting) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->usgs_drg = drg_setting;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+// common functionality of all the callbacks.  Probably don't even need 
+// all the X data here, either
+void map_properties_usgs_drg(Widget widget, XtPointer clientData, XtPointer callData, int drg_setting) {
+    int i, x;
+    XmString *list;
+    char *temp;
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the usgs_drg field on
+    // every one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
+                temp2 = temp + MPD_FILENAME_OFFSET;
+
+//fprintf(stderr,"New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting the "usgs_drg" field to drg_setting.
+                map_index_update_usgs_drg(temp2,drg_setting);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+// the real callbacks
+void map_properties_usgs_drg_auto(Widget widget, XtPointer clientData, XtPointer callData) {
+    map_properties_usgs_drg(widget, clientData, callData, 2);
+}
+void map_properties_usgs_drg_yes(Widget widget, XtPointer clientData, XtPointer callData) {
+    map_properties_usgs_drg(widget, clientData, callData, 1);
+}
+void map_properties_usgs_drg_no(Widget widget, XtPointer clientData, XtPointer callData) {
+    map_properties_usgs_drg(widget, clientData, callData, 0);
+}
 
 
 
@@ -17005,7 +17163,7 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -17057,7 +17215,7 @@ void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer 
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -17135,7 +17293,7 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -17214,7 +17372,7 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //                fprintf(stderr,"New string:%s\n",temp2);
 
@@ -17293,7 +17451,7 @@ void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPoint
 //OFFSET IS CRITICAL HERE!!!  If we change how the strings are
 //printed into the map_properties_list, we have to change this
 //offset.
-                temp2 = temp + 31;
+                temp2 = temp + MPD_FILENAME_OFFSET;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -17346,8 +17504,9 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 //    char *temp;
 //    XmString *list;
     static Widget pane, my_form, button_clear, button_close,
-        rowcol1, rowcol2, label1, label2, label3, label4,
+        rowcol1, rowcol2, rowcol3, label1, label2, label3, label4, label5,
         button_filled_auto, button_filled_yes, button_filled_no,
+        button_usgs_drg_auto, button_usgs_drg_yes, button_usgs_drg_no,
         button_layer_change,
         button_auto_maps_yes, button_auto_maps_no,
         button_max_zoom_change, button_min_zoom_change,
@@ -17411,14 +17570,30 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         map_properties_fill_in();
 
         // Attach a rowcolumn manager widget to my_form to handle
-        // the second button row.  Attach it to the bottom of the
+        // the third button row.  Attach it to the bottom of the
         // form.
-        rowcol2 = XtVaCreateManagedWidget("Map properties rowcol2", 
+        rowcol3 = XtVaCreateManagedWidget("Map properties rowcol3", 
                 xmRowColumnWidgetClass, 
                 my_form,
                 XmNorientation, XmHORIZONTAL,
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_FORM,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNkeyboardFocusPolicy, XmEXPLICIT,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Attach a rowcolumn manager widget to my_form to handle
+        // the second button row.  Attach it to the top of rowcol3.
+        rowcol2 = XtVaCreateManagedWidget("Map properties rowcol2", 
+                xmRowColumnWidgetClass, 
+                my_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, rowcol3,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment, XmATTACH_FORM,
                 XmNkeyboardFocusPolicy, XmEXPLICIT,
@@ -17619,10 +17794,45 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+// USGS DRG->
+        label5  = XtVaCreateManagedWidget(langcode("MAPP012"),
+                xmLabelWidgetClass,
+                rowcol2,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "USGS DRG Auto"
+        button_usgs_drg_auto = XtVaCreateManagedWidget(langcode("MAPP011"),
+                xmPushButtonGadgetClass, 
+                rowcol2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "USGS DRG Yes"
+        button_usgs_drg_yes = XtVaCreateManagedWidget(langcode("MAPP006"),
+                xmPushButtonGadgetClass, 
+                rowcol2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "USGS DRG No"
+        button_usgs_drg_no = XtVaCreateManagedWidget(langcode("MAPP007"),
+                xmPushButtonGadgetClass, 
+                rowcol2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 // "Select All"
         button_select_all = XtVaCreateManagedWidget(langcode("PULDNMMC09"),
                 xmPushButtonGadgetClass,
-                rowcol2,
+                rowcol3,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -17631,7 +17841,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Clear"
         button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
-                rowcol2,
+                rowcol3,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -17640,7 +17850,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 // "Close"
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                 xmPushButtonGadgetClass, 
-                rowcol2,
+                rowcol3,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -17652,6 +17862,9 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtAddCallback(button_filled_auto, XmNactivateCallback, map_properties_filled_auto, map_properties_dialog);
         XtAddCallback(button_filled_yes, XmNactivateCallback, map_properties_filled_yes, map_properties_dialog);
         XtAddCallback(button_filled_no, XmNactivateCallback, map_properties_filled_no, map_properties_dialog);
+        XtAddCallback(button_usgs_drg_auto, XmNactivateCallback, map_properties_usgs_drg_auto, map_properties_dialog);
+        XtAddCallback(button_usgs_drg_yes, XmNactivateCallback, map_properties_usgs_drg_yes, map_properties_dialog);
+        XtAddCallback(button_usgs_drg_no, XmNactivateCallback, map_properties_usgs_drg_no, map_properties_dialog);
         XtAddCallback(button_max_zoom_change, XmNactivateCallback, map_properties_max_zoom_change, map_properties_dialog);
         XtAddCallback(button_min_zoom_change, XmNactivateCallback, map_properties_min_zoom_change, map_properties_dialog);
         XtAddCallback(button_layer_change, XmNactivateCallback, map_properties_layer_change, map_properties_dialog);
@@ -17665,6 +17878,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         XtManageChild(rowcol1);
         XtManageChild(rowcol2);
+        XtManageChild(rowcol3);
         XtManageChild(my_form);
         XtManageChild(map_properties_list);
         XtVaSetValues(map_properties_list, XmNbackground, colors[0x0f], NULL);

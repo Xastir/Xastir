@@ -1112,8 +1112,8 @@ GPS011|Violeta||
 #
 # Diálogo de Propiedades de Mapa
 MAPP001|Propiedades de Mapa||
-MAPP002|Max   Min  Dibuja   Mapa  Auto||
-MAPP003|Zoom  Zoom  Capa  Llenado Mapa Sendero/NombreArchivo||
+MAPP002|Max   Min  Dibuja   Mapa  USGS  Auto||
+MAPP003|Zoom  Zoom  Capa  Llenado DRG   Mapa Sendero/NombreArchivo||
 MAPP004|Cambie Capa->||
 MAPP005|Llenado->||
 MAPP006|Sí||
@@ -1122,6 +1122,7 @@ MAPP008|Automapas->||
 MAPP009|Max Zoom->||
 MAPP010|Min Zoom->||
 MAPP011|Auto||
+MAPP012|USGS DRG->||
 #
 # Cadenas del Tiempo
 TIME001|Día||

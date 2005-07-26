@@ -92,7 +92,7 @@ void draw_palm_image_map(Widget w,
 			 alert_entry *alert, 
 			 u_char alert_color,
 			 int destination_pixmap, 
-			 int draw_filled) {
+			 map_draw_flags *mdf) {
 
 // Do NOT change any of these structs.  They have to match the
 // structs  that the palm maps were made with.
@@ -181,7 +181,9 @@ void draw_palm_image_map(Widget w,
     long line_x, line_y;
     int vector;
     char status_text[MAX_FILENAME];
+    int draw_filled;
 
+    draw_filled = mdf->draw_filled;
 
     xastir_snprintf(filename, sizeof(filename), "%s/%s", dir, filenm);
 
