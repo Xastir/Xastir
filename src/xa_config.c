@@ -520,7 +520,7 @@ void save_data(void)  {
 #endif //HAVE_IMAGEMAGICK
 
 #ifdef HAVE_LIBGEOTIFF
-//        store_int (fout, "DRG_XOR_COLORS", DRG_XOR_colors);
+        store_int (fout, "DRG_XOR_COLORS", DRG_XOR_colors);
         store_int (fout, "DRG_SHOW_COLORS_0", DRG_show_colors[0]);
         store_int (fout, "DRG_SHOW_COLORS_1", DRG_show_colors[1]);
         store_int (fout, "DRG_SHOW_COLORS_2", DRG_show_colors[2]);
@@ -1282,8 +1282,8 @@ void load_data_or_default(void) {
 #endif //HAVE_IMAGEMAGICK
 
 #ifdef HAVE_LIBGEOTIFF
-//    if (!get_int ("DRG_XOR_COLORS", &DRG_XOR_colors, 0, 1, 0))
-//        DRG_XOR_colors = 0;
+    if (!get_int ("DRG_XOR_COLORS", &DRG_XOR_colors, 0, 1, 0))
+        DRG_XOR_colors = 0;
 
     if (!get_int ("DRG_SHOW_COLORS_0", &DRG_show_colors[0], 0, 1, 1))
         DRG_show_colors[0] = 1;

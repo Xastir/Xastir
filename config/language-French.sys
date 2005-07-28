@@ -114,7 +114,7 @@ MPUPTGR018|Activer cartes Tiger||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Select items to be displayed:||
-MPUPDRG002|XOR?||
+MPUPDRG002|Tint Underlying Map (XOR)||
 MPUPDRG003|Black||
 MPUPDRG004|White||
 MPUPDRG005|Blue||

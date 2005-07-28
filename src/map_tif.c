@@ -2355,6 +2355,22 @@ right_crop = width - 1;
     }
 
 
+    // Set the bit-blitting function to XOR.  This is only used if
+    // DRG_XOR_colors is set to a non-zero value, but we set it here
+    // outside the pixel loop for speed reasons.
+    //
+    if (DRG_XOR_colors) {
+        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
+
+//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);  // yellow
+//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x0f]); // White
+//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x03]); // cyan
+//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x06]); // orange
+ 
+        (void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
+    }
+
+
     // Iterate over the rows of interest only.  Using the rectangular
     // top/bottom crop values for these is ok at this point.
     //
@@ -2589,13 +2605,27 @@ if (current_right >= width)
                          (usgs_drg ==1 && (*(imageMemory + column) >= 13
                           || DRG_show_colors[*(imageMemory + column)] == 1))) {
 
-                        // Set the color for the pixel
-                        //
-                        //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0xfd]);
-                        XSetForeground (XtDisplay (w), gc, my_colors[*(imageMemory + column)].pixel);
 
-                        // And draw the pixel
-                        XFillRectangle (XtDisplay (w), pixmap, gc, sxx, syy, stepwc, stephc);
+                        // If this is set, use gc_tint for drawing
+                        // with "GXxor" as the bit-blit operation.
+                        //
+                        if (DRG_XOR_colors) {
+
+                            // Draw the pixel using "gc_tint"
+                            // instead of "gc".
+
+                            XSetForeground (XtDisplay (w), gc_tint, my_colors[*(imageMemory + column)].pixel);
+ 
+                            XFillRectangle (XtDisplay (w), pixmap, gc_tint, sxx, syy, stepwc, stephc);
+                        }
+                        else {
+
+                            // Set the color for the pixel
+                            XSetForeground (XtDisplay (w), gc, my_colors[*(imageMemory + column)].pixel);
+
+                            // And draw the pixel
+                            XFillRectangle (XtDisplay (w), pixmap, gc, sxx, syy, stepwc, stephc);
+                        }
                     }
                 }
             }
