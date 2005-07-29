@@ -14962,8 +14962,10 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 
 
     // Split the relay digipeater calls into separate substrings.
-    // Split on comma delimiters.  We don't get rid of extra spaces
-    // here, so the original string needs to be free of them.
+    // Split on comma delimiters.  We get rid of extra spaces at the
+    // point where we read the string in from the config file
+    // (xa_config.c), so spaces between the calls are ok (but not
+    // tabs).
     split_string(relay_digipeater_calls, Relay_Calls, MAX_RELAY_DIGIPEATER_CALLS);
 
     // Check for match against my_callsign in this digipeater slot
