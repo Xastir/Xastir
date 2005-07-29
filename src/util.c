@@ -320,6 +320,26 @@ void xastir_debug(int my_debug_level, char *debug_string) {
 
 
 
+char *remove_all_spaces(char *data) {
+    char *ptr;
+    int length = strlen(data);
+
+    ptr = data;
+    while ( (ptr = strpbrk(data, " ")) ) {
+        memmove(ptr, ptr+1, strlen(ptr)+1);
+        length--;
+    }
+
+    // Terminate at the new string length
+    data[length] = '\0';
+
+    return(data);
+}
+
+
+
+
+
 char *remove_leading_spaces(char *data) {
     int i,j;
     int count;
