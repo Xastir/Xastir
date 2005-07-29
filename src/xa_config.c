@@ -1069,6 +1069,8 @@ void load_data_or_default(void) {
         sprintf (relay_digipeater_calls, "WIDE1-1");
     // Make them all upper-case.
     (void)to_upper(relay_digipeater_calls);
+    // And take out all spaces
+    (void)remove_all_spaces(relay_digipeater_calls);
 
 
     if (!get_int ("COORDINATE_SYSTEM", &coordinate_system, 0, 5, USE_DDMMMM))
