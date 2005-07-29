@@ -173,7 +173,7 @@ extern int print_auto_rotation;
 extern int print_auto_scale;
 extern int print_in_monochrome;
 extern int print_invert;
-extern int  locate_place(Widget w, char *name, char *state, char *county, char *quad, char* type, char *filename, int follow_case, int get_match);
+extern int  gnis_locate_place(Widget w, char *name, char *state, char *county, char *quad, char* type, char *filename, int follow_case, int get_match);
 extern void maps_init(void);
 extern int convert_from_xastir_coordinates ( float *f_longitude,
                                       float *f_latitude,

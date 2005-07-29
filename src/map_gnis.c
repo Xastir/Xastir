@@ -890,7 +890,7 @@ Cell Name
 // Might also need to place a label at that position on the map in
 // case that GNIS file isn't currently selected.
 //
-int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
+int gnis_locate_place( Widget w, char *name_in, char *state_in, char *county_in,
         char *quad_in, char *type_in, char *filename_in, int follow_case, int get_match ) {
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
@@ -1267,6 +1267,24 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                         coord_lon = convert_lon_s2l(long_str);
                         set_map_position(w, coord_lat, coord_lon);
                         return(1);  // We found a match
+
+
+//WE7U
+// Instead of returning on a match, we should fill an array with the
+// info, continue on through the file and find ALL of the matches.
+// Perhaps we could have a way for the user to specify that they
+// only want the first match in the GUI as well, for speed reasons?
+//
+// Return the array to the GUI, have it bring up a CHOOSER dialog,
+// then center the map on one of those iff the user requests it.
+//
+// We could pass back a linked list of records or a dynamically
+// allocated array and a length specifier.  Perhaps have an upper
+// limit on the number of records in case we're matching darned-near
+// everything in the file?  Heck, we might as well have a static
+// array of XX records then...
+
+
                     }
                 }
             }
