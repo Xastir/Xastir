@@ -890,8 +890,19 @@ Cell Name
 // Might also need to place a label at that position on the map in
 // case that GNIS file isn't currently selected.
 //
-int gnis_locate_place( Widget w, char *name_in, char *state_in, char *county_in,
-        char *quad_in, char *type_in, char *filename_in, int follow_case, int get_match ) {
+int gnis_locate_place( Widget w,
+        char *name_in,
+        char *state_in,
+        char *county_in,
+        char *quad_in,
+        char *type_in,
+        char *filename_in,
+        int follow_case,
+        int get_match,
+        char match_array_name[50][200],
+        long match_array_lat[50],
+        long match_array_long[50] ) {
+
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
     char line[MAX_FILENAME];        // One line of text from file
@@ -923,6 +934,7 @@ int gnis_locate_place( Widget w, char *name_in, char *state_in, char *county_in,
     long coord_lon, coord_lat;
     int ok;
     struct stat file_status;
+    int my_count = 0;
  
  
     xastir_snprintf(file,sizeof(file),"%s",filename_in);
@@ -960,340 +972,341 @@ int gnis_locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
     // Check status of the file
     if (stat(file, &file_status) < 0) {
+        // "Can't open file"
         popup_message( langcode("POPEM00028"), filename_in );
         return(0);
     }
     // Check for regular file
     if (!S_ISREG(file_status.st_mode)) {
+        // "Can't open file"
         popup_message( langcode("POPEM00028"), filename_in );
         return(0);
     }
     // Attempt to open the file
     f = fopen (file, "r");
-    if (f != NULL) {
-        while (!feof (f)) {     // Loop through entire file
-            if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
-                if (strlen(line) > 0) {
+    if (f == NULL) {
+        // "Can't open file"
+        popup_message_always( langcode("POPEM00028"), filename_in );
+        return(0);
+    }
+ 
+    while (!feof (f)) {     // Loop through entire file
+        if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
+            if (strlen(line) > 0) {
 
 
 //NOTE:  How do we handle running off the end of "line" while using "index"?
 // Short lines here can cause segfaults.
 
-                    // Find end of Feature ID Number field
-                    j = index(line,'|');
+                // Find end of Feature ID Number field
+                j = index(line,'|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip this line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip this line
+                }
 
-                    // Find end of State field
-                    i = index(j+1,'|');
+                // Find end of State field
+                i = index(j+1,'|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
-                    xastir_snprintf(state,sizeof(state),"%s",j+1);
-                    clean_string(state);
+                i[0] = '\0';
+                xastir_snprintf(state,sizeof(state),"%s",j+1);
+                clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
 
-                    // Find end of Feature Name field
-                    j = index(i+1, '|');
+                // Find end of Feature Name field
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
-                    xastir_snprintf(name,sizeof(name),"%s",i+1);
-                    clean_string(name);
+                j[0] = '\0';
+                xastir_snprintf(name,sizeof(name),"%s",i+1);
+                clean_string(name);
 
-                    // Find end of Feature Type field
-                    i = index(j+1, '|');
+                // Find end of Feature Type field
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
-                    xastir_snprintf(type,sizeof(type),"%s",j+1);
-                    clean_string(type);
+                i[0] = '\0';
+                xastir_snprintf(type,sizeof(type),"%s",j+1);
+                clean_string(type);
 
-                    // Find end of County Name field
-                    j = index(i+1, '|');
+                // Find end of County Name field
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
-                    xastir_snprintf(county,sizeof(county),"%s",i+1);
-                    clean_string(county);
+                j[0] = '\0';
+                xastir_snprintf(county,sizeof(county),"%s",i+1);
+                clean_string(county);
 
-                    // Find end of State Number Code field
-                    i = index(j+1, '|');
+                // Find end of State Number Code field
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
+                i[0] = '\0';
 
-                    // Find end of County Number Code field
-                    j = index(i+1, '|');
+                // Find end of County Number Code field
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
+                j[0] = '\0';
 
-                    // Find end of Primary Latitude field (DDMMSSN)
-                    i = index(j+1, '|');
+                // Find end of Primary Latitude field (DDMMSSN)
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
-                    xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
-                    clean_string(latitude);
+                i[0] = '\0';
+                xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
+                clean_string(latitude);
 
-                    // Find end of Primary Longitude field (DDDMMSSW)
-                    j = index(i+1, '|');
+                // Find end of Primary Longitude field (DDDMMSSW)
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
-                    xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
-                    clean_string(longitude);
+                j[0] = '\0';
+                xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
+                clean_string(longitude);
 
-                    // Find end of Primary Latitude field (decimal
-                    // degrees)
-                    i = index(j+1, '|');
+                // Find end of Primary Latitude field (decimal
+                // degrees)
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
+                i[0] = '\0';
 
-                    // Find end of Primary Longitude field (decimal
-                    // degrees)
-                    j = index(i+1, '|');
+                // Find end of Primary Longitude field (decimal
+                // degrees)
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
+                j[0] = '\0';
 
-                    // Find end of Source Latitude field (DMS)
-                    i = index(j+1, '|');
+                // Find end of Source Latitude field (DMS)
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
+                i[0] = '\0';
 
-                    // Find end of Source Longitude (DMS)
-                    j = index(i+1, '|');
+                // Find end of Source Longitude (DMS)
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
+                j[0] = '\0';
 
-                    // Find end of Source Latitude field (decimal
-                    // degrees)
-                    i = index(j+1, '|');
+                // Find end of Source Latitude field (decimal
+                // degrees)
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
+                i[0] = '\0';
 
-                    // Find end of Source Longitude field (decimal
-                    // degrees)
-                    j = index(i+1, '|');
+                // Find end of Source Longitude field (decimal
+                // degrees)
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
+                j[0] = '\0';
 
-                    // Find end of Elevation field
-                    i = index(j+1, '|');
+                // Find end of Elevation field
+                i = index(j+1, '|');
 
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    i[0] = '\0';
+                i[0] = '\0';
 
-                    // Find end of Estimated Population field
-                    j = index(i+1, '|');
+                // Find end of Estimated Population field
+                j = index(i+1, '|');
 
-                    if (j == NULL) {    // Pipe not found
-                        continue;   // Skip line
-                    }
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
 
-                    j[0] = '\0';
-                    xastir_snprintf(population,sizeof(population),"%s",i+1);
-                    clean_string(population);
+                j[0] = '\0';
+                xastir_snprintf(population,sizeof(population),"%s",i+1);
+                clean_string(population);
 
-                    // Snag Cell Name field (Quad name, last field)
-                    xastir_snprintf(quad,sizeof(quad),"%s",j+1);
-                    clean_string(quad);
+                // Snag Cell Name field (Quad name, last field)
+                xastir_snprintf(quad,sizeof(quad),"%s",j+1);
+                clean_string(quad);
 
-                    // If "Match Case" togglebutton is not set, convert
-                    // the data to upper-case before we do our compare.
-                    if (!follow_case) {
-                        to_upper(name);
-                        to_upper(state);
-                        to_upper(county);
-                        to_upper(quad);
-                        to_upper(type);
-                    }
+                // If "Match Case" togglebutton is not set, convert
+                // the data to upper-case before we do our compare.
+                if (!follow_case) {
+                    to_upper(name);
+                    to_upper(state);
+                    to_upper(county);
+                    to_upper(quad);
+                    to_upper(type);
+                }
 
 // Still need to code for the "Match Exact" togglebutton.
 
 
-                    // Now compare the input variables with those we've
-                    // parsed.  If a match, bring up a list of items which
-                    // match.
-                    //
-                    ok = 1;
-                    if (get_match) {    // Looking for exact match
-                        if (name_in2[0] != '\0')
-                            if (strcmp(name,name_in2) != 0)
-                                ok = 0;
-                        if (state_in2[0] != '\0')
-                            if (strcmp(state,state_in2) != 0)
-                                ok = 0;
-                        if (county_in2[0] != '\0')
-                            if (strcmp(county,county_in2) != 0)
-                                ok = 0;
-                        if (quad_in2[0] != '\0')
-                            if (strcmp(quad,quad_in2) != 0)
-                                ok = 0;
-                        if (type_in2[0] != '\0')
-                            if (strcmp(type,type_in2) != 0)
-                                ok = 0;
+                // Now compare the input variables with those we've
+                // parsed.  If a match, bring up a list of items which
+                // match.
+                //
+                ok = 1;
+                if (get_match) {    // Looking for exact match
+                    if (name_in2[0] != '\0')
+                        if (strcmp(name,name_in2) != 0)
+                            ok = 0;
+                    if (state_in2[0] != '\0')
+                        if (strcmp(state,state_in2) != 0)
+                            ok = 0;
+                    if (county_in2[0] != '\0')
+                        if (strcmp(county,county_in2) != 0)
+                            ok = 0;
+                    if (quad_in2[0] != '\0')
+                        if (strcmp(quad,quad_in2) != 0)
+                            ok = 0;
+                    if (type_in2[0] != '\0')
+                        if (strcmp(type,type_in2) != 0)
+                            ok = 0;
+                }
+                else {  // Look for substring in file, not exact match
+                    if (name_in2[0] != '\0')
+                        if (strstr(name,name_in2) == NULL)
+                            ok = 0;
+                    if (state_in2[0] != '\0')
+                        if (strstr(state,state_in2) == NULL)
+                            ok = 0;
+                    if (county_in2[0] != '\0')
+                        if (strstr(county,county_in2) == NULL)
+                            ok = 0;
+                    if (quad_in2[0] != '\0')
+                        if (strstr(quad,quad_in2) == NULL)
+                            ok = 0;
+                    if (type_in2[0] != '\0')
+                        if (strstr(type,type_in2) == NULL)
+                            ok = 0;
+                }
+
+
+                if (ok) {
+                    if (debug_level & 16)
+                        fprintf(stderr,"Match: %s,%s,%s,%s\n",name,state,county,type);
+
+// This one pops up the names of whatever we found.
+// "Found It!"
+//popup_message_always( langcode("POPEM00029"), name );
+
+                    lat_dd[0] = latitude[0];
+                    lat_dd[1] = latitude[1];
+                    lat_dd[2] = '\0';
+ 
+                    lat_mm[0] = latitude[2];
+                    lat_mm[1] = latitude[3];
+                    lat_mm[2] = '\0';
+
+                    lat_ss[0] = latitude[4];
+                    lat_ss[1] = latitude[5];
+                    lat_ss[2] = '\0';
+
+                    lat_dir[0] = latitude[6];
+                    lat_dir[1] = '\0';
+
+                    long_dd[0] = longitude[0];
+                    long_dd[1] = longitude[1];
+                    long_dd[2] = longitude[2];
+                    long_dd[3] = '\0';
+ 
+                    long_mm[0] = longitude[3];
+                    long_mm[1] = longitude[4];
+                    long_mm[2] = '\0';
+ 
+                    long_ss[0] = longitude[5];
+                    long_ss[1] = longitude[6];
+                    long_ss[2] = '\0';
+ 
+                    long_dir[0] = longitude[7];
+                    long_dir[1] = '\0';
+
+                    // Now must convert from DD MM SS format to DD MM.MM format so that we
+                    // can run it through our conversion routine to Xastir coordinates.
+                    if (1 != sscanf(lat_ss, "%d", &temp1)) {
+                        fprintf(stderr,"locate_place:sscanf parsing error\n");
                     }
-                    else {  // Look for substring in file, not exact match
-                        if (name_in2[0] != '\0')
-                            if (strstr(name,name_in2) == NULL)
-                                ok = 0;
-                        if (state_in2[0] != '\0')
-                            if (strstr(state,state_in2) == NULL)
-                                ok = 0;
-                        if (county_in2[0] != '\0')
-                            if (strstr(county,county_in2) == NULL)
-                                ok = 0;
-                        if (quad_in2[0] != '\0')
-                            if (strstr(quad,quad_in2) == NULL)
-                                ok = 0;
-                        if (type_in2[0] != '\0')
-                            if (strstr(type,type_in2) == NULL)
-                                ok = 0;
+
+                    temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
+                    xastir_snprintf(lat_str, sizeof(lat_str), "%s%s.%02d%s", lat_dd,
+                        lat_mm, temp1, lat_dir);
+                    coord_lat = convert_lat_s2l(lat_str);
+
+                    if (1 != sscanf(long_ss, "%d", &temp1)) {
+                        fprintf(stderr,"locate_place:sscanf parsing error\n");
                     }
 
-
-                    if (ok) {
-                        if (debug_level & 16)
-                            fprintf(stderr,"Match: %s,%s,%s,%s\n",name,state,county,type);
-
-                        popup_message_always( langcode("POPEM00029"), name );
-
-                        lat_dd[0] = latitude[0];
-                        lat_dd[1] = latitude[1];
-                        lat_dd[2] = '\0';
- 
-                        lat_mm[0] = latitude[2];
-                        lat_mm[1] = latitude[3];
-                        lat_mm[2] = '\0';
-
-                        lat_ss[0] = latitude[4];
-                        lat_ss[1] = latitude[5];
-                        lat_ss[2] = '\0';
-
-                        lat_dir[0] = latitude[6];
-                        lat_dir[1] = '\0';
-
-                        long_dd[0] = longitude[0];
-                        long_dd[1] = longitude[1];
-                        long_dd[2] = longitude[2];
-                        long_dd[3] = '\0';
- 
-                        long_mm[0] = longitude[3];
-                        long_mm[1] = longitude[4];
-                        long_mm[2] = '\0';
- 
-                        long_ss[0] = longitude[5];
-                        long_ss[1] = longitude[6];
-                        long_ss[2] = '\0';
- 
-                        long_dir[0] = longitude[7];
-                        long_dir[1] = '\0';
-
-                        // Now must convert from DD MM SS format to DD MM.MM format so that we
-                        // can run it through our conversion routine to Xastir coordinates.
-                        if (1 != sscanf(lat_ss, "%d", &temp1)) {
-                            fprintf(stderr,"locate_place:sscanf parsing error\n");
-                        }
-
-                        temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
-                        xastir_snprintf(lat_str, sizeof(lat_str), "%s%s.%02d%s", lat_dd,
-                                lat_mm, temp1, lat_dir);
-                        coord_lat = convert_lat_s2l(lat_str);
-
-                        if (1 != sscanf(long_ss, "%d", &temp1)) {
-                            fprintf(stderr,"locate_place:sscanf parsing error\n");
-                        }
-
-                        temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
-                        xastir_snprintf(long_str, sizeof(long_str), "%s%s.%02d%s", long_dd,
-                                long_mm, temp1, long_dir);
-                        coord_lon = convert_lon_s2l(long_str);
-                        set_map_position(w, coord_lat, coord_lon);
-                        return(1);  // We found a match
+                    temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
+                    xastir_snprintf(long_str, sizeof(long_str), "%s%s.%02d%s", long_dd,
+                        long_mm, temp1, long_dir);
+                    coord_lon = convert_lon_s2l(long_str);
 
 
-//WE7U
-// Instead of returning on a match, we should fill an array with the
-// info, continue on through the file and find ALL of the matches.
-// Perhaps we could have a way for the user to specify that they
-// only want the first match in the GUI as well, for speed reasons?
-//
-// Return the array to the GUI, have it bring up a CHOOSER dialog,
-// then center the map on one of those iff the user requests it.
-//
-// We could pass back a linked list of records or a dynamically
-// allocated array and a length specifier.  Perhaps have an upper
-// limit on the number of records in case we're matching darned-near
-// everything in the file?  Heck, we might as well have a static
-// array of XX records then...
+//set_map_position(w, coord_lat, coord_lon);
 
+                    // Fill in the array values with what we just
+                    // found, increment the counter.
+                    xastir_snprintf(match_array_name[my_count],200,"%s",name);
+                    match_array_lat[my_count] = coord_lat;
+                    match_array_long[my_count] = coord_lon;
+                    my_count++;
 
+                    // Check for a max array.  Return if it is full.
+                    if (my_count > 50) {
+                        return(50);
                     }
                 }
             }
         }
-    } else {
-        popup_message_always( langcode("POPEM00028"), filename_in );
     }
 
-    return(0);  // We didn't find a match
+    return(my_count);
 }
 
 

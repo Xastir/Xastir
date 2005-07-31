@@ -2684,7 +2684,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         label4, label5, label6,
         button_clear, button_calculate, button_cancel;
     Atom delw;
-    Arg args[2];                    // Arg List
+    Arg args[50];                    // Arg List
     register unsigned int n = 0;    // Arg Count
     char temp_string[50];
 
@@ -4016,7 +4016,7 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
 void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_close;
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
     char temp_string[10];
 
@@ -4190,7 +4190,7 @@ void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer cal
 void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_close;
     Atom delw;
-    Arg al[2];
+    Arg al[50];
     register unsigned int ac = 0;
     char temp_string[10];
 
@@ -4452,7 +4452,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                 button_cancel,button_xfontsel[FONT_MAX];
     Atom delw;
     int i;
-    Arg al[20];                 /* Arg List */
+    Arg al[50];                 /* Arg List */
     register unsigned int ac = 0; /* Arg Count */
 
 
@@ -4867,7 +4867,7 @@ inline int no_data_selected(void)
 void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
     Atom WM_DELETE_WINDOW;
     Widget children[9];         /* Children to manage */
-    Arg al[64];                 /* Arg List */
+    Arg al[100];                 /* Arg List */
     register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
@@ -12270,7 +12270,7 @@ void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
 void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     static Widget  pane,form, button_ok, button_cancel,
             lat_label, lon_label, zoom_label;
-//    Arg al[20];           /* Arg List */
+//    Arg al[50];           /* Arg List */
 //    unsigned int ac = 0;           /* Arg Count */
     Atom delw;
     char temp[50];
@@ -13655,7 +13655,7 @@ void GPS_transfer_select( void ) {
                   ctyp2, ctyp3, ctyp4, ctyp5, ctyp6, ctyp7,
                   gpsfilename_label;
     Atom delw;
-    Arg al[2];                      // Arg List
+    Arg al[50];                      // Arg List
     register unsigned int ac = 0;   // Arg Count
 
 
@@ -15632,7 +15632,7 @@ void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget d;
     XmString xms, xa, xb;
-    Arg al[10];
+    Arg al[50];
     unsigned int ac;
     float version;
     char string1[100];
@@ -15779,7 +15779,7 @@ void  Display_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, my_form, button_close, option_box, tnc_data, net_data, tnc_net_data;
     unsigned int n;
-    Arg args[20];
+    Arg args[50];
     Atom delw;
 
     if (!Display_data_dialog) {
@@ -16012,7 +16012,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     FILE *f;
     XmString *list;
     int open;
-    Arg args[20];
+    Arg args[50];
     int data_on,pos;
     int found;
     Atom delw;
@@ -16161,7 +16161,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     int n;
     char temp[600];
     FILE *f;
-    Arg al[20];           /* Arg List */
+    Arg al[50];           /* Arg List */
     unsigned int ac = 0;           /* Arg Count */
     Atom delw;
     XmString str_ptr;
@@ -17516,7 +17516,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         button_max_zoom_change, button_min_zoom_change,
         button_select_all;
     Atom delw;
-    Arg al[10];                     // Arg List
+    Arg al[50];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
 
 
@@ -19860,7 +19860,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
             maps_selected_label, button_apply;
     Atom delw;
     int i;
-    Arg al[10];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
 
@@ -20191,7 +20191,7 @@ void read_file_selection_now(Widget w, XtPointer clientData, XtPointer callData)
 
 
 void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    Arg al[10];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
     Widget fs;
 
@@ -20445,7 +20445,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 igate_option, igate_box,
                 igtyp0, igtyp1, igtyp2;
     Atom delw;
-    Arg al[2];                      /* Arg List */
+    Arg al[50];                      /* Arg List */
     register unsigned int ac = 0;   /* Arg Count */
 
     if (!configure_defaults_dialog) {
@@ -21470,7 +21470,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 label, coord_box, coord_0, coord_1, coord_2,
                 coord_3, coord_4, coord_5;
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     if (!configure_coordinates_dialog) {
@@ -25542,7 +25542,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     char temp_data[40];
     Atom delw;
     DataRow *p_station = (DataRow *)clientData;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac;     /* Arg Count */
     long x,y;
 
@@ -29138,7 +29138,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 sep, configure_button_symbol, compute_button;
     char temp_data[40];
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     if(!configure_station_dialog) {

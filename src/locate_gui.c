@@ -40,6 +40,7 @@
 
 Widget locate_station_dialog = (Widget)NULL;
 Widget locate_station_data = (Widget)NULL;
+
 char locate_station_call[30];
 static xastir_mutex locate_station_dialog_lock;
 
@@ -64,7 +65,14 @@ Widget locate_case_data, locate_match_data;
 
 /* locate place values */
 Widget locate_place_case_data, locate_place_match_data;
-
+Widget locate_place_list;
+Widget  locate_place_chooser = (Widget)NULL;
+static xastir_mutex locate_place_chooser_lock;
+char match_array_name[50][200];
+long match_array_lat[50];
+long match_array_long[50];
+int match_quantity = 0;
+ 
 
 
 
@@ -73,6 +81,7 @@ void locate_gui_init(void)
 {
     init_critical_section( &locate_station_dialog_lock );
     init_critical_section( &locate_place_dialog_lock );
+    init_critical_section( &locate_place_chooser_lock );
     locate_station_call[0] = '\0';
     locate_place_name[0] = '\0';
     locate_state_name[0] = '\0';
@@ -456,11 +465,227 @@ end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station" 
 //        XmUpdateDisplay(locate_station_dialog);
         XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
 
-    } else {
+    }
+    else {
         (void)XRaiseWindow(XtDisplay(locate_station_dialog), XtWindow(locate_station_dialog));
     }
 }
 
+
+
+
+
+/*******************************************************************/
+/* Locate Place Chooser routines */
+
+
+
+/*
+ *  Locate Place Chooser PopUp window: Cancelled
+ */
+void Locate_place_chooser_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData) {
+    Widget shell = (Widget) clientData;
+
+begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser_destroy_shell" );
+
+    XtDestroyWidget(shell);
+    locate_place_chooser = (Widget)NULL;
+
+end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser_destroy_shell" );
+
+}
+
+
+
+
+
+/*
+ *  Locate Place Selection PopUp window: Map selected place
+ */
+void Locate_place_chooser_select(Widget widget,
+        XtPointer clientData,
+        XtPointer callData) {
+
+    int ii, xx;
+    char *temp;
+    XmString *list;
+    int found = 0;
+    int index = 0;
+
+begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser_select" );
+
+    if (locate_place_chooser) {
+        XtVaGetValues(locate_place_list,
+            XmNitemCount,
+            &ii,
+            XmNitems,
+            &list,
+            NULL);
+
+        for (xx=1; xx<=ii; xx++) {
+            if (XmListPosSelected(locate_place_list, xx)) {
+                found = 1;
+                index = xx;
+                if (XmStringGetLtoR(list[(xx-1)], XmFONTLIST_DEFAULT_TAG, &temp))
+                    xx=ii+1;
+            }
+        }
+
+        if (found) {
+
+            // Center the map at the chosen location
+            set_map_position(widget,
+                match_array_lat[index-1],
+                match_array_long[index-1]);
+
+            XtFree(temp);
+        }
+    }
+
+end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser_select" );
+
+}
+
+
+
+
+
+void Locate_place_chooser(/*@unused@*/ Widget widget,
+        XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    Widget pane, form, button_ok, button_cancel;
+    Arg al[50];
+    register unsigned int ac = 0;
+    int ii, nn;
+    XmString str_ptr;
+    Atom delw;
+
+
+    if (locate_place_chooser != NULL)
+        Locate_place_chooser_destroy_shell(locate_place_chooser, locate_place_chooser, NULL);
+
+begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser");
+
+    if (locate_place_chooser == NULL) {
+
+        // Set up a selection box:
+        locate_place_chooser = XtVaCreatePopupShell(langcode("WPUPCFS028"),xmDialogShellWidgetClass,Global.top,
+            XmNdeleteResponse,XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            XmNbackground, colors[0xff],
+            NULL);
+
+        pane = XtVaCreateWidget("Locate_place_chooser pane",xmPanedWindowWidgetClass, locate_place_chooser,
+            XmNbackground, colors[0xff],
+            NULL);
+
+        form =  XtVaCreateWidget("Locate_place_chooser form",xmFormWidgetClass, pane,
+            XmNfractionBase, 5,
+            XmNbackground, colors[0xff],
+            XmNautoUnmanage, FALSE,
+            XmNshadowThickness, 1,
+            NULL);
+
+
+        // Attach buttons first to the bottom of the form,
+        // so that we'll be able to stretch this thing
+        // vertically to see all of the entries.
+        //
+        button_ok = XtVaCreateManagedWidget(langcode("WPUPCFS028"),xmPushButtonGadgetClass, form,
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_POSITION,
+            XmNleftPosition, 1,
+            XmNrightAttachment, XmATTACH_POSITION,
+            XmNrightPosition, 2,
+            XmNnavigationType, XmTAB_GROUP,
+            NULL);
+
+        XtAddCallback(button_ok,
+            XmNactivateCallback,
+            Locate_place_chooser_select,
+            locate_place_chooser);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_POSITION,
+            XmNleftPosition, 3,
+            XmNrightAttachment, XmATTACH_POSITION,
+            XmNrightPosition, 4,
+            XmNnavigationType, XmTAB_GROUP,
+            NULL);
+
+        XtAddCallback(button_cancel,
+            XmNactivateCallback,
+            Locate_place_chooser_destroy_shell,
+            locate_place_chooser);
+
+        // set args for color
+        ac = 0;
+        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNvisibleItemCount, 6); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+        XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
+        XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
+        XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
+        XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNtopOffset, 5); ac++;
+        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_WIDGET); ac++;
+        XtSetArg(al[ac], XmNbottomWidget, button_ok); ac++;
+        XtSetArg(al[ac], XmNbottomOffset, 5); ac++;
+        XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNrightOffset, 5); ac++;
+        XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+
+        locate_place_list = XmCreateScrolledList(form,"Locate_place_chooser list",al,ac);
+
+        nn = 1;
+        for (ii = 0; ii < match_quantity; ii++) {
+            XmListAddItem(locate_place_list,
+                str_ptr = XmStringCreateLtoR(match_array_name[ii],
+                XmFONTLIST_DEFAULT_TAG),
+                (int)nn++);
+            XmStringFree(str_ptr);
+        }
+
+        pos_dialog(locate_place_chooser);
+
+        delw = XmInternAtom(XtDisplay(locate_place_chooser),
+            "WM_DELETE_WINDOW",
+            FALSE);
+
+        XmAddWMProtocolCallback(locate_place_chooser,
+            delw,
+            Locate_place_chooser_destroy_shell,
+            (XtPointer)locate_place_chooser);
+
+        XtManageChild(form);
+        XtManageChild(locate_place_list);
+        XtVaSetValues(locate_place_list, XmNbackground, colors[0x0f], NULL);
+        XtManageChild(pane);
+
+        XtPopup(locate_place_chooser,XtGrabNone);
+
+        // Move focus to the Cancel button.  This appears to
+        // highlight t
+        // button fine, but we're not able to hit the
+        // <Enter> key to
+        // have that default function happen.  Note:  We
+        // _can_ hit the
+        // <SPACE> key, and that activates the option.
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+    }
+
+end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser" );
+
+}
+/*******************************************************************/
+ 
 
 
 
@@ -489,6 +714,7 @@ end_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place_destr
  */
 void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     char *temp_ptr;
+//    int ii;
 
 
     /* find place and go there */
@@ -542,27 +768,64 @@ void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData) {
 
     /*fprintf(stderr,"looking for %s\n",locate_place_name);*/
 
+    match_quantity = gnis_locate_place(da,
+        locate_place_name,
+        locate_state_name,
+        locate_county_name,
+        locate_quad_name,
+        locate_type_name,
+        locate_gnis_filename,
+        (int)XmToggleButtonGetState(locate_place_case_data),
+        (int)XmToggleButtonGetState(locate_place_match_data),
+        match_array_name,
+        match_array_lat,
+        match_array_long);
 
-// Here we need to change things around so that we have a Chooser
-// dialog if more than one match is found, plus the associated
-// callbacks.  Don't center the map unless the user chooses one of
-// the matches.  Leave the chooser dialog up so that the user can
-// click on the matches one at a time until the correct one is
-// found, then he/she can hit the Close button on that dialog to
-// make it go away.
+    if (match_quantity) {
+        // Found some matches!
 
+        // Have a Chooser dialog if more than one match is found,
+        // plus the associated callbacks.  Don't center the map
+        // unless the user chooses one of the matches.  Leave the
+        // chooser dialog up so that the user can click on the
+        // matches one at a time until the correct one is found,
+        // then he/she can hit the Close button on that dialog to
+        // make it go away.
 
-    if (gnis_locate_place(da,
-            locate_place_name,
-            locate_state_name,
-            locate_county_name,
-            locate_quad_name,
-            locate_type_name,
-            locate_gnis_filename,
-            (int)XmToggleButtonGetState(locate_place_case_data),
-            (int)XmToggleButtonGetState(locate_place_match_data)) ==0) {
+        // Bring up a chooser dialog with the results from the
+        // match_array and a close button.  Allow the user to choose
+        // which one to center the map to.  Could also allow the
+        // user to find out more about each match if we fill the
+        // array with more data from the GNIS file.
+
+// Debug:  Print out the contents of the match arrays.
+//fprintf(stderr,"Found %d matches!\n", match_quantity);
+
+/*
+set_dangerous("printing");
+for (ii = 0; ii < match_quantity; ii++) {
+    fprintf(stderr,
+        "%d, %s, %ld, %ld\n",
+        ii,
+        match_array_name[ii],
+        match_array_lat[ii],
+        match_array_long[ii]);
+}
+clear_dangerous();
+*/
+
+        // This one pops up the names of whatever we found.
+        // "Found It!"
+        //popup_message_always( langcode("POPEM00029"), match_array_name[0]);
+
+        // Bring up the new Chooser dialog
+        (void)Locate_place_chooser(w, clientData, callData);
+    }
+    else {
+        // No matches found.
         popup_message_always(langcode("POPEM00025"),locate_place_name);
     }
+
     Locate_place_destroy_shell(w, clientData, callData);
 }
 

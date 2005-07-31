@@ -3619,7 +3619,7 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_close, label;
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     if (!change_tactical_dialog) {
@@ -3816,7 +3816,7 @@ void compute_decorations( void ) {
     Widget cdtest = (Widget)NULL;
     Widget cdform = (Widget)NULL;
     Cardinal n = 0;
-    Arg args[20];
+    Arg args[50];
  
 
     // We'll create a dummy dialog at 0,0, then query its
@@ -4771,7 +4771,7 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
         button_direct, button_version, station_icon, station_call,
         station_type, station_data_auto_update_w,
         button_tactical;
-    Arg args[20];
+    Arg args[50];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
     int restore_position = 0;
@@ -5462,7 +5462,7 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
     unsigned int n;
     Atom delw;
     static Widget pane, form, button_ok, button_cancel;
-    Arg al[20];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
 

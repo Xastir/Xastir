@@ -573,7 +573,7 @@ void  Zero_Bulletin_Data_toggle( /*@unused@*/ Widget widget, XtPointer clientDat
 void Bulletins(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, form, button_range, button_close, dist, dist_units;
     unsigned int n;
-    Arg args[20];
+    Arg args[50];
     Atom delw;
     char temp[10];
 

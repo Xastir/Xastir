@@ -576,7 +576,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 radio_port_label;
     char temp[50];
     Atom delw;
-    Arg al[2];                      /* Arg List */
+    Arg al[50];                      /* Arg List */
     register unsigned int ac = 0;   /* Arg Count */
         register char *tmp;
 
@@ -1874,7 +1874,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                 style_8n1, style_7e1, style_7o1,
                 sep;
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     if(!config_GPS_dialog) {
@@ -2425,7 +2425,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                 gauge_type, gauge_box,
                 sep;
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     if(!config_WX_dialog) {
@@ -3079,7 +3079,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                 gauge_type, gauge_box,
                 sep;
     char temp[20];
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
     Atom delw;
 
@@ -4050,7 +4050,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
 
     char temp[50];
     Atom delw;
-    Arg al[2];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     if(!config_AX25_dialog) {
@@ -5683,7 +5683,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                 radioport_label, comment;
     Atom delw;
     char temp[40];
-    Arg al[2];                      // Arg list
+    Arg al[50];                      // Arg list
     register unsigned int ac = 0;    // Arg Count
 
     if(!config_AGWPE_dialog) {
@@ -6783,7 +6783,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
     int found;
     Atom delw;
     XmString str_ptr;
-    Arg al[15];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
     data_on=0;
@@ -7252,7 +7252,7 @@ void control_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientDat
     static Widget rowcol, form, button_start, button_stop, button_start_all, button_stop_all, button_cancel;
     static Widget button_add, button_delete, button_properties;
     Atom delw;
-    Arg al[15];                    /* Arg List */
+    Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
 

@@ -697,7 +697,7 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 // function which fills in the message history information.
 //
 void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    Arg args[30];
+    Arg args[50];
     char temp[60];
     unsigned int n;
     int j,i;
