@@ -45,7 +45,7 @@ against the latest CVS sources, as that is the version that the
 developers work from.  Create the diff file against the directories
 recursively if more than one file has been changed:
 
-    diff -ur xastir-1.5.0 xastir-modified-directory > mypatch
+    diff -ur xastir-1.6.0 xastir-modified-directory > mypatch
 
 Here's a shorthand method if you're doing all this against the CVS
 version.  Do this from the top-level Xastir directory:

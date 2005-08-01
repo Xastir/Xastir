@@ -67,8 +67,40 @@ specification, available from http://www.tapr.org .
 
 
 
-HELP-INDEX>What's new in Xastir BETA
-TBD
+HELP-INDEX>What's new in Xastir 1.6
+Configurable display of layers for USGS topo maps.
+Better Map Feature Search:  Shows up to 50 matches, user selects
+which one to center map on.
+Configurable "relay" digipeater calls:  Up to 50 callsigns can be
+specified in the Xastir config file to use for relay digipeating.
+"WIDE1-1" is now the default.
+Added support for Web Map Service (WMS).
+Tweaked the GPGGA and GPRMC GPS sentence decoding.
+Added speed-ups for lat/long geotiff's.
+Added Aloha circle.
+Added new #defines in interface.h for specifying "conv" or 'k'
+command to TNC.
+Added new tnc-startup file for TAPR-2 style TNC's.
+Added transparency capability to WMS.
+Fixed digpeating code for "wide1-1,wide2-1" case.
+Fixed some compile errors that are seen on FC4 and OSX Tiger.
+Added new terraserver .geo file options.
+Changed Map Properties "fill" option to allow NO/YES/AUTO.
+Auto uses dbfawk if present, no/yes force fill to that state.
+Fixed some #ifdef's here and there so that compiles will work if
+some libraries aren't present.
+Added map caching for nearly all internet maps, plus two new toggles
+on the map menu for clearing out current-view maps or all maps from
+the cache.
+Moved Tigermap timeout slider to main timing dialog, renamed it, and
+made it function for ALL internet map fetches.
+Added timestamps to x_spider log messages.
+A fix for the emacs tempfile bug w.r.t. dbfawk files went in, but
+hasn't been verified to have fixed the problem yet.
+More bulletproofing added to the map_cache code.
+Fixed a compile problem that happens if ImageMagick isn't installed.
+Changed stipple style to solid for polygons drawn with dbfawk.
+Another fix so that linking works without map caching. 
 
 
 
