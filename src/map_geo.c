@@ -553,10 +553,12 @@ void draw_geo_image_map (Widget w,
 #ifdef TIMING_DEBUG
     time_mark(1);
 #endif  // TIMING_DEBUG
-#ifdef USE_MAP_CACHE 
-    int map_cache_return;
-#endif  // USE_MAP_CACHE
 
+#ifdef HAVE_IMAGEMAGICK
+  #ifdef USE_MAP_CACHE 
+    int map_cache_return;
+  #endif  // USE_MAP_CACHE
+#endif  // HAVE_IMAGEMAGICK
 
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
