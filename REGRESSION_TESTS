@@ -135,6 +135,6 @@ touch regression.log
 
 
 grep -i warning regression.log
-grep -i error regression.log | grep -v error_popups
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
 
