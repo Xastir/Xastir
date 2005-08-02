@@ -63,12 +63,6 @@ touch regression.log
 
 
 # Test with each flag in turn, one flag at a time
-(./configure --without-shapelib 2>&1) >> regression.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
-
-
-# Test with each flag in turn, one flag at a time
 (./configure --without-imagemagick 2>&1) >> regression.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -88,6 +82,12 @@ touch regression.log
 
 # Test with each flag in turn, one flag at a time
 (./configure --without-gdal 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-shapelib 2>&1) >> regression.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
 
@@ -117,7 +117,7 @@ touch regression.log
 
 
 # Test with each flag in turn, one flag at a time
-(./configure --with-rtree 2>&1) >> regression.log
+(./configure --with-libgc 2>&1) >> regression.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
 
@@ -129,7 +129,7 @@ touch regression.log
 
 
 # Test with each flag in turn, one flag at a time
-(./configure --with-libgc 2>&1) >> regression.log
+(./configure --with-rtree 2>&1) >> regression.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
 
