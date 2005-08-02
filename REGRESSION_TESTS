@@ -1,0 +1,140 @@
+#!/bin/sh
+
+# $Id$
+
+# Simple regression tests.  Run through various combinations of the
+# configure flags, create a lot file, then grep for "warning" or
+# "error" through that log file when done.
+#
+# Copyright (C)  2005  The Xastir Group.
+#
+# Licensed under the GPL license.  See the file "COPYING" for more
+# information.
+
+
+
+rm regression.log
+touch regression.log
+
+./bootstrap.sh
+
+
+# Test with ZERO optional libraries
+(./configure --without-ax25 --without-festival --without-gpsman --without-shapelib --without-imagemagick --without-libproj --without-geotiff --without-gdal --without-pcre --without-dbfawk
+--without-map_cache 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with ALL optional libraries
+(./configure --with-errorpopups --with-rtree --with-profiling --with-libgc 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with every other library included
+(./configure --without-festival --without-shapelib --without-libproj --without-gdal --without-dbfawk --with-errorpopups --with-profiling 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with the opposite set of libraries
+(./configure --without-ax25 --without-gpsman --without-imagemagick --without-geotiff --without-pcre --without-map_cache --with-rtree --with-libgc 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-ax25 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-festival 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-gpsman 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-shapelib 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-imagemagick 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-libproj 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-geotiff 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-gdal 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-pcre 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-dbfawk 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --without-map_cache 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --with-errorpopups 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --with-rtree 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --with-profiling 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+# Test with each flag in turn, one flag at a time
+(./configure --with-libgc 2>&1) >> regression.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+
+
+grep -i warning regression.log
+grep -i error regression.log | grep -v error_popups
+
+
