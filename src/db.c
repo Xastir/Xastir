@@ -15165,6 +15165,8 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     int third_party;
     char backup[MAX_LINE_SIZE+1];
     char tmp_line[MAX_LINE_SIZE+1];
+    char tmp_path[100+1];
+    char *ViaCalls[10];
 
 
     xastir_snprintf(backup,
@@ -15260,6 +15262,63 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             fprintf(stderr,"decode_ax25_line: invalid path: %s\n",filtered_data);
         }
     }
+
+
+    // If it's not me transmitting it:
+    if (strcmp(my_callsign,call_sign) != 0) {
+
+        // Check for "EMERGENCY" anywhere in the line.
+        // APRS+SA also supports any of these in the TO: field:
+        //
+        //      EMERGENCY
+        //      ALARM
+        //      ALERT
+        //      WARNING
+        //      WXALARM
+        //      EM
+        //
+        // Snag just the TO: field from the path, used for most of the
+        // comparisons below.  It will be pointed to by ViaCalls[0];
+        xastir_snprintf(tmp_path,   // Make a temporary backup
+            sizeof(tmp_path),
+            "%s",
+            path);
+        split_string(tmp_path, ViaCalls, 10);
+
+        if (       (strstr(backup,      "EMERGENCY"))    // Checks entire line
+                || (strcmp(ViaCalls[0], "ALARM") == 0)   // Checks to_field
+                || (strcmp(ViaCalls[0], "ALERT") == 0)   // Checks to_field
+                || (strcmp(ViaCalls[0], "WARNING") == 0) // Checks to_field
+                || (strcmp(ViaCalls[0], "WXALARM") == 0) // Checks to_field
+                || (strcmp(ViaCalls[0], "EM") == 0) ) {  // Checks to_field
+
+            // Do a popup to alert the operator to this condition.  Make
+            // sure we haven't popped up an emergency message for this
+            // station within the last 30 minutes.  If we pop these up
+            // constantly it gets quite annoying.
+            if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
+                    || ((last_emergency_time + 60*30) < sec_now()) ) {
+
+                // Callsign is different or enough time has passed
+
+                last_emergency_time = sec_now();
+                xastir_snprintf(last_emergency_callsign,
+                    sizeof(last_emergency_callsign),
+                    "%s",
+                    call_sign);
+
+                // Bring up the Find Station dialog so that the operator
+                    // can go to the location quickly
+                xastir_snprintf(locate_station_call,
+                    sizeof(locate_station_call),
+                    "%s",
+                    call_sign);
+
+                Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)1 );
+            }
+        }
+    }
+
 
     if (ok) {
 
