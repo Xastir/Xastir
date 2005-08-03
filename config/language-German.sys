@@ -263,6 +263,8 @@ PULDNTNT10|Garmin RINO Wegpunkte holen|G|
 # Menu "Hilfe"
 PULDNHEL01|Version|V|
 PULDNHEL02|Hilfe Index|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
 #
 # Mauszeiger PopUp Menu
 POPUPMA001|Mauszeiger-Menu||

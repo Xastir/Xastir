@@ -257,6 +257,8 @@ PULDNTNT10|Ricevi Waypoints Garmin RINO|G|
 # Menù Aiuto
 PULDNHEL01|Versione di Xastir|A|
 PULDNHEL02|Indice Guida|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
 #
 #Mouse Menu Popup
 POPUPMA001|Opzioni||

@@ -168,6 +168,8 @@ extern int warn_about_mouse_modifiers;
 
 extern int output_station_type;
 
+extern int emergency_beacon;
+
 typedef struct _selections {
     int none;
     int mine;

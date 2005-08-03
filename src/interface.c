@@ -7798,11 +7798,30 @@ void output_my_aprs_data(void) {
     char output_brk[3];
     int ok;
     int port;
+    char my_comment_tx[MAX_COMMENT+1];
 
 
     header_txt_save[0] = '\0';
     data_txt_save[0] = '\0';
     sec = sec_now();
+
+
+    // Check whether we're in emergency beacon mode.  If so, add
+    // "EMERGENCY" at the beginning of the comment field we'll
+    // transmit.
+    if (emergency_beacon) {
+        xastir_snprintf(my_comment_tx,
+            sizeof(my_comment_tx),
+            "EMERGENCY %s",
+            my_comment);
+    }
+    else {
+        xastir_snprintf(my_comment_tx,
+            sizeof(my_comment_tx),
+            "%s",
+            my_comment);
+    }
+
 
     // Format latitude string for transmit later
     xastir_snprintf(my_output_lat,
@@ -8019,12 +8038,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     "%s@%02d%02d%02d/%s%s%s%s%s\r",
                     output_net, day_time->tm_mday, day_time->tm_hour,
                     day_time->tm_min, my_pos, output_cs, output_brk,
-                    output_alt, my_comment);
+                    output_alt, my_comment_tx);
                 xastir_snprintf(data_txt_save,
                     sizeof(data_txt_save),
                     "@%02d%02d%02d/%s%s%s%s%s\r", day_time->tm_mday,
                     day_time->tm_hour, day_time->tm_min,
-                    my_pos,output_cs, output_brk,output_alt, my_comment);
+                    my_pos,output_cs, output_brk,output_alt, my_comment_tx);
                 break;
 
             case(2):
@@ -8041,12 +8060,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     "%s@%02d%02d%02dz%s%s%s%s%s\r", output_net,
                     day_time->tm_mday, day_time->tm_hour,
                     day_time->tm_min,my_pos, output_cs,
-                    output_brk, output_alt, my_comment);
+                    output_brk, output_alt, my_comment_tx);
                 xastir_snprintf(data_txt_save,
                     sizeof(data_txt_save),
                     "@%02d%02d%02dz%s%s%s%s%s\r", day_time->tm_mday,
                     day_time->tm_hour, day_time->tm_min,my_pos,
-                    output_cs, output_brk, output_alt, my_comment);
+                    output_cs, output_brk, output_alt, my_comment_tx);
                 break;
 
             case(3):
@@ -8063,12 +8082,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     "%s@%02d%02d%02dh%s%s%s%s%s\r",
                     output_net, day_time->tm_hour, day_time->tm_min,
                     day_time->tm_sec, my_pos,output_cs, output_brk,
-                    output_alt,my_comment);
+                    output_alt,my_comment_tx);
                 xastir_snprintf(data_txt_save,
                     sizeof(data_txt_save),
                     "@%02d%02d%02dh%s%s%s%s%s\r", day_time->tm_hour,
                     day_time->tm_min, day_time->tm_sec, my_pos,output_cs,
-                    output_brk,output_alt,my_comment);
+                    output_brk,output_alt,my_comment_tx);
                 break;
 
             case(4):
@@ -8105,7 +8124,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         output_phg,
                         output_brk,
                         output_alt,
-                        my_comment);
+                        my_comment_tx);
                     xastir_snprintf(data_txt_save,
                         sizeof(data_txt_save),
                         "%c%s%s%s%s%s\r",
@@ -8114,7 +8133,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         output_phg,
                         output_brk,
                         output_alt,
-                        my_comment);
+                        my_comment_tx);
                 }
                 break;
 
@@ -8157,7 +8176,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         output_phg,
                         output_brk,
                         output_alt,
-                        my_comment);
+                        my_comment_tx);
                     xastir_snprintf(data_txt_save,
                         sizeof(data_txt_save),
                         "%c%s%s%s%s%s\r",
@@ -8166,7 +8185,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         output_phg,
                         output_brk,
                         output_alt,
-                        my_comment);
+                        my_comment_tx);
                 }
                 break;
 
@@ -8189,7 +8208,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         output_phg,
                         output_brk,
                         output_alt,
-                        my_comment);
+                        my_comment_tx);
                 xastir_snprintf(data_txt_save,
                         sizeof(data_txt_save),
                         "%c%s%s%s%s%s\r",
@@ -8198,7 +8217,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         output_phg,
                         output_brk,
                         output_alt,
-                        my_comment);
+                        my_comment_tx);
                 break;
         }
 

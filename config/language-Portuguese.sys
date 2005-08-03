@@ -261,6 +261,8 @@ PULDNTNT10|Buscar pontos da Garmin RINO|G|
 # Menu de ajuda
 PULDNHEL01|Acerca de|A|
 PULDNHEL02|Index de ajuda|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
 #
 # Menu do rato
 POPUPMA001|Opcoes||

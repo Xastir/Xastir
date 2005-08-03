@@ -333,8 +333,11 @@ static struct {
 Widget help_list;
 Widget help_index_dialog = (Widget)NULL;
 Widget help_view_dialog  = (Widget)NULL;
+Widget emergency_beacon_toggle;
+int emergency_beacon = 0;
 static void Help_About(Widget w, XtPointer clientData, XtPointer callData);
 static void Help_Index(Widget w, XtPointer clientData, XtPointer callData);
+void  Emergency_beacon_toggle( Widget widget, XtPointer clientData, XtPointer callData);
 
 // ----------------------------- map ---------------------------------
 Widget map_list;
@@ -4881,7 +4884,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane,
         stationspane, messagepane, ifacepane, helppane,
-        filter_data_pane, filter_display_pane, map_config_pane;
+        filter_data_pane, filter_display_pane, map_config_pane,
+        help_emergency_pane, help_emergency_button;
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button, station_clear_button,
@@ -7146,6 +7150,40 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
+    (void)XtVaCreateManagedWidget("create_appshell sephelp",
+            xmSeparatorGadgetClass,
+            helppane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    help_emergency_pane = XmCreatePulldownMenu(helppane,
+            "help_emergency_pane",
+            al,
+            ac);
+
+    help_emergency_button = XtVaCreateManagedWidget(langcode("PULDNHEL03"),
+            xmCascadeButtonGadgetClass,
+            helppane,
+            XmNsubMenuId,help_emergency_pane,
+            XmNmnemonic,langcode_hotkey("PULDNHEL03"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    emergency_beacon_toggle =  XtVaCreateManagedWidget(langcode("PULDNHEL04"),
+            xmToggleButtonGadgetClass,
+            help_emergency_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(emergency_beacon_toggle,XmNvalueChangedCallback,Emergency_beacon_toggle,"1");
+    if (emergency_beacon)
+        XmToggleButtonSetState(emergency_beacon_toggle,TRUE,FALSE);
+
 
     /* view */
     XtAddCallback(stations_button,      XmNactivateCallback,Station_List,"0");
@@ -15596,6 +15634,30 @@ void  Object_tx_disable_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         object_tx_disable = atoi(which);
     else
         object_tx_disable = 0;
+}
+
+
+
+
+
+void  Emergency_beacon_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set) {
+        emergency_beacon = atoi(which);
+
+//WE7U
+// We need to send a posit or two immediately, shorten the interval
+// between posits, and add the string "EMERGENCY" to the posit
+// before anything else in the comment field.
+
+        transmit_now = 1;
+
+    }
+    else {
+        emergency_beacon = 0;
+    }
 }
 
 

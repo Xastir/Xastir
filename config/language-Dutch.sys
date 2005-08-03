@@ -267,6 +267,8 @@ PULDNTNT10|Laad Garmin RINO routepunten|G|
 # Menu "Help"
 PULDNHEL01|Informatie|A|
 PULDNHEL02|Help Onderwerpen|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
 #
 # Mouse Menu Popup
 POPUPMA001|Opties||

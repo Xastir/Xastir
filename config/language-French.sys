@@ -256,6 +256,8 @@ PULDNTNT10|Extraire points de cheminement Garmin RINO|G|
 # Menu "Help"
 PULDNHEL01|Information|I|
 PULDNHEL02|Index de l'Aide|A|#'
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
 #
 # Mouse Menu Popup
 POPUPMA001|Options|O|

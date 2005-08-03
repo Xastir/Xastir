@@ -260,6 +260,8 @@ PULDNTNT10|Fetch Garmin RINO Waypoints|G|
 # Menú de Ayuda
 PULDNHEL01|Acerca de|A|
 PULDNHEL02|Indice de Ayuda|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
 #
 # Menú de Ratón
 POPUPMA001|Opciones||
