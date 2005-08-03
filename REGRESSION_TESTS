@@ -18,10 +18,11 @@
 ./bootstrap.sh
 
 
+
 # Test with ZERO optional libraries
 echo
 echo TEST: No optional libraries...
-rm regression.log
+(rm regression.log 2>&1) >/dev/null
 (./configure --without-ax25 --without-festival --without-gpsman \
 --without-shapelib --without-imagemagick --without-libproj \
 --without-geotiff --without-gdal --without-pcre --without-dbfawk \
