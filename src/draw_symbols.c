@@ -138,6 +138,161 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
 
 
+
+// Function to draw a line between a WP symbol "\/" and the
+// transmitting station.  We pass it the WP symbol.  It does a
+// lookup for the transmitting station callsign to get those
+// coordinates, then draws a line between the two symbols if
+// possible (both on screen).
+//
+// If the symbol was a Waypoint symbol, "\/", we need to draw a line
+// from the transmitting station to the waypoint symbol according to
+// the spec.  Take care to not draw the line any longer than needed
+// (don't exercise the X11 long-line drawing bug).  According to the
+// spec we also need to change the symbol to just a red dot, but
+// it's nice having the "WP" above it so we can differentiate it
+// from the other red dot symbol.
+//
+// We should skip drawing the line if the object/item is not being drawn.
+// Should we skip it if the origination station isn't being drawn?
+// Do we need to add yet another togglebutton to enable/disable this line?
+//
+// Note that this type of operation, making a relation between two
+// symbols, breaks our paradism quite a bit.  Until now all symbols
+// have been independent of each other.  Perhaps we should store the
+// location of one symbol in the data of the other so that we won't
+// have to compare back and forth.  This won't help much if either
+// or both symbols are moving.  Probably better to just do a lookup
+// of the originating station by callsign through our lists and then
+// draw the line between the two coordinates each time.
+//
+void draw_WP_line(DataRow *p_station, Pixmap where, Widget w) {
+    DataRow *transmitting_station = NULL;
+    int my_course;
+    long x_long, y_lat;
+    long x_long2, y_lat2;
+    double lat_m;
+    long x, y;
+    long x2, y2;
+    long max_x, max_y;
+    double temp;
+    int color = trail_colors[p_station->trail_color];
+    float temp_latitude, temp_latitude2;
+    float temp_longitude, temp_longitude2;
+
+
+    // Compute screen position of waypoint symbol
+    x_long = p_station->coord_lon;
+    y_lat = p_station->coord_lat;
+
+    // x & y are screen location of waypoint symbol
+    x = (x_long - x_long_offset)/scale_x;
+    y = (y_lat - y_lat_offset)/scale_y;
+ 
+    // Find transmitting station, get it's position.
+    // p_station->origin contains the callsign for the transmitting
+    // station.  Do a lookup on that callsign through our database
+    // to get the position of that station.
+
+    if (!search_station_name(&transmitting_station,p_station->origin,1)) {
+        // Can't find call,
+        return;
+    }
+
+    x_long2 = transmitting_station->coord_lon;
+    y_lat2 = transmitting_station->coord_lat;
+
+    // x2 & y2 are screen location of transmitting station
+    x2 = (x_long2 - x_long_offset)/scale_x;
+    y2 = (y_lat2 - y_lat_offset)/scale_y;
+
+    /* max off screen values */
+    max_x = screen_width+800l;
+    max_y = screen_height+800l;
+
+
+/*
+    if ((x2 - x) > 0) {
+        my_course = (int)( 57.29578
+            * atan( (double)((y2-(y*1.0)) / (x2-(x*1.0) ) ) ) );
+    }
+    else {
+        my_course = (int)( 57.29578
+            * atan( (double)((y2-(y*1.0)) / (x-(x2*1.0) ) ) ) );
+    }
+*/
+
+    // Use the mid-latitude formulas for calculating the rhumb line
+    // course.  Modified to minimize the number of conversions we
+    // need to do.
+//    lat_m = (double)( (y_lat + y_lat2) / 2.0 );
+
+    // Convert from Xastir coordinate system
+//    lat_m = (double)( -((lat_m - 32400000l) / 360000.0) );
+
+    lat_m = -((y_lat - 32400000l) / 360000.0)
+            + -((y_lat2 - 32400000l) / 360000.0);
+    lat_m = lat_m / 2.0;
+
+    convert_from_xastir_coordinates(&temp_longitude2,
+        &temp_latitude2,
+        x_long2,
+        y_lat2);
+
+    convert_from_xastir_coordinates(&temp_longitude,
+        &temp_latitude,
+        x_long,
+        y_lat);
+
+    temp = (double)( (temp_longitude2 - temp_longitude)
+            / (temp_latitude2 - temp_latitude) );
+
+    // Calculate course and convert to degrees
+    my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
+
+    // The arctan function returns values between -90 and +90.  To
+    // obtain the true course we apply the following rules:
+    if (temp_latitude2 > temp_latitude
+            && temp_longitude2 > temp_longitude) {
+        // Do nothing.
+    }
+    else if (temp_latitude2 < temp_latitude
+            && temp_longitude2 > temp_longitude) {
+        my_course = 180 - my_course;
+    }
+    else if (temp_latitude2 < temp_latitude
+            && temp_longitude2 < temp_longitude) {
+        my_course = 180 + my_course;
+    }
+    else if (temp_latitude2 > temp_latitude
+            && temp_longitude2 < temp_longitude) {
+        my_course = 360 - my_course;
+    }
+    else {
+        // ??
+        // Do nothing.
+    }
+
+//fprintf(stderr,"course:%d\n", my_course);
+
+    // Convert to screen angle
+//    my_course = my_course + 90;
+
+    // Compute whether either of them are on-screen.  If so, draw at
+    // least part of the line between them.
+    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+    (void)XSetForeground(XtDisplay(da),gc,color); // red3
+    (void)XDrawLine(XtDisplay(da),where,gc,
+        x,
+        y,
+        x2,
+        y2);
+}
+
+ 
+
+
+
 //draw_pod_circle(64000000l, 32400000l, 10, colors[0x44], pixmap_final);
 //
 // Probability of Detection circle:  A circle around the point last
@@ -2240,6 +2395,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         // Draw red circle
                         draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
                     }
+
 
 // DEBUG STUFF
 //                    draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);
