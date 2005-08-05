@@ -83,6 +83,10 @@ void clear_symbol_data(void) {
  *  Draw nice looking text
  */
 void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *text, int bgcolor, int fgcolor, int length) {
+    GContext gcontext;
+    XFontStruct *xfs_ptr;
+    int font_width, font_height;
+
 
     switch (style) {
         case 0:
@@ -115,13 +119,47 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
         default:
             // draw white or colored text in a black box
 
-// With a large font, the background rectangle is too small.  Need
-// to include the font metrics in this drawing algorithm.
- 
-            (void)XSetForeground(XtDisplay(w),gc,(int)GetPixelByName(w,"black") );
-            (void)XFillRectangle(XtDisplay(w),where,gc,x-2,(y-11),(length*6)+3,13);
-            break;
+            // With a large font, the background rectangle is too
+            // small.  Need to include the font metrics in this
+            // drawing algorithm, whic we do here.
 
+            gcontext = XGContextFromGC(gc);
+
+            xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
+
+//            font_width = xfs_ptr->max_bounds.width
+//                + xfs_ptr->max_bounds.rbearing
+//                - xfs_ptr->max_bounds.lbearing;
+            font_width = xfs_ptr->max_bounds.width;
+
+            font_height = xfs_ptr->max_bounds.ascent
+                + xfs_ptr->max_bounds.descent;
+
+            // Normal font returns 10 & 13.  Large system font
+            // returns 13 & 20 here.
+            //fprintf(stderr,
+            //    "Font dimemsions:  Width:%d  Height:%d\n",
+            //    font_width,
+            //    font_height);
+ 
+            (void)XSetForeground( XtDisplay(w),
+                gc,
+                (int)GetPixelByName(w,"black") );
+
+// Old:
+//(void)XFillRectangle(XtDisplay(w),where,gc,x-2,(y-11),(length*6)+3,13);
+
+// New:  This one makes the black rectangle too long for smaller
+// fonts.  Perhaps because they are proportional?
+            (void)XFillRectangle( XtDisplay(w),
+                where,
+                gc,
+                x-2,                    // X
+                y-font_height,          // Y
+                length*font_width+3,    // width
+                font_height+3);         // height
+
+            break;
     }
 
     // finally draw the text
