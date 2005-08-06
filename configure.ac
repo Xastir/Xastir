@@ -308,11 +308,7 @@ fi
 use_gdal=yes
 AC_ARG_WITH(gdal,[  --without-gdal       Disable gdal features.],use_gdal=$withval)
 if test "${use_gdal}" = "yes"; then
-  use_gdal=no
-  AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister, use_gdal=yes
-  LIBS="$LIBS -lgdal"
-  AC_DEFINE(HAVE_LIBGDAL, , Define to 1 if you have the `gdal' library (-lgdal). )
-  break)])
+XASTIR_CHECK_GDAL
 fi
 
 
