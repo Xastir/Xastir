@@ -21,12 +21,13 @@
 
 # Test with ZERO optional libraries
 echo
-echo TEST: No optional libraries...
+echo "    TEST: No optional libraries..."
 (rm regression.log 2>&1) >/dev/null
 (./configure --without-ax25 --without-festival --without-gpsman \
 --without-shapelib --without-imagemagick --without-libproj \
 --without-geotiff --without-gdal --without-pcre --without-dbfawk \
 --without-map-cache 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -37,10 +38,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with ALL optional libraries
 echo
-echo TEST: ALL optional libraries...
+echo "    TEST: ALL optional libraries..."
 rm regression.log
 (./configure --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -51,11 +53,12 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with every other library included
 echo
-echo TEST: Half of the libraries...
+echo "    TEST: Half of the libraries..."
 rm regression.log
 (./configure --without-festival --without-shapelib \
 --without-libproj --without-gdal --without-dbfawk \
 --with-errorpopups --with-profiling 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -66,11 +69,12 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with the opposite set of libraries
 echo
-echo TEST: The other half...
+echo "    TEST: The other half..."
 rm regression.log
 (./configure --without-ax25 --without-gpsman --without-imagemagick \
 --without-geotiff --without-pcre --without-map-cache --with-rtree \
 --with-libgc 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -81,9 +85,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-ax25...
+echo "    TEST: --without-ax25..."
 rm regression.log
 (./configure --without-ax25 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -94,9 +99,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-festival...
+echo "    TEST: --without-festival..."
 rm regression.log
 (./configure --without-festival 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -107,9 +113,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-gpsman...
+echo "    TEST: --without-gpsman..."
 rm regression.log
 (./configure --without-gpsman 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -120,9 +127,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-imagemagick...
+echo "    TEST: --without-imagemagick..."
 rm regression.log
 (./configure --without-imagemagick 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -133,9 +141,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-libproj...
+echo "    TEST: --without-libproj..."
 rm regression.log
 (./configure --without-libproj 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -146,9 +155,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-geotiff...
+echo "    TEST: --without-geotiff..."
 rm regression.log
 (./configure --without-geotiff 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -159,9 +169,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-gdal...
+echo "    TEST: --without-gdal..."
 rm regression.log
 (./configure --without-gdal 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -172,9 +183,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-shapelib...
+echo "    TEST: --without-shapelib..."
 rm regression.log
 (./configure --without-shapelib 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -185,9 +197,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-pcre...
+echo "    TEST: --without-pcre..."
 rm regression.log
 (./configure --without-pcre 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -198,9 +211,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-dbfawk...
+echo "    TEST: --without-dbfawk..."
 rm regression.log
 (./configure --without-dbfawk 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -211,9 +225,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --without-map-cache...
+echo "    TEST: --without-map-cache..."
 rm regression.log
 (./configure --without-map-cache 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -224,9 +239,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --with-errorpopups...
+echo "    TEST: --with-errorpopups..."
 rm regression.log
 (./configure --with-errorpopups 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -237,9 +253,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --with-libgc...
+echo "    TEST: --with-libgc..."
 rm regression.log
 (./configure --with-libgc 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -250,9 +267,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --with-profiling...
+echo "    TEST: --with-profiling..."
 rm regression.log
 (./configure --with-profiling 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
@@ -263,9 +281,10 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 echo
-echo TEST: --with-rtree...
+echo "    TEST: --with-rtree..."
 rm regression.log
 (./configure --with-rtree 2>&1) >> regression.log
+echo -n "        "
 cat summary.log
 (make clean 2>&1) >/dev/null
 (make 2>&1) >> regression.log
