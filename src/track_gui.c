@@ -462,6 +462,10 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 //        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1",// New
         download_trail_station_call,posit_start,posit_length);
 
+    if (debug_level & 1024) {
+        fprintf(stderr, "%s\n", fileimg);
+    }
+
     if (fetch_remote_file(fileimg, log_filename)) {
         // Had trouble getting the file.  Abort.
         return;
