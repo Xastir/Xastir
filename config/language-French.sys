@@ -9,7 +9,8 @@
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
-# Id (10 chars alpha numeric)|(String associated with id)|QuickKeys|#comment
+# ID (10 chars alpha+numeric)|(String associated with id)|QuickKeys|#comment
+# The ID is a unique uppercase char string for each block followed by a nummer
 #
 # WARNING:
 # Some strings contain formatting commands like %s and %d, you should not
@@ -26,7 +27,7 @@ MENUTB0009|Aide|A|
 #
 # Menu "File"
 PULDNFI001|Configurer|C|
-PULDNFI002|Ouvrir le fichier de journal|O|
+PULDNFI002|Ouvrir le journal|O|
 PULDNFI003|Test|e|
 PULDNFI004|Quitter|Q|
 PULDNFI007|Changer niveau de débogage|d|
@@ -51,16 +52,16 @@ PULDNVI011|Trafic des messages|i|
 PULDNVI013|Durée de fonctionnement|f|
 PULDNVI014|Durée de fonctionnement du logiciel||
 PULDNVI015|Etat du GPS||
-PULDNVI016|ALOHA Statistics||
+PULDNVI016|Statistiques ALOHA||
 #
 # Menu "Configure"
 PULDNCF004|Station|S|
 PULDNCF001|Défauts|D|
-PULDNCF003|Temporisation|T|
+PULDNCF003|Temporisations|T|
 PULDNCF002|Système des coordonnées|C|
 PULDNCF006|Alertes sonores|A|
 PULDNCF007|Parole|P|
-PULDNCF008|Sauver configuration maintenant!|a|
+PULDNCF008|Sauver la configuration maintenant!|a|
 # (Units see PULDNDP006)
 #
 # Menu "Maps"
@@ -70,7 +71,7 @@ PULDNMP014|Localiser élément cartographique|F|
 PULDNMP013|Désactiver cartes|D|
 PULDNMP002|Activer cartographie automatique|A|
 PULDNMP003|Activer quadrillage|q|
-PULDNMP004|Activer niveaus de cartes|n|
+PULDNMP004|Activer niveaux de cartes|n|
 PULDNMP010|Activer annotation des cartes|n|
 PULDNMP009|Activer remplissage de zones|r|
 PULDNMP007|Activer alertes météo|M|
@@ -86,11 +87,10 @@ PULDNMP023|Index: Ajouter nouvelles cartes|R|
 PULDNMP024|Index: Re-indexer toutes cartes|A|
 PULDNMP025|Police d'annotation des cartes||
 PULDNMP015|Xfontsel||
-PULDNMP027|Re-download Maps (Not from cache)||
-PULDNMP028|Flush Entire Map Cache!||
-PULDNMP029|Find Address||
-PULDNMP030|Configure USGS DRG||
-#
+PULDNMP027|Recharger les cartes (pas à partir du cache)||
+PULDNMP028|Vider le cache des cartes||
+PULDNMP029|Trouver l'adresse||
+PULDNMP030|Configurer USGS DRG||
 #
 # PopUp "Configure Tigermap"
 MPUPTGR001|Quadrillage||
@@ -109,25 +109,25 @@ MPUPTGR013|Rivières||
 MPUPTGR014|Lacs||
 MPUPTGR015|Aéroports, parcs, etc||
 MPUPTGR016|Intensité de la carte||
-MPUPTGR017|Internet Map Timeout (sec)||
+MPUPTGR017|Temporisation de carte Internet (sec)||
 MPUPTGR018|Activer cartes Tiger||
 #
 # PopUp "Configure USGS DRG"
-MPUPDRG001|Select items to be displayed:||
-MPUPDRG002|Tint Underlying Map (XOR)||
-MPUPDRG003|Black||
-MPUPDRG004|White||
-MPUPDRG005|Blue||
-MPUPDRG006|Red||
-MPUPDRG007|Brown||
-MPUPDRG008|Green||
-MPUPDRG009|Purple||
-MPUPDRG010|Yellow||
-MPUPDRG011|Light Blue||
-MPUPDRG012|Light Red||
-MPUPDRG013|Light Purple||
-MPUPDRG014|Light Gray||
-MPUPDRG015|Light Brown||
+MPUPDRG001|Sélectionner ce qui doit être affiché:||
+MPUPDRG002|Colorer la carte sous-jaçante (XOR)||
+MPUPDRG003|Noir||
+MPUPDRG004|Blanc||
+MPUPDRG005|Bleu||
+MPUPDRG006|Rouge||
+MPUPDRG007|Marron||
+MPUPDRG008|Vert||
+MPUPDRG009|Pourpre||
+MPUPDRG010|Jaune||
+MPUPDRG011|Bleu clair||
+MPUPDRG012|Rouge clair||
+MPUPDRG013|Pourpre clair||
+MPUPDRG014|Gris clair||
+MPUPDRG015|Marron clair||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Choix de cartes||
@@ -174,24 +174,24 @@ PULDNOT003|Court||
 # Menu "Stations"
 PULDNDP014|Localiser une station|L|
 PULDNDP001|Suivre une station|S|
-PULDNDP022|Télécharger piste Findu||
+PULDNDP022|Récupérer piste Findu||
 PULDNDP032|Filtrer données||
-PULDNDP040|Choisir rien||
-PULDNDP041|Choisir à moi||
+PULDNDP040|Ne rien afficher||
+PULDNDP041|Ma station||
 PULDNDP042|Choisir TNC||
-PULDNDP027|- Choisir direct||
-PULDNDP043|- Choisir par digi||
-PULDNDP034|Choisir net||
+PULDNDP027|- Stations en direct||
+PULDNDP043|- Stations via digi||
+PULDNDP034|Stations via le net||
 PULDNDP019|Inclure données périmées||
-PULDNDP044|Choisir stations||
-PULDNDP028|- Choisir stations fixes||
-PULDNDP029|- Choisir stations mobiles||
-PULDNDP030|- Choisir stations météo||
-PULDNDP053|  - Choisir stations météo CWOP||
-PULDNDP045|Choisir objets/articles||
-PULDNDP026|- Choisir objets/articles météo||
-PULDNDP039|- Choisir objets/articles indicateurs d'eau||#'
-PULDNDP031|- Choisir autres objets/articles||
+PULDNDP044|Afficher les stations||
+PULDNDP028|- Stations fixes||
+PULDNDP029|- Stations mobiles||
+PULDNDP030|- Stations météo||
+PULDNDP053|  - Stations météo CWOP||
+PULDNDP045|Objets/articles||
+PULDNDP026|- Objets/articles météo||
+PULDNDP039|- Objets/articles indicateurs d'eau||#'
+PULDNDP031|- Autres objets/articles||
 PULDNDP033|Filtrer affichage||
 PULDNDP010|Afficher indicatif|n|
 PULDNDP012|Afficher symbole|c|
@@ -204,8 +204,8 @@ PULDNDP002|Afficher altitude|A|
 PULDNDP009|Afficher info météo|I|
 PULDNDP046|- Afficher texte||
 PULDNDP018|-- Seulement la température||
-PULDNDP047|- Afficher indicateur de vent||
-PULDNDP054|Display Aloha Circle||
+PULDNDP047|- Indicateur de vent||
+PULDNDP054|Afficher cercle Aloha||
 PULDNDP013|Afficher ambiguïté de position|b|
 PULDNDP008|Afficher puissance/gain|g|
 PULDNDP021|- Activer puissance/gain défaut||
@@ -242,7 +242,7 @@ PULDNMG005|Activer réponse automatique|R|
 PULDNMG006|Mode "Satellite Ack"|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Interface Control|C|
+PULDNTNT04|Contrôle de l'interface|C|
 PULDNTNT03|Désactiver transmission: Tout||
 PULDNTNT05|Désactiver transmission: Ma position||
 PULDNTNT06|Désactiver transmission: Objets/Articles||
@@ -256,15 +256,16 @@ PULDNTNT10|Extraire points de cheminement Garmin RINO|G|
 # Menu "Help"
 PULDNHEL01|Information|I|
 PULDNHEL02|Index de l'Aide|A|#'
-PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
-PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
+PULDNHEL03|ACTIVER MODE BALISE DE DETRESSE|E|
+PULDNHEL04|!!! MODE BALISE DE DETRESSE !!!||
+#
 #
 # Mouse Menu Popup
 POPUPMA001|Options|O|
 POPUPMA00c|Centrer|C|
 POPUPMA015|Information sur la station||
-POPUPMA002|Niveau zoom supérieur|s|
-POPUPMA003|Niveau zoom inférieur|i|
+POPUPMA002|Zoom +|s|
+POPUPMA003|Zoom -|i|
 POPUPMA004|Niveau de zoom|N|
 POPUPMA005|Niveau 1|1|
 POPUPMA006|Niveau 16|6|
@@ -283,9 +284,9 @@ POPUPMA013|Ouest||
 POPUPMA014|Est||
 POPUPMA020|Mesurer||
 POPUPMA021|Déplacer||
-POPUPMA022|SuivreMoi||
+POPUPMA022|Me suivre||
 POPUPMA023|Modificateurs trouvés!||
-POPUPMA024|SVP désactiver CapsLock/NumLock/ScrollLock/autres modificateurs||
+POPUPMA024|SVP désactiver CapsLock/NumLock/ScrollLock/autres||
 POPUPMA026|Centre & zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
@@ -343,13 +344,13 @@ BBARSTA040|Station d'amateur APRS(tm) %s||#'
 BBARSTA041|Attendant données GPS..||
 BBARSTA042|Transmission objets/articles||
 BBARSTA043|Journalisation||
-BBARSTA044|ALOHA distance is %d%s||
+BBARSTA044|Le rayon ALOHA est de %d%s||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
 WPUPDPD002|Données du TNC seulement||
 WPUPDPD003|Données du réseau seulement||
-WPUPDPD004|Données du TNC et réseau||
+WPUPDPD004|Données du TNC et du réseau||
 WPUPDPD005|TNC||
 WPUPDPD006|Réseau||
 #
@@ -390,7 +391,7 @@ WPUPCFD025|Activer réseau alterne?|A|
 WPUPCFD026|Transmettre position à quel intervalle?||
 WPUPCFD027|Afficher bulletins nouveaus||
 WPUPCFD028|Alerter si il y a des clés modificatrices||
-WPUPCFD029|Voir bulletins avec distance zero||
+WPUPCFD029|Voir bulletins avec distance zéro||
 WPUPCFD030|Désactiver identif. de duplic. posit.||
 #
 # PopUp "Configure - Timing"
@@ -423,7 +424,7 @@ WPUPCFG003|Port GPS seulement||
 WPUPCFG002|Utiliser la position GPS?||
 WPUPCFG004|Options du GPS||
 WPUPCFG005|GPS seul||
-WPUPCFG006|TNC branché au GPS (Cable HSP)||
+WPUPCFG006|TNC branché au GPS (Câble HSP)||
 WPUPCFG007|TNC branché au GPS avec CTL-E||
 WPUPCFG008|Intervalle de temps GPS||
 WPUPCFG009|5 sec||
@@ -485,11 +486,12 @@ WPUPCFT039|Full duplex||
 WPUPCFT040|Configurer TNC Multi-Port KISS||
 WPUPCFT041|Port radio||
 WPUPCFT042|Dubious UNPROTO Path!||
-WPUPCFT043|Please consider a shorter path such as WIDE2-2 or WIDE1-1,WIDE2-2||
+WPUPCFT043|SVP choisissez un chemin plus court tel que WIDE2-2 or WIDE1-1,WIDE2-2||
 WPUPCFT044|Dubious IGATE Path!||
 WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
 WPUPCFT046|Transmitting w/Dubious IGATE Path!||
 WPUPCFT047|Initialize KISS-mode on startup||
+#
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||
@@ -519,7 +521,7 @@ WPUPCFS014|Hauteur de l'antenne||#'
 WPUPCFS015|Gain de l'antenne||#'
 WPUPCFS016|Omni||
 WPUPCFS017|Commentaire:||
-WPUPCFS018|Ambiguité de position||
+WPUPCFS018|Ambiguïté de position||
 WPUPCFS019|Rien||
 WPUPCFS020|.11 milles||
 WPUPCFS021|1.15 milles||
@@ -759,15 +761,16 @@ WPUPSTI067|Current Range: %d miles||
 #
 #
 # PopUp "ALOHA Statistics"
-WPUPALO001|ALOHA radius: %d %s||
-WPUPALO002|Stations inside ALOHA circle: %d||
-WPUPALO003| Digis:               %d||
-WPUPALO004| Mobiles (in motion): %d||
-WPUPALO005| Mobiles (other):     %d||
-WPUPALO006| WX stations:         %d||
-WPUPALO007| Home stations:       %d||
-WPUPALO008|Last calculated %d %s %d %s ago.||
-WPUPALO666|ALOHA radius not calculated yet||
+WPUPALO001|Rayon ALOHA: %d %s||
+WPUPALO002|Stations dans le cercle ALOHA: %d||
+WPUPALO003| Digis:                  %d||
+WPUPALO004| Mobiles (en mouvement): %d||
+WPUPALO005| Mobiles (autres):       %d||
+WPUPALO006| Stations météo:         %d||
+WPUPALO007| Stations fixes:         %d||
+WPUPALO008|Dernier calcul il y a %d %s %d %s.||
+WPUPALO666|Rayon ALOHA pas encore calculé||
+#
 #
 # FCC-RAC Call Look up
 STIFCC0001|Recherche base de données FCC||
@@ -909,7 +912,7 @@ WXPUPSI026|Davis Weather Monitor II/Wizard III/Vantage Pro||
 LHPUPNI000|Toutes stations||
 LHPUPNI001|Stations mobiles||
 LHPUPNI002|Stations météo||
-LHPUPNI003|Stations locales (par TNC)||
+LHPUPNI003|Stations locales (via TNC)||
 LHPUPNI004|Dernières stations||
 LHPUPNI005|Objets et articles||
 LHPUPNI006|Mes objets et articles||
@@ -917,7 +920,7 @@ LHPUPNI010|No.||
 LHPUPNI011|Indicatif||
 LHPUPNI012|#Paq||
 LHPUPNI013|Heure dernière pos.||
-LHPUPNI014|Relèvement||
+LHPUPNI014|Chemin||
 LHPUPNI015|PHG||
 LHPUPNI016|Commentaires||
 LHPUPNI100|Cap||
@@ -972,20 +975,20 @@ POPEM00024|Le nom de lieu spécifié est en cour d'utilisation!||#'
 POPEM00025|Pas trouvé!||
 POPEM00026|Suivi commencera quand elle apparaîtra||
 POPEM00027|Mauvaise info.  Certains champs vides?||
-POPEM00028|Ne peut ouvrier fichier||
+POPEM00028|Ne peut ouvrir fichier||
 POPEM00029|Trouvé!||
 POPEM00030|Symbole de station météo||
-POPEM00031|Changé au symbole météo '/_', autres alternatives:  '\_'  '/W'  et  '\W'||
+POPEM00031|Changé en symbole météo '/_', autres possibilités:  '\_'  '/W'  et  '\W'||
 POPEM00032|Attention: utilise symbole du "National Weather Service"!||
 POPEM00033|Pas de données GPS!||
 POPEM00034|TX de ma position désactivé jusqu'a réception de bonnes données GPS!||#'
 POPEM00035|Warning||
 POPEM00036|Avis||
 POPEM00037|Interface HSP présente: temporisation GPS augmentée||
-POPEM00038|Name Conflicts With Existing Object/Item/Station||
-POPEM00039|Illegal characters found, substituting periods in their place||
+POPEM00038|Conflit de nom avec un Objet/Item/Station déjà existant||
+POPEM00039|Charactère illégal, remplacé par un point||
 POPEM00040|Custom outgoing path was lost||
-POPEM00041|Processing another file.  Wait a bit, then try again||
+POPEM00041|Traitement d'un autre fichier en cours. Attendez, puis réessayez||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||
@@ -1012,7 +1015,8 @@ SPCHSTR007|%s, distance is %d %s %s %s.||
 SPCHSTR008|%s, distance is %.1f %s %s %s.||
 SPCHSTR009|Nouvelle alerte météo||
 SPCHSTR010|Nouvel indicatif||
-SPCHSTR011|Reçu, D X, %s, a une distance de %.1f %s||
+SPCHSTR011|Reçu, D X, %s, à une distance de %.1f %s||
+#
 #
 SPCHDIRN00|au nord de||
 SPCHDIRS00|au sud de||
@@ -1070,11 +1074,11 @@ COORD010|UTM vers le nord||
 # Smart Beaconing Dialog
 SMARTB001|Balise intelligente||
 SMARTB002|Intervalle maximal (secs):||
-SMARTB003|Vitesse haute (mph):||
-SMARTB004|Vitesse haute (kph):||
+SMARTB003|Vitesse haute (m/h):||
+SMARTB004|Vitesse haute (k/h):||
 SMARTB005|Intervalle minimal (mins):||
-SMARTB006|Vitesse basse (mph):||
-SMARTB007|Vitesse basse (kph):||
+SMARTB006|Vitesse basse (m/h):||
+SMARTB007|Vitesse basse (k/h):||
 SMARTB008|Virage minimum (deg):||
 SMARTB009|Pente de virage:||
 SMARTB010|Temps d'attente (secs):||#'
@@ -1087,6 +1091,7 @@ GAMMA001|Ajuster correction de gamma||
 GAMMA002|Correction de gamma||
 #
 #
+# 
 # Map labels font Dialog
 MAPFONT001|Changer police d'annotation des cartes||
 MAPFONT002|Police d'annotation des cartes||
@@ -1095,6 +1100,8 @@ MAPFONT004|Petite||
 MAPFONT005|Moyenne||
 MAPFONT006|Large||
 MAPFONT007|Enorme||
+#
+#
 #
 # Distance/Bearing on status line
 PULDNDB001|Etat dist/relèvement||
@@ -1138,3 +1145,5 @@ TIME005|minute||
 TIME006|minutes||
 TIME007|seconde||
 TIME008|secondes||
+#
+#
