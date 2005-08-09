@@ -221,6 +221,7 @@ if test "${found_gdal_config}" = "yes"; then
    LDFLAGS="$LDFLAGS `${GDAL_BIN} --libs | sed -e s/-lgdal//`"
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
                     [use_gdal=yes;
+                     LIBS="-lgdal $LIBS"
                      AC_DEFINE(HAVE_LIBGDAL, , 
                       [Define to 1 if you have the `gdal' library (-lgdal).])],
                     [use_gdal=no;
