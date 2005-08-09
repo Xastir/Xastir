@@ -218,8 +218,8 @@ if test "${found_gdal_config}" = "yes"; then
                      AC_DEFINE(HAVE_LIBGDAL, , 
                       [Define to 1 if you have the `gdal' library (-lgdal).])],
                     [use_gdal=no;
-                     $CPPFLAGS=${save_cppflags};
-                     $LIBS=${save_libs}])])
+                     CPPFLAGS=${save_cppflags};
+                     LIBS=${save_libs}])])
 else
    AC_MSG_WARN([*** Cannot find gdal-config:  Checking standard locations ***])
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
