@@ -293,6 +293,246 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 
 
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-ax25..."
+rm regression.log
+(./configure --without-ax25 \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-festival..."
+rm regression.log
+(./configure --without-festival \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-gpsman..."
+rm regression.log
+(./configure --without-gpsman \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-imagemagick..."
+rm regression.log
+(./configure --without-imagemagick \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-libproj..."
+rm regression.log
+(./configure --without-libproj \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-geotiff..."
+rm regression.log
+(./configure --without-geotiff \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-gdal..."
+rm regression.log
+(./configure --without-gdal \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-shapelib..."
+rm regression.log
+(./configure --without-shapelib \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-pcre..."
+rm regression.log
+(./configure --without-pcre \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-dbfawk..."
+rm regression.log
+(./configure --without-dbfawk \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL --without-map-cache..."
+rm regression.log
+(./configure --without-map-cache \
+--with-errorpopups --with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL except errorpopups..."
+rm regression.log
+(./configure \
+--with-rtree --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL except libgc..."
+rm regression.log
+(./configure \
+--with-errorpopups --with-rtree --with-profiling \
+2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL except profiling..."
+rm regression.log
+(./configure \
+--with-errorpopups --with-rtree \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test with all but one optional library enabled
+echo
+echo "    TEST: ALL except rtree..."
+rm regression.log
+(./configure \
+--with-errorpopups --with-profiling \
+--with-libgc 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(make clean 2>&1) >/dev/null
+(make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
 # Cleanup
 rm regression.log
 
