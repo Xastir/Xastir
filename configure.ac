@@ -262,6 +262,7 @@ LIBS="$LIBS -ltiff"
         fi
     fi
 else
+  echo "Warning: geotiff requires libproj."
   use_geotiff=no
 fi 
 
