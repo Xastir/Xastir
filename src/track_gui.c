@@ -62,8 +62,13 @@ int track_match;                /* used for tracking stations */
 char tracking_station_call[30]; /* Tracking station callsign */
 char download_trail_station_call[30];   /* Trail station callsign */
 //N0VH
-int posit_start = 336;
-int posit_length = 336;
+#define MAX_FINDU_DURATION 120
+#define MAX_FINDU_START_TIME 336
+// Make these two match, as that will be the most desired case: Snag
+// the track for as far back as possible up to the present in one
+// shot...
+int posit_start = MAX_FINDU_DURATION;
+int posit_length = MAX_FINDU_DURATION;
 
 
 
@@ -496,19 +501,28 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) {
 
-    int temp;
-
-    XmScaleGetValue(posit_length_value, &temp);
+    XmScaleGetValue(posit_length_value, &posit_length);
     XmScaleGetValue(posit_start_value, &posit_start);
-    if (temp >= posit_start) {
+
+    // Check whether start hours is greater than max findu allows
+    // for duration
+    //
+    if (posit_start > MAX_FINDU_DURATION) {    // Set the duration slider to
+                                // findu's max duration hours
+
+        XtVaSetValues(posit_length_value,
+            XmNvalue, MAX_FINDU_DURATION,
+            NULL);
+        posit_length = MAX_FINDU_DURATION;
+    }
+    else {  // Not near the max, so set the duration slider to match
+            // the start hours
+
         XtVaSetValues(posit_length_value,
             XmNvalue, posit_start,
             NULL);
-        posit_length = temp;
+        posit_length = posit_start;
     }
-    XtVaSetValues(posit_length_value,
-        XmNmaximum, posit_start,
-        NULL);
 }
 
 
@@ -602,7 +616,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
                 XmNminimum, 1,
-                XmNmaximum, 336,
+                XmNmaximum, MAX_FINDU_START_TIME,
                 XmNshowValue, TRUE,
                 XmNvalue, posit_start,
                 XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP009"), 22,
@@ -629,7 +643,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
                 XmNminimum, 1,
-                XmNmaximum, 336,
+                XmNmaximum, MAX_FINDU_DURATION,
                 XmNshowValue, TRUE,
                 XmNvalue, posit_length,
                 XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP010"), 19,
