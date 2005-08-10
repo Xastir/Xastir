@@ -151,7 +151,11 @@
 #include "rotated.h"
 #include "datum.h"
 #include "igate.h"
-#include "shp_hash.h"
+
+#ifdef HAVE_LIBSHP
+  #include "shp_hash.h"
+#endif  // HAVE_LIBSHP
+
 #include "x_spider.h"
 #include "map_cache.h"
 
@@ -10577,8 +10581,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             check_message_remove();             // remove old messages
 
 #ifdef USE_RTREE
+  #ifdef HAVE_LIBSHP
             purge_shp_hash();                   // purge stale rtrees
-#endif
+  #endif // HAVE_LIBSHP
+#endif // USE_RTREE
 
 
             // We need to always calculate the Aloha circle so that

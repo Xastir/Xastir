@@ -24,6 +24,8 @@
 #include "config.h"
 
 #ifdef USE_RTREE
+#ifdef HAVE_LIBSHP
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -321,4 +323,7 @@ void purge_shp_hash() {
         //fprintf(stderr,"   done Purging...\n");
     }
 }
+
+#endif  // HAVE_LIBSHP
 #endif // USE_RTREE
+
