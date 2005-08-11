@@ -15,7 +15,7 @@
 
 
 
-./bootstrap.sh
+nice ./bootstrap.sh
 
 
 
@@ -23,14 +23,14 @@
 echo
 echo "    TEST: No optional libraries..."
 (rm regression.log 2>&1) >/dev/null
-(./configure --without-ax25 --without-festival --without-gpsman \
+(nice ./configure --without-ax25 --without-festival --without-gpsman \
 --without-shapelib --without-imagemagick --without-libproj \
 --without-geotiff --without-gdal --without-pcre --without-dbfawk \
 --without-map-cache 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -40,44 +40,12 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL optional libraries..."
 rm regression.log
-(./configure --with-errorpopups --with-rtree --with-profiling \
+(nice ./configure --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
-grep -i warning regression.log
-grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
-
-# Test with every other library included
-echo
-echo "    TEST: Half of the libraries..."
-rm regression.log
-(./configure --without-festival --without-shapelib \
---without-libproj --without-gdal --without-dbfawk \
---with-errorpopups --with-profiling 2>&1) >> regression.log
-echo -n "        "
-cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
-grep -i warning regression.log
-grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
-
-# Test with the opposite set of libraries
-echo
-echo "    TEST: The other half..."
-rm regression.log
-(./configure --without-ax25 --without-gpsman --without-imagemagick \
---without-geotiff --without-pcre --without-map-cache --with-rtree \
---with-libgc 2>&1) >> regression.log
-echo -n "        "
-cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -87,11 +55,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-ax25..."
 rm regression.log
-(./configure --without-ax25 2>&1) >> regression.log
+(nice ./configure --without-ax25 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -101,11 +69,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-festival..."
 rm regression.log
-(./configure --without-festival 2>&1) >> regression.log
+(nice ./configure --without-festival 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -115,11 +83,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-gpsman..."
 rm regression.log
-(./configure --without-gpsman 2>&1) >> regression.log
+(nice ./configure --without-gpsman 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -129,11 +97,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-imagemagick..."
 rm regression.log
-(./configure --without-imagemagick 2>&1) >> regression.log
+(nice ./configure --without-imagemagick 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -143,11 +111,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-libproj..."
 rm regression.log
-(./configure --without-libproj 2>&1) >> regression.log
+(nice ./configure --without-libproj 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -157,11 +125,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-geotiff..."
 rm regression.log
-(./configure --without-geotiff 2>&1) >> regression.log
+(nice ./configure --without-geotiff 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -171,11 +139,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-gdal..."
 rm regression.log
-(./configure --without-gdal 2>&1) >> regression.log
+(nice ./configure --without-gdal 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -185,11 +153,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-shapelib..."
 rm regression.log
-(./configure --without-shapelib 2>&1) >> regression.log
+(nice ./configure --without-shapelib 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -199,11 +167,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-pcre..."
 rm regression.log
-(./configure --without-pcre 2>&1) >> regression.log
+(nice ./configure --without-pcre 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -213,11 +181,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-dbfawk..."
 rm regression.log
-(./configure --without-dbfawk 2>&1) >> regression.log
+(nice ./configure --without-dbfawk 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -227,11 +195,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --without-map-cache..."
 rm regression.log
-(./configure --without-map-cache 2>&1) >> regression.log
+(nice ./configure --without-map-cache 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -241,11 +209,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --with-errorpopups..."
 rm regression.log
-(./configure --with-errorpopups 2>&1) >> regression.log
+(nice ./configure --with-errorpopups 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -255,11 +223,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --with-libgc..."
 rm regression.log
-(./configure --with-libgc 2>&1) >> regression.log
+(nice ./configure --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -269,11 +237,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --with-profiling..."
 rm regression.log
-(./configure --with-profiling 2>&1) >> regression.log
+(nice ./configure --with-profiling 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -283,11 +251,11 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: --with-rtree..."
 rm regression.log
-(./configure --with-rtree 2>&1) >> regression.log
+(nice ./configure --with-rtree 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -297,13 +265,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-ax25..."
 rm regression.log
-(./configure --without-ax25 \
+(nice ./configure --without-ax25 \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -313,13 +281,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-festival..."
 rm regression.log
-(./configure --without-festival \
+(nice ./configure --without-festival \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -329,13 +297,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-gpsman..."
 rm regression.log
-(./configure --without-gpsman \
+(nice ./configure --without-gpsman \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -345,13 +313,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-imagemagick..."
 rm regression.log
-(./configure --without-imagemagick \
+(nice ./configure --without-imagemagick \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -361,13 +329,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-libproj..."
 rm regression.log
-(./configure --without-libproj \
+(nice ./configure --without-libproj \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -377,13 +345,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-geotiff..."
 rm regression.log
-(./configure --without-geotiff \
+(nice ./configure --without-geotiff \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -393,13 +361,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-gdal..."
 rm regression.log
-(./configure --without-gdal \
+(nice ./configure --without-gdal \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -409,13 +377,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-shapelib..."
 rm regression.log
-(./configure --without-shapelib \
+(nice ./configure --without-shapelib \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -425,13 +393,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-pcre..."
 rm regression.log
-(./configure --without-pcre \
+(nice ./configure --without-pcre \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -441,13 +409,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-dbfawk..."
 rm regression.log
-(./configure --without-dbfawk \
+(nice ./configure --without-dbfawk \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -457,13 +425,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL --without-map-cache..."
 rm regression.log
-(./configure --without-map-cache \
+(nice ./configure --without-map-cache \
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -473,13 +441,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL except errorpopups..."
 rm regression.log
-(./configure \
+(nice ./configure \
 --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -489,13 +457,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL except libgc..."
 rm regression.log
-(./configure \
+(nice ./configure \
 --with-errorpopups --with-rtree --with-profiling \
 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -505,13 +473,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL except profiling..."
 rm regression.log
-(./configure \
+(nice ./configure \
 --with-errorpopups --with-rtree \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
@@ -521,13 +489,13 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 echo
 echo "    TEST: ALL except rtree..."
 rm regression.log
-(./configure \
+(nice ./configure \
 --with-errorpopups --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
 cat summary.log
-(make clean 2>&1) >/dev/null
-(make 2>&1) >> regression.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
 
