@@ -501,6 +501,22 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 
 
+# Test default compile, no configure flags at all.  This test will
+# also put the system back into a mode where a "make install" should
+# be proper for this exact system.
+echo
+echo "    TEST: Default configure..."
+rm regression.log
+(nice ./configure 2>&1) >> regression.log
+echo -n "        "
+cat summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
 # Cleanup
 rm regression.log
 
