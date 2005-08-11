@@ -53,6 +53,76 @@ GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 GDAL/OGR                        Optional  Many formats (coming soon)
 libdb (4.0 or newer)            Optional  Internet map caching (fast!)
 
+
+Library/Option Heirarchy:
+-------------------------
+
+    ImageMagick (Usually requires additional libraries)
+
+    GDAL/OGR (Usually requires additional libraries)
+
+    error_popups (Annoying popups, turned off by default)
+
+    libgc (developer stuff:  memory leak testing)
+
+    "festival --server &" (Xastir connects to this server)
+      |
+      `-----------> Festival
+ 
+    gprof
+      |
+      `-+---------> profiling (developer stuff)
+       /
+      |
+    gprof-helper.so
+
+    libax25
+      |
+      `-----------> AX25
+
+    libProj
+      |
+      `-+-------+-> GeoTiff
+       /       /
+      /       /
+    libtiff  /
+            /
+    libgeotiff
+
+    gpsmanshp
+      |
+      `-+------+--> GPSMan
+       /      /
+      |      /
+    tcl/tk  /
+           /
+    ShapeLib 
+      |
+      +-----------> rtree
+      |
+      `-+---------> Dbfawk
+       /
+      |
+    PCRE
+
+    libcurl or wget
+       |
+       `-+--------> map_caching
+        /
+       |
+    Berkeley DB
+
+
+    MySQL
+      |
+      `-+---------> db2APRS (Xastir connects to this server)
+       /
+      |
+    Meteo
+
+---------------------------------
+
+
 Installing only the required libs gives you these capabilities:
 
     PocketAPRS maps
@@ -775,8 +845,22 @@ First Time Install:
       > and
       > --with-bdb-incdir=/usr/local/BerkeleyDB4.3/include
 
+   11. OPTIONAL:  Compile db2APRS and install MySQL and Meteo to
+      allow Davis weather station support.
+
+      Install MySQL and Meteo. 
+
+        "cd Davis"
+        "./bootstrap.sh"
+        "./configure"
+        "make"
+
+      This should build db2APRS in the "src" directory.  Start up db2APRS.
+      Xastir should be able to connect to the db2APRS server in order to get
+      the Davis weather station data.  See further instructions in the Davis
+      directory.
  
-   11. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   12. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using CVS)
@@ -877,7 +961,7 @@ First Time Install:
      see the notes above about /sbin/ldconfig.
 
 
-   12. Kernel AX.25 Interfaces
+   13. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -941,7 +1025,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   13. Serially-Connected TNC's
+   14. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -1065,7 +1149,7 @@ First Time Install:
      >    being yet another root exploit-in-waiting.
 
 
-   14. Serially-Connected Garmin RINO Radio/GPS
+   15. Serially-Connected Garmin RINO Radio/GPS
 
      If you have a Garmin RINO attached to a serial port, have GPSMan
      installed, and have support for GPSMan compiled into Xastir, then Xastir
@@ -1105,7 +1189,7 @@ First Time Install:
      (ie kerchunk) to send a position."
 
 
-   15. Start up XASTIR and read the help files to configure it. If you have 
+   16. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in
