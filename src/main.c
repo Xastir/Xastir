@@ -4882,7 +4882,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
-    Widget ctr_zoom;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
@@ -4909,6 +4908,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         map_button, map_auto_button, map_chooser_button,
         map_grid_button, map_levels_button, map_labels_button,
         map_fill_button, coordinate_calculator_button,
+        center_zoom_button,
         Map_background_color_Pane, map_background_button,
         map_pointer_menu_button, map_config_button,
 #if !defined(NO_GRAPHICS)
@@ -5509,6 +5509,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
+    center_zoom_button=XtVaCreateManagedWidget(langcode("POPUPMA026"),
+            xmPushButtonGadgetClass, mappane,
+            XmNmnemonic, langcode_hotkey("POPUPMA026"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(center_zoom_button,XmNactivateCallback,Center_Zoom,NULL);
 
     map_config_pane  = XmCreatePulldownMenu(mappane,
             "map_config_pane",
@@ -7712,20 +7720,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
     XtAddCallback(pan_ctr,XmNactivateCallback,Pan_ctr,NULL);
-
-    // "Center & Zoom"
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA026")); ac++;
-    ctr_zoom=XtCreateManagedWidget(langcode("POPUPMA026"),
-            xmPushButtonGadgetClass,
-            right_menu_popup,
-            al,
-            ac);
-    XtAddCallback(ctr_zoom,XmNactivateCallback,Center_Zoom,NULL);
 
     // "Station info"
     ac = 0;
