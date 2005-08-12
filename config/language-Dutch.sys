@@ -830,7 +830,8 @@ UNIOP00028|mm Hg||
 UNIOP00029|Stel de systeem klok in vanuit GPS?||
 UNIOP00030|Digipeat?||
 UNIOP00031|m||
-UNIOP00032|Toepassen||
+UNIOP00032|Toepassen|||
+UNIOP00033|Reset||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Kiezer||

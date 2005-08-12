@@ -821,7 +821,8 @@ UNIOP00028|mm Hg||
 UNIOP00029|Placez le temps de système du GPS||
 UNIOP00030|Digipeat?||
 UNIOP00031|m||
-UNIOP00032|Appliquer||
+UNIOP00032|Appliquer|||
+UNIOP00033|Reset||
 #
 # PopUp "Station Chooser"
 STCHO00001|Choix de station||
