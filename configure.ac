@@ -64,7 +64,6 @@ XASTIR_COMPILER_FLAGS
 # set XASTIR_SYSTEM
 XASTIR_SET_SYSTEM
 
-
 # Check for binaries
 use_festival=yes
 use_gpsman=yes
@@ -202,7 +201,11 @@ AC_CHECK_FUNCS([strndup])
 # 
 AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}") 
 
- 
+
+# Check for functional malloc()
+JM_FUNC_MALLOC
+
+
 # Check for Shapelib
 use_shapelib=yes
 AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=$withval)
