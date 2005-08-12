@@ -295,6 +295,7 @@ POPUPMA030|Start Draw Mode||
 POPUPMA031|Close Polygon||
 POPUPMA032|Erase All CAD Polygons||
 POPUPMA033|End Draw Mode||
+POPUPMA034|Custom Zoom Level||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

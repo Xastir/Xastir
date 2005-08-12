@@ -301,6 +301,7 @@ POPUPMA030|Start Zeichen-Modus||
 POPUPMA031|Polygon abschließen||
 POPUPMA032|Alle CAD-Polygone löschen||
 POPUPMA033|Ende Zeichen-Modus||
+POPUPMA034|Custom Zoom Level||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||

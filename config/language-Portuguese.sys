@@ -299,6 +299,7 @@ POPUPMA030|Comecar modo desenho||
 POPUPMA031|Fechar poligono||
 POPUPMA032|Apagar todos os poligonos CAD||
 POPUPMA033|Fim do modo de desenho||
+POPUPMA034|Custom Zoom Level||
 #
 # Menu dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||

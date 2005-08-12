@@ -295,6 +295,7 @@ POPUPMA030|Entra in modalità disegno||
 POPUPMA031|Chiudi il poligono||
 POPUPMA032|Cancella tutti i poligoni CAD||
 POPUPMA033|Termina modalità disegno||
+POPUPMA034|Custom Zoom Level||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||

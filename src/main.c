@@ -859,6 +859,7 @@ static void Pan_right_less(Widget w, XtPointer clientData, XtPointer calldata);
 void Center_Zoom(Widget w, XtPointer clientData, XtPointer calldata);
 int center_zoom_override = 0;
 Widget center_zoom_dialog = (Widget)NULL;
+Widget custom_zoom_dialog = (Widget)NULL;
 
 static void Menu_Quit(Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -4877,7 +4878,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Arg al[100];                 /* Arg List */
     register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
-    Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
+    Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
+        zl4, zl5, zl6, zl7, zl8, zl9, zlC;
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
@@ -7919,6 +7921,20 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
     XtAddCallback(zl9,XmNactivateCallback,Zoom_level,"9");
+
+    // "Custom Zoom Level"
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
+    zlC=XtCreateManagedWidget(langcode("POPUPMA034"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
+    XtAddCallback(zlC,XmNactivateCallback,Zoom_level,"10");
 
     // "Last map pos/zoom"
     ac = 0;
@@ -12033,6 +12049,185 @@ void Zoom_out_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, 
 
 
 
+void Custom_Zoom_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    custom_zoom_dialog = (Widget)NULL;
+}
+
+
+
+
+
+static Widget custom_zoom_zoom_level;
+
+
+
+
+
+void Custom_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    char *temp_ptr;
+
+    temp_ptr = XmTextFieldGetString(custom_zoom_zoom_level);
+    scale_y = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
+    new_scale_y = scale_y;
+    display_zoom_image(1);
+}
+
+
+
+
+
+// Function to bring up a dialog.  User can then select zoom for the
+// display directly.
+//
+void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+    static Widget  pane,form, button_ok, button_cancel, zoom_label;
+//    Arg al[50];           /* Arg List */
+//    unsigned int ac = 0;           /* Arg Count */
+    Atom delw;
+    char temp[50];
+
+    if(!custom_zoom_dialog) {
+
+        // "Custom Zoom"
+        custom_zoom_dialog = XtVaCreatePopupShell(langcode("POPUPMA034"),
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                XmNresize, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Jump_location pane",
+                xmPanedWindowWidgetClass,
+                custom_zoom_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        form =  XtVaCreateWidget("Jump_location form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 2,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // "Zoom Level"
+        zoom_label = XtVaCreateManagedWidget(langcode("POPUPMA004"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        custom_zoom_zoom_level = XtVaCreateManagedWidget("Custom_Zoom zoom_level",
+                xmTextFieldWidgetClass,
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,      1,
+                XmNcolumns,6,
+                XmNwidth,((6*7)+2),
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, zoom_label,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("JMLPO00002"),
+                xmPushButtonGadgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, zoom_label,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, zoom_label,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        XtAddCallback(button_cancel, XmNactivateCallback, Custom_Zoom_destroy_shell, custom_zoom_dialog);
+        XtAddCallback(button_ok, XmNactivateCallback, Custom_Zoom_do_it, NULL);
+
+        pos_dialog(custom_zoom_dialog);
+
+        delw = XmInternAtom(XtDisplay(custom_zoom_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(custom_zoom_dialog, delw, Custom_Zoom_destroy_shell, (XtPointer)custom_zoom_dialog);
+
+
+        // Snag the current zoom value, convert them to
+        // displayable values, and fill in the fields.
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%ld",
+            scale_y);
+        XmTextFieldSetString(custom_zoom_zoom_level, temp); 
+
+
+        XtManageChild(form);
+        XtManageChild(pane);
+
+        XtPopup(custom_zoom_dialog,XtGrabNone);
+        fix_dialog_size(custom_zoom_dialog);
+
+        // Move focus to the Close button.  This appears to
+        // highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit
+        // the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(custom_zoom_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    } else {
+        XtPopup(custom_zoom_dialog,XtGrabNone);
+        (void)XRaiseWindow(XtDisplay(custom_zoom_dialog), XtWindow(custom_zoom_dialog));
+    }
+}
+
+
+
+
+
 void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
     int level;
@@ -12089,6 +12284,29 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
                 // Don't allow the user to go in further than zoom 1
                 if (new_scale_y < 1)
                     new_scale_y = 1;
+                break;
+
+            // Pop up a new dialog that allows the user to select
+            // the zoom level, then causes that zoom level and the
+            // right-click mouse location to take effect on the map
+            // window.  Similar to the Center_Zoom function but with
+            // the mouse coordinates instead of the center of the
+            // screen.
+            case(10):   // Custom Zoom Level
+
+                // Pop up a new dialog that allows the user to
+                // select the zoom level, then causes that zoom
+                // level and the right-click mouse location to take
+                // effect on the map window.  Similar to the
+                // Center_Zoom function but with the mouse
+                // coordinates instead of the center of the screen.
+
+                // Set up new_scale_y for whatever custom zoom level
+                // the user has chosen, then call
+                // display_zoom_image() from the callback there.
+                //
+                Custom_Zoom( w, clientData, calldata);
+                return;
                 break;
 
             default:

@@ -305,6 +305,7 @@ POPUPMA030|Zet teken modus aan||
 POPUPMA031|Sluit polygoon||
 POPUPMA032|Wis alle CAD polygonen||
 POPUPMA033|Beeindig teken modus||
+POPUPMA034|Custom Zoom Level||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

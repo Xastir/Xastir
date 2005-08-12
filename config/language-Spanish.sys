@@ -298,6 +298,7 @@ POPUPMA030|Empiece el Modo Dibujar||
 POPUPMA031|Cierre el Polígono||
 POPUPMA032|Borre Todos los Polígonos CAD||
 POPUPMA033|Termine el Modo Dibujar||
+POPUPMA034|Custom Zoom Level||
 #
 # Menú de Estados de la líneas de Etiquetas
 BBARZM0001|Foco %s||
