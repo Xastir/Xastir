@@ -3998,6 +3998,16 @@ void Change_debug_level_destroy_shell( /*@unused@*/ Widget widget, XtPointer cli
 
 
 
+void Change_debug_level_reset(Widget widget, XtPointer clientData, XtPointer callData) {
+    debug_level = 0;
+    XmTextSetString(debug_level_text, "0");
+//    Change_debug_level_destroy_shell(widget,clientData,callData);
+}
+
+
+
+
+
 void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
     char temp_string[10];
@@ -4022,7 +4032,8 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
 
 
 void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, my_form, button_ok, button_close;
+    static Widget  pane, my_form, button_ok, button_close,
+        button_reset;
     Atom delw;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -4046,7 +4057,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
         my_form =  XtVaCreateWidget("Change Debug Level my_form",
                 xmFormWidgetClass,
                 pane,
-                XmNfractionBase, 5,
+                XmNfractionBase, 3,
                 XmNautoUnmanage, FALSE,
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
@@ -4075,15 +4086,32 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNtopAttachment,XmATTACH_FORM,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
+                XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_POSITION,
-                XmNrightPosition, 3,
+                XmNrightPosition, 2,
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
         // Fill in the current value of debug_level
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", debug_level);
         XmTextSetString(debug_level_text, temp_string);
+
+        button_reset = XtVaCreateManagedWidget(langcode("UNIOP00033"),
+                xmPushButtonGadgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, debug_level_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass,
@@ -4112,14 +4140,15 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 3,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 4,
+                XmNrightPosition, 3,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        XtAddCallback(button_reset, XmNactivateCallback, Change_debug_level_reset, change_debug_level_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, Change_debug_level_change_data, change_debug_level_dialog);
         XtAddCallback(button_close, XmNactivateCallback, Change_debug_level_destroy_shell, change_debug_level_dialog);
 
@@ -5646,6 +5675,12 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_wx_alerts_button,XmNvalueChangedCallback,Map_wx_alerts_toggle,"1");
     if (!wx_alert_style)
         XmToggleButtonSetState(map_wx_alerts_button,TRUE,FALSE);
+#ifndef HAVE_LIBSHP
+    // If we don't have Shapelib compiled in, grey-out the weather
+    // alerts button.
+    XtSetSensitive(map_wx_alerts_button, FALSE);
+#endif  // HAVE_LIBSHP
+
 
     (void)XtVaCreateManagedWidget("create_appshell sep2b",
             xmSeparatorGadgetClass,

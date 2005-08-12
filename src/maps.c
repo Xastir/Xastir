@@ -3824,6 +3824,9 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                 mdf.draw_filled=1;
                 mdf.usgs_drg=0;
 
+                if (debug_level & 16)
+                    fprintf(stderr,"map_search: calling draw_map for an alert\n");
+
                 draw_map (w,
                     dir,                // Alert directory
                     alert->filename,    // Shapefile filename
@@ -3831,6 +3834,10 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                     -1,                 // Signifies "DON'T DRAW THE SHAPE"
                     destination_pixmap,
                     &mdf );
+
+                if (debug_level & 16)
+                    fprintf(stderr,"map_search: returned from draw_map\n");
+
             }
             else {      // No filename found that matches the first two
                         // characters that we already computed.
@@ -4011,6 +4018,10 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                 for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
                                 mdf.draw_filled=1;
                                 mdf.usgs_drg=0;
+
+                                if (debug_level & 16)
+                                    fprintf(stderr,"Calling draw_map\n");
+ 
                                 draw_map (w,
                                     map_dir,
                                     ptr,
@@ -5760,10 +5771,24 @@ void map_indexer(int parameter) {
     }
 
 
-    if (check_times)
+    if (check_times) {
+        if (debug_level & 16)
+            fprintf(stderr,"map_indexer: Calling map_search\n");
+
         map_search (NULL, AUTO_MAP_DIR, NULL, NULL, (int)FALSE, INDEX_CHECK_TIMESTAMPS);
-    else
+
+        if (debug_level & 16)
+            fprintf(stderr,"map_indexer: Returned from map_search\n");
+    }
+    else {
+        if (debug_level & 16)
+            fprintf(stderr,"map_indexer: Calling map_search\n");
+
         map_search (NULL, AUTO_MAP_DIR, NULL, NULL, (int)FALSE, INDEX_NO_TIMESTAMPS);
+
+        if (debug_level & 16)
+            fprintf(stderr,"map_indexer: Returned from map_search\n");
+    }
 
     if (debug_level & 16)
         fprintf(stderr,"map_indexer() middle\n");
@@ -5826,10 +5851,12 @@ static int alert_count;
 void fill_in_new_alert_entries(Widget w, char *dir) {
 //    int ii;
     char alert_scan[MAX_FILENAME], *dir_ptr;
-    struct hashtable_itr *iterator;
+    struct hashtable_itr *iterator = NULL;
     alert_entry *temp;
 
 
+    if (debug_level & 16)
+        fprintf(stderr,"fill_in_new_alert_entries start\n");
 
     alert_count = MAX_ALERT - 1;
 
@@ -5882,7 +5909,13 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
         }
         temp = get_next_wx_alert(iterator);
     }
-    free(iterator);
+#ifndef USING_LIBGC
+//fprintf(stderr,"free iterator 4\n");
+    if (iterator) free(iterator);
+#endif  // USING_LIBGC
+
+    if (debug_level & 16)
+        fprintf(stderr,"fill_in_new_alert_entries end\n");
 }
 
 
@@ -5912,7 +5945,7 @@ void load_alert_maps (Widget w, char *dir) {
                                     (unsigned char)0x64,    // ForestGreen
                                     (unsigned char)0x62 };  // orange3
 
-    struct hashtable_itr *iterator;
+    struct hashtable_itr *iterator = NULL;
     alert_entry *temp;
     map_draw_flags mdf;
 
@@ -5955,12 +5988,18 @@ void load_alert_maps (Widget w, char *dir) {
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
-            free(iterator);
+#ifndef USING_LIBGC
+//fprintf(stderr,"free iterator 5\n");
+            if (iterator) free(iterator);
+#endif  // USING_LIBGC
             return;
         }
 
         if (disable_all_maps) {
-            free(iterator);
+#ifndef USING_LIBGC
+//fprintf(stderr,"free iterator 6\n");
+            if (iterator) free(iterator);
+#endif  // USING_LIBGC
             return;
         }
 
@@ -5992,6 +6031,10 @@ void load_alert_maps (Widget w, char *dir) {
 
                     mdf.draw_filled=1; 
                     mdf.usgs_drg=0;
+
+                    if (debug_level & 16)
+                        fprintf(stderr,"load_alert_maps: Calling draw_map\n");
+ 
                     draw_map (w,
                         dir,
                         temp->filename,
@@ -6012,7 +6055,10 @@ void load_alert_maps (Widget w, char *dir) {
         }
         temp = get_next_wx_alert(iterator);
     }
-    free(iterator);
+#ifndef USING_LIBGC
+//fprintf(stderr,"free iterator 7\n");
+    if (iterator) free(iterator);
+#endif  // USING_LIBGC
 
 //    fprintf(stderr,"load_alert_maps() Done drawing all active alerts\n");
 
@@ -6243,7 +6289,10 @@ void load_auto_maps (Widget w, char *dir) {
         if (current->auto_maps) {
             mdf.draw_filled = current->draw_filled;
             mdf.usgs_drg = current->usgs_drg;
-            
+
+            if (debug_level & 16)
+                fprintf(stderr,"load_auto_maps: Calling draw_map\n");
+ 
             draw_map (w,
                 SELECTED_MAP_DIR,
                 current->filename,
@@ -6457,6 +6506,10 @@ void load_maps (Widget w) {
         // Draw the maps in sorted-by-layer order
         mdf.draw_filled = current->draw_filled;
         mdf.usgs_drg = current->usgs_drg;
+
+        if (debug_level & 16)
+            fprintf(stderr,"load_maps: Calling draw_map\n");
+
         draw_map (w,
             SELECTED_MAP_DIR,
             current->filename,

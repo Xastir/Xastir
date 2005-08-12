@@ -403,8 +403,10 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             alert = get_next_wx_alert(iterator);
 
         }   // End of for loop
-        free(iterator);
-
+#ifndef USING_LIBGC
+//fprintf(stderr,"free iterator 9\n");
+        if (iterator) free(iterator);
+#endif  // USING_LIBGC
 
         // If we have fewer alerts now, delete the extras from the window
         if (ii < max_item_count) {
