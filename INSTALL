@@ -1354,6 +1354,10 @@ listed.  Memory leaks from lower-level libraries will be missing the
 detailed information, so they are easy to spot (and mostly useless
 for the purpose of finding and patching memory leaks).
 
+Note also that libgc will take Xastir's memory usage up quite a bit,
+so don't be surprised if Xastir uses two or three times the normal
+amount of memory while you're debugging memory leaks with libgc.
+
 
 
   ------------------------------------------------------------------------
