@@ -74,7 +74,7 @@ PULDNMP003|Enable Map Grid||
 PULDNMP004|Enable Map Levels||
 PULDNMP010|Enable Map Labels||
 PULDNMP009|Enable Area Color Fills||
-PULDNMP007|Enable Weather Alert Counties||
+PULDNMP007|Enable Weather Alerts||
 PULDNMP005|Background Color|C|
 PULDNMP006|Station Text Style|T|
 PULDNMP026|Icon Outline Style|O|
