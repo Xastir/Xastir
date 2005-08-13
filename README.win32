@@ -1109,9 +1109,9 @@ initial work on this, Henk de Groot optimized it:
     cd /usr/local/festival
     tar xzf ~/festival/speech_tools-1.2.95-beta.tar.gz
     tar xzf ~/festival/festival-1.95-beta.tar.gz
-    tar xzf ~/festival/festlex-CMU.tar.gz
-    tar xzf ~/festival/festlex-POSLEX.tar.gz
-    tar xzf ~/festival/festvox-kallpc16k.tar.gz
+    tar xzf ~/festival/festlex_CMU.tar.gz
+    tar xzf ~/festival/festlex_POSLEX.tar.gz
+    tar xzf ~/festival/festvox_kallpc16k.tar.gz
 
     cd speech_tools
     ./configure && make
