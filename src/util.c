@@ -4837,6 +4837,7 @@ void clear_dangerous(void) {
 
 
 
+#if (HAVE_MALLOC == 0)
 // Work around bug on some systems where malloc (0) fails.
 // written by Jim Meyering
  
@@ -4854,5 +4855,6 @@ char * rpl_malloc (size_t n) {
     n = 1;
     return malloc (n);
 }
+#endif  // HAVE_MALLOC==0
 
 
