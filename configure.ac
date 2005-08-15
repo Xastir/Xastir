@@ -568,6 +568,11 @@ AC_OUTPUT
 echo "$ILIBS" >summary.log
 
 
+# Write a short summary of the configure tests/results to
+# "summary.log"
+egrep -e "checking |result:|gcc version" config.log >> summary.log
+
+
 echo ===========================================
 echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured using the 
 echo following external libraries.
