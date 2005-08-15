@@ -204,11 +204,13 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
             timedatestring,
             shapefile_name);
 
-        // Change spaces to underlines
+        // Change spaces and colons to underlines
         for (ii = 0; ii < (int)strlen(temp_shapefile_name); ii++) {
-            if (temp_shapefile_name[ii] == ' ') {
+            if (temp_shapefile_name[ii] == ' ' ||
+                temp_shapefile_name[ii] == ':') {
                 temp_shapefile_name[ii] = '_';
             }
+
         }
     }
     else {  // Use the filename directly, no timestamp
