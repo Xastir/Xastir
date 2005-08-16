@@ -3543,6 +3543,7 @@ start_timer();
  
                     if (!hashtable_insert(polyid_hash,&temp->POLYID, temp)) {
                         fprintf(stderr,"Couldn't insert into polyid_hash\n");
+                        free(temp);
                     }
 //fprintf(stderr,"%i ",temp->POLYID);
                 }
@@ -3665,6 +3666,7 @@ fprintf(stderr,"                AreaLandmarks Layer ");
 // Remember to free() the hash storage later
                         if (!hashtable_insert(landmark_hash,&temp->LAND, temp)) {
                             fprintf(stderr,"Couldn't insert into landmark_hash\n");
+                            free(temp);
                         }
                     }
                 }
@@ -3983,6 +3985,7 @@ fprintf(stderr,"                CompleteChain Layer ");
 // Remember to free() the hash storage later
                     if (!hashtable_insert(tlid_hash,&temp->TLID, temp)) {
                         fprintf(stderr,"Couldn't insert into tlid_hash\n");
+                        free(temp);
                     }
                 }
 
