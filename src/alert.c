@@ -568,12 +568,15 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
         new_record = (alert_entry*)malloc(sizeof(alert_entry));
         CHECKMALLOC(new_record);
 
-        memcpy(new_unique_str, unique_string, 50);
+        xastir_snprintf(new_unique_str, 50, "%s", unique_string);
+
         memcpy(new_record, alert_record, sizeof(alert_entry));
 
         //                    hash           title  alert_record
         if (!hashtable_insert(wx_alert_hash, new_unique_str, new_record)) {
             fprintf(stderr,"Insert failed on wx alert hash --- fatal\n");
+            free(new_unique_str);
+            free(new_record);
 //            exit(1);
         }
     }
@@ -880,6 +883,7 @@ int alert_expire(void) {
 //    alert_entry *ptr;
 //    int i;
 
+set_dangerous("alert.c:alert_add_entry()");
 
     if (debug_level & 2)
         fprintf(stderr,"alert_add_entry\n");
@@ -887,6 +891,9 @@ int alert_expire(void) {
     if (strlen(entry->title) == 0) {
         if (debug_level & 2)
             fprintf(stderr,"alert_add_entry: Empty title!\n");
+
+clear_dangerous();
+
         return(NULL);
     }
 
@@ -896,11 +903,17 @@ int alert_expire(void) {
             || (strcmp(entry->to, "NWS_SOLAR") == 0) ) {
         if (debug_level & 2)
             fprintf(stderr,"NWS-SOLAR, skipping\n");
+
+clear_dangerous();
+
         return(NULL);
     }
     if (strcasecmp(entry->title, "-NoActivationExpected") == 0) {
         if (debug_level & 2)
             fprintf(stderr,"NoActivationExpected, skipping\n");
+
+clear_dangerous();
+
         return(NULL);
     }
 
@@ -913,6 +926,9 @@ int alert_expire(void) {
                 time(NULL),
                 entry->expiration );
         }
+
+clear_dangerous();
+
         return(NULL);
     }
 
@@ -974,7 +990,13 @@ int alert_expire(void) {
         alert_redraw_on_update = redraw_on_new_data = 2;
 
 //WE7U
+
+set_dangerous("alert.c:add_wx_alert_to_hash()");
+
 add_wx_alert_to_hash(entry->unique_string, entry);
+
+clear_dangerous();
+
 return(entry);
 
 /*
@@ -1005,6 +1027,8 @@ return(entry);
             entry->title,
             entry->expiration);
     }
+
+clear_dangerous();
 
     return(NULL);
 }
