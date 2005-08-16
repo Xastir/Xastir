@@ -198,8 +198,9 @@ char *get_tactical_from_hash(char *callsign) {
 // tactical call for that entry, else it inserts a new record.
 //
 void add_tactical_to_hash(char *callsign, char *tactical_call) {
-    char *temp;     // tac-call
+    char *temp1;    // tac-call
     char *temp2;    // callsign
+    char *ptr;
 
 
     // Note that tactical_call can be '\0', which means we're
@@ -218,11 +219,11 @@ void add_tactical_to_hash(char *callsign, char *tactical_call) {
     // Check whether we already have a hash entry for this
     // callsign/SSID.  If so, overwrite it with the new tactical
     // callsign.
-    temp = get_tactical_from_hash(callsign);
+    ptr = get_tactical_from_hash(callsign);
 
-    if (!temp) {
-        temp = (char *)malloc(MAX_TACTICAL_CALL+1);
-        CHECKMALLOC(temp);
+    if (!ptr) {
+        temp1 = (char *)malloc(MAX_TACTICAL_CALL+1);
+        CHECKMALLOC(temp1);
 
         temp2 = (char *)malloc(MAX_CALLSIGN+1);
         CHECKMALLOC(temp2);
@@ -234,14 +235,16 @@ void add_tactical_to_hash(char *callsign, char *tactical_call) {
             "%s",
             callsign);
 
-        xastir_snprintf(temp,
+        xastir_snprintf(temp1,
             MAX_TACTICAL_CALL+1,
             "%s",
             tactical_call);
 
         //                         hash      call   tac-call
-        if (!hashtable_insert(tactical_hash, temp2, temp)) {
+        if (!hashtable_insert(tactical_hash, temp2, temp1)) {
             fprintf(stderr,"Insert failed on tactical hash --- fatal\n");
+            free(temp1);
+            free(temp2);
             exit(1);
         }
     }
@@ -249,7 +252,7 @@ void add_tactical_to_hash(char *callsign, char *tactical_call) {
 
 //fprintf(stderr,"\t\t\tOverwriting previous value: %s = %s\n", callsign, tactical_call);
 
-        xastir_snprintf(temp,
+        xastir_snprintf(ptr,
             MAX_TACTICAL_CALL+1,
             "%s",
             tactical_call);
@@ -257,14 +260,14 @@ void add_tactical_to_hash(char *callsign, char *tactical_call) {
 
     // Yet another check to see whether hash insert/update worked
     // properly
-    temp = get_tactical_from_hash(callsign);
-    if (!temp) {
+    ptr = get_tactical_from_hash(callsign);
+    if (!ptr) {
         fprintf(stderr,"***Failed hash insert/update***\n");
     }
     else {
 //fprintf(stderr,"Current: %s -> %s\n",
 //    callsign,
-//    temp);
+//    ptr);
     }
 }
 
