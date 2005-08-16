@@ -209,6 +209,8 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
     //fprintf(stderr, "  adding %s...",temp->filename);
     if (!hashtable_insert(shp_hash,temp->filename,temp)) {
         fprintf(stderr,"Insert failed on shapefile hash --- fatal\n");
+        free(temp->filename);
+        free(temp);
         exit(1);
     }
 }
