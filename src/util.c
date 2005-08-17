@@ -73,6 +73,9 @@ extern int pthread_mutexattr_setkind_np(pthread_mutexattr_t *attr, int kind);
 #include <curl/curl.h>
 #endif  // HAVE_LIBCURL
 
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 int position_amb_chars;
@@ -216,50 +219,42 @@ void add_tactical_to_hash(char *callsign, char *tactical_call) {
         init_tactical_hash(1); // so create one
     }
 
-    // Check whether we already have a hash entry for this
-    // callsign/SSID.  If so, overwrite it with the new tactical
-    // callsign.
-    ptr = get_tactical_from_hash(callsign);
+    // Remove any matching entry to avoid duplicates
+    ptr = hashtable_remove(tactical_hash, callsign);
+    if (ptr) {  // If value found, free the storage space for it as
+                // the hashtable_remove function doesn't.  It does
+                // however remove the key (callsign) ok.
+        free(ptr);
+    }
 
-    if (!ptr) {
-        temp1 = (char *)malloc(MAX_TACTICAL_CALL+1);
-        CHECKMALLOC(temp1);
+    temp1 = (char *)malloc(MAX_TACTICAL_CALL+1);
+    CHECKMALLOC(temp1);
 
-        temp2 = (char *)malloc(MAX_CALLSIGN+1);
-        CHECKMALLOC(temp2);
+    temp2 = (char *)malloc(MAX_CALLSIGN+1);
+    CHECKMALLOC(temp2);
 
 //fprintf(stderr, "\t\t\tAdding %s = %s...\n", callsign, tactical_call);
 
-        xastir_snprintf(temp2,
-            MAX_CALLSIGN+1,
-            "%s",
-            callsign);
+    xastir_snprintf(temp2,
+        MAX_CALLSIGN+1,
+        "%s",
+        callsign);
 
-        xastir_snprintf(temp1,
-            MAX_TACTICAL_CALL+1,
-            "%s",
-            tactical_call);
+    xastir_snprintf(temp1,
+        MAX_TACTICAL_CALL+1,
+        "%s",
+        tactical_call);
 
-        //                         hash      call   tac-call
-        if (!hashtable_insert(tactical_hash, temp2, temp1)) {
-            fprintf(stderr,"Insert failed on tactical hash --- fatal\n");
-            free(temp1);
-            free(temp2);
-            exit(1);
-        }
-    }
-    else {
-
-//fprintf(stderr,"\t\t\tOverwriting previous value: %s = %s\n", callsign, tactical_call);
-
-        xastir_snprintf(ptr,
-            MAX_TACTICAL_CALL+1,
-            "%s",
-            tactical_call);
+    //                                   (key)  (value)
+    //                         hash      call   tac-call
+    if (!hashtable_insert(tactical_hash, temp2, temp1)) {
+        fprintf(stderr,"Insert failed on tactical hash --- fatal\n");
+        free(temp1);
+        free(temp2);
+        exit(1);
     }
 
-    // Yet another check to see whether hash insert/update worked
-    // properly
+    // A check to see whether hash insert/update worked properly
     ptr = get_tactical_from_hash(callsign);
     if (!ptr) {
         fprintf(stderr,"***Failed hash insert/update***\n");
@@ -298,9 +293,9 @@ void destroy_tactical_hash(void) {
 
         tactical_hash = NULL;
 
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
         if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
     }
 }
 
