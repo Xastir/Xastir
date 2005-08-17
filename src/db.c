@@ -1123,7 +1123,7 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
     char time_data[MAX_TIME];
 
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_data_add start\n");
 
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
@@ -1181,7 +1181,7 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
     // so that we can later draw it.
     fill_in_new_alert_entries(da, ALERT_MAP_DIR);
 
-    if (debug_level & 1)
+    if (debug_level & 2)
         fprintf(stderr,"alert_data_add end\n");
 
 }   // End of alert_data_add()
