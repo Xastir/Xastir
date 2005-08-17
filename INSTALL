@@ -1340,13 +1340,35 @@ Find it at:
 
     http://www.hpl.hp.com/personal/Hans_Boehm/gc
 
-2) "./configure --with-libgc"
+Configure/install libgc like this:
 
-3) "make clean"
+    ./configure --enable-threads=posix
 
-4) "make install"
+Make sure that "-DGC_LINUX_THREADS" and "-D_REENTRANT" are defined
+in the Makefile if you're compiling it on Linux.
 
-5) "xastir &".   Let Xastir run for some period of time.
+Optional:  Change Makefile to add "-DSAVE_CALL_CHAIN" on the DEFS
+line.  This will provide more of a stack trace each time a leak is
+found.  This is sometimes useful but much more verbose.
+
+    make
+    make check
+    su
+    make install
+    exit (from root)
+
+2) Now, back in the xastir directory:
+
+    ./configure --with-libgc
+
+Make sure that "-fomit_frame_pointer" is _NOT_ in the Makefiles.
+This will mess up the optional stack trace if present.
+
+    make clean
+    make install
+    xastir &
+
+Let Xastir run for some period of time.
 
 Libgc will dump messages to the xterm as memory leaks are found.
 Any Xastir memory leaks should have a filename and a line number
