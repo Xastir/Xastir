@@ -38,7 +38,6 @@
 #include <signal.h>
 #include <termios.h>
 #include <pwd.h>
-#include <pthread.h>
 #include <locale.h>
 #include <strings.h>
 #include <sys/wait.h>
@@ -162,6 +161,10 @@
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>
+
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 // Copyright 2005.
@@ -1066,6 +1069,10 @@ long max_symbol_labels_allowed; /* max map symbol labels allowed */
 
 time_t net_last_time;           /* reconnect last time in seconds */
 time_t net_next_time;           /* reconnect Next update delay time */
+
+#ifdef USING_LIBGC
+time_t gc_next_time = 0L;       // Garbage collection next time
+#endif  // USING_LIBGC
 
 time_t posit_last_time;
 time_t posit_next_time;         /* time at which next posit TX will occur */
@@ -10993,14 +11000,16 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 //fprintf(stderr,"Checking for reconnects\n");
                 check_ports();
+            }
 
 #ifdef USING_LIBGC
-                // Check for memory leaks as well
+            // Check for leaks?
+            if(sec_now() > gc_next_time) {
+                gc_next_time = sec_now() + 60;  // Check every minute
 //fprintf(stderr,"Checking for leaks\n");
                 CHECK_LEAKS();
-#endif  // USING LIBGC
-
             }
+#endif  // USING_LIBGC
 
             // Check to see if it is time to spit out data
             if(!wait_to_redraw) {
