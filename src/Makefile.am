@@ -31,6 +31,7 @@ xastir_SOURCES = \
     interface_gui.c \
     io-common.c io-mmap.c io.h \
     lang.c lang.h \
+    leak_detection.h \
     list_gui.c list_gui.h \
     locate_gui.c \
     location.c \
