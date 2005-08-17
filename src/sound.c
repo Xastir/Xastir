@@ -35,6 +35,11 @@
 #include "xastir.h"
 #include "main.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 
 
 pid_t play_sound(char *sound_cmd, char *soundfile) {

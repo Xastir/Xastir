@@ -84,6 +84,9 @@ extern int mag;
 #include "geo_normalize.h"
 #include "projects.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 

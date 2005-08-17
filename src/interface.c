@@ -40,7 +40,6 @@
 #include <signal.h>
 #include <termios.h>
 #include <pwd.h>
-#include <pthread.h>
 #include <termios.h>
 #include <setjmp.h>
 #include <sys/socket.h>
@@ -103,6 +102,11 @@
 #include <netax25/axlib.h>
 #include <netax25/axconfig.h>
 #endif  // HAVE_LIBAX25
+
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 #ifndef SIGRET
 #define SIGRET  void

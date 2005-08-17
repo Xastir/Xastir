@@ -22,6 +22,11 @@
 /* #include "xastir.h"*/
 #include "snprintf.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 static char last_speech_text[8000];
 static time_t last_speech_time = (time_t)0;
 static SpeechChannel channel;

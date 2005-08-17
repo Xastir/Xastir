@@ -80,6 +80,10 @@
 #include "lang.h"
 #include "util.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 #define MAX_RAW_WX_STRING 800
 

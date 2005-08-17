@@ -56,6 +56,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 

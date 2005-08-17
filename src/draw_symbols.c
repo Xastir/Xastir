@@ -39,6 +39,11 @@
 #include "color.h"
 #include "maps.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 #define ANGLE_UPDOWN 30         /* prefer horizontal cars if less than 45 degrees */
 
 int symbols_loaded = 0;

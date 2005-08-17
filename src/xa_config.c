@@ -49,6 +49,11 @@
 #include "geo.h"
 #include "snprintf.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 #define CONFIG_FILE      "config/xastir.cnf"
 #define CONFIG_FILE_BAK1 "config/xastir.cnf.1"
 #define CONFIG_FILE_BAK2 "config/xastir.cnf.2"

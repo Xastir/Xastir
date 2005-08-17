@@ -24,7 +24,6 @@
 #ifndef __XASTIR_SERVER_H
 #define __XASTIR_SERVER_H
 
-#include <pthread.h>
 //#include "xastir.h"
 
 

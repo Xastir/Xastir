@@ -16,6 +16,10 @@
 #include "hashtable.h"
 #include "hashtable_private.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 /*
 Credit for primes table: Aaron Krowne

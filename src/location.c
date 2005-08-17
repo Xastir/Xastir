@@ -36,6 +36,10 @@
 #include "main.h"
 #include "track_gui.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 static long last_mid_x_long_offset;     // remember last screen settings
 static long last_mid_y_lat_offset;

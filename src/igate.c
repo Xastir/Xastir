@@ -26,7 +26,6 @@
 #include "snprintf.h"
 
 #include <termios.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -44,6 +43,10 @@
 #include "interface.h"
 #include "xa_config.h"
 #include "util.h"
+
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 time_t last_nws_stations_file_time = 0;

@@ -22,6 +22,10 @@
 #include "main.h"
 #include "util.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 //  ellipsoid: index into the gEllipsoid[] array, in which
 //             a is the ellipsoid semimajor axis

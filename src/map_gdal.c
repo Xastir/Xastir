@@ -139,6 +139,11 @@
 // ok.
 #include "xastir.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 
 
 void map_gdal_init() {
@@ -4130,9 +4135,9 @@ fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
 
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_advance(iterator));
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
             if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
         }
 
 
@@ -4169,9 +4174,9 @@ fprintf(stderr,"               Free'ing hash memory ");
 
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
             if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
         }
         // polyid_hash should be empty at this point.
 
@@ -4195,9 +4200,9 @@ fprintf(stderr,"               Free'ing hash memory ");
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
 
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
             if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
         }
         // tlid_hash should be empty at this point.
 
@@ -4213,9 +4218,9 @@ fprintf(stderr,"               Free'ing hash memory ");
             do {
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
             if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
         }
         // landmark_hash should be empty at this point.
 

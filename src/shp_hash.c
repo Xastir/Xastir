@@ -61,6 +61,11 @@
 #include "hashtable_private.h"
 #include "shp_hash.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 #define PURGE_PERIOD 3600     // One hour, hard coded for now.
                               // This should be in a slider in the timing
                               // configuration instead.

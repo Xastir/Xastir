@@ -34,6 +34,10 @@
 #include "main.h"
 #include "lang.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 #define MAX_PATH 200
 

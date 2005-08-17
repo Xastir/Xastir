@@ -37,6 +37,10 @@
 #include "lang.h"
 #include "maps.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 Widget locate_station_dialog = (Widget)NULL;
 Widget locate_station_data = (Widget)NULL;

@@ -41,6 +41,11 @@
 #include "io.h"
 #include "geo.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 Widget geocoder_place_dialog = (Widget)NULL;
 Widget geocoder_zip_data = (Widget)NULL;
 Widget geocoder_state_data = (Widget)NULL;

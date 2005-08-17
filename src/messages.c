@@ -61,6 +61,10 @@
 #include "util.h"
 #include "interface.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 char group_data_file[400];
 char *group_data_list = NULL;   // Need this NULL for Solaris!

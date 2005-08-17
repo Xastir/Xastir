@@ -51,6 +51,10 @@
 #include "xastir.h"
 #include "lang.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 char lang_code[MAX_LANG_ENTRIES][MAX_LANG_CODE+1];
 char *lang_code_ptr[MAX_LANG_ENTRIES];

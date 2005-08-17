@@ -46,6 +46,12 @@
 #include "main.h"
 #include "lang.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
+
 
 #ifndef __LCLINT__
   #ifndef sigjmp_buf

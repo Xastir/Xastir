@@ -68,6 +68,11 @@
 #include "color.h"
 #include "xa_config.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 //NOTE:  This function has a problem if a non-gnis file is labeled

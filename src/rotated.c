@@ -43,6 +43,10 @@
 #include "rotated.h"
 #include "snprintf.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 /* ---------------------------------------------------------------------- */
 

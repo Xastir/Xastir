@@ -117,7 +117,7 @@
 #include <signal.h>
 #include <termios.h>
 #include <pwd.h>
-#include <pthread.h>
+
 #include <termios.h>
 #include <setjmp.h>
 #include <sys/socket.h>
@@ -165,6 +165,10 @@
 #ifndef SIGRET
 #define SIGRET  void
 #endif  // SIGRET
+
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 // Define this if you wish to use this as a standalone program

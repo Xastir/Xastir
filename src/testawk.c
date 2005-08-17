@@ -46,6 +46,11 @@
 #include "awk.h"
 #include "dbfawk.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 
 
 /*

@@ -62,6 +62,11 @@
 #include <dmalloc.h>
 #endif  // HAVE_DMALLOC
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 Widget All_messages_dialog = NULL;
 Widget view_messages_text = NULL;
 Widget vm_dist_data = NULL;

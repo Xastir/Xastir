@@ -113,6 +113,9 @@
 #undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_IMAGEMAGICK
 
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 extern int npoints;		/* tsk tsk tsk -- globals */

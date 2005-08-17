@@ -69,6 +69,10 @@
 #include "awk.h"
 #include "snprintf.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 #define min(a,b) ((a)<(b)?(a):(b))
 

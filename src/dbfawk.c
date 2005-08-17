@@ -62,6 +62,10 @@
 
 #include <sys/stat.h>
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 
 

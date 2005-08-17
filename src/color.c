@@ -32,6 +32,10 @@
 #include "color.h"
 #include "xa_config.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 static color_load color_choice[MAX_COLORS];
 static int colors_loaded;

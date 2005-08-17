@@ -40,6 +40,10 @@
 #include "rotated.h"
 #include "snprintf.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 static Popup_Window pw[MAX_POPUPS];
 static Popup_Window pwb;

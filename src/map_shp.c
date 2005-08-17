@@ -105,6 +105,11 @@ extern int npoints;		/* tsk tsk tsk -- globals */
 #include <rtree/index.h>    
 #include "shp_hash.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
 int RTree_hitarray_index=0;

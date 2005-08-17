@@ -26,7 +26,6 @@
 #define __XASTIR_INTERFACE_H
 
 #include <termios.h>
-#include <pthread.h>
 #include "util.h"
 #include "xastir.h"
 

@@ -69,6 +69,9 @@
 #include "interface.h"
 #include "util.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 Widget Display_bulletins_dialog = NULL;

@@ -17,6 +17,11 @@
 #include "hashtable_private.h"
 #include "hashtable_itr.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 
 
 /*****************************************************************************/

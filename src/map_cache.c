@@ -57,6 +57,12 @@
 #include "map_cache.h" 
 #include <db.h>
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
+
 
 // This is used to temporarily disable fetching from the map cache.
 // Used for refreshing corrupted maps in the cache.

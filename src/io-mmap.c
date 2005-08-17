@@ -17,6 +17,11 @@
 #include <sys/types.h>
 #include <string.h>
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 struct io_file {
 	int fd;
         int prot;

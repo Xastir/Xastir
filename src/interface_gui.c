@@ -29,8 +29,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <termios.h>
-#include <pthread.h>
-
 #include <Xm/XmAll.h>
 
 #include "xastir.h"
@@ -44,6 +42,11 @@
 #ifdef HAVE_DMALLOC
 #include <dmalloc.h>
 #endif  // HAVE_DMALLOC
+
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 Widget configure_interface_dialog = NULL;
 Widget choose_interface_dialog = NULL;

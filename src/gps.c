@@ -56,6 +56,10 @@
 #include "lang.h"
 #include "util.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 char gps_gprmc[MAX_GPS_STRING+1];
 char gps_gpgga[MAX_GPS_STRING+1];

@@ -37,6 +37,10 @@
 #include "lang.h"
 #include "snprintf.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
 
 Widget location_dialog = (Widget)NULL;
 Widget location_list;

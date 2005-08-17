@@ -39,6 +39,11 @@
 #include "util.h"
 #include "xa_config.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
+
+
 Widget track_station_dialog = (Widget)NULL;
 Widget track_station_data = (Widget)NULL;
 Widget download_findu_dialog = (Widget)NULL;
