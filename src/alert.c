@@ -546,9 +546,14 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
     char *new_unique_str;
 
 
+    if (debug_level & 2)
+        fprintf(stderr,"add_wx_alert_to_hash start\n");
+
     if (unique_string == NULL
-            || *unique_string == '\0'
+            || unique_string[0] == '\0'
             || alert_record == NULL) {
+        if (debug_level & 2)
+            fprintf(stderr,"add_wx_alert_to_hash finish\n");
         return;
     }
 
@@ -597,6 +602,9 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
 //    unique_string,
 //    temp);
     }
+
+    if (debug_level & 2)
+        fprintf(stderr,"add_wx_alert_to_hash finish\n");
 }
 
 
@@ -819,7 +827,7 @@ int alert_expire(void) {
         if (!temp) {
 //#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 1\n");
-            if (iterator) free(iterator);
+//            if (iterator) free(iterator);
 //#endif  // USING_LIBGC
             return(expire_count);
         }
@@ -852,7 +860,7 @@ int alert_expire(void) {
     }
 //#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 2\n");
-    if (iterator) free(iterator);
+//    if (iterator) free(iterator);
 //#endif  // USING_LIBGC
 
     // Cause a screen redraw if we expired some alerts
@@ -1340,7 +1348,7 @@ int alert_on_screen(void) {
     }
 //#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 3\n");
-    if (iterator) free(iterator);
+//    if (iterator) free(iterator);
 //#endif  // USING_LIBGC
 
     return (alert_count);
@@ -1524,7 +1532,7 @@ void alert_build_list(Message *fill) {
             }
         }
         if (debug_level & 2)
-            fprintf(stderr,"alert_build_list exit 1\n");
+            fprintf(stderr,"alert_build_list return 1\n");
         return;
     }
 
@@ -2258,7 +2266,7 @@ if (debug_level & 2)
     }
 
     if (debug_level & 2)
-        fprintf(stderr,"alert_build_list exit 1\n");
+        fprintf(stderr,"alert_build_list return 2\n");
 }
 
 
