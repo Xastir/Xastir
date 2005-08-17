@@ -316,6 +316,9 @@
 #include "hashtable.h"
 #include "hashtable_itr.h"
 
+// Must be last include file
+#include "leak_detection.h"
+
 
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
@@ -539,6 +542,8 @@ alert_entry *get_wx_alert_from_hash(char *unique_string) {
 //
 void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
     alert_entry *temp;  // alert_record
+    alert_entry *new_record;
+    char *new_unique_str;
 
 
     if (unique_string == NULL
@@ -552,42 +557,35 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
         init_wx_alert_hash(1); // so create one
     }
 
-    // Check whether we already have a hash entry for this wx alert.
-    // If so, overwrite it with the new info?
-    temp = get_wx_alert_from_hash(unique_string);
-
-    if (!temp) {
-        alert_entry *new_record;
-        char *new_unique_str;
+    // Remove any matching entry to avoid duplicates
+    temp = hashtable_remove(wx_alert_hash, unique_string);
+    if (temp) { // If value found, free the storage space for it as
+                // the hashtable_remove function doesn't.  It does
+                // however remove the key (callsign) ok.
+        free(temp);
+    }
 
 //fprintf(stderr, "\t\t\tAdding %s...\n", unique_string);
 
-        // Allocate new space for the key and the record
-        new_unique_str = (char *)malloc(50);
-        CHECKMALLOC(new_unique_str);
-        new_record = (alert_entry*)malloc(sizeof(alert_entry));
-        CHECKMALLOC(new_record);
+    // Allocate new space for the key and the record
+    new_unique_str = (char *)malloc(50);
+    CHECKMALLOC(new_unique_str);
 
-        xastir_snprintf(new_unique_str, 50, "%s", unique_string);
+    new_record = (alert_entry*)malloc(sizeof(alert_entry));
+    CHECKMALLOC(new_record);
 
-        memcpy(new_record, alert_record, sizeof(alert_entry));
+    xastir_snprintf(new_unique_str, 50, "%s", unique_string);
 
-        //                    hash           title  alert_record
-        if (!hashtable_insert(wx_alert_hash, new_unique_str, new_record)) {
-            fprintf(stderr,"Insert failed on wx alert hash --- fatal\n");
-            free(new_unique_str);
-            free(new_record);
-//            exit(1);
-        }
-    }
-    else {
-//WE7U
-//fprintf(stderr,"\t\t\tOverwriting previous value: %s\n", unique_string);
-fprintf(stderr,"Found a duplicate while inserting.  Dropping the new entry: %s\n", unique_string);
-//fprintf(stderr,"\t%s\n",temp);
+    memcpy(new_record, alert_record, sizeof(alert_entry));
+
+    //                    hash           title  alert_record
+    if (!hashtable_insert(wx_alert_hash, new_unique_str, new_record)) {
+        fprintf(stderr,"Insert failed on wx alert hash --- fatal\n");
+        free(new_unique_str);
+        free(new_record);
+//        exit(1);
     }
 
-/*
     // Yet another check to see whether hash insert/update worked
     // properly
     temp = get_wx_alert_from_hash(unique_string);
@@ -599,7 +597,6 @@ fprintf(stderr,"Found a duplicate while inserting.  Dropping the new entry: %s\n
 //    unique_string,
 //    temp);
     }
-*/
 }
 
 
@@ -820,10 +817,10 @@ int alert_expire(void) {
         temp = hashtable_iterator_value(iterator);
 
         if (!temp) {
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 1\n");
             if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
             return(expire_count);
         }
 
@@ -853,10 +850,10 @@ int alert_expire(void) {
             }
         }
     }
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 2\n");
     if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
 
     // Cause a screen redraw if we expired some alerts
     if (expire_count) {
@@ -1341,10 +1338,10 @@ int alert_on_screen(void) {
         }
         temp = get_next_wx_alert(iterator);
     }
-#ifndef USING_LIBGC
+//#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 3\n");
     if (iterator) free(iterator);
-#endif  // USING_LIBGC
+//#endif  // USING_LIBGC
 
     return (alert_count);
 }
