@@ -293,9 +293,7 @@ void destroy_tactical_hash(void) {
 
         tactical_hash = NULL;
 
-//#ifndef USING_LIBGC
-        if (iterator) free(iterator);
-//#endif  // USING_LIBGC
+//        if (iterator) free(iterator);
     }
 }
 
