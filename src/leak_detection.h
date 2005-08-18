@@ -61,6 +61,10 @@
 // should not include pthread.h themselves.
 //
 #include <pthread.h>
+#include <malloc.h>
+#ifdef HAVE_DMALLOC
+#include <dmalloc.h>
+#endif  // HAVE_DMALLOC
 //
 #ifdef HAVE_GC_H
   #ifdef HAVE_LIBGC
@@ -80,7 +84,6 @@
     // Ask for more debugging
     #define GC_DEBUG
 
-    #include <malloc.h>
     #include <gc.h>
     #define malloc(n) GC_MALLOC(n)
     #define calloc(m,n) GC_MALLOC((m)*(n))
