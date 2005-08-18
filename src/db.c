@@ -60,10 +60,6 @@
 #include "xa_config.h"
 #include "x_spider.h"
 
-#ifdef  WITH_DMALLOC
-#include <dmalloc.h>
-#endif  // WITH_DMALLOC
-
 // Must be last include file
 #include "leak_detection.h"
 
