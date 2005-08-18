@@ -61,7 +61,7 @@
 // should not include pthread.h themselves.
 //
 #include <pthread.h>
-#include <malloc.h>
+#include <stdlib.h> /* Where malloc/free definitions reside */
 #ifdef HAVE_DMALLOC
 #include <dmalloc.h>
 #endif  // HAVE_DMALLOC
