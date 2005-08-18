@@ -12,13 +12,12 @@
 //#include <string.h>
 //#include <math.h>
 
-#include "xastir.h" /* defines GC_MALLOC/GC_FREE */
 #include "hashtable.h"
 #include "hashtable_private.h"
 #include "hashtable_itr.h"
 
 // Must be last include file
-#include "leak_detection.h"
+#include "leak_detection.h" /* defines GC_MALLOC/GC_FREE */
 
 
 

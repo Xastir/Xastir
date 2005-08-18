@@ -11,7 +11,6 @@
 #define __HASHTABLE_PRIVATE_CWC22_H__
 
 #include "hashtable.h"
-#include "xastir.h" /* Defines GC_MALLOC/GC_FREE */
 
 
 /*****************************************************************************/
