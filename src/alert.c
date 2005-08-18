@@ -286,9 +286,6 @@
 
 #include "config.h"
 
-#ifdef  WITH_DMALLOC
-#include <dmalloc.h>
-#endif  // WITH_DMALLOC
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -825,10 +822,10 @@ int alert_expire(void) {
         temp = hashtable_iterator_value(iterator);
 
         if (!temp) {
-//#ifndef USING_LIBGC
+#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 1\n");
-//            if (iterator) free(iterator);
-//#endif  // USING_LIBGC
+            if (iterator) free(iterator);
+#endif  // USING_LIBGC
             return(expire_count);
         }
 
@@ -858,10 +855,10 @@ int alert_expire(void) {
             }
         }
     }
-//#ifndef USING_LIBGC
+#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 2\n");
-//    if (iterator) free(iterator);
-//#endif  // USING_LIBGC
+    if (iterator) free(iterator);
+#endif  // USING_LIBGC
 
     // Cause a screen redraw if we expired some alerts
     if (expire_count) {
@@ -1346,10 +1343,10 @@ int alert_on_screen(void) {
         }
         temp = get_next_wx_alert(iterator);
     }
-//#ifndef USING_LIBGC
+#ifndef USING_LIBGC
 //fprintf(stderr,"free iterator 3\n");
-//    if (iterator) free(iterator);
-//#endif  // USING_LIBGC
+    if (iterator) free(iterator);
+#endif  // USING_LIBGC
 
     return (alert_count);
 }
