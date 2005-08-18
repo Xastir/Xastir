@@ -58,10 +58,6 @@
 #include "main.h"
 #include "util.h"
 
-#ifdef HAVE_DMALLOC
-#include <dmalloc.h>
-#endif  // HAVE_DMALLOC
-
 // Must be last include file
 #include "leak_detection.h"
 
