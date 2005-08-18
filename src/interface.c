@@ -187,8 +187,8 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
                        unsigned char *Data,
                        int length) {
     int ii;
-    const int header_size = 36;
-    unsigned char output_string[512+header_size];
+#define agwpe_header_size 36
+    unsigned char output_string[512+agwpe_header_size];
     unsigned char path_string[200];
     int full_length;
     int data_length;
@@ -238,7 +238,7 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
         // Send the packet to AGWPE
         port_write_binary(xastir_interface,
             output_string,
-            header_size);
+            agwpe_header_size);
     }
  
     else if (Path == NULL) { // No ViaCalls, Data or login packet
@@ -280,14 +280,14 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 // Write login/password out as 255-byte strings each
 
             // Put the login string into the buffer
-            xastir_snprintf((char *)&output_string[header_size],
-                sizeof(output_string) - header_size,
+            xastir_snprintf((char *)&output_string[agwpe_header_size],
+                sizeof(output_string) - agwpe_header_size,
                 "%s",
                 callsign_base);
 
             // Put the password string into the buffer
-            xastir_snprintf((char *)&output_string[header_size+255],
-                sizeof(output_string) - header_size - 255,
+            xastir_snprintf((char *)&output_string[agwpe_header_size+255],
+                sizeof(output_string) - agwpe_header_size - 255,
                 "%s",
                 Data);
 
@@ -296,7 +296,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             // Send the packet to AGWPE
             port_write_binary(xastir_interface,
                 output_string,
-                255+255+header_size);
+                255+255+agwpe_header_size);
         }
         else {  // Data frame
             // Write the type character into the frame
@@ -320,9 +320,9 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             // doesn't have to be null-terminated, so strncpy() is
             // ok to use here.  strncpy stops at the first null byte
             // though.  Proper for a binary output routine?  NOPE!
-            strncpy(&output_string[header_size], Data, length);
+            strncpy(&output_string[agwpe_header_size], Data, length);
 
-            full_length = length + header_size;
+            full_length = length + agwpe_header_size;
 
             // Send the packet to AGWPE
             port_write_binary(xastir_interface,
@@ -358,84 +358,84 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         // Write the number of ViaCalls into the first byte
         if (ViaCall[7]) {
 //fprintf(stderr, "Eight viacalls\n");
-            output_string[header_size] = 0x08;
+            output_string[agwpe_header_size] = 0x08;
         }
         else if (ViaCall[6]) {
 //fprintf(stderr, "Seven viacalls\n");
-            output_string[header_size] = 0x07;
+            output_string[agwpe_header_size] = 0x07;
         }
         else if (ViaCall[5]) {
 //fprintf(stderr, "Six viacalls\n");
-            output_string[header_size] = 0x06;
+            output_string[agwpe_header_size] = 0x06;
         }
         else if (ViaCall[4]) {
 //fprintf(stderr, "Five viacalls\n");
-            output_string[header_size] = 0x05;
+            output_string[agwpe_header_size] = 0x05;
         }
         else if (ViaCall[3]) {
 //fprintf(stderr, "Four viacalls\n");
-            output_string[header_size] = 0x04;
+            output_string[agwpe_header_size] = 0x04;
         }
         else if (ViaCall[2]) {
 //fprintf(stderr, "Three viacalls\n");
-            output_string[header_size] = 0x03;
+            output_string[agwpe_header_size] = 0x03;
         }
         else if (ViaCall[1]) {
 //fprintf(stderr, "Two viacalls\n");
-            output_string[header_size] = 0x02;
+            output_string[agwpe_header_size] = 0x02;
         }
         else {
 //fprintf(stderr, "One viacall\n");
-            output_string[header_size] = 0x01;
+            output_string[agwpe_header_size] = 0x01;
         }
  
         // Write the ViaCalls into the Data field
-        switch (output_string[header_size]) {
+        switch (output_string[agwpe_header_size]) {
             case 8:
                 if (ViaCall[7]) {
-                    strncpy(&output_string[header_size+1+70], ViaCall[7], 10);
+                    strncpy(&output_string[agwpe_header_size+1+70], ViaCall[7], 10);
 //fprintf(stderr, "%s\n", ViaCall[7]);
                 }
                 else
                     return;
             case 7:
                 if (ViaCall[6]) {
-                    strncpy(&output_string[header_size+1+60], ViaCall[6], 10);
+                    strncpy(&output_string[agwpe_header_size+1+60], ViaCall[6], 10);
 //fprintf(stderr, "%s\n", ViaCall[6]);
                 }
                 else
                     return;
             case 6:
                 if (ViaCall[5]) {
-                    strncpy(&output_string[header_size+1+50], ViaCall[5], 10);
+                    strncpy(&output_string[agwpe_header_size+1+50], ViaCall[5], 10);
 //fprintf(stderr, "%s\n", ViaCall[5]);
                 }
                 else
                     return;
             case 5:
                 if (ViaCall[4]) {
-                    strncpy(&output_string[header_size+1+40], ViaCall[4], 10);
+                    strncpy(&output_string[agwpe_header_size+1+40], ViaCall[4], 10);
 //fprintf(stderr, "%s\n", ViaCall[4]);
                 }
                 else
                     return;
             case 4:
                 if (ViaCall[3]) {
-                    strncpy(&output_string[header_size+1+30], ViaCall[3], 10);
+                    strncpy(&output_string[agwpe_header_size+1+30], ViaCall[3], 10);
 //fprintf(stderr, "%s\n", ViaCall[3]);
                 }
                 else
                     return;
             case 3:
                 if (ViaCall[2]) {
-                    strncpy(&output_string[header_size+1+20], ViaCall[2], 10);
+                    strncpy(&output_string[agwpe_header_size+1+20], ViaCall[2], 10);
 //fprintf(stderr, "%s\n", ViaCall[2]);
                 }
                 else
                     return;
             case 2:
                 if (ViaCall[1]) {
-                    strncpy(&output_string[header_size+1+10], ViaCall[1], 10);
+                    strncpy(&output_string[agwpe_header_size+1+10], ViaCall[1], 10);
 //fprintf(stderr, "%s\n", ViaCall[1]);
                 }
                 else
@@ -443,7 +443,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             case 1:
             default:
                 if (ViaCall[0]) {
-                    strncpy(&output_string[header_size+1+0],  ViaCall[0], 10);
+                    strncpy(&output_string[agwpe_header_size+1+0],  ViaCall[0], 10);
 //fprintf(stderr, "%s\n", ViaCall[0]);
                 }
                 else
@@ -455,15 +455,16 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         // Doesn't need to be null-terminated, so strncpy is ok to
         // use here.  strncpy stops at the first null byte though.
         // Proper for a binary output routine?
-        strncpy(&output_string[((int)(output_string[header_size]) * 10) + header_size + 1],
+        strncpy(&output_string[((int)(output_string[agwpe_header_size]) * 10) + agwpe_header_size + 1],
             Data,
             length);
 
         //Fill in the data length field.  We're assuming the total
         //is less than 512 + 37.
-        data_length = length + ((int)(output_string[header_size]) * 10) + 1;
+        data_length = length + ((int)(output_string[agwpe_header_size]) * 10) + 1;
 
-//fprintf(stderr, "Via calls: %d\n", (int)(output_string[header_size]));
+//fprintf(stderr, "Via calls: %d\n",
+//(int)(output_string[agwpe_header_size]));
 //fprintf(stderr, "Length: %d\n", length);
 //fprintf(stderr, "Data Length: %d\n", data_length);
 
@@ -481,7 +482,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
     output_string[31]);
 */
 
-        full_length = data_length + header_size;
+        full_length = data_length + agwpe_header_size;
 
         // Send the packet to AGWPE
         port_write_binary(xastir_interface,
