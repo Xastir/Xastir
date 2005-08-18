@@ -334,3 +334,8 @@ void purge_shp_hash() {
 #endif  // HAVE_LIBSHP
 #endif // USE_RTREE
 
+
+// To get rid of "-pedantic" compiler warning:
+int NON_EMPTY_SOURCE_FILE;
+
+

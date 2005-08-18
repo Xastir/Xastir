@@ -165,7 +165,11 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                 if (debug_level & 1024)
                     fprintf(stderr,"Set alarm \n");
 
+#ifdef RETSIGTYPE
+                previous_loc = (RETSIGTYPE *)signal(SIGALRM, host_time_out);
+#else
                 previous_loc = signal(SIGALRM, host_time_out);
+#endif
 
                 // Set up to jump here if we time out on SIGALRM
                 if (sigsetjmp(ret_place,-1)!=0) {
@@ -174,7 +178,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                     (void)alarm(0);
 
                     // Reset the SIGALRM handler to its previous value
-                    (void)signal(SIGALRM, previous_loc);
+                    (void)signal(SIGALRM, (sighandler_t)previous_loc);
 
                     // Return net connection time out
                     xastir_snprintf(ip_addr, sizeof(ip_addr), "TIMEOUT");
@@ -198,7 +202,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                 // Turn off the alarm
                 (void)alarm(0);
                 // Reset the SIGALRM handler to its previous value
-                (void)signal(SIGALRM, previous_loc);
+                (void)signal(SIGALRM, (sighandler_t)previous_loc);
 
                 if (hostinfo) {
                     names = hostinfo -> h_aliases;
