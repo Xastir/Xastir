@@ -473,7 +473,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         // We have the message text now.  Check it for illegal
         // characters, remove them and substitute spaces if found.
         // Illegal characters are '|', '{', and '~' for messaging.
-        for (jj = 0; jj < strlen(temp2); jj++) {
+        for (jj = 0; jj < (int)strlen(temp2); jj++) {
             if (       temp2[jj] == '|'
                     || temp2[jj] == '{'
                     || temp2[jj] == '~' ) {
