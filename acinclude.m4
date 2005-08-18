@@ -232,7 +232,7 @@ else
    AC_MSG_WARN([*** Cannot find gdal-config:  Checking standard locations ***])
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
                     [use_gdal=yes;
-                     LIBS="$LIBS -lgdal"
+                     LIBS="-lgdal $LIBS"
                      AC_DEFINE(HAVE_LIBGDAL, , 
                       [Define to 1 if you have the `gdal' library (-lgdal).])],
                     [use_gdal=no])])

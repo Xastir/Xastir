@@ -92,13 +92,13 @@ void print_symtbl(awk_symtab *this) {
 
 
 awk_rule rules[] = {
-    { 0, BEGIN, NULL, NULL, 0, 0, "key=\"\"; lanes=1; color=8; name=\"\"; filled=0; pattern=1; display_level=8192; label_level=32",0 },
-    { 0, REGEXP, "^TLID=(.*)$", NULL, 0, 0, "key=\"$1\"",0 },
-    { 0, REGEXP, "^FENAME=United States Highway (.*)$", NULL, 0, 0, "name=\"US $1\"; next",0 },
-    { 0, REGEXP, "^FENAME=(.*)$", NULL, 0, 0, "name=\"$1\"; next",0 },
-    { 0, REGEXP, "^CFCC=A1", NULL, 0, 0, "lanes=4; color=4; next",0 },
-    { 0, REGEXP, "^CFCC=A3", NULL, 0, 0, "lanes=2; color=8",0 },
-    { 0, REGEXP, "^CFCC=A3[1-6]", NULL, 0, 0, "display_level=256; next",0 },
+    { 0, BEGIN, NULL, NULL, 0, 0, "key=\"\"; lanes=1; color=8; name=\"\"; filled=0; pattern=1; display_level=8192; label_level=32",0 ,0 },
+    { 0, REGEXP, "^TLID=(.*)$", NULL, 0, 0, "key=\"$1\"",0,0  },
+    { 0, REGEXP, "^FENAME=United States Highway (.*)$", NULL, 0, 0, "name=\"US $1\"; next",0,0  },
+    { 0, REGEXP, "^FENAME=(.*)$", NULL, 0, 0, "name=\"$1\"; next",0,0  },
+    { 0, REGEXP, "^CFCC=A1", NULL, 0, 0, "lanes=4; color=4; next",0,0  },
+    { 0, REGEXP, "^CFCC=A3", NULL, 0, 0, "lanes=2; color=8",0,0  },
+    { 0, REGEXP, "^CFCC=A3[1-6]", NULL, 0, 0, "display_level=256; next",0,0  },
 };
 
 
