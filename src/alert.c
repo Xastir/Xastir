@@ -394,7 +394,7 @@ void alert_fill_unique_string(alert_entry *alert) {
 //
 unsigned int wx_alert_hash_from_key(void *key) {
     alert_entry *temp = key;
-    unsigned char *jj = temp->unique_string;
+    char *jj = temp->unique_string;
     unsigned int hash = 1;
     int ii = 1;
 
