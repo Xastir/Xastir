@@ -56,10 +56,6 @@
 #include "hashtable_itr.h"
 
 
-#ifdef HAVE_DMALLOC
-#include <dmalloc.h>
-#endif  // HAVE_DMALLOC
-
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 // For mutex debugging with Linux threads only
@@ -293,7 +289,7 @@ void destroy_tactical_hash(void) {
 
         tactical_hash = NULL;
 
-//        if (iterator) free(iterator);
+        if (iterator) free(iterator);
     }
 }
 
