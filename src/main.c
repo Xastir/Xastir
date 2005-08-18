@@ -479,6 +479,7 @@ What_to_display Display_ = { 1, // callsign
                              1, // temperature_only
                              1, // wind_barb
 
+                             1, // aloha_circle
                              1, // ambiguity
                              1, // phg
                              1, // default_phg
