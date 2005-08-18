@@ -419,8 +419,8 @@ clear_dangerous();
 set_dangerous("map_cache_get:dbp->open 1");
     if ((mc_ret = dbp->open(dbp,
         mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
-        ( debug_level & 512 ) ?  dbp->err(dbp, mc_ret, "%s", mc_database_filename):0;
-        // db_strerror(mc_ret);
+            ( debug_level & 512 ) ?  dbp->err(dbp, mc_ret, "%s", mc_database_filename):0;
+            // db_strerror(mc_ret);
     }
 clear_dangerous();
 
@@ -428,9 +428,11 @@ clear_dangerous();
 
 set_dangerous("map_cache_get:dbp->open 2");
     if ((mc_ret = dbp->open(dbp,
-        NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
-        ( debug_level & 512 ) ? dbp->err(dbp, mc_ret, "%s", mc_database_filename) : 0 ;
-        // db_strerror(mc_ret);
+            NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
+        if (debug_level & 512) {
+            dbp->err(dbp, mc_ret, "%s", mc_database_filename);
+            // db_strerror(mc_ret);
+        }
     }
 clear_dangerous();
 
@@ -573,8 +575,10 @@ clear_dangerous();
                 (mc_key.data == NULL) ? "(null)" : (char *)mc_key.data);
         }
 
-        ( debug_level & 512 ) ? dbp->err(dbp, mc_ret, "DB->get"):0;
-        // db_strerror(mc_ret);
+        if (debug_level & 512) {
+            dbp->err(dbp, mc_ret, "DB->get");
+            // db_strerror(mc_ret);
+        }
 
         // there was some problem getting things from the db
         // return the return from the get 
@@ -637,9 +641,11 @@ int map_cache_del( char * map_cache_url ){
 #elif	 (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR>=1 )
 	
     if ((mc_ret = dbp->open(dbp,
-        NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
-        ( debug_level & 512 ) ? dbp->err(dbp, mc_ret, "%s", mc_database_filename):0;
-        // db_strerror(mc_ret);
+            NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
+        if (debug_level & 512) {
+            dbp->err(dbp, mc_ret, "%s", mc_database_filename);
+            // db_strerror(mc_ret);
+        }
         return(1);
     }
 
