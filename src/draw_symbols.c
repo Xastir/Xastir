@@ -94,6 +94,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
 
     switch (style) {
+
         case 0:
             // make outline style
             (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
@@ -107,6 +108,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             (void)XDrawString(XtDisplay(w),where,gc,x,y+1,text,length);
             (void)XDrawString(XtDisplay(w),where,gc,x,y-1,text,length);
             break;
+
         case 1:
             // draw text the old way in a gray box
             // Leave this next one hard-coded to 0xff.  This keeps
@@ -120,6 +122,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
             (void)XDrawString(XtDisplay(w),where,gc,x+1,y+1,text,length);
             break;
+
         case 2:
         default:
             // draw white or colored text in a black box
@@ -132,6 +135,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
             xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
 
+
 //            font_width = xfs_ptr->max_bounds.width
 //                + xfs_ptr->max_bounds.rbearing
 //                - xfs_ptr->max_bounds.lbearing;
@@ -140,7 +144,11 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             font_height = xfs_ptr->max_bounds.ascent
                 + xfs_ptr->max_bounds.descent;
 
-            XFreeFontInfo(NULL, xfs_ptr, 0);
+            if (xfs_ptr) {
+                XFreeFontInfo(NULL, xfs_ptr, 1);
+//                XFreeFont(XtDisplay(w), xfs_ptr);
+            }
+
 
             // Normal font returns 10 & 13.  Large system font
             // returns 13 & 20 here.
@@ -167,6 +175,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                 font_height+3);         // height
 
             break;
+
     }
 
     // finally draw the text
