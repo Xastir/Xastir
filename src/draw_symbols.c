@@ -145,10 +145,9 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                 + xfs_ptr->max_bounds.descent;
 
             if (xfs_ptr) {
+                // This leaks memory if the last parameter is a "0"
                 XFreeFontInfo(NULL, xfs_ptr, 1);
-//                XFreeFont(XtDisplay(w), xfs_ptr);
             }
-
 
             // Normal font returns 10 & 13.  Large system font
             // returns 13 & 20 here.
