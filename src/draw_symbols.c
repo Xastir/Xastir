@@ -126,7 +126,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
             // With a large font, the background rectangle is too
             // small.  Need to include the font metrics in this
-            // drawing algorithm, whic we do here.
+            // drawing algorithm, which we do here.
 
             gcontext = XGContextFromGC(gc);
 
@@ -139,6 +139,8 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
             font_height = xfs_ptr->max_bounds.ascent
                 + xfs_ptr->max_bounds.descent;
+
+            XFreeFontInfo(NULL, xfs_ptr, 0);
 
             // Normal font returns 10 & 13.  Large system font
             // returns 13 & 20 here.
