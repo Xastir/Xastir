@@ -50,7 +50,9 @@
 #include "leak_detection.h"
 
 
-
+#ifndef HAVE_SIGHANDLER_T
+typedef sig_t sighandler_t;
+#endif
 
 
 #ifndef __LCLINT__
