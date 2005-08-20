@@ -17247,7 +17247,7 @@ void check_and_transmit_objects_items(time_t time) {
 // station we counted is our ALOHA limit.  Per Bob B., this should be plotted
 // on the  map as a circle with no user-selectable way of turning it off.
 
-double calc_aloha_distance() {
+double calc_aloha_distance(void) {
     DataRow *p_station = n_first;  // walk in alphabetical order
     aloha_entry *aloha_array;
     aloha_entry *temp_aloha_array;
@@ -17426,7 +17426,7 @@ int comp_by_dist(const void *av,const void *bv) {
 
 // Called periodically by UpdateTime, we calculate our aloha radius every
 // so often.  (Bob B. recommends every 30 minutes)
-void calc_aloha()    {
+void calc_aloha(void)    {
     time_t secs_now;
     char status_text[100];
 

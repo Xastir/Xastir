@@ -48,7 +48,7 @@ extern int map_cache_del( char * map_cache_url );
 extern int map_cache_expired( char * mc_filename, time_t mc_max_age );
 
 // Generates filename based on current time
-extern char * map_cache_fileid();
+extern char * map_cache_fileid(void);
 
 
 // Static variable definitions

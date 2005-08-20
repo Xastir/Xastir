@@ -4016,7 +4016,7 @@ if (on_screen) {
 
 // This function will delete any pre-loaded dbfawk sigs and clear Dbf_sigs
 // This will trigger a  reload the first time a shapfile is redisplayed
-void clear_dbfawk_sigs() {
+void clear_dbfawk_sigs(void) {
     //    fprintf(stderr,"Clearing signatures.\n");
     if (Dbf_sigs ) {
         dbfawk_free_sigs(Dbf_sigs);

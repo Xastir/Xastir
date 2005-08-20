@@ -3303,7 +3303,7 @@ extern void draw_shapefile_map (Widget w,
                                 int destination_pixmap,
                                 map_draw_flags *draw_flags);
 #ifdef WITH_DBFAWK
-extern void clear_dbfawk_sigs();
+extern void clear_dbfawk_sigs(void);
 #endif /* WITH_DBFAWK */
 #endif /* HAVE_LIBSHP */
 #ifdef HAVE_LIBGEOTIFF
@@ -5730,7 +5730,7 @@ void map_indexer(int parameter) {
 
 #ifdef HAVE_LIBSHP
 #ifdef WITH_DBFAWK
-    // get rid of stored dbfawk signatues and force reload.
+    // get rid of stored dbfawk signatures and force reload.
     clear_dbfawk_sigs();
 #endif
 #endif

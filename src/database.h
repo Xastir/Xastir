@@ -613,8 +613,8 @@ typedef struct {
     int total;
 } aloha_stats;
 
-double calc_aloha_distance(); //meat
-void calc_aloha(); // periodic function
+double calc_aloha_distance(void); //meat
+void calc_aloha(void); // periodic function
 void Show_Aloha_Stats(Widget w, XtPointer clientData, 
                       XtPointer callData); // popup window
 
