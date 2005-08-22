@@ -77,9 +77,8 @@ done
 rm -f gccflags
 
 # add any other flags that aren't added earlier
-# "-W -pedantic -Wall -Wpointer-arith -Wstrict-prototypes"
 #
-for f in -Wall -Wpointer-arith -Wstrict-prototypes; do
+for f in -W -Wall -Wpointer-arith -Wstrict-prototypes -Wno-unused-parameter; do
 echo $CFLAGS | grep -- $f - > /dev/null || CFLAGS="$CFLAGS $f"
 done
 
