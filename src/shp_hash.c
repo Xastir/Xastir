@@ -78,6 +78,10 @@ static time_t purge_time;
 #define SHP_HASH_SIZE 65535
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
+
+
+
+
 unsigned int shape_hash_from_key(void *key) {
     char *str=(char *)key;
     unsigned int shphash=5381;
@@ -91,6 +95,10 @@ unsigned int shape_hash_from_key(void *key) {
     return (shphash);
 }
 
+
+
+
+
 int shape_keys_equal(void *key1, void *key2) {
 
     //    fprintf(stderr,"Comparing %s to %s\n",(char *)key1,(char *)key2);
@@ -102,6 +110,10 @@ int shape_keys_equal(void *key1, void *key2) {
         return(0);
     }
 }
+
+
+
+
 
 void init_shp_hash(int clobber) {
     //fprintf(stderr," Initializing shape hash \n");
@@ -124,6 +136,10 @@ void init_shp_hash(int clobber) {
     purge_time = sec_now() + PURGE_PERIOD;
 }
 
+
+
+
+
 // destructor for a single shapeinfo structure
 void destroy_shpinfo(shpinfo *si) {
     if (si) {
@@ -134,6 +150,10 @@ void destroy_shpinfo(shpinfo *si) {
         free(si);
     }
 }
+
+
+
+
 
 // free the pointers in a shapinfo object
 void empty_shpinfo(shpinfo *si) {
@@ -155,8 +175,12 @@ void empty_shpinfo(shpinfo *si) {
         //        }
     }
 }
-    
-void destroy_shp_hash() {
+
+
+
+
+
+void destroy_shp_hash(void) {
     struct hashtable_itr *iterator=NULL;
     shpinfo *si;
     int ret;
@@ -184,6 +208,10 @@ void destroy_shp_hash() {
         if (iterator) free(iterator);
     }
 }
+
+
+
+
 
 void add_shp_to_hash(char *filename, SHPHandle sHP) {
 
@@ -220,6 +248,10 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
     }
 }
 
+
+
+
+
 shpinfo *get_shp_from_hash(char *filename) {
     shpinfo *result;
     if (!shp_hash) {  // no table to search
@@ -245,6 +277,11 @@ shpinfo *get_shp_from_hash(char *filename) {
     return (result);
 
 }
+
+
+
+
+
 //CAREFUL:  note how adding things to the tree can change the root
 // Must not ever use cache a value of the root pointer if there's any
 // chance that the tree needs to be expanded!
@@ -270,7 +307,11 @@ void build_rtree (struct Node **root, SHPHandle sHP) {
     }
 }
 
-void purge_shp_hash() {
+
+
+
+
+void purge_shp_hash(void) {
     struct hashtable_itr *iterator=NULL;
     shpinfo *si;
     time_t secs_now;
