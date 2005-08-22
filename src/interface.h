@@ -223,6 +223,8 @@ extern void update_interface_list(void);
 extern int WX_rain_gauge_type;
 
 /* interface.c */
+extern int is_local_interface(int port);
+extern int is_network_interface(int port);
 extern void send_agwpe_packet(int xastir_interface, int RadioPort, unsigned char type, unsigned char *FromCall, unsigned char *ToCall, unsigned char *Path, unsigned char *Data, int length);
 
 extern unsigned char *incoming_data;

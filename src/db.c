@@ -12265,6 +12265,8 @@ void packet_data_add(char *from, char *line, int data_port) {
     int i;
     int offset;
     char prefix[3] = "";
+    int local_tnc_interface = 0;
+    int network_interface = 0;
 
 
     if (data_port == -1) {  // x_spider port (server port)
@@ -12277,58 +12279,84 @@ void packet_data_add(char *from, char *line, int data_port) {
         xastir_snprintf(prefix,sizeof(prefix),"%2d",data_port);
     }
 
-
     offset=0;
     if (line[0]==(char)3)
         offset=1;
 
-    if ( (Display_packet_data_type==1 && strcmp(from,langcode("WPUPDPD005"))==0) ||
-            (Display_packet_data_type==2 && strcmp(from,langcode("WPUPDPD006"))==0)
-            || Display_packet_data_type==0) {
+    // Check whether local or network interface
+    if (is_local_interface(data_port) || data_port == -99)
+        local_tnc_interface++;
 
-        redraw_on_new_packet_data=1;
-        if (packet_data_display < MAX_PACKET_DATA_DISPLAY) {
-            // Array is not filled yet.  Add the new text at the
-            // next position in the array.
-            xastir_snprintf(packet_data[packet_data_display],
-                sizeof(packet_data[packet_data_display]),
-                "%s:%s-> %s\n",
-                prefix,
-                from,
-                line+offset);
-            packet_data_display++;
-        }
-        else {
-            // Move everything up one and add the new text at the
-            // last position.
-            packet_data_display = MAX_PACKET_DATA_DISPLAY;
-            for ( i = 0; i < (MAX_PACKET_DATA_DISPLAY - 1); i++ ) {
-                xastir_snprintf(packet_data[i],
-                    sizeof(packet_data[i]),
-                    "%s",
-                    packet_data[i+1]);
-            }
+    if (is_network_interface(data_port) || data_port == -1 || data_port == -99)
+        network_interface++;
 
-            xastir_snprintf(packet_data[MAX_PACKET_DATA_DISPLAY-1],
-                sizeof(packet_data[MAX_PACKET_DATA_DISPLAY-1]),
-                "%s:%s-> %s\n",
-                prefix,
-                from,
-                line+offset);
-        }
+    // Compare Display_packet_data_type against the port type
+    // associated with data_port to determine whether or not to
+    // display it.
+    //
+    switch (Display_packet_data_type) {
 
-        // Write the current data in the array out to the
-        // packet_data_string variable for use in the
-        // display_packet_data() function above.
-        packet_data_string[0] = '\0';   // Empty the string
-        for ( i = 0; i <= packet_data_display; i++ ) {
-            int string_end = strlen(packet_data_string);
+        case 2:     // Display NET data only
+            if (!network_interface)
+                return; // Don't display it
+            break;
 
-            xastir_snprintf(&packet_data_string[string_end],
-                sizeof(packet_data_string) - string_end,
+        case 1:     // Display TNC data only
+            if (!local_tnc_interface)
+                return; // Don't display it
+            break;
+
+        case 0:     // Display both TNC and NET data
+        default:
+            break;
+    }
+
+//    fprintf(stderr,"display:%d, port:%d\n",
+//        Display_packet_data_type,
+//        data_port);
+
+    redraw_on_new_packet_data=1;
+    if (packet_data_display < MAX_PACKET_DATA_DISPLAY) {
+        // Array is not filled yet.  Add the new text at the
+        // next position in the array.
+        xastir_snprintf(packet_data[packet_data_display],
+            sizeof(packet_data[packet_data_display]),
+            "%s:%s-> %s\n",
+            prefix,
+            from,
+            line+offset);
+        packet_data_display++;
+    }
+    else {
+        // Move everything up one and add the new text at the
+        // last position.
+        packet_data_display = MAX_PACKET_DATA_DISPLAY;
+        for ( i = 0; i < (MAX_PACKET_DATA_DISPLAY - 1); i++ ) {
+            xastir_snprintf(packet_data[i],
+                sizeof(packet_data[i]),
                 "%s",
-                packet_data[i]);
+                packet_data[i+1]);
         }
+
+        xastir_snprintf(packet_data[MAX_PACKET_DATA_DISPLAY-1],
+            sizeof(packet_data[MAX_PACKET_DATA_DISPLAY-1]),
+            "%s:%s-> %s\n",
+            prefix,
+            from,
+            line+offset);
+    }
+
+    // Write the current data in the array out to the
+    // packet_data_string variable for use in the
+    // display_packet_data() function above.
+    packet_data_string[0] = '\0';   // Empty the string
+    for ( i = 0; i <= packet_data_display; i++ ) {
+        int string_end = strlen(packet_data_string);
+
+        xastir_snprintf(&packet_data_string[string_end],
+            sizeof(packet_data_string) - string_end,
+            "%s",
+            packet_data[i]);
     }
 }
 
