@@ -113,7 +113,7 @@ void io_close(struct io_file *f) {
 /* Attempts to make the mapping cover [pos,pos+len), or at least [pos].
    Returns nonzero iff failed. */
 static int remap(struct io_file *f,int pos,int len) {
-	if (pos < f->map_offset || pos >= f->map_offset + f->map_size) {
+	if (pos < (int)f->map_offset || pos >= (int)(f->map_offset + f->map_size) ) {
 		const int flags = MAP_SHARED;
 
 		const off_t b1 = pos / f->map_page * f->map_page;
@@ -157,7 +157,7 @@ int io_out(struct io_file *f,int pos,const void *o,int len) {
 		assert(pos >= f->map_offset);
 		if (pos >= f->buffer_offset && unbuffer(f))
 			return -1;
-		if (end > f->map_offset + f->map_size)
+		if (end > (int)(f->map_offset + f->map_size))
 			end = f->map_offset + f->map_size;
 		if (end > f->file_size)
 			end = f->file_size;
@@ -165,7 +165,7 @@ int io_out(struct io_file *f,int pos,const void *o,int len) {
 	}
 	else {
 		if (pos < f->buffer_offset
-		||  pos > f->buffer_offset + f->buffer_size) {
+		||  pos > (int)(f->buffer_offset + f->buffer_size)) {
 			if (unbuffer(f)) return -1;
 			if (lseek(f->fd,pos,SEEK_SET) == (off_t) -1) {
 				perror("lseek");
@@ -175,15 +175,15 @@ int io_out(struct io_file *f,int pos,const void *o,int len) {
 			assert(0 == f->buffer_size);
 			f->buffer_offset = pos;
 		}
-		else if (pos == f->buffer_offset + sizeof f->buffer)
+		else if (pos == (int)(f->buffer_offset + sizeof f->buffer))
 			if (unbuffer(f)) return -1;
 
 		assert(pos >= f->buffer_offset 
-                    && pos <= f->buffer_offset + f->buffer_size);
-		if (end > f->buffer_offset + sizeof f->buffer)
+                    && pos <= (int)(f->buffer_offset + f->buffer_size));
+		if (end > (int)(f->buffer_offset + sizeof f->buffer))
 			end = f->buffer_offset + sizeof f->buffer;
 		memcpy(&f->buffer[pos - f->buffer_offset],o,end - pos);
-		if (end - f->buffer_offset > f->buffer_size)
+		if ((int)(end - f->buffer_offset) > (int)f->buffer_size)
 			f->buffer_size = end - f->buffer_offset;
 	}
 
@@ -205,7 +205,7 @@ int io_in(struct io_file *f,int pos,void *i,int len) {
 		return -1;
 	}
 
-	if (end > f->map_offset + f->map_size)
+	if (end > (int)(f->map_offset + f->map_size))
 		end = f->map_offset + f->map_size;
 	if (end > f->file_size)
 		end = f->file_size;
