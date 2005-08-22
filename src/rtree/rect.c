@@ -64,7 +64,7 @@ void RTreeInitRect(struct Rect *R)
 | Return a rect whose first low side is higher than its opposite side -
 | interpreted as an undefined rect.
 -----------------------------------------------------------------------------*/
-struct Rect RTreeNullRect()
+struct Rect RTreeNullRect(void)
 {
 	struct Rect r;
 	register int i;

@@ -101,8 +101,8 @@ typedef int (*SearchHitCallback)(int id, void* arg);
 extern int RTreeSearch(struct Node*, struct Rect*, SearchHitCallback, void*);
 extern int RTreeInsertRect(struct Rect*, int, struct Node**, int depth);
 extern int RTreeDeleteRect(struct Rect*, int, struct Node**);
-extern struct Node * RTreeNewIndex();
-extern struct Node * RTreeNewNode();
+extern struct Node * RTreeNewIndex(void);
+extern struct Node * RTreeNewNode(void);
 extern void RTreeInitNode(struct Node*);
 extern void RTreeFreeNode(struct Node *);
 extern void RTreePrintNode(struct Node *, int);
@@ -110,7 +110,7 @@ extern void RTreeDestroyNode(struct Node*);
 extern void RTreeTabIn(int);
 extern struct Rect RTreeNodeCover(struct Node *);
 extern void RTreeInitRect(struct Rect*);
-extern struct Rect RTreeNullRect();
+extern struct Rect RTreeNullRect(void);
 extern RectReal RTreeRectArea(struct Rect*);
 extern RectReal RTreeRectSphericalVolume(struct Rect *R);
 extern RectReal RTreeRectVolume(struct Rect *R);
@@ -124,7 +124,7 @@ extern void RTreeSplitNode(struct Node*, struct Branch*, struct Node**);
 
 extern int RTreeSetNodeMax(int);
 extern int RTreeSetLeafMax(int);
-extern int RTreeGetNodeMax();
-extern int RTreeGetLeafMax();
+extern int RTreeGetNodeMax(void);
+extern int RTreeGetLeafMax(void);
 
 #endif /* _INDEX_ */

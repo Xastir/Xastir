@@ -41,7 +41,7 @@
 
 // Make a new index, empty.  Consists of a single node.
 //
-struct Node * RTreeNewIndex()
+struct Node * RTreeNewIndex(void)
 {
 	struct Node *x;
 	x = RTreeNewNode();
@@ -207,7 +207,7 @@ int RTreeInsertRect(struct Rect *R, int Tid, struct Node **Root, int Level)
 // Allocate space for a node in the list used in DeletRect to
 // store Nodes that are too empty.
 //
-static struct ListNode * RTreeNewListNode()
+static struct ListNode * RTreeNewListNode(void)
 {
 	return (struct ListNode *) malloc(sizeof(struct ListNode));
 	//return new ListNode;

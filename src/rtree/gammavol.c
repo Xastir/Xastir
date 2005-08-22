@@ -54,7 +54,7 @@ double sphere_volume(double dimension)
 }
 
 
-int main()
+int main(void)
 {
 	double dim=0, delta=1;
 	while(ABS(delta) > EP)

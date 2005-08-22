@@ -66,7 +66,7 @@ void RTreeInitNode(struct Node *N)
 
 // Make a new node and initialize to have all branch cells empty.
 //
-struct Node * RTreeNewNode()
+struct Node * RTreeNewNode(void)
 {
 	register struct Node *n;
 

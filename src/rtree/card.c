@@ -48,5 +48,5 @@ static int set_max(int *which, int new_max)
 
 int RTreeSetNodeMax(int new_max) { return set_max(&NODECARD, new_max); }
 int RTreeSetLeafMax(int new_max) { return set_max(&LEAFCARD, new_max); }
-int RTreeGetNodeMax() { return NODECARD; }
-int RTreeGetLeafMax() { return LEAFCARD; }
+int RTreeGetNodeMax(void) { return NODECARD; }
+int RTreeGetLeafMax(void) { return LEAFCARD; }
