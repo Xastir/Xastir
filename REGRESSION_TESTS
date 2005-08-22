@@ -28,7 +28,7 @@ echo "    TEST: No optional libraries..."
 --without-geotiff --without-gdal --without-pcre --without-dbfawk \
 --without-map-cache 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -43,7 +43,7 @@ rm regression.log
 (nice ./configure --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -57,7 +57,7 @@ echo "    TEST: --without-ax25..."
 rm regression.log
 (nice ./configure --without-ax25 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -71,7 +71,7 @@ echo "    TEST: --without-festival..."
 rm regression.log
 (nice ./configure --without-festival 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -85,7 +85,7 @@ echo "    TEST: --without-gpsman..."
 rm regression.log
 (nice ./configure --without-gpsman 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -99,7 +99,7 @@ echo "    TEST: --without-imagemagick..."
 rm regression.log
 (nice ./configure --without-imagemagick 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -113,7 +113,7 @@ echo "    TEST: --without-libproj..."
 rm regression.log
 (nice ./configure --without-libproj 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -127,7 +127,7 @@ echo "    TEST: --without-geotiff..."
 rm regression.log
 (nice ./configure --without-geotiff 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -141,7 +141,7 @@ echo "    TEST: --without-gdal..."
 rm regression.log
 (nice ./configure --without-gdal 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -155,7 +155,7 @@ echo "    TEST: --without-shapelib..."
 rm regression.log
 (nice ./configure --without-shapelib 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -169,7 +169,7 @@ echo "    TEST: --without-pcre..."
 rm regression.log
 (nice ./configure --without-pcre 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -183,7 +183,7 @@ echo "    TEST: --without-dbfawk..."
 rm regression.log
 (nice ./configure --without-dbfawk 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -197,7 +197,7 @@ echo "    TEST: --without-map-cache..."
 rm regression.log
 (nice ./configure --without-map-cache 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -211,7 +211,7 @@ echo "    TEST: --with-errorpopups..."
 rm regression.log
 (nice ./configure --with-errorpopups 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -225,7 +225,7 @@ echo "    TEST: --with-libgc..."
 rm regression.log
 (nice ./configure --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -239,7 +239,7 @@ echo "    TEST: --with-profiling..."
 rm regression.log
 (nice ./configure --with-profiling 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -253,7 +253,7 @@ echo "    TEST: --with-rtree..."
 rm regression.log
 (nice ./configure --with-rtree 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -269,7 +269,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -285,7 +285,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -301,7 +301,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -317,7 +317,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -333,7 +333,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -349,7 +349,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -365,7 +365,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -381,7 +381,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -397,7 +397,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -413,7 +413,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -429,7 +429,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -445,7 +445,7 @@ rm regression.log
 --with-rtree --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -461,7 +461,7 @@ rm regression.log
 --with-errorpopups --with-rtree --with-profiling \
 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -477,7 +477,7 @@ rm regression.log
 --with-errorpopups --with-rtree \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -493,7 +493,7 @@ rm regression.log
 --with-errorpopups --with-profiling \
 --with-libgc 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
@@ -509,7 +509,7 @@ echo "    TEST: Default configure..."
 rm regression.log
 (nice ./configure 2>&1) >> regression.log
 echo -n "        "
-cat summary.log
+head -1 summary.log
 (nice make clean 2>&1) >/dev/null
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
