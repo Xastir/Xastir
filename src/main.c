@@ -8917,7 +8917,7 @@ void Save_CAD_Objects_to_file(void) {
 
         // Write out the main object info:
         fprintf(f,"\nCAD_Object\n");
-        fprintf(f,"creation_time:   %lu\n",object_ptr->creation_time);
+        fprintf(f,"creation_time:   %lu\n",(unsigned long)object_ptr->creation_time);
         fprintf(f,"line_color:      %d\n",object_ptr->line_color);
         fprintf(f,"line_type:       %d\n",object_ptr->line_type);
         fprintf(f,"line_width:      %d\n",object_ptr->line_width);
@@ -11580,7 +11580,7 @@ void quit(int sig) {
 
 #ifdef USE_PID_FILE_CHECK
 
-void pid_file_check(){
+void pid_file_check(void){
 
     int killret=0; 
     int other_pid=0;
