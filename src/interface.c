@@ -1951,6 +1951,8 @@ int OpenTrac_decode_position(unsigned char *element,
 int OpenTrac_decode_timestamp(unsigned char *element,
                               int           element_len,
                               long          *rawtime) {
+    time_t rawtime_t;
+
 
     *rawtime = 0;
 
@@ -1959,7 +1961,9 @@ int OpenTrac_decode_timestamp(unsigned char *element,
 
     *rawtime = fetch32bits(element);
 
-    fprintf(stderr, "Time: %s", ctime(rawtime));
+    rawtime_t = (time_t)rawtime;
+
+    fprintf(stderr, "Time: %s", ctime(&rawtime_t));
 
     return 0;
 }
