@@ -876,7 +876,7 @@ void msg_record_interval_tries(char *to_call_sign,
         if (debug_level & 1) {
             fprintf(stderr,
                 "Found in msg db, updating interval field %ld -> 1, seq %s, record %ld\n",
-                msg_data[msg_index[record]].interval,
+                (long)msg_data[msg_index[record]].interval,
                 seq,
                 record);
         }
@@ -1394,7 +1394,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                         sizeof(interval_str),
                                         ">%d @ %ldsecs",
                                         msg_data[msg_index[j]].tries + 1,
-                                        msg_data[msg_index[j]].interval);
+                                        (long)msg_data[msg_index[j]].interval);
 
                                     // Don't highlight the interval
                                     // value
@@ -3133,7 +3133,7 @@ void display_file(Widget w) {
                                 if (debug_level & 256) {
                                     fprintf(stderr,"Drawing Solid trail for %s, secs old: %ld\n",
                                         p_station->call_sign,
-                                        sec_now() - temp_sec_heard);
+                                        (long)(sec_now() - temp_sec_heard) );
                                 }
                                 draw_trail(w,p_station,1);
                             }
@@ -3141,7 +3141,7 @@ void display_file(Widget w) {
                                 if (debug_level & 256) {
                                     fprintf(stderr,"Drawing trail for %s, secs old: %ld\n",
                                         p_station->call_sign,
-                                        sec_now() - temp_sec_heard);
+                                        (long)(sec_now() - temp_sec_heard) );
                                 }
                                 draw_trail(w,p_station,0);
                             }
