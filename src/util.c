@@ -1402,17 +1402,17 @@ time_t time_from_aprsstring(char *aprs_time) {
             alert_time.tm_min);
 
         a_time = mktime(&alert_time);
-        fprintf(stderr,"Alert: %ld\n", a_time);
+        fprintf(stderr,"Alert: %ld\n", (long)a_time);
 
         now_time = sec_now();
-        fprintf(stderr,"  Now: %ld\n", now_time);
+        fprintf(stderr,"  Now: %ld\n", (long)now_time);
 
         diff = now_time - a_time;
 
         if (diff >= 0)
-            fprintf(stderr,"Expired by %ld minutes\n", diff/60);
+            fprintf(stderr,"Expired by %ld minutes\n", (long)(diff/60) );
         else
-            fprintf(stderr,"%ld minutes until expiration\n", (-diff)/60);
+            fprintf(stderr,"%ld minutes until expiration\n", (long)((-diff)/60) );
 
         if (alert_time.tm_isdst > 0)
             fprintf(stderr,"Daylight savings time is in effect\n");
