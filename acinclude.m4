@@ -51,7 +51,6 @@ AC_MSG_RESULT([done])
 # add compiler flags
 AC_DEFUN([XASTIR_COMPILER_FLAGS],
 [
-AC_MSG_CHECKING([for compiler flags])
 # notes -- gcc only! HPUX doesn't work for this so no "-Ae +O2"
 # everybody likes "-g -O2", right?
 
@@ -77,14 +76,19 @@ done
 rm -f gccflags
 
 # add any other flags that aren't added earlier
-# Can't add "-Wno-unused-parameter" as newer compilers don't like
-# it.  For that reason we'll skip the "-W" for now too as we just
-# get reams of "unused parameter" messages otherwise.
+# Can't add "-Wno-unused-parameter" as older compilers don't like
+# it.  
 #
-#for f in -W -Wall -Wpointer-arith -Wstrict-prototypes; do
-for f in -Wall -Wpointer-arith -Wstrict-prototypes; do
+for f in -W -Wall -Wpointer-arith -Wstrict-prototypes; do
 echo $CFLAGS | grep -- $f - > /dev/null || CFLAGS="$CFLAGS $f"
 done
+
+# Now check whether to use -Wno-unused-parameter (gcc 3) or -Wno-unused
+AC_MSG_CHECKING([whether compiler accepts -Wno-unused-parameter])
+save_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS -Wno-unused-parameter"
+AC_TRY_COMPILE([] ,[int i;],[AC_MSG_RESULT([yes])] ,
+[AC_MSG_RESULT([no, using -Wno-unused]); CFLAGS="$save_CFLAGS -Wno-unused"])
 
 # end gcc-specific checks
 fi
@@ -92,6 +96,7 @@ fi
 # add any pthread flags now
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 
+AC_MSG_CHECKING([for compiler flags])
 AC_MSG_RESULT(using $CFLAGS)
 ])
 
