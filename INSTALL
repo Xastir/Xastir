@@ -755,7 +755,7 @@ First Time Install:
       following instructions for either:
 
         cd gdal
-        ./configure --without-jasper --without-mysql 
+        ./configure --without-mysql 
         make
         su (root)
         make install
@@ -769,9 +769,9 @@ First Time Install:
       Here's another GDAL configure command which forces GDAL to use its own
       internal libraries for some of the formats:
 
-      ./configure --without-jasper --without-mysql --with-libz=internal \
-      --with-png=internal --with-jpeg=internal --with-geotiff=internal \
-      --with-libtiff=internal --with-gif=internal 
+      ./configure --without-mysql --with-libz=internal --with-png=internal \
+      --with-jpeg=internal --with-geotiff=internal --with-libtiff=internal \
+      --with-gif=internal 
 
       Also note that as of Dec 11, 2003, a major memory leak bug in the OGR
       code was fixed, having to do with Shapefiles.  Please run a version of
