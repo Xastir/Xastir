@@ -4997,7 +4997,7 @@ int index_retrieve(char *filename,
 // in the in-memory linked list for which the "accessed" variable is
 // 0 or filename is empty.
 //
-void index_save_to_file() {
+void index_save_to_file(void) {
     FILE *f;
     map_index_record *current;
     map_index_record *last;

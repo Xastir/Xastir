@@ -447,8 +447,8 @@ static void find_zero_position_bulletins(void) {
 // that are newer than first_new_bulletin_time and fit within our
 // range.  If any found, it updates the Bulletins dialog.
 time_t last_bulletin_check = (time_t)0l;
-void check_for_new_bulletins() {
 
+void check_for_new_bulletins(void) {
 
     // Check every 15 seconds max
     if ( (last_bulletin_check + 15) > sec_now() ) {

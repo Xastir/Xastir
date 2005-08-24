@@ -146,7 +146,7 @@
 
 
 
-void map_gdal_init() {
+void map_gdal_init(void) {
 
 #ifdef HAVE_LIBGDAL
 
