@@ -31107,7 +31107,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
     last_popup_x = 0;
     last_popup_y = 0;
-    trap_segfault = 0;
+    trap_segfault = 1;
     deselect_maps_on_startup = 0;
     debug_level = 0;
     install_colormap = 0;
@@ -31148,7 +31148,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
             case 't':
                 fprintf(stderr,"Internal SIGSEGV handler disabled\n");
-                trap_segfault = (int)TRUE;
+                trap_segfault = 0;
                 break;
 
             case 'v':
@@ -31259,7 +31259,7 @@ int main(int argc, char *argv[], char *envp[]) {
 #endif  // OLD_PTHREADS
 
     (void) signal(SIGPIPE,SIG_IGN);                     // set sigpipe signal to ignore
-    if (!trap_segfault)
+    if (trap_segfault)
         (void) signal(SIGSEGV,segfault);                // set segfault signal to check
 
     load_data_or_default(); // load program parameters or set to default values
