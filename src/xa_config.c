@@ -1725,23 +1725,23 @@ void load_data_or_default(void) {
         snapshots_enabled = 0;
 
     /* WX ALERTS */
-    if (!get_long ("WX_ALERTS_REFRESH_TIME", (time_t *)&WX_ALERTS_REFRESH_TIME, 10l, 86400l, 60l))
+    if (!get_long ("WX_ALERTS_REFRESH_TIME", &WX_ALERTS_REFRESH_TIME, 10l, 86400l, 60l))
         WX_ALERTS_REFRESH_TIME = (time_t)60l;
 
     /* gps */
-    if (!get_long ("GPS_TIME", (time_t *)&gps_time, 1l, 86400l, 60l))
+    if (!get_long ("GPS_TIME", &gps_time, 1l, 86400l, 60l))
         gps_time = (time_t)60l;
 
     /* POSIT RATE */
-    if (!get_long ("POSIT_RATE", (time_t *)&POSIT_rate, 1l, 86400l, 1800l))
+    if (!get_long ("POSIT_RATE", &POSIT_rate, 1l, 86400l, 1800l))
         POSIT_rate = (time_t)30*60l;
 
     /* OBJECT RATE */
-    if (!get_long ("OBJECT_RATE", (time_t *)&OBJECT_rate, 1l, 86400l, 1800l))
+    if (!get_long ("OBJECT_RATE", &OBJECT_rate, 1l, 86400l, 1800l))
         OBJECT_rate = (time_t)30*60l;
 
     /* UPDATE DR RATE */
-    if (!get_long ("UPDATE_DR_RATE", (time_t *)&update_DR_rate, 1l, 86400l, 30l))
+    if (!get_long ("UPDATE_DR_RATE", &update_DR_rate, 1l, 86400l, 30l))
         update_DR_rate = (time_t)30l;
 
     /* station broadcast type */
@@ -1893,13 +1893,13 @@ void load_data_or_default(void) {
         ATV_screen_ID = 0; 
  
     /* defaults */
-    if (!get_long ("DEFAULT_STATION_OLD", (time_t *)&sec_old, 1l, 604800l, 4800l))
+    if (!get_long ("DEFAULT_STATION_OLD", &sec_old, 1l, 604800l, 4800l))
         sec_old = (time_t)4800l;
 
-    if (!get_long ("DEFAULT_STATION_CLEAR", (time_t *)&sec_clear, 1l, 604800l, 43200l))
+    if (!get_long ("DEFAULT_STATION_CLEAR", &sec_clear, 1l, 604800l, 43200l))
         sec_clear = (time_t)43200l;
 
-    if (!get_long("DEFAULT_STATION_REMOVE", (time_t *)&sec_remove, 1l, 604800*2, sec_clear*2)) {
+    if (!get_long("DEFAULT_STATION_REMOVE", &sec_remove, 1l, 604800*2, sec_clear*2)) {
         sec_remove = sec_clear*2;
     // In the interests of keeping the memory used by Xastir down, I'm
     // commenting out the below lines.  When hooked to one or more internet
