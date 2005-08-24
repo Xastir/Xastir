@@ -56,11 +56,11 @@ typedef sig_t sighandler_t;
 
 
 #ifndef __LCLINT__
-  #ifndef sigjmp_buf
+  #ifndef HAVE_SIGJMP_BUF
     jmp_buf ret_place;
-  #else // sigjmp_buf
+  #else // HAVE_SIGJMP_BUF
     static  sigjmp_buf ret_place;       /* Jump address if alarm */
-  #endif    // sigjmp_buf
+  #endif    // HAVE_SIGJMP_BUF
 #endif // __LCLINT__
 
 
