@@ -245,10 +245,7 @@ else
                     [use_gdal="yes"
                      LIBS="-lgdal $LIBS"
                      AC_DEFINE(HAVE_LIBGDAL, , 
-                      [Define to 1 if you have the `gdal' library (-lgdal).])],
-                    [CPPFLAGS=${save_cppflags}
-                     LDFLAGS=${save_ldflags}
-                     LIBS=${save_libs}])])
+                      [Define to 1 if you have the `gdal' library (-lgdal).])],)])
 fi
 ]
 )
@@ -700,7 +697,6 @@ fi
 ])
 
 # From Cyrus imap distribution (KB3EGH)
-dnl $Id$
 
 dnl These are the Cyrus Berkeley DB macros.  In an ideal world these would be
 dnl identical to the above.
