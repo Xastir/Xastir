@@ -213,6 +213,8 @@ fi
 # explore alternate paths.
 AC_DEFUN([XASTIR_CHECK_GDAL],
 [
+use_gdal=no
+#
 # Important: DO NOT use "use_gdal" as the variable here, because AC_CHECK_PROG
 # will do nothing if the variable is already set!  
 AC_CHECK_PROG(found_gdal_config, [gdal-config], yes, no)
@@ -230,22 +232,23 @@ if test "${found_gdal_config}" = "yes"; then
 # will put it into LIBS for us.
    LDFLAGS="$LDFLAGS `${GDAL_BIN} --libs | sed -e s/-lgdal//`"
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
-                    [use_gdal=yes;
+                    [use_gdal="yes"
                      LIBS="-lgdal $LIBS"
                      AC_DEFINE(HAVE_LIBGDAL, , 
                       [Define to 1 if you have the `gdal' library (-lgdal).])],
-                    [use_gdal=no;
-                     CPPFLAGS=${save_cppflags};
-                     LDFLAGS=${save_ldflags};
+                    [CPPFLAGS=${save_cppflags}
+                     LDFLAGS=${save_ldflags}
                      LIBS=${save_libs}])])
 else
    AC_MSG_WARN([*** Cannot find gdal-config:  Checking standard locations ***])
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
-                    [use_gdal=yes;
+                    [use_gdal="yes"
                      LIBS="-lgdal $LIBS"
                      AC_DEFINE(HAVE_LIBGDAL, , 
                       [Define to 1 if you have the `gdal' library (-lgdal).])],
-                    [use_gdal=no])])
+                    [CPPFLAGS=${save_cppflags}
+                     LDFLAGS=${save_ldflags}
+                     LIBS=${save_libs}])])
 fi
 ]
 )
