@@ -201,22 +201,22 @@ int get_char(char *option, char *value) {
 
 
 // Snags an int and checks whether it is within the correct range.
-// If not, it assigns a default value.
-int get_int(char *option, int *value, int low, int high, int def) {
+// If not, it assigns a default value.  Returns the value.
+int get_int(char *option, int low, int high, int def) {
     char value_o[MAX_VALUE];
     int ret;
 
     ret = get_string (option, value_o, sizeof(value_o));
-    if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) )
-        *value = atoi (value_o);
+    if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) ) {
+        return(atoi (value_o));
+    }
     else {
         fprintf(stderr,"Found out-of-range or non-existent value (%d) for %s in config file, changing to %d\n",
             atoi(value_o),
             option,
             def);
-        *value = def;
+        return(def);
     }
-    return (ret);
 }
 
 
@@ -224,22 +224,22 @@ int get_int(char *option, int *value, int low, int high, int def) {
 
 
 // Snags a long and checks whether it is within the correct range.
-// If not, it assigns a default value.
-int get_long(char *option, long *value, long low, long high, long def) {
+// If not, it assigns a default value.  Returns the value.
+long get_long(char *option, long low, long high, long def) {
     char value_o[MAX_VALUE];
     int ret;
 
     ret = get_string (option, value_o, sizeof(value_o));
-    if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) )
-        *value = atol (value_o);
+    if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) ) {
+        return(atol(value_o));
+    }
     else {
         fprintf(stderr,"Found out-of-range or non-existent value (%ld) for %s in config file, changing to %ld\n",
             atol(value_o),
             option,
             def);
-        *value = def;
+        return(def);
     }
-    return (ret);
 }
 
 
@@ -1032,8 +1032,7 @@ void load_data_or_default(void) {
     convert_lon_l2s (temp, my_long, sizeof(my_long), CONVERT_HP_NOSP);
 
 
-    if (!get_int ("STATION_TRANSMIT_AMB", &position_amb_chars, 0, 4, 0))
-        position_amb_chars = 0;
+    position_amb_chars = get_int ("STATION_TRANSMIT_AMB", 0, 4, 0);
 
     if (!get_char ("STATION_GROUP", &my_group))
         my_group = '/';
@@ -1051,24 +1050,11 @@ void load_data_or_default(void) {
         sprintf (my_comment, "XASTIR-%s", XASTIR_SYSTEM);
 
     /* default values */
-    if (!get_long ("SCREEN_WIDTH", &screen_width, 100l, 10000l, 640l))
-        screen_width = 640;
+    screen_width = get_long ("SCREEN_WIDTH", 100l, 10000l, 640l);
+    screen_height = get_long ("SCREEN_HEIGHT", 40l, 10000l, 480l);
 
-    if (screen_width < 100)
-        screen_width = 100;
-
-    if (!get_long ("SCREEN_HEIGHT", &screen_height, 40l, 10000l, 480l))
-        screen_height = 480;
-
-    if (screen_height < 40)
-        screen_height = 40;
-
-    if (!get_long ("SCREEN_LAT", &mid_y_lat_offset, 0l, 64800000l, 32400000l))
-        mid_y_lat_offset = 32400000l;
-
-    if (!get_long ("SCREEN_LONG", &mid_x_long_offset, 0l, 129600000l, 64800000l))
-        mid_x_long_offset = 64800000l;
-
+    mid_y_lat_offset = get_long ("SCREEN_LAT", 0l, 64800000l, 32400000l);
+    mid_x_long_offset = get_long ("SCREEN_LONG", 0l, 129600000l, 64800000l);
 
     if (!get_string("RELAY_DIGIPEAT_CALLS", relay_digipeater_calls, sizeof(relay_digipeater_calls)))
         sprintf (relay_digipeater_calls, "WIDE1-1");
@@ -1077,19 +1063,15 @@ void load_data_or_default(void) {
     // And take out all spaces
     (void)remove_all_spaces(relay_digipeater_calls);
 
+    coordinate_system = get_int ("COORDINATE_SYSTEM", 0, 5, USE_DDMMMM);
 
-    if (!get_int ("COORDINATE_SYSTEM", &coordinate_system, 0, 5, USE_DDMMMM))
-        coordinate_system = USE_DDMMMM;
+    scale_y = get_long ("SCREEN_ZOOM", 1l, 327680l, 327680l);
 
-    if (!get_long ("SCREEN_ZOOM", &scale_y, 1l, 327680l, 327680l))
-        scale_y = 327680;
     scale_x = get_x_scale(mid_x_long_offset,mid_y_lat_offset,scale_y);
 
-    if (!get_int ("MAP_BGCOLOR", &map_background_color, 0, 11, 0))
-        map_background_color = 0;
+    map_background_color = get_int ("MAP_BGCOLOR", 0, 11, 0);
 
-    if (!get_int ( "MAP_DRAW_FILLED_COLORS", &map_color_fill, 0, 1, 1) )
-        map_color_fill = 1;
+    map_color_fill = get_int ( "MAP_DRAW_FILLED_COLORS", 0, 1, 1);
 
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_IMAGEMAGICK)
@@ -1108,25 +1090,20 @@ void load_data_or_default(void) {
         }
 #endif  // NO_GRAPHICS
 
-    if (!get_int ("MAP_LETTERSTYLE", &letter_style, 0, 2, 1))
-        letter_style = 1;
+    letter_style = get_int ("MAP_LETTERSTYLE", 0, 2, 1);
 
-    if (!get_int ("MAP_ICONOUTLINESTYLE", &icon_outline_style, 0, 3, 0))
-        icon_outline_style = 0;
+    icon_outline_style = get_int ("MAP_ICONOUTLINESTYLE", 0, 3, 0);
 
-    if (!get_int ("MAP_WX_ALERT_STYLE", &wx_alert_style, 0, 1, 1))
-        wx_alert_style = 1;
+    wx_alert_style = get_int ("MAP_WX_ALERT_STYLE", 0, 1, 1);
 
     if (!get_string("ALTNET_CALL", altnet_call, sizeof(altnet_call)))
         xastir_snprintf(altnet_call,
             sizeof(altnet_call),
             "XASTIR");
 
-    if (!get_int("ALTNET", &altnet, 0, 1, 0))
-        altnet=0;
+    altnet = get_int("ALTNET", 0, 1, 0);
 
-    if (!get_int("SKIP_DUPE_CHECK", &skip_dupe_checking, 0, 1, 0))
-        skip_dupe_checking=0;
+    skip_dupe_checking = get_int("SKIP_DUPE_CHECK", 0, 1, 0);
 
     if (!get_string ("AUTO_MAP_DIR", AUTO_MAP_DIR, sizeof(AUTO_MAP_DIR)))
         xastir_snprintf(AUTO_MAP_DIR,
@@ -1188,27 +1165,20 @@ void load_data_or_default(void) {
             "%s",
             get_data_base_dir ("GNIS/geocode"));
 
-    if (!get_int ("SHOW_FIND_TARGET", &show_destination_mark, 0, 1, 1))
-        show_destination_mark = 1;
+    show_destination_mark = get_int ("SHOW_FIND_TARGET", 0, 1, 1);
 
     /* maps */
-    if (!get_int ("MAPS_LONG_LAT_GRID", &long_lat_grid, 0, 1, 1))
-        long_lat_grid = 1;
+    long_lat_grid = get_int ("MAPS_LONG_LAT_GRID", 0, 1, 1);
 
-    if (!get_int ("MAPS_LEVELS", &map_color_levels, 0, 1, 0))
-        map_color_levels = 0;
+    map_color_levels = get_int ("MAPS_LEVELS", 0, 1, 0);
 
-    if (!get_int ("MAPS_LABELS", &map_labels, 0, 1, 1))
-        map_labels = 1;
+    map_labels = get_int ("MAPS_LABELS", 0, 1, 1);
 
-    if (!get_int ("MAPS_AUTO_MAPS", &map_auto_maps, 0, 1, 0))
-        map_auto_maps = 0;
+    map_auto_maps = get_int ("MAPS_AUTO_MAPS", 0, 1, 0);
 
-    if (!get_int ("MAPS_AUTO_MAPS_SKIP_RASTER", &auto_maps_skip_raster, 0, 1, 0))
-        auto_maps_skip_raster = 0;
+    auto_maps_skip_raster = get_int ("MAPS_AUTO_MAPS_SKIP_RASTER", 0, 1, 0);
 
-    if (!get_int ("MAPS_INDEX_ON_STARTUP", &index_maps_on_startup, 0, 1, 1))
-      index_maps_on_startup = 1;
+    index_maps_on_startup = get_int ("MAPS_INDEX_ON_STARTUP", 0, 1, 1);
 
     if (!get_string ("MAPS_LABEL_FONT_TINY", rotated_label_fontname[FONT_TINY], sizeof(rotated_label_fontname[FONT_TINY])))
         xastir_snprintf(rotated_label_fontname[FONT_TINY],
@@ -1242,200 +1212,94 @@ void load_data_or_default(void) {
 
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
-    if (!get_int ("NET_MAP_TIMEOUT", &net_map_timeout, 10, 300, 120))
-        net_map_timeout = 90;
+    net_map_timeout = get_int ("NET_MAP_TIMEOUT", 10, 300, 90);
 
-    if (!get_int ("TIGERMAP_SHOW_GRID", &tiger_show_grid, 0, 1, 0))
-        tiger_show_grid = 0;
-
-    if (!get_int ("TIGERMAP_SHOW_COUNTIES", &tiger_show_counties, 0, 1, 1))
-        tiger_show_counties = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_CITIES", &tiger_show_cities, 0, 1, 1))
-        tiger_show_cities = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_PLACES", &tiger_show_places, 0, 1, 1))
-        tiger_show_places = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_MAJROADS", &tiger_show_majroads, 0, 1, 1))
-        tiger_show_majroads = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_STREETS", &tiger_show_streets, 0, 1, 0))
-        tiger_show_streets = 0;
-
-    if (!get_int ("TIGERMAP_SHOW_RAILROAD", &tiger_show_railroad, 0, 1, 1))
-        tiger_show_railroad = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_STATES", &tiger_show_states, 0, 1, 0))
-        tiger_show_states = 0;
-
-    if (!get_int ("TIGERMAP_SHOW_INTERSTATE", &tiger_show_interstate, 0, 1, 1))
-        tiger_show_interstate = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_USHWY", &tiger_show_ushwy, 0, 1, 1))
-        tiger_show_ushwy = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_STATEHWY", &tiger_show_statehwy, 0, 1, 1))
-        tiger_show_statehwy = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_WATER", &tiger_show_water, 0, 1, 1))
-        tiger_show_water = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_LAKES", &tiger_show_lakes, 0, 1, 1))
-        tiger_show_lakes = 1;
-
-    if (!get_int ("TIGERMAP_SHOW_MISC", &tiger_show_misc, 0, 1, 1))
-        tiger_show_misc = 1;
+    tiger_show_grid = get_int ("TIGERMAP_SHOW_GRID", 0, 1, 0);
+    tiger_show_counties = get_int ("TIGERMAP_SHOW_COUNTIES", 0, 1, 1);
+    tiger_show_cities = get_int ("TIGERMAP_SHOW_CITIES", 0, 1, 1);
+    tiger_show_places = get_int ("TIGERMAP_SHOW_PLACES", 0, 1, 1);
+    tiger_show_majroads = get_int ("TIGERMAP_SHOW_MAJROADS", 0, 1, 1);
+    tiger_show_streets = get_int ("TIGERMAP_SHOW_STREETS", 0, 1, 0);
+    tiger_show_railroad = get_int ("TIGERMAP_SHOW_RAILROAD", 0, 1, 1);
+    tiger_show_states = get_int ("TIGERMAP_SHOW_STATES", 0, 1, 0);
+    tiger_show_interstate = get_int ("TIGERMAP_SHOW_INTERSTATE", 0, 1, 1);
+    tiger_show_ushwy = get_int ("TIGERMAP_SHOW_USHWY", 0, 1, 1);
+    tiger_show_statehwy = get_int ("TIGERMAP_SHOW_STATEHWY", 0, 1, 1);
+    tiger_show_water = get_int ("TIGERMAP_SHOW_WATER", 0, 1, 1);
+    tiger_show_lakes = get_int ("TIGERMAP_SHOW_LAKES", 0, 1, 1);
+    tiger_show_misc = get_int ("TIGERMAP_SHOW_MISC", 0, 1, 1);
 #endif //HAVE_IMAGEMAGICK
 
 #ifdef HAVE_LIBGEOTIFF
-    if (!get_int ("DRG_XOR_COLORS", &DRG_XOR_colors, 0, 1, 0))
-        DRG_XOR_colors = 0;
-
-    if (!get_int ("DRG_SHOW_COLORS_0", &DRG_show_colors[0], 0, 1, 1))
-        DRG_show_colors[0] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_1", &DRG_show_colors[1], 0, 1, 1))
-        DRG_show_colors[1] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_2", &DRG_show_colors[2], 0, 1, 1))
-        DRG_show_colors[2] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_3", &DRG_show_colors[3], 0, 1, 1))
-        DRG_show_colors[3] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_4", &DRG_show_colors[4], 0, 1, 1))
-        DRG_show_colors[4] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_5", &DRG_show_colors[5], 0, 1, 1))
-        DRG_show_colors[5] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_6", &DRG_show_colors[6], 0, 1, 1))
-        DRG_show_colors[6] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_7", &DRG_show_colors[7], 0, 1, 1))
-        DRG_show_colors[7] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_8", &DRG_show_colors[8], 0, 1, 1))
-        DRG_show_colors[8] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_9", &DRG_show_colors[9], 0, 1, 1))
-        DRG_show_colors[9] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_10", &DRG_show_colors[10], 0, 1, 1))
-        DRG_show_colors[10] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_11", &DRG_show_colors[11], 0, 1, 1))
-        DRG_show_colors[11] = 1;
-
-    if (!get_int ("DRG_SHOW_COLORS_12", &DRG_show_colors[12], 0, 1, 1))
-        DRG_show_colors[12] = 1;
+    DRG_XOR_colors = get_int ("DRG_XOR_COLORS", 0, 1, 0);
+    DRG_show_colors[0] = get_int ("DRG_SHOW_COLORS_0", 0, 1, 1);
+    DRG_show_colors[1] = get_int ("DRG_SHOW_COLORS_1", 0, 1, 1);
+    DRG_show_colors[2] = get_int ("DRG_SHOW_COLORS_2", 0, 1, 1);
+    DRG_show_colors[3] = get_int ("DRG_SHOW_COLORS_3", 0, 1, 1);
+    DRG_show_colors[4] = get_int ("DRG_SHOW_COLORS_4", 0, 1, 1);
+    DRG_show_colors[5] = get_int ("DRG_SHOW_COLORS_5", 0, 1, 1);
+    DRG_show_colors[6] = get_int ("DRG_SHOW_COLORS_6", 0, 1, 1);
+    DRG_show_colors[7] = get_int ("DRG_SHOW_COLORS_7", 0, 1, 1);
+    DRG_show_colors[8] = get_int ("DRG_SHOW_COLORS_8", 0, 1, 1);
+    DRG_show_colors[9] = get_int ("DRG_SHOW_COLORS_9", 0, 1, 1);
+    DRG_show_colors[10] = get_int ("DRG_SHOW_COLORS_10", 0, 1, 1);
+    DRG_show_colors[11] = get_int ("DRG_SHOW_COLORS_11", 0, 1, 1);
+    DRG_show_colors[12] = get_int ("DRG_SHOW_COLORS_12", 0, 1, 1);
 #endif  // HAVE_LIBGEOTIFF
 
     // filter values
     // NOT SAVED: Select_.none
-    if (!get_int ("DISPLAY_MY_STATION", &Select_.mine, 0, 1, 1))
-        Select_.mine = 1;
-    if (!get_int ("DISPLAY_TNC_STATIONS", &Select_.tnc, 0, 1, 1))
-        Select_.tnc = 1;
-    if (!get_int ("DISPLAY_TNC_DIRECT_STATIONS", &Select_.direct, 0, 1, 1))
-        Select_.direct = 1;
-    if (!get_int ("DISPLAY_TNC_VIADIGI_STATIONS", &Select_.via_digi, 0, 1, 1))
-        Select_.via_digi = 1;
-    if (!get_int ("DISPLAY_NET_STATIONS", &Select_.net, 0, 1, 1))
-        Select_.net = 1;
-    if (!get_int ("DISPLAY_TACTICAL_STATIONS", &Select_.tactical, 0, 1, 0))
-        Select_.tactical = 0;
-    if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 0))
-        Select_.old_data = 0;
-    if (!get_int ("DISPLAY_STATIONS", &Select_.stations, 0, 1, 1))
-        Select_.stations = 1;
-    if (!get_int ("DISPLAY_FIXED_STATIONS", &Select_.fixed_stations, 0, 1, 1))
-        Select_.fixed_stations = 1;
-    if (!get_int ("DISPLAY_MOVING_STATIONS", &Select_.moving_stations, 0, 1, 1))
-        Select_.moving_stations = 1;
-    if (!get_int ("DISPLAY_WEATHER_STATIONS", &Select_.weather_stations, 0, 1, 1))
-        Select_.weather_stations = 1;
-    if (!get_int ("DISPLAY_CWOP_WX_STATIONS", &Select_.CWOP_wx_stations, 0, 1, 1))
-        Select_.CWOP_wx_stations = 1;
-    if (!get_int ("DISPLAY_OBJECTS", &Select_.objects, 0, 1, 1))
-        Select_.objects = 1;
-    if (!get_int ("DISPLAY_STATION_WX_OBJ", &Select_.weather_objects, 0, 1, 1))
-        Select_.weather_objects = 1;
-    if (!get_int ("DISPLAY_WATER_GAGE_OBJ", &Select_.gauge_objects, 0, 1, 1))
-        Select_.gauge_objects = 1;
-    if (!get_int ("DISPLAY_OTHER_OBJECTS", &Select_.other_objects, 0, 1, 1))
-        Select_.other_objects = 1;
+    Select_.mine = get_int ("DISPLAY_MY_STATION", 0, 1, 1);
+    Select_.tnc = get_int ("DISPLAY_TNC_STATIONS", 0, 1, 1);
+    Select_.direct = get_int ("DISPLAY_TNC_DIRECT_STATIONS", 0, 1, 1);
+    Select_.via_digi = get_int ("DISPLAY_TNC_VIADIGI_STATIONS", 0, 1, 1);
+    Select_.net = get_int ("DISPLAY_NET_STATIONS", 0, 1, 1);
+    Select_.tactical = get_int ("DISPLAY_TACTICAL_STATIONS", 0, 1, 0);
+    Select_.old_data = get_int ("DISPLAY_OLD_STATION_DATA", 0, 1, 0);
+    Select_.stations = get_int ("DISPLAY_STATIONS", 0, 1, 1);
+    Select_.fixed_stations = get_int ("DISPLAY_FIXED_STATIONS", 0, 1, 1);
+    Select_.moving_stations = get_int ("DISPLAY_MOVING_STATIONS", 0, 1, 1);
+    Select_.weather_stations = get_int ("DISPLAY_WEATHER_STATIONS", 0, 1, 1);
+    Select_.CWOP_wx_stations = get_int ("DISPLAY_CWOP_WX_STATIONS", 0, 1, 1);
+    Select_.objects = get_int ("DISPLAY_OBJECTS", 0, 1, 1);
+    Select_.weather_objects = get_int ("DISPLAY_STATION_WX_OBJ", 0, 1, 1);
+    Select_.gauge_objects = get_int ("DISPLAY_WATER_GAGE_OBJ", 0, 1, 1);
+    Select_.other_objects = get_int ("DISPLAY_OTHER_OBJECTS", 0, 1, 1);
 
     // display values
-    if (!get_int ("DISPLAY_CALLSIGN", &Display_.callsign, 0, 1, 1))
-        Display_.callsign = 1;
-    if (!get_int ("DISPLAY_LABEL_ALL_TRACKPOINTS", &Display_.label_all_trackpoints, 0, 1, 0))
-        Display_.label_all_trackpoints = 0;
-    if (!get_int ("DISPLAY_SYMBOL",        &Display_.symbol, 0, 1, 1))
-        Display_.symbol = 1;
-    if (!get_int ("DISPLAY_SYMBOL_ROTATE", &Display_.symbol_rotate, 0, 1, 1))
-        Display_.symbol_rotate = 1;
-    if (!get_int ("DISPLAY_STATION_PHG", &Display_.phg, 0, 1, 0))
-        Display_.phg = 0;
-    if (!get_int ("DISPLAY_DEFAULT_PHG", &Display_.default_phg, 0, 1, 0))
-        Display_.default_phg = 0;
-    if (!get_int ("DISPLAY_MOBILES_PHG", &Display_.phg_of_moving, 0, 1, 0))
-        Display_.phg_of_moving = 0;
-    if (!get_int ("DISPLAY_ALTITUDE", &Display_.altitude, 0, 1, 0))
-        Display_.altitude = 0;
-    if (!get_int ("DISPLAY_COURSE",      &Display_.course, 0, 1, 0))
-        Display_.course = 0;
-    if (!get_int ("DISPLAY_SPEED",       &Display_.speed, 0, 1, 0))
-        Display_.speed       = 0;
-    if (!get_int ("DISPLAY_SPEED_SHORT", &Display_.speed_short, 0, 1, 0))
-        Display_.speed_short = 0;
-    if (!get_int ("DISPLAY_DIST_COURSE", &Display_.dist_bearing, 0, 1, 0))
-        Display_.dist_bearing = 0;
-    if (!get_int ("DISPLAY_WEATHER",    &Display_.weather, 0, 1, 0))
-        Display_.weather = 0;
-    if (!get_int ("DISPLAY_STATION_WX", &Display_.weather_text, 0, 1, 0))
-        Display_.weather_text     = 0;
-    if (!get_int ("DISPLAY_TEMP_ONLY",  &Display_.temperature_only, 0, 1, 0))
-        Display_.temperature_only = 0;
-    if (!get_int ("DISPLAY_WIND_BARB",  &Display_.wind_barb, 0, 1, 0))
-        Display_.wind_barb = 0;
-    if (!get_int ("DISPLAY_STATION_TRAILS", &Display_.trail, 0, 1, 1))
-        Display_.trail = 1;
-    if (!get_int ("DISPLAY_LAST_HEARD", &Display_.last_heard, 0, 1, 0))
-        Display_.last_heard = 0;
-    if (!get_int ("DISPLAY_POSITION_AMB", &Display_.ambiguity, 0, 1, 0))
-        Display_.ambiguity = 0;
-    if (!get_int ("DISPLAY_DF_INFO", &Display_.df_data, 0, 1, 0))
-        Display_.df_data = 0;
-    if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &Display_.dr_data, 0, 1, 1))
-        Display_.dr_data = 1;
-    if (!get_int ("DISPLAY_DEAD_RECKONING_ARC", &Display_.dr_arc, 0, 1, 1))
-        Display_.dr_arc = 1;
-    if (!get_int ("DISPLAY_DEAD_RECKONING_COURSE", &Display_.dr_course, 0, 1, 1))
-        Display_.dr_course = 1;
-    if (!get_int ("DISPLAY_DEAD_RECKONING_SYMBOL", &Display_.dr_symbol, 0, 1, 1))
-        Display_.dr_symbol = 1;
+    Display_.callsign = get_int ("DISPLAY_CALLSIGN", 0, 1, 1);
+    Display_.label_all_trackpoints = get_int ("DISPLAY_LABEL_ALL_TRACKPOINTS", 0, 1, 0);
+    Display_.symbol = get_int ("DISPLAY_SYMBOL", 0, 1, 1);
+    Display_.symbol_rotate = get_int ("DISPLAY_SYMBOL_ROTATE", 0, 1, 1);
+    Display_.phg = get_int ("DISPLAY_STATION_PHG", 0, 1, 0);
+    Display_.default_phg = get_int ("DISPLAY_DEFAULT_PHG", 0, 1, 0);
+    Display_.phg_of_moving = get_int ("DISPLAY_MOBILES_PHG", 0, 1, 0);
+    Display_.altitude = get_int ("DISPLAY_ALTITUDE", 0, 1, 0);
+    Display_.course = get_int ("DISPLAY_COURSE", 0, 1, 0);
+    Display_.speed = get_int ("DISPLAY_SPEED", 0, 1, 0);
+    Display_.speed_short = get_int ("DISPLAY_SPEED_SHORT", 0, 1, 0);
+    Display_.dist_bearing = get_int ("DISPLAY_DIST_COURSE", 0, 1, 0);
+    Display_.weather = get_int ("DISPLAY_WEATHER", 0, 1, 0);
+    Display_.weather_text = get_int ("DISPLAY_STATION_WX", 0, 1, 0);
+    Display_.temperature_only = get_int ("DISPLAY_TEMP_ONLY", 0, 1, 0);
+    Display_.wind_barb = get_int ("DISPLAY_WIND_BARB", 0, 1, 0);
+    Display_.trail = get_int ("DISPLAY_STATION_TRAILS", 0, 1, 1);
+    Display_.last_heard = get_int ("DISPLAY_LAST_HEARD", 0, 1, 0);
+    Display_.ambiguity = get_int ("DISPLAY_POSITION_AMB", 0, 1, 0);
+    Display_.df_data = get_int ("DISPLAY_DF_INFO", 0, 1, 0);
+    Display_.dr_data = get_int ("DISPLAY_DEAD_RECKONING_INFO", 0, 1, 1);
+    Display_.dr_arc = get_int ("DISPLAY_DEAD_RECKONING_ARC", 0, 1, 1);
+    Display_.dr_course = get_int ("DISPLAY_DEAD_RECKONING_COURSE", 0, 1, 1);
+    Display_.dr_symbol = get_int ("DISPLAY_DEAD_RECKONING_SYMBOL", 0, 1, 1);
 
 
 
-    if (!get_int ("DISPLAY_UNITS_ENGLISH", &english_units, 0, 1, 0))
-        english_units = 0;
-
-    if (!get_int ("DISPLAY_DIST_BEAR_STATUS", &do_dbstatus, 0, 1, 0))
-        do_dbstatus = 0;
-
-    if (!get_int ("DISABLE_TRANSMIT", &transmit_disable, 0, 1, 0))
-        transmit_disable = 0;
-
-    if (!get_int ("DISABLE_POSIT_TX", &posit_tx_disable, 0, 1, 0))
-        posit_tx_disable = 0;
-
-    if (!get_int ("DISABLE_OBJECT_TX", &object_tx_disable, 0, 1, 0))
-        object_tx_disable = 0;
-
-    if (!get_int ("ENABLE_SERVER_PORT", &enable_server_port, 0, 1, 0))
-        enable_server_port = 0;
+    english_units = get_int ("DISPLAY_UNITS_ENGLISH", 0, 1, 0);
+    do_dbstatus = get_int ("DISPLAY_DIST_BEAR_STATUS", 0, 1, 0);
+    transmit_disable = get_int ("DISABLE_TRANSMIT", 0, 1, 0);
+    posit_tx_disable = get_int ("DISABLE_POSIT_TX", 0, 1, 0);
+    object_tx_disable = get_int ("DISABLE_OBJECT_TX", 0, 1, 0);
+    enable_server_port = get_int ("ENABLE_SERVER_PORT", 0, 1, 0);
 
 
     for (i = 0; i < MAX_IFACE_DEVICES; i++) {
@@ -1445,9 +1309,7 @@ void load_data_or_default(void) {
             "%s",
             name_temp);
         strncat (name, "TYPE", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].device_type,0,MAX_IFACE_DEVICE_TYPES,DEVICE_NONE)) {
-            devices[i].device_type = DEVICE_NONE;
-        }
+        devices[i].device_type = get_int (name, 0,MAX_IFACE_DEVICE_TYPES,DEVICE_NONE);
         xastir_snprintf(name,
             sizeof(name),
             "%s",
@@ -1591,93 +1453,81 @@ void load_data_or_default(void) {
             "%s",
             name_temp);
         strncat (name, "TNC_FULLDUPLEX", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].fullduplex, 0, 1, 0))
-            devices[i].fullduplex = 0;
+        devices[i].fullduplex = get_int (name, 0, 1, 0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "TNC_INIT_KISSMODE", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].init_kiss, 0, 1, 0))
-            devices[i].init_kiss = 0;
+        devices[i].init_kiss = get_int (name, 0, 1, 0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "SPEED", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].sp,0,230400,0))
-            devices[i].sp = 0;
+        devices[i].sp = get_int (name, 0,230400,0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "STYLE", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].style,0,2,0))
-            devices[i].style = 0;
+        devices[i].style = get_int (name, 0,2,0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "IGATE_OPTION", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].igate_options,0,2,0))
-            devices[i].igate_options = 0;
+        devices[i].igate_options = get_int (name, 0,2,0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "TXMT", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].transmit_data,0,1,0))
-            devices[i].transmit_data = 0;
+        devices[i].transmit_data = get_int (name, 0,1,0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "RELAY_DIGIPEAT", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].relay_digipeat,0,1,1))
-            devices[i].relay_digipeat = 1;
+        devices[i].relay_digipeat = get_int (name, 0,1,1);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "RECONN", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].reconnect,0,1,0))
-            devices[i].reconnect = 0;
+        devices[i].reconnect = get_int (name, 0,1,0);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "ONSTARTUP", sizeof(name) - strlen(name));
-        if (!get_int (name, &devices[i].connect_on_startup,0,1,0))
-            devices[i].connect_on_startup = 0;
+        devices[i].connect_on_startup = get_int (name, 0,1,0);
 
                 xastir_snprintf(name,
                     sizeof(name),
                     "%s",
                     name_temp);
                 strncat (name, "GPSRETR", sizeof(name) - strlen(name));
-                if (!get_int (name, &devices[i].gps_retrieve,0,255,DEFAULT_GPS_RETR))
-                        devices[i].gps_retrieve = DEFAULT_GPS_RETR;
+                devices[i].gps_retrieve = get_int (name, 0,255,DEFAULT_GPS_RETR);
 
                 xastir_snprintf(name,
                     sizeof(name),
                     "%s",
                     name_temp);
                 strncat (name, "SETTIME", sizeof(name) - strlen(name));
-                if (!get_int (name, &devices[i].set_time,0,1,0))
-                        devices[i].set_time = 0;
+                devices[i].set_time = get_int (name, 0,1,0);
     }
 
     /* TNC */
-    if (!get_int ("TNC_LOG_DATA", &log_tnc_data,0,1,0))
-        log_tnc_data = 0;
+    log_tnc_data = get_int ("TNC_LOG_DATA", 0,1,0);
 
     if (!get_string ("LOGFILE_TNC", LOGFILE_TNC, sizeof(LOGFILE_TNC)))
         xastir_snprintf(LOGFILE_TNC,
@@ -1686,21 +1536,16 @@ void load_data_or_default(void) {
             get_user_base_dir ("logs/tnc.log"));
 
     /* NET */
-    if (!get_int ("NET_LOG_DATA", &log_net_data,0,1,0))
-        log_net_data = 0;
+    log_net_data = get_int ("NET_LOG_DATA", 0,1,0);
 
-    if (!get_int ("NET_RUN_AS_IGATE", &operate_as_an_igate,0,2,0))
-        operate_as_an_igate = 0;
+    operate_as_an_igate = get_int ("NET_RUN_AS_IGATE", 0,2,0);
 
-    if (!get_int ("LOG_IGATE", &log_igate,0,1,0))
-        log_igate = 0;
+    log_igate = get_int ("LOG_IGATE", 0,1,0);
 
-    if (!get_int ("NETWORK_WAITTIME", &NETWORK_WAITTIME,10,120,10))
-        NETWORK_WAITTIME = 10;
+    NETWORK_WAITTIME = get_int ("NETWORK_WAITTIME", 10,120,10);
 
     // LOGGING
-    if (!get_int ("LOG_WX", &log_wx,0,1,0))
-        log_wx = 0;
+    log_wx = get_int ("LOG_WX", 0,1,0);
 
     if (!get_string ("LOGFILE_IGATE", LOGFILE_IGATE, sizeof(LOGFILE_IGATE)))
         xastir_snprintf(LOGFILE_IGATE,
@@ -1721,79 +1566,50 @@ void load_data_or_default(void) {
             get_user_base_dir ("logs/wx.log"));
 
     // SNAPSHOTS
-    if (!get_int ("SNAPSHOTS_ENABLED", &snapshots_enabled,0,1,0))
-        snapshots_enabled = 0;
+    snapshots_enabled = get_int ("SNAPSHOTS_ENABLED", 0,1,0);
 
     /* WX ALERTS */
-    if (!get_long ("WX_ALERTS_REFRESH_TIME", &WX_ALERTS_REFRESH_TIME, 10l, 86400l, 60l))
-        WX_ALERTS_REFRESH_TIME = (time_t)60l;
+    WX_ALERTS_REFRESH_TIME = (time_t) get_long ("WX_ALERTS_REFRESH_TIME", 10l, 86400l, 60l);
 
     /* gps */
-    if (!get_long ("GPS_TIME", &gps_time, 1l, 86400l, 60l))
-        gps_time = (time_t)60l;
+    gps_time = (time_t) get_long ("GPS_TIME", 1l, 86400l, 60l);
 
     /* POSIT RATE */
-    if (!get_long ("POSIT_RATE", &POSIT_rate, 1l, 86400l, 1800l))
-        POSIT_rate = (time_t)30*60l;
+    POSIT_rate = (time_t) get_long ("POSIT_RATE", 1l, 86400l, 30*60l);
 
     /* OBJECT RATE */
-    if (!get_long ("OBJECT_RATE", &OBJECT_rate, 1l, 86400l, 1800l))
-        OBJECT_rate = (time_t)30*60l;
+    OBJECT_rate = (time_t) get_long ("OBJECT_RATE", 1l, 86400l, 30*60l);
 
     /* UPDATE DR RATE */
-    if (!get_long ("UPDATE_DR_RATE", &update_DR_rate, 1l, 86400l, 30l))
-        update_DR_rate = (time_t)30l;
+    update_DR_rate = (time_t) get_long ("UPDATE_DR_RATE", 1l, 86400l, 30l);
 
     /* station broadcast type */
-    if (!get_int ("BST_TYPE", &output_station_type,0,5,0))
-        output_station_type = 0;
+    output_station_type = get_int ("BST_TYPE", 0,5,0);
 
 #ifdef TRANSMIT_RAW_WX
     /* raw wx transmit */
-    if (!get_int ("BST_WX_RAW", &transmit_raw_wx,0,1,0))
-        transmit_raw_wx = 0;
+    transmit_raw_wx = get_int ("BST_WX_RAW", 0,1,0);
 #endif  // TRANSMIT_RAW_WX
 
     /* compressed posit transmit */
-    if (!get_int ("BST_COMPRESSED_POSIT", &transmit_compressed_posit,0,1,0))
-        transmit_compressed_posit = 0;
+    transmit_compressed_posit = get_int ("BST_COMPRESSED_POSIT", 0,1,0);
 
     /* compressed objects/items transmit */
-    if (!get_int ("COMPRESSED_OBJECTS_ITEMS", &transmit_compressed_objects_items,0,1,0))
-        transmit_compressed_objects_items = 0;
+    transmit_compressed_objects_items = get_int ("COMPRESSED_OBJECTS_ITEMS", 0,1,0);
 
-    if (!get_int ("SMART_BEACONING", &smart_beaconing,0,1,1))
-        smart_beaconing = 0;
+    smart_beaconing = get_int ("SMART_BEACONING", 0,1,1);
+    sb_turn_min = get_int ("SB_TURN_MIN", 1,360,20);
+    sb_turn_slope = get_int ("SB_TURN_SLOPE", 0,360,25);
+    sb_turn_time = get_int ("SB_TURN_TIME", 0,3600,5);
+    sb_posit_fast = get_int ("SB_POSIT_FAST", 1,1440,60);
+    sb_posit_slow = get_int ("SB_POSIT_SLOW", 1,1440,30);
+    sb_low_speed_limit = get_int ("SB_LOW_SPEED_LIMIT", 0,999,2);
+    sb_high_speed_limit = get_int ("SB_HIGH_SPEED_LIMIT", 0,999,60);
 
-    if (!get_int ("SB_TURN_MIN", &sb_turn_min,1,360,20))
-        sb_turn_min = 20;
+    pop_up_new_bulletins = get_int ("POP_UP_NEW_BULLETINS", 0,1,1);
+    view_zero_distance_bulletins = get_int ("VIEW_ZERO_DISTANCE_BULLETINS", 0,1,1);
 
-    if (!get_int ("SB_TURN_SLOPE", &sb_turn_slope,0,360,25))
-        sb_turn_slope = 25;
-
-    if (!get_int ("SB_TURN_TIME", &sb_turn_time,0,3600,5))
-        sb_turn_time = 5;
-
-    if (!get_int ("SB_POSIT_FAST", &sb_posit_fast,1,1440,60))
-        sb_posit_fast = 60;
-
-    if (!get_int ("SB_POSIT_SLOW", &sb_posit_slow,1,1440,30))
-        sb_posit_slow = 30;
-
-    if (!get_int ("SB_LOW_SPEED_LIMIT", &sb_low_speed_limit,0,999,2))
-        sb_low_speed_limit = 2;
-
-    if (!get_int ("SB_HIGH_SPEED_LIMIT", &sb_high_speed_limit,0,999,60))
-        sb_high_speed_limit = 60;
-
-    if (!get_int ("POP_UP_NEW_BULLETINS", &pop_up_new_bulletins,0,1,1))
-        pop_up_new_bulletins = 1;
-
-    if (!get_int ("VIEW_ZERO_DISTANCE_BULLETINS", &view_zero_distance_bulletins,0,1,1))
-        view_zero_distance_bulletins = 1;
-
-    if (!get_int ("WARN_ABOUT_MOUSE_MODIFIERS", &warn_about_mouse_modifiers,0,1,1))
-        warn_about_mouse_modifiers = 1;
+    warn_about_mouse_modifiers = get_int ("WARN_ABOUT_MOUSE_MODIFIERS", 0,1,1);
 
 
     /* Audio Alarms*/
@@ -1802,24 +1618,21 @@ void load_data_or_default(void) {
             sizeof(sound_command),
             "play");
 
-    if (!get_int ("SOUND_PLAY_ONS", &sound_play_new_station,0,1,0))
-        sound_play_new_station = 0;
+    sound_play_new_station = get_int ("SOUND_PLAY_ONS", 0,1,0);
 
     if (!get_string ("SOUND_ONS_FILE", sound_new_station, sizeof(sound_new_station)))
         xastir_snprintf(sound_new_station,
             sizeof(sound_new_station),
             "newstation.wav");
 
-    if (!get_int ("SOUND_PLAY_ONM", &sound_play_new_message,0,1,0))
-        sound_play_new_message = 0;
+    sound_play_new_message = get_int ("SOUND_PLAY_ONM", 0,1,0);
 
     if (!get_string ("SOUND_ONM_FILE", sound_new_message, sizeof(sound_new_message)))
         xastir_snprintf(sound_new_message,
             sizeof(sound_new_message),
             "newmessage.wav");
 
-    if (!get_int ("SOUND_PLAY_PROX", &sound_play_prox_message,0,1,0))
-        sound_play_prox_message = 0;
+    sound_play_prox_message = get_int ("SOUND_PLAY_PROX", 0,1,0);
 
     if (!get_string ("SOUND_PROX_FILE", sound_prox_message, sizeof(sound_prox_message)))
         xastir_snprintf(sound_prox_message,
@@ -1836,8 +1649,7 @@ void load_data_or_default(void) {
             sizeof(prox_max),
             "10");
 
-    if (!get_int ("SOUND_PLAY_BAND", &sound_play_band_open_message,0,1,0))
-        sound_play_band_open_message = 0;
+    sound_play_band_open_message = get_int ("SOUND_PLAY_BAND", 0,1,0);
 
     if (!get_string ("SOUND_BAND_FILE", sound_band_open_message, sizeof(sound_band_open_message)))
         xastir_snprintf(sound_band_open_message,
@@ -1854,8 +1666,7 @@ void load_data_or_default(void) {
             sizeof(bando_max),
             "2000");
 
-    if (!get_int ("SOUND_PLAY_WX_ALERT", &sound_play_wx_alert_message,0,1,0))
-        sound_play_wx_alert_message = 0;
+    sound_play_wx_alert_message = get_int ("SOUND_PLAY_WX_ALERT", 0,1,0);
 
     if (!get_string ("SOUND_WX_ALERT_FILE", sound_wx_alert_message, sizeof(sound_wx_alert_message)))
         xastir_snprintf(sound_wx_alert_message,
@@ -1864,49 +1675,24 @@ void load_data_or_default(void) {
 
 #ifdef HAVE_FESTIVAL
     /* Festival Speech defaults */
-
-    if (!get_int ("SPEAK_NEW_STATION",&festival_speak_new_station,0,1,0))
-        festival_speak_new_station = 0;
-
-    if (!get_int ("SPEAK_PROXIMITY_ALERT",&festival_speak_proximity_alert,0,1,0))
-        festival_speak_proximity_alert = 0;
-
-    if (!get_int ("SPEAK_TRACKED_ALERT",&festival_speak_tracked_proximity_alert,0,1,0))
-        festival_speak_tracked_proximity_alert = 0;
-
-    if (!get_int ("SPEAK_BAND_OPENING",&festival_speak_band_opening,0,1,0))
-        festival_speak_band_opening = 0;
-                                  
-    if (!get_int ("SPEAK_MESSAGE_ALERT",&festival_speak_new_message_alert,0,1,0))
-        festival_speak_new_message_alert = 0; 
-
-    if (!get_int ("SPEAK_MESSAGE_BODY",&festival_speak_new_message_body,0,1,0))
-        festival_speak_new_message_body = 0;
-
-    if (!get_int ("SPEAK_WEATHER_ALERT",&festival_speak_new_weather_alert,0,1,0))
-        festival_speak_new_weather_alert = 0; 
-
-    if (!get_int ("SPEAK_ID",&festival_speak_ID,0,1,0))
-        festival_speak_new_station = 0;
+    festival_speak_new_station = get_int ("SPEAK_NEW_STATION",0,1,0);
+    festival_speak_proximity_alert = get_int ("SPEAK_PROXIMITY_ALERT",0,1,0);
+    festival_speak_tracked_proximity_alert = get_int ("SPEAK_TRACKED_ALERT",0,1,0);
+    festival_speak_band_opening = get_int ("SPEAK_BAND_OPENING",0,1,0);
+    festival_speak_new_message_alert = get_int ("SPEAK_MESSAGE_ALERT",0,1,0);
+    festival_speak_new_message_body = get_int ("SPEAK_MESSAGE_BODY",0,1,0);
+    festival_speak_new_weather_alert = get_int ("SPEAK_WEATHER_ALERT",0,1,0);
+    festival_speak_new_station = get_int ("SPEAK_ID",0,1,0);
 #endif  // HAVE_FESTIVAL
-    if (!get_int ("ATV_SCREEN_ID",&ATV_screen_ID,0,1,0))
-        ATV_screen_ID = 0; 
+
+    ATV_screen_ID = get_int ("ATV_SCREEN_ID",0,1,0);
  
     /* defaults */
-    if (!get_long ("DEFAULT_STATION_OLD", &sec_old, 1l, 604800l, 4800l))
-        sec_old = (time_t)4800l;
+    sec_old = (time_t) get_long ("DEFAULT_STATION_OLD", 1l, 604800l, 4800l);
 
-    if (!get_long ("DEFAULT_STATION_CLEAR", &sec_clear, 1l, 604800l, 43200l))
-        sec_clear = (time_t)43200l;
+    sec_clear = (time_t) get_long ("DEFAULT_STATION_CLEAR", 1l, 604800l, 43200l);
 
-    if (!get_long("DEFAULT_STATION_REMOVE", &sec_remove, 1l, 604800*2, sec_clear*2)) {
-        sec_remove = sec_clear*2;
-    // In the interests of keeping the memory used by Xastir down, I'm
-    // commenting out the below lines.  When hooked to one or more internet
-    // links it's nice to expire stations from the database more quickly.
-//        if (sec_remove < (time_t)(24*3600)) // If it's less than one day,
-//            sec_remove = (time_t)(24*3600); // change to a one-day expire
-    }
+    sec_remove = get_long("DEFAULT_STATION_REMOVE", 1l, 604800*2, sec_clear*2);
 
     if (!get_string ("MESSAGE_COUNTER", message_counter, sizeof(message_counter)))
         xastir_snprintf(message_counter,
@@ -1932,37 +1718,24 @@ void load_data_or_default(void) {
             sizeof(auto_reply_message),
             "Autoreply- No one is at the keyboard");
 
-    if (!get_int ("DISPLAY_PACKET_TYPE", &Display_packet_data_type,0,2,0))
-        Display_packet_data_type = 0;
+    Display_packet_data_type = get_int ("DISPLAY_PACKET_TYPE", 0,2,0);
 
-    if (!get_int ("BULLETIN_RANGE", &bulletin_range,0,99999,0))
-        bulletin_range = 0;
+    bulletin_range = get_int ("BULLETIN_RANGE", 0,99999,0);
 
-    if(!get_int("VIEW_MESSAGE_RANGE", &vm_range,0,99999,0))
-        vm_range=0;
+    vm_range = get_int("VIEW_MESSAGE_RANGE", 0,99999,0);
 
-    if(!get_int("VIEW_MESSAGE_LIMIT", &view_message_limit,10000,99999,10000))
-        view_message_limit = 10000;
+    view_message_limit = get_int("VIEW_MESSAGE_LIMIT", 10000,99999,10000);
 
 
     /* printer variables */
-    if (!get_int ("PRINT_ROTATED", &print_rotated,0,1,0))
-        print_rotated = 0;
+    print_rotated = get_int ("PRINT_ROTATED", 0,1,0);
+    print_auto_rotation = get_int ("PRINT_AUTO_ROTATION", 0,1,1);
+    print_auto_scale = get_int ("PRINT_AUTO_SCALE", 0,1,1);
+    print_in_monochrome = get_int ("PRINT_IN_MONOCHROME", 0,1,0);
+    print_invert = get_int ("PRINT_INVERT_COLORS", 0,1,0);
 
-    if (!get_int ("PRINT_AUTO_ROTATION", &print_auto_rotation,0,1,1))
-        print_auto_rotation = 1;
-
-    if (!get_int ("PRINT_AUTO_SCALE", &print_auto_scale,0,1,1))
-        print_auto_scale = 1;
-
-    if (!get_int ("PRINT_IN_MONOCHROME", &print_in_monochrome,0,1,0))
-        print_in_monochrome = 0;
-
-    if (!get_int ("PRINT_INVERT_COLORS", &print_invert,0,1,0))
-        print_invert = 0;
-
-    if (!get_int ("RAIN_GAUGE_TYPE", &WX_rain_gauge_type,0,3,0))
-        WX_rain_gauge_type = 0;     // No Correction
+    // 0 = no correction
+    WX_rain_gauge_type = get_int ("RAIN_GAUGE_TYPE", 0,3,0);
 
 
     /* list attributes */
@@ -1973,42 +1746,38 @@ void load_data_or_default(void) {
             "%s",
             name_temp);
         strncat (name, "H", sizeof(name) - strlen(name));
-        if (!get_int (name, &list_size_h[i],-1,8192,-1))
-            list_size_h[i] = -1;
+        list_size_h[i] = get_int (name, -1,8192,-1);
 
         xastir_snprintf(name,
             sizeof(name),
             "%s",
             name_temp);
         strncat (name, "W", sizeof(name) - strlen(name));
-        if (!get_int (name, &list_size_w[i],-1,8192,-1))
-            list_size_w[i] = -1;
-
+        list_size_w[i] = get_int (name, -1,8192,-1);
     }
 
-    if (!get_int ("TRACK_ME", &track_me,0,1,0))
-        track_me = 0;    // No tracking
+    // 0 = no tracking
+    track_me = get_int ("TRACK_ME", 0,1,0);
 
-    if (!get_int ("MAP_CHOOSER_EXPAND_DIRS", &map_chooser_expand_dirs,0,1,1))
-        map_chooser_expand_dirs = 1;
+    map_chooser_expand_dirs = get_int ("MAP_CHOOSER_EXPAND_DIRS", 0,1,1);
 
-    if (!get_int ("ST_DIRECT_TIMEOUT", &st_direct_timeout,1,60*60*24*30,60*60))
-        st_direct_timeout = 60*60;    // One hour default
+    // One hour default
+    st_direct_timeout = get_int ("ST_DIRECT_TIMEOUT", 1,60*60*24*30,60*60);
 
-    if (!get_int ("DEAD_RECKONING_TIMEOUT", &dead_reckoning_timeout,1,60*60*24*30,60*10))
-        dead_reckoning_timeout = 60*10;     // Ten minute default
+    // Ten minute default
+    dead_reckoning_timeout = get_int ("DEAD_RECKONING_TIMEOUT", 1,60*60*24*30,60*10);
 
-    if (!get_int ("SERIAL_CHAR_PACING", &serial_char_pacing,0,50,1))
-        serial_char_pacing = 1; // 1ms default
+    // 1ms default
+    serial_char_pacing = get_int ("SERIAL_CHAR_PACING", 0,50,1);
 
-    if (!get_int ("TRAIL_SEGMENT_TIME", &trail_segment_time,0,12*60,45))
-        trail_segment_time = 45; // 45 minutes default, 12 hours max
+    // 45 minutes default, 12 hours max
+    trail_segment_time = get_int ("TRAIL_SEGMENT_TIME", 0,12*60,45);
 
-    if (!get_int ("TRAIL_SEGMENT_DISTANCE", &trail_segment_distance,0,45,1))
-        trail_segment_distance = 1; // 1 degrees default
+    // 1 degree default
+    trail_segment_distance = get_int ("TRAIL_SEGMENT_DISTANCE", 0,45,1);
 
-    if (!get_int ("RINO_DOWNLOAD_INTERVAL", &RINO_download_interval,0,30,0))
-        RINO_download_interval = 0; // 0 minutes default (function disabled)
+    // 0 minutes default (function disabled)
+    RINO_download_interval = get_int ("RINO_DOWNLOAD_INTERVAL", 0,30,0);
 
     input_close();
 }
