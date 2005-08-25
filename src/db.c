@@ -8316,10 +8316,10 @@ void station_del_ptr(DataRow *p_name) {
         // A bit of debug code:  Attempting to find out if we're
         // deleting our own objects from time to time.  Leave this
         // in until we're sure the problem has been fixed.
-        if (is_my_call(p_name->origin,1)) {
-            fprintf(stderr,"station_del_ptr: Removing my own object: %s\n",
-                p_name->call_sign);
-        }
+//        if (is_my_call(p_name->origin,1)) {
+//            fprintf(stderr,"station_del_ptr: Removing my own object: %s\n",
+//                p_name->call_sign);
+//        }
 
 #ifdef EXPIRE_DEBUG
         fprintf(stderr,"Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
