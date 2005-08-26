@@ -169,6 +169,7 @@ AC_CHECK_TYPES(socklen_t,,,[#include <sys/types.h>
 
 # some BSD systems do not define sighandler_t, but rather sig_t
 AC_CHECK_TYPES(sighandler_t,,,[#include <signal.h>])
+AC_CHECK_TYPES(sig_t,,,[#include <signal.h>])
 
 # some BSD systems do not define sighandler_t, but rather sig_t
 AC_CHECK_TYPES(sigjmp_buf,,,[#include <setjmp.h>])

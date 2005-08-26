@@ -51,7 +51,11 @@
 
 
 #ifndef HAVE_SIGHANDLER_T
-typedef sig_t sighandler_t;
+  #ifdef HAVE_SIG_T
+    typedef sig_t sighandler_t;
+  #else
+    typedef void (*sighandler_t)(int);
+  #endif
 #endif
 
 
