@@ -2429,7 +2429,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_baro,0,10);
             memset(weather->wx_station,0,MAX_WXSTATION);
 			
-            if ((temp_conv=strchr(data,'c'))) { // Wind Direction in Degrees 
+            if ((temp_conv=strchr((char *)data,'c'))) { // Wind Direction in Degrees 
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
                     "%s",
@@ -2444,7 +2444,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 "360");
             }
 				
-            if ((temp_conv=strchr(data,'s'))) { // Wind Speed in MPH - not snowfall
+            if ((temp_conv=strchr((char *)data,'s'))) { // Wind Speed in MPH - not snowfall
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
                     "%s",
@@ -2452,7 +2452,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 weather->wx_speed[3] = '\0';
             }
 
-            if ((temp_conv=strchr(data,'g'))) { // Wind Gust in MPH
+            if ((temp_conv=strchr((char *)data,'g'))) { // Wind Gust in MPH
                 xastir_snprintf(weather->wx_gust,
                     sizeof(weather->wx_gust),
                     "%s",
@@ -2471,7 +2471,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 wx_high_wind_on=1;
             }
 
-            if ((temp_conv=strchr(data,'t'))) { // Temperature in Degrees F
+            if ((temp_conv=strchr((char *)data,'t'))) { // Temperature in Degrees F
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%s",
@@ -2501,7 +2501,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 wx_low_temp_on=1;
             }
 
-            if ((temp_conv=strchr(data,'r'))) { // Rain per hour
+            if ((temp_conv=strchr((char *)data,'r'))) { // Rain per hour
                 xastir_snprintf(weather->wx_rain,
                     sizeof(weather->wx_rain),
                     "%s",
@@ -2509,7 +2509,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 weather->wx_rain[3] = '\0';
             }
 
-            if ((temp_conv=strchr(data,'p'))) { // Rain per 24 hrs/total
+            if ((temp_conv=strchr((char *)data,'p'))) { // Rain per 24 hrs/total
                 xastir_snprintf(weather->wx_rain_total,
                     sizeof(weather->wx_rain_total),
                     "%s",
@@ -2517,7 +2517,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_rain_total[3] = '\0';
             }
 
-            if ((temp_conv=strchr(data,'h'))) { // Humidity %
+            if ((temp_conv=strchr((char *)data,'h'))) { // Humidity %
 
                 if (!strncmp(temp_conv+1,"00",2)) {  // APRS says 00 is	
                     xastir_snprintf(weather->wx_hum, // 100% humidity
@@ -2534,7 +2534,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 }
             } 	 
 
-            if ((temp_conv=strchr(data,'b'))) { // Air Pressure in 1/10 hPa
+            if ((temp_conv=strchr((char *)data,'b'))) { // Air Pressure in 1/10 hPa
 			    memset(temp_data1,0,sizeof(temp_data1));
 
                 xastir_snprintf(temp_data1,
@@ -2554,7 +2554,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp_data1);
             }
 
-            if ((temp_conv=strchr(data,'x'))) { // WX Station Identifier
+            if ((temp_conv=strchr((char *)data,'x'))) { // WX Station Identifier
                 xastir_snprintf(weather->wx_station,
                     sizeof(weather->wx_station),
                     "%s",
@@ -2697,7 +2697,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                     wx_fill_data(0,APRS_WX4,wx_line,p_station);
                     decoded=1;
                 }
-                else if (strncmp("$ULTW",wx_line,5)==0
+                else if (strncmp("$ULTW",(char *)wx_line,5)==0
                         && is_xnum_or_dash((char *)(wx_line+5),44)
                         && port_data[port].data_type==0) {
 
@@ -2722,7 +2722,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                 }
                 else if (wx_line[2]==' ' && wx_line[5]==' ' && wx_line[8]=='/' && wx_line[11]=='/'
                         && wx_line[14]==' ' && wx_line[17]==':' && wx_line[20]==':'
-                        && strncmp(" #0:",wx_line+23,4)==0 && port_data[port].data_type==0) {
+                        && strncmp(" #0:",(char *)wx_line+23,4)==0 && port_data[port].data_type==0) {
                     find=0;
                     for (i=len;i>23 && !find;i--) {
                         if ((int)wx_line[i]==0x03) {
@@ -2766,7 +2766,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                     decoded=1;
                 }
 
-                else if (strncmp("&CR&",wx_line,4)==0
+                else if (strncmp("&CR&",(char *)wx_line,4)==0
                         && is_xnum_or_dash((char *)(wx_line+5),44)
                         && port_data[port].data_type==0) {
 

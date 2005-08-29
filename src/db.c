@@ -14802,7 +14802,7 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 
     // Add the Info field to the decoded header info
     strncat(result,
-        &incoming_data[ptr],
+        (char *)(&incoming_data[ptr]),
         sizeof(result) - strlen(result));
 
     // Copy the result onto the top of the input data.  Note that

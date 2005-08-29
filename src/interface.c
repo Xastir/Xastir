@@ -378,7 +378,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             // doesn't have to be null-terminated, so strncpy() is
             // ok to use here.  strncpy stops at the first null byte
             // though.  Proper for a binary output routine?  NOPE!
-            strncpy(&output_string[agwpe_header_size], Data, length);
+            strncpy((char *)(&output_string[agwpe_header_size]),(char *)Data, length);
 
             full_length = length + agwpe_header_size;
 
@@ -398,7 +398,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         // Doesn't need to be null-terminated, so strncpy is ok to
         // use here.  strncpy stops at the first null byte though.
         // Proper for a binary output routine?  NOPE!
-        strncpy(path_string, Path, sizeof(path_string));
+        strncpy((char *)path_string, (char *)Path, sizeof(path_string));
 
         // Convert path_string to upper-case
         to_upper((char *)path_string);
@@ -451,49 +451,49 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         switch (output_string[agwpe_header_size]) {
             case 8:
                 if (ViaCall[7]) {
-                    strncpy(&output_string[agwpe_header_size+1+70], ViaCall[7], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+70]), ViaCall[7], 10);
 //fprintf(stderr, "%s\n", ViaCall[7]);
                 }
                 else
                     return;
             case 7:
                 if (ViaCall[6]) {
-                    strncpy(&output_string[agwpe_header_size+1+60], ViaCall[6], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+60]), ViaCall[6], 10);
 //fprintf(stderr, "%s\n", ViaCall[6]);
                 }
                 else
                     return;
             case 6:
                 if (ViaCall[5]) {
-                    strncpy(&output_string[agwpe_header_size+1+50], ViaCall[5], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+50]), ViaCall[5], 10);
 //fprintf(stderr, "%s\n", ViaCall[5]);
                 }
                 else
                     return;
             case 5:
                 if (ViaCall[4]) {
-                    strncpy(&output_string[agwpe_header_size+1+40], ViaCall[4], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+40]), ViaCall[4], 10);
 //fprintf(stderr, "%s\n", ViaCall[4]);
                 }
                 else
                     return;
             case 4:
                 if (ViaCall[3]) {
-                    strncpy(&output_string[agwpe_header_size+1+30], ViaCall[3], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+30]), ViaCall[3], 10);
 //fprintf(stderr, "%s\n", ViaCall[3]);
                 }
                 else
                     return;
             case 3:
                 if (ViaCall[2]) {
-                    strncpy(&output_string[agwpe_header_size+1+20], ViaCall[2], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+20]), ViaCall[2], 10);
 //fprintf(stderr, "%s\n", ViaCall[2]);
                 }
                 else
                     return;
             case 2:
                 if (ViaCall[1]) {
-                    strncpy(&output_string[agwpe_header_size+1+10], ViaCall[1], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+10]), ViaCall[1], 10);
 //fprintf(stderr, "%s\n", ViaCall[1]);
                 }
                 else
@@ -501,7 +501,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             case 1:
             default:
                 if (ViaCall[0]) {
-                    strncpy(&output_string[agwpe_header_size+1+0],  ViaCall[0], 10);
+                    strncpy((char *)(&output_string[agwpe_header_size+1+0]),  ViaCall[0], 10);
 //fprintf(stderr, "%s\n", ViaCall[0]);
                 }
                 else
@@ -513,8 +513,8 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         // Doesn't need to be null-terminated, so strncpy is ok to
         // use here.  strncpy stops at the first null byte though.
         // Proper for a binary output routine?
-        strncpy(&output_string[((int)(output_string[agwpe_header_size]) * 10) + agwpe_header_size + 1],
-            Data,
+        strncpy((char *)(&output_string[((int)(output_string[agwpe_header_size]) * 10) + agwpe_header_size + 1]),
+            (char *)Data,
             length);
 
         //Fill in the data length field.  We're assuming the total
@@ -996,7 +996,7 @@ special_debug++;
     temp_str[0] = '\0';
 
     while (input_string[ii] != ']') {
-      strncat(temp_str, &input_string[ii++], 1);
+      strncat(temp_str, (char *)(&input_string[ii++]), 1);
     }
 
     // Make sure that the protocol ID is "F0".  If not, return.
@@ -1050,7 +1050,7 @@ special_debug++;
 
     // Copy the info field to the output string
     while (info_ptr[0] != '\0') {
-      strncat(output_string, &info_ptr[0], 1);
+      strncat((char *)output_string, &info_ptr[0], 1);
       info_ptr++;
     }
 
@@ -1298,14 +1298,14 @@ void channel_data(int port, unsigned char *string, int length) {
                 // GPRMC and GPGGA strings into global variables.
                 // Drop other GPS strings on the floor.
                 //
-                if ( (length > 7) && (strncmp(string,"$GPRMC,",7) == 0) ) {
+                if ( (length > 7) && (strncmp((char *)string,"$GPRMC,",7) == 0) ) {
                     xastir_snprintf(gprmc_save_string,
                         sizeof(gprmc_save_string),
                         "%s",
                         string);
                     gps_port_save = port;
                 }
-                else if ( (length > 7) && (strncmp(string,"$GPGGA,",7) == 0) ) {
+                else if ( (length > 7) && (strncmp((char *)string,"$GPGGA,",7) == 0) ) {
                     xastir_snprintf(gpgga_save_string,
                         sizeof(gpgga_save_string),
                         "%s",
@@ -1779,7 +1779,7 @@ int OpenTrac_decode_origination(unsigned char *element,
     // Binary routine.  strncpy is ok here as long as nulls not in
     // data.  We null-terminate it ourselves to make sure it is
     // terminated.
-    strncpy(callsign, element, 6);
+    strncpy(callsign, (char *)element, 6);
     callsign[6]=0;
     for (c=*ssid=0;c<6;c++) {
         *ssid |= (callsign[c] & 0x80) >> (c+2);
@@ -1984,7 +1984,7 @@ int OpenTrac_decode_comment(unsigned char *element,
         return -1;  // shouldn't be possible
 
     strncat(comment," ",1);
-    strncat(comment, element, element_len);
+    strncat(comment, (char *)element, element_len);
     comment[element_len + 1] = 0;   // Account for the space char
 
     fprintf(stderr, "Text: %s\n", comment);
@@ -2065,13 +2065,13 @@ int OpenTrac_decode_country(unsigned char *element,
     // Binary routine.  strncpy is ok here as long as nulls not in
     // data.  We null-terminate it ourselves to make sure it is
     // terminated.
-    strncpy(country, element, 2);
+    strncpy(country, (char *)element, 2);
     country[2] = 0;
     if (element_len > 2) {
         // Binary routine.  strncpy is ok here as long as nulls not
         // in data.  We null-terminate it ourselves to make sure it
         // is terminated.
-        strncpy(subdivision, element+2, element_len-2);
+        strncpy(subdivision, (char *)(element+2), element_len-2);
         subdivision[element_len-2] = 0;
         fprintf(stderr, "Country Code %s-%s\n", country, subdivision);
     }
@@ -2099,7 +2099,7 @@ int OpenTrac_decode_displayname(unsigned char *element,
     // Binary routine.  strncpy is ok here as long as nulls not in
     // data.  We null-terminate it ourselves to make sure it is
     // terminated.
-    strncpy(displayname, element, element_len);
+    strncpy(displayname, (char *)element, element_len);
     displayname[element_len] = 0;
 
     fprintf(stderr, "Display Name: %s\n", displayname);
@@ -2124,7 +2124,7 @@ int OpenTrac_decode_waypoint(unsigned char *element,
     // Binary routine.  strncpy is ok here as long as nulls not in
     // data.  We null-terminate it ourselves to make sure it is
     // terminated.
-    strncpy(waypoint, element, element_len);
+    strncpy(waypoint, (char *)element, element_len);
     waypoint[element_len] = 0;
 
     fprintf(stderr, "Waypoint Name: %s\n", waypoint);
@@ -2480,7 +2480,7 @@ int OpenTrac_decode_maidenhead(unsigned char *element,
     // Binary routine.  strncpy is ok here as long as nulls not in
     // data.  We null-terminate it ourselves to make sure it is
     // terminated.
-    strncpy(maidenhead, element, element_len);
+    strncpy(maidenhead, (char *)element, element_len);
     maidenhead[element_len] = 0;
 
     fprintf(stderr, "Maidenhead Grid: %s\n", maidenhead);
@@ -2561,7 +2561,7 @@ int OpenTrac_decode_acreg(unsigned char *element,
     // Binary routine.  strncpy is ok here as long as nulls not in
     // data.  We null-terminate it ourselves to make sure it is
     // terminated.
-    strncpy(aircraft_id, element, element_len);
+    strncpy(aircraft_id, (char *)element, element_len);
     aircraft_id[element_len]=0;
 
     fprintf(stderr, "Aircraft ID: %s\n", aircraft_id);
@@ -5136,9 +5136,9 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
         "%s",
         source);
     fix_up_callsign(temp_source, sizeof(temp_source));
-    strncat(transmit_txt,
-        temp_source,
-        sizeof(transmit_txt) - strlen(transmit_txt));
+    strncat((char *)transmit_txt,
+        (char *)temp_source,
+        sizeof(transmit_txt) - strlen((char *)transmit_txt));
 
     // Break up the path into individual callsigns and send them one
     // by one to fix_up_callsign()
@@ -5158,9 +5158,9 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
             //fprintf(stderr,"%s\n",temp);
 
             fix_up_callsign(temp, sizeof(temp));
-            strncat(transmit_txt,
-                temp,
-                sizeof(transmit_txt) - strlen(transmit_txt));
+            strncat((char *)transmit_txt,
+                (char *)temp,
+                sizeof(transmit_txt) - strlen((char *)transmit_txt));
         }
     }
 
@@ -5171,21 +5171,21 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     // Add the Control byte
     control[0] = 0x03;
     control[1] = '\0';
-    strncat(transmit_txt,
-        control,
-        sizeof(transmit_txt) - strlen(transmit_txt));
+    strncat((char *)transmit_txt,
+        (char *)control,
+        sizeof(transmit_txt) - strlen((char *)transmit_txt));
 
     // Add the PID byte
     pid[0] = 0xf0;
     pid[1] = '\0';
-    strncat(transmit_txt,
-        pid,
-        sizeof(transmit_txt) - strlen(transmit_txt));
+    strncat((char *)transmit_txt,
+        (char *)pid,
+        sizeof(transmit_txt) - strlen((char *)transmit_txt));
 
     // Append the information chars
-    strncat(transmit_txt,
+    strncat((char *)transmit_txt,
         data,
-        sizeof(transmit_txt) - strlen(transmit_txt));
+        sizeof(transmit_txt) - strlen((char *)transmit_txt));
 
     //fprintf(stderr,"%s\n",transmit_txt);
 
