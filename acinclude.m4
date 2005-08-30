@@ -57,7 +57,7 @@ AC_DEFUN([XASTIR_COMPILER_FLAGS],
 for f in -g -O2; do
 # eventually write a test for these
 # gcc already checks for -g earlier!
-echo $CFLAGS | grep -- $f - > /dev/null || CFLAGS="$CFLAGS $f"
+echo $CFLAGS | grep -- $f > /dev/null || CFLAGS="$CFLAGS $f"
 done
 
 # brutal!
@@ -80,7 +80,7 @@ rm -f gccflags
 # it.  
 #
 for f in -W -Wall -Wpointer-arith -Wstrict-prototypes; do
-echo $CFLAGS | grep -- $f - > /dev/null || CFLAGS="$CFLAGS $f"
+echo $CFLAGS | grep -- $f > /dev/null || CFLAGS="$CFLAGS $f"
 done
 
 # Now check whether to use -Wno-unused-parameter (gcc 3) or -Wno-unused
@@ -145,7 +145,7 @@ AC_DEFUN([XASTIR_DETECT_BINARIES],
 BINPATH=$PATH
 
 for d in / /usr /usr/local /usr/X11 /usr/X11R6 /usr/sfw /opt/sfw /sw; do
-test -d $d/bin && echo $BINPATH | grep -- $d/bin - > /dev/null || BINPATH="$BINPATH:$d/bin"
+test -d $d/bin && echo $BINPATH | grep -- $d/bin > /dev/null || BINPATH="$BINPATH:$d/bin"
 done
 
 # it would be much nicer to do this in a for loop
