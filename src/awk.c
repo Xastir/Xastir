@@ -64,9 +64,12 @@
 #ifdef HAVE_LIBPCRE
 #include <stdio.h>
 #include <string.h>
+
+// Needed for Solaris
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
-#endif
+#endif  // HAVE_STRINGS_H
+
 #include <ctype.h>
 #include <sys/types.h>
 #include "awk.h"

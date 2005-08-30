@@ -32,7 +32,12 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+// Needed for Solaris
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif  // HAVE_STRINGS_H
+
 #include <ctype.h>
 #include <sys/types.h>
 

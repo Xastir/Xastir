@@ -39,7 +39,9 @@
 #include <errno.h>
 
 // Needed for Solaris
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif  // HAVE_STRINGS_H
 
 #ifdef HAVE_IMAGEMAGICK
 #if TIME_WITH_SYS_TIME
