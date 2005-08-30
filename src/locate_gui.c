@@ -244,7 +244,10 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
             popup_message_always(langcode("POPEM00001"),temp2);
             break;
     }
-    Locate_station_destroy_shell(w, clientData, callData);
+
+    // Don't enable this as then we can't click on the Locate button
+    // later.
+    //Locate_station_destroy_shell(w, clientData, callData);
 }
 
 
@@ -274,7 +277,11 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), locate_station_call);
         popup_message_always(langcode("POPEM00001"),temp2);
     }
-    Locate_station_destroy_shell(w, clientData, callData);
+
+    // Don't enable this as then we can't click on the FCC/RAC
+    // button later, and we'll lose the callsign info if we want to
+    // see it again.
+    //Locate_station_destroy_shell(w, clientData, callData);
 }
 
 
