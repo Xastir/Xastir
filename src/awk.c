@@ -64,6 +64,7 @@
 #ifdef HAVE_LIBPCRE
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include "awk.h"
