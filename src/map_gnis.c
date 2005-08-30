@@ -321,7 +321,7 @@ Cell Name
 
                     i[0] = '\0';
                     xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
-                    if (!isdigit(latitude[0])) { // skip record if not
+                    if (!isdigit((int)latitude[0])) { // skip record if not
                         continue;                // numeric! (e.g. "UNKNOWN")
                     }
 
@@ -336,7 +336,7 @@ Cell Name
 
                     j[0] = '\0';
                     xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
-                    if (!isdigit(longitude[0])) { // skip record if not
+                    if (!isdigit((int)longitude[0])) { // skip record if not
                         continue;                 // numeric (e.g. UNKNOWN)
                     }
 

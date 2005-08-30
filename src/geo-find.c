@@ -312,7 +312,7 @@ static const char *input_word(struct state *s,const char *pos) {
 	}
 
 	while (s->input_begin != s->input_end 
-	   && (s->input_depth > 0 || !isalnum(*s->input_begin))) {
+	   && (s->input_depth > 0 || !isalnum((int)*s->input_begin))) {
 		const char ch = *s->input_begin++;
 		if ('(' == ch)
 			++s->input_depth;
@@ -322,9 +322,9 @@ static const char *input_word(struct state *s,const char *pos) {
 
 	while (s->input_begin != s->input_end
 	   &&  s->buffer_end != &s->buffer[sizeof s->buffer]
-           &&  isalnum(*s->input_begin)) {
+           &&  isalnum((int)*s->input_begin)) {
 		if (s->buffer == s->buffer_end
-		|| !isdigit(s->buffer_end[-1]) || !isalpha(*s->input_begin))
+		|| !isdigit((int)s->buffer_end[-1]) || !isalpha((int)*s->input_begin))
 			*s->buffer_end++ = *s->input_begin;
 		++s->input_begin;
 	}

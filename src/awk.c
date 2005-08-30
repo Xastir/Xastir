@@ -64,7 +64,9 @@
 #ifdef HAVE_LIBPCRE
 #include <stdio.h>
 #include <string.h>
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif
 #include <ctype.h>
 #include <sys/types.h>
 #include "awk.h"
@@ -358,7 +360,7 @@ int awk_compile_stmt(awk_symtab *this,
              int len) {
     const char *s = stmt, *op, *ep;
   
-    while (isspace(*s)) {               /* clean up leading white space */
+    while (isspace((int)*s)) {               /* clean up leading white space */
         ++s;
         --len;
     }
@@ -366,12 +368,12 @@ int awk_compile_stmt(awk_symtab *this,
 
     if ((op = strchr(s,'=')) != NULL) {   /* it's either an assignment */
         const char *val = op+1;
-        while (isspace(*val)) {
+        while (isspace((int)*val)) {
             val++;
             len--;
         }
         --op;
-        while (isspace(*op) && op>s) op--;
+        while (isspace((int)*op) && op>s) op--;
         p->opcode = ASSIGN;
         p->dest = awk_find_sym(this,s,(op-s+1));
         if (!p->dest) {
@@ -382,7 +384,7 @@ int awk_compile_stmt(awk_symtab *this,
     } else {                    /* or the "next" keyword */
         const char *r;
 
-        for (r=&s[len-1]; isspace(*r); r--,len--) ; /* trim trailing white space */
+        for (r=&s[len-1]; isspace((int)*r); r--,len--) ; /* trim trailing white space */
         if (len == 4 && strncmp(s,"next",4) == 0) {
             p->opcode = NEXT;
         } else if (len == 4 && strncmp(s,"skip",4) == 0) {
@@ -507,7 +509,7 @@ void awk_eval_expr(awk_symtab *this,
                 /* now search for the var name using closing delim */
                 symname = expr;
                 if (delim == '\0') {    /* no close delim */
-                    while (!isspace(*expr) && !ispunct(*expr) && exprlen > 0) {
+                    while (!isspace((int)*expr) && !ispunct((int)*expr) && exprlen > 0) {
                         ++expr;
                         --exprlen;
                     }
@@ -809,7 +811,7 @@ awk_program *awk_load_program_file(const char *file) { /* rules filename */
         ++line;
         if (in[l-1] == '\n')
             in[--l] = '\0';
-        while (isspace(*cp)) ++cp;
+        while (isspace((int)*cp)) ++cp;
         switch(*cp) {
         case '\0':              /* empty line */
             continue;
@@ -862,7 +864,7 @@ awk_program *awk_load_program_file(const char *file) { /* rules filename */
             garbage(file,line,in,cp);
             continue;
         }
-        while (isspace(*cp)) ++cp; /* skip whitespace */
+        while (isspace((int)*cp)) ++cp; /* skip whitespace */
         if (*cp == '{') {
             p = ++cp;
         loop: 
@@ -887,7 +889,7 @@ awk_program *awk_load_program_file(const char *file) { /* rules filename */
 
             r->flags |= AR_MALLOC;
             /* make sure there's no extraneous junk on the line */
-            while (*cp && isspace(*cp)) ++cp;
+            while (*cp && isspace((int)*cp)) ++cp;
             if (*cp == '#' || *cp == '\0')
                 awk_add_rule(n,r);
             else {

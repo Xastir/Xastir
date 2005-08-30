@@ -57,9 +57,9 @@ int io_strntoi(const char *str,int len) {
 	int r = 0;
 	int sign = 1;
 	const char * const end = str + len;
-	while (end != str && isspace(*str)) ++str;
+	while (end != str && isspace((int)*str)) ++str;
 	if (end != str && *str == '-') (sign *= -1),++str;
 	if (end != str && *str == '+') ++str;
-	while (end != str && isdigit(*str)) r = *str++ - '0' + 10 * r;
+	while (end != str && isdigit((int)*str)) r = *str++ - '0' + 10 * r;
 	return r * sign;
 }
