@@ -15349,7 +15349,16 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                                     "%s",
                                     call_sign);
                     
-                Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)1 );
+                    Locate_station( (Widget)NULL,
+                        (XtPointer)NULL,
+                        (XtPointer)1 );
+
+                    // Bring up an additional popup dialog that
+                    // shows the entire packet, so the user can make
+                    // a determination as to whether the packet is
+                    // or is not a real emergency.
+                    //
+                    popup_message_always(langcode("POPEM00036"), backup);
                 }
             }
         }
