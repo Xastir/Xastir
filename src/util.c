@@ -40,6 +40,12 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+
+// Needed for Solaris
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif  // HAVE_STRINGS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
