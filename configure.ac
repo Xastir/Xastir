@@ -197,7 +197,7 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify alarm dcgettext])
 AC_CHECK_FUNCS([getcwd getpgrp gethostbyname gethostname gettimeofday])
 AC_CHECK_FUNCS([getwd inet_ntoa memmove mempcpy memset mkdir munmap pow])
-AC_CHECK_FUNCS([putenv select setenv setlocale settimeofday signal])
+AC_CHECK_FUNCS([putenv select setenv setlocale settimeofday signal sigignore])
 AC_CHECK_FUNCS([snprintf socket sqrt stpcpy strcasecmp strchr strdup])
 AC_CHECK_FUNCS([strerror strncasecmp strpbrk strptime strrchr strstr])
 AC_CHECK_FUNCS([strtol strtoul tzset vsnprintf])

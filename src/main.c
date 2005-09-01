@@ -31263,7 +31263,12 @@ int main(int argc, char *argv[], char *envp[]) {
     (void) signal(SIGUSR1,usr1sig);                     // take a snapshot on demand 
 #endif  // OLD_PTHREADS
 
+#ifdef HAVE_SIGIGNORE
+    (void) sigignore(SIGPIPE);
+#else   // HAVE_SIGIGNORE
     (void) signal(SIGPIPE,SIG_IGN);                     // set sigpipe signal to ignore
+#endif  // HAVE_SIGIGNORE
+
     if (trap_segfault)
         (void) signal(SIGSEGV,segfault);                // set segfault signal to check
 
