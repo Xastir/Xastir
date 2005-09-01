@@ -645,7 +645,10 @@ Enabling Street Address Lookup:
 Download the USA.geocode file and install it into the
 /usr/local/share/xastir/GNIS/ directory.  This will enable the
 "Map->Find Address" menu option to work.  Xastir will place a big
-"X" on the map at the street address it finds for you.
+"X" on the map at the street address it finds for you.  This file is
+sometimes available at http://www.dementia.org/geocoder/tgr2003/
+As an alternative you can download the individual state files that
+are located there.
 
 
 Enabling Audio Alarms:
