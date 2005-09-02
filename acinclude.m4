@@ -169,35 +169,33 @@ if test "$lpr" != "no"; then
 fi
 
 # Test gv version
-AC_PATH_PROG(gv, [gv --version], no, $BINPATH)
-if test "$gv" != "no"; then
-  #
-  # Compute the "gv" revision number
-  #
-  gv_new="no";
-  gv_version=`gv -v`
-  gv_short_version=`echo $gv_version | cut -d ' ' -f 2`
-  gv_major=`echo $gv_short_version | cut -d '.' -f 1` 
-  gv_minor=`echo $gv_short_version | cut -d '.' -f 2` 
-  gv_tiny=`echo $gv_short_version | cut -d '.' -f 3` 
-#
-#debug
-#echo $gv_major $gv_minor $gv_tiny
-#
-  if test "$gv_major" -gt 3; then 
-    gv_new="yes"; 
-  elif test "$gv_major" -ge 3 -a "$gv_minor" -ge 6 -a "$gv_tiny" -ge 1; then 
-    gv_new="yes"; 
-  fi 
-  if test "$gv_new" != "no"; then
-    AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
-    AC_DEFINE_UNQUOTED(HAVE_NEW_GV, 1, [Define if you have old gv])
-    AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
-  else
-    AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
-    AC_DEFINE_UNQUOTED(HAVE_OLD_GV, 1, [Define if you have old gv])
-    AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
-  fi
+gv_new="no";
+gv_version=`gv --version 2>&1`
+gv_test=`echo $gv_version | cut -d ' ' -f 1`
+if test "$gv_test" != "gv"; then
+  gv_version=`gv -v 2>&1`
+fi
+gv_short_version=`echo $gv_version | cut -d ' ' -f 2`
+gv_major=`echo $gv_short_version | cut -d '.' -f 1`
+gv_minor=`echo $gv_short_version | cut -d '.' -f 2`
+gv_tiny=`echo $gv_short_version | cut -d '.' -f 3`
+if test "$gv_major" -gt 3; then
+  gv_new="yes";
+elif test "$gv_major" -ge 3 -a "$gv_minor" -gt 6; then
+  gv_new="yes";
+elif test "$gv_major" -ge 3 -a "$gv_minor" -ge 6 -a "$gv_tiny" -ge 1; then
+  gv_new="yes";
+fi
+if test "$gv_new" != "no"; then
+  AC_PATH_PROG(gv, [gv], no, $BINPATH)
+  AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
+  AC_DEFINE_UNQUOTED(HAVE_NEW_GV, 1, [Define if you have old gv])
+  AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
+else
+  AC_PATH_PROG(gv, [gv], no, $BINPATH)
+  AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
+  AC_DEFINE_UNQUOTED(HAVE_OLD_GV, 1, [Define if you have old gv])
+  AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
 fi
 
 AC_PATH_PROG(cp, [cp], no, $BINPATH)
