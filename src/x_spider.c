@@ -361,7 +361,7 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
 
     //Send our callsign to spider clients as "#callsign" much like APRS-IS sends "# javaAPRS"
     // # xastir 1.5.1 callsign:<mycall>
-    sprintf(line,"# Welcome to Xastir's server port, callsign: %s\n",my_callsign);
+    sprintf(line,"# Welcome to Xastir's server port, callsign: %s\r\n",my_callsign);
     writen(sockfd,line,strlen(line));
 
     // Infinite loop
