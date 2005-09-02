@@ -2071,13 +2071,16 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 static void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
 #ifdef NO_XPM
-    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
+//    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
+    popup_message_always(langcode("POPEM00035"),
+        "XPM or ImageMagick support not compiled into Xastir! Cannot Print!");
 #else   // NO_GRAPHICS
 
 #ifndef HAVE_GV
-    fprintf(stderr,"GV support not compiled into Xastir!\n");
+//    fprintf(stderr,"GV support not compiled into Xastir!\n");
+    popup_message_always(langcode("POPEM00035"),
+        "GV support not compiled into Xastir! Cannot Print!");
 #else   // HAVE_GV
-
 
     char xpm_filename[MAX_FILENAME];
     char ps_filename[MAX_FILENAME];
