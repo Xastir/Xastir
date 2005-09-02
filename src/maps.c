@@ -26,6 +26,10 @@
 //#define MAP_SCALE_CHECK
 
 
+// Define this if you have a "gv" version prior to 3.6.1
+#define OLD_GV
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -2088,7 +2092,13 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     char density[50] = "";
     char command[MAX_FILENAME*2];
     char temp[100];
+
+#ifdef OLD_GV
     char format[50] = "-portrait ";
+#else   // OLD_GV
+    char format[50] = "--orientation=portrait";
+#endif  // OLD_GV
+
     int xpmretval;
 
 
@@ -2167,13 +2177,25 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 
         if ( print_rotated ) {
             xastir_snprintf(rotate, sizeof(rotate), "-rotate -90 " );
+
+#ifdef OLD_GV
             xastir_snprintf(format, sizeof(format), "-landscape " );
+#else   // OLD_GV
+            xastir_snprintf(format, sizeof(format), "--orientation=landscape " );
+#endif  // OLD_GV
+
         } else if ( print_auto_rotation ) {
             // Check whether the width or the height of the pixmap is greater.
             // If width is greater than height, rotate the image by 270 degrees.
             if (screen_width > screen_height) {
                 xastir_snprintf(rotate, sizeof(rotate), "-rotate -90 " );
+
+#ifdef OLD_GV
                 xastir_snprintf(format, sizeof(format), "-landscape " );
+#else   // OLD_GV
+                xastir_snprintf(format, sizeof(format), "--orientation=landscape " );
+#endif  // OLD_GV
+
                 if (debug_level & 512)
                     fprintf(stderr,"Rotating\n");
             } else {
@@ -2270,7 +2292,13 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
         xastir_snprintf(command,
             sizeof(command),
 //            "%s %s-scale -2 -media Letter %s &",
+
+#ifdef OLD_GV
             "%s %s-scale -2 %s &",
+#else   // OLD_GV
+            "%s %s--scale=-2 %s &",
+#endif  // OLD_GV
+
             GV_PATH,
             format,
             ps_filename );
