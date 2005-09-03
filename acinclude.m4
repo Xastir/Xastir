@@ -177,7 +177,9 @@ if test "$gv_test" != "gv"; then
 fi
 gv_test=`echo $gv_version | cut -d ' ' -f 1`
 if test "$gv_test" != "gv"; then
-  echo "No gv found"
+  # No gv found.  Put an AC_PATH_PROG here so the "then" clause has
+  # something to do and so that we get proper output to the user.
+  AC_PATH_PROG(gv, [gv], no, $BINPATH)
 else
   gv_short_version=`echo $gv_version | cut -d ' ' -f 2`
   gv_major=`echo $gv_short_version | cut -d '.' -f 1`
