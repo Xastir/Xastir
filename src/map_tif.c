@@ -82,9 +82,9 @@ extern int mag;
 #ifdef HAVE_LIBGEOTIFF
 //#include "cpl_csv.h"
 #include "xtiffio.h"
-#include "geotiffio.h"
+//#include "geotiffio.h"
 #include "geo_normalize.h"
-#include "projects.h"
+//#include "projects.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -711,18 +711,20 @@ void draw_geotiff_image_map (Widget w,
      * or keys that I need individually instead.  I
      * need "defn" for the GTIFProj4ToLatLong calls though.
      */
-    if (GTIFGetDefn (gtif, &defn))
-    {
+    if (GTIFGetDefn (gtif, &defn)) {
         if (debug_level & 16)
             GTIFPrintDefn (&defn, stdout);
     }
+    else {
+        fprintf(stderr,"GTIFGetDefn failed\n");
+    }
 
     proj_is_latlong=FALSE;
-    if( !GTIFKeyGet(gtif,ProjectedCSTypeGeoKey, &PCS,0,1))
-      {
+
+    if( !GTIFKeyGet(gtif,ProjectedCSTypeGeoKey, &PCS,0,1)) {
           //fprintf(stderr,"Warning: no PCS in geotiff file %s, assuming map is in lat/lon!\n", filenm);
-	proj_is_latlong=TRUE;
-      }
+        proj_is_latlong=TRUE;
+    }
 
     /* Fetch a few TIFF fields for this image */
     if ( !TIFFGetField (tif, TIFFTAG_IMAGEWIDTH, &width) ) {
@@ -795,6 +797,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
+
         if ( proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )   // Do all 4 of these in one call?
         {
             if (debug_level & 16) {
@@ -803,6 +806,10 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"%f  %f\n", xxx, yyy);
             }
         }
+        else {
+            fprintf(stderr,"Failed GTIFProj4LatLong() call\n");
+        }
+
         f_NW_x_bounding = (float)xxx;
         f_NW_y_bounding = (float)yyy;
 
@@ -817,6 +824,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
+
         if (  proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16) {
@@ -825,6 +833,10 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"%f  %f\n", xxx, yyy);
             }
         }
+        else {
+            fprintf(stderr,"Failed GTIFProj4LatLong() call\n");
+        }
+
         f_NE_x_bounding = (float)xxx;
         f_NE_y_bounding = (float)yyy;
 
@@ -838,6 +850,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
+
         if (  proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16) {
@@ -846,6 +859,10 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"%f  %f\n", xxx, yyy);
             }
         }
+        else {
+            fprintf(stderr,"Failed GTIFProj4LatLong() call\n");
+        }
+
         f_SW_x_bounding = (float)xxx;
         f_SW_y_bounding = (float)yyy;
 
@@ -859,6 +876,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
+
         if (  proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16) {
@@ -867,6 +885,10 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"%f  %f\n", xxx, yyy);
             }
         }
+        else {
+            fprintf(stderr,"Failed GTIFProj4LatLong() call\n");
+        }
+
         f_SE_x_bounding = (float)xxx;
         f_SE_y_bounding = (float)yyy;
 
@@ -1336,14 +1358,14 @@ Samples Per Pixel: 1
         yyy = (double)f_NW_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )     // Do all 4 in one call?
-        {
+        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) ) {     // Do all 4 in one call?
+
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
 
             /* Convert from PCS coordinates to image pixel coordinates */
-            if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )           // Do all 4 in one call?
-            {
+            if ( GTIFPCSToImage( gtif, &xxx, &yyy ) ) { // Do all 4 in one call?
+
                 if (debug_level & 16)
                     fprintf(stderr,"X/Y Pixels: %f, %f\n", xxx, yyy);
 
