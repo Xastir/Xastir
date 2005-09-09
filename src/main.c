@@ -2098,20 +2098,20 @@ void Coordinate_calc_output(char *full_zone, long northing,
     xastir_snprintf(temp_string,
         sizeof(temp_string),
         "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu\n%s%s\n%s%s",
-        "               Decimal Degrees:  ",
+        langcode("COORD011"), // "Decimal Degrees:",
         lat_deg_int+lat_min/60.0, (south) ? 'S':'N',
         lon_deg_int+lon_min/60.0, (west) ?  'W':'E',
-        "       Degrees/Decimal Minutes:  ",
+        langcode("COORD012"), // "Degrees/Decimal Minutes:",
         lat_deg_int, lat_min, (south) ? 'S':'N',
         lon_deg_int, lon_min, (west) ?  'W':'E',
-        "  Degrees/Minutes/Dec. Seconds:  ",
+        langcode("COORD013"), // "Degrees/Minutes/Dec. Seconds:",
         lat_deg_int, lat_min_int, lat_sec, (south) ? 'S':'N',
         lon_deg_int, lon_min_int, lon_sec, (west) ?  'W':'E',
-        " Universal Transverse Mercator:  ",
+        langcode("COORD014"), // "Universal Transverse Mercator:",
         full_zone, easting, northing,
-        "Military Grid Reference System:  ",
+        langcode("COORD015"), // "Military Grid Reference System:",
         MGRS_str,
-        "       Maidenhead Grid Locator:  ",
+        langcode("COORD016"), // "Maidenhead Grid Locator:",
         maidenhead_grid);
     XmTextSetString(coordinate_calc_result_text, temp_string);
 
@@ -2628,8 +2628,10 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         xastir_snprintf(temp_string,
             sizeof(temp_string),
             "%s\n%s\n%s\n%s",
-            " **       Sorry, your input was not recognized!        **",
-            " **   Please use one of the following input formats:   **",
+//            " **       Sorry, your input was not recognized!        **",
+            langcode("COORD017"),
+//            " **   Please use one of the following input formats:   **",
+            langcode("COORD018"),
             " ** 47.99999N  121.99999W,   47 59.999N   121 59.999W  **",
             " ** 10T  0574599  5316887,   47 59 59.9N  121 59 59.9W **");
         XmTextSetString(coordinate_calc_result_text, temp_string);
@@ -4701,24 +4703,38 @@ char *report_gps_status(void) {
 
     switch (gps_valid) {
         case 3: // 3D Fix
-            xastir_snprintf(temp2,sizeof(temp2),"3D");
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS001") );  // "3D"
             break;
         case 2: // 2D Fix
-            xastir_snprintf(temp2,sizeof(temp2),"2D");
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS002") );  // "2D"
             break;
         case 1: // Valid
-            xastir_snprintf(temp2,sizeof(temp2),"Valid");
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS003") );  // "Valid"
             break;
         case 0: // Invalid
         default:
-            xastir_snprintf(temp2,sizeof(temp2),"Invalid");
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS004") );  // "Invalid"
             break;
     }
 
     xastir_snprintf(gps_temp,
         sizeof(gps_temp),
-        "Sats/View:%s Fix:%s",
+        "%s:%s %s:%s",
+        langcode("GPSS005"),    // "Sats/View"
         gps_sats,
+        langcode("GPSS006"),    // "Fix"
         temp2);
 
     // Save it in global variable in case we request status via the
@@ -4752,7 +4768,8 @@ void view_gps_status(Widget w, XtPointer clientData, XtPointer callData) {
     else {
         // Yes, GPS status data is old
         popup_message_always(langcode("PULDNVI015"),
-            "!GPS data is older than 30 seconds!");
+            langcode("GPSS007") );
+            // "!GPS data is older than 30 seconds!"
     }
 }
 
@@ -7958,7 +7975,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'o'); ac++;
-    zl8=XtCreateManagedWidget("10% out" ,
+    zl8=XtCreateManagedWidget(langcode("POPUPMA035"),   // 10% out
             xmPushButtonGadgetClass,
             zoom_sub,
             al,
@@ -7972,7 +7989,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
-    zl9=XtCreateManagedWidget("10% in" ,
+    zl9=XtCreateManagedWidget(langcode("POPUPMA036"),   // 10% in
             xmPushButtonGadgetClass,
             zoom_sub,
             al,
@@ -9320,24 +9337,30 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             area = area * 5280 * 5280;
             xastir_snprintf(temp,
                 sizeof(temp),
-                "Area: %0.2f square feet",
-                area);
+                "%s: %0.2f %s",
+                langcode("POPUPMA037"), // Area
+                area,
+                langcode("POPUPMA039") ); // square feet
             popup_message_always(langcode("POPUPMA020"),temp);
         }
         else {  // Square meters
             area = area * 1000 * 1000;  // Square meters
             xastir_snprintf(temp,
                 sizeof(temp),
-                "Area: %0.2f square meters",
-                area);
+                "%s: %0.2f %s",
+                langcode("POPUPMA037"), // Area
+                area,
+                langcode("POPUPMA040") ); // square meters
             popup_message_always(langcode("POPUPMA020"),temp);
         }
     }
     else {  // Not small
         xastir_snprintf(temp,
             sizeof(temp),
-            "Area: %0.2f square %s",
+            "%s: %0.2f %s %s",
+            langcode("POPUPMA037"), // Area
             area,
+            langcode("POPUPMA038"), // square
             un_dst);
         popup_message_always(langcode("POPUPMA020"),temp);
     }
@@ -9864,12 +9887,16 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
                         xastir_snprintf(temp,
                             sizeof(temp),
-                            "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s, %0.2f square %s,  Bearing: %s degrees",
+                            "%0.2f %s, x=%0.2f %s, y=%0.2f %s, %0.2f %s %s, %s: %s %s",
                             full_distance, un_alt,      // feet/meters
                             x_distance_real, un_alt,    // feet/meters
                             y_distance_real, un_alt,    // feet/meters
-                            area, un_alt,
-                            temp_course);
+                            area,
+                            langcode("POPUPMA038"), // square
+                            un_alt,
+                            langcode("POPUPMA041"), // Bearing
+                            temp_course,
+                            langcode("POPUPMA042") );   // degrees
                     }
                     else {
                         // Compute the total area in miles or
@@ -9902,12 +9929,16 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
                         xastir_snprintf(temp,
                             sizeof(temp),
-                            "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s, %0.2f square %s,  Bearing: %s degrees",
+                            "%0.2f %s, x=%0.2f %s, y=%0.2f %s, %0.2f %s %s, %s: %s %s",
                             full_distance, un_dst,      // miles/kilometers
                             x_distance_real, un_dst,    // miles/kilometers
                             y_distance_real, un_dst,    // miles/kilometers
-                            area, un_dst,
-                            temp_course);
+                            area,
+                            langcode("POPUPMA038"), // square
+                            un_dst,
+                            langcode("POPUPMA041"), // Bearing
+                            temp_course,
+                            langcode("POPUPMA042") ); // degrees
                     }
                     popup_message_always(langcode("POPUPMA020"),temp);
                 }
@@ -10632,13 +10663,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
         if(display_up_first == 0) {             // very first call, do initialization
 
             display_up_first = 1;
-            statusline("Loading symbols...",1);
+            statusline(langcode("BBARSTA045"), 1); // Loading symbols...
             load_pixmap_symbol_file("symbols.dat", 0);
-            statusline("Initialize my station...",1);
+            statusline(langcode("BBARSTA047"), 1); // Initialize my station...
             my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
             da_resize(w, NULL,NULL);            // make sure the size is right after startup & create image
             set_last_position();                // init last map position
-            statusline("Start interfaces...",1);
+            statusline(langcode("BBARSTA048"), 1); // Start interfaces...
             startup_all_or_defined_port(-1);    // start interfaces
         }
 
@@ -12968,7 +12999,8 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     //}
     // check for position abiguity
     if ( position_amb_chars > 0 ) { // popup warning that ambiguity is on
-      popup_message_always( "Modify ambiguous position", "Position abiguity is on, your new position may appear to jump.");
+        popup_message_always(langcode("POPUPMA043"), // "Modify ambiguous position"
+            langcode("POPUPMA044") );   // "Position abiguity is on, your new position may appear to jump."
     }
 
     if(display_up) {
@@ -13300,7 +13332,7 @@ void Map_icon_outline( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
         redraw_symbols(da);
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
-    statusline("Reloading symbols...",1);
+    statusline( langcode("BBARSTA046"), 1);   // Reloading symbols...
     load_pixmap_symbol_file("symbols.dat", 1);
     redraw_symbols(da);
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
@@ -16052,11 +16084,13 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
     ac = 0;
     XtSetArg(al[ac], XmNmessageString, xms); ac++;
-    XtSetArg(al[ac], XmNtitle, "About Xastir"); ac++;
+    // "About Xastir"
+    XtSetArg(al[ac], XmNtitle, langcode("PULDNHEL05") ); ac++;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
- 
-    d = XmCreateInformationDialog(Global.top, "About Xastir", al, ac);
+
+    // "About Xastir" 
+    d = XmCreateInformationDialog(Global.top, langcode("PULDNHEL05"), al, ac);
     XmStringFree(xms);
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_CANCEL_BUTTON));
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_HELP_BUTTON));
@@ -20540,7 +20574,7 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNtitle, "Open Log File"); ac++;
+        XtSetArg(al[ac], XmNtitle, langcode("PULDNFI002")); ac++;  // Open Log File
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
@@ -25961,7 +25995,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         if ( !(p_station->flag & ST_OBJECT)
                 && !(p_station->flag & ST_ITEM)) {  // Not an object or item
             //fprintf(stderr,"flag: %i\n", (int)p_station->flag);
-            popup_message_always(langcode("POPEM00022"), "Not an Object/Item!");
+            popup_message_always(langcode("POPEM00022"),
+                langcode("POPEM00043") ); // "Not an Object/Item!"
             return;
         }
 
@@ -26667,8 +26702,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 NULL);
 
 
-        // "Probability Circles Enable"
-        probabilities_toggle = XtVaCreateManagedWidget("Probability Circles",
+        // "Probability Circles"
+        probabilities_toggle = XtVaCreateManagedWidget(langcode("POPUPOB047"),
                 xmToggleButtonGadgetClass,
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
@@ -26746,8 +26781,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 
 
         // "Map View Object"
-//        map_view_toggle = XtVaCreateManagedWidget(langcode("POPUPOB038"),
-        map_view_toggle = XtVaCreateManagedWidget("Map View Object",
+        map_view_toggle = XtVaCreateManagedWidget(langcode("POPUPOB048"),
                 xmToggleButtonGadgetClass,
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
@@ -26787,10 +26821,7 @@ if (Probability_circles_enabled) {
                 NULL);
 
         // "Probability Circles"
-
-// Change this to langcode format later
-
-        probability_ts  = XtVaCreateManagedWidget("Probability Circles",
+        probability_ts  = XtVaCreateManagedWidget(langcode("POPUPOB047"),
                 xmLabelWidgetClass,
                 probability_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -26807,11 +26838,8 @@ if (Probability_circles_enabled) {
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        // "Probability Data"
-
-// Change this to langcode format later
-
-        probability_label_min = XtVaCreateManagedWidget("Min (mi):",
+        // "Min (mi):"
+        probability_label_min = XtVaCreateManagedWidget(langcode("POPUPOB049"),
                 xmLabelWidgetClass, 
                 probability_form,
                 XmNtopAttachment,           XmATTACH_FORM,
@@ -26842,7 +26870,8 @@ if (Probability_circles_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 NULL);
 
-        probability_label_max = XtVaCreateManagedWidget("Max (mi):",
+        // "Max (mi):"
+        probability_label_max = XtVaCreateManagedWidget(langcode("POPUPOB050"),
                 xmLabelWidgetClass, 
                 probability_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
@@ -27578,7 +27607,8 @@ else if (DF_object_enabled) {
 
 
         // 10 Feet
-        hoption0 = XtVaCreateManagedWidget("10ft",
+        hoption0 = XtVaCreateManagedWidget(
+                (english_units) ? "10ft" : "3m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27587,7 +27617,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption0,XmNvalueChangedCallback,Ob_height_toggle,"0");
 
         // 20 Feet
-        hoption1 = XtVaCreateManagedWidget("20ft",
+        hoption1 = XtVaCreateManagedWidget(
+                (english_units) ? "20ft" : "6m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27596,7 +27627,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption1,XmNvalueChangedCallback,Ob_height_toggle,"1");
 
         // 40 Feet
-        hoption2 = XtVaCreateManagedWidget("40ft",
+        hoption2 = XtVaCreateManagedWidget(
+                (english_units) ? "40ft" : "12m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27605,7 +27637,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption2,XmNvalueChangedCallback,Ob_height_toggle,"2");
 
         // 80 Feet
-        hoption3 = XtVaCreateManagedWidget("80ft",
+        hoption3 = XtVaCreateManagedWidget(
+                (english_units) ? "80ft" : "24m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27614,7 +27647,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption3,XmNvalueChangedCallback,Ob_height_toggle,"3");
 
         // 160 Feet
-        hoption4 = XtVaCreateManagedWidget("160ft",
+        hoption4 = XtVaCreateManagedWidget(
+                (english_units) ? "160ft" : "49m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27623,7 +27657,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption4,XmNvalueChangedCallback,Ob_height_toggle,"4");
 
         // 320 Feet
-        hoption5 = XtVaCreateManagedWidget("320ft",
+        hoption5 = XtVaCreateManagedWidget(
+                (english_units) ? "320ft" : "98m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27632,7 +27667,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption5,XmNvalueChangedCallback,Ob_height_toggle,"5");
 
         // 640 Feet
-        hoption6 = XtVaCreateManagedWidget("640ft",
+        hoption6 = XtVaCreateManagedWidget(
+                (english_units) ? "640ft" : "195m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27641,7 +27677,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption6,XmNvalueChangedCallback,Ob_height_toggle,"6");
 
         // 1280 Feet
-        hoption7 = XtVaCreateManagedWidget("1280ft",
+        hoption7 = XtVaCreateManagedWidget(
+                (english_units) ? "1280ft" : "390m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27650,7 +27687,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption7,XmNvalueChangedCallback,Ob_height_toggle,"7");
 
         // 2560 Feet
-        hoption8 = XtVaCreateManagedWidget("2560ft",
+        hoption8 = XtVaCreateManagedWidget(
+                (english_units) ? "2560ft" : "780m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -27659,7 +27697,8 @@ else if (DF_object_enabled) {
         XtAddCallback(hoption8,XmNvalueChangedCallback,Ob_height_toggle,"8");
 
         // 5120 Feet
-        hoption9 = XtVaCreateManagedWidget("5120ft",
+        hoption9 = XtVaCreateManagedWidget(
+                (english_units) ? "5120ft" : "1561m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30118,7 +30157,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
 
         // 10 Feet
-        hoption1 = XtVaCreateManagedWidget("10ft",
+        hoption1 = XtVaCreateManagedWidget(
+                (english_units) ? "10ft" : "3m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30127,7 +30167,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption1,XmNvalueChangedCallback,Height_toggle,"0");
 
         // 20 Feet
-        hoption2 = XtVaCreateManagedWidget("20ft",
+        hoption2 = XtVaCreateManagedWidget(
+                (english_units) ? "20ft" : "6m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30136,7 +30177,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption2,XmNvalueChangedCallback,Height_toggle,"1");
 
         // 40 Feet
-        hoption3 = XtVaCreateManagedWidget("40ft",
+        hoption3 = XtVaCreateManagedWidget(
+                (english_units) ? "40ft" : "12m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30145,7 +30187,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption3,XmNvalueChangedCallback,Height_toggle,"2");
 
         // 80 Feet
-        hoption4 = XtVaCreateManagedWidget("80ft",
+        hoption4 = XtVaCreateManagedWidget(
+                (english_units) ? "80ft" : "24m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30154,7 +30197,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption4,XmNvalueChangedCallback,Height_toggle,"3");
 
         // 160 Feet
-        hoption5 = XtVaCreateManagedWidget("160ft",
+        hoption5 = XtVaCreateManagedWidget(
+                (english_units) ? "160ft" : "49m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30163,7 +30207,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption5,XmNvalueChangedCallback,Height_toggle,"4");
 
         // 320 Feet
-        hoption6 = XtVaCreateManagedWidget("320ft",
+        hoption6 = XtVaCreateManagedWidget(
+                (english_units) ? "320ft" : "98m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30172,7 +30217,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption6,XmNvalueChangedCallback,Height_toggle,"5");
 
         // 640 Feet
-        hoption7 = XtVaCreateManagedWidget("640ft",
+        hoption7 = XtVaCreateManagedWidget(
+                (english_units) ? "640ft" : "195m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30181,7 +30227,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption7,XmNvalueChangedCallback,Height_toggle,"6");
 
         // 1280 Feet
-        hoption8 = XtVaCreateManagedWidget("1280ft",
+        hoption8 = XtVaCreateManagedWidget(
+                (english_units) ? "1280ft" : "390m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30190,7 +30237,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption8,XmNvalueChangedCallback,Height_toggle,"7");
 
         // 2560 Feet
-        hoption9 = XtVaCreateManagedWidget("2560ft",
+        hoption9 = XtVaCreateManagedWidget(
+                (english_units) ? "2560ft" : "780m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30199,7 +30247,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(hoption9,XmNvalueChangedCallback,Height_toggle,"8");
 
         // 5120 Feet
-        hoption10 = XtVaCreateManagedWidget("5120ft",
+        hoption10 = XtVaCreateManagedWidget(
+                (english_units) ? "5120ft" : "1561m",
                 xmToggleButtonGadgetClass,
                 height_box,
                 MY_FOREGROUND_COLOR,
@@ -30340,7 +30389,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
 
         // Omni-directional
-        doption1 = XtVaCreateManagedWidget("Omni",
+        doption1 = XtVaCreateManagedWidget(langcode("WPUPCFS016"), // Omni
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,

@@ -691,8 +691,9 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
     if (strlen(phg) != 7) {
         xastir_snprintf(phg_decoded,
             phg_decoded_length,
+            "%s %s",
             langstr,
-            "BAD PHG");
+            langcode("WPUPSTI073") ); // "BAD PHG"
         return;
     }
 
@@ -725,7 +726,7 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
             xastir_snprintf(directivity,
                 sizeof(directivity),
                 "%s",
-                " omni");
+                langcode("WPUPSTI071") );   // "omni"
             break;
         case '1':
             xastir_snprintf(directivity,
@@ -782,24 +783,29 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
     if (english_units)
         xastir_snprintf(temp,
             sizeof(temp),
-            "%.0fW @ %.0fft HAAT, %ddB%s, range %.1fmi",
+            "%.0fW @ %.0fft %s, %ddB%s, %s %.1fmi",
             power,
             height,
+            langcode("WPUPSTI070"), // HAAT
             gain_db,
             directivity,
+            langcode("WPUPSTI072"), // range
             range);
     else
         xastir_snprintf(temp,
             sizeof(temp),
-            "%.0fW @ %.1fm HAAT, %ddB%s, range %.1fkm",
+            "%.0fW @ %.1fm %s, %ddB%s, %s %.1fkm",
             power,
             height*0.3048,
+            langcode("WPUPSTI070"), // HAAT
             gain_db,
             directivity,
+            langcode("WPUPSTI072"), // range
             range*1.609344);
 
     xastir_snprintf(phg_decoded,
         phg_decoded_length,
+        "%s %s",
         langstr,
         temp);
 }
@@ -824,7 +830,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
         xastir_snprintf(shg_decoded,
             shg_decoded_length,
             langstr,
-            "BAD SHG");
+            langcode("WPUPSTI074") );   // "BAD SHG"
         return;
     }
 
@@ -838,61 +844,71 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "No signal detected");
+                langcode("WPUPSTI076") );
+                // "No signal detected"
             break;
         case '1':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Detectible signal (Maybe)");
+                langcode("WPUPSTI077") );
+                // "Detectible signal (Maybe)"
             break;
         case '2':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Detectible signal but not copyable)");
+                langcode("WPUPSTI078") );
+                // "Detectible signal but not copyable)"
             break;
         case '3':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Weak signal, marginally readable");
+                langcode("WPUPSTI079") );
+                // "Weak signal, marginally readable"
             break;
         case '4':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Noisy but copyable signal");
+                langcode("WPUPSTI080") );
+                // "Noisy but copyable signal"
             break;
         case '5':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Some noise, easy to copy signal");
+                langcode("WPUPSTI081") );
+                // "Some noise, easy to copy signal"
             break;
         case '6':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Good signal w/detectible noise");
+                langcode("WPUPSTI082") );
+                // "Good signal w/detectible noise"
             break;
         case '7':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Near full-quieting signal");
+                langcode("WPUPSTI083") );
+                // "Near full-quieting signal"
             break;
         case '8':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Full-quieting signal");
+                langcode("WPUPSTI084") );
+                // "Full-quieting signal"
             break;
         case '9':
             xastir_snprintf(signal,
                 sizeof(signal),
                 "%s",
-                "Extremely strong & full-quieting signal");
+                langcode("WPUPSTI085") );
+                // "Extremely strong & full-quieting signal"
             break;
         default:
             signal[0] = '\0';
@@ -925,8 +941,8 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
         case '0':
             xastir_snprintf(directivity,
                 sizeof(directivity),
-                "%s",
-                " omni");
+                "%s ",
+                langcode("WPUPSTI071") );   // "omni"
             break;
         case '1':
             xastir_snprintf(directivity,
@@ -983,19 +999,23 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
     if (english_units)
         xastir_snprintf(temp,
             sizeof(temp),
-            "%.0fft HAAT, %ddB%s, DF Range: %.1fmi, %s",
+            "%.0fft %s, %ddB%s, %s: %.1fmi, %s",
             height,
+            langcode("WPUPSTI070"), // "HAAT"
             gain_db,
             directivity,
+            langcode("WPUPSTI075"), // "DF Range"
             range,
             signal);
     else
         xastir_snprintf(temp,
             sizeof(temp),
-            "%.1fm HAAT, %ddB%s, DF Range: %.1fkm, %s",
+            "%.1fm %s, %ddB%s, %s: %.1fkm, %s",
             height*0.3048,
+            langcode("WPUPSTI070"), // "HAAT"
             gain_db,
             directivity,
+            langcode("WPUPSTI075"), // "DF Range"
             range*1.609344,
             signal);
 
@@ -1029,7 +1049,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
         xastir_snprintf(bearing_decoded,
             bearing_decoded_length,
             langstr,
-            "BAD BEARING");
+            langcode("WPUPSTI086") );   // "BAD BEARING"
         return;
     }
 
@@ -1037,7 +1057,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
         xastir_snprintf(bearing_decoded,
             bearing_decoded_length,
             langstr,
-            "BAD NRQ");
+            langcode("WPUPSTI087") );   // "BAD NRQ"
         return;
     }
 
@@ -1093,23 +1113,28 @@ void bearing_decode(const char *langstr, const char *bearing_str,
         if (english_units) {
             xastir_snprintf(temp,
                 sizeof(temp),
-                "%i°, DF Beamwidth: %i°, DF Length: %i mi",
+                "%i°, %s: %i°, %s: %i mi",
                 bearing,
+                langcode("WPUPSTI088"), // DF Beamwidth
                 width,
+                langcode("WPUPSTI089"), // DF Length
                 range);
         } else {
             xastir_snprintf(temp,
                 sizeof(temp),
-                "%i°, DF Beamwidth: %i°, DF Length: %0.2f km",
+                "%i°, %s: %i°, %s: %0.2f km",
                 bearing,
+                langcode("WPUPSTI088"), // DF Beamwidth
                 width,
+                langcode("WPUPSTI089"), // DF Length
                 range*1.609344);
         }
     } else {
         xastir_snprintf(temp,
             sizeof(temp),
             "%s",
-            "Not Valid");
+            langcode("WPUPSTI090") );   // "Not Valid"
+
 //fprintf(stderr,"N was 0\n");
     }
     xastir_snprintf(bearing_decoded,

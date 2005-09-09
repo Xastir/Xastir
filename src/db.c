@@ -1385,12 +1385,14 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 if (msg_data[msg_index[j]].acked == 2) {
                                     xastir_snprintf(prefix,
                                         sizeof(prefix),
-                                        "*TIMEOUT* ");
+                                        "%s ",
+                                        langcode("WPUPMSB016") ); // "*TIMEOUT*"
                                 }
                                 else if (msg_data[msg_index[j]].acked == 3) {
                                     xastir_snprintf(prefix,
                                         sizeof(prefix),
-                                        "*CANCELLED* ");
+                                        "%s ",
+                                        langcode("WPUPMSB017") ); // "*CANCELLED*"
                                 }
                                 else prefix[0] = '\0';
 
@@ -1620,8 +1622,15 @@ void mscan_file(char msg_type, void (*function)(Message *)) {
 
 
 void mprint_record(Message *m_fill) {
-    fprintf(stderr,"%-9s>%-9s seq:%5s type:%c :%s\n", m_fill->from_call_sign, m_fill->call_sign,
-        m_fill->seq, m_fill->type, m_fill->message_line);
+    fprintf(stderr,
+        "%-9s>%-9s %s:%5s %s:%c :%s\n",
+        m_fill->from_call_sign,
+        m_fill->call_sign,
+        langcode("WPUPMSB013"), // "seq"
+        m_fill->seq,
+        langcode("WPUPMSB014"), // "type"
+        m_fill->type,
+        m_fill->message_line);
 }
 
 
@@ -2961,18 +2970,34 @@ void draw_range_scale(Widget w) {
 
     if (english_units) { // English units
         if (small_flag) {
-            xastir_snprintf(text,sizeof(text),"RANGE SCALE 1/%ld mi", range);
+            xastir_snprintf(text,
+                sizeof(text),
+                "%s 1/%ld mi",
+                langcode("RANGE001"),   // "RANGE SCALE"
+                range);
         }
         else {
-            xastir_snprintf(text,sizeof(text),"RANGE SCALE %ld mi", range);
+            xastir_snprintf(text,
+                sizeof(text),
+                "%s %ld mi",
+                langcode("RANGE001"),   // "RANGE SCALE"
+                range);
         }
     }
     else {  // Metric units
         if (small_flag) {
-            xastir_snprintf(text,sizeof(text),"RANGE SCALE %ld m", range);
+            xastir_snprintf(text,
+                sizeof(text),
+                "%s %ld m",
+                langcode("RANGE001"),   // "RANGE SCALE"
+                range);
         }
         else {
-            xastir_snprintf(text,sizeof(text),"RANGE SCALE %ld km", range);
+            xastir_snprintf(text,
+                sizeof(text),
+                "%s %ld km",
+                langcode("RANGE001"),   // "RANGE SCALE"
+                range);
         }
     }
 
@@ -3549,7 +3574,7 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
             // We're doing a Move Object operation
             //fprintf(stderr,"Modify_object:  Object not owned by me!\n");
             popup_message_always(langcode("POPEM00035"),
-                "Object not owned by me!\nTry adopting the object first.\n");
+                langcode("POPEM00042"));
             return;
         }
     }
@@ -4359,7 +4384,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
         else {
             // Found PHG
-            phg_decode(langcode("WPUPSTI014"),
+            phg_decode(langcode("WPUPSTI014"), // "Current Power Gain"
                 p_station->power_gain,
                 temp,
                 sizeof(temp) );
@@ -4381,12 +4406,36 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             Center_Zoom(w,NULL,(XtPointer)p_station);
         }
     }
-    else if (p_station->flag & (ST_OBJECT|ST_ITEM))
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "none");
-    else if (english_units)
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "default (9W @ 20ft HAAT, 3dB omni, range 6.2mi)");
-    else
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "default (9W @ 6.1m HAAT, 3dB omni, range 10.0km)");
+    else if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s %s",
+            langcode("WPUPSTI014"), // "Current Power Gain:"
+            langcode("WPUPSTI058") );   // "none"
+    }
+    else if (english_units) {
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s %s (9W @ 20ft %s, 3dB %s, %s 10.0km)",
+            langcode("WPUPSTI014"), // "Current Power Gain:"
+            langcode("WPUPSTI069"), // "default"
+            langcode("WPUPSTI070"), // "HAAT"
+            langcode("WPUPSTI071"), // "omni"
+            langcode("WPUPSTI072") ); // "range"
+//          "default (9W @ 20ft HAAT, 3dB omni, range 6.2mi)");
+    }
+    else {
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s %s (9W @ 6.1m %s, 3dB %s, %s 10.0km)",
+            langcode("WPUPSTI014"), // "Current Power Gain:"
+            langcode("WPUPSTI069"), // "default"
+            langcode("WPUPSTI070"), // "HAAT"
+            langcode("WPUPSTI071"), // "omni"
+            langcode("WPUPSTI072") ); // "range"
+//          "default (9W @ 6.1m HAAT, 3dB omni, range 10.0km)");
+            
+    }
 
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
@@ -17274,6 +17323,9 @@ void check_and_transmit_objects_items(time_t time) {
 }
 
 
+
+
+
 // ********************************************************************
 // calc aloha_distance()
 // calculate and return alhoa circle radius in current distance units
@@ -17288,7 +17340,7 @@ void check_and_transmit_objects_items(time_t time) {
 // (the supposed limit of the channel capacity).  The distance to the last
 // station we counted is our ALOHA limit.  Per Bob B., this should be plotted
 // on the  map as a circle with no user-selectable way of turning it off.
-
+//
 double calc_aloha_distance(void) {
     DataRow *p_station = n_first;  // walk in alphabetical order
     aloha_entry *aloha_array;
@@ -17454,6 +17506,10 @@ double calc_aloha_distance(void) {
     
 }
 
+
+
+
+
 // Used by qsort to sort the aloha entries
 int comp_by_dist(const void *av,const void *bv) {
     aloha_entry *a = (aloha_entry *) av;
@@ -17465,6 +17521,10 @@ int comp_by_dist(const void *av,const void *bv) {
 
      return 0;
 }
+
+
+
+
 
 // Called periodically by UpdateTime, we calculate our aloha radius every
 // so often.  (Bob B. recommends every 30 minutes)
@@ -17515,6 +17575,9 @@ void calc_aloha(void)    {
         }
     }
 }
+
+
+
 
 
 // popup window on menu request
@@ -17598,4 +17661,6 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
         popup_message_always(langcode("PULDNVI016"),langcode("WPUPALO666"));
     }
 }        
-                        
+
+
+
