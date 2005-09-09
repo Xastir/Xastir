@@ -258,6 +258,7 @@ PULDNHEL01|Information|I|
 PULDNHEL02|Index de l'Aide|A|#'
 PULDNHEL03|ACTIVER MODE BALISE DE DETRESSE|E|
 PULDNHEL04|!!! MODE BALISE DE DETRESSE !!!||
+PULDNHEL05|About Xastir||
 #
 #
 # Mouse Menu Popup
@@ -296,6 +297,16 @@ POPUPMA031|Fermer polygone||
 POPUPMA032|Effacer tout les polygones CAD||
 POPUPMA033|Finir mode de dessin||
 POPUPMA034|Custom Zoom Level||
+POPUPMA035|10% out||
+POPUPMA036|10% in||
+POPUPMA037|Area||
+POPUPMA038|square||
+POPUPMA039|square feet||
+POPUPMA040|square meters||
+POPUPMA041|Bearing||
+POPUPMA042|degrees||
+POPUPMA043|Modify ambiguous position||
+POPUPMA044|Position abiguity is on, your new position may appear to jump.||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -346,6 +357,10 @@ BBARSTA041|Attendant données GPS..||
 BBARSTA042|Transmission objets/articles||
 BBARSTA043|Journalisation||
 BBARSTA044|Le rayon ALOHA est de %d%s||
+BBARSTA045|Loading symbols...||
+BBARSTA046|Reloading symbols...||
+BBARSTA047|Initialize my station...||
+BBARSTA048|Start interfaces...||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
@@ -581,6 +596,10 @@ POPUPOB043|Inutile||
 POPUPOB044|Adopter objet||
 POPUPOB045|Adopter article||
 POPUPOB046|DF Bearing:||
+POPUPOB047|Probability Circles||
+POPUPOB048|Map View Object||
+POPUPOB049|Min (mi):||
+POPUPOB050|Max (mi):||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Configurer Internet||
@@ -685,6 +704,8 @@ WPUPMSB012|Kick Timer||
 WPUPMSB013|seq||
 WPUPMSB014|type||
 WPUPMSB015|Broadcast||
+WPUPMSB016|*TIMEOUT*||
+WPUPMSB017|*CANCELLED*||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
@@ -709,7 +730,7 @@ WPUPSTI010|dernièrement sur Internet %d||
 WPUPSTI011|dernièrement dans fichier||
 WPUPSTI012|dernièrement sur inconnu||
 WPUPSTI013|, et a bougé||
-WPUPSTI014|Puissance/gain/etc.: %s||
+WPUPSTI014|Puissance/gain/etc.:||
 WPUPSTI016|Altitude: %.0f%s ||
 WPUPSTI017|Cap: %s° ||
 WPUPSTI018|Vitesse: %.1f km/h||
@@ -762,6 +783,29 @@ WPUPSTI064|Charger alerte NWS||
 WPUPSTI065|Indicatif tactique: %s||
 WPUPSTI066|Assign Tactical Call||
 WPUPSTI067|Current Range: %d miles||
+WPUPSTI068|none||
+WPUPSTI069|default||
+WPUPSTI070|HAAT||
+WPUPSTI071|omni||
+WPUPSTI072|range||
+WPUPSTI073|BAD PHG||
+WPUPSTI074|BAD SHG||
+WPUPSTI075|DF Range||
+WPUPSTI076|No signal detected||
+WPUPSTI077|Detectible signal (Maybe)||
+WPUPSTI078|Detectible signal but not copyable)||
+WPUPSTI079|Weak signal, marginally readable||
+WPUPSTI080|Noisy but copyable signal||
+WPUPSTI081|Some noise, easy to copy signal||
+WPUPSTI082|Good signal w/detectible noise||
+WPUPSTI083|Near full-quieting signal||
+WPUPSTI084|Full-quieting signal||
+WPUPSTI085|Extremely strong & full-quieting signal||
+WPUPSTI086|BAD BEARING||
+WPUPSTI087|BAD NRQ||
+WPUPSTI088|DF Beamwidth||
+WPUPSTI089|DF Length||
+WPUPSTI090|Not Valid||
 #
 #
 # PopUp "ALOHA Statistics"
@@ -1005,6 +1049,8 @@ POPEM00038|Conflit de nom avec un Objet/Item/Station déjà existant||
 POPEM00039|Charactère illégal, remplacé par un point||
 POPEM00040|Custom outgoing path was lost||
 POPEM00041|Traitement d'un autre fichier en cours. Attendez, puis réessayez||
+POPEM00042|Object not owned by me! Try adopting the object first.||
+POPEM00043|Not an Object/Item!||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||
@@ -1090,6 +1136,14 @@ COORD007|Longitude ou||
 COORD008|Zone||
 COORD009|UTM vers l'est||#'
 COORD010|UTM vers le nord||
+COORD011|               Decimal Degrees:  ||
+COORD012|       Degrees/Decimal Minutes:  ||
+COORD013|  Degrees/Minutes/Dec. Seconds:  ||
+COORD014| Universal Transverse Mercator:  ||
+COORD015|Military Grid Reference System:  ||
+COORD016|       Maidenhead Grid Locator:  ||
+COORD017| **       Sorry, your input was not recognized!        **||
+COORD018| **   Please use one of the following input formats:   **||
 #
 #
 # Smart Beaconing Dialog
@@ -1172,5 +1226,19 @@ TIME008|secondes||
 CACHE001|Map now cached||
 CACHE002|Loading Cached Map||
 CACHE003|Map not found in cache...||
+#
+#
+# Map Screen Misc
+RANGE001|RANGE SCALE||
+#
+#
+# GPS Status
+GPSS001|3D||
+GPSS002|2D||
+GPSS003|Valid||
+GPSS004|Invalid|
+GPSS005|Sats/View|
+GPSS006|Fix|
+GPSS007|!GPS data is older than 30 seconds!||
 #
 #

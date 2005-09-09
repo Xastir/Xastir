@@ -262,6 +262,7 @@ PULDNHEL01|Acerca de|A|
 PULDNHEL02|Indice de Ayuda|I|
 PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
 PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
+PULDNHEL05|About Xastir||
 #
 # Menú de Ratón
 POPUPMA001|Opciones||
@@ -299,6 +300,16 @@ POPUPMA031|Cierre el Polígono||
 POPUPMA032|Borre Todos los Polígonos CAD||
 POPUPMA033|Termine el Modo Dibujar||
 POPUPMA034|Custom Zoom Level||
+POPUPMA035|10% out||
+POPUPMA036|10% in||
+POPUPMA037|Area||
+POPUPMA038|square||
+POPUPMA039|square feet||
+POPUPMA040|square meters||
+POPUPMA041|Bearing||
+POPUPMA042|degrees||
+POPUPMA043|Modify ambiguous position||
+POPUPMA044|Position abiguity is on, your new position may appear to jump.||
 #
 # Menú de Estados de la líneas de Etiquetas
 BBARZM0001|Foco %s||
@@ -349,6 +360,10 @@ BBARSTA041|Esperando por GPS data..||
 BBARSTA042|Transmitiendo objetos/articulos||
 BBARSTA043|Anotando||
 BBARSTA044|ALOHA distance is %d%s||
+BBARSTA045|Loading symbols...||
+BBARSTA046|Reloading symbols...||
+BBARSTA047|Initialize my station...||
+BBARSTA048|Start interfaces...||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||
@@ -583,6 +598,10 @@ POPUPOB043|Inútil||
 POPUPOB044|Adopt Object||
 POPUPOB045|Adopt Item||
 POPUPOB046|DF Bearing:||
+POPUPOB047|Probability Circles||
+POPUPOB048|Map View Object||
+POPUPOB049|Min (mi):||
+POPUPOB050|Max (mi):||
 #
 # Configurar Internet
 WPUPCFI001|Configurar Internet||
@@ -687,6 +706,8 @@ WPUPMSB012|Kick Timer||
 WPUPMSB013|seq||
 WPUPMSB014|type||
 WPUPMSB015|Broadcast||
+WPUPMSB016|*TIMEOUT*||
+WPUPMSB017|*CANCELLED*||
 #
 # Auto Contestación
 WPUPARM001|Cambiar auto Contestación||
@@ -711,7 +732,7 @@ WPUPSTI010|Ultima vez vía Internet en dispositivo: %d||
 WPUPSTI011|Ultima vez vía Archivo||
 WPUPSTI012|Ultima vez vía Desconocida||
 WPUPSTI013|, y ha cambiado posición||
-WPUPSTI014|Actual Potencia/Ganancia: %s||
+WPUPSTI014|Actual Potencia/Ganancia:||
 WPUPSTI016|Altitud: %.1f%s ||
 WPUPSTI017|Curso: %s° ||
 WPUPSTI018|Velocidad: %.1f km/h||
@@ -764,6 +785,29 @@ WPUPSTI064|Fetch NWS Alert||
 WPUPSTI065|Tactical Call: %s||
 WPUPSTI066|Assign Tactical Call||
 WPUPSTI067|Current Range: %d miles||
+WPUPSTI068|none||
+WPUPSTI069|default||
+WPUPSTI070|HAAT||
+WPUPSTI071|omni||
+WPUPSTI072|range||
+WPUPSTI073|BAD PHG||
+WPUPSTI074|BAD SHG||
+WPUPSTI075|DF Range||
+WPUPSTI076|No signal detected||
+WPUPSTI077|Detectible signal (Maybe)||
+WPUPSTI078|Detectible signal but not copyable)||
+WPUPSTI079|Weak signal, marginally readable||
+WPUPSTI080|Noisy but copyable signal||
+WPUPSTI081|Some noise, easy to copy signal||
+WPUPSTI082|Good signal w/detectible noise||
+WPUPSTI083|Near full-quieting signal||
+WPUPSTI084|Full-quieting signal||
+WPUPSTI085|Extremely strong & full-quieting signal||
+WPUPSTI086|BAD BEARING||
+WPUPSTI087|BAD NRQ||
+WPUPSTI088|DF Beamwidth||
+WPUPSTI089|DF Length||
+WPUPSTI090|Not Valid||
 #
 #
 # PopUp "ALOHA Statistics"
@@ -1006,6 +1050,8 @@ POPEM00038|Name Conflicts With Existing Object/Item/Station||
 POPEM00039|Illegal characters found, substituting periods in their place||
 POPEM00040|Custom outgoing path was lost||
 POPEM00041|Processing another file.  Wait a bit, then try again||
+POPEM00042|Object not owned by me! Try adopting the object first.||
+POPEM00043|Not an Object/Item!||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||
@@ -1090,6 +1136,14 @@ COORD007|Longitud o||
 COORD008|Zona||
 COORD009|UTM Hacia Este||
 COORD010|UTM Hacia Norte||
+COORD011|               Decimal Degrees:  ||
+COORD012|       Degrees/Decimal Minutes:  ||
+COORD013|  Degrees/Minutes/Dec. Seconds:  ||
+COORD014| Universal Transverse Mercator:  ||
+COORD015|Military Grid Reference System:  ||
+COORD016|       Maidenhead Grid Locator:  ||
+COORD017| **       Sorry, your input was not recognized!        **||
+COORD018| **   Please use one of the following input formats:   **||
 #
 # Diálogo Baliza Inteligente
 SMARTB001|Baliza Inteligente||
@@ -1162,5 +1216,19 @@ TIME008|Segundos||
 CACHE001|Map now cached||
 CACHE002|Loading Cached Map||
 CACHE003|Map not found in cache...||
+#
+#
+# Map Screen Misc
+RANGE001|RANGE SCALE||
+#
+#
+# GPS Status
+GPSS001|3D||
+GPSS002|2D||
+GPSS003|Valid||
+GPSS004|Invalid|
+GPSS005|Sats/View|
+GPSS006|Fix|
+GPSS007|!GPS data is older than 30 seconds!||
 #
 #
