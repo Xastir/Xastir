@@ -271,6 +271,7 @@ void Geocoder_place(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
 begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_place" );
 
+        // Find Address
         geocoder_place_dialog = XtVaCreatePopupShell(langcode("PULDNMP029"),
                 xmDialogShellWidgetClass,Global.top,
                 XmNdeleteResponse,XmDESTROY,
@@ -288,8 +289,8 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNshadowThickness, 1,
                 NULL);
 
-//        address = XtVaCreateManagedWidget(langcode("FEATURE004"),xmLabelWidgetClass, form,
-        address = XtVaCreateManagedWidget("Address:",xmLabelWidgetClass, form,
+        // Address:
+        address = XtVaCreateManagedWidget(langcode("FEATURE007"),xmLabelWidgetClass, form,
                 XmNtopAttachment, XmATTACH_FORM,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_NONE,
@@ -320,9 +321,8 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNtraversalOn, TRUE,
                 NULL);
 
-//        locality = XtVaCreateManagedWidget(langcode("FEATURE003"),xmLabelWidgetClass, form,
-        locality = XtVaCreateManagedWidget("City:",xmLabelWidgetClass, form,
- 
+        // City:
+        locality = XtVaCreateManagedWidget(langcode("FEATURE008"),xmLabelWidgetClass, form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, address,
                 XmNtopOffset, 10,
@@ -355,6 +355,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNtraversalOn, TRUE,
                 NULL);
 
+        // State/Province:
         state = XtVaCreateManagedWidget(langcode("FEATURE002"),xmLabelWidgetClass, form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, locality,
@@ -388,8 +389,8 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNtraversalOn, TRUE,
                 NULL);
 
-//        show_dest_toggle = XtVaCreateManagedWidget(langcode("FEATURE002"),xmToggleButtonGadgetClass, form,
-        show_dest_toggle = XtVaCreateManagedWidget("Mark Destination",xmToggleButtonGadgetClass, form,
+        // Mark Destination
+        show_dest_toggle = XtVaCreateManagedWidget(langcode("FEATURE009"),xmToggleButtonGadgetClass, form,
                 XmNvisibleWhenOff, TRUE,
                 XmNindicatorSize, 12,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -410,8 +411,8 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
             XmToggleButtonSetState(show_dest_toggle,TRUE,FALSE);
 
 
-//        zip = XtVaCreateManagedWidget(langcode("FEATURE001"),xmLabelWidgetClass, form,
-        zip = XtVaCreateManagedWidget("Zip Code:",xmLabelWidgetClass, form,
+        // Zip Code:
+        zip = XtVaCreateManagedWidget(langcode("FEATURE010"),xmLabelWidgetClass, form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, state,
                 XmNtopOffset, 10,
@@ -443,9 +444,8 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNtraversalOn, TRUE,
                 NULL);
 
-//        map_file = XtVaCreateManagedWidget(langcode("FEATURE006"),xmLabelWidgetClass, form,
-        map_file = XtVaCreateManagedWidget("Geocoding File",xmLabelWidgetClass, form,
- 
+        // Geocoding File:
+        map_file = XtVaCreateManagedWidget(langcode("FEATURE011"),xmLabelWidgetClass, form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, zip,
                 XmNtopOffset, 10,

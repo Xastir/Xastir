@@ -355,7 +355,10 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
         // db_strerror(mc_ret); 
         return(mc_ret); 
     } 
-    statusline("Map now cached",1);
+
+    // Map now cached
+    statusline(langcode("CACHE001"), 1);
+
 // close the db 
 
     // Only try the close if we have a valid handle
@@ -564,7 +567,9 @@ set_dangerous("map_cache_get: dbp->close 2");
             }
 clear_dangerous();
             // If we made it here all is good
-            statusline("Loading Cached Map",1);
+
+            // Loading Cached Map
+            statusline(langcode("CACHE002"), 1);
             return (0); 
         }
 		
@@ -583,7 +588,8 @@ clear_dangerous();
         // there was some problem getting things from the db
         // return the return from the get 
 
-        statusline("Map not found in cache...",1);        
+        // Map not found in cache...
+        statusline(langcode("CACHE003"), 1);
         return (mc_ret); 
     }
 

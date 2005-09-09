@@ -210,13 +210,19 @@ int get_int(char *option, int low, int high, int def) {
     if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) ) {
         return(atoi (value_o));
     }
-    else {
-        fprintf(stderr,"Found out-of-range or non-existent value (%d) for %s in config file, changing to %d\n",
-            atoi(value_o),
+
+    if (!ret) {
+        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %d\n",
             option,
             def);
         return(def);
     }
+
+    fprintf(stderr,"xastir.cnf: %s out-of-range: %d, changing to default: %d\n",
+        option,
+        atoi(value_o),
+        def);
+    return(def);
 }
 
 
@@ -233,13 +239,20 @@ long get_long(char *option, long low, long high, long def) {
     if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) ) {
         return(atol(value_o));
     }
-    else {
-        fprintf(stderr,"Found out-of-range or non-existent value (%ld) for %s in config file, changing to %ld\n",
-            atol(value_o),
+
+    if (!ret) {
+        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %ld\n",
             option,
             def);
         return(def);
     }
+
+    fprintf(stderr,
+        "xastir.cnf: %s out-of-range: %ld, changing to default: %ld\n",
+        option,
+        atol(value_o),
+        def);
+    return(def);
 }
 
 

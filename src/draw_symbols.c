@@ -2389,22 +2389,38 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         // Heard from this station within the
                         // last 30 minutes?
                         if (minutes < 30.0) {
-                            xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
+                            xastir_snprintf(age,
+                                sizeof(age),
+                                "%d%s",
+                                (int)minutes,
+                                langcode("UNIOP00034"));    // min
                             fgcolor = 0x52; // green
                         }
                         // 30 to 59 minutes?
                         else if (minutes < 60.0) {
-                            xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
+                            xastir_snprintf(age,
+                                sizeof(age),
+                                "%d%s",
+                                (int)minutes,
+                                langcode("UNIOP00034"));    // min
                             fgcolor = 0x40; // yellow
                         }
                         // 1 hour to 1 day old?
                         else if (hours <= 24.0) {
-                            xastir_snprintf(age,sizeof(age),"%.1fhr", hours);
+                            xastir_snprintf(age,
+                                sizeof(age),
+                                "%.1f%s",
+                                hours,
+                                langcode("UNIOP00035"));    // hr
                             fgcolor = 0x4a; // red
                         }
                         // More than a day old
                         else {
-                            xastir_snprintf(age,sizeof(age),"%.1fday", hours / 24.0);
+                            xastir_snprintf(age,
+                                sizeof(age),
+                                "%.1f%s",
+                                hours / 24.0,
+                                langcode("UNIOP00036"));    // day
                             fgcolor = 0x0f; // white
                         }
 

@@ -104,7 +104,9 @@ int build_fcc_index(int type){
         if (file_time(get_data_base_dir(database_name))<=file_time(get_user_base_dir("data/appl.ndx")))
             return(1);
         else {
-            statusline("FCC index old, rebuilding",1);
+            // FCC index old, rebuilding
+            statusline(langcode("STIFCC0100"),1);
+
             fprintf(stderr,"FCC index is old.  Rebuilding index.\n");
 //            XmTextFieldSetString(text,"FCC index old, rebuilding");
 //            XtManageChild(text);
@@ -468,7 +470,11 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                             // location for the callsign.  Return if so.
                             if ( (temp[0] < line[pos]) ||
                                     ( (temp[0] == line[pos]) && (temp[1] < line[pos+1]) ) ) {
-                                popup_message_always("Callsign Search", "Callsign Not Found!");
+
+                                // "Callsign Search", "Callsign Not Found!"
+                                popup_message_always(langcode("STIFCC0101"),
+                                    langcode("STIFCC0102") );
+
                                 //fprintf(stderr,"%c%c\t%c%c\n",temp[0],temp[1],line[pos],line[pos+1]);
                                 (void)fclose(f);
                                 return(0);
