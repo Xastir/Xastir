@@ -691,6 +691,9 @@ WPUPMSB009|Stuur nu!||
 WPUPMSB010|Pad:||
 WPUPMSB011|Breek alle openstaande berichten af||
 WPUPMSB012|Kick Timer||
+WPUPMSB013|seq||
+WPUPMSB014|type||
+WPUPMSB015|Broadcast||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Automatich antwoord bericht||
@@ -795,6 +798,14 @@ STIFCC0009|Geavanceerd ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
+#
+# FCC-RAC indexing/searching
+STIFCC0100|FCC index old, rebuilding||
+STIFCC0101|Callsign Search||
+STIFCC0102|Callsign Not Found!||
+STIFCC0103|RAC index old, rebuilding||
+#
+#
 # Band open message
 UMBNDO0001|op een afstand van||
 #
@@ -832,6 +843,9 @@ UNIOP00030|Digipeat?||
 UNIOP00031|m||
 UNIOP00032|Toepassen|||
 UNIOP00033|Reset||
+UNIOP00034|min||
+UNIOP00035|hr||
+UNIOP00036|day||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Kiezer||
@@ -1068,6 +1082,11 @@ FEATURE003|Land:||
 FEATURE004|Kaart quadrant:||
 FEATURE005|Type:||
 FEATURE006|GNIS Bestand:||
+FEATURE007|Adres:||
+FEATURE008|City:||
+FEATURE009|Mark Destination||
+FEATURE010|Zip Code:||
+FEATURE011|Geocoding File||
 #
 # Coordinate Calculator Dialog
 COORD001|Coordinaten berekening||
@@ -1156,3 +1175,11 @@ TIME005|Minuut||
 TIME006|Minuten||
 TIME007|Seconde||
 TIME008|Secondes||
+#
+#
+# Map Caching
+CACHE001|Map now cached||
+CACHE002|Loading Cached Map||
+CACHE003|Map not found in cache...||
+#
+#

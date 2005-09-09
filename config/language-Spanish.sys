@@ -684,6 +684,9 @@ WPUPMSB009|Enviar ahora!||
 WPUPMSB010|Ruta:||
 WPUPMSB011|Cancel Pending Msgs||
 WPUPMSB012|Kick Timer||
+WPUPMSB013|seq||
+WPUPMSB014|type||
+WPUPMSB015|Broadcast||
 #
 # Auto Contestación
 WPUPARM001|Cambiar auto Contestación||
@@ -787,6 +790,14 @@ STIFCC0009|Advanzada ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
+#
+# FCC-RAC indexing/searching
+STIFCC0100|FCC index old, rebuilding||
+STIFCC0101|Callsign Search||
+STIFCC0102|Callsign Not Found!||
+STIFCC0103|RAC index old, rebuilding||
+#
+#
 # Mensaje de Banda abierta 
 UMBNDO0001|en distancia de||
 #
@@ -824,6 +835,9 @@ UNIOP00030|Digipeat?||
 UNIOP00031|m||
 UNIOP00032|Apply|||
 UNIOP00033|Reset||
+UNIOP00034|min||
+UNIOP00035|hr||
+UNIOP00036|day||
 #
 # Seleccionar Estación
 STCHO00001|Seleccionar Estación||
@@ -1059,6 +1073,11 @@ FEATURE003|Pais:||
 FEATURE004|Cuadratura del Mapa:||
 FEATURE005|Tipo:||
 FEATURE006|GNIS Archivo:||
+FEATURE007|Address:||
+FEATURE008|City:||
+FEATURE009|Mark Destination||
+FEATURE010|Zip Code:||
+FEATURE011|Geocoding File||
 #
 # Diálogo de Calcular Coordenada
 COORD001|Calcula Coordenada||
@@ -1137,4 +1156,11 @@ TIME005|Minuto||
 TIME006|Minutos||
 TIME007|Segundo||
 TIME008|Segundos||
+#
+#
+# Map Caching
+CACHE001|Map now cached||
+CACHE002|Loading Cached Map||
+CACHE003|Map not found in cache...||
+#
 #
