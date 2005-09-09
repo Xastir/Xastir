@@ -4411,7 +4411,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             sizeof(temp),
             "%s %s",
             langcode("WPUPSTI014"), // "Current Power Gain:"
-            langcode("WPUPSTI058") );   // "none"
+            langcode("WPUPSTI068") );   // "none"
     }
     else if (english_units) {
         xastir_snprintf(temp,
