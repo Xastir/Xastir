@@ -270,7 +270,8 @@ char dangerous_operation[200];
 
 FILE *file_wx_test;
 
-int server_pid = 0;
+int tcp_server_pid = 0;
+int udp_server_pid = 0;
 
 int serial_char_pacing;  // Inter-char delay in ms for serial ports.
 int dtr_on = 1;
@@ -11211,9 +11212,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 // Check the x_spider server for incoming data
                 if (enable_server_port) {
-                    // Check whether the x_spider server pipe has any data
-                    // for us.  Process it if found.
-                    n = readline(pipe_server_to_xastir, line, MAX_LINE_SIZE);
+                    // Check whether the x_spider server pipes have
+                    // any data for us.  Process if found.
+
+                    // Check the TCP pipe
+                    n = readline(pipe_tcp_server_to_xastir, line, MAX_LINE_SIZE);
                     if (n < 0) {
                         //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -11232,7 +11235,81 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             log_data(LOGFILE_NET,
                                 (char *)line);
 
-//fprintf(stderr,"server data: %s\n", line);
+//fprintf(stderr,"TCP server data: %s\n", line);
+
+                        packet_data_add(langcode("WPUPDPD006"),
+                            (char *)line,
+                            -1);    // data_port -1 signifies x_spider
+
+                        // Set port to -2 here to designate that it
+                        // came from x_spider.  -1 = from a log
+                        // file, 0 - 14 = from normal interfaces.
+                        decode_ax25_line((char *)line,
+                            'I',
+                            -2, // Port -2 signifies x_spider data
+                            1);
+
+                        max++;  // Count the number of packets processed
+                    }
+
+                    // Check the RF UDP pipe
+                    n = readline(pipe_udp_server_to_xastir_rf, line, MAX_LINE_SIZE);
+                    if (n < 0) {
+                        //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            // This is normal if we have no data to read
+                            //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+                        }
+                        else {  // Non-normal error.  Report it.
+                            fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
+                        }
+                    }
+                    else {
+                        // Knock off the linefeed at the end
+                        line[n-1] = '\0';
+
+                        if (log_net_data)
+                            log_data(LOGFILE_NET,
+                                (char *)line);
+
+//fprintf(stderr,"UDP server data: %s\n", line);
+
+                        packet_data_add(langcode("WPUPDPD006"),
+                            (char *)line,
+                            -1);    // data_port -1 signifies x_spider
+
+                        // Set port to -2 here to designate that it
+                        // came from x_spider.  -1 = from a log
+                        // file, 0 - 14 = from normal interfaces.
+                        decode_ax25_line((char *)line,
+                            'I',
+                            -2, // Port -2 signifies x_spider data
+                            1);
+
+                        max++;  // Count the number of packets processed
+                    }
+
+                    // Check the INET UDP pipe
+                    n = readline(pipe_udp_server_to_xastir_inet, line, MAX_LINE_SIZE);
+                    if (n < 0) {
+                        //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            // This is normal if we have no data to read
+                            //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+                        }
+                        else {  // Non-normal error.  Report it.
+                            fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
+                        }
+                    }
+                    else {
+                        // Knock off the linefeed at the end
+                        line[n-1] = '\0';
+
+                        if (log_net_data)
+                            log_data(LOGFILE_NET,
+                                (char *)line);
+
+//fprintf(stderr,"UDP inet server data: %s\n", line);
 
                         packet_data_add(langcode("WPUPDPD006"),
                             (char *)line,
@@ -11277,7 +11354,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                             if (enable_server_port) {
                                 // Send data to the x_spider server
-                                if (writen(pipe_xastir_to_server,
+                                if (writen(pipe_xastir_to_tcp_server,
                                         (char *)incoming_data,
                                         incoming_data_length) != incoming_data_length) {
                                     fprintf(stderr,
@@ -11285,7 +11362,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                         errno);
                                 }
                                 // Terminate it with a linefeed
-                                if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                     fprintf(stderr,
                                         "UpdateTime: Writen error: %d\n",
                                         errno);
@@ -11335,7 +11412,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                             if (enable_server_port) {
                                 // Send data to the x_spider server
-                                if (writen(pipe_xastir_to_server,
+                                if (writen(pipe_xastir_to_tcp_server,
                                         (char *)incoming_data,
                                         incoming_data_length) != incoming_data_length) {
                                     fprintf(stderr,
@@ -11343,7 +11420,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                         errno);
                                 }
                                 // Terminate it with a linefeed
-                                if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                     fprintf(stderr,
                                         "UpdateTime: Writen error: %d\n",
                                         errno);
@@ -11384,7 +11461,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                                 if (enable_server_port) {
                                     // Send data to the x_spider server
-                                    if (writen(pipe_xastir_to_server,
+                                    if (writen(pipe_xastir_to_tcp_server,
                                             (char *)incoming_data,
                                             incoming_data_length) != incoming_data_length) {
                                         fprintf(stderr,
@@ -11392,7 +11469,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                             errno);
                                     }
                                     // Terminate it with a linefeed
-                                    if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                    if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                         fprintf(stderr,
                                             "UpdateTime: Writen error: %d\n",
                                             errno);
@@ -11436,7 +11513,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                                 if (enable_server_port) {
                                     // Send data to the x_spider server
-                                    if (writen(pipe_xastir_to_server,
+                                    if (writen(pipe_xastir_to_tcp_server,
                                             (char *)incoming_data,
                                             incoming_data_length) != incoming_data_length) {
                                         fprintf(stderr,
@@ -11444,7 +11521,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                             errno);
                                     }
                                     // Terminate it with a linefeed
-                                    if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                    if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                         fprintf(stderr,
                                             "UpdateTime: Writen error: %d\n",
                                             errno);
@@ -11560,10 +11637,14 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
 void shut_down_server(void) {
 
     // Shut down the server if it was enabled
-    if (server_pid) {
+    if (tcp_server_pid || udp_server_pid) {
 
         // Send a kill to the main server process
-        kill(server_pid, 1);
+        if (tcp_server_pid)
+            kill(tcp_server_pid, 1);
+
+        if (udp_server_pid)
+            kill(udp_server_pid, 1);
 
         wait(NULL); // Reap the status of the process
 
@@ -11576,7 +11657,11 @@ void shut_down_server(void) {
 
         // Send a more forceful kill signal in case the "nice" kill
         // signal didn't work.
-        kill(server_pid, 9);
+        if (tcp_server_pid)
+            kill(tcp_server_pid, 9);
+
+        if (udp_server_pid)
+            kill(udp_server_pid, 9);
     }
 }
 
@@ -15991,7 +16076,8 @@ void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         // rules should apply from there.
         //
         enable_server_port = atoi(which);
-        server_pid = Fork_server(my_argc, my_argv, my_envp);
+        tcp_server_pid = Fork_TCP_server(my_argc, my_argv, my_envp);
+        udp_server_pid = Fork_UDP_server(my_argc, my_argv, my_envp);
     }
     else {
         enable_server_port = 0;
@@ -31335,7 +31421,8 @@ int main(int argc, char *argv[], char *envp[]) {
     // Anything transmitted by the clients will come back to us and
     // standard igating rules should apply from there.
     if (enable_server_port) {
-        server_pid = Fork_server(my_argc, my_argv, my_envp);
+        tcp_server_pid = Fork_TCP_server(my_argc, my_argv, my_envp);
+        udp_server_pid = Fork_UDP_server(my_argc, my_argv, my_envp);
     }
 
 

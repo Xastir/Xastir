@@ -197,10 +197,16 @@ typedef struct _pipe_object {
 pipe_object *pipe_head = NULL;
 //int master_fd = -1; // Start with an invalid value
 
-pipe_object *xastir_pipe = NULL;
+pipe_object *xastir_tcp_pipe = NULL;
+pipe_object *xastir_udp_pipe = NULL;
 
-int pipe_xastir_to_server = -1;
-int pipe_server_to_xastir = -1;
+// TCP server pipes to/from Xastir proper
+int pipe_xastir_to_tcp_server = -1;
+int pipe_tcp_server_to_xastir = -1;
+
+// UDP server pipes to Xastir proper (no from)
+int pipe_udp_server_to_xastir_rf = -1;
+int pipe_udp_server_to_xastir_inet = -1;
 
 
 
@@ -699,7 +705,7 @@ int pipe_check(char *client_address) {
 //fprintf(stderr,"Data available, sending to server\n");
 //fprintf(stderr,"\t%s\n",line);
 
-                if (writen(pipe_server_to_xastir, line, n) != n) {
+                if (writen(pipe_tcp_server_to_xastir, line, n) != n) {
                     fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
                 }
             }
@@ -711,7 +717,7 @@ int pipe_check(char *client_address) {
 
     // Check the pipe from Xastir's main thread to see if it is
     // sending us any data
-    n = readline(pipe_xastir_to_server, line, MAXLINE);
+    n = readline(pipe_xastir_to_tcp_server, line, MAXLINE);
     if (n == 0) {
         exit(0); // Connection terminated
     }
@@ -878,7 +884,7 @@ void set_proc_title(char *fmt,...) {
 #ifdef STANDALONE_PROGRAM
 int main(int argc, char *argv[]) {
 #else   // !STANDALONE_PROGRAM 
-void Server(int argc, char *argv[], char *envp[]) {
+void TCP_Server(int argc, char *argv[], char *envp[]) {
 #endif  // STANDALONE_PROGRAM
 
     int sockfd, newsockfd, childpid;
@@ -1123,6 +1129,83 @@ finis:
 
 
 
+// Create a UDP listening port.  This allows scripts and other
+// programs to inject packets into Xastir via UDP protocol.
+//
+void UDP_Server(int argc, char *argv[], char *envp[]) {
+    int sock, length, fromlen, n;
+    struct sockaddr_in server;
+    struct sockaddr_in from;
+    char buf[1024];
+
+
+    sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (sock < 0) {
+        fprintf(stderr, "Error: Opening socket");
+        return;
+    }
+
+    length = sizeof(server);
+    memset(&server, 0, length);
+
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(SERV_UDP_PORT);
+
+    if (bind(sock, (struct sockaddr *)&server, length) < 0) {
+        fprintf(stderr, "Error: Binding");
+        return;
+    }
+
+    fromlen = sizeof(struct sockaddr_in);
+
+    while (1) {
+        n = recvfrom(sock,
+            buf,
+            1024,
+            0,
+            (struct sockaddr *)&from, &fromlen);
+        if (n < 0) {
+            fprintf(stderr, "Error: recvfrom");
+        }
+        else {
+            buf[n] = '\0';    // Terminate the buffer
+        }
+
+//        fprintf(stderr, "Received datagram: %s", buf);
+
+// Send to x_spider TCP ports as well?
+
+// Send to Xastir RF ports
+//if (writen(pipe_udp_server_to_xastir_rf, buf, n) != n) {
+//    fprintf(stderr, "UDP_Server: Writen error1: %d\n", errno);
+//}
+
+// Send to Xastir INET ports
+if (writen(pipe_udp_server_to_xastir_inet, buf, n) != n) {
+    fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
+}
+
+
+
+        // Send an ack back to the udp_client program 
+        n = sendto(sock,
+            "ACK",
+            4,
+            0,
+            (struct sockaddr *)&from,
+            fromlen);
+        if (n < 0) {
+            fprintf(stderr, "Error: sendto");
+        }
+    }
+}
+
+
+
+
+
 // Function used to start a separate process for the server.  This
 // way the server can be running concurrently with the main part of
 // Xastir.
@@ -1134,36 +1217,36 @@ finis:
 // communicate between Xastir and the server.
 //
 #ifndef STANDALONE_PROGRAM
-int Fork_server(int argc, char *argv[], char *envp[]) {
+int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
     int childpid;
 
 
     // Allocate a pipe before we fork.
     //
-    xastir_pipe = (pipe_object *)malloc(sizeof(pipe_object));
-    if (xastir_pipe == NULL) {
+    xastir_tcp_pipe = (pipe_object *)malloc(sizeof(pipe_object));
+    if (xastir_tcp_pipe == NULL) {
         fprintf(stderr,"x_spider: Couldn't malloc pipe_object\n");
         return(0);
     }
 
-    if (pipe(xastir_pipe->to_child) < 0 || pipe(xastir_pipe->to_parent) < 0) {
+    if (pipe(xastir_tcp_pipe->to_child) < 0 || pipe(xastir_tcp_pipe->to_parent) < 0) {
         fprintf(stderr,"x_spider: Can't create pipes\n");
-        free(xastir_pipe);    // Free the malloc'd memory.
+        free(xastir_tcp_pipe);    // Free the malloc'd memory.
         return(0);
     }
  
-    xastir_pipe->authenticated = 1;
-    xastir_pipe->callsign[0] = '\0';
+    xastir_tcp_pipe->authenticated = 1;
+    xastir_tcp_pipe->callsign[0] = '\0';
  
     if ( (childpid = fork()) < 0) {
-        fprintf(stderr,"Fork_server: Fork error\n");
+        fprintf(stderr,"Fork_TCP_server: Fork error\n");
 
         // Close pipes
-        close(xastir_pipe->to_child[0]);
-        close(xastir_pipe->to_child[1]);
-        close(xastir_pipe->to_parent[0]);
-        close(xastir_pipe->to_parent[1]);
-        free(xastir_pipe);    // Free the malloc'd memory.
+        close(xastir_tcp_pipe->to_child[0]);
+        close(xastir_tcp_pipe->to_child[1]);
+        close(xastir_tcp_pipe->to_parent[0]);
+        close(xastir_tcp_pipe->to_parent[1]);
+        free(xastir_tcp_pipe);    // Free the malloc'd memory.
         return(0);
     }
     else if (childpid == 0) {
@@ -1178,57 +1261,57 @@ int Fork_server(int argc, char *argv[], char *envp[]) {
         // can use setprogname(2).
 #ifdef __linux__
         init_set_proc_title(argc, argv, envp);
-        set_proc_title("%s", "x-spider daemon (xastir)");
+        set_proc_title("%s", "x-spider TCP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
  
 
-        close(xastir_pipe->to_child[1]);  // Close write end of pipe
-        close(xastir_pipe->to_parent[0]); // Close read end of pipe
+        close(xastir_tcp_pipe->to_child[1]);  // Close write end of pipe
+        close(xastir_tcp_pipe->to_parent[0]); // Close read end of pipe
 
         // Assign the global variables
-        pipe_server_to_xastir = xastir_pipe->to_parent[1];
-        pipe_xastir_to_server = xastir_pipe->to_child[0];
+        pipe_tcp_server_to_xastir = xastir_tcp_pipe->to_parent[1];
+        pipe_xastir_to_tcp_server = xastir_tcp_pipe->to_child[0];
 
         // Set read-end of pipe to be non-blocking.
         //
-        if (fcntl(pipe_xastir_to_server, F_SETFL, O_NONBLOCK) < 0) {
-            fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_server non-blocking\n");
+        if (fcntl(pipe_xastir_to_tcp_server, F_SETFL, O_NONBLOCK) < 0) {
+            fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_tcp_server non-blocking\n");
         }
 
         // Go into an infinite loop here which restarts the
         // listening process whenever it dies.
         //
 //        while (1) {
-//            fprintf(stderr,"Starting Server...\n");
+//            fprintf(stderr,"Starting TCP_Server...\n");
 
-            Server(argc, argv, envp);
+            TCP_Server(argc, argv, envp);
  
-//            fprintf(stderr,"Server process died.\n");
+//            fprintf(stderr,"TCP_Server process died.\n");
 //        }
     }
     //
     // Parent process
     //
 
-    close(xastir_pipe->to_parent[1]); // Close write end of pipe
-    close(xastir_pipe->to_child[0]);  // Close read end of pipe
+    close(xastir_tcp_pipe->to_parent[1]); // Close write end of pipe
+    close(xastir_tcp_pipe->to_child[0]);  // Close read end of pipe
 
     // Assign the global variables so that Xastir itself will know
     // how to talk to the pipes
-    pipe_server_to_xastir = xastir_pipe->to_parent[0];
-    pipe_xastir_to_server = xastir_pipe->to_child[1];
+    pipe_tcp_server_to_xastir = xastir_tcp_pipe->to_parent[0];
+    pipe_xastir_to_tcp_server = xastir_tcp_pipe->to_child[1];
 
     // Set read-end of pipe to be non-blocking.
     //
-    if (fcntl(pipe_server_to_xastir, F_SETFL, O_NONBLOCK) < 0) {
-        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_server_to_xastir non-blocking\n");
+    if (fcntl(pipe_tcp_server_to_xastir, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_tcp_server_to_xastir non-blocking\n");
     }
 
 //    // Set write-end of pipe to be non-blocking.
 //    //
-//    if (fcntl(pipe_xastir_to_server, F_SETFL, O_NONBLOCK) < 0) {
-//        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_server non-blocking\n");
+//    if (fcntl(pipe_xastir_to_tcp_server, F_SETFL, O_NONBLOCK) < 0) {
+//        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_tcp_server non-blocking\n");
 //    }
 
     // We don't need to do anything here except return back to the
@@ -1240,3 +1323,103 @@ int Fork_server(int argc, char *argv[], char *envp[]) {
 #endif  // STANDALONE_PROGRAM
 
 
+
+
+
+int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
+    int childpid;
+
+
+    // Allocate a pipe before we fork.
+    //
+    xastir_udp_pipe = (pipe_object *)malloc(sizeof(pipe_object));
+    if (xastir_udp_pipe == NULL) {
+        fprintf(stderr,"x_spider: Couldn't malloc pipe_object\n");
+        return(0);
+    }
+
+    if (pipe(xastir_udp_pipe->to_child) < 0 || pipe(xastir_udp_pipe->to_parent) < 0) {
+        fprintf(stderr,"x_spider: Can't create pipes\n");
+        free(xastir_udp_pipe);    // Free the malloc'd memory.
+        return(0);
+    }
+ 
+    xastir_udp_pipe->authenticated = 1;
+    xastir_udp_pipe->callsign[0] = '\0';
+ 
+    if ( (childpid = fork()) < 0) {
+        fprintf(stderr,"Fork_UDP_server: Fork error\n");
+
+        // Close pipes
+        close(xastir_udp_pipe->to_child[0]);
+        close(xastir_udp_pipe->to_child[1]);
+        close(xastir_udp_pipe->to_parent[0]);
+        close(xastir_udp_pipe->to_parent[1]);
+        free(xastir_udp_pipe);    // Free the malloc'd memory.
+        return(0);
+    }
+    else if (childpid == 0) {
+        //
+        // Child process
+        //
+
+
+        // Change the name of the new child process.  So far this
+        // only works for "ps" listings, not for "top".  This code
+        // only works on Linux.  For BSD use setproctitle(3), NetBSD
+        // can use setprogname(2).
+#ifdef __linux__
+        init_set_proc_title(argc, argv, envp);
+        set_proc_title("%s", "x-spider UDP daemon (xastir)");
+        //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
+#endif  // __linux__
+ 
+
+        close(xastir_udp_pipe->to_child[0]);  // Close read end of pipe
+        close(xastir_udp_pipe->to_parent[0]); // Close read end of pipe
+
+        // Assign the global variables
+        pipe_udp_server_to_xastir_rf = xastir_udp_pipe->to_parent[1];
+        pipe_udp_server_to_xastir_inet = xastir_udp_pipe->to_child[1];
+
+        // Go into an infinite loop here which restarts the
+        // listening process whenever it dies.
+        //
+//        while (1) {
+//            fprintf(stderr,"Starting UDP_Server...\n");
+
+            UDP_Server(argc, argv, envp);
+ 
+//            fprintf(stderr,"UDP_Server process died.\n");
+//        }
+    }
+    //
+    // Parent process
+    //
+
+    close(xastir_udp_pipe->to_parent[1]); // Close write end of pipe
+    close(xastir_udp_pipe->to_child[1]);  // Close write end of pipe
+
+    // Assign the global variables so that Xastir itself will know
+    // how to talk to the pipes
+    pipe_udp_server_to_xastir_rf = xastir_udp_pipe->to_parent[0];
+    pipe_udp_server_to_xastir_inet = xastir_udp_pipe->to_child[0];
+
+    // Set read-end of pipes to be non-blocking.
+    //
+    if (fcntl(pipe_udp_server_to_xastir_rf, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_udp_server_to_xastir_rf non-blocking\n");
+    }
+    if (fcntl(pipe_udp_server_to_xastir_inet, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_udp_server_to_xastir_inet non-blocking\n");
+    }
+
+
+    // We don't need to do anything here except return back to the
+    // calling routine with the PID of the new server process, so
+    // that it can request the server and all it's children to quit
+    // when Xastir quits or segfaults.
+    return(childpid);   // Really the parent PID in this case
+}
+
+ 

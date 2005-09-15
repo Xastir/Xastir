@@ -8411,7 +8411,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
                 VERSIONFRM, data_txt_save);
  
-        if (writen(pipe_xastir_to_server,
+        if (writen(pipe_xastir_to_tcp_server,
                 data_txt,
                 strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
@@ -8419,7 +8419,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 errno);
         }
         // Terminate it with a linefeed
-        if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+        if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
             fprintf(stderr,
                 "UpdateTime: Writen error: %d\n",
                 errno);
@@ -8914,7 +8914,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
 //fprintf(stderr,"\tport:%d  type:%d  loopback_only:%d use_igate_path:%d\n",
 //    incoming_port, type, loopback_only, use_igate_path);
 
-        if (writen(pipe_xastir_to_server,
+        if (writen(pipe_xastir_to_tcp_server,
                 data_txt,
                 strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
@@ -8922,7 +8922,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
                 errno);
         }
         // Terminate it with a linefeed
-        if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+        if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
             fprintf(stderr,
                 "UpdateTime: Writen error: %d\n",
                 errno);
