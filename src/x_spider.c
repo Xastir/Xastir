@@ -1189,7 +1189,7 @@ if (writen(pipe_udp_server_to_xastir_inet, buf, n) != n) {
 
 
 
-        // Send an ack back to the udp_client program 
+        // Send an ack back to the xastir_udp_client program 
         n = sendto(sock,
             "ACK",
             4,
