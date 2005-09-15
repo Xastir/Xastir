@@ -3,3 +3,4 @@ Makefile
 .deps
 testawk
 xastir
+xastir_udp_client
