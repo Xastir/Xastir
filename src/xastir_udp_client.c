@@ -55,8 +55,12 @@
 // and other programs to inject packets into Xastir via UDP
 // protocol.
 // Inputs:
-//      hostname
-//      port
+//      hostname    (argv[1]) (currently ignored, "127.0.0.1" substituted)
+//      port        (argv[2])
+//      callsign    (argv[3])
+//      passcode    (argv[4])
+//      optional flags:  -to_rf -to_inet (not implemented yet)
+//      message     (argv[5])
 // Returns:
 //      0: Message sent, ack received
 //      1: Error condition
@@ -65,11 +69,14 @@ int main(int argc, char *argv[]) {
     int sockfd, length, n;
     struct sockaddr_in server, from;
 //    struct hostent *hostinfo;
-    char buffer[256];
+    char buffer[512];
+    char callsign[10];
+    int passcode;
+    char message[256];
 
 
-    if (argc != 3) {
-        fprintf(stderr, "Usage: server port\n");
+    if (argc < 6) {
+        fprintf(stderr, "Usage: server port call passcode \"message\"\n");
         return(1);
     }
 
@@ -94,10 +101,31 @@ int main(int argc, char *argv[]) {
 
     length = sizeof(struct sockaddr_in);
 
-    fprintf(stdout, "Please enter the message: ");
+    // Fetch the callsign
+    snprintf(callsign, sizeof(callsign), "%s", argv[3]);
+    callsign[sizeof(callsign)-1] = '\0';  // Terminate it
+
+    // Fetch the passcode
+    passcode = atoi(argv[4]);
+
+//    fprintf(stdout, "Please enter the message: ");
+
+    // Fetch the message portion from the command-line
+    snprintf(message, sizeof(message), "%s", argv[5]);
+    message[sizeof(message)-1] = '\0';  // Terminate it
+
+    if (message[0] == '\0') // Empty message
+        return(1);
 
     memset(buffer, 0, 256);
-    fgets(buffer, 255, stdin);
+//    fgets(buffer, 255, stdin);
+
+    snprintf(buffer,
+        sizeof(buffer),
+        "%s,%d\n%s\n",
+        callsign,
+        passcode,
+        message);
 
     n = sendto(sockfd,
         buffer,
@@ -123,7 +151,18 @@ int main(int argc, char *argv[]) {
 
     fprintf(stderr,"Received: %s\n", buffer);
 
-    return(0);  // All ok
+    if (strncmp(buffer, "NACK", 4) == 0) {
+//fprintf(stderr,"returning 1\n");
+        return(1);  // Received a NACK
+    }
+    else if (strncmp(buffer, "ACK", 3) == 0) {
+//fprintf(stderr,"returning 0\n");
+        return(0);  // Received an ACK
+    }
+    else {
+//fprintf(stderr,"returning 1\n");
+        return(1);  // Received something other than ACK or NACK
+    }
 }
 
 

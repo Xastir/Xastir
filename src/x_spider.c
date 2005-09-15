@@ -182,7 +182,7 @@
 // because it causes other problems.
 extern short checkHash(char *theCall, short theHash);
 extern void get_timestamp(char *timestring);
-
+extern void split_string( char *data, char *cptr[], int max );
 
 
 typedef struct _pipe_object {
@@ -1129,6 +1129,25 @@ finis:
 
 
 
+// Send a nack back to the xastir_udp_client program 
+void send_udp_nack(int sock, struct sockaddr_in from, int fromlen) {
+    int n;
+
+    n = sendto(sock,
+        "NACK", // Negative Acknowledgment
+        5,
+        0,
+        (struct sockaddr *)&from,
+        fromlen);
+    if (n < 0) {
+        fprintf(stderr, "Error: sendto");
+    }
+}
+ 
+
+
+
+
 // Create a UDP listening port.  This allows scripts and other
 // programs to inject packets into Xastir via UDP protocol.
 //
@@ -1137,6 +1156,11 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
     struct sockaddr_in server;
     struct sockaddr_in from;
     char buf[1024];
+    char buf2[512];
+    char *callsign;
+    short passcode;
+    char *cptr[10];
+    char *message = NULL;
 
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -1175,23 +1199,93 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
 //        fprintf(stderr, "Received datagram: %s", buf);
 
+
+        //
+        // Authenticate the packet.  First line should contain:
+        //
+        //      callsign,passcode,[TO_RF],[TO_INET]
+        //
+        // The second line should contain the APRS packet
+        //
+
+        // Copy the entire buffer so that we can modify it
+        xastir_snprintf(buf2, sizeof(buf2), "%s", buf);
+        split_string(buf2, cptr, 10);
+
+        if (cptr[0] == NULL || cptr[0][0] == '\0') {    // callsign
+            send_udp_nack(sock, from, fromlen);
+            continue;
+        }
+
+        callsign = cptr[0];
+
+        if (cptr[1] == NULL || cptr[1][0] == '\0') {    // passcode
+            send_udp_nack(sock, from, fromlen);
+            continue;
+        }
+
+        passcode = atoi(cptr[1]);
+
+//fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
+
+        if (checkHash(callsign, passcode)) {
+            // Authenticate the pipe.  It is now allowed to send
+            // to the upstream server.
+            //fprintf(stderr,
+            //    "x_spider: Authenticated user %s\n",
+            //    callsign);
+        }
+        else {
+            fprintf(stderr,
+                "X_spider: Bad authentication, user %s, pass %d\n",
+                callsign,
+                passcode);
+            fprintf(stderr,
+                "UDP Packet: %s\n",
+                buf);
+            send_udp_nack(sock, from, fromlen);
+            continue;
+        }
+
+
+// Here's where we would look for the optional flags in the first
+// line.
+
+
+        // Now snag the text message from the second line using the
+        // original buffer.  Look for the first '\n' character which
+        // is just before the text message itself.
+        message = strchr(buf, '\n');
+        message++;  // Point to the first char after the '\n'
+
+        if (message == NULL || message[0] == '\0') {
+//fprintf(stderr,"Empty message field\n");
+            send_udp_nack(sock, from, fromlen);
+            continue;
+        }
+
+//fprintf(stderr,"Message: %s\n", message);
+
+        n = strlen(message);
+
 // Send to x_spider TCP ports as well?
 
-// Send to Xastir RF ports
-//if (writen(pipe_udp_server_to_xastir_rf, buf, n) != n) {
-//    fprintf(stderr, "UDP_Server: Writen error1: %d\n", errno);
-//}
 
-// Send to Xastir INET ports
-if (writen(pipe_udp_server_to_xastir_inet, buf, n) != n) {
-    fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
-}
+        // Send to Xastir RF ports
+        //if (writen(pipe_udp_server_to_xastir_rf, buf, n) != n) {
+        //    fprintf(stderr, "UDP_Server: Writen error1: %d\n", errno);
+        //}
 
 
+        // Send to Xastir INET ports
+        if (writen(pipe_udp_server_to_xastir_inet, message, n) != n) {
+            fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
+        }
 
-        // Send an ack back to the xastir_udp_client program 
+
+        // Send an ACK back to the xastir_udp_client program 
         n = sendto(sock,
-            "ACK",
+            "ACK",  // Acknowledgment.  Good UDP packet.
             4,
             0,
             (struct sockaddr *)&from,
