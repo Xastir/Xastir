@@ -23,6 +23,7 @@
 
 
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,7 +56,7 @@
 // and other programs to inject packets into Xastir via UDP
 // protocol.
 // Inputs:
-//      hostname    (argv[1]) (currently ignored, "127.0.0.1" substituted)
+//      hostname    (argv[1])
 //      port        (argv[2])
 //      callsign    (argv[3])
 //      passcode    (argv[4])
@@ -68,7 +69,7 @@
 int main(int argc, char *argv[]) {
     int sockfd, length, n;
     struct sockaddr_in server, from;
-//    struct hostent *hostinfo;
+    struct hostent *hostinfo;
     char buffer[512];
     char callsign[10];
     int passcode;
@@ -76,7 +77,10 @@ int main(int argc, char *argv[]) {
 
 
     if (argc < 6) {
-        fprintf(stderr, "Usage: server port call passcode \"message\"\n");
+        fprintf(stderr,
+            "Usage: server port call passcode \"message\"\n");
+        fprintf(stderr,
+            "Example: xastir_udp_client localhost 2024 ab7cd 1234 \"APRS packet\"\n");
         return(1);
     }
 
@@ -90,13 +94,15 @@ int main(int argc, char *argv[]) {
 
     server.sin_family = AF_INET;
 
-//    hostinfo = (struct hostent *)gethostbyname(argv[1]);
-//    if (hostinfo == NULL) {
-//        fprintf(stderr, "Unknown host\n");
-//        return(1);
-//    }
+    hostinfo = gethostbyname(argv[1]);
+    if (hostinfo == NULL) {
+        fprintf(stderr, "Unknown host\n");
+        return(1);
+    }
 
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+//    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    memcpy(&server.sin_addr, hostinfo->h_addr, hostinfo->h_length);
+
     server.sin_port = htons(atoi(argv[2]));
 
     length = sizeof(struct sockaddr_in);
