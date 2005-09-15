@@ -14343,15 +14343,23 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 ignore = 1;     // don't treat undecoded packets as status text
                 break;
 
+            case 'T':   // Telemetry data                           [APRS Reference, chapter 13]
+                // We treat these as status packets currently.
+                ok_igate_rf = 1;
+                break;
+ 
+            case '{':   // User-defined APRS packet format     //}
+                // We treat these as status packets currently.
+                ok_igate_rf = 1;
+                break;
+ 
             case '~':   // UI-format messages, not relevant for APRS ("Do not use" in Reference)
             case ',':   // Invalid data or test packets             [APRS Reference, chapter 19]
             case '<':   // Station capabilities                     [APRS Reference, chapter 15]
-            case '{':   // User-defined APRS packet format     //}
             case '%':   // Agrelo DFJr / MicroFinder
             case '&':   // Reserved -- Map Feature
-            case 'T':   // Telemetrie data                          [APRS Reference, chapter 13]
                 if (debug_level & 1)
-                    fprintf(stderr,"decode_info_field: ~,<{%%&T[\n");
+                    fprintf(stderr,"decode_info_field: ~,<%%&\n");
                 ignore = 1;     // don't treat undecoded packets as status text
                 break;
         }
