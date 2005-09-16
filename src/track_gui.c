@@ -390,6 +390,48 @@ end_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 /***** DOWNLOAD FINDU TRAILS *****/
 
 
+// This is the separate execution thread that fetches the track from
+// findu.  The thread is started up by the Download_trail_now()
+// function below.
+//
+static void* findu_transfer_thread(void *arg) {
+    char *fileimg;
+    char *log_filename;
+    char **ptrs;
+
+
+    // Get fileimg and log_filename from parameters
+    ptrs = arg;
+    log_filename = ptrs[0];
+    fileimg = ptrs[1];
+
+    if (fetch_remote_file(fileimg, log_filename)) {
+        // Had trouble getting the file.  Abort.
+        return(NULL);
+    }
+
+    // Set permissions on the file so that any user can overwrite it.
+    chmod(log_filename, 0666);
+
+    // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
+    // We have the log data we're interested in within the log_filename file.
+    // Cause that file to be read by the "File->Open Log File" routine.  HTML
+    // tags will be ignored just fine.
+    read_file_ptr = fopen(log_filename, "r");
+
+    if (read_file_ptr != NULL)
+        read_file = 1;
+    else
+        fprintf(stderr,"Couldn't open file: %s\n", log_filename);
+
+    // End the thread
+    return(NULL);
+}
+
+
+
+
+
 void Download_trail_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -411,7 +453,14 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char fileimg[400];
     char log_filename[200];
     char *temp_ptr;
+    pthread_t download_trail_thread;
+    XtPointer download_client_data = NULL;
+    char *download_client_ptrs[2];
 
+
+    download_client_ptrs[0] = log_filename;
+    download_client_ptrs[1] = fileimg;
+    download_client_data = (XtPointer *)download_client_ptrs;
 
     // Check whether it's ok to do a download currently.
     if (read_file) {
@@ -476,24 +525,19 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         fprintf(stderr, "%s\n", fileimg);
     }
 
-    if (fetch_remote_file(fileimg, log_filename)) {
-        // Had trouble getting the file.  Abort.
-        return;
+
+//----- Start New Thread -----
+
+    if (pthread_create(&download_trail_thread,
+            NULL,
+            findu_transfer_thread,
+            download_client_data)) {
+
+        fprintf(stderr,"Error creating findu transfer thread\n");
     }
-
-    // Set permissions on the file so that any user can overwrite it.
-    chmod(log_filename, 0666);
-
-    // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
-    // We have the log data we're interested in within the log_filename file.
-    // Cause that file to be read by the "File->Open Log File" routine.  HTML
-    // tags will be ignored just fine.
-    read_file_ptr = fopen(log_filename, "r");
-
-    if (read_file_ptr != NULL)
-        read_file = 1;
-    else
-        fprintf(stderr,"Couldn't open file: %s\n", log_filename);
+    else {
+        // We're off and running with the new thread!
+    }
 
     display_zoom_status();
 
