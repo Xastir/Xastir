@@ -1554,16 +1554,27 @@ have an option to disable transmission on that specific interface in their
 configuration menus as well.
 
 Enable Server Port
-This enables/disables a listening socket at port 2023.  You may connect other
-APRS(tm) clients to that port in order to send/receive APRS(tm) data.  Once they
-authenticate, they'll be able to send data to Xastir.  Without authentication,
-they'll be able to receive every bit of TNC and INET data that Xastir receives.
+This enables/disables TCP and UDP listening sockets at port 2023.  You may
+connect other APRS(tm) clients to the TCP port in order to send/receive
+APRS(tm) data.  Once they authenticate, they'll be able to send data to Xastir.
+Without authentication, they'll be able to receive every bit of TNC and INET
+data that Xastir receives.
 
     "user WE7U-13 pass XXXX vers XASTIR 1.3.3"
 
-Connect another APRS(tm) client to that port and it should authenticate
-and be able to send to any server that Xastir is connected to, as
-well as receive packets from all ports/servers Xastir is hooked to.
+Connect another APRS(tm) client to that port and it should authenticate and be
+able to send to any server that Xastir is connected to, as well as receive
+packets from all ports/servers Xastir is hooked to.
+
+You should also have a binary called "xastir_udp_client" which can send packets
+into the UDP listening port.  Invoke it like this:
+
+ xastir_udp_client localhost 2023 <callsign> <passcode> "APRS Packet Goes Here"
+
+Currently that will inject the packet into Xastir's decoding routines plus
+igate it to the INET if you have igating enabled.  It won't send that packet
+out the RF ports or to any TCP-connected clients. The UDP client is useful for
+generating and injecting APRS packets from external scripts.
 
 Transmit now
 Causes all interfaces that have transmit enabled (see configure|interfaces) to
