@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr,
             "Usage: server port call passcode \"message\"\n");
         fprintf(stderr,
-            "Example: xastir_udp_client localhost 2024 ab7cd 1234 \"APRS packet\"\n");
+            "Example: xastir_udp_client localhost 2023 ab7cd 1234 \"APRS packet\"\n");
         return(1);
     }
 

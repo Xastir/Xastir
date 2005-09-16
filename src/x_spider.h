@@ -29,7 +29,7 @@
 
 #define NET_CONNECT_TIMEOUT 20
 #define SERV_TCP_PORT       2023
-#define SERV_UDP_PORT       2024
+#define SERV_UDP_PORT       2023
 
 
 char *pname;
