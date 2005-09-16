@@ -60,7 +60,7 @@
 //      port        (argv[2])
 //      callsign    (argv[3])
 //      passcode    (argv[4])
-//      optional flags:  -to_rf -to_inet (not implemented yet)
+//      optional flags:  -identify -to_rf -to_inet (not implemented yet)
 //      message     (argv[5])
 // Returns:
 //      0: Message sent, ack received
@@ -72,13 +72,15 @@ int main(int argc, char *argv[]) {
     struct hostent *hostinfo;
     char buffer[512];
     char callsign[10];
+    char extra[100];
     int passcode;
     char message[256];
+    int ii;
 
 
     if (argc < 6) {
         fprintf(stderr,
-            "Usage: server port call passcode \"message\"\n");
+            "Usage: server port call passcode [-identify] \"message\"\n");
         fprintf(stderr,
             "Example: xastir_udp_client localhost 2023 ab7cd 1234 \"APRS packet\"\n");
         return(1);
@@ -114,10 +116,32 @@ int main(int argc, char *argv[]) {
     // Fetch the passcode
     passcode = atoi(argv[4]);
 
+    // Check for optional flags here:
+    //      -identify
+    //      -to_rf
+    //      -to_inet
+    //
+    extra[0] = '\0';
+    for (ii = 5; ii < argc; ii++) {
+        if (strstr(argv[ii], "-identify")) {
+//fprintf(stderr,"Found -identify\n");
+            strncat(extra, ",-identify", 10);
+        }
+        else if (strstr(argv[ii], "-to_rf")) {
+//fprintf(stderr,"Found -to_rf\n");
+            strncat(extra, ",-to_rf", 7);
+        }
+        else if (strstr(argv[ii], "-to_inet")) {
+//fprintf(stderr,"Found -to_inet\n");
+            strncat(extra, ",-to_inet", 9);
+        }
+    }
+
+
 //    fprintf(stdout, "Please enter the message: ");
 
-    // Fetch the message portion from the command-line
-    snprintf(message, sizeof(message), "%s", argv[5]);
+    // Fetch message portion from the end of the command-line
+    snprintf(message, sizeof(message), "%s", argv[argc-1]);
     message[sizeof(message)-1] = '\0';  // Terminate it
 
     if (message[0] == '\0') // Empty message
@@ -128,10 +152,13 @@ int main(int argc, char *argv[]) {
 
     snprintf(buffer,
         sizeof(buffer),
-        "%s,%d\n%s\n",
+        "%s,%d%s\n%s\n",
         callsign,
         passcode,
+        extra,
         message);
+
+//fprintf(stderr, "%s", buffer);
 
     n = sendto(sockfd,
         buffer,
