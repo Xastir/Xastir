@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
         return(1);
     }
 
-    fprintf(stderr,"Received: %s\n", buffer);
+    fprintf(stdout,"Received: %s\n", buffer);
 
     if (strncmp(buffer, "NACK", 4) == 0) {
 //fprintf(stderr,"returning 1\n");
