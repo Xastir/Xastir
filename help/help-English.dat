@@ -1571,11 +1571,16 @@ into the UDP listening port.  Invoke it like this:
 
  xastir_udp_client localhost 2023 <callsign> <passcode> "APRS Packet Goes Here"
 
-Currently that will inject the packet into Xastir's decoding routines plus
-igate it to the INET if you have igating enabled and send it to any
-TCP-connected clients.  It won't send that packet out the RF ports. The UDP
-client is useful for generating and injecting APRS packets from external
-scripts.
+Currently that will inject the packet into Xastir's decoding routines and send
+it to any TCP-connected clients. It will also igate it to the INET if you have
+igating enabled.  It will not send the packet out the RF ports. The UDP client
+is useful for generating and injecting APRS packets from external scripts.  It
+can also be used to fetch the callsign of the remote xastir server by using the
+-identify flag:
+
+ xastir_udp_client localhost 2023 <callsign> <passcode> -identify " "
+
+Note that you must have a non-empty message field for -identify to work.
 
 Transmit now
 Causes all interfaces that have transmit enabled (see configure|interfaces) to
