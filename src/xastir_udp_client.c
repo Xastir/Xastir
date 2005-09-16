@@ -60,11 +60,15 @@
 //      port        (argv[2])
 //      callsign    (argv[3])
 //      passcode    (argv[4])
-//      optional flags:  -identify -to_rf -to_inet (not implemented yet)
-//      message     (argv[5])
+//      optional flags:  -identify
+//                       -to_rf (not implemented yet)
+//                       -to_inet (not implemented yet)
+//      APRS Packet (argv[5])
 // Returns:
 //      0: Message sent, ack received
 //      1: Error condition
+//
+// 
 //
 int main(int argc, char *argv[]) {
     int sockfd, length, n;
@@ -80,9 +84,12 @@ int main(int argc, char *argv[]) {
 
     if (argc < 6) {
         fprintf(stderr,
-            "Usage: server port call passcode [-identify] \"message\"\n");
+            "\nUsage: xastir_udp_client server port call passcode -identify\n");
         fprintf(stderr,
-            "Example: xastir_udp_client localhost 2023 ab7cd 1234 \"APRS packet\"\n");
+            "       xastir_udp_client server port call passcode [-to_rf] [-to_inet] \"APRS Packet\"\n");
+ 
+        fprintf(stderr,
+            "\nExample: xastir_udp_client localhost 2023 ab7cd 1234 \"APRS packet goes here\"\n");
         return(1);
     }
 
