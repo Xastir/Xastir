@@ -1252,6 +1252,12 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
         // Here's where we would look for the optional flags in the
         // first line.  Here we only implement the "-identify" flag.
+//
+// Still needed are:
+//      "-to_rf"
+//      "-to_inet"
+// perhaps others.
+//
         //
         if (strstr(buf, "-identify")) {
             
@@ -1286,8 +1292,6 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
         n = strlen(message);
 
-// Send to x_spider TCP ports as well?
-
 
         // Send to Xastir RF ports
         //if (writen(pipe_udp_server_to_xastir_rf, buf, n) != n) {
@@ -1300,7 +1304,12 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
             fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
         }
 
-
+        // Send to the x_spider TCP server, so it can go to all
+        // connected TCP clients
+        if (writen(pipe_xastir_to_tcp_server, message, n) != n) {
+            fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
+        }
+ 
         // Send an ACK back to the xastir_udp_client program 
         n = sendto(sock,
             "ACK",  // Acknowledgment.  Good UDP packet.
