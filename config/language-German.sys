@@ -57,7 +57,7 @@ PULDNVI011|Nachrichten|N|
 PULDNVI013|Laufzeit|z|
 PULDNVI014|Programmlaufzeit||
 PULDNVI015|GPS Status||
-PULDNVI016|ALOHA Statistics||
+PULDNVI016|ALOHA Statistiken||
 #
 # Menu "Einstellungen"
 PULDNCF004|Meine Stationsdaten|M|
@@ -83,7 +83,7 @@ PULDNMP007|Wetterwarnung||
 PULDNMP005|Hintergrundfarbe|H|
 PULDNMP006|Textdarstellung|T|
 PULDNMP026|Symbol Umrandung|U|
-PULDNMP011|Mauszeiger-Menu|M|
+PULDNMP011|Mauszeiger-Menü|M|
 PULDNMP008|Intensität|I|
 PULDNMP020|Einstellungen Tigermaps||
 PULDNMP021|Autom. Karten - PixelKarten aus||
@@ -92,10 +92,10 @@ PULDNMP023|Index: Neue Karten hinzufügen|N|
 PULDNMP024|Index: ALLE Karten reindizieren|r|
 PULDNMP025|Font Kartenbeschriftung||
 PULDNMP015|Xfontsel||
-PULDNMP027|Re-download Maps (Not from cache)||
-PULDNMP028|Flush Entire Map Cache!||
-PULDNMP029|Find Address||
-PULDNMP030|Configure USGS DRG||
+PULDNMP027|Karten neu laden (nicht vom Cache)||
+PULDNMP028|Lösche gesamten Karten-Cache!||
+PULDNMP029|Finde Adresse||
+PULDNMP030|Konfiguration USGS DRG||
 #
 #
 # PopUp "Einstellungen Tigermaps"
@@ -115,25 +115,25 @@ MPUPTGR013|Flüsse||
 MPUPTGR014|Seen||
 MPUPTGR015|Flughäfen, Parks, etc||
 MPUPTGR016|Karten Intensität||
-MPUPTGR017|Internet Map Timeout [Sek]||
+MPUPTGR017|Internet-Karten Timeout [Sek]||
 MPUPTGR018|Tiger Maps erlauben||
 #
 # PopUp "Configure USGS DRG"
-MPUPDRG001|Select items to be displayed:||
-MPUPDRG002|Tint Underlying Map (XOR)||
-MPUPDRG003|Black||
-MPUPDRG004|White||
-MPUPDRG005|Blue||
-MPUPDRG006|Red||
-MPUPDRG007|Brown||
-MPUPDRG008|Green||
-MPUPDRG009|Purple||
-MPUPDRG010|Yellow||
-MPUPDRG011|Light Blue||
-MPUPDRG012|Light Red||
-MPUPDRG013|Light Purple||
-MPUPDRG014|Light Gray||
-MPUPDRG015|Light Brown||
+MPUPDRG001|Wähle dazustellende Objekte:||
+MPUPDRG002|färbe Hintergrundkarten (XOR)||
+MPUPDRG003|Schwarz||
+MPUPDRG004|Wei||
+MPUPDRG005|Blau||
+MPUPDRG006|Rot||
+MPUPDRG007|Braun||
+MPUPDRG008|Grün||
+MPUPDRG009|Violett||
+MPUPDRG010|Gelb||
+MPUPDRG011|Hellblau||
+MPUPDRG012|Rosa||
+MPUPDRG013|Violett (hell)||
+MPUPDRG014|Hellgrau||
+MPUPDRG015|Hellbraun||
 #
 #
 # PopUp "Kartenauswahl"
@@ -212,7 +212,7 @@ PULDNDP009|Wetterdaten||
 PULDNDP046|- Wetter Text||
 PULDNDP018|-- nur Temperatur||
 PULDNDP047|- Windfahne||
-PULDNDP054|Display Aloha Circle||
+PULDNDP054|Aloha Kreis anzeigen||
 PULDNDP013|Positionsverschleierung||
 PULDNDP008|Leistung/Gewinn||
 PULDNDP021|- mit Standardwert||
@@ -253,7 +253,7 @@ PULDNTNT04|Schnittstellensteuerung||
 PULDNTNT03|Nicht senden: ALLES||
 PULDNTNT05|Nicht senden: Meine Position||
 PULDNTNT06|Nicht senden: Objekte||
-PULDNTNT11|Enable Server Port||
+PULDNTNT11|aktiviere Server-Port||
 PULDNTNT01|Sende jetzt!|S|
 PULDNTNT07|Lade GPS Track|T|
 PULDNTNT08|Lade GPS Route|R|
@@ -263,9 +263,9 @@ PULDNTNT10|Garmin RINO Wegpunkte holen|G|
 # Menu "Hilfe"
 PULDNHEL01|Version|V|
 PULDNHEL02|Hilfe Index|I|
-PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
-PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
-PULDNHEL05|About Xastir||
+PULDNHEL03|NOTFALL BAKEN MODUS EINSCHALTEN|E|
+PULDNHEL04|!!! NOTFALL BAKEN MODUS !!!||
+PULDNHEL05|Über Xastir||
 #
 # Mauszeiger PopUp Menu
 POPUPMA001|Mauszeiger-Menu||
@@ -302,17 +302,17 @@ POPUPMA030|Start Zeichen-Modus||
 POPUPMA031|Polygon abschließen||
 POPUPMA032|Alle CAD-Polygone löschen||
 POPUPMA033|Ende Zeichen-Modus||
-POPUPMA034|Custom Zoom Level||
-POPUPMA035|10% out||
-POPUPMA036|10% in||
-POPUPMA037|Area||
-POPUPMA038|square||
-POPUPMA039|square feet||
-POPUPMA040|square meters||
-POPUPMA041|Bearing||
-POPUPMA042|degrees||
-POPUPMA043|Modify ambiguous position||
-POPUPMA044|Position abiguity is on, your new position may appear to jump.||
+POPUPMA034|Selbstdefinierter Zoom||
+POPUPMA035|10% verkleinern||
+POPUPMA036|10% vergrößern||
+POPUPMA037|Bereich||
+POPUPMA038|Quadrat||
+POPUPMA039|Quadratfuss||
+POPUPMA040|Quadratmeter||
+POPUPMA041|Peilung||
+POPUPMA042|Grad||
+POPUPMA043|Bearbeite mehrdeutige Position||
+POPUPMA044|Mehrdeutige Position, Ihre Position kann sich sprunghaft verändern.||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -336,7 +336,7 @@ BBARSTA014|Schließe GPS Port||
 BBARSTA015|GPS RMC String empfangen||
 BBARSTA016|GPS GGA String empfangen||
 BBARSTA017|Netz vom Host getrennt||
-BBARSTA018|Timeout Verbindungsaufbau!||
+BBARSTA018|Timeout beim Verbindungsaufbau!||
 BBARSTA019|Suche Host %s||
 BBARSTA020|Verbunden mit %s||
 BBARSTA021|Netzverbindung fehlgeschlagen!||
@@ -362,11 +362,11 @@ BBARSTA040|APRS(tm) Station %s||
 BBARSTA041|Warten auf GPS Daten..||
 BBARSTA042|Senden von Objekten||
 BBARSTA043|Protokoll||
-BBARSTA044|ALOHA distance is %d%s||
-BBARSTA045|Loading symbols...||
-BBARSTA046|Reloading symbols...||
-BBARSTA047|Initialize my station...||
-BBARSTA048|Start interfaces...||
+BBARSTA044|ALOHA Entfernung beträgt %d%s||
+BBARSTA045|Lade Symbole...||
+BBARSTA046|Lade Symbole neu...||
+BBARSTA047|Initialisiere meine Station...||
+BBARSTA048|Starte Schnittstellen...||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||
@@ -600,7 +600,7 @@ POPUPOB042|Richtantenne||
 POPUPOB043|unbekannt||
 POPUPOB044|Objekt übernehmen||
 POPUPOB045|Item übernehmen||
-POPUPOB046|DF Bearing:||
+POPUPOB046|DF Peilung:||
 POPUPOB047|Probability Circles||
 POPUPOB048|Map View Object||
 POPUPOB049|Min (mi):||
@@ -700,7 +700,7 @@ WPUPMSB003|Stationsrufzeichen:||
 WPUPMSB004|Gruppenrufzeichen:||
 WPUPMSB005|Neues Rufzeichen||
 WPUPMSB006|Neue Gruppe||
-WPUPMSB007|Clear Msg History||
+WPUPMSB007|Lösche alte Nachrichten||
 WPUPMSB008|Nachricht:||
 WPUPMSB009|Sende jetzt!||
 WPUPMSB010|Pfad:||
@@ -710,7 +710,7 @@ WPUPMSB013|seq||
 WPUPMSB014|type||
 WPUPMSB015|Broadcast||
 WPUPMSB016|*TIMEOUT*||
-WPUPMSB017|*CANCELLED*||
+WPUPMSB017|*ABBRUCH*||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||
@@ -788,41 +788,41 @@ WPUPSTI064|NWS Wetterwarnung holen||
 WPUPSTI065|Taktisches Rufzeichen: %s||
 WPUPSTI066|Taktischen Rufzeichen zuweisen||
 WPUPSTI067|Aktuelle Reichweite: %d Meilen||
-WPUPSTI068|none||
-WPUPSTI069|default||
+WPUPSTI068|keine||
+WPUPSTI069|Standard||
 WPUPSTI070|HAAT||
 WPUPSTI071|omni||
-WPUPSTI072|range||
+WPUPSTI072|Reichweite||
 WPUPSTI073|BAD PHG||
 WPUPSTI074|BAD SHG||
 WPUPSTI075|DF Range||
-WPUPSTI076|No signal detected||
-WPUPSTI077|Detectible signal (Maybe)||
-WPUPSTI078|Detectible signal but not copyable)||
-WPUPSTI079|Weak signal, marginally readable||
-WPUPSTI080|Noisy but copyable signal||
-WPUPSTI081|Some noise, easy to copy signal||
-WPUPSTI082|Good signal w/detectible noise||
-WPUPSTI083|Near full-quieting signal||
-WPUPSTI084|Full-quieting signal||
-WPUPSTI085|Extremely strong & full-quieting signal||
-WPUPSTI086|BAD BEARING||
+WPUPSTI076|Kein Signal erkannt||
+WPUPSTI077|mögliches Signal||
+WPUPSTI078|Signal erkannt, nicht lesbar||
+WPUPSTI079|Schwaches Signal, schlecht lesbar||
+WPUPSTI080|Verrauschtes Signal aber lesbar||
+WPUPSTI081|Signal lesbar, etwas Rauschen||
+WPUPSTI082|Gutes Signal mit Restrauschen||
+WPUPSTI083|Sehr gutes Signal||
+WPUPSTI084|Hervorragendes  Signal||
+WPUPSTI085|Aßuerordentlich starkes Signal||
+WPUPSTI086|SCHLECHTE PEILUNG||
 WPUPSTI087|BAD NRQ||
 WPUPSTI088|DF Beamwidth||
 WPUPSTI089|DF Length||
-WPUPSTI090|Not Valid||
+WPUPSTI090|ungültig||
 #
 #
 # PopUp "ALOHA Statistics"
-WPUPALO001|ALOHA radius: %d %s||
-WPUPALO002|Stations inside ALOHA circle: %d||
-WPUPALO003| Digis:               %d||
-WPUPALO004| Mobiles (in motion): %d||
-WPUPALO005| Mobiles (other):     %d||
-WPUPALO006| WX stations:         %d||
-WPUPALO007| Home stations:       %d||
-WPUPALO008|Last calculated %d %s %d %s ago.||
-WPUPALO666|ALOHA radius not calculated yet||
+WPUPALO001|ALOHA Radius: %d %s||
+WPUPALO002|Stationen innerhalb des ALOHA Kreises: %d||
+WPUPALO003| Digis                    : %d||
+WPUPALO004| Mobilstationen (in Bew.) : %d||
+WPUPALO005| Mobilstationen (sonstige): %d||
+WPUPALO006| Wetterstationen          : %d||
+WPUPALO007| Feststationen            : %d||
+WPUPALO008|zuletzt berechnet vor %d %s %d %s.||
+WPUPALO666|ALOHA Radius noch nicht berechnet||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Datenbank Abfrage||
@@ -839,10 +839,10 @@ STIFCC0011|12 wpm ||
 #
 #
 # FCC-RAC indexing/searching
-STIFCC0100|FCC index old, rebuilding||
-STIFCC0101|Callsign Search||
-STIFCC0102|Callsign Not Found!||
-STIFCC0103|RAC index old, rebuilding||
+STIFCC0100|FCC-Index zu alt, erstelle neu...||
+STIFCC0101|Rufzeichensuche||
+STIFCC0102|Rufzeichen nicht gefunden!||
+STIFCC0103|RAC-Index zu alt, erstelle neu...||
 #
 #
 # Band open message 
@@ -884,7 +884,7 @@ UNIOP00032|Anwenden|||
 UNIOP00033|Reset||
 UNIOP00034|min||
 UNIOP00035|hr||
-UNIOP00036|day||
+UNIOP00036|Tag||
 #
 # popUp "Stationsauswahl"
 STCHO00001|Stationsauswahl||
@@ -941,7 +941,7 @@ IGPUPCF000|Internet Gateway||
 IGPUPCF001|Alle Weiterleitungen verhindern||
 IGPUPCF002|Weiterleitung NUR von HF nach Internet||
 IGPUPCF003|Weiterleitung HF->Internet UND Internet->HF||
-IGPUPCF004|Igate -> HF Pfad   ||
+IGPUPCF004|Igate -> HF Pfad ||
 #
 # Wetterstation
 WXPUPSI000|Wetterstation||
@@ -1053,8 +1053,8 @@ POPEM00038|Der Name steht im Konflikt mit einem bereits existierenden Objekt, ei
 POPEM00039|Nicht zulaessige Zeichen gefunden||
 POPEM00040|Der nutzerspezifische Pfad ging verloren||
 POPEM00041|Erstelle andere Datei. Bitte etwas warten und danach neu versuchen||
-POPEM00042|Object not owned by me! Try adopting the object first.||
-POPEM00043|Not an Object/Item!||
+POPEM00042|Kein eigenes Objekt! Versuchen Sie erst das Obkekt zu übernehmen.||
+POPEM00043|Kein Objekt/Item!||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -1121,12 +1121,12 @@ FEATURE002|Bundesland/Provinz:||
 FEATURE003|County:||
 FEATURE004|Map Quad:||
 FEATURE005|Typ:||
-FEATURE006|GNIS Datei:||
-FEATURE007|Address:||
-FEATURE008|City:||
-FEATURE009|Mark Destination||
-FEATURE010|Zip Code:||
-FEATURE011|Geocoding File||
+FEATURE006|GNIS-Datei:||
+FEATURE007|Adresse:||
+FEATURE008|Stadt:||
+FEATURE009|Zielmarkierung:||
+FEATURE010|PLZ:||
+FEATURE011|Geocoding Datei||
 #
 # Koordinatenrechner Dialog
 COORD001|Koordinatenumrechnung||
@@ -1137,16 +1137,16 @@ COORD005|UTM||
 COORD006|Breitengrad oder||
 COORD007|Längengrad oder||
 COORD008|Zone||
-COORD009|UTM Easting||
-COORD010|UTM Northing||
-COORD011|               Decimal Degrees:  ||
-COORD012|       Degrees/Decimal Minutes:  ||
-COORD013|  Degrees/Minutes/Dec. Seconds:  ||
-COORD014| Universal Transverse Mercator:  ||
-COORD015|Military Grid Reference System:  ||
-COORD016|       Maidenhead Grid Locator:  ||
-COORD017| **       Sorry, your input was not recognized!        **||
-COORD018| **   Please use one of the following input formats:   **||
+COORD009|UTM östlich||
+COORD010|UTM nördlich||
+COORD011|                   Dezimal Grad: ||
+COORD012|           Grad/Dezimal Minuten: ||
+COORD013|  Grad/Minuten/Dezimal Sekunden: ||
+COORD014|  Universal Transverse Mercator: ||
+COORD015|Militärisches Koordinatensystem: ||
+COORD016|        Maidenhead Grid Locator: ||
+COORD017| **             Ihre Eingabe war fehlerhaft !            **||
+COORD018| ** Bitte nutzen Sie eines der folgenden Eingabeformate: **||
 #
 #
 # Smart Beaconing Dialog
@@ -1223,22 +1223,22 @@ TIME008|Sekunden||
 #
 #
 # Map Caching
-CACHE001|Map now cached||
-CACHE002|Loading Cached Map||
-CACHE003|Map not found in cache...||
+CACHE001|Karte im Cache gespeichert||
+CACHE002|Lade Karte aus dem Cache||
+CACHE003|Karte nicht im Cache gefunden...||
 #
 #
 # Map Screen Misc
-RANGE001|RANGE SCALE||
+RANGE001|ENTFERNUNGS-SKALIERUNG||
 #
 #
 # GPS Status
 GPSS001|3D||
 GPSS002|2D||
-GPSS003|Valid||
-GPSS004|Invalid|
-GPSS005|Sats/View|
-GPSS006|Fix|
-GPSS007|!GPS data is older than 30 seconds!||
+GPSS003|gültig||
+GPSS004|ungültig|
+GPSS005|Sats/Anzeige|
+GPSS006|Fest|
+GPSS007|!GPS-Daten sind älter als 30 Sekunden!||
 #
 #
