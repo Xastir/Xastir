@@ -168,43 +168,48 @@ if test "$lpr" != "no"; then
   AC_DEFINE_UNQUOTED(LPR_PATH, "${lpr}", [Path to lpr]) 
 fi
 
-# Test gv version
-gv_new="no";
-gv_version=`gv --version 2>&1`
-gv_test=`echo $gv_version | cut -d ' ' -f 1`
-if test "$gv_test" != "gv"; then
-  gv_version=`gv -v 2>&1`
-fi
-gv_test=`echo $gv_version | cut -d ' ' -f 1`
-if test "$gv_test" != "gv"; then
-  # No gv found.  Put an AC_PATH_PROG here so the "then" clause has
-  # something to do and so that we get proper output to the user.
-  AC_PATH_PROG(gv, [gv], no, $BINPATH)
-else
-  gv_short_version=`echo $gv_version | cut -d ' ' -f 2`
-  gv_major=`echo $gv_short_version | cut -d '.' -f 1`
-  gv_minor=`echo $gv_short_version | cut -d '.' -f 2`
-  gv_tiny=`echo $gv_short_version | cut -d '.' -f 3`
-  if test "$gv_major" -gt 3; then
-    gv_new="yes";
-  elif test "$gv_major" -ge 3 -a "$gv_minor" -gt 6; then
-    gv_new="yes";
-  elif test "$gv_major" -ge 3 -a "$gv_minor" -ge 6 -a "$gv_tiny" -ge 1; then
-    gv_new="yes";
-  fi
-  if test "$gv_new" != "no"; then
-    AC_PATH_PROG(gv, [gv], no, $BINPATH)
-    AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
-    AC_DEFINE_UNQUOTED(HAVE_NEW_GV, 1, [Define if you have old gv])
-    AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
-  else
-    AC_PATH_PROG(gv, [gv], no, $BINPATH)
-    AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
-    AC_DEFINE_UNQUOTED(HAVE_OLD_GV, 1, [Define if you have old gv])
-    AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
-  fi
-fi
+#Find gv executable
+AC_PATH_PROG(gv, [gv], no, $BINPATH)
 
+if test "$gv" != "no"; then
+  # Test gv version
+  AC_MSG_CHECKING([gv version])
+  gv_new="no";
+  gv_version=`gv --version 2>&1`
+  gv_test=`echo $gv_version | cut -d ' ' -f 1`
+  if test "$gv_test" != "gv"; then
+    gv_version=`gv -v 2>&1`
+  fi
+  gv_test=`echo $gv_version | cut -d ' ' -f 1`
+  if test "$gv_test" != "gv"; then
+    # No gv found.  Put an AC_PATH_PROG here so the "then" clause has
+    # something to do and so that we get proper output to the user.
+    AC_MSG_RESULT([gv version test likely exited with error, this is what it said: $gv_version])
+  else
+    gv_short_version=`echo $gv_version | cut -d ' ' -f 2`
+    gv_major=`echo $gv_short_version | cut -d '.' -f 1`
+    gv_minor=`echo $gv_short_version | cut -d '.' -f 2`
+    gv_tiny=`echo $gv_short_version | cut -d '.' -f 3`
+    if test "$gv_major" -gt 3; then
+      gv_new="yes";
+    elif test "$gv_major" -ge 3 -a "$gv_minor" -gt 6; then
+      gv_new="yes";
+    elif test "$gv_major" -ge 3 -a "$gv_minor" -ge 6 -a "$gv_tiny" -ge 1; then
+      gv_new="yes";
+    fi
+    if test "$gv_new" != "no"; then
+      AC_MSG_RESULT([new, >= 3.6.1])
+      AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
+      AC_DEFINE_UNQUOTED(HAVE_NEW_GV, 1, [Define if you have old gv])
+      AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
+    else
+      AC_MSG_RESULT([old, pre 3.6.1])
+      AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv])
+      AC_DEFINE_UNQUOTED(HAVE_OLD_GV, 1, [Define if you have old gv])
+      AC_DEFINE_UNQUOTED(GV_PATH, "${gv}", [Path to gv])
+    fi
+  fi
+fi
 AC_PATH_PROG(cp, [cp], no, $BINPATH)
 if test "$cp" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_CP, 1, [Define if you have cp]) 
