@@ -1052,6 +1052,7 @@ POPEM00040|Custom outgoing path was lost||
 POPEM00041|Processing another file.  Wait a bit, then try again||
 POPEM00042|Object not owned by me! Try adopting the object first.||
 POPEM00043|Not an Object/Item!||
+POPEM00044|Fetch Findu Trail failed||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||

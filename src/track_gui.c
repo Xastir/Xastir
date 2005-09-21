@@ -413,6 +413,9 @@ static void* findu_transfer_thread(void *arg) {
 
         // Had trouble getting the file.  Abort.
 
+        popup_message_always(langcode("POPEM00035"),
+            langcode("POPEM00044"));
+
         // Reset global "busy" variable
         fetching_findu_trail_now = 0;
         
@@ -464,12 +467,12 @@ end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail_de
 
 void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[MAX_CALLSIGN+1];
-    char fileimg[400];
-    char log_filename[200];
+    static char fileimg[400];
+    static char log_filename[200];
     char *temp_ptr;
     pthread_t download_trail_thread;
-    XtPointer download_client_data = NULL;
-    char *download_client_ptrs[2];
+    static XtPointer download_client_data = NULL;
+    static char *download_client_ptrs[2];
 
 
     // If we're already fetching a trail, we shouldn't be calling
@@ -485,8 +488,12 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     if (read_file) {
         // No, we're already in the middle of reading in some file.
         // Skip trying to download yet another file.
+
+        fprintf(stderr,"Processing another file.  Wait a bit, then try again\n");
+
         popup_message_always(langcode("POPEM00035"),
             langcode("POPEM00041"));
+
         return;
     }
  
