@@ -2598,7 +2598,7 @@ _do_the_drawing:
     if (Display_.df_data && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3)) {
         //fprintf(stderr,"Bearing: %s\n",p_station->signal_gain,NRQ);
         if (p_station->df_color == -1)
-            p_station->df_color = rand() % 32;
+            p_station->df_color = rand() % MAX_TRAIL_COLORS;
 
         draw_bearing(p_station->coord_lon,
                      p_station->coord_lat,
@@ -3654,10 +3654,10 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 
 
 void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, my_form, button_ok, button_close, label;
+    static Widget pane, my_form, button_ok, button_close, label;
     Atom delw;
-    Arg al[50];                    /* Arg List */
-    register unsigned int ac = 0;           /* Arg Count */
+    Arg al[50];                     // Arg List
+    register unsigned int ac = 0;   // Arg Count
 
     if (!change_tactical_dialog) {
         change_tactical_dialog =
@@ -3686,7 +3686,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 NULL);
 
 
-        /*set args for color */
+        // set args for color
         ac=0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
@@ -3814,6 +3814,32 @@ void Assign_Tactical_Call( Widget w, XtPointer clientData, XtPointer calldata) {
     //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
     tactical_pointer = p_station;
     Change_tactical(w, p_station, NULL);
+}
+
+
+
+
+
+/*
+ *  Change the trail color for a station
+ */
+void Change_trail_color( Widget w, XtPointer clientData, XtPointer calldata) {
+    DataRow *p_station = clientData;
+    int temp;
+
+    temp = p_station->trail_color;
+
+    // Increment to the next color, round-robin style
+    temp = (temp + 1) % MAX_TRAIL_COLORS;
+
+    // Test for and skip if my trail color
+    if (temp == MY_TRAIL_COLOR) {
+        temp = (temp + 1) % MAX_TRAIL_COLORS;
+    }
+
+    p_station->trail_color = temp;
+
+    redraw_on_new_data = 2; // redraw symbols now
 }
 
 
@@ -4831,7 +4857,7 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
         button_trace, button_messages, button_object_modify,
         button_direct, button_version, station_icon, station_call,
         station_type, station_data_auto_update_w,
-        button_tactical;
+        button_tactical, button_change_trail_color;
     Arg args[50];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
@@ -5241,8 +5267,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNcursorPositionVisible, FALSE,
                                 XmNtraversalOn, FALSE,
                                 XmNshadowThickness,       0,
-                                XmNcolumns,15,
-                                XmNwidth,((15*7)+2),
+                                XmNcolumns,10,
+                                XmNwidth,((10*7)+2),
                                 XmNbackground, colors[0xff],
                                 XmNtopAttachment,XmATTACH_FORM,
                                 XmNtopOffset, 2,
@@ -5276,7 +5302,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmNtopOffset, 5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNleftAttachment, XmATTACH_WIDGET,
-            XmNleftOffset, 20,
+            XmNleftOffset, 10,
             XmNleftWidget, station_data_auto_update_w,
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
@@ -5291,6 +5317,25 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             // so make the button insensitive.
             XtSetSensitive(button_tactical,FALSE);
         }
+ 
+        //Add change_trail_color button at the top/right
+        // "Trail Color"
+        button_change_trail_color = XtVaCreateManagedWidget(langcode("WPUPSTI091"),
+            xmPushButtonGadgetClass, form,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNtopOffset, 5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftOffset, 10,
+            XmNleftWidget, button_tactical,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNbackground, colors[0xff],
+            XmNnavigationType, XmTAB_GROUP,
+            NULL);
+        XtAddCallback(button_change_trail_color,
+            XmNactivateCallback,
+            Change_trail_color,
+            (XtPointer)p_station);
  
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
@@ -6727,8 +6772,8 @@ int new_trail_color(char *call) {
     } else {
         // all other callsigns get some other color out of the color table
         color = current_trail_color;
-        for(i=0,found=0;!found && i<max_trail_colors;i++) {
-            color = (color + 1) % max_trail_colors; // try next color in list
+        for(i=0,found=0;!found && i<MAX_TRAIL_COLORS;i++) {
+            color = (color + 1) % MAX_TRAIL_COLORS; // try next color in list
             // skip special and or inactive colors.
             if (color != MY_TRAIL_COLOR && trail_color_active(color))
                 found = 1;

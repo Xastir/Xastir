@@ -413,6 +413,7 @@ static void* findu_transfer_thread(void *arg) {
 
         // Had trouble getting the file.  Abort.
 
+        // Fetch Findu Trail: Failed
         popup_message_always(langcode("POPEM00035"),
             langcode("POPEM00044"));
 
@@ -421,6 +422,10 @@ static void* findu_transfer_thread(void *arg) {
         
         return(NULL);
     }
+
+    // Fetch Findu Trail: Complete
+    popup_message_always(langcode("POPEM00036"),
+        langcode("POPEM00045"));
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);

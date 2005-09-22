@@ -975,9 +975,8 @@ char user_dir[1000];            /* user directory file */
 int delay_time;                 /* used to delay display data */
 time_t last_weather_cycle;      // Time of last call to cycle_weather()
 int colors[256];                /* screen colors */
-int trail_colors[32];           /* station trail colors, duh */
+int trail_colors[MAX_TRAIL_COLORS]; /* station trail colors, duh */
 int current_trail_color;        /* what color to draw station trails with */
-int max_trail_colors = 32;
 Pixel_Format visual_type = NOT_TRUE_NOR_DIRECT;
 int install_colormap;           /* if visual_type == NOT_TRUE..., should we install priv cmap */
 Colormap cmap;                  /* current colormap */

@@ -805,6 +805,7 @@ WPUPSTI087|BAD NRQ||
 WPUPSTI088|DF Beamwidth||
 WPUPSTI089|DF Length||
 WPUPSTI090|Not Valid||
+WPUPSTI091|Change Trail Color||
 #
 #
 # PopUp "ALOHA Statistics"
@@ -1049,7 +1050,8 @@ POPEM00040|Custom outgoing path was lost||
 POPEM00041|Processing another file.  Wait a bit, then try again||
 POPEM00042|Object not owned by me! Try adopting the object first.||
 POPEM00043|Not an Object/Item!||
-POPEM00044|Fetch Findu Trail failed||
+POPEM00044|Fetch Findu Trail: Failed||
+POPEM00045|Fetch Findu Trail: Complete||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||

@@ -811,6 +811,7 @@ WPUPSTI087|BAD NRQ||
 WPUPSTI088|DF Beamwidth||
 WPUPSTI089|DF Length||
 WPUPSTI090|ungültig||
+WPUPSTI091|Change Trail Color||
 #
 #
 # PopUp "ALOHA Statistics"
@@ -1055,7 +1056,8 @@ POPEM00040|Der nutzerspezifische Pfad ging verloren||
 POPEM00041|Erstelle andere Datei. Bitte etwas warten und danach neu versuchen||
 POPEM00042|Kein eigenes Objekt! Versuchen Sie erst das Obkekt zu übernehmen.||
 POPEM00043|Kein Objekt/Item!||
-POPEM00044|Fetch Findu Trail failed||
+POPEM00044|Fetch Findu Trail: Failed||
+POPEM00045|Fetch Findu Trail: Complete||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
