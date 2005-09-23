@@ -964,13 +964,6 @@ long scale_x;                   // x scaling in 1/100 sec per pixel, calculated 
 long scale_y;                   // y scaling in 1/100 sec per pixel
 long new_scale_x;
 long new_scale_y;
-int appshell_width= 0;
-int appshell_height = 0;
-int appshell_offset_x = 0;
-int appshell_offset_x_right = 0;
-int appshell_offset_y = 0;
-int appshell_offset_y_bottom = 0;
-int appshell_have_offsets = 0;
 long screen_width;              // Screen width,  map area without border (in pixel)
 long screen_height;             // Screen height, map area without border (in pixel)
 float d_screen_distance;        /* Diag screen distance */
@@ -5022,6 +5015,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
+    int global_width, global_height, global_x, global_y;
+
 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell start\n");
@@ -5052,6 +5047,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     colors[0x0c] = (int)GetPixelByName(Global.top,"red");
     colors[0xff] = (int)GetPixelByName(Global.top,"gray73");
 
+
     ac = 0;
     XtSetArg(al[ac], XmNallowShellResize, TRUE);            ac++;
 
@@ -5060,17 +5056,50 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
  
     XtSetArg(al[ac], XmNargv,             app_argv);        ac++;
 
-    // Set the window position offset
-//    XtSetArg(al[ac], XmNx,                1);               ac++;
-//    XtSetArg(al[ac], XmNy,                1);               ac++;
-
     // Set the minimum width that Xastir can be shrunk to
     XtSetArg(al[ac], XmNminWidth,         100);             ac++;
     XtSetArg(al[ac], XmNminHeight,        100);             ac++;
 
     XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
+ 
     XtSetArg(al[ac], XmNforeground,       MY_FG_COLOR);     ac++;
     XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
+
+    // Snag the X/Y offsets and the window size from Global.top
+    // widget, which is affected by the -geometry command-line flag.
+    // If it has the default size (width=1/height=1), use the size
+    // from our config file instead.  That way, if -geometry is
+    // specified on the command-line, we use it, if not, we use our
+    // stored value.
+    //
+    XtVaGetValues(Global.top,
+        XmNwidth,  &global_width,
+        XmNheight, &global_height,
+        XmNx,      &global_x,
+        XmNy,      &global_y,
+        NULL);
+fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
+    global_width,
+    global_height,
+    global_x,
+    global_y);
+    if (global_width != 1 || global_height != 1) {
+        // Set to the same size/position as the Global.top widget
+        XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
+        XtSetArg(al[ac], XmNheight,       global_height);   ac++;
+    }
+    else {
+        // Set to the size specified in the config file
+        XtSetArg(al[ac], XmNwidth,        screen_width);    ac++;
+        XtSetArg(al[ac], XmNheight,       screen_height+60);ac++;
+    }
+        // Set to the same offset as the Global.top widget
+// This doesn't work yet!
+    if (global_x != 0 || global_y != 0) {
+        XtSetArg(al[ac], XmNx,            global_x);        ac++;
+        XtSetArg(al[ac], XmNy,            global_y);        ac++;
+    }
+ 
 
     appshell= XtCreatePopupShell (app_name,
             topLevelShellWidgetClass,
@@ -5093,6 +5122,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
+//    XtVaSetValues(form,
+//                XmNx,           1,
+//                XmNy,           1,
+//                XmNwidth,       screen_width,
+//                XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
+//                NULL);
 
     /* Menu Bar */
     ac = 0;
@@ -8345,14 +8381,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
     (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
 
-    // Set to the proper size before we make the window visible on the screen
-    XtVaSetValues(appshell,
-                XmNx,           1,
-                XmNy,           1,
-                XmNwidth,       screen_width,
-//              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
-                XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
-                NULL);
+
+    // Set to the proper offset before we make the window visible on
+    // the screen.
+// This doesn't work yet!
+    if (global_x != 0 || global_y != 0) {
+        XtVaSetValues(appshell,XmNx,global_x,XmNy,global_y,NULL);
+    }
+
 
     // Show the window
     XtPopup(appshell,XtGrabNone);
@@ -31354,105 +31390,8 @@ int main(int argc, char *argv[], char *envp[]) {
                 deselect_maps_on_startup = (int)TRUE;
                 break;
 
-            case 'g':
-                fprintf(stderr,"Window Geometry Specified:\n");
-
-                if (optarg) {
-                    char geom[100];
-                    char *p;
-                    int done;
-
-                    xastir_snprintf(geom,
-                        sizeof(geom),
-                        "%s",
-                        optarg);
-
-                    // Find 'x' char separating width from height,
-                    // if present.
-                    p = strchr(geom, 'x');
-                    if (p != NULL) {    // Width/Height were specified
-                        *p = '\0';      // Terminate the first string
-                        // Fetch window width
-                        appshell_width = atoi(geom);
-                        p++;
-                        // Fetch window height
-                        appshell_height = atoi(p);
-                    }
-                    else {  // p was NULL, set it to the start of
-                            // the string.
-                        p = geom;
-                    }
-
-                    // Look for offsets, '+' or '-'
-                    //
-                    // Fetch appshell_offset_x
-                    //
-                    done = 0;
-                    while (!done && *p != '\0') {
-                        int negative = 0;
-
-                        if (*p == '+' || *p == '-') { // Found X offset
-                            if (*p == '-')
-                                appshell_offset_x_right++;
-                            p++;        // Skip over first '+'/'-'
-                            if (*p == '-') {
-                                negative++;
-                                p++;    // Skip over '-'
-                            }
-                            else if (*p == '+') {
-                                p++;    // Skip over '+'
-                            }
-                            appshell_offset_x = atoi(p);
-                            if (negative)
-                                appshell_offset_x = -appshell_offset_x;
-                            appshell_have_offsets++;
-                            done++;
-                        }
-                        else {
-                            p++;
-                        }
-                    }
-                    // Fetch appshell_offset_y 
-                    done = 0;
-                    while (!done && *p != '\0') {
-                        int negative = 0;
-
-                        if (*p == '+' || *p == '-') { // Found Y offset
-                            if (*p == '-')
-                                appshell_offset_y_bottom++;
-                            p++;        // Skip over '+'/'-'
-                            if (*p == '-') {
-                                negative++;
-                                p++;    // Skip over '-'
-                            }
-                            else if (*p == '+') {
-                                p++;    // Skip over '+'
-                            }
-                            appshell_offset_y = atoi(p);
-                            if (negative)
-                                appshell_offset_y = -appshell_offset_y;
-                            appshell_have_offsets++;
-                            done++;
-                        }
-                        else {
-                            p++;
-                        }
-                    }
-
-                    fprintf(stderr,
-                        "\tWidth:%d\n\tHeight:%d\n",
-                        appshell_width,
-                        appshell_height);
-
-                    if (appshell_have_offsets == 2) {
-                        fprintf(stderr,
-                            "\t%s Edge Offset:%d\n\t%s Edge Offset:%d\n",
-                            (appshell_offset_x_right) ? "Right" : "Left",
-                            appshell_offset_x,
-                            (appshell_offset_y_bottom) ? "Bottom" : "Top",
-                            appshell_offset_y);
-                    }
-                }
+            case 'g':   // -geometry
+                // Supported by XtIntrinsics
                 break;
 
             default:
@@ -31464,18 +31403,18 @@ int main(int argc, char *argv[], char *envp[]) {
 
     if (ag_error){
         fprintf(stderr,"\nXastir Command line Options\n\n");
-        fprintf(stderr,"-i            Install private Colormap\n");
-        fprintf(stderr,"-g WxH+X+Y    Set Window Geometry\n");
-        fprintf(stderr,"-l Dutch      Set the language to Dutch\n");
-        fprintf(stderr,"-l English    Set the language to English\n");
-        fprintf(stderr,"-l French     Set the language to French\n");
-        fprintf(stderr,"-l German     Set the language to German\n");
-        fprintf(stderr,"-l Italian    Set the language to Italian\n");
-        fprintf(stderr,"-l Portuguese Set the language to Portuguese\n");
-        fprintf(stderr,"-l Spanish    Set the language to Spanish\n");
-        fprintf(stderr,"-m            Deselect Maps\n");
-        fprintf(stderr,"-t            Internal SIGSEGV handler disabled\n");
-        fprintf(stderr,"-v level      Set the debug level\n\n");
+        fprintf(stderr,"-i                 Install private Colormap\n");
+        fprintf(stderr,"-geometry WxH+X+Y  Set Window Geometry\n");
+        fprintf(stderr,"-l Dutch           Set the language to Dutch\n");
+        fprintf(stderr,"-l English         Set the language to English\n");
+        fprintf(stderr,"-l French          Set the language to French\n");
+        fprintf(stderr,"-l German          Set the language to German\n");
+        fprintf(stderr,"-l Italian         Set the language to Italian\n");
+        fprintf(stderr,"-l Portuguese      Set the language to Portuguese\n");
+        fprintf(stderr,"-l Spanish         Set the language to Spanish\n");
+        fprintf(stderr,"-m                 Deselect Maps\n");
+        fprintf(stderr,"-t                 Internal SIGSEGV handler disabled\n");
+        fprintf(stderr,"-v level           Set the debug level\n\n");
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options
     }
@@ -31528,31 +31467,6 @@ int main(int argc, char *argv[], char *envp[]) {
 
     load_data_or_default(); // load program parameters or set to default values
 
-
-    // Fix the window size if the user has specified it.  In reality
-    // we're fixing the application size without regard to the
-    // window decorations.  Window decorations will make the actual
-    // display window a bit bigger than the numbers that were
-    // selected by the user.  Window decoration sizes depend on the
-    // individual window manager.
-    //
-    if (appshell_width > 0)
-        screen_width = (long)appshell_width;        // da widget width
-    if (appshell_height > 0)
-        screen_height = (long)appshell_height - 60; // da widget height
-
-
-    // We know our window size by this point, so we can compute our
-    // offsets from the top-left corner of the appshell.
-//appshell_width
-//appshell_height
-//appshell_have_offsets == 2) {
-//(appshell_offset_x_right) ? "Right" : "Left",
-//appshell_offset_x,
-//(appshell_offset_y_bottom) ? "Bottom" : "Top",
-//appshell_offset_y);
-
- 
 
     // Start the listening socket.  If we fork it early we end up
     // with much smaller process memory allocated for it and all its
@@ -31648,13 +31562,15 @@ int main(int argc, char *argv[], char *envp[]) {
             XtToolkitInitialize();
 
             // ERROR:
-            Global.top = XtVaAppInitialize(&app_context,"Xastir", NULL, 0,
-                                       &argc, argv,
-                                       fallback_resources,
-                                       XmNmappedWhenManaged, FALSE,
-                                       XmNwidth, 10,
-                                       XmNheight, 10,
-                                       NULL);
+            Global.top = XtVaAppInitialize(&app_context,
+                "Xastir",
+                NULL,
+                0,
+                &argc, argv,
+                fallback_resources,
+                XmNmappedWhenManaged, FALSE,
+                NULL);
+
             // DK7IN: now scanf and printf use "," instead of "."
             // that leads to several problems in the initialisation
 
@@ -31717,7 +31633,7 @@ int main(int argc, char *argv[], char *envp[]) {
 //fprintf(stderr,"***create_appshell\n");
 
             create_appshell(display, argv[0], argc, argv);      // does the init
- 
+
             /* reset language attribs for numeric, program needs decimal in US for all data! */
             (void)setlocale(LC_NUMERIC, "C");
             // DK7IN: now scanf and printf work as wanted...
