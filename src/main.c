@@ -964,8 +964,8 @@ long scale_x;                   // x scaling in 1/100 sec per pixel, calculated 
 long scale_y;                   // y scaling in 1/100 sec per pixel
 long new_scale_x;
 long new_scale_y;
-int appshell_width= 100;
-int appshell_height = 100;
+int appshell_width= 0;
+int appshell_height = 0;
 int appshell_offset_x = 0;
 int appshell_offset_x_right = 0;
 int appshell_offset_y = 0;
