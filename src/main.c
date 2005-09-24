@@ -5015,7 +5015,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
-    int global_width, global_height, global_x, global_y;
+    Dimension global_width, global_height;
+    Position global_x, global_y;
     XSizeHints sizehints;
 
     static XWMHints wm_hints = {
@@ -5101,7 +5102,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //    global_height,
 //    global_x,
 //    global_y);
-    if (global_width != 1 || global_height != 1) {
+    if (       global_width  != 1
+            || global_height != 1
+            || global_width  > 50000
+            || global_height > 50000 ) {
+
         // Set to the same size/position as the Global.top widget
         XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
         XtSetArg(al[ac], XmNheight,       global_height);   ac++;
@@ -16552,7 +16557,8 @@ void help_index_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,
 
 void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, my_form, button_close,help_text;
-    int i, x, y;
+    int i;
+    Position x, y;
     unsigned int n;
     char *temp;
     char title[200];

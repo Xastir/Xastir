@@ -972,7 +972,7 @@ end_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill" )
 void update_station_scroll_list(void) {         // called from UpdateTime() [main.c] in timing loop
     int i;
     int pos;
-    int last_h, last_w;
+    Dimension last_h, last_w;
     int last;
     int ok;
 
