@@ -5016,11 +5016,29 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         help_button, help_about, help_help;
     char *title, *t;
     int global_width, global_height, global_x, global_y;
+    XSizeHints sizehints;
+
+    static XWMHints wm_hints = {
+        (InputHint|StateHint),  // flags telling which values are set
+        True,   // We _do_ expect input!  Change this to False and
+                // you won't be able to interoperate with Xastir
+                // anymore.
+        NormalState,    // Initial state
+        0,      // icon pixmap
+        0,      // icon window
+        0, 0,   // icon location
+        0,      // icon mask
+        0       // window group
+    };
 
 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell start\n");
 
+
+    // Initialize flags
+    sizehints.flags = 0;
+ 
 
     t = _("X Amateur Station Tracking and Information Reporting");
     title = (char *)malloc(strlen(t) + 42 + strlen(PACKAGE));
@@ -5078,28 +5096,45 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmNx,      &global_x,
         XmNy,      &global_y,
         NULL);
-fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
-    global_width,
-    global_height,
-    global_x,
-    global_y);
+//fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
+//    global_width,
+//    global_height,
+//    global_x,
+//    global_y);
     if (global_width != 1 || global_height != 1) {
         // Set to the same size/position as the Global.top widget
         XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
         XtSetArg(al[ac], XmNheight,       global_height);   ac++;
+        sizehints.width = global_width;
+        sizehints.height = global_height;
+        sizehints.base_width = 100; // Absolute minimum size
+        sizehints.base_height = 100;    // Absolute minimum size
+        sizehints.flags |= USSize;  // User-defined size
+        sizehints.flags |= PBaseSize;
     }
     else {
         // Set to the size specified in the config file
         XtSetArg(al[ac], XmNwidth,        screen_width);    ac++;
         XtSetArg(al[ac], XmNheight,       screen_height+60);ac++;
+        sizehints.width = screen_width;
+        sizehints.height = screen_height + 60;
+        sizehints.base_width = 100; // Absolute minimum size
+        sizehints.base_height = 100;    // Absolute minimum size
+        sizehints.flags |= PSize;
+        sizehints.flags |= PBaseSize;
     }
         // Set to the same offset as the Global.top widget
-// This doesn't work yet!
     if (global_x != 0 || global_y != 0) {
+        sizehints.x = global_x;
+        sizehints.y = global_y;
+        sizehints.flags |= USPosition; // User-defined position
+
+        // These two statements don't appear to have any effect.  We
+        // have to use sizehints instead.
         XtSetArg(al[ac], XmNx,            global_x);        ac++;
         XtSetArg(al[ac], XmNy,            global_y);        ac++;
     }
- 
+
 
     appshell= XtCreatePopupShell (app_name,
             topLevelShellWidgetClass,
@@ -8382,12 +8417,23 @@ fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
     (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
 
 
-    // Set to the proper offset before we make the window visible on
-    // the screen.
-// This doesn't work yet!
-    if (global_x != 0 || global_y != 0) {
-        XtVaSetValues(appshell,XmNx,global_x,XmNy,global_y,NULL);
-    }
+//    XSetStandardProperties(display,
+//        XtWindow(appshell),
+//        "Xastir",   // window name
+//        "Xastir",   // icon name
+//        None,       // pixmap for icon
+//        0, 0,       // argv and argc for restarting
+//        &sizehints);
+//    XSetWMHints(display, XtWindow(appshell), &wm_hints);
+    XSetWMProperties(display,
+        XtWindow(appshell),
+        NULL, // window name
+        NULL, // icon name
+        app_argv,
+        app_argc,
+        &sizehints,
+        &wm_hints,
+        NULL);  // class hints
 
 
     // Show the window
