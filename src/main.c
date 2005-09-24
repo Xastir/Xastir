@@ -5102,10 +5102,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //    global_height,
 //    global_x,
 //    global_y);
-    if (       global_width  != 1
-            || global_height != 1
-            || global_width  > 50000
-            || global_height > 50000 ) {
+    //
+    // On Linux, Global.top has size 1,1 if -geometry wasn't
+    // specified.  On FreeBSD it appears to have size
+    // 672464897,672464897.  Here we're testing to see if either
+    // value is within range (meaning -geometry was specified).  If
+    // so, then set the 2nd window (the first visible Xastir window)
+    // to the same size.
+    //
+    if (       (global_width  > 1 && global_width  < 20000)
+            || (global_height > 1 && global_height < 20000) ) {
 
         // Set to the same size/position as the Global.top widget
         XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
@@ -5128,8 +5134,18 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         sizehints.flags |= PSize;
         sizehints.flags |= PBaseSize;
     }
-        // Set to the same offset as the Global.top widget
-    if (global_x != 0 || global_y != 0) {
+    //
+    // Set to the same offset as the Global.top widget
+    // On Linux, Global.top has x/y of 0,0 if -geometry wasn't
+    // specified.  On FreeBSD it appears to have x/y of
+    // 672464896,672464896.  Here we're testing to see if either
+    // value is within range (meaning -geometry was specified).  If
+    // so, then set the 2nd window (the first visible Xastir window)
+    // to the same offsets.
+    // 
+    if (       (global_x > 0 && global_x < 20000)
+            || (global_y > 0 && global_y < 20000) ) {
+
         sizehints.x = global_x;
         sizehints.y = global_y;
         sizehints.flags |= USPosition; // User-defined position
