@@ -407,8 +407,10 @@ void recompute_lat_long(void) {
     half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
     half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
 
-//fprintf(stderr,"scale_x: %ld\thalf_screen_h: %f\n",scale_x,half_screen_horiz);
-//fprintf(stderr,"scale_y: %ld\thalf_screen_v: %f\n",scale_y,half_screen_vert);
+//fprintf(stderr,"scale_x: %ld\thalf_screen_h:
+//%f\n",scale_x,half_screen_horiz);
+//fprintf(stderr,"scale_y: %ld\thalf_screen_v:
+//%f\n",scale_y,half_screen_vert);
 
     view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
     view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
@@ -432,135 +434,6 @@ void recompute_lat_long(void) {
 
     if (view_max_y >  90.0 || view_max_y < -90.0)
         view_max_y =  90.0;
-}
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////
-// convert_from_xastir_coordinates()
-//
-// Converts from Xastir coordinate system to lat/lon.  First two
-// parameters are the output floating point lat/lon values.  2nd two
-// are the input Xastir X/Y values.
-//
-//              0 (90 deg. or 90N)
-//
-// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
-//
-//          64,800,000 (-90 deg. or 90S)
-//
-// Returns 0 if error, 1 if good values were converted.
-/////////////////////////////////////////////////////////////////////
-int convert_from_xastir_coordinates ( float *f_longitude,
-                                      float *f_latitude,
-                                      long x,
-                                      long y ) {
-
-//fprintf(stderr,"convert_from_xastir_coordinates\n");
-
-    if (x < 0l ) {
-        fprintf(stderr,
-            "convert_from_xastir_coordinates:X out-of-range (too low):%lu\n",
-            x);
-        return(0);
-    }
-
-    if (x > 129600000l) {
-        fprintf(stderr,
-            "convert_from_xastir_coordinates:X out-of-range (too high):%lu\n",
-            x);
-        return(0);
-    }
-
-    if (y < 0l) {
-        fprintf(stderr,
-            "convert_from_xastir_coordinates:Y out-of-range (too low):%lu\n",
-            y);
-        return(0);
-    }
-
-    if (y > 64800000l) {
-        fprintf(stderr,
-            "convert_from_xastir_coordinates:Y out-of-range (too high):%lu\n",
-            y);
-        return(0);
-    }
-
-    *f_latitude  = (float)( -((y - 32400000l) / 360000.0) );
-    *f_longitude = (float)(   (x - 64800000l) / 360000.0  );
-
-//fprintf(stderr,"input x: %lu\tinput y: %lu\n",
-//    x,
-//    y);
-//fprintf(stderr,"latitude: %f\tlongitude: %f\n",
-//    *f_latitude,
-//    *f_longitude);
-
-    recompute_lat_long();
-
-    return(1);
-}
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////
-// convert_to_xastir_coordinates()
-//
-// Converts from lat/lon to Xastir coordinate system.
-// First two parameters are the output Xastir X/Y values, 
-// 2nd two are the input floating point lat/lon values.
-//
-//              0 (90 deg. or 90N)
-//
-// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
-//
-//          64,800,000 (-90 deg. or 90S)
-//
-// Returns 0 if error, 1 if good values were converted.
-/////////////////////////////////////////////////////////////////////
-int convert_to_xastir_coordinates ( unsigned long* x,
-                                    unsigned long* y,
-                                    float f_longitude,
-                                    float f_latitude ) {
-
-/*
-    if (f_longitude < -180.0) {
-        fprintf(stderr,
-            "convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",
-            f_longitude);
-        return(0);
-    }
-
-    if (f_longitude >  180.0) {
-        fprintf(stderr,
-            "convert_to_xastir_coordinates:Longitude out-of-range (too high):%f\n",
-            f_longitude);
-        return(0);
-    }
-
-    if (f_latitude <  -90.0) {
-        fprintf(stderr,
-            "convert_to_xastir_coordinates:Latitude out-of-range (too low):%f\n",
-            f_latitude);
-        return(0);
-    }
-
-    if (f_latitude >   90.0) {
-        fprintf(stderr,
-            "convert_to_xastir_coordinates:Latitude out-of-range (too high):%f\n",
-            f_latitude);
-        return(0);
-    }
-*/
-
-    *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
-    *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
-
-    return(1);
 }
 
 

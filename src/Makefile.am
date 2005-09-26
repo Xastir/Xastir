@@ -50,6 +50,7 @@ xastir_SOURCES = \
     map_WMS.c \
     messages.c messages.h \
     messages_gui.c \
+    objects.h objects.c \
     popup.h \
     popup_gui.c \
     rac_data.c rac_data.h \

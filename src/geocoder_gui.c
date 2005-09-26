@@ -37,7 +37,7 @@
 #include "xastir.h"
 #include "main.h"
 #include "lang.h"
-#include "maps.h"
+//#include "maps.h"
 #include "io.h"
 #include "geo.h"
 

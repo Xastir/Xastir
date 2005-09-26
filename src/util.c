@@ -60,6 +60,7 @@
 #include "datum.h"
 #include "hashtable.h"
 #include "hashtable_itr.h"
+#include "maps.h"
 
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
@@ -92,6 +93,135 @@ struct timezone tz;
 
 static struct hashtable *tactical_hash = NULL;
 #define TACTICAL_HASH_SIZE 1024
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+// convert_from_xastir_coordinates()
+//
+// Converts from Xastir coordinate system to lat/lon.  First two
+// parameters are the output floating point lat/lon values.  2nd two
+// are the input Xastir X/Y values.
+//
+//              0 (90 deg. or 90N)
+//
+// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
+//
+//          64,800,000 (-90 deg. or 90S)
+//
+// Returns 0 if error, 1 if good values were converted.
+/////////////////////////////////////////////////////////////////////
+int convert_from_xastir_coordinates ( float *f_longitude,
+                                      float *f_latitude,
+                                      long x,
+                                      long y ) {
+
+//fprintf(stderr,"convert_from_xastir_coordinates\n");
+
+    if (x < 0l ) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:X out-of-range (too low):%lu\n",
+            x);
+        return(0);
+    }
+
+    if (x > 129600000l) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:X out-of-range (too high):%lu\n",
+            x);
+        return(0);
+    }
+
+    if (y < 0l) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:Y out-of-range (too low):%lu\n",
+            y);
+        return(0);
+    }
+
+    if (y > 64800000l) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:Y out-of-range (too high):%lu\n",
+            y);
+        return(0);
+    }
+
+    *f_latitude  = (float)( -((y - 32400000l) / 360000.0) );
+    *f_longitude = (float)(   (x - 64800000l) / 360000.0  );
+
+//fprintf(stderr,"input x: %lu\tinput y: %lu\n",
+//    x,
+//    y);
+//fprintf(stderr,"latitude: %f\tlongitude: %f\n",
+//    *f_latitude,
+//    *f_longitude);
+
+    recompute_lat_long();
+
+    return(1);
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+// convert_to_xastir_coordinates()
+//
+// Converts from lat/lon to Xastir coordinate system.
+// First two parameters are the output Xastir X/Y values, 
+// 2nd two are the input floating point lat/lon values.
+//
+//              0 (90 deg. or 90N)
+//
+// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
+//
+//          64,800,000 (-90 deg. or 90S)
+//
+// Returns 0 if error, 1 if good values were converted.
+/////////////////////////////////////////////////////////////////////
+int convert_to_xastir_coordinates ( unsigned long* x,
+                                    unsigned long* y,
+                                    float f_longitude,
+                                    float f_latitude ) {
+
+/*
+    if (f_longitude < -180.0) {
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",
+            f_longitude);
+        return(0);
+    }
+
+    if (f_longitude >  180.0) {
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Longitude out-of-range (too high):%f\n",
+            f_longitude);
+        return(0);
+    }
+
+    if (f_latitude <  -90.0) {
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Latitude out-of-range (too low):%f\n",
+            f_latitude);
+        return(0);
+    }
+
+    if (f_latitude >   90.0) {
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Latitude out-of-range (too high):%f\n",
+            f_latitude);
+        return(0);
+    }
+*/
+
+    *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
+    *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
+
+    return(1);
+}
 
 
 
@@ -2743,6 +2873,248 @@ char *convert_bearing_to_name(char *bearing, int opposite) {
 
 
 
+// Calculate new position based on distance and angle.
+//
+// Input:   lat/long in Xastir coordinate system (100ths of seconds)
+//          distance in nautical miles
+//          angle in ° true
+//
+// Outputs: *x_long, *y_lat in Xastir coordinate system (100ths of
+//           seconds)
+//
+//
+// From http://home.t-online.de/home/h.umland/Chapter12.pdf
+//
+// Dead-reckoning using distance in km, course C:
+// Lat_B° = Lat_A° + ( (360/40031.6) * distance * cos C )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lat_B° = Lat_A° + ( (distance/60) * cos C )
+//
+// Average of two latitudes (required for next two equations)
+// Lat_M° = (Lat_A° + Lat_B°) / 2
+//
+// Dead-reckoning using distance in km, course C:
+// Lon_B° = Lon_A° + ( (360/40031.6) * distance * (sin C / cos
+// Lat_M) )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lon_B° = Lon_A° + ( (distance/60) * (sin C / cos Lat_M) )
+//
+// If resulting longitude exceeds +/- 180°, subtract/add 360°.
+// 
+void compute_DR_position(long x_long,   // input
+        long y_lat,     // input
+        double range,   // input in nautical miles
+        double course,  // input in ° true
+        long *x_long2,  // output
+        long *y_lat2) { // output
+    double bearing_radians, lat_M_radians;
+    float lat_A, lat_B, lon_A, lon_B, lat_M;
+    int ret;
+    unsigned long x_u_long, y_u_lat;
+
+
+//fprintf(stderr,"Distance:%fnm, Course:%f,  Time:%d\n",
+//    range,
+//    course,
+//    (int)(sec_now() - p_station->sec_heard));
+
+    // Bearing in radians
+    bearing_radians = (double)((course/360.0) * 2.0 * M_PI);
+
+    // Convert lat/long to floats
+    ret = convert_from_xastir_coordinates( &lon_A,
+        &lat_A,
+        x_long,
+        y_lat);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long2 = x_long;
+        *y_lat2 = y_lat;
+        return;
+    }
+
+    // Compute new latitude
+    lat_B = (float)((double)(lat_A) + (range/60.0) * cos(bearing_radians));
+
+    // Compute mid-range latitude
+    lat_M = (lat_A + lat_B) / 2.0;
+
+    // Convert lat_M to radians
+    lat_M_radians = (double)((lat_M/360.0) * 2.0 * M_PI);
+
+    // Compute new longitude
+    lon_B = (float)((double)(lon_A)
+        + (range/60.0) * ( sin(bearing_radians) / cos(lat_M_radians)) );
+
+    // Test for out-of-bounds longitude, correct if so.
+    if (lon_B < -360.0)
+        lon_B = lon_B + 360.0;
+    if (lon_B >  360.0)
+        lon_B = lon_B - 360.0;
+
+//fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
+
+    ret = convert_to_xastir_coordinates(&x_u_long,
+        &y_u_lat,
+        lon_B,
+        lat_B);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long2 = x_long;
+        *y_lat2 = y_lat;
+        return;
+    }
+
+    // Convert from unsigned long to long
+    *x_long2 = (long)x_u_long;
+    *y_lat2  = (long)y_u_lat;
+}
+
+
+
+
+
+// Calculate new position based on speed/course/modified-time.
+// We'll call it from Create_object_item_tx_string() and from the
+// modify object/item routines to calculate a new position and stuff
+// it into the record along with the modification time before we
+// start off in a new direction.
+//
+// Input:   *p_station
+//
+// Outputs: *x_long, *y_lat in Xastir coordinate system (100ths of
+//           seconds)
+//
+//
+// From http://home.t-online.de/home/h.umland/Chapter12.pdf
+//
+// Dead-reckoning using distance in km, course C:
+// Lat_B° = Lat_A° + ( (360/40031.6) * distance * cos C )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lat_B° = Lat_A° + ( (distance/60) * cos C )
+//
+// Average of two latitudes (required for next two equations)
+// Lat_M° = (Lat_A° + Lat_B°) / 2
+//
+// Dead-reckoning using distance in km, course C:
+// Lon_B° = Lon_A° + ( (360/40031.6) * distance * (sin C / cos
+// Lat_M) )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lon_B° = Lon_A° + ( (distance/60) * (sin C / cos Lat_M) )
+//
+// If resulting longitude exceeds +/- 180°, subtract/add 360°.
+//
+//
+// Possible Problems/Changes:
+// --------------------------
+// *) Change to using last_modified_time for DR.  Also tweak the
+//    code so that we don't do incremental DR and use our own
+//    decoded objects to update everything.  If we keep the
+//    last_modified_time and the last_modified_position separate
+//    DR'ed objects/items, we can always use those instead of the
+//    other variables if we have a non-zero speed.
+//
+// *) Make sure not to corrupt our position of the object when we
+//    receive the packet back via loopback/RF/internet.  In
+//    particular the position and the last_modified_time should stay
+//    constant in this case so that dead-reckoning can continue to
+//    move the object consistently, plus we won't compound errors as
+//    we go.
+//
+// *) A server Xastir sees empty strings on it's server port when
+//    these objects are transmitted to it.  Investigate.  It
+//    sometimes does it when speed is 0, but it's not consistent.
+//
+// *) Get the last_modified_time embedded into the logfile so that
+//    we don't "lose time" if we shut down for a bit.  DR'ed objects
+//    will be at the proper positions when we start back up.
+// 
+void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) {
+    int my_course = atoi(p_station->course); // In ° true
+    double range;
+    double bearing_radians, lat_M_radians;
+    float lat_A, lat_B, lon_A, lon_B, lat_M;
+    int ret;
+    unsigned long x_u_long, y_u_lat;
+
+
+    // Get distance in nautical miles
+    range = (double)( (sec_now() - p_station->sec_heard)
+            * ( atof(p_station->speed) / 3600.0 ) );
+
+//fprintf(stderr,"Distance:%fnm, Course:%d,  Time:%d\n",
+//    range,
+//    my_course,
+//    (int)(sec_now() - p_station->sec_heard));
+
+    // Bearing in radians
+    bearing_radians = (double)((my_course/360.0) * 2.0 * M_PI);
+
+    // Convert lat/long to floats
+    ret = convert_from_xastir_coordinates( &lon_A,
+        &lat_A,
+        p_station->coord_lon,
+        p_station->coord_lat);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long = p_station->coord_lon;
+        *y_lat = p_station->coord_lat;
+        return;
+    }
+
+    // Compute new latitude
+    lat_B = (float)((double)(lat_A) + (range/60.0) * cos(bearing_radians));
+
+    // Compute mid-range latitude
+    lat_M = (lat_A + lat_B) / 2.0;
+
+    // Convert lat_M to radians
+    lat_M_radians = (double)((lat_M/360.0) * 2.0 * M_PI);
+
+    // Compute new longitude
+    lon_B = (float)((double)(lon_A)
+        + (range/60.0) * ( sin(bearing_radians) / cos(lat_M_radians)) );
+
+    // Test for out-of-bounds longitude, correct if so.
+    if (lon_B < -360.0)
+        lon_B = lon_B + 360.0;
+    if (lon_B >  360.0)
+        lon_B = lon_B - 360.0;
+
+//fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
+
+    ret = convert_to_xastir_coordinates(&x_u_long,
+        &y_u_lat,
+        lon_B,
+        lat_B);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long = p_station->coord_lon;
+        *y_lat = p_station->coord_lat;
+        return;
+    }
+
+    // Convert from unsigned long to long
+    *x_long = (long)x_u_long;
+    *y_lat  = (long)y_u_lat;
+}
+
+
+
+
+
 int filethere(char *fn) {
     FILE *f;
     int ret;
@@ -2839,322 +3211,6 @@ void log_data(char *file, char *line) {
             fprintf(stderr,"Couldn't open file for appending: %s\n", file);
         }
     }
-}
-
-
-
-
-
-//
-// Disown function called by object/item decode routines.
-// If an object/item is received that matches something in our
-// object.log file, we immediately cease to transmit that object and
-// we mark each line containing that object in our log file with a
-// hash mark ('#').  This comments out that object so that the next
-// time we reboot, we won't start transmitting it again.
-
-// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
-// which is currently set to 4096.
-//
-void disown_object_item(char *call_sign, char *new_owner) {
-    char *ptr;
-    char file[200];
-    char file_temp[200];
-    FILE *f;
-    FILE *f_temp;
-#ifdef HAVE_CP
-    char command[300];
-#endif  // HAVE_CP
-    char line[300];
-    char name[15];
-
-
-//fprintf(stderr,"disown_object_item, object: %s, new_owner: %s\n",
-//    call_sign,
-//    new_owner);
-
-
-    // If it's my call in the new_owner field, then I must have just
-    // deleted the object and am transmitting a killed object for
-    // it.  If it's not my call, someone else has assumed control of
-    // the object.
-    //
-    // Comment out any references to the object in the log file so
-    // that we don't start retransmitting it on a restart.
-
-    if (is_my_call(new_owner,1)) {
-        //fprintf(stderr,"Commenting out %s in object.log\n", call_sign);
-    }
-    else {
-        fprintf(stderr,"Disowning '%s': '%s' is taking over control of it.\n",
-            call_sign, new_owner);
-    }
-
-    ptr =  get_user_base_dir("config/object.log");
-
-    xastir_snprintf(file,
-        sizeof(file),
-        "%s",
-        ptr);
-
-    ptr =  get_user_base_dir("config/object-temp.log");
-
-    xastir_snprintf(file_temp,
-        sizeof(file_temp),
-        "%s",
-        ptr);
-
-    //fprintf(stderr,"%s\t%s\n",file,file_temp);
-
-#ifdef HAVE_CP
-    // Copy to a temp file
-    xastir_snprintf(command,
-        sizeof(command),
-        "%s -f %s %s",
-        CP_PATH,
-        file,
-        file_temp);
-
-    if ( debug_level & 512 )
-        fprintf(stderr,"%s\n", command );
-
-    if ( system( command ) != 0 ) {
-        fprintf(stderr,"\n\nCouldn't create temp file %s!\n\n\n",
-            file_temp);
-        return;
-    }
-#endif  // HAVE_CP
-
-    // Open the temp file and write to the original file, with hash
-    // marks in front of the appropriate lines.
-    f_temp=fopen(file_temp,"r");
-    f=fopen(file,"w");
-
-    if (f == NULL) {
-        fprintf(stderr,"Couldn't open %s\n",file);
-        return;
-    }
-    if (f_temp == NULL) {
-        fprintf(stderr,"Couldn't open %s\n",file_temp);
-        return;
-    }
-
-    // Read lines from the temp file and write them to the standard
-    // file, modifying them as necessary.
-    while (fgets(line, 300, f_temp) != NULL) {
-
-        // Need to check that the length matches for both!  Best way
-        // is to parse the object/item name out of the string and
-        // then do a normal string compare between the two.
-
-        if (line[0] == ';') {       // Object
-            substr(name,&line[1],9);
-            name[9] = '\0';
-            remove_trailing_spaces(name);
-        }
-
-        else if (line[0] == ')') {  // Item
-            int i;
-
-            // 3-9 char name
-            for (i = 1; i <= 9; i++) {
-                if (line[i] == '!' || line[i] == '_') {
-                    name[i-1] = '\0';
-                    break;
-                }
-                name[i-1] = line[i];
-            }
-            name[9] = '\0';  // In case we never saw '!' || '_'
-
-            // Don't remove trailing spaces for Items, else we won't
-            // get a match.
-        }
-
-        else if (line[1] == ';') {  // Commented out Object
-            substr(name,&line[2],10);
-            name[9] = '\0';
-            remove_trailing_spaces(name);
- 
-        }
-
-        else if (line[1] == ')') {  // Commented out Item
-            int i;
-
-            // 3-9 char name
-            for (i = 2; i <= 10; i++) {
-                if (line[i] == '!' || line[i] == '_') {
-                    name[i-1] = '\0';
-                    break;
-                }
-                name[i-1] = line[i];
-            }
-            name[9] = '\0';  // In case we never saw '!' || '_'
-
-            // Don't remove trailing spaces for Items, else we won't
-            // get a match.
-        }
- 
-
-        //fprintf(stderr,"'%s'\t'%s'\n", name, call_sign);
-
-        if (valid_object(name)) {
-
-            if ( strcmp(name,call_sign) == 0 ) {
-                // Match.  Comment it out in the file unless it's
-                // already commented out.
-                if (line[0] != '#') {
-                    fprintf(f,"#%s",line);
-                    //fprintf(stderr,"#%s",line);
-                }
-                else {
-                    fprintf(f,"%s",line);
-                    //fprintf(stderr,"%s",line);
-                }
-            }
-            else {
-                // No match.  Copy the line verbatim unless it's just a
-                // blank line.
-                if (line[0] != '\n') {
-                    fprintf(f,"%s",line);
-                    //fprintf(stderr,"%s",line);
-                }
-            }
-        }
-    }
-    fclose(f);
-    fclose(f_temp);
-}
-
-
-
-
-
-//
-// Logging function called by object/item create/modify routines.
-// We log each object/item as one line in a file.
-//
-// We need to check for objects of the same name in the file,
-// deleting lines that have the same name, and adding new records to
-// the end.  Actually  BAD IDEA!  We want to keep the history of the
-// object so that we can trace its movements later.
-//
-// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
-// which is currently set to 4096.
-//
-// Change this function so that deleted objects/items get disowned
-// instead (commented out in the file so that they're not
-// transmitted again after a restart).  See disown_object_item().
-//
-void log_object_item(char *line, int disable_object, char *object_name) {
-    char *file;
-    FILE *f;
-
-    file = get_user_base_dir("config/object.log");
-
-    f=fopen(file,"a");
-    if (f!=NULL) {
-        fprintf(f,"%s\n",line);
-        (void)fclose(f);
-
-        if (debug_level & 1)
-            fprintf(stderr,"Saving object/item to file: %s",line);
-
-        // Comment out all instances of the object/item in the log
-        // file.  This will make sure that the object is not
-        // retransmitted again when Xastir is restarted.
-        if (disable_object) {
-            disown_object_item(object_name, my_callsign);
-       }
-
-    }
-    else {
-        fprintf(stderr,"Couldn't open file for appending: %s\n", file);
-    }
-}
-
-
-
-
-
-//
-// Function to load saved objects and items back into Xastir.  This
-// is called on startup.  This implements persistent objects/items
-// across Xastir restarts.
-//
-// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
-// which is currently set to 4096.
-//
-// This appears to skip the loading of killed objects/items.  We may
-// instead want to begin transmitting them again until they time
-// out, then mark them with a '#' in the log file at that point.
-//
-void reload_object_item(void) {
-    char *file;
-    FILE *f;
-    char line[300+1];
-    char line2[300+1];
-    int save_state;
-
-
-    file = get_user_base_dir("config/object.log");
-
-    // Prevent transmission of objects until sometime after we're
-    // done with our initial load.
-    last_object_check = sec_now();
-
-    f=fopen(file,"r");
-    if (f!=NULL) {
-
-        // Turn off duplicate point checking (need this in order to
-        // work with SAR objects).  Save state so that we don't mess
-        // it up.
-        save_state = skip_dupe_checking;
-        skip_dupe_checking++;
-
-        while (fgets(line, 300, f) != NULL) {
-
-            if (debug_level & 1)
-                fprintf(stderr,"Loading object/item from file: %s",line);
-   
-            if (line[0] != '#') {   // Skip comment lines
-                xastir_snprintf(line2,
-                    sizeof(line2),
-                    "%s>%s:%s",
-                    my_callsign,
-                    VERSIONFRM,
-                    line);
-
-                // Decode this packet.  This will put it into our
-                // station database and cause it to be transmitted at
-                // regular intervals.  Port is set to -1 here.
-                decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
-
-// Right about here we could do a lookup for the object/item
-// matching the name and change the timing on it.  This could serve
-// to spread the transmit timing out a bit so that all objects/items
-// are not transmitted together.  Another easier option would be to
-// change the routine which chooses when to transmit, having it
-// randomize the numbers a bit each time.  I chose the second
-// option.
-
-            }
-        }
-        (void)fclose(f);
-
-        // Restore the skip_dupe_checking state
-        skip_dupe_checking = save_state;
-
-        // Update the screen
-        redraw_symbols(da);
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-    }
-    else {
-        if (debug_level & 1)
-            fprintf(stderr,"Couldn't open file for reading: %s\n", file);
-    }
-
-    // Start transmitting these objects in about 30 seconds.
-    last_object_check = sec_now() + 30 - OBJECT_rate;
 }
 
 
@@ -3718,55 +3774,6 @@ int valid_call(char *call) {
     ok = (ok && strcmp(call,"MAIL")   != 0);
 
     return(ok);
-}
-
-
-
-
-
-/*
- *  Check for a valid object name
- */
-int valid_object(char *name) {
-    int len, i;
-    
-    // max 9 printable ASCII characters, case sensitive   [APRS Reference]
-    len = (int)strlen(name);
-    if (len > 9 || len == 0)
-        return(0);                      // wrong size
-
-    for (i=0;i<len;i++)
-        if (!isprint((int)name[i]))
-            return(0);                  // not printable
-
-    return(1);
-}
-
-
-
-
-
-/*
- *  Check for a valid item name (3-9 chars, any printable ASCII except '!' or '_')
- */
-int valid_item(char *name) {
-    int len, i;
-    
-    // min 3, max 9 printable ASCII characters, case sensitive   [APRS Reference]
-    len = (int)strlen(name);
-    if (len > 9 || len < 3)
-        return(0);                      // Wrong size
-
-    for (i=0;i<len;i++) {
-        if (!isprint((int)name[i])) {
-            return(0);                  // Not printable
-        }
-        if ( (name[i] == '!') || (name[i] == '_') ) {
-            return(0);                  // Contains '!' or '_'
-        }
-    }
-
-    return(1);
 }
 
 

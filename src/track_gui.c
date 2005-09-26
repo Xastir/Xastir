@@ -35,6 +35,7 @@
 #include "xastir.h"
 #include "main.h"
 #include "lang.h"
+#include "objects.h"
 #include "popup.h"
 #include "util.h"
 #include "xa_config.h"

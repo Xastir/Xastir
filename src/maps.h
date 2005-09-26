@@ -100,6 +100,8 @@ typedef struct {
     unsigned long y_lat;
 } tiepoint;
 
+extern void recompute_lat_long(void);
+
 void draw_point(Widget w,
                  unsigned long x1,
                  unsigned long y1,
@@ -181,14 +183,6 @@ match_array_lat[50], long match_array_long[50]);
 
 
 extern void maps_init(void);
-extern int convert_from_xastir_coordinates ( float *f_longitude,
-                                      float *f_latitude,
-                                      long x,
-                                      long y );
-extern int convert_to_xastir_coordinates (unsigned long* x,
-					  unsigned long* y,
-					  float f_longitude,
-					  float f_latitude);
 enum map_onscreen_enum {MAP_NOT_VIS=0,MAP_IS_VIS,MAP_NOT_INDEXED};
 extern enum map_onscreen_enum map_onscreen(long left, long right, long top, long bottom, int checkpercentage);
 extern enum map_onscreen_enum map_onscreen_index(char *filename);

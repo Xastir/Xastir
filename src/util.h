@@ -34,6 +34,15 @@
 #define MAX_WIDES 3
 
 
+
+extern int convert_from_xastir_coordinates ( float *f_longitude,
+                                      float *f_latitude,
+                                      long x,
+                                      long y );
+extern int convert_to_xastir_coordinates (unsigned long* x,
+                      unsigned long* y,
+                      float f_longitude,
+                      float f_latitude);
 extern char *get_tactical_from_hash(char *callsign);
 extern void destroy_tactical_hash(void);
 extern void xastir_debug(int my_debug_level, char *debug_string);
@@ -80,13 +89,13 @@ extern double distance_from_my_station(char *call_sign, char *course_deg);
 
 extern char *convert_bearing_to_name(char *bearing, int opposite);
 
+extern void compute_DR_position(long x_long, long y_lat, double range, double course, long *x_long2, long *y_lat2);
+extern void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat);
+
 extern int  filethere(char *fn);
 extern int  filecreate(char *fn);
 extern time_t file_time(char *fn);
 extern void log_data(char *file, char *line);
-extern void disown_object_item(char *call_sign,char *new_owner);
-extern void log_object_item(char *line, int disable_object, char *object_name);
-extern void reload_object_item(void);
 extern void log_tactical_call(char *call_sign, char *tactical_call_sign);
 extern void reload_tactical_calls(void);
 extern time_t sec_now(void);
@@ -95,8 +104,6 @@ extern char *get_time(char *time_here);
 extern void substr(char *dest, char *src, int size);
 extern int  valid_path(char *path);
 extern int  valid_call(char *call);
-extern int  valid_object(char *name);
-extern int  valid_item(char *name);
 extern int  valid_inet_name(char *name, char *info, char *origin, int origin_size);
 
 extern char echo_digis[6][9+1];

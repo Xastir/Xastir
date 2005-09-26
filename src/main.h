@@ -112,6 +112,9 @@ extern void *my_argv;
 extern void *my_envp;
 //////////////////////////////////////////////////////////////////////
 
+extern int input_x;
+extern int input_y;
+
 #define MAX_RELAY_DIGIPEATER_CALLS 50
 extern char relay_digipeater_calls[10*MAX_RELAY_DIGIPEATER_CALLS];
 extern int skip_dupe_checking;
@@ -322,6 +325,18 @@ extern int coordinate_system;
 #define USE_UTM         3
 #define USE_UTM_SPECIAL 4
 #define USE_MGRS        5
+
+typedef struct {
+    Widget calling_dialog;  // NULL if the calling dialog has been closed.
+    Widget input_lat_deg;   // Pointers to calling dialog's widgets
+    Widget input_lat_min;   // (Where to get/put the data)
+    Widget input_lat_dir;
+    Widget input_lon_deg;
+    Widget input_lon_min;
+    Widget input_lon_dir;
+} coordinate_calc_array_type;
+extern coordinate_calc_array_type coordinate_calc_array;
+extern void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData);
 
 
 extern void HandlePendingEvents(XtAppContext app);
