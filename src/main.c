@@ -5057,6 +5057,9 @@ fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
         XtSetArg(al[ac], XmNx,            global_x);        ac++;
         XtSetArg(al[ac], XmNy,            global_y);        ac++;
     }
+// Other possible ways to get the geometry of the Global.top widget:
+// XtQueryGeometry(), getsize(), getsize2().
+
 
 
     appshell= XtCreatePopupShell (app_name,
@@ -24284,6 +24287,7 @@ int main(int argc, char *argv[], char *envp[]) {
     struct passwd *user_info;
     static char lang_to_use_or[30];
     char temp[100];
+ 
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
     String fallback_resources[] = {
@@ -24713,26 +24717,28 @@ int main(int argc, char *argv[], char *envp[]) {
     (void)wx_gui_init();
     (void)igate_init();
 
-    clear_all_port_data();                              // clear interface port data
+    clear_all_port_data();              // clear interface port data
 
-    (void) signal(SIGINT,quit);                         // set signal on stop
+    (void) signal(SIGINT,quit);         // set signal on stop
     (void) signal(SIGQUIT,quit);
     (void) signal(SIGTERM,quit);
 
 #ifndef OLD_PTHREADS
-    (void) signal(SIGUSR1,usr1sig);                     // take a snapshot on demand 
+    (void) signal(SIGUSR1,usr1sig);     // take a snapshot on demand 
 #endif  // OLD_PTHREADS
 
 #ifdef HAVE_SIGIGNORE
     (void) sigignore(SIGPIPE);
 #else   // HAVE_SIGIGNORE
-    (void) signal(SIGPIPE,SIG_IGN);                     // set sigpipe signal to ignore
+    (void) signal(SIGPIPE,SIG_IGN);     // set sigpipe signal to ignore
 #endif  // HAVE_SIGIGNORE
 
     if (trap_segfault)
-        (void) signal(SIGSEGV,segfault);                // set segfault signal to check
+        (void) signal(SIGSEGV,segfault);// set segfault signal to check
 
-    load_data_or_default(); // load program parameters or set to default values
+
+    // Load program parameters or set to default values
+    load_data_or_default();
 
 
     // Start the listening socket.  If we fork it early we end up
@@ -24813,6 +24819,7 @@ int main(int argc, char *argv[], char *envp[]) {
             init_message_data();                // init messages
             reset_outgoing_messages();
 
+
             // If we don't make this call, we can't access Xt or
             // Xlib calls from multiple threads at the same time.
             // Note that Motif from the OSF (including OpenMotif)
@@ -24822,43 +24829,71 @@ int main(int argc, char *argv[], char *envp[]) {
             // We'll probably have to add in a global mutex lock in
             // order to keep from accessing the widget set from more
             // than one thread.
+            //
             XInitThreads();
 
-            /* set language attribs */
-            (void)XtSetLanguageProc((XtAppContext) NULL, (XtLanguageProc) NULL, (XtPointer) NULL );
-            XtToolkitInitialize();
 
-            // ERROR:
-            Global.top = XtVaAppInitialize(&app_context,
+            // Set language attribs.  Must be called prior to
+            // XtVaOpenApplication().
+            (void)XtSetLanguageProc((XtAppContext) NULL,
+                (XtLanguageProc) NULL,
+                (XtPointer) NULL );
+
+
+            // This convenience function calls (in turn):
+            //      XtToolkitInitialize()
+            //      XtCreateApplicationContext()
+            //      XtOpenDisplay()
+            //      XtAppCreateShell().
+            //
+//            Global.top = XtVaAppInitialize(
+//                &app_context,
+//                "Xastir",
+//                NULL,
+//                0,
+//                &argc, argv,
+//                fallback_resources,
+//                XmNmappedWhenManaged, FALSE,
+//                NULL);
+
+
+            // This supersedes the XtVaAppInitialize() function above:
+            Global.top = XtVaOpenApplication(
+                &app_context,
                 "Xastir",
                 NULL,
                 0,
-                &argc, argv,
+                &argc,
+                argv,
                 fallback_resources,
+                applicationShellWidgetClass,
                 XmNmappedWhenManaged, FALSE,
                 NULL);
+                
 
-            // DK7IN: now scanf and printf use "," instead of "."
-            // that leads to several problems in the initialisation
-
-            // DK7IN: inserted next line here for avoiding scanf errors during init!
-            (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
-
-            // DK7IN: XtOpenDisplay again changes the scanf function
-            display = XtOpenDisplay(app_context, NULL, argv[0], "XApplication",NULL, 0, &argc, argv);
-
-            // So change it back!
-            (void)setlocale(LC_NUMERIC, "C");       // repairs wrong scanf
-            // DK7IN: scanf again uses '.' instead of ','
+            display = XtDisplay(Global.top);
 
             if (!display) {
                 fprintf(stderr,"%s: can't open display, exiting...\n", argv[0]);
                 exit(-1);   // Must exit here as we can't get our display.
             }
 
+
+            // DK7IN: now scanf and printf use "," instead of "."
+            // that leads to several problems in the initialization.
+            //
+            // DK7IN: inserted next line here for avoiding scanf
+            // errors during init!
+            //
+            (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
+
+
             setup_visual_info(display, DefaultScreen(display));
 
-            /* Get colormap (N7TAP: do we need this if the screen visual is TRUE or DIRECT? */
+
+            // Get colormap (N7TAP: do we need this if the screen
+            // visual is TRUE or DIRECT?
+            //
             cmap = DefaultColormapOfScreen(XtScreen(Global.top));
             if (visual_type == NOT_TRUE_NOR_DIRECT) {
                 if (install_colormap) {
@@ -24867,29 +24902,33 @@ int main(int argc, char *argv[], char *envp[]) {
                 }
             }
 
-//fprintf(stderr,"***XtVaSetValues\n");
-
-            // Set to the proper size before we make the window
-            // visible on the screen
-//            XtVaSetValues(Global.top,
-//                XmNx,           1,
-//                XmNy,           1,
-//                XmNwidth,       screen_width,
-//                XmNheight,      (screen_height + 60),
-//                NULL);
-
-//fprintf(stderr,"***XtRealizeWidget\n");
 
 // We get this error on some systems if XtRealizeWidget() is called
 // without setting width/height values first:
 // "Error: Shell widget xastir has zero width and/or height"
-// 
+// This has to do with the initial Xastir window which doesn't
+// actually get visually mapped to the display (it's hidden).
+
+//fprintf(stderr,"***XtRealizeWidget\n");
+
             XtRealizeWidget(Global.top);
+
+
+// Try to flush out the Window creation to the X-Server, so that by
+// the time we get to create_appshell we'll be able to snag geometry
+// from the Global.top widget.
+//(void)XFlush(XtDisplay(Global.top));
+//
+// Don't discard events in X11 queue, but wait for the X11 server to
+// catch up.
+(void)XSync(XtDisplay(Global.top), FALSE);
+
 
 //fprintf(stderr,"***index_restore_from_file\n");
 
             // Read the current map index file into the index linked list
             index_restore_from_file();
+
 
             // Reload tactical calls.  This implements persistence
             // for this type.
@@ -24897,11 +24936,25 @@ int main(int argc, char *argv[], char *envp[]) {
 
 //fprintf(stderr,"***create_appshell\n");
 
-            create_appshell(display, argv[0], argc, argv);      // does the init
 
-            /* reset language attribs for numeric, program needs decimal in US for all data! */
+// The previous window we created (Global.toplevel) is our initial
+// top-level window, but doesn't get mapped to the display (It is
+// therefore invisible).  The create_appshell() and popup()
+// functions we use then create windows which get mapped and are
+// somewhat independent of each other.
+
+
+            // This call creates the second window, which is the
+            // first visible window and our main Xastir window.
+            //
+            create_appshell(display, argv[0], argc, argv);
+
+
+            // reset language attribs for numeric, program needs
+            // decimal in US for all data!
             (void)setlocale(LC_NUMERIC, "C");
             // DK7IN: now scanf and printf work as wanted...
+
 
 //fprintf(stderr,"***check_fcc_data\n");
 
@@ -24943,6 +24996,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
  
             XtAppMainLoop(app_context);
+
 
         } else
             fprintf(stderr,"Error in language file! Exiting...\n");
