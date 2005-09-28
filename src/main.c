@@ -9779,6 +9779,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     static int last_alert_on_screen;
     char station_num[30];
     char line[MAX_LINE_SIZE+1];
+    int line_offset = 0;
     int n;
     time_t current_time;
 
@@ -10394,7 +10395,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     // Check whether the x_spider server pipes have
                     // any data for us.  Process if found.
 
-                    // Check the TCP pipe
+
+// Check the TCP pipe
                     n = readline(pipe_tcp_server_to_xastir, line, MAX_LINE_SIZE);
                     if (n < 0) {
                         //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
@@ -10406,6 +10408,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         }
                     }
+                    else if (n == 0) {
+                        // Do nothing, empty packet
+                    }
                     else {
                         // Knock off the linefeed at the end
                         line[n-1] = '\0';
@@ -10414,7 +10419,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             log_data(LOGFILE_NET,
                                 (char *)line);
 
-//fprintf(stderr,"TCP server data: %s\n", line);
+//fprintf(stderr,"TCP server data:%d: %s\n", n, line);
 
                         packet_data_add(langcode("WPUPDPD006"),
                             (char *)line,
@@ -10431,8 +10436,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         max++;  // Count the number of packets processed
                     }
 
-                    // Check the RF UDP pipe
-                    n = readline(pipe_udp_server_to_xastir_rf, line, MAX_LINE_SIZE);
+
+// Check the UDP pipe
+                    n = readline(pipe_udp_server_to_xastir, line, MAX_LINE_SIZE);
                     if (n < 0) {
                         //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -10443,24 +10449,74 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         }
                     }
+                    else if (n == 0) {
+                        // Do nothing, empty packet
+                    }
                     else {
                         // Knock off the linefeed at the end
                         line[n-1] = '\0';
+                        char temp_call[10];
+
+
+// Check for "TO_INET," prefix and then check for "TO_RF," prefix
+// here.  Set appropriate flags and remove the prefixes if found.
+
+                        // Check for "TO_INET," string
+                        if (strncmp(line, "TO_INET,", 8) == 0) {
+                            fprintf(stderr,"Xastir received UDP packet with \"TO_INET,\" prefix\n");
+                            line_offset += 8;
+//
+// This packet should be gated to the internet if and only if
+// igating is enabled.
+//
+                        }
+
+                        // Check for "TO_RF," string
+                        if (strncmp((char *)(line+line_offset), "TO_RF,", 6) == 0) {
+                            fprintf(stderr,"Xastir received UDP packet with \"TO_RF,\" prefix\n");
+                            line_offset += 6;
+//
+// This packet should be sent out the local RF ports.  If the
+// callsign matches Xastir's (without the SSID), then send it out
+// first-person format.  If it doesn't, send it out third-party
+// format?
+//
+                        // Snag FROM callsign and do a non-exact
+                        // match on it against "my_callsign"
+                        xastir_snprintf(temp_call,
+                            sizeof(temp_call),
+                            (char *)(line+line_offset));
+                        if (strchr(temp_call,'>')) {
+                            *strchr(temp_call,'>') = '\0';
+                        }
+
+                        if (is_my_call(temp_call, 0)) {
+                            // Send to RF as direct packet
+fprintf(stderr,"Base callsigns Match!  Send to RF as direct packet\n");
+                            }
+                            else {  // Send to RF as 3rd party packet
+fprintf(stderr,"Base callsigns do not match, send to RF as 3rd party packet\n");
+// Drop the packet for now, until we get more code added to turn it
+// into a 3rd party packet
+continue;
+                            }
+                        }
 
                         if (log_net_data)
                             log_data(LOGFILE_NET,
-                                (char *)line);
+                                (char *)(line + line_offset));
 
-//fprintf(stderr,"UDP server data: %s\n", line);
+//fprintf(stderr,"UDP server data:  %s\n", line);
+fprintf(stderr,"UDP server data2: %s\n", (char *)(line + line_offset));
 
                         packet_data_add(langcode("WPUPDPD006"),
-                            (char *)line,
+                            (char *)(line + line_offset),
                             -1);    // data_port -1 signifies x_spider
 
                         // Set port to -2 here to designate that it
                         // came from x_spider.  -1 = from a log
                         // file, 0 - 14 = from normal interfaces.
-                        decode_ax25_line((char *)line,
+                        decode_ax25_line((char *)(line + line_offset),
                             'I',
                             -2, // Port -2 signifies x_spider data
                             1);
@@ -10468,42 +10524,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         max++;  // Count the number of packets processed
                     }
 
-                    // Check the INET UDP pipe
-                    n = readline(pipe_udp_server_to_xastir_inet, line, MAX_LINE_SIZE);
-                    if (n < 0) {
-                        //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
-                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                            // This is normal if we have no data to read
-                            //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
-                        }
-                        else {  // Non-normal error.  Report it.
-                            fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
-                        }
-                    }
-                    else {
-                        // Knock off the linefeed at the end
-                        line[n-1] = '\0';
 
-                        if (log_net_data)
-                            log_data(LOGFILE_NET,
-                                (char *)line);
-
-//fprintf(stderr,"UDP inet server data: %s\n", line);
-
-                        packet_data_add(langcode("WPUPDPD006"),
-                            (char *)line,
-                            -1);    // data_port -1 signifies x_spider
-
-                        // Set port to -2 here to designate that it
-                        // came from x_spider.  -1 = from a log
-                        // file, 0 - 14 = from normal interfaces.
-                        decode_ax25_line((char *)line,
-                            'I',
-                            -2, // Port -2 signifies x_spider data
-                            1);
-
-                        max++;  // Count the number of packets processed
-                    }
                 }
 // End of x_spider server check code
 

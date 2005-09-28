@@ -207,9 +207,9 @@ pipe_object *xastir_udp_pipe = NULL;
 int pipe_xastir_to_tcp_server = -1;
 int pipe_tcp_server_to_xastir = -1;
 
-// UDP server pipes to Xastir proper (no from)
-int pipe_udp_server_to_xastir_rf = -1;
-int pipe_udp_server_to_xastir_inet = -1;
+// UDP server pipes to/from Xastir proper
+int pipe_xastir_to_udp_server = -1; // (not currently used)
+int pipe_udp_server_to_xastir = -1;
 
 
 
@@ -1154,7 +1154,7 @@ void send_udp_nack(int sock, struct sockaddr_in from, int fromlen) {
 // programs to inject packets into Xastir via UDP protocol.
 //
 void UDP_Server(int argc, char *argv[], char *envp[]) {
-    int sock, length, fromlen, n;
+    int sock, length, fromlen, n1, n2;
     struct sockaddr_in server;
     struct sockaddr_in from;
     char buf[1024];
@@ -1163,6 +1163,9 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
     short passcode;
     char *cptr[10];
     char *message = NULL;
+    char message2[1024];
+    int send_to_inet;
+    int send_to_rf;
 
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -1187,19 +1190,26 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
     fromlen = sizeof(struct sockaddr_in);
 
     while (1) {
-        n = recvfrom(sock,
+        n1 = recvfrom(sock,
             buf,
             1024,
             0,
             (struct sockaddr *)&from, &fromlen);
-        if (n < 0) {
+        if (n1 < 0) {
             fprintf(stderr, "Error: recvfrom");
         }
+        else if (n1 == 0) {
+            continue;
+        }
         else {
-            buf[n] = '\0';    // Terminate the buffer
+            buf[n1] = '\0';    // Terminate the buffer
         }
 
-//        fprintf(stderr, "Received datagram: %s", buf);
+fprintf(stderr, "Received datagram: %s", buf);
+
+
+        send_to_inet = 0;
+        send_to_rf = 0;
 
 
         //
@@ -1228,7 +1238,7 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
         passcode = atoi(cptr[1]);
 
-//fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
+fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
 
         if (checkHash(callsign, passcode)) {
             // Authenticate the pipe.  It is now allowed to send
@@ -1251,28 +1261,44 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
 
         // Here's where we would look for the optional flags in the
-        // first line.  Here we only implement the "-identify" flag.
-//
-// Still needed are:
-//      "-to_rf"
-//      "-to_inet"
-// perhaps others.
-//
+        // first line.  Here we implement these flags:
+        //      -identify
+        //      -to_rf
+        //      -to_inet
+
+
+        // Look for the "-identify" flag in the UDP packet
         //
         if (strstr(buf, "-identify")) {
             
             // Send the callsign back to the xastir_udp_client
             // program
-            n = sendto(sock,
+            n1 = sendto(sock,
                 my_callsign,
                 strlen(my_callsign)+1,
                 0,
                 (struct sockaddr *)&from,
                 fromlen);
-            if (n < 0) {
+            if (n1 < 0) {
                 fprintf(stderr, "Error: sendto");
             }
             continue;
+        }
+
+
+        // Look for the "-to_inet" flag in the UDP packet
+        //
+        if (strstr(buf, "-to_inet")) {
+//fprintf(stderr,"Sending to INET\n");
+            send_to_inet++;
+        }
+
+
+        // Look for the "-to_rf" flag in the UDP packet
+        //
+        if (strstr(buf, "-to_rf")) {
+//fprintf(stderr,"Sending to local RF\n");
+            send_to_rf++;
         }
 
 
@@ -1288,36 +1314,60 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
             continue;
         }
 
-//fprintf(stderr,"Message: %s\n", message);
+//fprintf(stderr,"Message:  %s", message);
 
-        n = strlen(message);
+        xastir_snprintf(message2,
+            sizeof(message2),
+            "%s%s%s",
+            (send_to_inet) ? "TO_INET," : "",
+            (send_to_rf) ? "TO_RF," : "",
+            message);
+
+//fprintf(stderr,"Message2: %s", message2);
 
 
-        // Send to Xastir RF ports
-        //if (writen(pipe_udp_server_to_xastir_rf, buf, n) != n) {
-        //    fprintf(stderr, "UDP_Server: Writen error1: %d\n", errno);
-        //}
+
+//
+//
+// NOTE:
+// Should we refuse to send the message on if "callsign" and the
+// FROM callsign in the packet don't match?
+//
+// Should we change to third-party format if "my_callsign" and the
+// FROM callsign in the packet don't match?
+//
+// Require all three callsigns to match?
+//
+//
 
 
-        // Send to Xastir INET ports
-        if (writen(pipe_udp_server_to_xastir_inet, message, n) != n) {
-            fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
+
+        n1 = strlen(message);
+        n2 = strlen(message2);
+
+
+        // Send to Xastir udp pipe
+        //
+//fprintf(stderr,"Sending to Xastir itself\n");
+        if (writen(pipe_udp_server_to_xastir, message2, n2) != n2) {
+            fprintf(stderr,"UDP_Server: Writen error1: %d\n", errno);
         }
 
         // Send to the x_spider TCP server, so it can go to all
         // connected TCP clients
-        if (writen(pipe_xastir_to_tcp_server, message, n) != n) {
+//fprintf(stderr,"Sending to TCP clients\n");
+        if (writen(pipe_xastir_to_tcp_server, message, n1) != n1) {
             fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
         }
  
         // Send an ACK back to the xastir_udp_client program 
-        n = sendto(sock,
+        n1 = sendto(sock,
             "ACK",  // Acknowledgment.  Good UDP packet.
             4,
             0,
             (struct sockaddr *)&from,
             fromlen);
-        if (n < 0) {
+        if (n1 < 0) {
             fprintf(stderr, "Error: sendto");
         }
     }
@@ -1496,12 +1546,19 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
 #endif  // __linux__
  
 
-        close(xastir_udp_pipe->to_child[0]);  // Close read end of pipe
+        close(xastir_udp_pipe->to_child[1]);  // Close write end of pipe
         close(xastir_udp_pipe->to_parent[0]); // Close read end of pipe
 
         // Assign the global variables
-        pipe_udp_server_to_xastir_rf = xastir_udp_pipe->to_parent[1];
-        pipe_udp_server_to_xastir_inet = xastir_udp_pipe->to_child[1];
+        pipe_udp_server_to_xastir = xastir_udp_pipe->to_parent[1];
+        pipe_xastir_to_udp_server = xastir_udp_pipe->to_child[0];
+
+        // Set read-end of pipe to be non-blocking.
+        //
+//        if (fcntl(pipe_xastir_to_udp_server, F_SETFL, O_NONBLOCK) < 0) {
+//            fprintf(stderr,
+//                "x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
+//        }
 
         // Go into an infinite loop here which restarts the
         // listening process whenever it dies.
@@ -1511,7 +1568,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
 
             UDP_Server(argc, argv, envp);
  
-//            fprintf(stderr,"UDP_Server process died.\n");
+            fprintf(stderr,"UDP_Server process died.\n");
 //        }
     }
     //
@@ -1519,21 +1576,25 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
     //
 
     close(xastir_udp_pipe->to_parent[1]); // Close write end of pipe
-    close(xastir_udp_pipe->to_child[1]);  // Close write end of pipe
+    close(xastir_udp_pipe->to_child[0]);  // Close read end of pipe
 
     // Assign the global variables so that Xastir itself will know
     // how to talk to the pipes
-    pipe_udp_server_to_xastir_rf = xastir_udp_pipe->to_parent[0];
-    pipe_udp_server_to_xastir_inet = xastir_udp_pipe->to_child[0];
+    pipe_udp_server_to_xastir = xastir_udp_pipe->to_parent[0];
+    pipe_xastir_to_udp_server = xastir_udp_pipe->to_child[1];
 
-    // Set read-end of pipes to be non-blocking.
+
+    // Set read-end of pipe to be non-blocking.
     //
-    if (fcntl(pipe_udp_server_to_xastir_rf, F_SETFL, O_NONBLOCK) < 0) {
-        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_udp_server_to_xastir_rf non-blocking\n");
+    if (fcntl(pipe_udp_server_to_xastir, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_udp_server_to_xastir non-blocking\n");
     }
-    if (fcntl(pipe_udp_server_to_xastir_inet, F_SETFL, O_NONBLOCK) < 0) {
-        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_udp_server_to_xastir_inet non-blocking\n");
-    }
+
+//    // Set write-end of pipe to be non-blocking.
+//    //
+//    if (fcntl(pipe_xastir_to_udp_server, F_SETFL, O_NONBLOCK) < 0) {
+//        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
+//    }
 
 
     // We don't need to do anything here except return back to the

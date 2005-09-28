@@ -35,8 +35,8 @@
 char *pname;
 extern int pipe_xastir_to_tcp_server;
 extern int pipe_tcp_server_to_xastir;
-extern int pipe_udp_server_to_xastir_rf;
-extern int pipe_udp_server_to_xastir_inet;
+extern int pipe_xastir_to_udp_server;
+extern int pipe_udp_server_to_xastir;
 
 extern int writen(register int fd, register char *ptr, register int nbytes);
 extern int readline(register int fd, register char *ptr, register int maxlen);
