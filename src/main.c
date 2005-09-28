@@ -296,8 +296,8 @@ int debug_level;
 
 //Widget hidden_shell = (Widget) NULL;
 Widget appshell = (Widget) NULL;
-int appshell_geometry_sizing = 0;
-int appshell_geometry_offsets = 0;
+//int appshell_geometry_sizing = 0;
+//int appshell_geometry_offsets = 0;
 Widget form = (Widget) NULL;
 Widget da = (Widget) NULL;
 Widget text;
@@ -24726,12 +24726,12 @@ int main(int argc, char *argv[], char *envp[]) {
 // the appshell window.
  
                 if (strchr(optarg, 'x')) {
-                    appshell_geometry_sizing++;
+//                    appshell_geometry_sizing++;
 //fprintf(stderr,"Found sizing info\n");
                 }
 
                 if (strchr(optarg, '+') || strchr(optarg, '-')) {
-                    appshell_geometry_offsets++;
+//                    appshell_geometry_offsets++;
 //fprintf(stderr,"Found offset info\n");
                 }
 
