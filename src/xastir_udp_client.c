@@ -61,8 +61,8 @@
 //      callsign    (argv[3])
 //      passcode    (argv[4])
 //      optional flags:  -identify
-//                       -to_rf (not implemented yet)
-//                       -to_inet (not implemented yet)
+//                       -to_rf
+//                       -to_inet
 //      APRS Packet (argv[5])
 // Returns:
 //      0: Message sent, ack received
