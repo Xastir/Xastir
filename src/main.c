@@ -10398,7 +10398,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 // Check the TCP pipe
                     n = readline(pipe_tcp_server_to_xastir, line, MAX_LINE_SIZE);
-                    if (n < 0) {
+                    if (n == 0) {
+                        // Do nothing, empty packet
+                    }
+                    else if (n < 0) {
                         //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
                             // This is normal if we have no data to read
@@ -10408,10 +10411,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         }
                     }
-                    else if (n == 0) {
-                        // Do nothing, empty packet
-                    }
-                    else {
+                    else {  // We have a good packet
                         // Knock off the linefeed at the end
                         line[n-1] = '\0';
 
@@ -10439,7 +10439,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 // Check the UDP pipe
                     n = readline(pipe_udp_server_to_xastir, line, MAX_LINE_SIZE);
-                    if (n < 0) {
+                    if (n == 0) {
+                        // Do nothing, empty packet
+                    }
+                    else if (n < 0) {
                         //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
                             // This is normal if we have no data to read
@@ -10449,33 +10452,42 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
                         }
                     }
-                    else if (n == 0) {
-                        // Do nothing, empty packet
-                    }
-                    else {
+                    else {  // We have a good packet
                         // Knock off the linefeed at the end
                         line[n-1] = '\0';
                         char temp_call[10];
+                        int skip_decode = 0;
 
 
-// Check for "TO_INET," prefix and then check for "TO_RF," prefix
-// here.  Set appropriate flags and remove the prefixes if found.
+                        // Check for "TO_INET," prefix, then check
+                        // for "TO_RF," prefix.  Set appropriate
+                        // flags and remove the prefixes if found.
+                        // x_spider.c will always put them in that
+                        // order if both flags are present, so we
+                        // don't need to check for the reverse
+                        // order.
 
                         // Check for "TO_INET," string
                         if (strncmp(line, "TO_INET,", 8) == 0) {
-                            fprintf(stderr,"Xastir received UDP packet with \"TO_INET,\" prefix\n");
+//                            fprintf(stderr,"Xastir received UDP packet with \"TO_INET,\" prefix\n");
                             line_offset += 8;
 //
+// "TO_INET" found.
 // This packet should be gated to the internet if and only if
-// igating is enabled.
+// igating is enabled.  This may happen automatically as-is, due to
+// the decode_ax25_line() call below.  Check whether that's true.
+//
+// We can always add "NOGATE" or "RFONLY" to the path before we dump
+// it to decode_ax25_line() in order to stop this igating...
 //
                         }
 
                         // Check for "TO_RF," string
                         if (strncmp((char *)(line+line_offset), "TO_RF,", 6) == 0) {
-                            fprintf(stderr,"Xastir received UDP packet with \"TO_RF,\" prefix\n");
+//                            fprintf(stderr,"Xastir received UDP packet with \"TO_RF,\" prefix\n");
                             line_offset += 6;
 //
+// "TO_RF" found.
 // This packet should be sent out the local RF ports.  If the
 // callsign matches Xastir's (without the SSID), then send it out
 // first-person format.  If it doesn't, send it out third-party
@@ -10492,13 +10504,47 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                         if (is_my_call(temp_call, 0)) {
                             // Send to RF as direct packet
-fprintf(stderr,"Base callsigns Match!  Send to RF as direct packet\n");
+fprintf(stderr,"\tBase callsigns Match!  Send to RF as direct packet\n");
+//fprintf(stderr,"\t%s\n", line);
+
+// Change this to go out only RF interfaces so we don't double-up on
+// the INET interfaces?  This would require looping on the
+// interfaces and checking type and transmit_enable for each, as is
+// done in output_igate_rf().  If we change to that method,
+// re-enable the decode_ax25_line() call below.
+//
+                            output_my_data(
+                                (char *)(line + line_offset),  // Raw data line
+                                -1,    // ports, -1=send out all interfaces
+                                1,     // type: 0=cooked, 1=raw
+                                0,     // loopback_only
+                                0,     // use_igate_path
+                                NULL); // path
+
+skip_decode++;
+
+                                igate_msgs_tx++;
                             }
                             else {  // Send to RF as 3rd party packet
-fprintf(stderr,"Base callsigns do not match, send to RF as 3rd party packet\n");
+fprintf(stderr,
+    "\tBase callsigns don't match. Could send to RF as 3rd party packet, but dropping packet for now...\n");
+//fprintf(stderr,"\t%s\n", line);
+
 // Drop the packet for now, until we get more code added to turn it
 // into a 3rd party packet
-continue;
+
+/*
+                                output_igate_rf(temp_call,
+                                    addr,
+                                    path,
+                                    (char *)(line + line_offset),
+                                    port,
+                                    1,
+                                    NULL);
+
+                            igate_msgs_tx++;
+*/
+//continue;
                             }
                         }
 
@@ -10507,21 +10553,28 @@ continue;
                                 (char *)(line + line_offset));
 
 //fprintf(stderr,"UDP server data:  %s\n", line);
-fprintf(stderr,"UDP server data2: %s\n", (char *)(line + line_offset));
+//fprintf(stderr,"\tUDP server data2: %s\n\n", (char *)(line + line_offset));
 
                         packet_data_add(langcode("WPUPDPD006"),
                             (char *)(line + line_offset),
                             -1);    // data_port -1 signifies x_spider
 
-                        // Set port to -2 here to designate that it
-                        // came from x_spider.  -1 = from a log
-                        // file, 0 - 14 = from normal interfaces.
-                        decode_ax25_line((char *)(line + line_offset),
-                            'I',
-                            -2, // Port -2 signifies x_spider data
-                            1);
+// We don't need the below if we call output_my_data with -1 for the
+// port, as in that case it calls decode_ax25_line directly.
 
-                        max++;  // Count the number of packets processed
+if (!skip_decode) {
+
+                            // Set port to -2 here to designate that it
+                            // came from x_spider.  -1 = from a log
+                            // file, 0 - 14 = from normal interfaces.
+                            decode_ax25_line((char *)(line + line_offset),
+                                'I',
+                                -2, // Port -2 signifies x_spider data
+                                1);
+
+                            max++;  // Count the number of packets processed
+}
+
                     }
 
 
