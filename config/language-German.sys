@@ -355,7 +355,7 @@ BBARSTA033|Echo vom Digipeater||
 BBARSTA034|Lade Wetterwarnungs-Karten||
 BBARSTA035|Warte auf GPS Daten via AUX..||
 BBARSTA036|Setze AUX auf TNC Daten..||
-BBARSTA037|Dekodiere GPS daten||
+BBARSTA037|Dekodiere GPS Daten||
 BBARSTA038|eigene Position geändert||
 BBARSTA039|Indizieren %s||
 BBARSTA040|APRS(tm) Station %s||
@@ -708,7 +708,7 @@ WPUPMSB011|Wartende Nachrichten zurücknehmen||
 WPUPMSB012|Kick Timer||
 WPUPMSB013|seq||
 WPUPMSB014|type||
-WPUPMSB015|Broadcast||
+WPUPMSB015|Rundmeldung||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*ABBRUCH*||
 #
@@ -811,7 +811,7 @@ WPUPSTI087|BAD NRQ||
 WPUPSTI088|DF Beamwidth||
 WPUPSTI089|DF Length||
 WPUPSTI090|ungültig||
-WPUPSTI091|Change Trail Color||
+WPUPSTI091|Wegfarbe ändern||
 #
 #
 # PopUp "ALOHA Statistics"
@@ -1051,13 +1051,13 @@ POPEM00035|Warnung||
 POPEM00036|Hinweis||
 POPEM00037|HSP Interface vorhanden: GPS-Abfrageintervalle größer||
 POPEM00038|Der Name steht im Konflikt mit einem bereits existierenden Objekt, einer Markierung oder Station||
-POPEM00039|Nicht zulaessige Zeichen gefunden||
+POPEM00039|Nicht zulässige Zeichen gefunden||
 POPEM00040|Der nutzerspezifische Pfad ging verloren||
 POPEM00041|Erstelle andere Datei. Bitte etwas warten und danach neu versuchen||
 POPEM00042|Kein eigenes Objekt! Versuchen Sie erst das Obkekt zu übernehmen.||
 POPEM00043|Kein Objekt/Item!||
-POPEM00044|Fetch Findu Trail: Failed||
-POPEM00045|Fetch Findu Trail: Complete||
+POPEM00044|Findu-Wegdaten: fehlgeschlagen||
+POPEM00045|Findu-Wegdaten: fertig||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
