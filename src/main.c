@@ -10493,18 +10493,18 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 // first-person format.  If it doesn't, send it out third-party
 // format?
 //
-                        // Snag FROM callsign and do a non-exact
-                        // match on it against "my_callsign"
-                        xastir_snprintf(temp_call,
-                            sizeof(temp_call),
-                            (char *)(line+line_offset));
-                        if (strchr(temp_call,'>')) {
-                            *strchr(temp_call,'>') = '\0';
-                        }
+                            // Snag FROM callsign and do a non-exact
+                            // match on it against "my_callsign"
+                            xastir_snprintf(temp_call,
+                                sizeof(temp_call),
+                                (char *)(line+line_offset));
+                            if (strchr(temp_call,'>')) {
+                                *strchr(temp_call,'>') = '\0';
+                            }
 
-                        if (is_my_call(temp_call, 0)) {
-                            // Send to RF as direct packet
-fprintf(stderr,"\tBase callsigns Match!  Send to RF as direct packet\n");
+//                            if (is_my_call(temp_call, 0)) {
+                                // Send to RF as direct packet
+//fprintf(stderr,"\tBase callsigns Match!  Send to RF as direct packet\n");
 //fprintf(stderr,"\t%s\n", line);
 
 // Change this to go out only RF interfaces so we don't double-up on
@@ -10513,21 +10513,26 @@ fprintf(stderr,"\tBase callsigns Match!  Send to RF as direct packet\n");
 // done in output_igate_rf().  If we change to that method,
 // re-enable the decode_ax25_line() call below.
 //
+
+// Change to a third-party packet.  In this case we know we have a
+// line_offset, so backing up one to insert a char is ok.
+*(line + line_offset - 1) = '}';
+
                             output_my_data(
-                                (char *)(line + line_offset),  // Raw data line
+                                (char *)(line + line_offset - 1),  // Raw data line
                                 -1,    // ports, -1=send out all interfaces
-                                1,     // type: 0=cooked, 1=raw
+                                0,     // type: 0=cooked, 1=raw
                                 0,     // loopback_only
                                 0,     // use_igate_path
                                 NULL); // path
 
-skip_decode++;
+//skip_decode++;
 
                                 igate_msgs_tx++;
-                            }
-                            else {  // Send to RF as 3rd party packet
-fprintf(stderr,
-    "\tBase callsigns don't match. Could send to RF as 3rd party packet, but dropping packet for now...\n");
+//                            }
+//                            else {  // Send to RF as 3rd party packet
+//fprintf(stderr,
+//    "\tBase callsigns don't match. Could send to RF as 3rd party packet, but dropping packet for now...\n");
 //fprintf(stderr,"\t%s\n", line);
 
 // Drop the packet for now, until we get more code added to turn it
@@ -10545,7 +10550,7 @@ fprintf(stderr,
                             igate_msgs_tx++;
 */
 //continue;
-                            }
+//                            }
                         }
 
                         if (log_net_data)
