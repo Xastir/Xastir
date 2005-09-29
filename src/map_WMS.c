@@ -542,7 +542,16 @@ void draw_WMS_map (Widget w,
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 

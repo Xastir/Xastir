@@ -608,7 +608,16 @@ void draw_dos_map(Widget w,
         (void)fclose(f);
 
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
    
@@ -643,7 +652,16 @@ void draw_dos_map(Widget w,
           (void)fclose(f);
 
           // Update to screen
-          (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+          (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
           return;
       }
       
@@ -946,7 +964,16 @@ void draw_dos_map(Widget w,
             (void)fclose(f);
 
             // Update to screen
-            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
             return;
         }
 

@@ -6177,13 +6177,31 @@ void load_auto_maps (Widget w, char *dir) {
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
     if (disable_all_maps) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -6243,7 +6261,16 @@ void load_maps (Widget w) {
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -6395,13 +6422,31 @@ void load_maps (Widget w) {
         if (interrupt_drawing_now) {
             statusline(" ",1);      // delete status line
             // Update to screen
-            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
             return;
         }
 
         if (disable_all_maps) {
             // Update to screen
-            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
             return;
         }
  

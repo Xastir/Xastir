@@ -319,7 +319,16 @@ void draw_palm_image_map(Widget w,
             if (interrupt_drawing_now) {
                 fclose(fn);
                 // Update to screen
-                (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+                (void)XCopyArea(XtDisplay(da),
+                    pixmap,
+                    XtWindow(da),
+                    gc,
+                    0,
+                    0,
+                    (unsigned int)screen_width,
+                    (unsigned int)screen_height,
+                    0,
+                    0);
                 return;
             }
 

@@ -15680,7 +15680,7 @@ void set_map_position(Widget w, long lat, long lon) {
     request_new_image++;
 
 //    if (create_image(w)) {
-//        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 

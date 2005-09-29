@@ -291,7 +291,13 @@ void popup_ID_message(char *banner, char *message) {
         // be seen.
         (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
         (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
-        (void)XFillRectangle(XtDisplay(appshell),pixmap_alerts,gc,0,0,screen_width,screen_height);
+        (void)XFillRectangle(XtDisplay(appshell),
+            pixmap_alerts,
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height);
 
         /* load font */
         if(!id_font) {
@@ -339,7 +345,16 @@ void popup_ID_message(char *banner, char *message) {
 
         // Write it to the screen.  Symbols/tracks will disappear during
         // this short interval time.
-        (void)XCopyArea(XtDisplay(da),pixmap_alerts,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap_alerts,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
     }
     else {  // ATV Screen ID is not enabled
         pending_ID_message = 0;

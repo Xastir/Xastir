@@ -1245,7 +1245,16 @@ fprintf(stderr,"1 ");
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1289,7 +1298,16 @@ fprintf(stderr,"1 ");
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1424,7 +1442,16 @@ fprintf(stderr,"1 ");
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1458,7 +1485,16 @@ fprintf(stderr,"2 ");
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1492,7 +1528,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1535,7 +1580,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1552,7 +1606,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1569,7 +1632,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1586,7 +1658,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1603,7 +1684,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1620,7 +1710,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1639,7 +1738,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1674,7 +1782,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1732,7 +1849,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1753,7 +1879,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1774,7 +1909,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1866,7 +2010,16 @@ fprintf(stderr,"2 ");
         if (image_info)
             DestroyImageInfo(image_info);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1916,7 +2069,16 @@ fprintf(stderr,"2 ");
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -1960,7 +2122,16 @@ fprintf(stderr,"2 ");
         if (xi)
             XDestroyImage (xi);
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 
@@ -2060,7 +2231,16 @@ fprintf(stderr,"2 ");
             XDestroyImage (xi);
 #endif  // HAVE_IMAGEMAGICK
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
         return;
     }
 

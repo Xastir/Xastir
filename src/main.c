@@ -3189,7 +3189,13 @@ int create_image(Widget w) {
     (void)XSetForeground(XtDisplay(w),gc,colors[0xfd]);
     (void)XSetBackground(XtDisplay(w),gc,colors[0xfd]);
 
-    (void)XFillRectangle(XtDisplay(w), pixmap,gc,0,0,screen_width,screen_height);
+    (void)XFillRectangle(XtDisplay(w),
+        pixmap,
+        gc,
+        0,
+        0,
+        (unsigned int)screen_width,
+        (unsigned int)screen_height);
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
@@ -3212,14 +3218,14 @@ int create_image(Widget w) {
         statusline(langcode("BBARSTA034"),1);
 
     // Update to screen
-//    (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return(0);
  
     /* copy map data to alert pixmap */
-    (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,screen_width,screen_height,0,0);
+    (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
@@ -3229,14 +3235,14 @@ int create_image(Widget w) {
         load_alert_maps(w, ALERT_MAP_DIR);  // These write onto pixmap_alerts
 
     // Update to screen
-//    (void)XCopyArea(XtDisplay(da),pixmap_alerts,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    (void)XCopyArea(XtDisplay(da),pixmap_alerts,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return(0);
  
     /* copy map and alert data to final pixmap */
-    (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
+    (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
@@ -3360,7 +3366,7 @@ void refresh_image(Widget w) {
     (void)XSetBackground(XtDisplay(w),gc,colors[0xfd]);
 
     /* copy over map data to alert pixmap */
-    (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,screen_width,screen_height,0,0);
+    (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
     if (!wx_alert_style && !disable_all_maps) {
             statusline(langcode("BBARSTA034"),1);
@@ -3368,7 +3374,7 @@ void refresh_image(Widget w) {
     }
 
     /* copy over map and alert data to final pixmap */
-    (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
+    (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
 //    statusline("Weather Alert Maps Loaded",1);
 
@@ -3457,7 +3463,7 @@ void redraw_symbols(Widget w) {
     /* copy over map and alert data to final pixmap */
     if(!wait_to_redraw) {
 
-        (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 
         draw_grid(w);           // draw grid if enabled
 
@@ -3467,7 +3473,7 @@ void redraw_symbols(Widget w) {
 
         display_file(w);        // display stations (symbols, info, trails)
 
-        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
     }
     else {
         fprintf(stderr,"wait_to_redraw\n");
@@ -4140,7 +4146,7 @@ void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer cal
     request_new_image++;
 
 //    if (create_image(da)) {
-//        XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -4998,11 +5004,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmNy,      &global_y,
         NULL);
 fprintf(stderr,
-    "Top-level window (unmapped) at:\n\tWidth:%d Height:%d  X-offset:%d  Y-offset:%d\n",
-    global_width,
-    global_height,
-    global_x,
-    global_y);
+    "Widgets:\n       Global.top (unmapped):  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
+    (int)global_width,
+    (int)global_height,
+    (int)global_x,
+    (int)global_y);
     //
     // On Linux, Global.top has size 1,1 if -geometry wasn't
     // specified.  On FreeBSD it appears to have size
@@ -5024,27 +5030,29 @@ fprintf(stderr,
         sizehints.base_height = 100;    // Absolute minimum size
         sizehints.flags |= USSize;  // User-defined size
         sizehints.flags |= PBaseSize;
-fprintf(stderr, "Attempting to map Xastir main window at:\n\tWidth:%d Height:%d ",
-    global_width,
-    global_height);
+fprintf(stderr,
+    "       appshell:               Width:%4d  Height:%4d",
+    (int)global_width,
+    (int)global_height);
     }
     else {
         // Set to the size specified in the config file
 
 // What size are XmNwidth/XmNheight?  screen_width is a long,
-// global_width is an int.
+// global_width is a Dimension.
 
-        XtSetArg(al[ac], XmNwidth,        screen_width);    ac++;
-        XtSetArg(al[ac], XmNheight,       screen_height+60);ac++;
-        sizehints.width = screen_width;
-        sizehints.height = screen_height + 60;
+        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
+        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
+        sizehints.width = (Dimension)screen_width;
+        sizehints.height = (Dimension)(screen_height + 60);
         sizehints.base_width = 100; // Absolute minimum size
         sizehints.base_height = 100;    // Absolute minimum size
         sizehints.flags |= PSize;
         sizehints.flags |= PBaseSize;
-fprintf(stderr, "Attempting to map Xastir main window at:\n\tWidth:%ld Height:%ld ",
-    screen_width,
-    screen_height+60);
+fprintf(stderr,
+    "       appshell:               Width:%4d  Height:%4d",
+    (int)screen_width,
+    (int)screen_height+60);
     }
     //
     // Set to the same offset as the Global.top widget
@@ -5067,13 +5075,13 @@ fprintf(stderr, "Attempting to map Xastir main window at:\n\tWidth:%ld Height:%l
         // have to use sizehints instead.
         XtSetArg(al[ac], XmNx,            global_x);        ac++;
         XtSetArg(al[ac], XmNy,            global_y);        ac++;
-fprintf(stderr, "X-offset:%d  Y-offset:%d\n",
+fprintf(stderr, "  X-offset:%4d  Y-offset:%4d\n",
     global_x,
     global_y);
     }
     else {
 fprintf(stderr,
-    "X-offset:unspecified  Y-offset:unspecified\n");
+    "  X-offset:none  Y-offset:none\n");
     }
 
 // Other possible ways to get the geometry of the Global.top widget:
@@ -5106,8 +5114,8 @@ fprintf(stderr,
 //    XtVaSetValues(form,
 //                XmNx,           1,
 //                XmNy,           1,
-//                XmNwidth,       screen_width,
-//                XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
+//                XmNwidth,       (Dimension)screen_width,
+//                XmNheight,      (Dimension)((screen_height + 60)),
 //                NULL);
 
     /* Menu Bar */
@@ -7740,8 +7748,8 @@ fprintf(stderr,
     da = XtVaCreateWidget("create_appshell da",
             xmDrawingAreaWidgetClass,
             form,
-            XmNwidth,               screen_width,
-            XmNheight,              screen_height,
+            XmNwidth,               (Dimension)screen_width,
+            XmNheight,              (Dimension)screen_height,
             XmNunitType,            XmPIXELS,
             XmNtopAttachment,       XmATTACH_WIDGET,
             XmNtopWidget,           menubar,
@@ -8359,7 +8367,13 @@ fprintf(stderr,
     // Fill the drawing area with the background color.
     (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
     (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
-    (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
+    (void)XFillRectangle(XtDisplay(appshell),
+        XtWindow(da),
+        gc,
+        0,
+        0,
+        (unsigned int)screen_width,
+        (unsigned int)screen_height);
 
 
 //    XSetStandardProperties(display,
@@ -8576,17 +8590,17 @@ void create_gc(Widget w) {
 
     pixmap=XCreatePixmap(XtDisplay(w),
                         DefaultRootWindow(XtDisplay(w)),
-                        screen_width,screen_height,
+                        (unsigned int)screen_width,(unsigned int)screen_height,
                         DefaultDepthOfScreen(XtScreen(w)));
 
     pixmap_final=XCreatePixmap(XtDisplay(w),
                         DefaultRootWindow(XtDisplay(w)),
-                        screen_width,screen_height,
+                        (unsigned int)screen_width,(unsigned int)screen_height,
                         DefaultDepthOfScreen(XtScreen(w)));
 
     pixmap_alerts=XCreatePixmap(XtDisplay(w),
                         DefaultRootWindow(XtDisplay(w)),
-                        screen_width,screen_height,
+                        (unsigned int)screen_width,(unsigned int)screen_height,
                         DefaultDepthOfScreen(XtScreen(w)));
 
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "2x2.xbm");
@@ -8709,8 +8723,8 @@ void da_resize_execute(Widget w) {
         screen_width  = (long)width;
         screen_height = (long)height;
         XtVaSetValues(w,
-            XmNwidth,   screen_width,
-            XmNheight,  screen_height,
+            XmNwidth,   (Dimension)screen_width,
+            XmNheight,  (Dimension)screen_height,
             NULL);
 
         /*  fprintf(stderr,"Size x:%ld, y:%ld\n",screen_width,screen_height);*/
@@ -8725,17 +8739,17 @@ void da_resize_execute(Widget w) {
 
         pixmap=XCreatePixmap(XtDisplay(w),
                 DefaultRootWindow(XtDisplay(w)),
-                width,height,
+                (unsigned int)width,(unsigned int)height,
                 DefaultDepthOfScreen(XtScreen(w)));
 
         pixmap_final=XCreatePixmap(XtDisplay(w),
                 DefaultRootWindow(XtDisplay(w)),
-                width,height,
+                (unsigned int)width,(unsigned int)height,
                 DefaultDepthOfScreen(XtScreen(w)));
 
         pixmap_alerts=XCreatePixmap(XtDisplay(w),
                 DefaultRootWindow(XtDisplay(w)),
-                width,height,
+                (unsigned int)width,(unsigned int)height,
                 DefaultDepthOfScreen(XtScreen(w)));
 
         HandlePendingEvents(app_context);
@@ -8758,7 +8772,7 @@ void da_resize_execute(Widget w) {
         request_new_image++;
 
 //        if (create_image(w)) {
-//            (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+//            (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //        }
     }
 }
@@ -9982,7 +9996,16 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                     if (!pending_ID_message) {
                         refresh_image(da);  // Much faster than create_image.
-                        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+                        (void)XCopyArea(XtDisplay(da),
+                            pixmap_final,
+                            XtWindow(da),
+                            gc,
+                            0,
+                            0,
+                            (unsigned int)screen_width,
+                            (unsigned int)screen_height,
+                            0,
+                            0);
 
                         // We just refreshed the screen, so don't
                         // try to erase any zoom-in boxes via XOR.
@@ -10395,7 +10418,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 request_new_image++;
 
 //                if (create_image(da)) {
-//                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //                }
 
                 map_refresh_time = sec_now() + map_refresh_interval;
@@ -11295,7 +11318,16 @@ void new_image(Widget da) {
         if (interrupt_drawing_now)
             return;
 
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap_final,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
 
         // We just refreshed the screen, so don't try to erase any
         // zoom-in boxes via XOR.
@@ -12420,7 +12452,16 @@ void Grid_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callDat
         statusline(langcode("BBARSTA006"),2);   // Map Lat/Long Grid Off
 
     redraw_symbols(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    (void)XCopyArea(XtDisplay(da),
+        pixmap_final,
+        XtWindow(da),
+        gc,
+        0,
+        0,
+        (unsigned int)screen_width,
+        (unsigned int)screen_height,
+        0,
+        0);
 }
 
 
@@ -12441,7 +12482,7 @@ void  Map_disable_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -12472,7 +12513,7 @@ void  Map_auto_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 
     if (map_auto_maps)
@@ -12504,7 +12545,7 @@ void  Map_auto_skip_raster_toggle( /*@unused@*/ Widget widget, XtPointer clientD
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -12534,7 +12575,7 @@ void  Map_levels_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -12559,7 +12600,7 @@ void  Map_labels_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -12589,7 +12630,7 @@ void  Map_fill_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -12620,7 +12661,7 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
         request_new_image++;
 
 //        if (create_image(da)) {
-//            (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//            (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //        }
     }
 }
@@ -12657,7 +12698,7 @@ void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
         request_new_image++;
 
 //        if (create_image(da)) {
-//            XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//            XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //        }
     }
 }
@@ -12676,7 +12717,16 @@ void Map_station_label( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
         letter_style = style;
         sel3_switch(letter_style,map_station_label2,map_station_label1,map_station_label0);
         redraw_symbols(da);
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap_final,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
     }
 }
 
@@ -12693,12 +12743,30 @@ void Map_icon_outline( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
         icon_outline_style = style;
         sel4_switch(icon_outline_style,map_icon_outline3,map_icon_outline2,map_icon_outline1,map_icon_outline0);
         redraw_symbols(da);
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap_final,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
     }
     statusline( langcode("BBARSTA046"), 1);   // Reloading symbols...
     load_pixmap_symbol_file("symbols.dat", 1);
     redraw_symbols(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    (void)XCopyArea(XtDisplay(da),
+        pixmap_final,
+        XtWindow(da),
+        gc,
+        0,
+        0,
+        (unsigned int)screen_width,
+        (unsigned int)screen_height,
+        0,
+        0);
 }
 
 
@@ -12716,7 +12784,16 @@ void  Map_wx_alerts_toggle( /*@unused@*/ Widget widget, XtPointer clientData, Xt
 
     if (display_up) {
         refresh_image(da);
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap_final,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
     }
 }
 
@@ -13789,7 +13866,7 @@ void check_for_new_gps_map(void) {
                 request_new_image++;
 
 //                if (create_image(da)) {
-//                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //                }
             }
             else {
@@ -17844,7 +17921,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0;
 //    }
 }
 
@@ -17939,7 +18016,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -18486,7 +18563,7 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
     request_new_image++;
 
 //    if (create_image(da)) {
-//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //    }
 }
 
@@ -19011,7 +19088,7 @@ void Configure_DRG_change_data(Widget widget, XtPointer clientData, XtPointer ca
         request_new_image++;
 
     //    if (create_image(da)) {
-    //        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    //        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
     //    }
 
     }
@@ -20050,7 +20127,7 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
 */
 
 
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 }
 
 

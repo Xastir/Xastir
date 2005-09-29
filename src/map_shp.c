@@ -1686,7 +1686,16 @@ void draw_shapefile_map (Widget w,
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
         // Update to screen
-        (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
 
 #ifdef WITH_DBFAWK
         dbfawk_free_info(fld_info);
