@@ -4997,7 +4997,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmNx,      &global_x,
         XmNy,      &global_y,
         NULL);
-fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
+fprintf(stderr,
+    "Top-level window (unmapped) at:\n\tWidth:%d Height:%d  X-offset:%d  Y-offset:%d\n",
     global_width,
     global_height,
     global_x,
@@ -5023,9 +5024,16 @@ fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
         sizehints.base_height = 100;    // Absolute minimum size
         sizehints.flags |= USSize;  // User-defined size
         sizehints.flags |= PBaseSize;
+fprintf(stderr, "Attempting to map Xastir main window at:\n\tWidth:%d Height:%d ",
+    global_width,
+    global_height);
     }
     else {
         // Set to the size specified in the config file
+
+// What size are XmNwidth/XmNheight?  screen_width is a long,
+// global_width is an int.
+
         XtSetArg(al[ac], XmNwidth,        screen_width);    ac++;
         XtSetArg(al[ac], XmNheight,       screen_height+60);ac++;
         sizehints.width = screen_width;
@@ -5034,6 +5042,9 @@ fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
         sizehints.base_height = 100;    // Absolute minimum size
         sizehints.flags |= PSize;
         sizehints.flags |= PBaseSize;
+fprintf(stderr, "Attempting to map Xastir main window at:\n\tWidth:%ld Height:%ld ",
+    screen_width,
+    screen_height+60);
     }
     //
     // Set to the same offset as the Global.top widget
@@ -5056,7 +5067,15 @@ fprintf(stderr,"W:%d  H:%d  X:%d  Y:%d\n",
         // have to use sizehints instead.
         XtSetArg(al[ac], XmNx,            global_x);        ac++;
         XtSetArg(al[ac], XmNy,            global_y);        ac++;
+fprintf(stderr, "X-offset:%d  Y-offset:%d\n",
+    global_x,
+    global_y);
     }
+    else {
+fprintf(stderr,
+    "X-offset:unspecified  Y-offset:unspecified\n");
+    }
+
 // Other possible ways to get the geometry of the Global.top widget:
 // XtQueryGeometry(), getsize(), getsize2().
 
