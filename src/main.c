@@ -10453,11 +10453,12 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         }
                     }
                     else {  // We have a good packet
-                        // Knock off the linefeed at the end
-                        line[n-1] = '\0';
                         char temp_call[10];
                         int skip_decode = 0;
 
+
+                        // Knock off the linefeed at the end
+                        line[n-1] = '\0';
 
                         // Check for "TO_INET," prefix, then check
                         // for "TO_RF," prefix.  Set appropriate
