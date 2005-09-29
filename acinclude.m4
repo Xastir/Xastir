@@ -266,7 +266,7 @@ if test "${found_gdal_config}" = "yes"; then
 #   LIBS="$LIBS `${GDAL_BIN} --libs`"
 # Remove the -lgdal from what gdal-config --libs returns, because AC_CHECK_LIB
 # will put it into LIBS for us.
-   LDFLAGS="$LDFLAGS `${GDAL_BIN} --libs | sed -e s/-lgdal//`"
+   LDFLAGS="$LDFLAGS `${GDAL_BIN} --libs | sed -e 's/-lgdal[^ ]*//'`"
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
                     [use_gdal="yes"
                      LIBS="$LIBS -lgdal"
