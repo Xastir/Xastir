@@ -14353,6 +14353,9 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             case 'T':   // Telemetry data                           [APRS Reference, chapter 13]
                 // We treat these as status packets currently.
                 ok_igate_rf = 1;
+                if (debug_level & 1)
+                    fprintf(stderr,"decode_info_field: T (telem)\n");
+                 done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party);
                 break;
  
             case '{':   // User-defined APRS packet format     //}
