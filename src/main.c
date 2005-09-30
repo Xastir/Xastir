@@ -5030,9 +5030,9 @@ fprintf(stderr,
 //        sizehints.width =  (int)global_width; // Obsolete, X11R3
 //        sizehints.height = (int)global_height;// Obsolete, X11R3
         sizehints.flags |= USSize;  // We still need this
-        sizehints.base_width =  (int)global_width;
-        sizehints.base_height = (int)global_height;
-        sizehints.flags |= PBaseSize;
+//        sizehints.base_width =  (int)global_width;  // Takes priority over min_width
+//        sizehints.base_height = (int)global_height; // Takes priority over min_height
+//        sizehints.flags |= PBaseSize;
         sizehints.min_width  = 100; // Minimum size
         sizehints.min_height = 100; // Minimum size
         sizehints.flags |= PMinSize;
@@ -5052,9 +5052,9 @@ fprintf(stderr,
 //        sizehints.width =  (int)screen_width;        // Obsolete, X11R3
 //        sizehints.height = (int)(screen_height + 60);// Obsolete, X11R3
         sizehints.flags |= PSize;   // We still need this
-        sizehints.base_width =  (int)screen_width;
-        sizehints.base_height = (int)(screen_height + 60);
-        sizehints.flags |= PBaseSize;
+//        sizehints.base_width =  (int)screen_width;         // Takes priority over min_width
+//        sizehints.base_height = (int)(screen_height + 60); // Takes priority over min_height
+//        sizehints.flags |= PBaseSize;
         sizehints.min_width  = 100; // Minimum size
         sizehints.min_height = 100; // Minimum size
         sizehints.flags |= PMinSize;
