@@ -5021,12 +5021,13 @@ fprintf(stderr,
             || (global_height > 1 && global_height < 20000) ) {
 //    if (appshell_geometry_sizing) {
 
-        // Set to the same size/position as the Global.top widget
+        // Set to the same size/position as the Global.top widget,
+        // which is using the user-provided -geometry information.
         XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
         XtSetArg(al[ac], XmNheight,       global_height);   ac++;
         sizehints.width =  (int)global_width; // Obsolete, but set for old WM's
         sizehints.height = (int)global_height;// Obsolete, but set for old WM's
-        sizehints.flags |= PSize;             // Obsolete, but set for old WM's
+        sizehints.flags |= USSize;            // Obsolete, but set for old WM's
         sizehints.base_width =  (int)global_width;
         sizehints.base_height = (int)global_height;
         sizehints.flags |= PBaseSize;
