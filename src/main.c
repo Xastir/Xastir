@@ -5025,8 +5025,8 @@ fprintf(stderr,
         // Set to the same size as the Global.top widget which is
         // already using the user-provided -geometry information.
         //
-//        XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
-//        XtSetArg(al[ac], XmNheight,       global_height);   ac++;
+        XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
+        XtSetArg(al[ac], XmNheight,       global_height);   ac++;
 //        sizehints.width =  (int)global_width; // Obsolete, but set for old WM's
 //        sizehints.height = (int)global_height;// Obsolete, but set for old WM's
 //        sizehints.flags |= USSize;            // Obsolete, but set for old WM's
@@ -5050,8 +5050,8 @@ fprintf(stderr,
 // What size are XmNwidth/XmNheight?  screen_width is a long,
 // global_width is a Dimension.
 
-//        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
-//        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
+        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
+        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
 //        sizehints.width =  (int)screen_width;        // Obsolete, but set for old WM's
 //        sizehints.height = (int)(screen_height + 60);// Obsolete, but set for old WM's
 //        sizehints.flags |= PSize;                    // Obsolete, but set for old WM's
