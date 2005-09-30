@@ -1005,6 +1005,12 @@ First Time Install:
      potential security risks remaining in the code.  User beware!  We will
      attempt to plug known security holes in future releases.
 
+     Also be aware that turning on the Interface->Server ports (TCP and UDP)
+     will allow other users who authenticate properly to send packets.  In
+     the case of TCP they can only get routed to other TCP ports and to the
+     internet.  UDP packets may also get routed to your RF ports (as
+     third-party packets).
+
      LINUX-SPECIFIC SECURITY WARNING:  If you're using Linux AX.25 kernel
      networking, you'll need to either make Xastir SUID-root, or use a shim
      (which itself is set to SUID-root) between Xastir and the AX.25 ports.

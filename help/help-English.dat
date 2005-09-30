@@ -1558,7 +1558,10 @@ This enables/disables TCP and UDP listening sockets at port 2023.  You may
 connect other APRS(tm) clients to the TCP port in order to send/receive
 APRS(tm) data.  Once they authenticate, they'll be able to send data to Xastir.
 Without authentication, they'll be able to receive every bit of TNC and INET
-data that Xastir receives.
+data that Xastir receives.  Note that ANY user with the proper credentials can
+come in on the TCP or UDP ports if they are enabled.  The only one of these two
+ports currently that can send to RF is the UDP Server port.  The TCP
+port cannot.
 
     "user WE7U-13 pass XXXX vers XASTIR 1.3.3"
 
@@ -1573,8 +1576,8 @@ into the UDP listening port.  Invoke it like this:
 
 Currently that will inject the packet into Xastir's decoding routines and send
 it to any TCP-connected clients. It will also igate it to the INET if you have
-igating enabled.  It will send the packet out the RF ports only if you add the
-"-to_rf" flag after the passcode like this:
+igating enabled.  It will send the packet out the RF ports as third-party
+packets only if you add the "-to_rf" flag after the passcode like this:
 
  xastir_udp_client localhost 2023 <callsign> <passcode> -to_rf "APRS Packet"
 
