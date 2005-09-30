@@ -296,8 +296,6 @@ int debug_level;
 
 //Widget hidden_shell = (Widget) NULL;
 Widget appshell = (Widget) NULL;
-//int appshell_geometry_sizing = 0;
-//int appshell_geometry_offsets = 0;
 Widget form = (Widget) NULL;
 Widget da = (Widget) NULL;
 Widget text;
@@ -5003,8 +5001,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmNx,      &global_x,
         XmNy,      &global_y,
         NULL);
+
 fprintf(stderr,
     "Widgets:\n       Global.top (unmapped):  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
+
     (int)global_width,
     (int)global_height,
     (int)global_x,
@@ -5014,52 +5014,59 @@ fprintf(stderr,
     // specified.  On FreeBSD it appears to have size
     // 672464897,672464897.  Here we're testing to see if either
     // value is within range (meaning -geometry was specified).  If
-    // so, then set the 2nd window (the first visible Xastir window)
-    // to the same size.
+    // so, it means that -geometry sizes were specified, so set the
+    // 2nd window (the first visible Xastir window) to the same
+    // size.
     //
     if (       (global_width  > 1 && global_width  < 20000)
             || (global_height > 1 && global_height < 20000) ) {
-//    if (appshell_geometry_sizing) {
-
-        // Set to the same size/position as the Global.top widget,
-        // which is using the user-provided -geometry information.
-        XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
-        XtSetArg(al[ac], XmNheight,       global_height);   ac++;
-        sizehints.width =  (int)global_width; // Obsolete, but set for old WM's
-        sizehints.height = (int)global_height;// Obsolete, but set for old WM's
-        sizehints.flags |= USSize;            // Obsolete, but set for old WM's
+        //
+        // Size of Xastir was specified with a -geometry setting.
+        // Set to the same size as the Global.top widget which is
+        // already using the user-provided -geometry information.
+        //
+//        XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
+//        XtSetArg(al[ac], XmNheight,       global_height);   ac++;
+//        sizehints.width =  (int)global_width; // Obsolete, but set for old WM's
+//        sizehints.height = (int)global_height;// Obsolete, but set for old WM's
+//        sizehints.flags |= USSize;            // Obsolete, but set for old WM's
         sizehints.base_width =  (int)global_width;
         sizehints.base_height = (int)global_height;
         sizehints.flags |= PBaseSize;
         sizehints.min_width =  100;  // Minimum size
         sizehints.min_height = 100; // Minimum size
         sizehints.flags |= PMinSize;
+
 fprintf(stderr,
     "       appshell:               Width:%4d  Height:%4d",
     (int)global_width,
     (int)global_height);
+
     }
     else {
-        // Set to the size specified in the config file
+        // Size was not specified in a -geometry string.  Set to the
+        // size specified in the config file.
 
 // What size are XmNwidth/XmNheight?  screen_width is a long,
 // global_width is a Dimension.
 
-        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
-        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
-        sizehints.width =  (int)screen_width;        // Obsolete, but set for old WM's
-        sizehints.height = (int)(screen_height + 60);// Obsolete, but set for old WM's
-        sizehints.flags |= PSize;                    // Obsolete, but set for old WM's
+//        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
+//        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
+//        sizehints.width =  (int)screen_width;        // Obsolete, but set for old WM's
+//        sizehints.height = (int)(screen_height + 60);// Obsolete, but set for old WM's
+//        sizehints.flags |= PSize;                    // Obsolete, but set for old WM's
         sizehints.base_width =  (int)screen_width;
         sizehints.base_height = (int)(screen_height + 60);
         sizehints.flags |= PBaseSize;
         sizehints.min_width = 100;  // Minimum size
         sizehints.min_height = 100; // Minimum size
         sizehints.flags |= PMinSize;
+
 fprintf(stderr,
     "       appshell:               Width:%4d  Height:%4d",
     (int)screen_width,
     (int)screen_height+60);
+
     }
     //
     // Set to the same offset as the Global.top widget
@@ -5072,28 +5079,31 @@ fprintf(stderr,
     // 
     if (       (global_x > 0 && global_x < 20000)
             || (global_y > 0 && global_y < 20000) ) {
-//    if (appshell_geometry_offsets) {
+        //
+        // Position of Xastir was specified with a -geometry setting.
+        // Set to the same position as the Global.top widget which is
+        // already using the user-provided -geometry information.
+        // 
+        sizehints.x = (int)global_x;    // Obsolete, but set for old WM's
+        sizehints.y = (int)global_y;    // Obsolete, but set for old WM's
+        sizehints.flags |= USPosition;  // Obsolete, but set for old WM's
 
-        sizehints.x = (int)global_x; // Obsolete, but set for old WM's
-        sizehints.y = (int)global_y; // Obsolete, but set for old WM's
-        sizehints.flags |= USPosition; // Obsolete, but set for old WM's
-
-        // These two statements don't appear to have any effect.  We
-        // have to use sizehints instead.
+        // These two statements are the ones that actually set the
+        // position of the window.
         XtSetArg(al[ac], XmNx, global_x); ac++;
         XtSetArg(al[ac], XmNy, global_y); ac++;
+
 fprintf(stderr, "  X-offset:%4d  Y-offset:%4d\n",
     global_x,
     global_y);
+
     }
     else {
+
 fprintf(stderr,
     "  X-offset:none  Y-offset:none\n");
+
     }
-
-// Other possible ways to get the geometry of the Global.top widget:
-// XtQueryGeometry(), getsize(), getsize2().
-
 
 
     appshell= XtCreatePopupShell (app_name,
@@ -24835,12 +24845,10 @@ int main(int argc, char *argv[], char *envp[]) {
 // the appshell window.
  
                 if (strchr(optarg, 'x')) {
-//                    appshell_geometry_sizing++;
 //fprintf(stderr,"Found sizing info\n");
                 }
 
                 if (strchr(optarg, '+') || strchr(optarg, '-')) {
-//                    appshell_geometry_offsets++;
 //fprintf(stderr,"Found offset info\n");
                 }
 
