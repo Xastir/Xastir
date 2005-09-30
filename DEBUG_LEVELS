@@ -73,7 +73,7 @@ For example, in the "maps.c" the following lines appear:
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
-The highest debug level for Xastir is 2047, and debug levels are additive. 
+The highest debug level for Xastir is 4095, and debug levels are additive. 
 If you want to have "general basic debugging" and "GPS interface Detail"
 and "Map Debugging" you'd use:
 
