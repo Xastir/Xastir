@@ -4979,14 +4979,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
  
     XtSetArg(al[ac], XmNargv,             app_argv);        ac++;
 
-    // Set the minimum width that Xastir can be shrunk to
-    XtSetArg(al[ac], XmNminWidth,         100);             ac++;
-    XtSetArg(al[ac], XmNminHeight,        100);             ac++;
+    // Set the minimum width that Xastir can be shrunk to.  We use
+    // XSizeHints for this now instead.
+//    XtSetArg(al[ac], XmNminWidth,         100);             ac++;
+//    XtSetArg(al[ac], XmNminHeight,        100);             ac++;
 
     XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
  
     XtSetArg(al[ac], XmNforeground,       MY_FG_COLOR);     ac++;
     XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
+
 
     // Snag the X/Y offsets and the window size from Global.top
     // widget, which is affected by the -geometry command-line flag.
@@ -5010,13 +5012,11 @@ fprintf(stderr,
     (int)global_x,
     (int)global_y);
     //
-    // On Linux, Global.top has size 1,1 if -geometry wasn't
-    // specified.  On FreeBSD it appears to have size
-    // 672464897,672464897.  Here we're testing to see if either
-    // value is within range (meaning -geometry was specified).  If
-    // so, it means that -geometry sizes were specified, so set the
-    // 2nd window (the first visible Xastir window) to the same
-    // size.
+    // Global.top should have a size of 1,1 if -geometry wasn't
+    // specified.  Here we're testing to see if either value is
+    // within range (meaning -geometry was specified).  If so, it
+    // means that -geometry sizes were specified, so set the 2nd
+    // window (the first visible Xastir window) to the same size.
     //
     if (       (global_width  > 1 && global_width  < 20000)
             || (global_height > 1 && global_height < 20000) ) {
@@ -5027,13 +5027,13 @@ fprintf(stderr,
         //
         XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
         XtSetArg(al[ac], XmNheight,       global_height);   ac++;
-//        sizehints.width =  (int)global_width; // Obsolete, but set for old WM's
-//        sizehints.height = (int)global_height;// Obsolete, but set for old WM's
-//        sizehints.flags |= USSize;            // Obsolete, but set for old WM's
+//        sizehints.width =  (int)global_width; // Obsolete, X11R3
+//        sizehints.height = (int)global_height;// Obsolete, X11R3
+        sizehints.flags |= USSize;  // We still need this
         sizehints.base_width =  (int)global_width;
         sizehints.base_height = (int)global_height;
         sizehints.flags |= PBaseSize;
-        sizehints.min_width =  100;  // Minimum size
+        sizehints.min_width  = 100; // Minimum size
         sizehints.min_height = 100; // Minimum size
         sizehints.flags |= PMinSize;
 
@@ -5046,19 +5046,16 @@ fprintf(stderr,
     else {
         // Size was not specified in a -geometry string.  Set to the
         // size specified in the config file.
-
-// What size are XmNwidth/XmNheight?  screen_width is a long,
-// global_width is a Dimension.
-
+        //
         XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
         XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
-//        sizehints.width =  (int)screen_width;        // Obsolete, but set for old WM's
-//        sizehints.height = (int)(screen_height + 60);// Obsolete, but set for old WM's
-//        sizehints.flags |= PSize;                    // Obsolete, but set for old WM's
+//        sizehints.width =  (int)screen_width;        // Obsolete, X11R3
+//        sizehints.height = (int)(screen_height + 60);// Obsolete, X11R3
+        sizehints.flags |= PSize;   // We still need this
         sizehints.base_width =  (int)screen_width;
         sizehints.base_height = (int)(screen_height + 60);
         sizehints.flags |= PBaseSize;
-        sizehints.min_width = 100;  // Minimum size
+        sizehints.min_width  = 100; // Minimum size
         sizehints.min_height = 100; // Minimum size
         sizehints.flags |= PMinSize;
 
@@ -5084,12 +5081,16 @@ fprintf(stderr,
         // Set to the same position as the Global.top widget which is
         // already using the user-provided -geometry information.
         // 
-        sizehints.x = (int)global_x;    // Obsolete, but set for old WM's
-        sizehints.y = (int)global_y;    // Obsolete, but set for old WM's
-        sizehints.flags |= USPosition;  // Obsolete, but set for old WM's
+//        sizehints.x = (int)global_x; // Obsolete, X11R3
+//        sizehints.y = (int)global_y; // Obsolete, X11R3
+        sizehints.flags |= USPosition; // We still need this
 
-        // These two statements are the ones that actually set the
-        // position of the window.
+        // These two statements are necessary as well to set the
+        // position of the window.  I have no idea why we need two
+        // methods for setting these variables, but things didn't
+        // work correctly with just the above code or just the below
+        // code.
+        //
         XtSetArg(al[ac], XmNx, global_x); ac++;
         XtSetArg(al[ac], XmNy, global_y); ac++;
 
@@ -8379,19 +8380,6 @@ fprintf(stderr,
 
     XtRealizeWidget (appshell);
 
-    create_gc(da);
-
-    // Fill the drawing area with the background color.
-    (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
-    (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
-    (void)XFillRectangle(XtDisplay(appshell),
-        XtWindow(da),
-        gc,
-        0,
-        0,
-        (unsigned int)screen_width,
-        (unsigned int)screen_height);
-
 
 //    XSetStandardProperties(display,
 //        XtWindow(appshell),
@@ -8411,6 +8399,19 @@ fprintf(stderr,
         &wm_hints,
         NULL);  // class hints
 
+
+    create_gc(da);
+
+    // Fill the drawing area with the background color.
+    (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
+    (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
+    (void)XFillRectangle(XtDisplay(appshell),
+        XtWindow(da),
+        gc,
+        0,
+        0,
+        (unsigned int)screen_width,
+        (unsigned int)screen_height);
 
     // Show the window
     XtPopup(appshell,XtGrabNone);
