@@ -5024,12 +5024,15 @@ fprintf(stderr,
         // Set to the same size/position as the Global.top widget
         XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
         XtSetArg(al[ac], XmNheight,       global_height);   ac++;
-        sizehints.width = global_width;
-        sizehints.height = global_height;
-        sizehints.base_width = 100; // Absolute minimum size
-        sizehints.base_height = 100;    // Absolute minimum size
-        sizehints.flags |= USSize;  // User-defined size
+        sizehints.width =  (int)global_width; // Obsolete, but set for old WM's
+        sizehints.height = (int)global_height;// Obsolete, but set for old WM's
+        sizehints.flags |= PSize;             // Obsolete, but set for old WM's
+        sizehints.base_width =  (int)global_width;
+        sizehints.base_height = (int)global_height;
         sizehints.flags |= PBaseSize;
+        sizehints.min_width =  100;  // Minimum size
+        sizehints.min_height = 100; // Minimum size
+        sizehints.flags |= PMinSize;
 fprintf(stderr,
     "       appshell:               Width:%4d  Height:%4d",
     (int)global_width,
@@ -5043,12 +5046,15 @@ fprintf(stderr,
 
         XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
         XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
-        sizehints.width = (Dimension)screen_width;
-        sizehints.height = (Dimension)(screen_height + 60);
-        sizehints.base_width = 100; // Absolute minimum size
-        sizehints.base_height = 100;    // Absolute minimum size
-        sizehints.flags |= PSize;
+        sizehints.width =  (int)screen_width;        // Obsolete, but set for old WM's
+        sizehints.height = (int)(screen_height + 60);// Obsolete, but set for old WM's
+        sizehints.flags |= PSize;                    // Obsolete, but set for old WM's
+        sizehints.base_width =  (int)screen_width;
+        sizehints.base_height = (int)(screen_height + 60);
         sizehints.flags |= PBaseSize;
+        sizehints.min_width = 100;  // Minimum size
+        sizehints.min_height = 100; // Minimum size
+        sizehints.flags |= PMinSize;
 fprintf(stderr,
     "       appshell:               Width:%4d  Height:%4d",
     (int)screen_width,
@@ -5067,14 +5073,14 @@ fprintf(stderr,
             || (global_y > 0 && global_y < 20000) ) {
 //    if (appshell_geometry_offsets) {
 
-        sizehints.x = global_x;
-        sizehints.y = global_y;
-        sizehints.flags |= USPosition; // User-defined position
+        sizehints.x = (int)global_x; // Obsolete, but set for old WM's
+        sizehints.y = (int)global_y; // Obsolete, but set for old WM's
+        sizehints.flags |= USPosition; // Obsolete, but set for old WM's
 
         // These two statements don't appear to have any effect.  We
         // have to use sizehints instead.
-        XtSetArg(al[ac], XmNx,            global_x);        ac++;
-        XtSetArg(al[ac], XmNy,            global_y);        ac++;
+        XtSetArg(al[ac], XmNx, global_x); ac++;
+        XtSetArg(al[ac], XmNy, global_y); ac++;
 fprintf(stderr, "  X-offset:%4d  Y-offset:%4d\n",
     global_x,
     global_y);
