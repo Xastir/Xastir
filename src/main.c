@@ -250,6 +250,14 @@
 // placing the name at offset 37
 #define MPD_FILENAME_OFFSET 37
 
+
+//Dimension geometry_width, geometry_height;
+//Position geometry_x, geometry_y;
+int geometry_x, geometry_y;
+unsigned int geometry_width, geometry_height;
+int geometry_flags;
+
+
 /* JMT - works under FreeBSD */
 uid_t euid;
 gid_t egid;
@@ -896,7 +904,11 @@ int request_new_image = 0;      // Flag used to request a create_image operation
 extern void new_image(Widget da);
 
 
+typedef struct XastirGlobal {
+    Widget  top;    // top level shell
+} XastirGlobal;
 XastirGlobal Global;
+
 
 char *database_ptr;             /* database pointers */
 
@@ -1272,8 +1284,8 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
     if (!smart_beacon_dialog) {
 
         smart_beacon_dialog = XtVaCreatePopupShell(langcode("SMARTB001"),
-                xmDialogShellWidgetClass,Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -2670,8 +2682,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf( temp_string, sizeof(temp_string), "%s %s", (char *)clientData, langcode("COORD001") );
 
         coordinate_calc_dialog = XtVaCreatePopupShell(temp_string,
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -3969,8 +3980,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
 
     if (!change_debug_level_dialog) {
         change_debug_level_dialog = XtVaCreatePopupShell(langcode("PULDNFI007"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -4162,7 +4172,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     if (!gamma_adjust_dialog) {
         // Gamma Correction
         gamma_adjust_dialog = XtVaCreatePopupShell(langcode("GAMMA002"),
-                xmDialogShellWidgetClass, Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,        XmDESTROY,
                 XmNdefaultPosition,       FALSE,
                 NULL);
@@ -4423,7 +4433,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
     if (!map_font_dialog) {
         map_font_dialog = XtVaCreatePopupShell(langcode("MAPFONT002"),
-                xmDialogShellWidgetClass, Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,        XmDESTROY,
                 XmNdefaultPosition,       FALSE,
                 NULL);
@@ -4919,10 +4929,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
-    Dimension global_width, global_height;
-    Position global_x, global_y;
-    XSizeHints sizehints;
+//    XSizeHints sizehints;
 
+/*
     static XWMHints wm_hints = {
         (InputHint|StateHint),  // flags telling which values are set
         True,   // We _do_ expect input!  Change this to False and
@@ -4935,15 +4944,17 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         0,      // icon mask
         0       // window group
     };
+*/
 
 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell start\n");
 
 
+
     // Initialize flags
-    sizehints.flags = 0;
- 
+//    sizehints.flags = 0;
+
 
     t = _("X Amateur Station Tracking and Information Reporting");
     title = (char *)malloc(strlen(t) + 42 + strlen(PACKAGE));
@@ -4966,12 +4977,73 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     // Allocate a couple of colors that we'll need before we get
     // around to calling create_gc(), which creates the rest.
     //
-    colors[0x08] = (int)GetPixelByName(Global.top,"black");
-    colors[0x0c] = (int)GetPixelByName(Global.top,"red");
-    colors[0xff] = (int)GetPixelByName(Global.top,"gray73");
+    colors[0x08] = (int)GetPixelByName(appshell,"black");
+    colors[0x0c] = (int)GetPixelByName(appshell,"red");
+    colors[0xff] = (int)GetPixelByName(appshell,"gray73");
 
 
     ac = 0;
+
+
+    if ( (WidthValue|HeightValue) & geometry_flags ) {
+        //
+        // Size of Xastir was specified with a -geometry setting.
+        // Set to the same size as the Global.top widget which is
+        // already using the user-provided -geometry information.
+        //
+//        XtSetArg(al[ac], XmNwidth,        geometry_width);    ac++;
+//        XtSetArg(al[ac], XmNheight,       geometry_height);   ac++;
+////        sizehints.width =  (int)geometry_width; // Obsolete, X11R3
+////        sizehints.height = (int)geometry_height;// Obsolete, X11R3
+//        sizehints.flags |= USSize;  // We still need this
+////        sizehints.base_width =  (int)geometry_width;  // Takes priority over min_width
+////        sizehints.base_height = (int)geometry_height; // Takes priority over min_height
+////        sizehints.flags |= PBaseSize;
+////        sizehints.min_width  = 100; // Minimum size
+////        sizehints.min_height = 100; // Minimum size
+////        sizehints.flags |= PMinSize;
+    }
+    else {
+        // Size was not specified in a -geometry string.  Set to the
+        // size specified in the config file.
+        //
+        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
+        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
+////        sizehints.width =  (int)screen_width;        // Obsolete, X11R3
+////        sizehints.height = (int)(screen_height + 60);// Obsolete, X11R3
+//        sizehints.flags |= PSize;   // We still need this
+////        sizehints.base_width =  (int)screen_width;         // Takes priority over min_width
+////        sizehints.base_height = (int)(screen_height + 60); // Takes priority over min_height
+////        sizehints.flags |= PBaseSize;
+////        sizehints.min_width  = 100; // Minimum size
+////        sizehints.min_height = 100; // Minimum size
+////        sizehints.flags |= PMinSize;
+    }
+
+
+    if ( (XValue|YValue) & geometry_flags ) {
+//if (XNegative & flags)
+//if (YNegative & flags)
+        //
+        // Position of Xastir was specified with a -geometry setting.
+        // Set to the same position as the Global.top widget which is
+        // already using the user-provided -geometry information.
+        // 
+////        sizehints.x = (int)geometry_x; // Obsolete, X11R3
+////        sizehints.y = (int)geometry_y; // Obsolete, X11R3
+//        sizehints.flags |= USPosition; // We still need this
+
+        // These two statements are necessary as well to set the
+        // position of the window.  I have no idea why we need two
+        // methods for setting these variables, but things didn't
+        // work correctly with just the above code or just the below
+        // code.
+        //
+//        XtSetArg(al[ac], XmNx, geometry_x); ac++;
+//        XtSetArg(al[ac], XmNy, geometry_y); ac++;
+    }
+
+
     XtSetArg(al[ac], XmNallowShellResize, TRUE);            ac++;
 
     if (title)
@@ -4990,130 +5062,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
 
 
-    // Snag the X/Y offsets and the window size from Global.top
-    // widget, which is affected by the -geometry command-line flag.
-    // If it has the default size (width=1/height=1), use the size
-    // from our config file instead.  That way, if -geometry is
-    // specified on the command-line, we use it, if not, we use our
-    // stored value.
-    //
-    XtVaGetValues(Global.top,
-        XmNwidth,  &global_width,
-        XmNheight, &global_height,
-        XmNx,      &global_x,
-        XmNy,      &global_y,
-        NULL);
-
-fprintf(stderr,
-    "Widgets:\n       Global.top (unmapped):  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
-
-    (int)global_width,
-    (int)global_height,
-    (int)global_x,
-    (int)global_y);
-    //
-    // Global.top should have a size of 1,1 if -geometry wasn't
-    // specified.  Here we're testing to see if either value is
-    // within range (meaning -geometry was specified).  If so, it
-    // means that -geometry sizes were specified, so set the 2nd
-    // window (the first visible Xastir window) to the same size.
-    //
-    if (       (global_width  > 1 && global_width  < 20000)
-            || (global_height > 1 && global_height < 20000) ) {
-        //
-        // Size of Xastir was specified with a -geometry setting.
-        // Set to the same size as the Global.top widget which is
-        // already using the user-provided -geometry information.
-        //
-        XtSetArg(al[ac], XmNwidth,        global_width);    ac++;
-        XtSetArg(al[ac], XmNheight,       global_height);   ac++;
-//        sizehints.width =  (int)global_width; // Obsolete, X11R3
-//        sizehints.height = (int)global_height;// Obsolete, X11R3
-        sizehints.flags |= USSize;  // We still need this
-//        sizehints.base_width =  (int)global_width;  // Takes priority over min_width
-//        sizehints.base_height = (int)global_height; // Takes priority over min_height
-//        sizehints.flags |= PBaseSize;
-//        sizehints.min_width  = 100; // Minimum size
-//        sizehints.min_height = 100; // Minimum size
-//        sizehints.flags |= PMinSize;
-
-fprintf(stderr,
-    "       appshell:               Width:%4d  Height:%4d",
-    (int)global_width,
-    (int)global_height);
-
-    }
-    else {
-        // Size was not specified in a -geometry string.  Set to the
-        // size specified in the config file.
-        //
-        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
-        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
-//        sizehints.width =  (int)screen_width;        // Obsolete, X11R3
-//        sizehints.height = (int)(screen_height + 60);// Obsolete, X11R3
-        sizehints.flags |= PSize;   // We still need this
-//        sizehints.base_width =  (int)screen_width;         // Takes priority over min_width
-//        sizehints.base_height = (int)(screen_height + 60); // Takes priority over min_height
-//        sizehints.flags |= PBaseSize;
-//        sizehints.min_width  = 100; // Minimum size
-//        sizehints.min_height = 100; // Minimum size
-//        sizehints.flags |= PMinSize;
-
-fprintf(stderr,
-    "       appshell:               Width:%4d  Height:%4d",
-    (int)screen_width,
-    (int)screen_height+60);
-
-    }
-    //
-    // Set to the same offset as the Global.top widget
-    // On Linux, Global.top has x/y of 0,0 if -geometry wasn't
-    // specified.  On FreeBSD it appears to have x/y of
-    // 672464896,672464896.  Here we're testing to see if either
-    // value is within range (meaning -geometry was specified).  If
-    // so, then set the 2nd window (the first visible Xastir window)
-    // to the same offsets.
-    // 
-    if (       (global_x > 0 && global_x < 20000)
-            || (global_y > 0 && global_y < 20000) ) {
-        //
-        // Position of Xastir was specified with a -geometry setting.
-        // Set to the same position as the Global.top widget which is
-        // already using the user-provided -geometry information.
-        // 
-//        sizehints.x = (int)global_x; // Obsolete, X11R3
-//        sizehints.y = (int)global_y; // Obsolete, X11R3
-        sizehints.flags |= USPosition; // We still need this
-
-        // These two statements are necessary as well to set the
-        // position of the window.  I have no idea why we need two
-        // methods for setting these variables, but things didn't
-        // work correctly with just the above code or just the below
-        // code.
-        //
-        XtSetArg(al[ac], XmNx, global_x); ac++;
-        XtSetArg(al[ac], XmNy, global_y); ac++;
-
-fprintf(stderr, "  X-offset:%4d  Y-offset:%4d\n",
-    global_x,
-    global_y);
-
-    }
-    else {
-
-fprintf(stderr,
-    "  X-offset:none  Y-offset:none\n");
-
-    }
-
-
-    appshell= XtCreatePopupShell (app_name,
-            topLevelShellWidgetClass,
-            Global.top,
-            al,
-            ac);
-
     free(title);
+
 
     // Make at least one Motif call so that the next function won't
     // result in this problem:  'Error: atttempt to add non-widget
@@ -8378,6 +8328,7 @@ fprintf(stderr,
             NULL,
             0);
 
+
     XtRealizeWidget (appshell);
 
 
@@ -8389,6 +8340,7 @@ fprintf(stderr,
 //        0, 0,       // argv and argc for restarting
 //        &sizehints);
 //    XSetWMHints(display, XtWindow(appshell), &wm_hints);
+/*
     XSetWMProperties(display,
         XtWindow(appshell),
         NULL, // window name
@@ -8398,6 +8350,7 @@ fprintf(stderr,
         &sizehints,
         &wm_hints,
         NULL);  // class hints
+*/
 
 
     create_gc(da);
@@ -13476,9 +13429,8 @@ void GPS_transfer_select( void ) {
 
         GPS_operations_dialog = XtVaCreatePopupShell(
                 langcode("GPS001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -14217,7 +14169,9 @@ void GPS_operations( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 void Set_Log_Indicator(void) {
     if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
         XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
-        XtVaSetValues(log_indicator, XmNbackground, (int)GetPixelByName(Global.top,"RosyBrown"), NULL);
+        XtVaSetValues(log_indicator,
+            XmNbackground,
+            (int)GetPixelByName(appshell,"RosyBrown"), NULL);
     } else {
         XmTextFieldSetString(log_indicator, NULL);
         XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
@@ -15549,7 +15503,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
     // "About Xastir" 
-    d = XmCreateInformationDialog(Global.top, langcode("PULDNHEL05"), al, ac);
+    d = XmCreateInformationDialog(appshell, langcode("PULDNHEL05"), al, ac);
     XmStringFree(xms);
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_CANCEL_BUTTON));
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_HELP_BUTTON));
@@ -15611,9 +15565,8 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
     if (!Display_data_dialog) {
         Display_data_dialog = XtVaCreatePopupShell(langcode("WPUPDPD001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -15873,8 +15826,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
         if (!help_view_dialog) {
             xastir_snprintf(title, sizeof(title), "%s - %s", langcode("MENUTB0009"), temp);
             help_view_dialog = XtVaCreatePopupShell(title,
-                    xmDialogShellWidgetClass,
-                    Global.top,
+                    xmDialogShellWidgetClass, appshell,
                     XmNdeleteResponse,XmDESTROY,
                     XmNdefaultPosition, FALSE,
                     NULL);
@@ -17359,8 +17311,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
     if (!map_properties_dialog) {
 
         map_properties_dialog = XtVaCreatePopupShell(langcode("MAPP001"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -18600,8 +18551,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     if (!configure_tiger_dialog) {
 
         configure_tiger_dialog = XtVaCreatePopupShell(langcode("PULDNMP020"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -19171,8 +19121,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     if (!configure_DRG_dialog) {
 
         configure_DRG_dialog = XtVaCreatePopupShell(langcode("PULDNMP030"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -19697,8 +19646,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
     i=0;
     if (!map_chooser_dialog) {
         map_chooser_dialog = XtVaCreatePopupShell(langcode("WPUPMCP001"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -20043,7 +19991,7 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
         //XtSetArg(al[ac], XmNdirectory, "/home/hacker/.xastir/logs/"); ac++;
         //XtSetArg(al[ac], XmNpattern, "*"); ac++;
         //XtSetArg(al[ac], XmNdirMask, ".xastir/logs/*"); ac++;
-        read_selection_dialog = XmCreateFileSelectionDialog(Global.top,
+        read_selection_dialog = XmCreateFileSelectionDialog(appshell,
                 "filesb",
                 al,
                 ac);
@@ -20284,9 +20232,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
         configure_defaults_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -20826,9 +20773,8 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
     if (!configure_timing_dialog) {
         configure_timing_dialog = XtVaCreatePopupShell(langcode("WPUPCFTM01"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -21292,9 +21238,8 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
 
     if (!configure_coordinates_dialog) {
         configure_coordinates_dialog = XtVaCreatePopupShell(langcode("WPUPCFC001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -21652,9 +21597,8 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
 
     if (!configure_audio_alarm_dialog) {
         configure_audio_alarm_dialog = XtVaCreatePopupShell(langcode("WPUPCFA001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -22303,9 +22247,8 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
     if (!configure_speech_dialog) {
         configure_speech_dialog = XtVaCreatePopupShell(langcode("WPUPCFSP01"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -23081,8 +23024,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
     if(!configure_station_dialog) {
         configure_station_dialog = XtVaCreatePopupShell(langcode("WPUPCFS001"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass,   appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
                 NULL);
@@ -24481,6 +24423,7 @@ int main(int argc, char *argv[], char *envp[]) {
     struct passwd *user_info;
     static char lang_to_use_or[30];
     char temp[100];
+    int zz;
  
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
@@ -24777,6 +24720,42 @@ int main(int argc, char *argv[], char *envp[]) {
     gps_valid = 0;
 
 
+    // Look for -geometry string first as it is not parsed by the
+    // getopt() function below.
+    for (zz = 0; zz < argc; zz++) {
+        if (strcmp(argv[zz], "-geometry") == 0) {
+            if ((zz + 1) < argc) {
+                //
+                // Really we should be merging with the RDB database
+                // as well and then parsing the final geometry (Xlib
+                // Programming Manual section 14.4.3 and 14.4.4).
+                //
+                geometry_flags = XParseGeometry(argv[zz+1],
+                    &geometry_x,
+                    &geometry_y,
+                    &geometry_width,
+                    &geometry_height);
+
+if ((WidthValue|HeightValue) & geometry_flags) {
+    fprintf(stderr,"Found width/height\n");
+}
+if (XValue & geometry_flags) {
+    fprintf(stderr,"Found X-offset\n");
+}
+if (YValue & geometry_flags) {
+    fprintf(stderr,"Found Y-offset\n");
+}
+fprintf(stderr,
+    "Widgets:\n         appshell:  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
+    (int)geometry_width,
+    (int)geometry_height,
+    (int)geometry_x,
+    (int)geometry_y);
+            }
+        }
+    }
+
+
     // Here we had to add "g:" in order to allow -geometry to be
     // used, which is actually parsed out by the XtIntrinsics code,
     // not directly in Xastir code.
@@ -24838,23 +24817,7 @@ int main(int argc, char *argv[], char *envp[]) {
                 break;
 
             case 'g':   // -geometry
-                // Supported by XtIntrinsics
-
-//fprintf(stderr,"ag=%c, optarg=%s\n", ag, optarg);
- 
-// Check whether there's an 'x' here.  If so, we'll set the size of
-// the appshell window.
- 
-                if (strchr(optarg, 'x')) {
-//fprintf(stderr,"Found sizing info\n");
-                }
-
-                if (strchr(optarg, '+') || strchr(optarg, '-')) {
-//fprintf(stderr,"Found offset info\n");
-                }
-
-// Check whether there's a "+' or '-' here.  If so, we'll set the
-// X/Y offsets for the appshell window.
+                        // Supported by XtIntrinsics
                 break;
 
             default:
@@ -25038,19 +25001,7 @@ int main(int argc, char *argv[], char *envp[]) {
             //      XtOpenDisplay()
             //      XtAppCreateShell().
             //
-//            Global.top = XtVaAppInitialize(
-//                &app_context,
-//                "Xastir",
-//                NULL,
-//                0,
-//                &argc, argv,
-//                fallback_resources,
-//                XmNmappedWhenManaged, FALSE,
-//                NULL);
-
-
-            // This supersedes the XtVaAppInitialize() function above:
-            Global.top = XtVaOpenApplication(
+            appshell = XtVaOpenApplication(
                 &app_context,
                 "Xastir",
                 NULL,
@@ -25063,7 +25014,7 @@ int main(int argc, char *argv[], char *envp[]) {
                 NULL);
                 
 
-            display = XtDisplay(Global.top);
+            display = XtDisplay(appshell);
 
             if (!display) {
                 fprintf(stderr,"%s: can't open display, exiting...\n", argv[0]);
@@ -25086,11 +25037,11 @@ int main(int argc, char *argv[], char *envp[]) {
             // Get colormap (N7TAP: do we need this if the screen
             // visual is TRUE or DIRECT?
             //
-            cmap = DefaultColormapOfScreen(XtScreen(Global.top));
+            cmap = DefaultColormapOfScreen(XtScreen(appshell));
             if (visual_type == NOT_TRUE_NOR_DIRECT) {
                 if (install_colormap) {
                     cmap = XCopyColormapAndFree(display, cmap);
-                    XtVaSetValues(Global.top, XmNcolormap, cmap, NULL);
+                    XtVaSetValues(appshell, XmNcolormap, cmap, NULL);
                 }
             }
 
@@ -25103,17 +25054,17 @@ int main(int argc, char *argv[], char *envp[]) {
 
 //fprintf(stderr,"***XtRealizeWidget\n");
 
-            XtRealizeWidget(Global.top);
+//            XtRealizeWidget(appshell);
 
 
 // Try to flush out the Window creation to the X-Server, so that by
 // the time we get to create_appshell we'll be able to snag geometry
-// from the Global.top widget.
-//(void)XFlush(XtDisplay(Global.top));
+// from the appshell widget.
+//(void)XFlush(XtDisplay(appshell));
 //
 // Don't discard events in X11 queue, but wait for the X11 server to
 // catch up.
-(void)XSync(XtDisplay(Global.top), FALSE);
+//(void)XSync(XtDisplay(appshell), FALSE);
 
 
 //fprintf(stderr,"***index_restore_from_file\n");

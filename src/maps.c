@@ -2326,10 +2326,11 @@ void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
 begin_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 
 
-        print_properties_dialog = XtVaCreatePopupShell(langcode("PRINT0001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        print_properties_dialog = XtVaCreatePopupShell(langcode("PRINT0001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
 
         pane = XtVaCreateWidget("Print_properties pane",xmPanedWindowWidgetClass, print_properties_dialog,

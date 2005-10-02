@@ -5274,8 +5274,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         (void)XRaiseWindow(XtDisplay(object_dialog), XtWindow(object_dialog));
     else {                      // create new popup window
         object_dialog = XtVaCreatePopupShell(langcode("POPUPOB001"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass,   appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
                 NULL);

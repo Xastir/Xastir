@@ -3625,7 +3625,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
         change_tactical_dialog =
             XtVaCreatePopupShell(langcode("WPUPSTI065"),
                 xmDialogShellWidgetClass,
-                Global.top,
+                appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
@@ -3855,7 +3855,8 @@ void compute_decorations( void ) {
     XtSetArg(args[n], XmNy, 0); n++;
 
     cdtest = (Widget) XtVaCreatePopupShell("compute_decorations test",
-                        xmDialogShellWidgetClass,Global.top,
+                        xmDialogShellWidgetClass,
+                        appshell,
                         args, n,
                         NULL);
  
@@ -4888,21 +4889,24 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         // form and the correct height, and let the text widget
         // grow/shrink as the dialog is resized.
 
-        db_station_info = XtVaCreatePopupShell(langcode("WPUPSTI001"),xmDialogShellWidgetClass,Global.top,
-                        XmNdeleteResponse,XmDESTROY,
-                        XmNdefaultPosition, FALSE,
-                        NULL);
+        db_station_info = XtVaCreatePopupShell(langcode("WPUPSTI001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
-        pane = XtVaCreateWidget("Station Data pane",xmPanedWindowWidgetClass, db_station_info,
-                        XmNbackground, colors[0xff],
-                        NULL);
+        pane = XtVaCreateWidget("Station Data pane",
+            xmPanedWindowWidgetClass, db_station_info,
+            XmNbackground, colors[0xff],
+            NULL);
 
-        form =  XtVaCreateWidget("Station Data form",xmFormWidgetClass, pane,
-                        XmNfractionBase, 4,
-                        XmNbackground, colors[0xff],
-                        XmNautoUnmanage, FALSE,
-                        XmNshadowThickness, 1,
-                        NULL);
+        form =  XtVaCreateWidget("Station Data form",
+            xmFormWidgetClass, pane,
+            XmNfractionBase, 4,
+            XmNbackground, colors[0xff],
+            XmNautoUnmanage, FALSE,
+            XmNshadowThickness, 1,
+            NULL);
 
 
 // Start with the bottom row, left button
@@ -5601,11 +5605,12 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
 
             if (db_station_popup == NULL) {
                 // Set up a selection box:
-                db_station_popup = XtVaCreatePopupShell(langcode("STCHO00001"),xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    XmNbackground, colors[0xff],
-                                    NULL);
+                db_station_popup = XtVaCreatePopupShell(langcode("STCHO00001"),
+                    xmDialogShellWidgetClass, appshell,
+                    XmNdeleteResponse, XmDESTROY,
+                    XmNdefaultPosition, FALSE,
+                    XmNbackground, colors[0xff],
+                    NULL);
 
                 pane = XtVaCreateWidget("Station_info pane",xmPanedWindowWidgetClass, db_station_popup,
                             XmNbackground, colors[0xff],

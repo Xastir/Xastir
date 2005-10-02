@@ -83,12 +83,8 @@ extern Pixmap  pixmap_13pct_stipple;
 extern Pixmap  pixmap_wx_stipple;
 
 
-typedef struct XastirGlobal {
-    Widget  top;    // top level shell
-} XastirGlobal;
-
-extern XastirGlobal Global;
 extern Widget appshell;
+
 
 extern int wait_to_redraw;
 /*extern char my_callsign[MAX_CALLSIGN+1];*/

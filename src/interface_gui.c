@@ -620,7 +620,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
         config_TNC_dialog = XtVaCreatePopupShell(
                             tmp,
-                            xmDialogShellWidgetClass,Global.top,
+                            xmDialogShellWidgetClass, appshell,
                             XmNdeleteResponse,XmDESTROY,
                             XmNdefaultPosition, FALSE,
                             NULL);
@@ -1878,111 +1878,112 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_GPS_dialog) {
         GPS_port=port;
-        config_GPS_dialog = XtVaCreatePopupShell(langcode("WPUPCFG001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_GPS_dialog = XtVaCreatePopupShell(langcode("WPUPCFG001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse,XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_GPS pane",xmPanedWindowWidgetClass, config_GPS_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+            XmNbackground, colors[0xff],
+            NULL);
 
         form =  XtVaCreateWidget("Config_GPS form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+            XmNfractionBase, 5,
+            XmNbackground, colors[0xff],
+            XmNautoUnmanage, FALSE,
+            XmNshadowThickness, 1,
+            NULL);
 
         device = XtVaCreateManagedWidget(langcode("WPUPCFG003"),xmLabelWidgetClass, form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNtopOffset, 10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 10,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNbackground, colors[0xff],
+            NULL);
 
         GPS_device_name_data = XtVaCreateManagedWidget("Config_GPS device_data", xmTextFieldWidgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 40,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, device,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNrightOffset, 5,
-                                      NULL);
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 25,
+            XmNwidth, ((25*7)+2),
+            XmNmaxLength, 40,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment,XmATTACH_FORM,
+            XmNtopOffset, 5,
+            XmNbottomAttachment,XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, device,
+            XmNleftOffset, 10,
+            XmNrightAttachment,XmATTACH_FORM,
+            XmNrightOffset, 5,
+            NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, device,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 15,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, device,
+            XmNtopOffset, 10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 15,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNbackground, colors[0xff],
+            NULL);
 
         GPS_comment = XtVaCreateManagedWidget("Config_GPS comment", xmTextFieldWidgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 49,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, device,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, comment,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNrightOffset, 5,
-                                      NULL);
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 25,
+            XmNwidth, ((25*7)+2),
+            XmNmaxLength, 49,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment,XmATTACH_WIDGET,
+            XmNtopWidget, device,
+            XmNtopOffset, 10,
+            XmNbottomAttachment,XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, comment,
+            XmNleftOffset, 10,
+            XmNrightAttachment,XmATTACH_FORM,
+            XmNrightOffset, 5,
+            NULL);
 
         GPS_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, comment,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, comment,
+            XmNtopOffset, 10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset ,10,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNbackground, colors[0xff],
+            NULL);
 
         GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, GPS_active_on_startup,
-                                      XmNtopOffset, 7,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, GPS_active_on_startup,
+            XmNtopOffset, 7,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset ,10,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNbackground, colors[0xff],
+            NULL);
 
 // We can only set the time properly on Linux systems
 #ifndef HAVE_SETTIMEOFDAY
@@ -1995,21 +1996,21 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
 
  
         frame = XtVaCreateManagedWidget("Config_GPS frame", xmFrameWidgetClass, form,
-                                    XmNtopAttachment,XmATTACH_WIDGET,
-                                    XmNtopOffset,10,
-                                    XmNtopWidget, GPS_set_time,
-                                    XmNbottomAttachment,XmATTACH_NONE,
-                                    XmNleftAttachment, XmATTACH_FORM,
-                                    XmNleftOffset, 10,
-                                    XmNrightAttachment,XmATTACH_FORM,
-                                    XmNrightOffset, 10,
-                                    XmNbackground, colors[0xff],
-                                    NULL);
+            XmNtopAttachment,XmATTACH_WIDGET,
+            XmNtopOffset,10,
+            XmNtopWidget, GPS_set_time,
+            XmNbottomAttachment,XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 10,
+            XmNrightAttachment,XmATTACH_FORM,
+            XmNrightOffset, 10,
+            XmNbackground, colors[0xff],
+            NULL);
 
         speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
-                                    XmNchildType, XmFRAME_TITLE_CHILD,
-                                    XmNbackground, colors[0xff],
-                                    NULL);
+            XmNchildType, XmFRAME_TITLE_CHILD,
+            XmNbackground, colors[0xff],
+            NULL);
 
         /*set args for color */
         ac=0;
@@ -2021,146 +2022,146 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         XtVaSetValues(speed_box,XmNnumColumns,3,NULL);
 
         speed_300 = XtVaCreateManagedWidget(langcode("WPUPCFT005"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_300,XmNvalueChangedCallback,speed_toggle,"1");
 
         speed_1200 = XtVaCreateManagedWidget(langcode("WPUPCFT006"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_1200,XmNvalueChangedCallback,speed_toggle,"2");
 
         speed_2400 = XtVaCreateManagedWidget(langcode("WPUPCFT007"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_2400,XmNvalueChangedCallback,speed_toggle,"3");
 
         speed_4800 = XtVaCreateManagedWidget(langcode("WPUPCFT008"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_4800,XmNvalueChangedCallback,speed_toggle,"4");
 
         speed_9600 = XtVaCreateManagedWidget(langcode("WPUPCFT009"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_9600,XmNvalueChangedCallback,speed_toggle,"5");
 
         speed_19200 = XtVaCreateManagedWidget(langcode("WPUPCFT010"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_19200,XmNvalueChangedCallback,speed_toggle,"6");
 
         speed_38400 = XtVaCreateManagedWidget(langcode("WPUPCFT019"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_57600,XmNvalueChangedCallback,speed_toggle,"8");
 
         speed_115200 = XtVaCreateManagedWidget(langcode("WPUPCFT021"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_115200,XmNvalueChangedCallback,speed_toggle,"9");
 
         speed_230400 = XtVaCreateManagedWidget(langcode("WPUPCFT022"),xmToggleButtonGadgetClass,
-                                        speed_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            speed_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
 
         frame2 = XtVaCreateManagedWidget("Config_GPS frame2", xmFrameWidgetClass, form,
-                                     XmNtopAttachment, XmATTACH_WIDGET,
-                                     XmNtopWidget, frame,
-                                     XmNtopOffset, 10,
-                                     XmNbottomAttachment, XmATTACH_NONE,
-                                     XmNleftAttachment, XmATTACH_FORM,
-                                     XmNleftOffset, 10,
-                                     XmNrightAttachment, XmATTACH_FORM,
-                                     XmNrightOffset, 10,
-                                     XmNbackground, colors[0xff],
-                                     NULL);
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, frame,
+            XmNtopOffset, 10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 10,
+            XmNrightAttachment, XmATTACH_FORM,
+            XmNrightOffset, 10,
+            XmNbackground, colors[0xff],
+            NULL);
 
         style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
-                                    XmNchildType, XmFRAME_TITLE_CHILD,
-                                    XmNbackground, colors[0xff],
-                                    NULL);
+            XmNchildType, XmFRAME_TITLE_CHILD,
+            XmNbackground, colors[0xff],
+            NULL);
 
         style_box = XmCreateRadioBox(frame2,"Config_GPS Style box",al,ac);
 
         XtVaSetValues(style_box,
-                  XmNorientation, XmHORIZONTAL,
-                  NULL);
+            XmNorientation, XmHORIZONTAL,
+            NULL);
 
         style_8n1 = XtVaCreateManagedWidget(langcode("WPUPCFT016"),xmToggleButtonGadgetClass,
-                                        style_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            style_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(style_8n1,XmNvalueChangedCallback,style_toggle,"0");
 
         style_7e1 = XtVaCreateManagedWidget(langcode("WPUPCFT017"),xmToggleButtonGadgetClass,
-                                        style_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            style_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(style_7e1,XmNvalueChangedCallback,style_toggle,"1");
 
         style_7o1 = XtVaCreateManagedWidget(langcode("WPUPCFT018"),xmToggleButtonGadgetClass,
-                                        style_box,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+            style_box,
+            XmNbackground, colors[0xff],
+            NULL);
         XtAddCallback(style_7o1,XmNvalueChangedCallback,style_toggle,"2");
 
         sep = XtVaCreateManagedWidget("Config_GPS sep", xmSeparatorGadgetClass,form,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, frame2,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNorientation, XmHORIZONTAL,
+            XmNtopAttachment,XmATTACH_WIDGET,
+            XmNtopWidget, frame2,
+            XmNtopOffset, 20,
+            XmNbottomAttachment,XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNrightAttachment,XmATTACH_FORM,
+            XmNbackground, colors[0xff],
+            NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, sep,
+            XmNtopOffset, 10,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_POSITION,
+            XmNleftPosition, 1,
+            XmNrightAttachment, XmATTACH_POSITION,
+            XmNrightPosition, 2,
+            XmNbackground, colors[0xff],
+            NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 3,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 4,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, sep,
+            XmNtopOffset, 10,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_POSITION,
+            XmNleftPosition, 3,
+            XmNrightAttachment, XmATTACH_POSITION,
+            XmNrightPosition, 4,
+            XmNbackground, colors[0xff],
+            NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Config_GPS_change_data, config_GPS_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Config_GPS_destroy_shell, config_GPS_dialog);
@@ -2429,10 +2430,11 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_WX_dialog) {
         WX_port=port;
-        config_WX_dialog = XtVaCreatePopupShell(langcode("WPUPCFWX01"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_WX_dialog = XtVaCreatePopupShell(langcode("WPUPCFWX01"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_WX pane",xmPanedWindowWidgetClass, config_WX_dialog,
                           XmNbackground, colors[0xff],
@@ -3084,10 +3086,11 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_NWX_dialog) {
         NWX_port=port;
-        config_NWX_dialog = XtVaCreatePopupShell(langcode("WPUPCFG021"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_NWX_dialog = XtVaCreatePopupShell(langcode("WPUPCFG021"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_NWX pane",xmPanedWindowWidgetClass, config_NWX_dialog,
                           XmNbackground, colors[0xff],
@@ -3589,10 +3592,11 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
 
     if (!config_NGPS_dialog) {
         NGPS_port=port;
-        config_NGPS_dialog = XtVaCreatePopupShell(langcode("WPUPCFG019"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_NGPS_dialog = XtVaCreatePopupShell(langcode("WPUPCFG019"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_NGPS pane",xmPanedWindowWidgetClass, config_NGPS_dialog,
                           XmNbackground, colors[0xff],
@@ -4054,10 +4058,11 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_AX25_dialog) {
         AX25_port=port;
-        config_AX25_dialog = XtVaCreatePopupShell(langcode("WPUPCAX001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_AX25_dialog = XtVaCreatePopupShell(langcode("WPUPCAX001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_AX25 pane",xmPanedWindowWidgetClass, config_AX25_dialog,
                           XmNbackground, colors[0xff],
@@ -4660,10 +4665,11 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_Inet_dialog) {
         Inet_port=port;
-        config_Inet_dialog = XtVaCreatePopupShell(langcode("WPUPCFI001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_Inet_dialog = XtVaCreatePopupShell(langcode("WPUPCFI001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_Inet pane",xmPanedWindowWidgetClass, config_Inet_dialog,
                           XmNbackground, colors[0xff],
@@ -5137,10 +5143,11 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_Database_dialog) {
         Database_port=port;
-        config_Database_dialog = XtVaCreatePopupShell(langcode("WPUPCFID01"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_Database_dialog = XtVaCreatePopupShell(langcode("WPUPCFID01"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_Database pane",xmPanedWindowWidgetClass, config_Database_dialog,
                           XmNbackground, colors[0xff],
@@ -5687,10 +5694,11 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
 
     if(!config_AGWPE_dialog) {
         AGWPE_port=port;
-        config_AGWPE_dialog = XtVaCreatePopupShell(langcode("WPUPCFIA01"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        config_AGWPE_dialog = XtVaCreatePopupShell(langcode("WPUPCFIA01"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("Config_AGWPE pane",xmPanedWindowWidgetClass, config_AGWPE_dialog,
                           XmNbackground, colors[0xff],
@@ -6792,11 +6800,12 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
     switch (do_w) {
         case 0:/* add interface */
             if (!choose_interface_dialog) {
-                choose_interface_dialog = XtVaCreatePopupShell(langcode("WPUPCIF002"),xmDialogShellWidgetClass,Global.top,
-                            XmNdeleteResponse,XmDESTROY,
-                            XmNdefaultPosition, FALSE,
-                            XmNresize, FALSE,
-                            NULL);
+                choose_interface_dialog = XtVaCreatePopupShell(langcode("WPUPCIF002"),
+                    xmDialogShellWidgetClass, appshell,
+                    XmNdeleteResponse, XmDESTROY,
+                    XmNdefaultPosition, FALSE,
+                    XmNresize, FALSE,
+                    NULL);
 
                 pane = XtVaCreateWidget("interface_option pane",xmPanedWindowWidgetClass, choose_interface_dialog,
                     XmNbackground, colors[0xff],
@@ -7259,11 +7268,12 @@ void control_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientDat
 
 begin_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_interface" );
 
-        control_interface_dialog = XtVaCreatePopupShell(langcode("IFPUPCT000"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  XmNresize, TRUE,
-                                  NULL);
+        control_interface_dialog = XtVaCreatePopupShell(langcode("IFPUPCT000"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            XmNresize, TRUE,
+            NULL);
 
         rowcol =  XtVaCreateWidget("control_interface rowcol",xmRowColumnWidgetClass, control_interface_dialog,
                             XmNorientation, XmVERTICAL,

@@ -124,11 +124,12 @@ void wx_alert_finger_output( Widget widget, char *handle) {
 
 begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_click_action" );
 
-        wx_detailed_alert_shell = XtVaCreatePopupShell(langcode("WPUPWXA001"), xmDialogShellWidgetClass, Global.top,
-                        XmNdeleteResponse, XmDESTROY,
-                        XmNdefaultPosition, FALSE,
-                        XmNminWidth, 600,
-                        NULL);
+        wx_detailed_alert_shell = XtVaCreatePopupShell(langcode("WPUPWXA001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            XmNminWidth, 600,
+            NULL);
 
         pane = XtVaCreateWidget("wx_alert_double_click_action pane",xmPanedWindowWidgetClass, wx_detailed_alert_shell,
                         XmNbackground, colors[0xff],
@@ -435,11 +436,12 @@ void Display_Wx_Alert( /*@unused@*/ Widget wdgt, /*@unused@*/ XtPointer clientDa
 
 begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
 
-        wx_alert_shell = XtVaCreatePopupShell(langcode("WPUPWXA001"), xmDialogShellWidgetClass, Global.top,
-                        XmNdeleteResponse, XmDESTROY,
-                        XmNdefaultPosition, FALSE,
-                        XmNminWidth, 600,
-                        NULL);
+        wx_alert_shell = XtVaCreatePopupShell(langcode("WPUPWXA001"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            XmNminWidth, 600,
+            NULL);
 
         pane = XtVaCreateWidget("Display_Wx_Alert pane",xmPanedWindowWidgetClass, wx_alert_shell,
                         XmNbackground, colors[0xff],
@@ -638,10 +640,11 @@ void WX_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
 begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:WX_station" );
 
-        wx_station_dialog = XtVaCreatePopupShell(langcode("WXPUPSI000"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        wx_station_dialog = XtVaCreatePopupShell(langcode("WXPUPSI000"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
 
         pane = XtVaCreateWidget("WX_station pane",xmPanedWindowWidgetClass, wx_station_dialog,
                           XmNbackground, colors[0xff],

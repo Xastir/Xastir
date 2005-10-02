@@ -299,9 +299,8 @@ void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_messages" );
 
         All_messages_dialog = XtVaCreatePopupShell(langcode("AMTMW00001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 

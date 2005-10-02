@@ -594,7 +594,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
 
         Display_bulletins_dialog = XtVaCreatePopupShell(langcode("BULMW00001"),
                 xmDialogShellWidgetClass,
-                Global.top,
+                appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);

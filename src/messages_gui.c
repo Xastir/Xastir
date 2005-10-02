@@ -689,7 +689,7 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
             sizeof(call),
             "%s",
             (char *)clientData);
-        Send_message(Global.top,call,NULL);
+        Send_message(appshell, call, NULL);
     }           
 }
 
@@ -759,8 +759,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         mw[i].message_group = groupon;
         mw[i].send_message_dialog = XtVaCreatePopupShell(temp,
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNtitleString,"Send Message",
@@ -1156,8 +1155,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
     if(!auto_msg_dialog) {
 
         auto_msg_dialog = XtVaCreatePopupShell(langcode("WPUPARM001"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);

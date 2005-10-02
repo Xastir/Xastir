@@ -2771,8 +2771,7 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
 
 
         select_symbol_dialog = XtVaCreatePopupShell(langcode("SYMSEL0001"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);

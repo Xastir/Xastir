@@ -273,7 +273,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
 
         // Find Address
         geocoder_place_dialog = XtVaCreatePopupShell(langcode("PULDNMP029"),
-                xmDialogShellWidgetClass,Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);

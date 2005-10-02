@@ -305,15 +305,15 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
         // Check whether it is an emergency locate function
         if (emergency_flag == 1) {
                 locate_station_dialog = XtVaCreatePopupShell(langcode("WPUPLSP006"),
-                xmDialogShellWidgetClass,Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
         }
         else {  // Non-emergency locate
             locate_station_dialog = XtVaCreatePopupShell(langcode("WPUPLSP001"),
-                xmDialogShellWidgetClass,Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
         }
@@ -581,8 +581,9 @@ begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_ch
     if (locate_place_chooser == NULL) {
 
         // Set up a selection box:
-        locate_place_chooser = XtVaCreatePopupShell(langcode("WPUPCFS028"),xmDialogShellWidgetClass,Global.top,
-            XmNdeleteResponse,XmDESTROY,
+        locate_place_chooser = XtVaCreatePopupShell(langcode("WPUPCFS028"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
             XmNbackground, colors[0xff],
             NULL);
@@ -854,8 +855,8 @@ void Locate_place(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
 
         locate_place_dialog = XtVaCreatePopupShell(langcode("PULDNMP014"),
-                xmDialogShellWidgetClass,Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 

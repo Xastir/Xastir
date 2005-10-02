@@ -1188,14 +1188,15 @@ void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
 
-        station_list_dialog[type]= XtVaCreatePopupShell(temp, xmDialogShellWidgetClass, Global.top,
-                                XmNdeleteResponse,      XmDESTROY,
-                                XmNdefaultPosition,     FALSE,
-                                XmNminWidth,            274,
-                                XmNmaxHeight,           610,
-                                XmNminHeight,           95,
-//                                XmNheight,             230,
-                                NULL);
+        station_list_dialog[type]= XtVaCreatePopupShell(temp,
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse,      XmDESTROY,
+            XmNdefaultPosition,     FALSE,
+            XmNminWidth,            274,
+            XmNmaxHeight,           610,
+            XmNminHeight,           95,
+//          XmNheight,             230,
+            NULL);
 
         pane = XtVaCreateWidget("Station_List pane",xmPanedWindowWidgetClass, station_list_dialog[type],
                                 XmNbackground, colors[0xff],

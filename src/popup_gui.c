@@ -158,11 +158,12 @@ void popup_message_always(char *banner, char *message) {
 
 begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 
-            pw[i].popup_message_dialog = XtVaCreatePopupShell(banner,xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  XmNtitleString,banner,
-                                  NULL);
+            pw[i].popup_message_dialog = XtVaCreatePopupShell(banner,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                XmNtitleString,banner,
+                NULL);
 
             pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
                           XmNbackground, colors[0xff],

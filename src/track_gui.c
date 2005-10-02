@@ -190,9 +190,8 @@ void Track_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 
         track_station_dialog = XtVaCreatePopupShell(langcode("WPUPTSP001"),
-                xmDialogShellWidgetClass,
-                Global.top,
-                XmNdeleteResponse,XmDESTROY,
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
 
@@ -620,8 +619,7 @@ void Download_findu_trail( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientD
 begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_trail" );
 
         download_findu_dialog = XtVaCreatePopupShell(langcode("WPUPTSP007"),
-                xmDialogShellWidgetClass,
-                Global.top,
+                xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 NULL);
