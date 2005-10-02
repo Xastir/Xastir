@@ -4929,9 +4929,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
-//    XSizeHints sizehints;
+    XSizeHints sizehints;
 
-/*
     static XWMHints wm_hints = {
         (InputHint|StateHint),  // flags telling which values are set
         True,   // We _do_ expect input!  Change this to False and
@@ -4944,7 +4943,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         0,      // icon mask
         0       // window group
     };
-*/
 
 
     if(debug_level & 8)
@@ -4953,7 +4951,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
     // Initialize flags
-//    sizehints.flags = 0;
+    sizehints.flags = 0;
 
 
     t = _("X Amateur Station Tracking and Information Reporting");
@@ -4988,14 +4986,12 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if ( (WidthValue|HeightValue) & geometry_flags ) {
         //
         // Size of Xastir was specified with a -geometry setting.
-        // Set to the same size as the Global.top widget which is
-        // already using the user-provided -geometry information.
         //
-//        XtSetArg(al[ac], XmNwidth,        geometry_width);    ac++;
-//        XtSetArg(al[ac], XmNheight,       geometry_height);   ac++;
+        XtSetArg(al[ac], XmNwidth,        geometry_width);    ac++;
+        XtSetArg(al[ac], XmNheight,       geometry_height);   ac++;
 ////        sizehints.width =  (int)geometry_width; // Obsolete, X11R3
 ////        sizehints.height = (int)geometry_height;// Obsolete, X11R3
-//        sizehints.flags |= USSize;  // We still need this
+        sizehints.flags |= USSize;  // We still need this
 ////        sizehints.base_width =  (int)geometry_width;  // Takes priority over min_width
 ////        sizehints.base_height = (int)geometry_height; // Takes priority over min_height
 ////        sizehints.flags |= PBaseSize;
@@ -5011,7 +5007,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
 ////        sizehints.width =  (int)screen_width;        // Obsolete, X11R3
 ////        sizehints.height = (int)(screen_height + 60);// Obsolete, X11R3
-//        sizehints.flags |= PSize;   // We still need this
+        sizehints.flags |= USSize;   // We still need this
 ////        sizehints.base_width =  (int)screen_width;         // Takes priority over min_width
 ////        sizehints.base_height = (int)(screen_height + 60); // Takes priority over min_height
 ////        sizehints.flags |= PBaseSize;
@@ -5026,12 +5022,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //if (YNegative & flags)
         //
         // Position of Xastir was specified with a -geometry setting.
-        // Set to the same position as the Global.top widget which is
-        // already using the user-provided -geometry information.
         // 
 ////        sizehints.x = (int)geometry_x; // Obsolete, X11R3
 ////        sizehints.y = (int)geometry_y; // Obsolete, X11R3
-//        sizehints.flags |= USPosition; // We still need this
+        sizehints.flags |= USPosition; // We still need this
 
         // These two statements are necessary as well to set the
         // position of the window.  I have no idea why we need two
@@ -8340,7 +8334,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //        0, 0,       // argv and argc for restarting
 //        &sizehints);
 //    XSetWMHints(display, XtWindow(appshell), &wm_hints);
-/*
     XSetWMProperties(display,
         XtWindow(appshell),
         NULL, // window name
@@ -8350,7 +8343,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         &sizehints,
         &wm_hints,
         NULL);  // class hints
-*/
 
 
     create_gc(da);
@@ -25080,15 +25072,8 @@ fprintf(stderr,
 //fprintf(stderr,"***create_appshell\n");
 
 
-// The previous window we created (Global.toplevel) is our initial
-// top-level window, but doesn't get mapped to the display (It is
-// therefore invisible).  The create_appshell() and popup()
-// functions we use then create windows which get mapped and are
-// somewhat independent of each other.
-
-
-            // This call creates the second window, which is the
-            // first visible window and our main Xastir window.
+            // This call fills in the top-level window and then
+            // calls XtRealize.
             //
             create_appshell(display, argv[0], argc, argv);
 
