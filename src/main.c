@@ -4981,8 +4981,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     // Set the minimum width that Xastir can be shrunk to.  We use
     // XSizeHints for this now instead.
-    XtSetArg(al[ac], XmNminWidth,         100);             ac++;
-    XtSetArg(al[ac], XmNminHeight,        100);             ac++;
+//    XtSetArg(al[ac], XmNminWidth,         100);             ac++;
+//    XtSetArg(al[ac], XmNminHeight,        100);             ac++;
 
     XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
  
