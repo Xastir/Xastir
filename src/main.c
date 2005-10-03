@@ -11781,11 +11781,11 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 // make sure the world fits in both).  We should probably center at
 // 0.0N/0.0W as well.
 
-                new_scale_y = 262144;
+                new_scale_y = 500000;
 
                 // Center on Earth (0/0)
-                new_mid_x = 12900000l / 2;
-                new_mid_y = 6480000l  / 2;
+//                new_mid_x = 12900000l / 2;
+//                new_mid_y = 6480000l  / 2;
                 break;
 
             case(8):    // 10% out
