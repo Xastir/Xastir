@@ -1078,7 +1078,7 @@ void load_data_or_default(void) {
 
     coordinate_system = get_int ("COORDINATE_SYSTEM", 0, 5, USE_DDMMMM);
 
-    scale_y = get_long ("SCREEN_ZOOM", 1l, 327680l, 327680l);
+    scale_y = get_long ("SCREEN_ZOOM", 1l, 500000l, 327680l);
 
     scale_x = get_x_scale(mid_x_long_offset,mid_y_lat_offset,scale_y);
 
