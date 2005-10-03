@@ -4929,29 +4929,38 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
-    XSizeHints sizehints;
-
-    static XWMHints wm_hints = {
-        (InputHint|StateHint),  // flags telling which values are set
-        True,   // We _do_ expect input!  Change this to False and
-                // you won't be able to interoperate with Xastir
-                // anymore.
-        NormalState,    // Initial state
-        0,      // icon pixmap
-        0,      // icon window
-        0, 0,   // icon location
-        0,      // icon mask
-        0       // window group
-    };
+    XSizeHints *size_hints; // Used for window manager hints
+    XWMHints *wm_hints;     // Used for window manager hints
+    int temp_width = 0;
+    int temp_height = 0;
 
 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell start\n");
 
+    // Allocate space for size_hints and wm_hints.  We need to do it
+    // this way in case the structures change in later versions of
+    // X11.
+    //
+    size_hints = XAllocSizeHints();
+    if (!size_hints) {
+        fprintf(stderr,"Failure allocating memory: size_hints\n");
+        exit(0);
+    }
 
+    wm_hints = XAllocWMHints();
+    if (!wm_hints) {
+        fprintf(stderr,"Failure allocating memory: wm_hints\n");
+        exit(0);
+    }
+
+    // Set up the wm_hints struct
+    wm_hints->initial_state = NormalState;
+    wm_hints->input = True;
+    wm_hints->flags = StateHint | InputHint;
 
     // Initialize flags
-    sizehints.flags = 0;
+    size_hints->flags = 0;
 
 
     t = _("X Amateur Station Tracking and Information Reporting");
@@ -4983,58 +4992,95 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     ac = 0;
 
 
+// Snag border widths so that we can use them in the calculations
+// below.  If we fail to do this the size and offsets will be off by
+// the width of the borders added by the window manager.
+/*
+if (XGetGeometry(XtDisplay(da),
+    XtWindow(appshell),
+    &root_return,
+    &x_return,
+    &y_return,
+    &width_return,
+    &height_return,
+    &border_width_return,
+    &depth_return) ) == False) {
+    fprintf(stderr,"Couldn't get window attributes\n");
+}
+// Another method:
+XWindowAttributes windowattr; // Defined in Xlib.h
+// Struct has x/y/width/height/border_width/depth fields.
+if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
+    fprintf(stderr,"Couldn't get window attributes\n")
+}
+*/
+
+
     if ( (WidthValue|HeightValue) & geometry_flags ) {
         //
         // Size of Xastir was specified with a -geometry setting.
+        // Set up the window size and then pass hints to the window
+        // manager to tell it the size is user-specified.
         //
-        XtSetArg(al[ac], XmNwidth,        geometry_width);    ac++;
-        XtSetArg(al[ac], XmNheight,       geometry_height);   ac++;
-////        sizehints.width =  (int)geometry_width; // Obsolete, X11R3
-////        sizehints.height = (int)geometry_height;// Obsolete, X11R3
-        sizehints.flags |= USSize;  // We still need this
-////        sizehints.base_width =  (int)geometry_width;  // Takes priority over min_width
-////        sizehints.base_height = (int)geometry_height; // Takes priority over min_height
-////        sizehints.flags |= PBaseSize;
-////        sizehints.min_width  = 100; // Minimum size
-////        sizehints.min_height = 100; // Minimum size
-////        sizehints.flags |= PMinSize;
+        XtSetArg(al[ac], XmNwidth,  (Dimension)geometry_width);    ac++;
+        XtSetArg(al[ac], XmNheight, (Dimension)geometry_height);   ac++;
+        temp_width = geometry_width;    // Used in offset equations below
+        temp_height = geometry_height;  // Used in offset equations below
+//        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
+//        size_hints->height = (int)geometry_height;// Obsolete, X11R3
+        size_hints->flags |= USSize;  // We still need this
+        size_hints->min_width  = 100; // Minimum size
+        size_hints->min_height = 75;  // Minimum size
+//        XtSetArg(al[ac], XmNminWidth,         100);             ac++;
+//        XtSetArg(al[ac], XmNminHeight,        100);             ac++;
+        size_hints->flags |= PMinSize;
+//        size_hints->base_width =  (int)geometry_width;  // Takes priority over min_width
+//        size_hints->base_height = (int)geometry_height; // Takes priority over min_height
+//        size_hints->flags |= PBaseSize;
     }
     else {
         // Size was not specified in a -geometry string.  Set to the
-        // size specified in the config file.
+        // size specified in the config file then pass hints to the
+        // window manager to tell it the size is user-specified.
         //
-        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);       ac++;
-        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height+60)); ac++;
-////        sizehints.width =  (int)screen_width;        // Obsolete, X11R3
-////        sizehints.height = (int)(screen_height + 60);// Obsolete, X11R3
-        sizehints.flags |= USSize;   // We still need this
-////        sizehints.base_width =  (int)screen_width;         // Takes priority over min_width
-////        sizehints.base_height = (int)(screen_height + 60); // Takes priority over min_height
-////        sizehints.flags |= PBaseSize;
-////        sizehints.min_width  = 100; // Minimum size
-////        sizehints.min_height = 100; // Minimum size
-////        sizehints.flags |= PMinSize;
+        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);         ac++;
+        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height + 60)); ac++;
+        temp_width = screen_width;          // Used in offset equations below
+        temp_height = screen_height + 60;   // Used in offset equations below
+//        size_hints->width =  (int)screen_width;        // Obsolete, X11R3
+//        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
+        size_hints->flags |= USSize;  // We still need this
+        size_hints->min_width  = 100; // Minimum size
+        size_hints->min_height = 75;  // Minimum size
+//        XtSetArg(al[ac], XmNminWidth,         100);             ac++;
+//        XtSetArg(al[ac], XmNminHeight,        100);             ac++;
+        size_hints->flags |= PMinSize;
+//        size_hints->base_width =  (int)screen_width;         // Takes priority over min_width
+//        size_hints->base_height = (int)(screen_height + 60); // Takes priority over min_height
+//        size_hints->flags |= PBaseSize;
     }
 
 
     if ( (XValue|YValue) & geometry_flags ) {
-//if (XNegative & flags)
-//if (YNegative & flags)
         //
         // Position of Xastir was specified with a -geometry setting.
         // 
-////        sizehints.x = (int)geometry_x; // Obsolete, X11R3
-////        sizehints.y = (int)geometry_y; // Obsolete, X11R3
-        sizehints.flags |= USPosition; // We still need this
-
-        // These two statements are necessary as well to set the
-        // position of the window.  I have no idea why we need two
-        // methods for setting these variables, but things didn't
-        // work correctly with just the above code or just the below
-        // code.
-        //
-//        XtSetArg(al[ac], XmNx, geometry_x); ac++;
-//        XtSetArg(al[ac], XmNy, geometry_y); ac++;
+        if (XNegative & geometry_flags) {
+            geometry_x = DisplayWidth(display, DefaultScreen(display) )
+                + geometry_x - temp_width;
+        }
+        if (YNegative & geometry_flags) {
+            geometry_y = DisplayHeight(display, DefaultScreen(display) )
+                + geometry_y - temp_height;
+        }
+        size_hints->x = (int)geometry_x; // Obsolete? X11R3
+        size_hints->y = (int)geometry_y; // Obsolete? X11R3
+        size_hints->flags |= USPosition; // We still need this
+//        XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
+//        XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
+    }
+    else {
+        size_hints->flags |= PPosition;
     }
 
 
@@ -5043,18 +5089,17 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (title)
         XtSetArg(al[ac], XmNtitle,        title);           ac++;
  
-    XtSetArg(al[ac], XmNargv,             app_argv);        ac++;
-
-    // Set the minimum width that Xastir can be shrunk to.  We use
-    // XSizeHints for this now instead.
-//    XtSetArg(al[ac], XmNminWidth,         100);             ac++;
-//    XtSetArg(al[ac], XmNminHeight,        100);             ac++;
-
     XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
- 
+
     XtSetArg(al[ac], XmNforeground,       MY_FG_COLOR);     ac++;
     XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
 
+
+    //
+    // Set the above values into the appshell widget
+    //
+    XtSetValues(appshell, al, ac);
+ 
 
     free(title);
 
@@ -5073,12 +5118,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-//    XtVaSetValues(form,
-//                XmNx,           1,
-//                XmNy,           1,
-//                XmNwidth,       (Dimension)screen_width,
-//                XmNheight,      (Dimension)((screen_height + 60)),
-//                NULL);
 
     /* Menu Bar */
     ac = 0;
@@ -8332,16 +8371,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //        "Xastir",   // icon name
 //        None,       // pixmap for icon
 //        0, 0,       // argv and argc for restarting
-//        &sizehints);
-//    XSetWMHints(display, XtWindow(appshell), &wm_hints);
+//        size_hints);
+//    XSetWMHints(display, XtWindow(appshell), wm_hints);
     XSetWMProperties(display,
         XtWindow(appshell),
         NULL, // window name
         NULL, // icon name
         app_argv,
         app_argc,
-        &sizehints,
-        &wm_hints,
+        size_hints,
+        wm_hints,
         NULL);  // class hints
 
 
