@@ -11413,6 +11413,7 @@ void check_range(void) {
 // long x_long_offset;             // Longitude at top NW corner of map screen
 // long y_lat_offset;              // Latitude  at top NW corner of map screen
 
+/*
 if (x_long_offset < 0l) {
 //    fprintf(stderr,"left\n");
     x_long_offset = 0l;         // New left viewpoint edge
@@ -11423,6 +11424,7 @@ if ( (x_long_offset + (width*new_scale_x) ) > 129600000l) {
     x_long_offset = 129600000l - (width*new_scale_x);   // New left viewpoint edge
     new_mid_x = 129600000l - ((width*new_scale_x) / 2); // New midpoint
 }
+*/
 
 // Find the four corners of the map in the new scale system.  Make
 // sure they are on the display, but not well inside the borders of
