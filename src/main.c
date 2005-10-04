@@ -5029,11 +5029,11 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
 //        size_hints->height = (int)geometry_height;// Obsolete, X11R3
         size_hints->flags |= USSize;  // We still need this
-        size_hints->min_width  = 100; // Minimum size
-        size_hints->min_height = 75;  // Minimum size
+//        size_hints->min_width  = 100; // Minimum size
+//        size_hints->min_height = 75;  // Minimum size
 //        XtSetArg(al[ac], XmNminWidth,         100);             ac++;
 //        XtSetArg(al[ac], XmNminHeight,        100);             ac++;
-        size_hints->flags |= PMinSize;
+//        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)geometry_width;  // Takes priority over min_width
 //        size_hints->base_height = (int)geometry_height; // Takes priority over min_height
 //        size_hints->flags |= PBaseSize;
@@ -5050,11 +5050,11 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->width =  (int)screen_width;        // Obsolete, X11R3
 //        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
         size_hints->flags |= USSize;  // We still need this
-        size_hints->min_width  = 100; // Minimum size
-        size_hints->min_height = 75;  // Minimum size
+//        size_hints->min_width  = 100; // Minimum size
+//        size_hints->min_height = 75;  // Minimum size
 //        XtSetArg(al[ac], XmNminWidth,         100);             ac++;
 //        XtSetArg(al[ac], XmNminHeight,        100);             ac++;
-        size_hints->flags |= PMinSize;
+//        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)screen_width;         // Takes priority over min_width
 //        size_hints->base_height = (int)(screen_height + 60); // Takes priority over min_height
 //        size_hints->flags |= PBaseSize;
@@ -5073,14 +5073,14 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
             geometry_y = DisplayHeight(display, DefaultScreen(display) )
                 + geometry_y - temp_height;
         }
-        size_hints->x = (int)geometry_x; // Obsolete? X11R3
-        size_hints->y = (int)geometry_y; // Obsolete? X11R3
+//        size_hints->x = (int)geometry_x; // Obsolete? X11R3
+//        size_hints->y = (int)geometry_y; // Obsolete? X11R3
         size_hints->flags |= USPosition; // We still need this
-//        XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
-//        XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
+        XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
+        XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
     }
     else {
-        size_hints->flags |= PPosition;
+//        size_hints->flags |= PPosition;
     }
 
 
@@ -8398,7 +8398,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         (unsigned int)screen_height);
 
     // Show the window
-    XtPopup(appshell,XtGrabNone);
+//    XtPopup(appshell,XtGrabNone);
+    XMapWindow(XtDisplay(appshell), XtWindow(appshell));
 
     XtAddCallback (da, XmNinputCallback,  da_input,NULL);
     XtAddCallback (da, XmNresizeCallback, da_resize,NULL);
