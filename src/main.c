@@ -251,6 +251,15 @@
 #define MPD_FILENAME_OFFSET 37
 
 
+// Define the ICON
+static unsigned char icon_bits[] = {
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   0x00, 0xfc, 0x01, 0x00, 0x22, 0x02, 0x00, 0x31, 0x06, 0x80, 0x33, 0x06,
+   0xfe, 0xf3, 0x0f, 0xff, 0xf9, 0x0f, 0xff, 0xff, 0x0f, 0xff, 0xff, 0x0f,
+   0xfe, 0xff, 0x07, 0x3e, 0xe0, 0x03, 0x1c, 0xc0, 0x01, 0x00, 0x00, 0x00,
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+
 //Dimension geometry_width, geometry_height;
 //Position geometry_x, geometry_y;
 int geometry_x, geometry_y;
@@ -4855,6 +4864,7 @@ inline int no_data_selected(void)
 
 
 void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
+    Pixmap icon_pixmap;
     Atom WM_DELETE_WINDOW;
     Widget children[9];         /* Children to manage */
     Arg al[100];                 /* Arg List */
@@ -5028,12 +5038,12 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         temp_height = geometry_height;  // Used in offset equations below
 //        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
 //        size_hints->height = (int)geometry_height;// Obsolete, X11R3
-        size_hints->flags |= USSize;  // We still need this
-//        size_hints->min_width  = 100; // Minimum size
-//        size_hints->min_height = 75;  // Minimum size
-//        XtSetArg(al[ac], XmNminWidth,         100);             ac++;
-//        XtSetArg(al[ac], XmNminHeight,        100);             ac++;
-//        size_hints->flags |= PMinSize;
+        size_hints->flags |= USSize; // We still need this
+        size_hints->min_width  = 61; // Minimum size
+        size_hints->min_height = 61; // Minimum size
+        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
+        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)geometry_width;  // Takes priority over min_width
 //        size_hints->base_height = (int)geometry_height; // Takes priority over min_height
 //        size_hints->flags |= PBaseSize;
@@ -5049,12 +5059,12 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         temp_height = screen_height + 60;   // Used in offset equations below
 //        size_hints->width =  (int)screen_width;        // Obsolete, X11R3
 //        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
-        size_hints->flags |= USSize;  // We still need this
-//        size_hints->min_width  = 100; // Minimum size
-//        size_hints->min_height = 75;  // Minimum size
-//        XtSetArg(al[ac], XmNminWidth,         100);             ac++;
-//        XtSetArg(al[ac], XmNminHeight,        100);             ac++;
-//        size_hints->flags |= PMinSize;
+        size_hints->flags |= USSize; // We still need this
+        size_hints->min_width  = 61; // Minimum size
+        size_hints->min_height = 61; // Minimum size
+        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
+        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)screen_width;         // Takes priority over min_width
 //        size_hints->base_height = (int)(screen_height + 60); // Takes priority over min_height
 //        size_hints->flags |= PBaseSize;
@@ -5078,9 +5088,6 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         size_hints->flags |= USPosition; // We still need this
         XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
         XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
-    }
-    else {
-//        size_hints->flags |= PPosition;
     }
 
 
@@ -8362,26 +8369,15 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
             0);
 
 
+// We get this error on some systems if XtRealizeWidget() is called
+// without setting width/height values first:
+// "Error: Shell widget xastir has zero width and/or height"
+
     XtRealizeWidget (appshell);
 
 
-//    XSetStandardProperties(display,
-//        XtWindow(appshell),
-//        "Xastir",   // window name
-//        "Xastir",   // icon name
-//        None,       // pixmap for icon
-//        0, 0,       // argv and argc for restarting
-//        size_hints);
-//    XSetWMHints(display, XtWindow(appshell), wm_hints);
-    XSetWMProperties(display,
-        XtWindow(appshell),
-        NULL, // window name
-        NULL, // icon name
-        app_argv,
-        app_argc,
-        size_hints,
-        wm_hints,
-        NULL);  // class hints
+    // Flush all pending requests to the X server.
+    XFlush(display);
 
 
     create_gc(da);
@@ -8397,13 +8393,72 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         (unsigned int)screen_width,
         (unsigned int)screen_height);
 
+
     // Show the window
 //    XtPopup(appshell,XtGrabNone);
-    XMapWindow(XtDisplay(appshell), XtWindow(appshell));
+//    XMapWindow(XtDisplay(appshell), XtWindow(appshell));
+    XMapRaised(XtDisplay(appshell), XtWindow(appshell));
+
 
     XtAddCallback (da, XmNinputCallback,  da_input,NULL);
     XtAddCallback (da, XmNresizeCallback, da_resize,NULL);
     XtAddCallback (da, XmNexposeCallback, da_expose,(XtPointer)text);
+
+
+    // Don't discard events in X11 queue, but wait for the X11
+    // server to catch up.
+    (void)XSync(XtDisplay(appshell), False);
+
+
+//XSetSizeHints(Display*, Window, XSizeHints*, Atom);
+//XSetZoomHints(Display*, Window, XSizeHints*);
+//XmbSetWMProperties(Display* Window, _Xconst char*, _Xconst char*, char**, int, XSizeHints*, XWMHints*, XClassHint*);
+//XSetWMSizeHints(Display*, Window, XSizeHints*, Atom);
+
+//    XSetWMNormalHints(display, XtWindow(appshell), size_hints);
+
+//    XSetWMHints(display, XtWindow(appshell), wm_hints);
+
+    icon_pixmap = XCreateBitmapFromData(display,
+        XtWindow(appshell),
+        icon_bits,
+        20,     // icon_bitmap_width,
+        20);    // icon_bitmap_height
+
+    XSetStandardProperties(display,
+        XtWindow(appshell),
+        "Xastir",       // window name
+        "Xastir",       // icon name
+        icon_pixmap,    // pixmap for icon
+        0, 0,           // argv and argc for restarting
+        size_hints);
+
+//    XSetWMProperties(display,
+//        XtWindow(appshell),
+//        NULL, // window name
+//        NULL, // icon name
+//        app_argv,
+//        app_argc,
+//        size_hints,
+//        wm_hints,
+//        NULL);  // class hints
+
+// Cygwin has these functions which use XSizeHints structs:
+// XSetNormalHints        Linux too. Superceded by XSetWMNormalHints
+// XSetSizeHints          Linux too. Superceded by XSetWMSizeHints()
+// XSetStandardProperties Linux too.
+// XSetZoomHints          Linux too.
+// XSetWMNormalHints      Linux too
+// XSetWMProperties       Linux too. Calls XSetWMNormalHints.
+// XmbSetWMProperties     Linux too. Calls XSetWMNormalHints.
+// Xutf8SetWMProperties   Linux too. Calls XSetWMNormalHints.
+// XSetWMSizeHints        Linux too. Same as first but with "Atom property" added
+
+
+    // Free the allocated structures.  We won't need them again.
+    XFree(size_hints);
+    XFree(wm_hints);    // We're not currently using this struct
+
 
     if (track_me)
         XmToggleButtonSetState(trackme_button,TRUE,TRUE);
@@ -25099,27 +25154,6 @@ fprintf(stderr,
                     XtVaSetValues(appshell, XmNcolormap, cmap, NULL);
                 }
             }
-
-
-// We get this error on some systems if XtRealizeWidget() is called
-// without setting width/height values first:
-// "Error: Shell widget xastir has zero width and/or height"
-// This has to do with the initial Xastir window which doesn't
-// actually get visually mapped to the display (it's hidden).
-
-//fprintf(stderr,"***XtRealizeWidget\n");
-
-//            XtRealizeWidget(appshell);
-
-
-// Try to flush out the Window creation to the X-Server, so that by
-// the time we get to create_appshell we'll be able to snag geometry
-// from the appshell widget.
-//(void)XFlush(XtDisplay(appshell));
-//
-// Don't discard events in X11 queue, but wait for the X11 server to
-// catch up.
-//(void)XSync(XtDisplay(appshell), FALSE);
 
 
 //fprintf(stderr,"***index_restore_from_file\n");
