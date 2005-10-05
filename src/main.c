@@ -252,6 +252,9 @@
 
 
 // Define the ICON
+//
+// Created with "bitmap" editor:
+//
 static unsigned char icon_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0xfc, 0x01, 0x00, 0x22, 0x02, 0x00, 0x31, 0x06, 0x80, 0x33, 0x06,
@@ -4943,6 +4946,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XWMHints *wm_hints;     // Used for window manager hints
     int temp_width = 0;
     int temp_height = 0;
+    int use_sizehints = 0;
 
 
     if(debug_level & 8)
@@ -5038,18 +5042,28 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         temp_height = geometry_height;  // Used in offset equations below
 //        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
 //        size_hints->height = (int)geometry_height;// Obsolete, X11R3
-        size_hints->flags |= USSize; // We still need this
-        size_hints->min_width  = 61; // Minimum size
-        size_hints->min_height = 61; // Minimum size
-        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
-        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
-        size_hints->flags |= PMinSize;
+//        size_hints->flags |= USSize; // We still need this
+//
+//
+//        size_hints->min_width  = 61; // Minimum size
+//        size_hints->min_height = 61; // Minimum size
+// Lock the min size to the specified initial size for now, release
+// later after creating initial window.  Got this idea from the
+// Lincity project where they do similar things in their "lcx11.c"
+// file.
+//        size_hints->min_width = geometry_width;
+//        size_hints->min_height = geometry_height;
+        XtSetArg(al[ac], XmNminWidth,  (Dimension)geometry_width);  ac++;
+        XtSetArg(al[ac], XmNminHeight, (Dimension)geometry_height); ac++;
+//        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
+//        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+//        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)geometry_width;  // Takes priority over min_width
 //        size_hints->base_height = (int)geometry_height; // Takes priority over min_height
 //        size_hints->flags |= PBaseSize;
     }
     else {
-        // Size was not specified in a -geometry string.  Set to the
+        // Size was NOT specified in a -geometry string.  Set to the
         // size specified in the config file then pass hints to the
         // window manager to tell it the size is user-specified.
         //
@@ -5060,11 +5074,22 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->width =  (int)screen_width;        // Obsolete, X11R3
 //        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
         size_hints->flags |= USSize; // We still need this
-        size_hints->min_width  = 61; // Minimum size
-        size_hints->min_height = 61; // Minimum size
-        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
-        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
-        size_hints->flags |= PMinSize;
+        use_sizehints++;
+//
+//
+//        size_hints->min_width  = 61; // Minimum size
+//        size_hints->min_height = 61; // Minimum size
+// Lock the min size to the specified initial size for now, release
+// later after creating initial window.  Got this idea from the
+// Lincity project where they do the similar things in their
+// "lcx11.c" file.
+//        size_hints->min_width =  (int)screen_width;
+//        size_hints->min_height = (int)(screen_height + 60);
+        XtSetArg(al[ac], XmNminWidth,  (Dimension)screen_width);         ac++;
+        XtSetArg(al[ac], XmNminHeight, (Dimension)(screen_height + 60)); ac++;
+//        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
+//        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+//        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)screen_width;         // Takes priority over min_width
 //        size_hints->base_height = (int)(screen_height + 60); // Takes priority over min_height
 //        size_hints->flags |= PBaseSize;
@@ -5085,7 +5110,7 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         }
 //        size_hints->x = (int)geometry_x; // Obsolete? X11R3
 //        size_hints->y = (int)geometry_y; // Obsolete? X11R3
-        size_hints->flags |= USPosition; // We still need this
+//        size_hints->flags |= USPosition; // We still need this
         XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
         XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
     }
@@ -8394,12 +8419,6 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         (unsigned int)screen_height);
 
 
-    // Show the window
-//    XtPopup(appshell,XtGrabNone);
-//    XMapWindow(XtDisplay(appshell), XtWindow(appshell));
-    XMapRaised(XtDisplay(appshell), XtWindow(appshell));
-
-
     XtAddCallback (da, XmNinputCallback,  da_input,NULL);
     XtAddCallback (da, XmNresizeCallback, da_resize,NULL);
     XtAddCallback (da, XmNexposeCallback, da_expose,(XtPointer)text);
@@ -8417,7 +8436,7 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 
 //    XSetWMNormalHints(display, XtWindow(appshell), size_hints);
 
-//    XSetWMHints(display, XtWindow(appshell), wm_hints);
+    XSetWMHints(display, XtWindow(appshell), wm_hints);
 
     icon_pixmap = XCreateBitmapFromData(display,
         XtWindow(appshell),
@@ -8431,12 +8450,12 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         "Xastir",       // icon name
         icon_pixmap,    // pixmap for icon
         0, 0,           // argv and argc for restarting
-        size_hints);
+        (use_sizehints) ? size_hints : NULL);    // size hints
 
 //    XSetWMProperties(display,
 //        XtWindow(appshell),
-//        NULL, // window name
-//        NULL, // icon name
+//        "Xastir", // window name
+//        "Xastir", // icon name
 //        app_argv,
 //        app_argc,
 //        size_hints,
@@ -8455,15 +8474,47 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 // XSetWMSizeHints        Linux too. Same as first but with "Atom property" added
 
 
-    // Free the allocated structures.  We won't need them again.
-    XFree(size_hints);
-    XFree(wm_hints);    // We're not currently using this struct
-
-
     if (track_me)
         XmToggleButtonSetState(trackme_button,TRUE,TRUE);
     else
         XmToggleButtonSetState(trackme_button,FALSE,TRUE);
+
+
+
+    // Don't discard events in X11 queue, but wait for the X11
+    // server to catch up.
+    (void)XSync(XtDisplay(appshell), False);
+
+
+
+    // Change the minimum window size so that we can change it
+    // again, but only down to size 61.
+    //
+    // Initialize flags
+//    size_hints->flags = 0;
+//    size_hints->min_width  = 61; // Minimum size
+//    size_hints->min_height = 61; // Minimum size
+//    XSetWMNormalHints(display, XtWindow(appshell), size_hints);
+    XtVaSetValues(appshell,
+        XmNminWidth,  61,
+        XmNminHeight, 61,
+        NULL);
+// Lincity method of locking down the min_width/height when
+// instantiating the window, then releasing it later:
+// http://pingus.seul.org/~grumbel/tmp/lincity-source/lcx11_8c-source.html
+
+
+
+     // Actually show the window
+//    XtPopup(appshell,XtGrabNone);
+//    XMapWindow(XtDisplay(appshell), XtWindow(appshell));
+    XMapRaised(XtDisplay(appshell), XtWindow(appshell));
+
+
+    // Free the allocated structures.  We won't need them again.
+    XFree(size_hints);
+    XFree(wm_hints);    // We're not currently using this struct
+
 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell stop\n");
@@ -24538,6 +24589,8 @@ int main(int argc, char *argv[], char *envp[]) {
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
     String fallback_resources[] = {
+
+//        "Mwm*iconImageForeground: #000000000000\n",
 
         "*initialResourcesPersistent: False\n",
 
