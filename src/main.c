@@ -5042,11 +5042,13 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         temp_height = geometry_height;  // Used in offset equations below
 //        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
 //        size_hints->height = (int)geometry_height;// Obsolete, X11R3
-//        size_hints->flags |= USSize; // We still need this
-//
-//
+//        size_hints->flags |= USSize; // User-specified size
 //        size_hints->min_width  = 61; // Minimum size
 //        size_hints->min_height = 61; // Minimum size
+//        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
+//        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+//
+//
 // Lock the min size to the specified initial size for now, release
 // later after creating initial window.  Got this idea from the
 // Lincity project where they do similar things in their "lcx11.c"
@@ -5055,8 +5057,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->min_height = geometry_height;
         XtSetArg(al[ac], XmNminWidth,  (Dimension)geometry_width);  ac++;
         XtSetArg(al[ac], XmNminHeight, (Dimension)geometry_height); ac++;
-//        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
-//        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+//
+//
 //        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)geometry_width;  // Takes priority over min_width
 //        size_hints->base_height = (int)geometry_height; // Takes priority over min_height
@@ -5075,10 +5077,12 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
         size_hints->flags |= USSize; // We still need this
         use_sizehints++;
-//
-//
 //        size_hints->min_width  = 61; // Minimum size
 //        size_hints->min_height = 61; // Minimum size
+//        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
+//        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+//
+//
 // Lock the min size to the specified initial size for now, release
 // later after creating initial window.  Got this idea from the
 // Lincity project where they do the similar things in their
@@ -5087,8 +5091,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->min_height = (int)(screen_height + 60);
         XtSetArg(al[ac], XmNminWidth,  (Dimension)screen_width);         ac++;
         XtSetArg(al[ac], XmNminHeight, (Dimension)(screen_height + 60)); ac++;
-//        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
-//        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
+//
+//
 //        size_hints->flags |= PMinSize;
 //        size_hints->base_width =  (int)screen_width;         // Takes priority over min_width
 //        size_hints->base_height = (int)(screen_height + 60); // Takes priority over min_height
@@ -8488,7 +8492,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 
 
     // Change the minimum window size so that we can change it
-    // again, but only down to size 61.
+    // again, but only down to size 61.  Also write out the
+    // width/height values again.
     //
     // Initialize flags
 //    size_hints->flags = 0;
@@ -8498,6 +8503,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
     XtVaSetValues(appshell,
         XmNminWidth,  61,
         XmNminHeight, 61,
+//        XmNwidth,     (Dimension)temp_width,
+//        XmNheight,    (Dimension)temp_height,
         NULL);
 // Lincity method of locking down the min_width/height when
 // instantiating the window, then releasing it later:
