@@ -251,16 +251,8 @@
 #define MPD_FILENAME_OFFSET 37
 
 
-// Define the ICON
-//
-// Created with "bitmap" editor:
-//
-static unsigned char icon_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0xfc, 0x01, 0x00, 0x22, 0x02, 0x00, 0x31, 0x06, 0x80, 0x33, 0x06,
-   0xfe, 0xf3, 0x0f, 0xff, 0xf9, 0x0f, 0xff, 0xff, 0x0f, 0xff, 0xff, 0x0f,
-   0xfe, 0xff, 0x07, 0x3e, 0xe0, 0x03, 0x1c, 0xc0, 0x01, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+// Define the ICON, created with the "bitmap" editor:
+#include "icon.xbm"
 
 
 int geometry_x, geometry_y;
@@ -5027,13 +5019,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         my_appshell_width = (Dimension)geometry_width; // Used in offset equations below
         my_appshell_height = (Dimension)geometry_height; // Used in offset equations below
-fprintf(stderr,"gW:%d  gH:%d\n", geometry_width, geometry_height);
-fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height);
+//fprintf(stderr,"gW:%d  gH:%d\n", geometry_width, geometry_height);
+//fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height);
         if (my_appshell_width < 61)
             my_appshell_width = 61;
         if (my_appshell_height < 61)
             my_appshell_height = 61;
-fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height);
+//fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height);
         XtSetArg(al[ac], XmNwidth,  my_appshell_width);    ac++;
         XtSetArg(al[ac], XmNheight, my_appshell_height);   ac++;
 //        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
@@ -8401,8 +8393,8 @@ fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height
     icon_pixmap = XCreateBitmapFromData(display,
         XtWindow(appshell),
         icon_bits,
-        20,     // icon_bitmap_width,
-        20);    // icon_bitmap_height
+        icon_width,     // icon_bitmap_width,
+        icon_height);   // icon_bitmap_height
 
     XSetStandardProperties(display,
         XtWindow(appshell),
@@ -24834,6 +24826,7 @@ int main(int argc, char *argv[], char *envp[]) {
                     &geometry_width,
                     &geometry_height);
 
+/*
 if ((WidthValue|HeightValue) & geometry_flags) {
     fprintf(stderr,"Found width/height\n");
 }
@@ -24849,6 +24842,7 @@ fprintf(stderr,
     (int)geometry_height,
     (int)geometry_x,
     (int)geometry_y);
+*/
             }
         }
     }
