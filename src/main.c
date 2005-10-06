@@ -263,8 +263,6 @@ static unsigned char icon_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 
-//Dimension geometry_width, geometry_height;
-//Position geometry_x, geometry_y;
 int geometry_x, geometry_y;
 unsigned int geometry_width, geometry_height;
 int geometry_flags;
@@ -4942,25 +4940,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
-    XSizeHints *size_hints; // Used for window manager hints
-    XWMHints *wm_hints;     // Used for window manager hints
-    int temp_width = 0;
-    int temp_height = 0;
-    int use_size_hints = 0;
+    XWMHints *wm_hints; // Used for window manager hints
+    Dimension my_appshell_width, my_appshell_height;
+    Dimension da_width, da_height;
 
 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell start\n");
-
-    // Allocate space for size_hints and wm_hints.  We need to do it
-    // this way in case the structures change in later versions of
-    // X11.
-    //
-    size_hints = XAllocSizeHints();
-    if (!size_hints) {
-        fprintf(stderr,"Failure allocating memory: size_hints\n");
-        exit(0);
-    }
 
     wm_hints = XAllocWMHints();
     if (!wm_hints) {
@@ -4972,9 +4958,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     wm_hints->initial_state = NormalState;
     wm_hints->input = True;
     wm_hints->flags = StateHint | InputHint;
-
-    // Initialize flags
-    size_hints->flags = 0;
 
 
     t = _("X Amateur Station Tracking and Information Reporting");
@@ -5006,122 +4989,99 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     ac = 0;
 
 
+
 // Snag border widths so that we can use them in the calculations
 // below.  If we fail to do this the size and offsets will be off by
 // the width of the borders added by the window manager.
-/*
-if (XGetGeometry(XtDisplay(da),
-    XtWindow(appshell),
-    &root_return,
-    &x_return,
-    &y_return,
-    &width_return,
-    &height_return,
-    &border_width_return,
-    &depth_return) ) == False) {
-    fprintf(stderr,"Couldn't get window attributes\n");
-}
+//
+// if (XGetGeometry(XtDisplay(da),
+//     XtWindow(appshell),
+//     &root_return,
+//     &x_return,
+//     &y_return,
+//     &width_return,
+//     &height_return,
+//     &border_width_return,
+//     &depth_return) ) == False) {
+//     fprintf(stderr,"Couldn't get window attributes\n");
+// }
+//
 // Another method:
-XWindowAttributes windowattr; // Defined in Xlib.h
+//
+// XWindowAttributes windowattr; // Defined in Xlib.h
 // Struct has x/y/width/height/border_width/depth fields.
-if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
-    fprintf(stderr,"Couldn't get window attributes\n")
-}
-*/
+// if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
+//     fprintf(stderr,"Couldn't get window attributes\n")
+// }
 
 
+
+    // Set up the main window X/Y sizes and the minimum sizes
+    // allowable.
+    //
     if ( (WidthValue|HeightValue) & geometry_flags ) {
         //
         // Size of Xastir was specified with a -geometry setting.
-        // Set up the window size and then pass hints to the window
-        // manager to tell it the size is user-specified.
+        // Set up the window size.
         //
-        XtSetArg(al[ac], XmNwidth,  (Dimension)geometry_width);    ac++;
-        XtSetArg(al[ac], XmNheight, (Dimension)geometry_height);   ac++;
-        temp_width = geometry_width;    // Used in offset equations below
-        temp_height = geometry_height;  // Used in offset equations below
-//        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
-//        size_hints->height = (int)geometry_height;// Obsolete, X11R3
-//        size_hints->flags |= USSize; // User-specified size
-//        size_hints->flags |= PSize; // User-specified size
-//use_size_hints++;
-//        size_hints->min_width  = 61; // Minimum size
-//        size_hints->min_height = 61; // Minimum size
+
+        my_appshell_width = (Dimension)geometry_width; // Used in offset equations below
+        my_appshell_height = (Dimension)geometry_height; // Used in offset equations below
+fprintf(stderr,"gW:%d  gH:%d\n", geometry_width, geometry_height);
+fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height);
+        if (my_appshell_width < 61)
+            my_appshell_width = 61;
+        if (my_appshell_height < 61)
+            my_appshell_height = 61;
+fprintf(stderr,"tW:%d  tH:%d\n", (int)my_appshell_width, (int)my_appshell_height);
+        XtSetArg(al[ac], XmNwidth,  my_appshell_width);    ac++;
+        XtSetArg(al[ac], XmNheight, my_appshell_height);   ac++;
 //        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
 //        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
-//
-//
 // Lock the min size to the specified initial size for now, release
-// later after creating initial window.  Got this idea from the
-// Lincity project where they do similar things in their "lcx11.c"
-// file.
-//        size_hints->min_width = geometry_width;
-//        size_hints->min_height = geometry_height;
-        XtSetArg(al[ac], XmNminWidth,  (Dimension)geometry_width);  ac++;
-        XtSetArg(al[ac], XmNminHeight, (Dimension)geometry_height); ac++;
-//
-//
-//        size_hints->flags |= PMinSize;
-//        size_hints->base_width =  (int)geometry_width;  // Takes priority over min_width
-//        size_hints->base_height = (int)geometry_height; // Takes priority over min_height
-//        size_hints->flags |= PBaseSize;
+// later after creating initial window.  Snagged this idea from the
+// Lincity project where they do similar things in "lcx11.c"
+//        XtSetArg(al[ac], XmNminWidth,  my_appshell_width);  ac++;
+//        XtSetArg(al[ac], XmNminHeight, my_appshell_height); ac++;
     }
     else {
         // Size was NOT specified in a -geometry string.  Set to the
-        // size specified in the config file then pass hints to the
-        // window manager to tell it the size is user-specified.
+        // size specified in the config file instead.
         //
-        XtSetArg(al[ac], XmNwidth,  (Dimension)screen_width);         ac++;
-        XtSetArg(al[ac], XmNheight, (Dimension)(screen_height + 60)); ac++;
-        temp_width = screen_width;          // Used in offset equations below
-        temp_height = screen_height + 60;   // Used in offset equations below
-//        size_hints->width =  (int)screen_width;        // Obsolete, X11R3
-//        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
-//        size_hints->flags |= USSize; // We still need this
-//        size_hints->flags |= PSize; // We still need this
-//        use_size_hints++;
-//        size_hints->min_width  = 61; // Minimum size
-//        size_hints->min_height = 61; // Minimum size
+        my_appshell_width = (Dimension)screen_width;
+        my_appshell_height = (Dimension)(screen_height + 60);
+        XtSetArg(al[ac], XmNwidth,  my_appshell_width);  ac++;
+        XtSetArg(al[ac], XmNheight, my_appshell_height); ac++;
 //        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
 //        XtSetArg(al[ac], XmNminHeight,        61);             ac++;
-//
-//
 // Lock the min size to the specified initial size for now, release
 // later after creating initial window.  Got this idea from the
-// Lincity project where they do the similar things in their
-// "lcx11.c" file.
-//        size_hints->min_width =  (int)screen_width;
-//        size_hints->min_height = (int)(screen_height + 60);
-        XtSetArg(al[ac], XmNminWidth,  (Dimension)screen_width);         ac++;
-        XtSetArg(al[ac], XmNminHeight, (Dimension)(screen_height + 60)); ac++;
-//
-//
-//        size_hints->flags |= PMinSize;
-//        size_hints->base_width =  (int)screen_width;         // Takes priority over min_width
-//        size_hints->base_height = (int)(screen_height + 60); // Takes priority over min_height
-//        size_hints->flags |= PBaseSize;
+// Lincity project where they do the similar things in "lcx11.c"
+//        XtSetArg(al[ac], XmNminWidth,  my_appshell_width);  ac++;
+//        XtSetArg(al[ac], XmNminHeight, my_appshell_height); ac++;
     }
 
 
+    // Set up the X/Y offsets for the main window
+    //
     if ( (XValue|YValue) & geometry_flags ) {
+        Position my_x, my_y;
+
         //
         // Position of Xastir was specified with a -geometry setting.
         // 
         if (XNegative & geometry_flags) {
             geometry_x = DisplayWidth(display, DefaultScreen(display) )
-                + geometry_x - temp_width;
+                + geometry_x - (int)my_appshell_width;
         }
         if (YNegative & geometry_flags) {
             geometry_y = DisplayHeight(display, DefaultScreen(display) )
-                + geometry_y - temp_height;
+                + geometry_y - (int)my_appshell_height;
         }
-//        size_hints->x = (int)geometry_x; // Obsolete? X11R3
-//        size_hints->y = (int)geometry_y; // Obsolete? X11R3
-//        size_hints->flags |= USPosition; // We still need this
-//        size_hints->flags |= PPosition; // We still need this
-//use_size_hints++;
-        XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
-        XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
+        my_x = (Position)geometry_x;
+        my_y = (Position)geometry_y;
+        XtSetArg(al[ac], XmNx, my_x); ac++;
+        XtSetArg(al[ac], XmNy, my_y); ac++;
     }
 
 
@@ -7787,11 +7747,13 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
             NULL);
 
     /* Do drawing map area */
+    da_width = (Dimension)screen_width;
+    da_height = (Dimension)screen_height;
     da = XtVaCreateWidget("create_appshell da",
             xmDrawingAreaWidgetClass,
             form,
-            XmNwidth,               (Dimension)screen_width,
-            XmNheight,              (Dimension)screen_height,
+            XmNwidth,               da_width,
+            XmNheight,              da_height,
             XmNunitType,            XmPIXELS,
             XmNtopAttachment,       XmATTACH_WIDGET,
             XmNtopWidget,           menubar,
@@ -8396,13 +8358,6 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 
     XtManageChild(text);
 
-//    (void)XtCreateManagedWidget("MAIN",
-//            xmMainWindowWidgetClass,
-//            appshell,
-//            NULL,
-//            0);
-
-
 // We get this error on some systems if XtRealizeWidget() is called
 // without setting width/height values first:
 // "Error: Shell widget xastir has zero width and/or height"
@@ -8438,15 +8393,11 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
     (void)XSync(XtDisplay(appshell), False);
 
 
-//XSetSizeHints(Display*, Window, XSizeHints*, Atom);
-//XSetZoomHints(Display*, Window, XSizeHints*);
-//XmbSetWMProperties(Display* Window, _Xconst char*, _Xconst char*, char**, int, XSizeHints*, XWMHints*, XClassHint*);
-//XSetWMSizeHints(Display*, Window, XSizeHints*, Atom);
-
-//    XSetWMNormalHints(display, XtWindow(appshell), size_hints);
-
+    // Send the window manager hints
     XSetWMHints(display, XtWindow(appshell), wm_hints);
 
+
+    // Set up the icon
     icon_pixmap = XCreateBitmapFromData(display,
         XtWindow(appshell),
         icon_bits,
@@ -8459,29 +8410,7 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         "Xastir",       // icon name
         icon_pixmap,    // pixmap for icon
         0, 0,           // argv and argc for restarting
-        (use_size_hints) ? size_hints : NULL);    // size hints
-
-//    XSetWMProperties(display,
-//        XtWindow(appshell),
-//        "Xastir", // window name
-//        "Xastir", // icon name
-//        app_argv,
-//        app_argc,
-//        size_hints,
-//        wm_hints,
-//        NULL);  // class hints
-
-// Cygwin has these functions which use XSizeHints structs:
-// XSetNormalHints        Linux too. Superceded by XSetWMNormalHints
-// XSetSizeHints          Linux too. Superceded by XSetWMSizeHints()
-// XSetStandardProperties Linux too.
-// XSetZoomHints          Linux too.
-// XSetWMNormalHints      Linux too
-// XSetWMProperties       Linux too. Calls XSetWMNormalHints.
-// XmbSetWMProperties     Linux too. Calls XSetWMNormalHints.
-// Xutf8SetWMProperties   Linux too. Calls XSetWMNormalHints.
-// XSetWMSizeHints        Linux too. Same as first but with "Atom property" added
-
+        NULL);          // size hints
 
     if (track_me)
         XmToggleButtonSetState(trackme_button,TRUE,TRUE);
@@ -8496,20 +8425,17 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 
 
 
-    // Change the minimum window size so that we can change it
-    // again, but only down to size 61.  Also write out the
-    // width/height values again.
+    // Reset the minimum window size so that we can adjust the
+    // window downwards again, but only down to size 61.  If we go
+    // any smaller heighth-wise then we end up getting segfaults,
+    // probably because we're trying to update some widgets that
+    // aren't visible at that point.
     //
-    // Initialize flags
-//    size_hints->flags = 0;
-//    size_hints->min_width  = 61; // Minimum size
-//    size_hints->min_height = 61; // Minimum size
-//    XSetWMNormalHints(display, XtWindow(appshell), size_hints);
     XtVaSetValues(appshell,
         XmNminWidth,  61,
         XmNminHeight, 61,
-//        XmNwidth,     (Dimension)temp_width,
-//        XmNheight,    (Dimension)temp_height,
+        XmNwidth,     my_appshell_width,
+        XmNheight,    my_appshell_height,
         NULL);
 // Lincity method of locking down the min_width/height when
 // instantiating the window, then releasing it later:
@@ -8517,14 +8443,11 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 
 
 
-     // Actually show the window
-//    XtPopup(appshell,XtGrabNone);
-//    XMapWindow(XtDisplay(appshell), XtWindow(appshell));
+     // Actually show the draw and show the window on the display
     XMapRaised(XtDisplay(appshell), XtWindow(appshell));
 
 
-    // Free the allocated structures.  We won't need them again.
-    XFree(size_hints);
+    // Free the allocated struct.  We won't need it again.
     XFree(wm_hints);    // We're not currently using this struct
 
 
@@ -8844,8 +8767,8 @@ void da_resize_execute(Widget w) {
         screen_width  = (long)width;
         screen_height = (long)height;
         XtVaSetValues(w,
-            XmNwidth,   (Dimension)screen_width,
-            XmNheight,  (Dimension)screen_height,
+            XmNwidth,  width,
+            XmNheight, height,
             NULL);
 
         /*  fprintf(stderr,"Size x:%ld, y:%ld\n",screen_width,screen_height);*/
@@ -24921,7 +24844,7 @@ if (YValue & geometry_flags) {
     fprintf(stderr,"Found Y-offset\n");
 }
 fprintf(stderr,
-    "Widgets:\n         appshell:  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
+    "appshell:  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
     (int)geometry_width,
     (int)geometry_height,
     (int)geometry_x,
