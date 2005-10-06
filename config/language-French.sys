@@ -307,6 +307,7 @@ POPUPMA041|Bearing||
 POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position abiguity is on, your new position may appear to jump.||
+POPUPMA045|Create SAR Objects||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
