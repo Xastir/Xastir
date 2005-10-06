@@ -5095,8 +5095,9 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
 
     // could implement using multiple optional sets of predefined objects (SAR/public service event)
 
-    number_of_predefined_objects = 0;
     int j = 0;
+
+    number_of_predefined_objects = 0;
 
     // command post
     xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"ICP");
