@@ -4946,7 +4946,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XWMHints *wm_hints;     // Used for window manager hints
     int temp_width = 0;
     int temp_height = 0;
-    int use_sizehints = 0;
+    int use_size_hints = 0;
 
 
     if(debug_level & 8)
@@ -5043,6 +5043,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->width =  (int)geometry_width; // Obsolete, X11R3
 //        size_hints->height = (int)geometry_height;// Obsolete, X11R3
 //        size_hints->flags |= USSize; // User-specified size
+//        size_hints->flags |= PSize; // User-specified size
+//use_size_hints++;
 //        size_hints->min_width  = 61; // Minimum size
 //        size_hints->min_height = 61; // Minimum size
 //        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
@@ -5075,8 +5077,9 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         temp_height = screen_height + 60;   // Used in offset equations below
 //        size_hints->width =  (int)screen_width;        // Obsolete, X11R3
 //        size_hints->height = (int)(screen_height + 60);// Obsolete, X11R3
-        size_hints->flags |= USSize; // We still need this
-        use_sizehints++;
+//        size_hints->flags |= USSize; // We still need this
+//        size_hints->flags |= PSize; // We still need this
+//        use_size_hints++;
 //        size_hints->min_width  = 61; // Minimum size
 //        size_hints->min_height = 61; // Minimum size
 //        XtSetArg(al[ac], XmNminWidth,         61);             ac++;
@@ -5115,6 +5118,8 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 //        size_hints->x = (int)geometry_x; // Obsolete? X11R3
 //        size_hints->y = (int)geometry_y; // Obsolete? X11R3
 //        size_hints->flags |= USPosition; // We still need this
+//        size_hints->flags |= PPosition; // We still need this
+//use_size_hints++;
         XtSetArg(al[ac], XmNx, (Position)geometry_x); ac++;
         XtSetArg(al[ac], XmNy, (Position)geometry_y); ac++;
     }
@@ -8391,11 +8396,11 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
 
     XtManageChild(text);
 
-    (void)XtCreateManagedWidget("MAIN",
-            xmMainWindowWidgetClass,
-            appshell,
-            NULL,
-            0);
+//    (void)XtCreateManagedWidget("MAIN",
+//            xmMainWindowWidgetClass,
+//            appshell,
+//            NULL,
+//            0);
 
 
 // We get this error on some systems if XtRealizeWidget() is called
@@ -8454,7 +8459,7 @@ if (XGetWindowAttributes(display,XtWindow(appshell),&windowattr) == 0) {
         "Xastir",       // icon name
         icon_pixmap,    // pixmap for icon
         0, 0,           // argv and argc for restarting
-        (use_sizehints) ? size_hints : NULL);    // size hints
+        (use_size_hints) ? size_hints : NULL);    // size hints
 
 //    XSetWMProperties(display,
 //        XtWindow(appshell),
