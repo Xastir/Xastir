@@ -5297,7 +5297,7 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         c_lon,
         symbol_plus);
 
-fprintf(stderr,"Packet:%s\n", data);
+//fprintf(stderr,"Packet:%s\n", data);
 
     log_object_item(data,0,last_object);
 
