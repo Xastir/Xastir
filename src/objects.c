@@ -194,6 +194,11 @@ Widget object_name_data,
        omni_antenna_toggle, beam_antenna_toggle;
 Pixmap Ob_icon0, Ob_icon;
 void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
+// Array to hold predefined objects to display on Create/Move popup menu.
+predefinedObject predefinedObjects[MAX_NUMBER_OF_PREDEFINED_OBJECTS];
+void Populate_predefined_objects(predefinedObject *predefinedObjects);
+int number_of_predefined_objects;  
+
 int Area_object_enabled = 0;
 int Map_View_object_enabled = 0;
 int Area_type = 0;
@@ -4022,6 +4027,7 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 
     //fprintf(stderr,"Object_change_data_set\n");
 
+    // p_station will be NULL if the object is new.
     if (Setup_object_data(line, sizeof(line), p_station)) {
 
         // Update this object in our save file
@@ -5074,6 +5080,231 @@ void Ob_width_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointe
     object_NRQ[3] = '\0';
 
     //fprintf(stderr,"NRQ: %s\n", object_NRQ);
+}
+
+
+
+
+
+/* populate predefined object (SAR) struct */
+void Populate_predefined_objects(predefinedObject *predefinedObjects) {
+    // The number of objects you are defining below must be 
+    // exactly equal to number_of_predefined_objects
+    // and less than MAX_NUMBER_OF_PREDEFINED_OBJECTS.
+    // using counter j for this seems inelegant **
+
+    // could implement using multiple optional sets of predefined objects (SAR/public service event)
+
+    number_of_predefined_objects = 0;
+    int j = 0;
+
+    // command post
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"ICP");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"c");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"ICP: Command Post");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+    // Staging area
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Staging");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"S");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Staging");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+    // Initial Planning Point
+    // set up to draw as two objects with different probability circles
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"IPP_");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data)," Pmin0.75,Pmax1.0");
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"[not shown]");
+    // show on menu = 0 will hide this entry on menu
+    predefinedObjects[j].show_on_menu = 0;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"IPP");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data)," Pmin0.25,Pmax0.5");
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"IPP: Initial Planning Point");
+    predefinedObjects[j].show_on_menu = 1;
+    // index of child j - 1 will add additional callback to IPP_
+    predefinedObjects[j].index_of_child = j - 1;
+    predefinedObjects[j].index = j;
+    j++;
+    
+    // Point last seen
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"PLS");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"PLS: Point Last Seen");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+
+    // Last known point
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"LKP");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),".");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"LKP: Last Known Point");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+    // Base
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Base");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"B");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Base");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+    // Helibase
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Helibase");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"H");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Helibase");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+    // Camp
+    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Camp");
+    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"C");
+    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Camp");
+    predefinedObjects[j].show_on_menu = 1;
+    predefinedObjects[j].index_of_child = -1;
+    predefinedObjects[j].index = j;
+    j++;
+
+    // Could read additional entries from a file here.
+    // The total number of entries should be left fairly small 
+    // to prevent the menu from becoming too large and unweildy.
+
+    number_of_predefined_objects = j;
+    if (number_of_predefined_objects>MAX_NUMBER_OF_PREDEFINED_OBJECTS) {
+        // need beter handling of this - we will allready have run
+        // past the end of the array if we have reached here.
+        number_of_predefined_objects=MAX_NUMBER_OF_PREDEFINED_OBJECTS;
+    }
+}
+
+
+
+
+
+/* Create or Move predefined SAR object
+   Create an object of the specified type at the current mouse position 
+   without a dialog.  
+   Current undesirable behavior: If an object of the same name exists, 
+   takes control of that object and moves it to the current mouse position.  
+
+   clientData is pointer to an integer representing the index of a 
+   predefined object in the predefinedObjects array
+   */
+void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldata) {
+    Dimension width, height;
+    char call[MAX_CALLSIGN+1];
+    long x_lat,x_lon;
+    char origin[MAX_CALLSIGN+1];  // mycall
+    char data[MAX_TNC_LINE_SIZE];
+    char page[2];
+    // reserve space for probability circle as well as symbol /Pmin0.25,Pmax0.5,
+    char symbol_plus[PREDEFINED_OBJECT_DATA_LENGTH];
+    char symbol[2];
+    char c_lon[10]; 
+    char c_lat[10];
+    char time[7];
+    int i;
+    DataRow *p_station;
+    
+    // set some defaults in case of a non-matched value
+    xastir_snprintf(page,sizeof(page),"/");
+    xastir_snprintf(symbol,sizeof(symbol),"/");
+    xastir_snprintf(call, sizeof(call), "Marker");
+
+    //for (i=0;i<number_of_predefined_objects;i++) {
+    //   if (strcmp((char *)clientData,predefinedObjects[i].call)==0) {   
+    i = (int)clientData;
+    if (i > -1) {
+        if (i <= number_of_predefined_objects) {
+            xastir_snprintf(page,sizeof(page),predefinedObjects[i].page);
+            xastir_snprintf(symbol,sizeof(symbol),predefinedObjects[i].symbol);
+            xastir_snprintf(call, sizeof(call), predefinedObjects[i].call);
+            xastir_snprintf(symbol_plus, sizeof(symbol_plus), "%s%s",symbol,predefinedObjects[i].data);
+        }
+    }
+
+    // Get mouse position.
+    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
+    x_lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
+    x_lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+    if(debug_level & 1)
+        fprintf(stderr, "Creating symbol %s %s at: %lu %lu with calldata: [%i]\n",
+             page,
+             symbol,
+             x_lat,
+             x_lon,
+             (int)clientData);
+
+    // CONVERT_LP_NOSP      = DDMM.MMN
+    convert_lat_l2s(x_lat, (char *)c_lat, sizeof(c_lat), CONVERT_LP_NOSP);
+    convert_lon_l2s(x_lon, (char *)c_lon, sizeof(c_lon), CONVERT_LP_NOSP);
+
+    // Create object as owned by own station, or take control of object if it has another owner
+    // taking control of a received object is probably not a desirable behavior.
+    if (search_station_name(&p_station,call,1)) {
+       // station with this name exists allready
+    }
+    xastir_snprintf(origin,
+            sizeof(origin),
+            my_callsign);
+    xastir_snprintf(time, sizeof(time), "%02d%02d%02d", 
+            get_hours(), 
+            get_minutes(), 
+            get_seconds() );
+    // Prepare APRS data string using latitude and longitude from mouse click location
+    // and page, symbol, and any additional data from the prepared object.
+    xastir_snprintf(data,
+        sizeof(data),
+        ";%-9s*%sh%s%s%s%s",
+        call,
+        time,
+        c_lat,
+        page,
+        c_lon,
+        symbol_plus);
+
+fprintf(stderr,"Packet:%s\n", data);
+
+    log_object_item(data,0,last_object);
+
+    if (object_tx_disable)
+            output_my_data(data,-1,0,1,0,NULL); // Local loopback only, not igating
+    else
+        output_my_data(data,-1,0,0,0,NULL); // Transmit/loopback object data, not igating
 }
 
 

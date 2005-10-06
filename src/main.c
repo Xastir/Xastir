@@ -766,6 +766,7 @@ int DRG_show_colors[13];
 
 // -------------------------------------------------------------------
 
+
 Widget tnc_logging_on, tnc_logging_off;
 Widget net_logging_on, net_logging_off;
 Widget igate_logging_on, igate_logging_off;
@@ -3070,6 +3071,11 @@ void busy_cursor(Widget w) {
 
     (void)XDefineCursor(XtDisplay(w),XtWindow(w),cs);
     (void)XFlush(XtDisplay(w));
+
+    // This X11 function gets invoked when X11 decides that it has
+    // some free time.  We use that to advantage in making the busy
+    // cursor go away "magically" when we're not so busy.
+    //
     (void)XtAppAddWorkProc(XtWidgetToApplicationContext(w),unbusy_cursor,(XtPointer)w);
 }
 
@@ -4865,11 +4871,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
+    Widget sar_object_menu, sar_object_sub;
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
+    int i;
     /*menu widgets */
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane,
@@ -4932,7 +4940,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
     char *title, *t;
-    XWMHints *wm_hints; // Used for window manager hints
+//    XWMHints *wm_hints; // Used for window manager hints
     Dimension my_appshell_width, my_appshell_height;
     Dimension da_width, da_height;
 
@@ -4940,6 +4948,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if(debug_level & 8)
         fprintf(stderr,"Create appshell start\n");
 
+/*
     wm_hints = XAllocWMHints();
     if (!wm_hints) {
         fprintf(stderr,"Failure allocating memory: wm_hints\n");
@@ -4950,6 +4959,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     wm_hints->initial_state = NormalState;
     wm_hints->input = True;
     wm_hints->flags = StateHint | InputHint;
+*/
 
 
     t = _("X Amateur Station Tracking and Information Reporting");
@@ -8092,6 +8102,55 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
+    sar_object_sub=XmCreatePulldownMenu(right_menu_popup,
+            "create_appshell sar_object_sub",
+            al,
+            ac);
+
+    // "Create SAR Objects"
+    sar_object_menu=XtVaCreateManagedWidget(langcode("POPUPMA045"),
+            xmCascadeButtonGadgetClass,
+            right_menu_popup,
+            XmNsubMenuId,sar_object_sub,
+            XmNmnemonic,langcode_hotkey("POPUPMA045"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Display a list of predefined SAR or Public service event objects.
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    Widget predefined_object_menu_items[number_of_predefined_objects];
+    for (i=0; i<number_of_predefined_objects; i++) {
+        // Walk through array of predefined objects and
+        // build a menu item for each predefined object.
+        if (predefinedObjects[i].show_on_menu==1) {
+            // Some predefined objects are hidden to allow construction
+            // of two predefined objects in the same place at the same
+            // time with one menu item.
+            if(debug_level & 1)
+                 fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
+            (Widget)predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
+                  xmPushButtonGadgetClass,
+                  sar_object_sub,
+                  al,
+                  ac);
+            XtAddCallback(predefined_object_menu_items[i],XmNactivateCallback,Create_SAR_Object,(int *)predefinedObjects[i].index);
+            if (predefinedObjects[i].index_of_child>-1) {
+                // This second callback allows stacking of two objects 
+                // such as a PLS with 0.25 and 0.5 and a PLS_ with 0.75 
+                // and 1.0 mile probability circles.
+                if (predefinedObjects[i].index_of_child<number_of_predefined_objects) {
+                    XtAddCallback(predefined_object_menu_items[i],XmNactivateCallback,Create_SAR_Object,(int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
+                }
+            }
+        }
+    }
+
+
     CAD_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell CAD sub",
             al,
@@ -8386,7 +8445,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
     // Send the window manager hints
-    XSetWMHints(display, XtWindow(appshell), wm_hints);
+//    XSetWMHints(display, XtWindow(appshell), wm_hints);
 
 
     // Set up the icon
@@ -8440,7 +8499,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
     // Free the allocated struct.  We won't need it again.
-    XFree(wm_hints);    // We're not currently using this struct
+//    XFree(wm_hints);    // We're not currently using this struct
 
 
     if(debug_level & 8)
@@ -25056,6 +25115,10 @@ fprintf(stderr,
         //exit(0);  // Not worth exiting just because we can't talk!
     }  
 #endif  // HAVE_FESTIVAL
+
+
+    /* populate the predefined object (SAR/Public service) struct */
+    Populate_predefined_objects(predefinedObjects); 
 
     if (load_color_file()) {
         if (load_language_file(get_user_base_dir("config/language.sys"))) {
