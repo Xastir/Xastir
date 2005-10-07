@@ -5278,32 +5278,32 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     // Create object as owned by own station, or take control of object if it has another owner
     // taking control of a received object is probably not a desirable behavior.
     if (search_station_name(&p_station,call,1)) {
-        // station with this name exists already
-
-
-/*
-  1) If we own it:
-
-    a) MOVE the EXISTING object (default), perhaps with the option
-       to clear the track.  Clearing the track would only take
-       effect on our local map screen, not on everyone else's.
-
-    b) RENAME the NEW object
-
-    c) CANCEL request
-
-
-  2) If someone else owns it:
-
-    a) ADOPT the existing object and MOVE it (usually a bad idea).
-       Same track-clearing as option 1a.
-
-    b) RENAME the NEW object (default)
-
-    c) CANCEL request
-*/
-
-
+        // An object with this name exists already
+        //
+        // If my_callsign, exact match
+        if (is_my_call(p_station->origin,1)) {
+            // The previous object with the same name is owned by
+            // me:
+            //   a) MOVE the EXISTING object (default), perhaps with the option
+            //      to clear the track.  Clearing the track would only take
+            //      effect on our local map screen, not on everyone else's.
+            //   b) RENAME the NEW object, perhaps tacking a number
+            //   onto the end until we get to an unused name.
+            //   c) CANCEL request
+fprintf(stderr, "Object with same name exists, owned by me\n");
+        }
+        else {
+            // The previous object with the same name is NOT owned
+            // by me.
+            //   a) ADOPT the existing object and MOVE it (a very
+            //      poor idea).
+            //      Same track-clearing as option 1a.
+            //   b) RENAME the NEW object (default), perhaps tacking
+            //   a number onto the end until we get to an unused
+            //   name.
+            //   c) CANCEL request
+fprintf(stderr, "Object with same name exists, owned by %s\n", p_station->origin);
+        }
     }
     xastir_snprintf(origin,
         sizeof(origin),
