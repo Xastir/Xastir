@@ -926,6 +926,8 @@ long new_scale_x;
 long new_scale_y;
 long screen_width;              // Screen width,  map area without border (in pixel)
 long screen_height;             // Screen height, map area without border (in pixel)
+Position screen_x_offset;
+Position screen_y_offset;
 float d_screen_distance;        /* Diag screen distance */
 float x_screen_distance;        /* x screen distance */
 float f_center_longitude;       // Floating point map center longitude
@@ -5088,6 +5090,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetArg(al[ac], XmNx, my_x); ac++;
         XtSetArg(al[ac], XmNy, my_y); ac++;
     }
+    else {
+        //
+        // Position of Xastir was not specified.  Use the values
+        // from the config file
+        //
+/*
+// This doesn't position the widget in fvwm2.  Would hate to go back
+// to XSizeHints in order to make this work.
+fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
+    (int)screen_x_offset,
+    (int)screen_y_offset);
+
+        XtSetArg(al[ac], XmNx, screen_x_offset); ac++;  // Doesn't work here
+        XtSetArg(al[ac], XmNy, screen_y_offset); ac++;  // Doesn't work here
+*/
+    }
 
 
     XtSetArg(al[ac], XmNallowShellResize, TRUE);            ac++;
@@ -8105,6 +8123,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
+
+    // Display a list of predefined SAR or Public service event objects.
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
     sar_object_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell sar_object_sub",
             al,
@@ -8115,17 +8141,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             xmCascadeButtonGadgetClass,
             right_menu_popup,
             XmNsubMenuId,sar_object_sub,
-            XmNmnemonic,langcode_hotkey("POPUPMA045"),
+//            XmNmnemonic,langcode_hotkey("POPUPMA045"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-
-    // Display a list of predefined SAR or Public service event objects.
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
     for (i=0; i<number_of_predefined_objects; i++) {
         // Walk through array of predefined objects and
@@ -8135,19 +8154,28 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             // of two predefined objects in the same place at the same
             // time with one menu item.
             if(debug_level & 1)
-                 fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
+                fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
+
             (Widget)predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
-                  xmPushButtonGadgetClass,
-                  sar_object_sub,
-                  al,
-                  ac);
-            XtAddCallback(predefined_object_menu_items[i],XmNactivateCallback,Create_SAR_Object,(int *)predefinedObjects[i].index);
+                xmPushButtonGadgetClass,
+                sar_object_sub,
+                al,
+                ac);
+
+            XtAddCallback(predefined_object_menu_items[i],
+                XmNactivateCallback,
+                Create_SAR_Object,
+                (int *)predefinedObjects[i].index);
+
             if (predefinedObjects[i].index_of_child>-1) {
-                // This second callback allows stacking of two objects 
-                // such as a PLS with 0.25 and 0.5 and a PLS_ with 0.75 
-                // and 1.0 mile probability circles.
+                // This second callback allows stacking of two
+                // objects such as a PLS with 0.25 and 0.5 and a
+                // PLS_ with 0.75 and 1.0 mile probability circles.
                 if (predefinedObjects[i].index_of_child<number_of_predefined_objects) {
-                    XtAddCallback(predefined_object_menu_items[i],XmNactivateCallback,Create_SAR_Object,(int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
+                    XtAddCallback(predefined_object_menu_items[i],
+                        XmNactivateCallback,
+                        Create_SAR_Object,
+                        (int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
                 }
             }
         }
@@ -8490,6 +8518,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmNminHeight, 61,
         XmNwidth,     my_appshell_width,
         XmNheight,    my_appshell_height,
+//        XmNx,         screen_x_offset,    // Doesn't work here
+//        XmNy,         screen_y_offset,    // Doesn't work here
         NULL);
 // Lincity method of locking down the min_width/height when
 // instantiating the window, then releasing it later:

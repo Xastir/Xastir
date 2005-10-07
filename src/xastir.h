@@ -118,6 +118,8 @@ extern float f_center_latitude;
 extern float f_center_longitude;
 extern long screen_width;
 extern long screen_height;
+extern Position screen_x_offset;
+extern Position screen_y_offset;
 extern int long_lat_grid;
 //extern Pixmap  pixmap;
 //extern Pixmap  pixmap_final;

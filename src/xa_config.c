@@ -436,6 +436,10 @@ void save_data(void)  {
 
     fout = fopen (config_file, "a");
     if (fout != NULL) {
+//        Position x_return;
+//        Position y_return;
+
+ 
         if (debug_level & 1)
             fprintf(stderr,"Save Data Start\n");
 
@@ -457,8 +461,22 @@ void save_data(void)  {
 
         /* default values */
         store_long (fout, "SCREEN_WIDTH", screen_width);
-
         store_long (fout, "SCREEN_HEIGHT", screen_height);
+
+
+/*
+        // Get the X/Y offsets for the main window
+        XtVaGetValues(appshell,
+            XmNx, &x_return,
+            XmNy, &y_return,
+            NULL);
+
+fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
+        store_int (fout, "SCREEN_X_OFFSET", (int)x_return);
+        store_int (fout, "SCREEN_Y_OFFSET", (int)y_return);
+*/
+
+
         store_long (fout, "SCREEN_LAT", mid_y_lat_offset);
         store_long (fout, "SCREEN_LONG", mid_x_long_offset);
 
@@ -1065,6 +1083,11 @@ void load_data_or_default(void) {
     /* default values */
     screen_width = get_long ("SCREEN_WIDTH", 61l, 10000l, 61l);
     screen_height = get_long ("SCREEN_HEIGHT", 1l, 10000l, 1l);
+
+
+//    screen_x_offset = (Position)get_int ("SCREEN_X_OFFSET", 0, 10000, 0);
+//    screen_y_offset = (Position)get_int ("SCREEN_Y_OFFSET", 0, 10000, 0);
+
 
     mid_y_lat_offset = get_long ("SCREEN_LAT", 0l, 64800000l, 32400000l);
     mid_x_long_offset = get_long ("SCREEN_LONG", 0l, 129600000l, 64800000l);
