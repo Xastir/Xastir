@@ -10,7 +10,6 @@ SUBDIRS = @SUBRTREE@
 DIST_SUBDIRS = rtree
 
 EXTRA_DIST=icon.xbm
-xastir_DATA= icon.xbm
 
 xastir_SOURCES = \
     alert.c alert.h \
