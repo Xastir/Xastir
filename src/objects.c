@@ -5240,7 +5240,8 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     char time[7];
     int i;
     DataRow *p_station;
-    
+   
+ 
     // set some defaults in case of a non-matched value
     xastir_snprintf(page,sizeof(page),"/");
     xastir_snprintf(symbol,sizeof(symbol),"/");
@@ -5277,15 +5278,40 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     // Create object as owned by own station, or take control of object if it has another owner
     // taking control of a received object is probably not a desirable behavior.
     if (search_station_name(&p_station,call,1)) {
-       // station with this name exists allready
+        // station with this name exists already
+
+
+/*
+  1) If we own it:
+
+    a) MOVE the EXISTING object (default), perhaps with the option
+       to clear the track.  Clearing the track would only take
+       effect on our local map screen, not on everyone else's.
+
+    b) RENAME the NEW object
+
+    c) CANCEL request
+
+
+  2) If someone else owns it:
+
+    a) ADOPT the existing object and MOVE it (usually a bad idea).
+       Same track-clearing as option 1a.
+
+    b) RENAME the NEW object (default)
+
+    c) CANCEL request
+*/
+
+
     }
     xastir_snprintf(origin,
-            sizeof(origin),
-            my_callsign);
+        sizeof(origin),
+        my_callsign);
     xastir_snprintf(time, sizeof(time), "%02d%02d%02d", 
-            get_hours(), 
-            get_minutes(), 
-            get_seconds() );
+        get_hours(), 
+        get_minutes(), 
+        get_seconds() );
     // Prepare APRS data string using latitude and longitude from mouse click location
     // and page, symbol, and any additional data from the prepared object.
     xastir_snprintf(data,
