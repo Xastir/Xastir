@@ -5290,7 +5290,17 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
             //   b) RENAME the NEW object, perhaps tacking a number
             //   onto the end until we get to an unused name.
             //   c) CANCEL request
+
+
 fprintf(stderr, "Object with same name exists, owned by me\n");
+
+// Pop up a new dialog with the various options on it.  Save our
+// state here so that we can create the object in the callbacks for
+// the next dialog.
+//
+// Code goes here...
+
+
         }
         else {
             // The previous object with the same name is NOT owned
@@ -5302,7 +5312,17 @@ fprintf(stderr, "Object with same name exists, owned by me\n");
             //   a number onto the end until we get to an unused
             //   name.
             //   c) CANCEL request
+
+
 fprintf(stderr, "Object with same name exists, owned by %s\n", p_station->origin);
+
+// Pop up a new dialog with the various options on it.  Save our
+// state here so that we can create the object in the callbacks for
+// the next dialog.
+//
+// Code goes here...
+
+
         }
     }
     xastir_snprintf(origin,
