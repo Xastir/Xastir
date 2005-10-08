@@ -1422,7 +1422,7 @@ void check_and_transmit_objects_items(time_t time) {
 
         //fprintf(stderr,"%s\t%s\n",p_station->call_sign,p_station->origin);
 
-        // If station is owned by me
+        // If station is owned by me (Exact match includes SSID)
         if (is_my_call(p_station->origin,1)) {
 
             // and it's an object or item
@@ -5240,7 +5240,11 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     char time[7];
     int i;
     DataRow *p_station;
-   
+    int done = 0;
+    int iterations_left = 1000; // Max iterations of while loop below
+    int extra_num = 1;
+    char orig_call[MAX_CALLSIGN+1];
+
  
     // set some defaults in case of a non-matched value
     xastir_snprintf(page,sizeof(page),"/");
@@ -5275,15 +5279,77 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     convert_lat_l2s(x_lat, (char *)c_lat, sizeof(c_lat), CONVERT_LP_NOSP);
     convert_lon_l2s(x_lon, (char *)c_lon, sizeof(c_lon), CONVERT_LP_NOSP);
 
-    // Create object as owned by own station, or take control of object if it has another owner
-    // taking control of a received object is probably not a desirable behavior.
-    if (search_station_name(&p_station,call,1)) {
-        // An object with this name exists already
+
+    // Save "call" away in "orig_call" so that we can use it again
+    // and again as we try to come up with a unique name for the
+    // object.
+    //
+    xastir_snprintf(orig_call,
+        sizeof(orig_call),
+        "%s",
+        call);
+
+    // Check object names against our station database until we find
+    // a unique name or a killed object name we can use.
+    //
+    while (!done && iterations_left) {
+ 
+        // Create object as owned by own station, or take control of
+        // object if it has another owner.  Taking control of a
+        // received object is probably not a desirable behavior.
+
+        if (!search_station_name(&p_station,call,1)) {
+            //
+            // No match found with the original name, so the name
+            // for our object is ok to use.  Get out of the while
+            // loop and create the object.
+            //
+            done++;
+            continue;   // Next loop iteration (Exit the while loop)
+        }
+ 
+
+        // If we get to here, a station with this name exists.  We
+        // have a pointer to it with p_station.
         //
-        // If my_callsign, exact match
+        // If object or item and killed, use the old name to create
+        // a new object.
+        //
+        // If not killed or not object/item, pick a new name by
+        // adding digits onto the end of the old name until we don't
+        // have a name collision or we find an old object or item by
+        // that name that has been killed.
+
+
+        // Check whether object or item.  If so, check whether killed.
+        if ((p_station->flag & (ST_OBJECT | ST_ITEM)) != 0) { // It's an object or item
+
+            // Check whether object/item has been killed already
+            if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE) {
+                //
+                // The object or item has been killed.  Ok to use
+                // this object name.  Get out of the while loop and
+                // create the object.
+                //
+                done++;
+                continue;   // Next loop iteration (Exit the while loop)
+            }
+        }
+
+
+// If we get to this point we have an object name that matches
+// another in our database.  We must come up with a new name.  We
+// add digits to the end of the original name until we get one that
+// works for us.
+
+
+
+/*
+        // If my_callsign (Exact match includes SSID)
         if (is_my_call(p_station->origin,1)) {
+
             // The previous object with the same name is owned by
-            // me:
+            // me.
             //   a) MOVE the EXISTING object (default), perhaps with the option
             //      to clear the track.  Clearing the track would only take
             //      effect on our local map screen, not on everyone else's.
@@ -5301,7 +5367,6 @@ fprintf(stderr, "Object with same name exists, owned by me\n");
 // Code goes here...
 
 
-        }
         else {
             // The previous object with the same name is NOT owned
             // by me.
@@ -5324,7 +5389,34 @@ fprintf(stderr, "Object with same name exists, owned by %s\n", p_station->origin
 
 
         }
+*/
+
+
+        extra_num++;
+
+        // Append extra_num to the object name (starts at "2"), try
+        // again to see if it is unique.
+        //
+        xastir_snprintf(call,
+            sizeof(call),
+            "%s%d",
+            orig_call,
+            extra_num);
+
+        iterations_left--;
+
+    }   // End of while loop
+
+
+    if (iterations_left == 0) {
+// Pop up a message stating that we couldn't find an empty name in
+// 1000 iterations.  Call popup_message_always()
+ 
+fprintf(stderr, "No more iterations left\n");
+
     }
+
+
     xastir_snprintf(origin,
         sizeof(origin),
         my_callsign);
@@ -8625,10 +8717,10 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
     // user to adopt the object first, then move it.
     //
     // Not exact match (this one is useful for testing)
-//    if (!is_my_call(p_station->origin,1)) {
+//    if (!is_my_call(p_station->origin,0)) {
     //
-    // Exact match (this one is for production code)
-    if (!is_my_call(p_station->origin,0)) {
+    // Exact match includes SSID (this one is for production code)
+    if (!is_my_call(p_station->origin,1)) {
 
         // It's not from my callsign
         if (strncmp(calldata,"2",1) == 0) {
@@ -8686,7 +8778,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
     // Comment out any references to the object in the log file so
     // that we don't start retransmitting it on a restart.
 
-    if (is_my_call(new_owner,1)) {
+    if (is_my_call(new_owner,1)) { // Exact match includes SSID
         //fprintf(stderr,"Commenting out %s in object.log\n",
         //call_sign);
     }
