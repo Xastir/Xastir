@@ -10673,7 +10673,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 *strchr(temp_call,'>') = '\0';
                             }
 
-//                            if (is_my_call(temp_call, 0)) {
+//                            if (is_my_call(temp_call, 0)) { // Match ignoring SSID
+//                            exact match
                                 // Send to RF as direct packet
 //fprintf(stderr,"\tBase callsigns Match!  Send to RF as direct packet\n");
 //fprintf(stderr,"\t%s\n", line);
