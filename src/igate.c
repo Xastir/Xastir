@@ -193,6 +193,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             // Changes needed before parsing code:  Get rid of first
             // part of packet up to the '}' symbol.  After this the
             // generic parsing code will work.
+// Note that the REPLY-ACK algorithm also uses the '}' symbol.
 
             c0 = strstr(line, ":}"); // Find start of 3rd party packet
             if (c0 == NULL) {   // Not 3rd party packet
@@ -204,6 +205,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             // Copy original packet into line2 for later parsing.  We
             // want to keep the '}' character because our own
             // transmissions out RF have that character as well.
+// Note that the REPLY-ACK algorithm also uses the '}' symbol.
             if (debug_level & 1024)
                 fprintf(stderr,"3rd party HeardQ: %s\n",line);
 
@@ -567,6 +569,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
     // Check for third party messages.  We don't want to gate these
     // back onto the internet feeds
+// Note that the REPLY-ACK algorithm also uses the '}' symbol.
     if (message[0] == '}') {
 
         if (log_igate && (debug_level & 1024) ) {
