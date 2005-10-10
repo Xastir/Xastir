@@ -1225,15 +1225,30 @@ fprintf(stderr,
 
 // Function which marks a message as ack'ed in the transmit queue
 // and releases the next message to allow it to be transmitted.
+// Handles REPLY-ACK format or normal ACK format just fine.
+//
 void clear_acked_message(char *from, char *to, char *seq) {
     int i,ii;
     int found;
     char lowest[3];
     char temp1[MAX_CALLSIGN+1];
     char *temp_ptr;
+    char msg_id[5+1];
 
 
-    (void)remove_trailing_spaces(seq);  // This is IMPORTANT here!!!
+    // Copy seq into local variable
+    xastir_snprintf(msg_id,
+        sizeof(msg_id),
+        "%s",
+        seq);
+
+    // Check for REPLY-ACK protocol.  If found, terminate at the end
+    // of the first ack.
+    temp_ptr = strchr(msg_id, '}');
+    if (temp_ptr)
+        *temp_ptr = '\0';
+
+    (void)remove_trailing_spaces(msg_id);  // This is IMPORTANT here!!!
 
     //lowest=100000;
     // Highest Base-90 2-char string
@@ -1248,7 +1263,8 @@ void clear_acked_message(char *from, char *to, char *seq) {
                     to,
                     message_pool[i].to_call_sign,
                     from,
-                    message_pool[i].from_call_sign,seq,
+                    message_pool[i].from_call_sign,
+                    msg_id,
                     message_pool[i].seq);
 
             if (strcmp(message_pool[i].to_call_sign,from)==0) {
@@ -1257,7 +1273,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
                 if (strcmp(message_pool[i].from_call_sign,to)==0) {
                     if (debug_level & 1)
                         fprintf(stderr,"Matched message from_call_sign\n");
-                    if (strcmp(message_pool[i].seq,seq)==0) {
+                    if (strcmp(message_pool[i].seq,msg_id)==0) {
                         if (debug_level & 2)
                             fprintf(stderr,"Found and cleared\n");
 
@@ -1316,7 +1332,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_message"
                     }
                     else {
                         if (debug_level & 1)
-                            fprintf(stderr,"Sequences didn't match: %s %s\n",message_pool[i].seq,seq);
+                            fprintf(stderr,"Sequences didn't match: %s %s\n",message_pool[i].seq,msg_id);
                     }
                 }
             }
