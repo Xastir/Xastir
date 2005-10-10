@@ -8156,7 +8156,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             if(debug_level & 1)
                 fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
 
-            (Widget)predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
+            predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
                 xmPushButtonGadgetClass,
                 sar_object_sub,
                 al,
@@ -8481,10 +8481,10 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     // Set up the icon
     icon_pixmap = XCreateBitmapFromData(display,
-        XtWindow(appshell),
-        icon_bits,
-        icon_width,     // icon_bitmap_width,
-        icon_height);   // icon_bitmap_height
+                        XtWindow(appshell),
+                        (char *)icon_bits,
+                        icon_width,     // icon_bitmap_width,
+                        icon_height);   // icon_bitmap_height
 
     XSetStandardProperties(display,
         XtWindow(appshell),
