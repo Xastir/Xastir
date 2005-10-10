@@ -13435,6 +13435,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             // Terminate it here so that rest of decode works
             // properly.  We can get duplicate messages
             // otherwise.
+            //
+// Note that we modify msg_id here.  Use orig_msg_id if we need the
+// unmodified version (full REPLY-ACK version) later.
+            //
             temp_ptr[0] = '\0'; // adjust msg_id end
 
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
@@ -13481,10 +13485,26 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     len = (int)strlen(message);
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"ack",3) == 0) {              // ACK
+
+        // Received an ACK packet.  Note that these packets do not
+        // carry the REPLY-ACK protocol, but only a single ACK
+        // sequence number plus perhaps an extra '}' on the end.
+        // They should have one of these formats:
+        //      ack1
+        //      ackY
+        //      ack23
+        //      ackfH
+        //      ack23{
+
         substr(msg_id,message+3,5);
         // fprintf(stderr,"ACK: %s: |%s| |%s|\n",call,addr,msg_id);
         if (is_my_call(addr,1)) { // Check SSID also
+
+            // Note:  This function handles REPLY-ACK protocol just
+            // fine, stripping off the 2nd ack if present.
             clear_acked_message(call,addr,msg_id);  // got an ACK for me
+
+            // This one also handles REPLY-ACK protocol just fine.
             msg_record_ack(call,addr,msg_id,0,0);   // Record the ack for this message
         }
         else {  // ACK is for another station
@@ -13535,7 +13555,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"rej",3) == 0) {              // REJ
         substr(msg_id,message+3,5);
-        // fprintf(stderr,"REJ: %s: |%s| |%s|\n",call,addr,msg_id);
+fprintf(stderr,"Received a REJ packet from %s: |%s| |%s|\n",call,addr,msg_id);
         // we ignore it
         done = 1;
     }
@@ -13560,13 +13580,19 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 // applicable).
 
         // Check for Reply/Ack
-        if (strlen(ack_string) != 0) {  // Have a free-ride ack to deal with
+        if (strlen(ack_string) != 0) { // Have a free-ride ack to deal with
+
             clear_acked_message(call,addr,ack_string);  // got an ACK for me
+
             msg_record_ack(call,addr,ack_string,0,0);   // Record the ack for this message
         }
 
         // Save the ack 'cuz we might need it while talking to this
         // station.  We need it to implement Reply/Ack protocol.
+
+// Note that msg_id has already been truncated by this point.
+// orig_msg_id contains the full REPLY-ACK text.
+
         store_most_recent_ack(call,msg_id);
  
         // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
@@ -13959,7 +13985,9 @@ else {
             // Check for Reply/Ack.  APRS+ sends an AA: response back
             // for auto-reply, with an embedded free-ride Ack.
             if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
+
                 clear_acked_message(call,addr,ack_string);  // got an ACK for me
+
                 msg_record_ack(call,addr,ack_string,0,0);   // Record the ack for this message
             }
         }
@@ -14084,7 +14112,9 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
     if (!done && len == 2 && msg_id[0] == '\0') {                // ACK
         substr(msg_id,message,5);
         if (is_my_call(addr,1)) { // Check SSID also
+
             clear_acked_message(call,addr,msg_id); // got an ACK for me
+
             msg_record_ack(call,addr,msg_id,0,0);  // Record the ack for this message
         }
 //        else {                                          // ACK for other station
