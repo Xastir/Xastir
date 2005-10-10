@@ -13818,7 +13818,7 @@ else {
             fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",
                 addr,
                 message,
-                msg_id);
+                orig_msg_id);
 
         (void)msg_data_add(addr,
             call,
@@ -13873,7 +13873,7 @@ else {
                 my_callsign,
                 addr9,
                 message,
-                msg_id);
+                orig_msg_id);
 
 //fprintf(stderr,"Attempting to send message to RF\n");
 
