@@ -22879,6 +22879,33 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
     (void)remove_trailing_spaces(my_callsign);
     (void)to_upper(my_callsign);
 
+
+    // Check for '-' character in callsign.  If found, check for
+    // trailing zeroes and remove.
+    if (strchr(my_callsign, '-')) {
+        char *ptr;
+
+        ptr = my_callsign + (strlen(my_callsign) - 1);
+
+        // Remove trailing zeroes
+        while (ptr >= my_callsign && *ptr == '0') {
+            *ptr = '\0'; // Terminate at zero char
+            ptr--;
+        }
+
+        // Remove trailing dashes
+        while (ptr >= my_callsign && *ptr == '-') {
+            *ptr = '\0';  // Terminate at dash
+            ptr--;
+        }
+    }
+    // Enter NOCALL if there's nothing left.
+    if (my_callsign[0] == '\0')
+        xastir_snprintf(my_callsign,
+            sizeof(my_callsign),
+            "NOCALL");
+
+
     temp_ptr = XmTextFieldGetString(station_config_slat_data_ns);
     if((char)toupper((int)temp_ptr[0])=='S')
         temp[0]='S';
