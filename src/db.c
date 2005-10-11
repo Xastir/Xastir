@@ -13339,6 +13339,7 @@ void shorten_path( char *path, char *short_path, int short_path_size ) {
 int decode_message(char *call,char *path,char *message,char from,int port,int third_party) {
     char *temp_ptr;
     char ipacket_message[300];
+    char message_plus_acks[MAX_MESSAGE_LENGTH + 10];
     char from_call[MAX_CALLSIGN+1];
     char ack[20];
     int ok, len;
@@ -13389,6 +13390,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             addr9);
         (void)remove_trailing_spaces(addr);
         message = message + 10; // pointer to message text
+
+        // Save the message text and the acks/reply-acks before we
+        // extract the acks below.
+        xastir_snprintf(message_plus_acks,
+            sizeof(message_plus_acks),
+            "%s",
+            message);
 
         temp_ptr = strrchr(message,'{'); // look for message ID after
                                          //*last* { in message.
@@ -13528,17 +13536,25 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 //    addr);
                 shorten_path(path,short_path,sizeof(short_path));
 
+                // Only send '}' and the ack_string if it's not
+                // empty, else just end the packet with the message
+                // string.  This keeps us from appending a '}' when
+                // it's not called for.
                 xastir_snprintf(ipacket_message,
                     sizeof(ipacket_message),
-                    "}%s>%s,TCPIP,%s*::%s:%s}%s",
+//                    "}%s>%s,TCPIP,%s*::%s:%s%s%s",
+                    "}%s>%s,TCPIP,%s*::%s:%s",
+ 
                     call,
                     short_path,
                     my_callsign,
                     addr9,
-                    message,
-                    ack_string);
+//                    message,
+                    message_plus_acks);
+//                    (ack_string[0] == '\0') ? "" : "}",
+//                    ack_string);
 
-//fprintf(stderr,"Attempting to send ACK to RF\n");
+//fprintf(stderr,"Attempting to send ACK to RF:  %s\n", ipacket_message);
 
                 output_igate_rf(call,
                     addr,
@@ -13844,7 +13860,8 @@ else {
     if (debug_level & 1)
         fprintf(stderr,"6b\n");
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0) {          // other message with linenumber
+    if (!done && strlen(msg_id) > 0) {  // Other message with linenumber. This is
+                                        // probably a message for someone else.
         long record_out;
 
         if (debug_level & 2)
@@ -13900,15 +13917,17 @@ else {
             shorten_path(path,short_path,sizeof(short_path));
             xastir_snprintf(ipacket_message,
                 sizeof(ipacket_message),
-                "}%s>%s,TCPIP,%s*::%s:%s{%s",
+//                "}%s>%s,TCPIP,%s*::%s:%s{%s",
+                "}%s>%s,TCPIP,%s*::%s:%s",
                 call,
                 short_path,
                 my_callsign,
                 addr9,
-                message,
-                orig_msg_id);
+                message_plus_acks);
+//                message,
+//                orig_msg_id);
 
-//fprintf(stderr,"Attempting to send message to RF\n");
+//fprintf(stderr,"Attempting to send message to RF: %s\n", ipacket_message);
 
             output_igate_rf(call,
                 addr,
