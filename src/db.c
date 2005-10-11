@@ -13349,6 +13349,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     char orig_msg_id[5+1];
     char ack_string[6];
     int done;
+    int reply_ack = 0;
 
 
     // :xxxxxxxxx:____0-67____             message              printable, except '|', '~', '{'
@@ -13426,6 +13427,9 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             int zz = 1;
             int yy = 0;
 
+
+            reply_ack++;
+
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
                 fprintf(stderr,"Found Reply/Ack:%s\n",message);
                 fprintf(stderr,"Orig_msg_id:%s\t",msg_id);
@@ -13462,6 +13466,9 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             if (temp_ptr != NULL) {
                 int zz = 1;
                 int yy = 0;
+
+
+                reply_ack++;
 
                 if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
                     fprintf(stderr,"Found Reply/Ack:%s\n",message);
@@ -13554,7 +13561,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 //                    (ack_string[0] == '\0') ? "" : "}",
 //                    ack_string);
 
-//fprintf(stderr,"Attempting to send ACK to RF:  %s\n", ipacket_message);
+if (reply_ack) { // For debugging, so we only have reply-ack
+                 // messages and acks scrolling across the screen.
+//    fprintf(stderr,"Attempting to send ACK to RF:  %s\n", ipacket_message);
+}
 
                 output_igate_rf(call,
                     addr,
@@ -13927,7 +13937,10 @@ else {
 //                message,
 //                orig_msg_id);
 
-//fprintf(stderr,"Attempting to send message to RF: %s\n", ipacket_message);
+if (reply_ack) { // For debugging, so we only have reply-ack
+                 // messages and acks scrolling across the screen.
+//    fprintf(stderr,"Attempting to send message to RF: %s\n", ipacket_message);
+}
 
             output_igate_rf(call,
                 addr,
