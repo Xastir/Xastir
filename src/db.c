@@ -13530,12 +13530,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
                 xastir_snprintf(ipacket_message,
                     sizeof(ipacket_message),
-                    "}%s>%s,TCPIP,%s*::%s:%s",
+                    "}%s>%s,TCPIP,%s*::%s:%s}%s",
                     call,
                     short_path,
                     my_callsign,
                     addr9,
-                    message);
+                    message,
+                    ack_string);
 
 //fprintf(stderr,"Attempting to send ACK to RF\n");
 
