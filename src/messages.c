@@ -780,6 +780,74 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
 
 
+// Here we're doing some routing of the transmitted packets based on
+// heard_via_tnc_port, data_via, flag, and last_port_heard variables
+// which are stored in the station's data record.  This keep Xastir
+// from transmitting on ports that aren't actively being used in the
+// QSO, but it can also cause problems if internet interfaces go
+// down, TNC ports are switched around during runtime, etc.
+//
+// In particular, if an internet port is up and a QSO is
+// established, then the internet port is closed, the QSO will halt
+// completely as Xastir won't transmit the message out any TNC
+// ports.  The only way to reestablish communication at that point
+// is to clear all stations.  Not much of a solution.
+//
+// Possible solutions:
+//
+// *) Clear the station variables which specify a particular port or
+//    interface type if that interface or entire class of interfaces
+//    goes down.  Make sure that we end up transmitting on other
+//    ports that are useful in this case.  Change the logic as
+//    necessary to make this happen.
+//
+//    Run through entire station database, checking variables:
+//
+//      If heard_via_tnc_port==downed interface
+//        clear heard_via_tnc_last_time (time_t)?
+//        clear heard_via_tnc_port (int)
+//        clear data_via (char)
+//        clear flag (short)
+//
+//      If last_port_heard==downed interface
+//        clear last_port_heard (int)
+//        clear data_via (char)
+//        clear flag (short)
+//
+// *) Change output_my_data() such that it will re-route if a
+//    requested transmit port isn't available.  That may or may not
+//    be the proper place to make routing decisions.
+//
+// *) Here is what Bill Vodall suggested.  Unfortunately we don't
+// currently have a way to tell the interface.c code to send to all
+// internet interfaces or all TNC interfaces.  We can send to ALL
+// interfaces though:
+//
+//      if (Internet)
+//          send everything to Internet
+//          send to interface if heard there
+//      else
+//          send everything to TNC
+//
+//
+// With Xastir we could do this perhaps:
+//
+//      if station heard on RF port within last hour
+//          send to that one specific RF port
+//          send to all active internet ports
+//      else
+//          send to all active ports
+//
+// This seems a simple solution, but will require some code changes
+// to interface.c:output_my_data() in order to implement.  We need
+// to be able to specify that we want it to send to all active
+// internet ports, which we can't do right now.  Note that igates
+// might get into the act quite a bit for RF<->RF QSO's if we're
+// sending to the internet too, but that's a bug in the igate
+// software, and not something that Xastir should try to correct
+// itself.
+//
+//
 void transmit_message_data(char *to, char *message, char *path) {
     DataRow *p_station;
 
@@ -787,46 +855,70 @@ void transmit_message_data(char *to, char *message, char *path) {
         fprintf(stderr,"Transmitting data to %s : %s\n",to,message);
 
     p_station = NULL;
-    if (search_station_name(&p_station,to,1)) {
+
+
+    if (strcmp(to, my_callsign) == 0) { // My station message
+
+        // Send out all active ports
+
         if (debug_level & 2)
-            fprintf(stderr,"found station %s\n",p_station->call_sign);
+            fprintf(stderr,"My call VIA any way\n");
 
-        if (strcmp(to,my_callsign)!=0) {
-            /* check to see if it was heard via a TNC otherwise send it to the last port heard */
-            if ((p_station->flag & ST_VIATNC) != 0) {        // heard via TNC ?
-                output_my_data(message,p_station->heard_via_tnc_port,0,0,0,path);
-                /* station heard via tnc but in the past hour? */
-                /* if not heard with in the hour try via net */
-                if (!heard_via_tnc_in_past_hour(to)) {
-                    if (p_station->data_via==DATA_VIA_NET) {
-                        /* try last port heard */
-                        output_my_data(message,p_station->last_port_heard,0,0,0,path);
-                    }
-                }
-            } else {
-                /* if not a TNC then a NET port? */
-                if (p_station->data_via==DATA_VIA_NET) {
-                    /* try last port herd */
-                    output_my_data(message,p_station->last_port_heard,0,0,0,path);
-                } else {
-                    /* Not a TNC or a NET try all possible */
-                    if (debug_level & 2)
-                        fprintf(stderr,"VIA any way\n");
+        output_my_data(message,-1,0,0,0,path);
 
-                    output_my_data(message,-1,0,0,0,path);
-                }
+        return;
+    }
+
+
+    if (!search_station_name(&p_station,to,1)) {
+
+        // No data record found for this station.  Send to all
+        // active ports.
+
+        if (debug_level & 2)
+            fprintf(stderr,"VIA any way\n");
+
+        output_my_data(message,-1,0,0,0,path);
+
+        return;
+    }
+
+
+    if (debug_level & 2)
+        fprintf(stderr,"found station %s\n",p_station->call_sign);
+
+
+    // It's not being sent to my callsign but to somebody else
+    // "out there".  Because the truth is...
+
+
+    if ( ((p_station->flag & ST_VIATNC) != 0)
+            && (heard_via_tnc_in_past_hour(to)) ) {
+
+        int port_num;
+
+
+        // Station was heard via a TNC port within the previous
+        // hour.  Send to TNC port it was heard on.
+        // 
+        output_my_data(message,p_station->heard_via_tnc_port,0,0,0,path);
+
+        // Send to all internet ports.  Iterate through the port
+        // definitions looking for non-RF ports, send the message
+        // out once to each.
+        //
+        for (port_num = 0; port_num < MAX_IFACE_DEVICES; port_num++) {
+
+            // If it's an internet port, send the message.
+            if (port_data[port_num].device_type == DEVICE_NET_STREAM) {
+                output_my_data(message,port_num,0,0,0,path);
             }
-        } else {
-            /* my station message */
-            /* try all possible */
-            if (debug_level & 2)
-                fprintf(stderr,"My call VIA any way\n");
-
-            output_my_data(message,-1,0,0,0,path);
         }
-    } else {
-        /* no data found try every way*/
-        /* try all possible */
+    }
+    else {
+        // We've NOT heard this station on a TNC port within the
+        // last hour.  Send to ALL active ports.
+
         if (debug_level & 2)
             fprintf(stderr,"VIA any way\n");
 
