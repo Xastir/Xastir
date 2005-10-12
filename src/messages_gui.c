@@ -279,7 +279,9 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
                 temp_ptr);
             XtFree(temp_ptr);
 
+            (void)remove_trailing_dash_zero(temp1);
             (void)to_upper(temp1);
+
             if(strcmp(temp1,my_callsign)==0) {
                 found = ii;
                 break;
@@ -348,6 +350,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
 
         (void)remove_leading_spaces(temp1);
         (void)remove_trailing_spaces(temp1);
+        (void)remove_trailing_dash_zero(temp1);
 
         if(temp1[0] != '\0') {
             // Yep, we have a custom path.  Warn the user that
@@ -410,6 +413,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
             temp_ptr);
         XtFree(temp_ptr);
 
+        (void)remove_trailing_dash_zero(call_sign);
+
         // Try lowercase
         get_path_data(call_sign, path, MAX_PATH);
         if (strlen(path) == 0) {
@@ -452,7 +457,6 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
 
     if (mw[ii].send_message_dialog) {
 
-        /* find station and go there */
         temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
         xastir_snprintf(temp1,
             sizeof(temp1),
@@ -462,6 +466,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
 
         (void)remove_trailing_spaces(temp1);
         (void)to_upper(temp1);
+        (void)remove_trailing_dash_zero(temp1);
 
         temp_ptr = XmTextFieldGetString(mw[ii].send_message_message_data);
         xastir_snprintf(temp2,
@@ -545,7 +550,6 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_
 
     if (mw[i].send_message_dialog) {
 
-        /* find station and go there */
         temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
         xastir_snprintf(temp1,
             sizeof(temp1),
@@ -555,6 +559,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_
 
         (void)remove_trailing_spaces(temp1);  
         (void)to_upper(temp1);
+        (void)remove_trailing_dash_zero(temp1);
+
         /*fprintf(stderr,"Clear message from <%s> to <%s>\n",temp1,my_callsign);*/
         mdelete_messages_from(temp1);
         new_message_data=1;
@@ -579,7 +585,7 @@ void Clear_message_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to" );
 
     if (mw[i].send_message_dialog) {
-        /* find station and go there */
+
         temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
         xastir_snprintf(temp1,
             sizeof(temp1),
@@ -589,6 +595,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_
 
         (void)remove_trailing_spaces(temp1);  
         (void)to_upper(temp1);
+        (void)remove_trailing_dash_zero(temp1);
+
         /*fprintf(stderr,"Clear message to <%s>\n",temp1);*/
         mdelete_messages_to(temp1);
         new_message_data=1;
@@ -648,11 +656,13 @@ void Kick_timer( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
 
     temp_ptr = XmTextFieldGetString(mw[atoi(clientData)].send_message_call_data);
-        xastir_snprintf(temp1,
-            sizeof(temp1),
-            "%s",
-            temp_ptr);
+    xastir_snprintf(temp1,
+        sizeof(temp1),
+        "%s",
+        temp_ptr);
     XtFree(temp_ptr);
+
+    (void)remove_trailing_dash_zero(temp1);
 
     kick_outgoing_timer(temp1);
 }
@@ -672,6 +682,8 @@ void Clear_messages_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
             "%s",
             temp_ptr);
     XtFree(temp_ptr);
+
+    (void)remove_trailing_dash_zero(temp1);
 
     clear_outgoing_messages_to(temp1);
     update_messages(1); // Force an update to the window

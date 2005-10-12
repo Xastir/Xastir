@@ -142,6 +142,7 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(station_call);
+    (void)remove_trailing_dash_zero(station_call);
 
     to_upper(station_call);
 
@@ -271,6 +272,8 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(locate_station_call);
+    (void)remove_trailing_dash_zero(locate_station_call);
+
     /*fprintf(stderr,"looking for %s\n",locate_station_call);*/
     if (locate_station(da, locate_station_call, (int)XmToggleButtonGetState(locate_case_data),
                     (int)XmToggleButtonGetState(locate_match_data),1) ==0) {

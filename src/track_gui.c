@@ -137,7 +137,6 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     char *temp_ptr;
 
 
-    /* find station and go there */
     temp_ptr = XmTextFieldGetString(track_station_data);
     xastir_snprintf(temp,
         sizeof(temp),
@@ -146,6 +145,8 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(temp);
+    (void)remove_trailing_dash_zero(temp);
+
     xastir_snprintf(tracking_station_call,
         sizeof(tracking_station_call),
         "%s",
@@ -518,7 +519,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 
     XmScaleGetValue(posit_start_value , &posit_start);
     XmScaleGetValue(posit_length_value , &posit_length);
-    /* find station and go there */
+
     temp_ptr = XmTextFieldGetString(download_trail_station_data);
     xastir_snprintf(temp,
         sizeof(temp),
@@ -527,6 +528,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(temp);
+    (void)remove_trailing_dash_zero(temp);
    
     xastir_snprintf(download_trail_station_call,
         sizeof(download_trail_station_call),

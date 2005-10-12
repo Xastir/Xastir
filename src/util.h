@@ -50,6 +50,7 @@ extern char *remove_all_spaces(char *data);
 extern char *remove_leading_spaces(char *data);
 extern char *remove_trailing_spaces(char *data);
 extern char *remove_trailing_asterisk(char *data);
+extern char *remove_trailing_dash_zero(char *data);
 extern int  position_amb_chars;
 extern void start_timer(void);
 extern void stop_timer(void);
