@@ -258,7 +258,7 @@ PULDNHEL01|Information|I|
 PULDNHEL02|Index de l'Aide|A|#'
 PULDNHEL03|ACTIVER MODE BALISE DE DETRESSE|E|
 PULDNHEL04|!!! MODE BALISE DE DETRESSE !!!||
-PULDNHEL05|About Xastir||
+PULDNHEL05|A propos de Xastir||
 #
 #
 # Mouse Menu Popup
@@ -296,18 +296,19 @@ POPUPMA030|Commencer mode de dessin||
 POPUPMA031|Fermer polygone||
 POPUPMA032|Effacer tout les polygones CAD||
 POPUPMA033|Finir mode de dessin||
-POPUPMA034|Custom Zoom Level||
-POPUPMA035|10% out||
-POPUPMA036|10% in||
-POPUPMA037|Area||
-POPUPMA038|square||
-POPUPMA039|square feet||
-POPUPMA040|square meters||
-POPUPMA041|Bearing||
-POPUPMA042|degrees||
-POPUPMA043|Modify ambiguous position||
-POPUPMA044|Position abiguity is on, your new position may appear to jump.||
-POPUPMA045|Create SAR Objects||
+POPUPMA034|Changer niveau de zoom||
+POPUPMA035|10% arrière||
+POPUPMA036|10% avant||
+POPUPMA037|Aire||
+POPUPMA038|carré||
+POPUPMA039|pieds carrés||
+POPUPMA040|mètres carrés||
+POPUPMA041|Relèvement||
+POPUPMA042|degrés||
+POPUPMA043|Modifier ambiguïté de position||
+POPUPMA044|Ambiguïté de position est active, votre nouvelle position pourra sauter.||
+POPUPMA045|Créer objets SAR||
+#
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -358,10 +359,11 @@ BBARSTA041|Attendant données GPS..||
 BBARSTA042|Transmission objets/articles||
 BBARSTA043|Journalisation||
 BBARSTA044|Le rayon ALOHA est de %d%s||
-BBARSTA045|Loading symbols...||
-BBARSTA046|Reloading symbols...||
-BBARSTA047|Initialize my station...||
-BBARSTA048|Start interfaces...||
+BBARSTA045|Chargement de symboles...||
+BBARSTA046|Rechargement des symboles...||
+BBARSTA047|Initialisation de ma station...||
+BBARSTA048|Démarrer interfaces...||
+#
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
@@ -502,12 +504,12 @@ WPUPCFT038|TxTail (unités de 10 ms)||
 WPUPCFT039|Full duplex||
 WPUPCFT040|Configurer TNC Multi-Port KISS||
 WPUPCFT041|Port radio||
-WPUPCFT042|Dubious UNPROTO Path!||
+WPUPCFT042|Propriétés d'interface: Chemin UNPROTO douteux!||
 WPUPCFT043|SVP choisissez un chemin plus court tel que WIDE2-2 or WIDE1-1,WIDE2-2||
-WPUPCFT044|Dubious IGATE Path!||
-WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
-WPUPCFT046|Transmitting w/Dubious IGATE Path!||
-WPUPCFT047|Initialize KISS-mode on startup||
+WPUPCFT044|Propriétés d'interface: Chemin IGATE douteux!||
+WPUPCFT045|Transmission avec chemin UNPROTO douteux!||
+WPUPCFT046|Transmission avec chemin IGATE douteux!||
+WPUPCFT047|Initialiser mode KISS au démarrage||
 #
 #
 # PopUp "Configure WX Port"
@@ -596,9 +598,9 @@ POPUPOB042|Antenne dirigée||
 POPUPOB043|Inutile||
 POPUPOB044|Adopter objet||
 POPUPOB045|Adopter article||
-POPUPOB046|DF Bearing:||
-POPUPOB047|Probability Circles||
-POPUPOB048|Map View Object||
+POPUPOB046|Relèvement DF:||
+POPUPOB047|Cercles de probabilité||
+POPUPOB048|Objet Map View||
 POPUPOB049|Min (mi):||
 POPUPOB050|Max (mi):||
 #
@@ -701,12 +703,12 @@ WPUPMSB008|Message:||
 WPUPMSB009|Transmettre maintenant!||
 WPUPMSB010|Voie:||
 WPUPMSB011|Annuler messages en suspens||
-WPUPMSB012|Kick Timer||
+WPUPMSB012|Temporisateur d'éjection||
 WPUPMSB013|seq||
 WPUPMSB014|type||
 WPUPMSB015|Broadcast||
-WPUPMSB016|*TIMEOUT*||
-WPUPMSB017|*CANCELLED*||
+WPUPMSB016|*EXPIRATION*||
+WPUPMSB017|*ANNULE*||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
@@ -845,6 +847,7 @@ STIFCC0103|RAC index old, rebuilding||
 #
 # Band open message
 UMBNDO0001|à une distance de||
+#
 #
 # Universal Options
 UNIOP00001|OK||
