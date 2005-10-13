@@ -780,73 +780,15 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
 
 
-// Here we're doing some routing of the transmitted packets based on
-// heard_via_tnc_port, data_via, flag, and last_port_heard variables
-// which are stored in the station's data record.  This keep Xastir
-// from transmitting on ports that aren't actively being used in the
-// QSO, but it can also cause problems if internet interfaces go
-// down, TNC ports are switched around during runtime, etc.
+// Here we're doing some routing of the transmitted packets.  We
+// want to keep Xastir from transmitting on ports that aren't
+// actively being used in the QSO, but also cover the case where
+// ports can go up/down during the QSO.
 //
-// In particular, if an internet port is up and a QSO is
-// established, then the internet port is closed, the QSO will halt
-// completely as Xastir won't transmit the message out any TNC
-// ports.  The only way to reestablish communication at that point
-// is to clear all stations.  Not much of a solution.
-//
-// Possible solutions:
-//
-// *) Clear the station variables which specify a particular port or
-//    interface type if that interface or entire class of interfaces
-//    goes down.  Make sure that we end up transmitting on other
-//    ports that are useful in this case.  Change the logic as
-//    necessary to make this happen.
-//
-//    Run through entire station database, checking variables:
-//
-//      If heard_via_tnc_port==downed interface
-//        clear heard_via_tnc_last_time (time_t)?
-//        clear heard_via_tnc_port (int)
-//        clear data_via (char)
-//        clear flag (short)
-//
-//      If last_port_heard==downed interface
-//        clear last_port_heard (int)
-//        clear data_via (char)
-//        clear flag (short)
-//
-// *) Change output_my_data() such that it will re-route if a
-//    requested transmit port isn't available.  That may or may not
-//    be the proper place to make routing decisions.
-//
-// *) Here is what Bill Vodall suggested.  Unfortunately we don't
-// currently have a way to tell the interface.c code to send to all
-// internet interfaces or all TNC interfaces.  We can send to ALL
-// interfaces though:
-//
-//      if (Internet)
-//          send everything to Internet
-//          send to interface if heard there
-//      else
-//          send everything to TNC
-//
-//
-// With Xastir we could do this perhaps:
-//
-//      if station heard on RF port within last hour
-//          send to that one specific RF port
-//          send to all active internet ports
-//      else
-//          send to all active ports
-//
-// This seems a simple solution, but will require some code changes
-// to interface.c:output_my_data() in order to implement.  We need
-// to be able to specify that we want it to send to all active
-// internet ports, which we can't do right now.  Note that igates
-// might get into the act quite a bit for RF<->RF QSO's if we're
-// sending to the internet too, but that's a bug in the igate
-// software, and not something that Xastir should try to correct
-// itself.
-//
+// Note that igates might get into the act quite a bit for RF<->RF
+// QSO's if we're sending to the internet too, but that's a bug in
+// the igate software, and not something that Xastir should try to
+// correct itself.
 //
 void transmit_message_data(char *to, char *message, char *path) {
     DataRow *p_station;
@@ -866,6 +808,7 @@ void transmit_message_data(char *to, char *message, char *path) {
 
         output_my_data(message,-1,0,0,0,path);
 
+        // All done 
         return;
     }
 
@@ -880,6 +823,7 @@ void transmit_message_data(char *to, char *message, char *path) {
 
         output_my_data(message,-1,0,0,0,path);
 
+        // All done
         return;
     }
 
@@ -904,7 +848,7 @@ void transmit_message_data(char *to, char *message, char *path) {
         output_my_data(message,p_station->heard_via_tnc_port,0,0,0,path);
 
         // Send to all internet ports.  Iterate through the port
-        // definitions looking for non-RF ports, send the message
+        // definitions looking for internet ports, send the message
         // out once to each.
         //
         for (port_num = 0; port_num < MAX_IFACE_DEVICES; port_num++) {
@@ -914,16 +858,64 @@ void transmit_message_data(char *to, char *message, char *path) {
                 output_my_data(message,port_num,0,0,0,path);
             }
         }
-    }
-    else {
-        // We've NOT heard this station on a TNC port within the
-        // last hour.  Send to ALL active ports.
 
-        if (debug_level & 2)
-            fprintf(stderr,"VIA any way\n");
-
-        output_my_data(message,-1,0,0,0,path);
+        // All done
+        return;
     }
+
+    else if (p_station->data_via==DATA_VIA_NET) {
+        int port_num;
+        int active_internet_ports_found = 0;
+
+
+        // Station was heard over an internet interface.  Check
+        // whether we have any internet interfaces available with TX
+        // enabled.  If so, send out those ports.  Else drop through
+        // and hit the TRANSMIT-ALL clause at the end of this
+        // function.
+
+        // Iterate through the port definitions looking for internet
+        // ports with transmit enabled.  Send the message out once
+        // to each.
+        //
+        for (port_num = 0; port_num < MAX_IFACE_DEVICES; port_num++) {
+
+            // If it's an internet port and transmit is enabled,
+            // send the message and set the flag.
+            if ( (port_data[port_num].device_type == DEVICE_NET_STREAM)
+                    && (port_data[port_num].active == DEVICE_IN_USE)
+                    && (port_data[port_num].status == DEVICE_UP)
+                    && (devices[port_num].transmit_data == 1) ) {
+
+                // Found a tx-enabled internet port that was up and
+                // running.  Send the message out this port.
+                output_my_data(message,port_num,0,0,0,path);
+
+                active_internet_ports_found++;
+            }
+        }
+
+        if (active_internet_ports_found) {
+            // We found at least one tx-enabled internet interface
+            // that was up and running.
+
+            // All done.
+            return;
+        }
+        else {  // No active tx-enabled internet ports were found.
+                // Drop through to the TRANSMIT-ALL clause below.
+        } 
+    }
+
+
+    // We've NOT heard this station on a TNC port within the
+    // last hour and have no active tx-enabled internet ports to
+    // send to.  Send to ALL active ports.
+
+    if (debug_level & 2)
+        fprintf(stderr,"VIA any way\n");
+
+    output_my_data(message,-1,0,0,0,path);
 }
 
 
