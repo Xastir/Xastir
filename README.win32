@@ -411,6 +411,12 @@ the next command:
     make
     make install
 
+NOTE:  You'll probably want to run the configure step from an xterm
+window with the X11 server running of course.  If you do this from a
+non-X11 window then the configure test for "gv" will fail, as "gv"
+requires an X11 server even when asking it for it's version number.
+Without "gv" support you won't be able to print from Xastir.
+ 
 NOTE:  The "make" step can be extremely memory hungry.  If you don't
 have much free memory, that step might take a long time to run.  One
 Win2k machine with only 20MB of free RAM (128MB total RAM) couldn't
