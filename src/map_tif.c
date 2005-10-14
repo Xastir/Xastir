@@ -84,7 +84,12 @@ extern int mag;
 #include "xtiffio.h"
 //#include "geotiffio.h"
 #include "geo_normalize.h"
-//#include "projects.h"
+#include "projects.h"
+
+#ifdef USE_PROJUV
+#  define UV projUV
+#endif
+
 
 // Must be last include file
 #include "leak_detection.h"
@@ -329,6 +334,80 @@ int read_fgd_file ( char* tif_filename,
     }
 
     return(1);    /* Successful */
+}
+
+
+
+
+
+// This next function was borrowed from the libgeotiff project.  We
+// have permission from Frank Warmerdam to use any code from
+// geotiff_proj4.c and relicense it under GPL, per private message
+// of 10/14/2005.  Frank wrote that module.
+//
+// When we used the original function from libgeotiff we'd lose topo
+// map capability if we linked in libgdal.  We avoid that problem by
+// having a local copy of the function here with a different name so
+// that libgdal can't try to override it.
+//
+//***********************************************************************
+//                        my_GTIFProj4FromLatLong()
+//
+//      Convert lat/long values to projected coordinate for a
+//      particular definition.
+//***********************************************************************
+
+int my_GTIFProj4FromLatLong( GTIFDefn * psDefn,
+                             int nPoints,
+                             double *padfX,
+                             double *padfY ) {
+
+    char    *pszProjection, **papszArgs;
+    PJ      *psPJ;
+    int     i;
+
+// --------------------------------------------------------------------
+//  Get a projection definition.
+// --------------------------------------------------------------------
+    pszProjection = GTIFGetProj4Defn( psDefn );
+
+    if( pszProjection == NULL )
+        return FALSE;
+
+// --------------------------------------------------------------------
+//      Parse into tokens for pj_init(), and initialize the projection
+// --------------------------------------------------------------------
+
+    papszArgs = CSLTokenizeStringComplex( pszProjection, " +", TRUE, FALSE );
+    free( pszProjection );
+
+    psPJ = pj_init( CSLCount(papszArgs), papszArgs );
+
+    CSLDestroy( papszArgs );
+
+    if( psPJ == NULL ) {
+        return FALSE;
+    }
+
+// --------------------------------------------------------------------
+//      Process each of the points.
+// --------------------------------------------------------------------
+
+    for( i = 0; i < nPoints; i++ ) {
+        UV  sUV;
+
+        sUV.u = padfX[i] * DEG_TO_RAD;
+        sUV.v = padfY[i] * DEG_TO_RAD;
+
+        sUV = pj_fwd( sUV, psPJ );
+
+        padfX[i] = sUV.u;
+        padfY[i] = sUV.v;
+    }
+
+    pj_free( psPJ );
+
+    return TRUE;
 }
 
 
@@ -1376,7 +1455,7 @@ Samples Per Pixel: 1
         yyy = (double)f_NW_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) ) {     // Do all 4 in one call?
+        if (  proj_is_latlong || my_GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) ) {     // Do all 4 in one call?
 
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -1454,7 +1533,7 @@ Samples Per Pixel: 1
         yyy = (double)f_NE_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || my_GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -1532,7 +1611,7 @@ Samples Per Pixel: 1
         yyy = (double)f_SW_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || my_GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -1610,7 +1689,7 @@ Samples Per Pixel: 1
         yyy = (double)f_SE_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || my_GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
