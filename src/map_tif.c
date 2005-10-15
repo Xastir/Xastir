@@ -340,6 +340,14 @@ int read_fgd_file ( char* tif_filename,
 
 
 
+#ifndef HAVE_LIBGDAL
+#define my_GTIFProj4FromLatLong GTIFProj4FromLatLong
+#else
+// If we have libgdal included then the GTIFProj4FromLatLong()
+// functions may not work.  In this case we use the function below
+// instead.
+
+
 // This next function was borrowed from the libgeotiff project.  We
 // have permission from Frank Warmerdam to use any code from
 // geotiff_proj4.c and relicense it under GPL, per private message
@@ -409,6 +417,7 @@ int my_GTIFProj4FromLatLong( GTIFDefn * psDefn,
 
     return TRUE;
 }
+#endif  // HAVE_LIBGDAL
 
 
 
