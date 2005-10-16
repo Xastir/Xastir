@@ -7,7 +7,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 27. Aug 2004, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 16. Oct 2005, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -18,8 +18,10 @@
 # Some strings contain formatting commands like %s and %d, you should not
 # change these. Wrong format strings could produce a segfault!
 #
+# Warnung:
 # Einige Texte enthalten Formatierungsbefehle wie %s oder %d, diese sollten
-# beibehalten werden. Falsche Formatbefehle können zu einem Absturz führen.
+# beibehalten werden. Falsche Formatbefehle können zu einem Programmabsturz
+# führen.
 #
 # Hauptmenu
 MENUTB0001|Datei|D|
@@ -119,7 +121,7 @@ MPUPTGR017|Internet-Karten Timeout [Sek]||
 MPUPTGR018|Tiger Maps erlauben||
 #
 # PopUp "Configure USGS DRG"
-MPUPDRG001|Wähle dazustellende Objekte:||
+MPUPDRG001|Wähle darzustellende Objekte:||
 MPUPDRG002|färbe Hintergrundkarten (XOR)||
 MPUPDRG003|Schwarz||
 MPUPDRG004|Wei||
@@ -313,7 +315,7 @@ POPUPMA041|Peilung||
 POPUPMA042|Grad||
 POPUPMA043|Bearbeite mehrdeutige Position||
 POPUPMA044|Mehrdeutige Position, Ihre Position kann sich sprunghaft verändern.||
-POPUPMA045|Create SAR Objects||
+POPUPMA045|SAR-Objekte erstellen||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -602,8 +604,8 @@ POPUPOB043|unbekannt||
 POPUPOB044|Objekt übernehmen||
 POPUPOB045|Item übernehmen||
 POPUPOB046|DF Peilung:||
-POPUPOB047|Probability Circles||
-POPUPOB048|Map View Object||
+POPUPOB047|Wahrscheinlichkeitskreise||
+POPUPOB048|Map View Objekt||
 POPUPOB049|Min (mi):||
 POPUPOB050|Max (mi):||
 #
@@ -707,8 +709,8 @@ WPUPMSB009|Sende jetzt!||
 WPUPMSB010|Pfad:||
 WPUPMSB011|Wartende Nachrichten zurücknehmen||
 WPUPMSB012|Kick Timer||
-WPUPMSB013|seq||
-WPUPMSB014|type||
+WPUPMSB013|Seq||
+WPUPMSB014|Typ||
 WPUPMSB015|Rundmeldung||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*ABBRUCH*||
@@ -794,9 +796,9 @@ WPUPSTI069|Standard||
 WPUPSTI070|HAAT||
 WPUPSTI071|omni||
 WPUPSTI072|Reichweite||
-WPUPSTI073|BAD PHG||
-WPUPSTI074|BAD SHG||
-WPUPSTI075|DF Range||
+WPUPSTI073|PHG fehlerhaft||
+WPUPSTI074|SHG fehlerhaft||
+WPUPSTI075|DF Bereich||
 WPUPSTI076|Kein Signal erkannt||
 WPUPSTI077|mögliches Signal||
 WPUPSTI078|Signal erkannt, nicht lesbar||
@@ -806,11 +808,11 @@ WPUPSTI081|Signal lesbar, etwas Rauschen||
 WPUPSTI082|Gutes Signal mit Restrauschen||
 WPUPSTI083|Sehr gutes Signal||
 WPUPSTI084|Hervorragendes  Signal||
-WPUPSTI085|Aßuerordentlich starkes Signal||
+WPUPSTI085|Außerordentlich starkes Signal||
 WPUPSTI086|SCHLECHTE PEILUNG||
-WPUPSTI087|BAD NRQ||
-WPUPSTI088|DF Beamwidth||
-WPUPSTI089|DF Length||
+WPUPSTI087|NRQ fehlerhaft||
+WPUPSTI088|DF Öffnungswinkel||
+WPUPSTI089|DF Länge||
 WPUPSTI090|ungültig||
 WPUPSTI091|Wegfarbe ändern||
 #
