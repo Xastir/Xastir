@@ -17,6 +17,7 @@
 # Modified 1.3.2 : Jun 08 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.3.x : Sept 1 2004, Han Sytsma <h.l.sytsma@hetnet.nl> / # Henk de Groot <pe1dnn@amsat.org>
 # Modified 1.4.2 : Feb 14 2005, Han Sytsma <h.l.sytsma@hetnet.nl>
+# Modified 1.7.0 : Oct 15 2005, Han Sytsma <h.l.sytsma@hetnet.nl>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -62,7 +63,7 @@ PULDNVI011|Berichten Verkeer|V|
 PULDNVI013|Tijdsduur Aktief|U|
 PULDNVI014|Tijdsduur Programma Beschikbaar||
 PULDNVI015|GPS Status||
-PULDNVI016|ALOHA Statistics||
+PULDNVI016|ALOHA Statistieken||
 #
 # Menu "Configure"
 PULDNCF001|Standaard|S|
@@ -97,10 +98,10 @@ PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
 PULDNMP024|Index: Herindexeer ALLE kaarten|H|
 PULDNMP025|Kaart label font||
 PULDNMP015|Xfont selectie||
-PULDNMP027|Re-download Maps (Not from cache)||
-PULDNMP028|Flush Entire Map Cache!||
+PULDNMP027|Download Kaarten opnieuw (niet uit cache)||
+PULDNMP028|Leeg de gehele kaarten cache!||
 PULDNMP029|Zoek Adres||
-PULDNMP030|Configure USGS DRG||
+PULDNMP030|Configureer USGS DRG||
 #
 #
 # PopUp "Configure Tigermap"
@@ -120,27 +121,27 @@ MPUPTGR013|Rivieren||
 MPUPTGR014|Meren||
 MPUPTGR015|Vliegvelden, Parken, enz||
 MPUPTGR016|Kaart Intensiteit||
-MPUPTGR017|Internet Map Timeout (sec)||
+MPUPTGR017|Internet Kaarten Timeout (sec)||
 MPUPTGR018|Zet Tiger Kaarten aan||
 #
-# PopUp "Configure USGS DRG"
-MPUPDRG001|Select items to be displayed:||
-MPUPDRG002|Tint Underlying Map (XOR)||
-MPUPDRG003|Black||
-MPUPDRG004|White||
-MPUPDRG005|Blue||
-MPUPDRG006|Red||
-MPUPDRG007|Brown||
-MPUPDRG008|Green||
-MPUPDRG009|Purple||
-MPUPDRG010|Yellow||
-MPUPDRG011|Light Blue||
-MPUPDRG012|Light Red||
-MPUPDRG013|Light Purple||
-MPUPDRG014|Light Gray||
-MPUPDRG015|Light Brown||
+# PopUp "Configureer USGS DRG"
+MPUPDRG001|Selecteer weer te geven items:||
+MPUPDRG002|Kleur onderliggende kaart (XOR)||
+MPUPDRG003|Zwart||
+MPUPDRG004|Wit||
+MPUPDRG005|Blauw||
+MPUPDRG006|Rood||
+MPUPDRG007|Bruin||
+MPUPDRG008|Groen||
+MPUPDRG009|Paars||
+MPUPDRG010|Geel||
+MPUPDRG011|Licht Blauw||
+MPUPDRG012|Licht Rood||
+MPUPDRG013|Licht Paars||
+MPUPDRG014|Licht Grijs||
+MPUPDRG015|Licht Bruin||
 #
-# PopUp "Map Chooser"
+# PopUp "Kaart kiezer"
 WPUPMCP001|Kaart Kiezer||
 PULDNMMC01|Wis|N|
 PULDNMMC02|Vector|V|
@@ -198,7 +199,7 @@ PULDNDP044|Selecteer stations||
 PULDNDP028|- Selecteer vaste stations||
 PULDNDP029|- Selecteer bewegende stations||
 PULDNDP030|- Selecteer weer stations||
-PULDNDP053|  - Selecteer CWOP WX stations||
+PULDNDP053|- Selecteer CWOP WX stations||
 PULDNDP045|Selecteer Objecten/Items||
 PULDNDP026|- Selecteer  weer Objecten/Items||
 PULDNDP039|- Selecteer  water Hoogte Objecten/Items||
@@ -253,7 +254,7 @@ PULDNMG005|Automatisch Beantwoorden|B|
 PULDNMG006|Sateliet Bevestigings Mode|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Interface Control||
+PULDNTNT04|Interface besturing||
 PULDNTNT03|Zet verzenden van alle data uit||
 PULDNTNT05|Zet verzenden positie uit||
 PULDNTNT06|Zet verzenden van objecten uit||
@@ -267,9 +268,9 @@ PULDNTNT10|Laad Garmin RINO routepunten|G|
 # Menu "Help"
 PULDNHEL01|Informatie|A|
 PULDNHEL02|Help Onderwerpen|I|
-PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
-PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
-PULDNHEL05|About Xastir||
+PULDNHEL03|NOOD BAKEN BAKEN MODUS INSCHAKELEN|E|
+PULDNHEL04|!!! NOOD BAKEN MODUS !!!||
+PULDNHEL05|Over Xastir||
 #
 # Mouse Menu Popup
 POPUPMA001|Opties||
@@ -306,18 +307,18 @@ POPUPMA030|Zet teken modus aan||
 POPUPMA031|Sluit polygoon||
 POPUPMA032|Wis alle CAD polygonen||
 POPUPMA033|Beeindig teken modus||
-POPUPMA034|Custom Zoom Level||
-POPUPMA035|10% out||
+POPUPMA034|Handmatig Zoom Niveau||
+POPUPMA035|10% uit||
 POPUPMA036|10% in||
-POPUPMA037|Area||
-POPUPMA038|square||
-POPUPMA039|square feet||
-POPUPMA040|square meters||
-POPUPMA041|Bearing||
-POPUPMA042|degrees||
-POPUPMA043|Modify ambiguous position||
-POPUPMA044|Position abiguity is on, your new position may appear to jump.||
-POPUPMA045|Create SAR Objects||
+POPUPMA037|Gebied||
+POPUPMA038|Vierkant||
+POPUPMA039|Vierkante voet||
+POPUPMA040|Vierkante meters||
+POPUPMA041|Richting||
+POPUPMA042|Graden||
+POPUPMA043|Pas meerduidige positie aan||# origineel ambigious mag ook meervoudige zijn?
+POPUPMA044|Positie meerduidigheid is aan, uw nieuwe positie kan verspringen.||
+POPUPMA045|Maak SAR Objecten||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -367,10 +368,10 @@ BBARSTA040|Amateur APRS(tm) station %s||
 BBARSTA041|Wacht op GPS gegevens..||
 BBARSTA042|Uitzenden van objecten/items||
 BBARSTA043|Log bijwerken||
-BBARSTA044|ALOHA distance is %d%s||
-BBARSTA045|Loading symbols...||
-BBARSTA046|Reloading symbols...||
-BBARSTA047|Initialize my station...||
+BBARSTA044|ALOHA afstand is %d%s||
+BBARSTA045|Symbolen laden...||
+BBARSTA046|Opnieuw laden van symbolen...||
+BBARSTA047|Initialiseer mijn station...||
 BBARSTA048|Start interfaces...||
 #
 # PopUp "View - Incoming Packet Data"
@@ -517,7 +518,7 @@ WPUPCFT043|Gebruik liever een kortere route zoals WIDE2-2 of WIDE1-1,WIDE2-2||
 WPUPCFT044|Twijfelachtige IGATE route!||
 WPUPCFT045|Uitzenden met twijfelachtige UNPROTO route!||
 WPUPCFT046|Uitzenden met twijfelachtige IGATE route!||
-WPUPCFT047|Init KISS-mode on startup||
+WPUPCFT047|Initialisser KISS-modus bij opstarten||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort instelling||
@@ -605,9 +606,9 @@ POPUPOB042|Richtantenne||
 POPUPOB043|Onbruikbaar||
 POPUPOB044|Neem object over||
 POPUPOB045|Neem item over||
-POPUPOB046|DF Bearing:||
-POPUPOB047|Probability Circles||
-POPUPOB048|Map View Object||
+POPUPOB046|DF richting:||
+POPUPOB047|Waarschijnlijkheids ringen||
+POPUPOB048|Kaartbeeld Object||
 POPUPOB049|Min (mi):||
 POPUPOB050|Max (mi):||
 #
@@ -713,9 +714,9 @@ WPUPMSB011|Breek alle openstaande berichten af||
 WPUPMSB012|Kick Timer||
 WPUPMSB013|seq||
 WPUPMSB014|type||
-WPUPMSB015|Broadcast||
+WPUPMSB015|Zend uit||
 WPUPMSB016|*TIMEOUT*||
-WPUPMSB017|*CANCELLED*||
+WPUPMSB017|*AFGEBROKEN*||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Automatich antwoord bericht||
@@ -792,43 +793,43 @@ WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Vraag NWS waarschuwing||
 WPUPSTI065|Gemarkeerde bijnaam: %s||
 WPUPSTI066|Geef station een bijnaam||
-WPUPSTI067|Current Range: %d miles||
-WPUPSTI068|none||
+WPUPSTI067|Huidig bereik: %d miles||
+WPUPSTI068|geen||
 WPUPSTI069|default||
 WPUPSTI070|HAAT||
 WPUPSTI071|omni||
-WPUPSTI072|range||
-WPUPSTI073|BAD PHG||
-WPUPSTI074|BAD SHG||
-WPUPSTI075|DF Range||
-WPUPSTI076|No signal detected||
-WPUPSTI077|Detectible signal (Maybe)||
-WPUPSTI078|Detectible signal but not copyable)||
-WPUPSTI079|Weak signal, marginally readable||
-WPUPSTI080|Noisy but copyable signal||
-WPUPSTI081|Some noise, easy to copy signal||
-WPUPSTI082|Good signal w/detectible noise||
-WPUPSTI083|Near full-quieting signal||
-WPUPSTI084|Full-quieting signal||
-WPUPSTI085|Extremely strong & full-quieting signal||
-WPUPSTI086|BAD BEARING||
-WPUPSTI087|BAD NRQ||
-WPUPSTI088|DF Beamwidth||
-WPUPSTI089|DF Length||
-WPUPSTI090|Not Valid||
-WPUPSTI091|Change Trail Color||
+WPUPSTI072|bereik||
+WPUPSTI073|SLECHTE PHG||
+WPUPSTI074|SLECHTE SHG||
+WPUPSTI075|DF bereik||
+WPUPSTI076|Geen signaal gedetecteerd||
+WPUPSTI077|Detecteerbaar signaal (Wellicht)||
+WPUPSTI078|Detecteerbaar signaal maar niet bruikbaar)||
+WPUPSTI079|Zwak signaal, nauwelijks leesbaar||
+WPUPSTI080|Verruist maar bruikbaar signaal||
+WPUPSTI081|Enige ruis, goed bruikbaar signaal||
+WPUPSTI082|Goed signaal met enig waarneembare ruis||
+WPUPSTI083|Bijna ruisvrij siganal||
+WPUPSTI084|Volledig ruisvrij signaal||
+WPUPSTI085|Extreem sterk & volledig ruisvrij signaal||
+WPUPSTI086|VERKEERDE RICHTING||
+WPUPSTI087|SLECHTE NRQ||
+WPUPSTI088|DF openingshoek||
+WPUPSTI089|DF Lengte||
+WPUPSTI090|Ongeldig||
+WPUPSTI091|Verander volgspoor kleur||
 #
 #
 # PopUp "ALOHA Statistics"
-WPUPALO001|ALOHA radius: %d %s||
-WPUPALO002|Stations inside ALOHA circle: %d||
+WPUPALO001|ALOHA omtrek: %d %s||
+WPUPALO002|Stations binnen ALOHA omtrek: %d||
 WPUPALO003| Digis:               %d||
-WPUPALO004| Mobiles (in motion): %d||
-WPUPALO005| Mobiles (other):     %d||
+WPUPALO004| Mobiel (bewegend):   %d||
+WPUPALO005| Mobiel (anders):     %d||
 WPUPALO006| WX stations:         %d||
-WPUPALO007| Home stations:       %d||
-WPUPALO008|Last calculated %d %s %d %s ago.||
-WPUPALO666|ALOHA radius not calculated yet||
+WPUPALO007| Vaste stations:      %d||
+WPUPALO008|Laatst berekening %d %s %d %s geleden.||
+WPUPALO666|ALOHA omtrek nog niet berekend||
 #
 #
 # FCC-RAC Call Look up
@@ -846,10 +847,10 @@ STIFCC0011|12 wpm ||
 #
 #
 # FCC-RAC indexing/searching
-STIFCC0100|FCC index old, rebuilding||
-STIFCC0101|Callsign Search||
-STIFCC0102|Callsign Not Found!||
-STIFCC0103|RAC index old, rebuilding||
+STIFCC0100|FCC index is oud, bezig met herindexeren||
+STIFCC0101|Zoeken roepnaam||
+STIFCC0102|Roepnaam niet gevonden!||
+STIFCC0103|RAC index is oud, bezig met herindexeren||
 #
 #
 # Band open message
@@ -989,7 +990,7 @@ LHPUPNI005|Objecten & Items||
 LHPUPNI006|Eigen Objecten & Items||
 LHPUPNI010|#||
 LHPUPNI011|Roepnaam||
-LHPUPNI012|#Pack||
+LHPUPNI012|#Comprimeer||
 LHPUPNI013|Pos Tijd||
 LHPUPNI014|Pad||
 LHPUPNI015|PHG||
@@ -999,7 +1000,7 @@ LHPUPNI101|SPD||
 LHPUPNI102|ALT.||
 LHPUPNI103|Breedte gr||
 LHPUPNI104|Lengte gr||
-LHPUPNI105|#Pack||
+LHPUPNI105|#Comprimeer||
 LHPUPNI106|LSV||
 LHPUPNI107|CFMS||
 LHPUPNI108|DFMS||
@@ -1038,7 +1039,7 @@ POPEM00016|Fout bij het openen interface %d Time Out||
 POPEM00017|Geen interfaces meer beschikbaar!||
 POPEM00018|Gegevens Aanvraag - Enkele Bericht Regel||
 POPEM00019|Verzenden is uit voor poort %d||
-POPEM00020|Databank Fout!||
+POPEM00020|Database Fout!||
 POPEM00021|AX.25 ondersteunig is niet mee gecompileerd in deze Xastir Versie!||
 POPEM00022|Invoer Fout!||
 POPEM00023|Geen lokatie naam gegeven!||
@@ -1059,11 +1060,11 @@ POPEM00037|HSP interface aanwezig: GPS timing is verhoogd||
 POPEM00038|Naam komt overeen met bestaand Object/Item/Station||
 POPEM00039|Niet toegestane tekens gevonden, deze worden door punten vervangen||
 POPEM00040|Handmatig ingestelde uitgaande route is verloren gegaan||
-POPEM00041|Processing another file.  Wait a bit, then try again||
-POPEM00042|Object not owned by me! Try adopting the object first.||
-POPEM00043|Not an Object/Item!||
-POPEM00044|Fetch Findu Trail: Failed||
-POPEM00045|Fetch Findu Trail: Complete||
+POPEM00041|Bezig met een ander bestand te bewerken.  Wacht even en probeer opnieuw||
+POPEM00042|Niet een eigen object! Probeer het object eerst over te nemen.||
+POPEM00043|Geen Object/Item!||
+POPEM00044|Fetch Findu Trail: Mislukt||
+POPEM00045|Fetch Findu Trail: Gereed||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||
@@ -1136,7 +1137,7 @@ FEATURE007|Adres:||
 FEATURE008|City:||
 FEATURE009|Mark Destination||
 FEATURE010|Zip Code:||
-FEATURE011|Geocoding File||
+FEATURE011|Geocoding Bestand||
 #
 # Coordinate Calculator Dialog
 COORD001|Coordinaten berekening||
@@ -1149,14 +1150,14 @@ COORD007|Lengtegraden of||
 COORD008|Zone||
 COORD009|UTM Oostelijk||
 COORD010|UTM Noordelijk||
-COORD011|               Decimal Degrees:  ||
-COORD012|       Degrees/Decimal Minutes:  ||
-COORD013|  Degrees/Minutes/Dec. Seconds:  ||
+COORD011|               Decimale graden:  ||
+COORD012|       Graden/Decimale minuten:  ||
+COORD013|  Graden/Minuten/Dec. seconden:  ||
 COORD014| Universal Transverse Mercator:  ||
-COORD015|Military Grid Reference System:  ||
-COORD016|       Maidenhead Grid Locator:  ||
-COORD017| **       Sorry, your input was not recognized!        **||
-COORD018| **   Please use one of the following input formats:   **||
+COORD015|    Militair Referentie raster:  ||
+COORD016|     Maidenhead lokatie raster:  ||
+COORD017| **         Sorry, uw invoer is niet herkend!          **||
+COORD018| **   Gebruik een van onderstaande invoer formaten:    **||
 #
 #
 # Smart Beaconing Dialog
@@ -1236,22 +1237,22 @@ TIME008|Secondes||
 #
 #
 # Map Caching
-CACHE001|Map now cached||
-CACHE002|Loading Cached Map||
-CACHE003|Map not found in cache...||
+CACHE001|Kaart in cache||
+CACHE002|Kaart uit cache laden||
+CACHE003|Kaart niet in cache gevonden...||
 #
 #
 # Map Screen Misc
-RANGE001|RANGE SCALE||
+RANGE001|BEREIK SCHAAL||
 #
 #
 # GPS Status
 GPSS001|3D||
 GPSS002|2D||
-GPSS003|Valid||
-GPSS004|Invalid|
-GPSS005|Sats/View|
+GPSS003|Geldig||
+GPSS004|Ongeldig|
+GPSS005|Sats/beeld|
 GPSS006|Fix|
-GPSS007|!GPS data is older than 30 seconds!||
+GPSS007|!GPS data is ouder dan 30 seconden!||
 #
 #
