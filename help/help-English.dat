@@ -374,7 +374,10 @@ create a ~/.xastir/data/nws-stations.txt file listing each call or NWS station
 (like "PHISVR") that you would like to transmit via RF.  This feature also
 works for gating specific callsigns to RF.  Bob Bruninga, WB4APR, recommends
 gating these calls to RF: SCOUTS, SATERN, KIDS, REDCROSS, FOUR-H, YOUTH, GUARD,
-MARS, JOTA.
+MARS, JOTA.  See his link: "Generic Callsigns for National Events" off this web
+page for his current list of recommended callsigns:
+
+        http://www.ew.usna.edu/~bruninga/aprs.html
                      
 "Transmit Compressed objects/items?", if selected, will transmit objects and
 items in the newer compressed format. The maximum precision of the transmitted
