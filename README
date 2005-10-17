@@ -442,6 +442,10 @@ README
       above.  Callsigns or object/item names listed in this file are
       case-insensitive, so they'll match any case in received packets.
 
+      Bob Bruninga, WB4APR, recommends gating these calls to RF:
+        
+        SCOUTS, SATERN, KIDS, REDCROSS, FOUR-H, YOUTH, GUARD, MARS, JOTA
+
 
      (8) BORING LEGAL STUFF
 
