@@ -1242,9 +1242,9 @@ RANGE001|ENTFERNUNGS-SKALIERUNG||
 GPSS001|3D||
 GPSS002|2D||
 GPSS003|gültig||
-GPSS004|ungültig|
-GPSS005|Sats/Anzeige|
-GPSS006|Fest|
+GPSS004|ungültig||
+GPSS005|Sats/Anzeige||
+GPSS006|Fest||
 GPSS007|!GPS-Daten sind älter als 30 Sekunden!||
 #
 #
