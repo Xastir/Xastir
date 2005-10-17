@@ -495,8 +495,9 @@ this command line instead from inside an Xterm:
 
      xastir -l <language>
 
-Current choices are: English Dutch French German Italian Portuguese
-Spanish
+Current choices are:
+
+    Dutch English French German Italian Portuguese Spanish
 
 This option will be stored in the users config file for the next
 time Xastir is run. On new installs Xastir will default to English
