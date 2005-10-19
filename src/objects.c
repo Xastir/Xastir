@@ -1481,7 +1481,7 @@ void check_and_transmit_objects_items(time_t time) {
                     int new_increment;
 
 
-                    if (first) {    // "Transmitting objects/items"
+                    if (first && !object_tx_disable) {    // "Transmitting objects/items"
                         statusline(langcode("BBARSTA042"),1);
                         first = 0;
                     }
