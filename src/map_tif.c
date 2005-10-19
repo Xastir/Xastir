@@ -1893,11 +1893,14 @@ right_crop = width - 1;
                 my_colors[l].green = (uint16)(green_orig[l] * raster_map_intensity);
                 my_colors[l].blue  =  (uint16)(blue_orig[l] * raster_map_intensity);
 
-                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                if (visual_type == NOT_TRUE_NOR_DIRECT) {
+                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
-                else
+                }
+                else {
                     pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
                                     &my_colors[l].pixel);
+                }
             }
             break;
         case PHOTOMETRIC_MINISBLACK:
@@ -1907,11 +1910,14 @@ right_crop = width - 1;
                 my_colors[l].red = my_colors[l].green = my_colors[l].blue =
                     (uint16)(v * raster_map_intensity) << 8;
 
-                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                if (visual_type == NOT_TRUE_NOR_DIRECT) {
+                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
-                else
+                }
+                else {
                     pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
                                     &my_colors[l].pixel);
+                }
             }
             break;
         case PHOTOMETRIC_MINISWHITE:
@@ -1921,11 +1927,14 @@ right_crop = width - 1;
                 my_colors[l].red = my_colors[l].green = my_colors[l].blue =
                   (uint16)(v * raster_map_intensity) << 8;
 
-                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                if (visual_type == NOT_TRUE_NOR_DIRECT) {
+                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
-                else
+                }
+                else {
                     pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
                                     &my_colors[l].pixel);
+                }
             }
             break;
         }

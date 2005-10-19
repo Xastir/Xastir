@@ -667,11 +667,14 @@ void draw_tiger_map (Widget w,
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
-            if (visual_type == NOT_TRUE_NOR_DIRECT)
+            if (visual_type == NOT_TRUE_NOR_DIRECT) {
+                XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                 XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
-            else
+            }
+            else {
                 pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
                                 &my_colors[l].pixel);
+            }
 
             if (debug_level & 512)
                 fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
