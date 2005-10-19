@@ -8405,7 +8405,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     }
 
 
-    if (enable_server_port && !loopback_only) {
+    if (enable_server_port && !transmit_disable) {
 // Send data to the x_spider server
 
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
