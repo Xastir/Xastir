@@ -1566,11 +1566,11 @@ void check_and_transmit_objects_items(time_t time) {
                     if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
 //fprintf(stderr,"Transmitting: %s\n",line);
                         // Attempt to transmit the object/item again
-                        if (object_tx_disable) {
+                        if (object_tx_disable) {    // Send to loopback only
                             output_my_data(line,-1,0,1,0,NULL);
 // Local loopback only, not igating
                         }
-                        else {
+                        else { // Send to all active tx-enabled interfaces
                             output_my_data(line,-1,0,0,0,NULL);
 // Transmit/loopback object data, not igating
                         }
