@@ -1894,7 +1894,7 @@ right_crop = width - 1;
                 my_colors[l].blue  =  (uint16)(blue_orig[l] * raster_map_intensity);
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {
@@ -1911,7 +1911,7 @@ right_crop = width - 1;
                     (uint16)(v * raster_map_intensity) << 8;
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {
@@ -1928,7 +1928,7 @@ right_crop = width - 1;
                   (uint16)(v * raster_map_intensity) << 8;
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {

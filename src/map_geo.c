@@ -1967,7 +1967,7 @@ fprintf(stderr,"2 ");
 
                 // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {
@@ -1995,7 +1995,7 @@ fprintf(stderr,"2 ");
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
             if (visual_type == NOT_TRUE_NOR_DIRECT) {
-                XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+//                XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                 XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
             }
             else {
