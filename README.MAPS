@@ -1006,22 +1006,10 @@ Getting Maps and other Data Files for Xastir:
      
          unzip l_amat.zip
 
-
-         Non-Windows systems:
-         --------------------
          To sort the file, make sure you have plenty of disk space for this as
          the file is BIG!
 
-         sort +4 -t \| EN.dat >EN.dat.sorted
-
-
-         Windows/Cygwin systems:
-         -----------------------
-         You'll need to run this instead in order to fix up the line-end
-         characters:
-
-         cat EN.dat /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t > EN.dat.sorted
-
+         cat EN.dat | /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t > EN.dat.sorted
 
          All operating systems:
          ----------------------
