@@ -992,7 +992,7 @@ Getting Maps and other Data Files for Xastir:
 
        The download and installation of these is automated in the fcc-get
        script included with Xastir, but you may install them by hand
-       individually if you wish.
+       individually if you wish as described here:
 
        To use the FCC lookup:
        ----------------------
