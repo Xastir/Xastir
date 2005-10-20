@@ -1011,8 +1011,6 @@ Getting Maps and other Data Files for Xastir:
 
          cat EN.dat | /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t > EN.dat.sorted
 
-         All operating systems:
-         ----------------------
          Install it in the xastir/fcc directory:
 
          su
