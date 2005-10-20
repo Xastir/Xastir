@@ -1848,10 +1848,6 @@ void draw_shapefile_map (Widget w,
                 fprintf(stderr,"  Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
             }
 
-            if (alert)
-                alert->flags[0] = 'Y';
-
-
             if (debug_level & 16) {
                 // Print the field contents
                 for (jj = 0; jj < fieldcount; jj++) {
@@ -3975,10 +3971,6 @@ if (on_screen) {
                     break;
 
             }   // End of switch
-        }
-        else {  // Shape not currently visible
-            if (alert)
-                alert->flags[0] = 'N';
         }
         SHPDestroyObject( object ); // Done with this structure
     }

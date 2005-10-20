@@ -5810,7 +5810,7 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
                 alert_scan,
                 temp,
                 &alert_count,
-                (int)temp->flags[1],
+                (int)temp->flags[source],
                 DRAW_TO_PIXMAP_ALERTS);
 
 //            fprintf(stderr,"fill_in_new_alert_entries() Title1:%s\n",temp->title);
@@ -5951,9 +5951,11 @@ void load_alert_maps (Widget w, char *dir) {
                         fill_color[level],
                         DRAW_TO_PIXMAP_ALERTS,
                         &mdf);  // draw filled
+                    if (temp) temp->flags[on_screen] = 'Y';
                 }
                 else {
 			if (debug_level & 16) fprintf(stderr,"load_alert_maps() Alert not visible\n");
+                        if (temp) temp->flags[on_screen] = 'N';
                 }
             }
             else {
