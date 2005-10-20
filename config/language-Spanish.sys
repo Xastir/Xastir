@@ -310,7 +310,7 @@ POPUPMA041|Bearing||
 POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position abiguity is on, your new position may appear to jump.||
-POPUPMA045|Create SAR Objects||
+POPUPMA045|Predefined Objects||
 #
 # Menú de Estados de la líneas de Etiquetas
 BBARZM0001|Foco %s||
@@ -413,7 +413,7 @@ WPUPCFD027|Mostrar bulletines Nuevo||
 WPUPCFD028|Avisar si hay teclas Modificadora||
 WPUPCFD029|Ver boletines de zero-distancia||
 WPUPCFD030|Disable Posit Dupe-Checks||
-WPUPCFD031|Load SAR objects menu from file||
+WPUPCFD031|Load predefined objects from file||
 #
 # Menu "Configurar - Cronómetro"
 WPUPCFTM01|Configurar Cronómetro||

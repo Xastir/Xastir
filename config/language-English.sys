@@ -307,7 +307,7 @@ POPUPMA041|Bearing||
 POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position ambiguity is on, your new position may appear to jump.||
-POPUPMA045|Create SAR Objects||
+POPUPMA045|Predefined Objects||
 #
 #
 # Status line labels
@@ -412,7 +412,7 @@ WPUPCFD027|Pop up new bulletins||
 WPUPCFD028|Warn if Modifier Keys||
 WPUPCFD029|View zero-distance bulletins||
 WPUPCFD030|Disable Posit Dupe-Checks||
-WPUPCFD031|Load SAR objects menu from file||
+WPUPCFD031|Load predefined objects from file||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configure Timing||

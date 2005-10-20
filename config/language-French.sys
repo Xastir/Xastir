@@ -309,7 +309,7 @@ POPUPMA041|Relèvement||
 POPUPMA042|degrés||
 POPUPMA043|Modifier ambiguïté de position||
 POPUPMA044|Ambiguïté de position est active, votre nouvelle position pourra sauter.||
-POPUPMA045|Créer objets SAR||
+POPUPMA045|Objets predefined||
 #
 #
 # Status line labels
@@ -414,7 +414,7 @@ WPUPCFD027|Afficher bulletins nouveaux||
 WPUPCFD028|Alerter si il y a des clés modificatrices||
 WPUPCFD029|Voir bulletins avec distance zéro||
 WPUPCFD030|Désactiver identif. de duplic. posit.||
-WPUPCFD031|Load SAR objects menu from file||
+WPUPCFD031|Load predefined objects from file||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configurer temporisation||

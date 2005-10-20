@@ -315,7 +315,7 @@ POPUPMA041|Peilung||
 POPUPMA042|Grad||
 POPUPMA043|Bearbeite mehrdeutige Position||
 POPUPMA044|Mehrdeutige Position, Ihre Position kann sich sprunghaft verändern.||
-POPUPMA045|SAR-Objekte erstellen||
+POPUPMA045|Predefined-Objekte||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -418,7 +418,7 @@ WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
 WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
 WPUPCFD030|Position Dubletten-Prüfung aus||
-WPUPCFD031|Load SAR objects menu from file||
+WPUPCFD031|Load predefined objects from file||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||

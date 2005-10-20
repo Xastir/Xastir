@@ -318,7 +318,7 @@ POPUPMA041|Richting||
 POPUPMA042|Graden||
 POPUPMA043|Pas meerduidige positie aan||# origineel ambigious mag ook meervoudige zijn?
 POPUPMA044|Positie meerduidigheid is aan, uw nieuwe positie kan verspringen.||
-POPUPMA045|Maak SAR Objecten||
+POPUPMA045|Predefined Objecten||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -421,7 +421,7 @@ WPUPCFD027|Nieuwe berichten weergeven||
 WPUPCFD028|Waarschuw als speciale functie toetsen aanstaan||
 WPUPCFD029|Geef bulletins zonder afstand weer||
 WPUPCFD030|Zet positie duplicaat controle uit||
-WPUPCFD031|Load SAR objects menu from file||
+WPUPCFD031|Load predefined objects from file||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configureer tijdsinstelling|||

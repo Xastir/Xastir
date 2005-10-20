@@ -307,7 +307,7 @@ POPUPMA041|Bearing||
 POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position abiguity is on, your new position may appear to jump.||
-POPUPMA045|Create SAR Objects||
+POPUPMA045|Predefined Objects||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||
@@ -410,7 +410,7 @@ WPUPCFD027|Apparizione nuovi bollettini||
 WPUPCFD028|Avvisa per utilizzo tasti inadatti||
 WPUPCFD029|Vedi bollettini a distanza zero||
 WPUPCFD030|Disattiva Posit Dupe-Checks||
-WPUPCFD031|Load SAR objects menu from file||
+WPUPCFD031|Load predefined objects from file||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
