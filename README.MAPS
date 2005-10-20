@@ -1005,12 +1005,26 @@ Getting Maps and other Data Files for Xastir:
          **** NOTE To use the data base file it must be sorted first!!! ****
      
          unzip l_amat.zip
- 
-         To sort the file: Make sure you have plenty of disk space
-         for this as the file is BIG!
+
+
+         Non-Windows systems:
+         --------------------
+         To sort the file, make sure you have plenty of disk space for this as
+         the file is BIG!
 
          sort +4 -t \| EN.dat >EN.dat.sorted
 
+
+         Windows/Cygwin systems:
+         -----------------------
+         You'll need to run this instead in order to fix up the line-end
+         characters:
+
+         cat EN.dat /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t > EN.dat.sorted
+
+
+         All operating systems:
+         ----------------------
          Install it in the xastir/fcc directory:
 
          su
