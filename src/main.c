@@ -9007,10 +9007,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     // Start of CAD Objects code.  We have both ButtonPress and
     // ButtonRelease code handlers here, for this mode only.
     // Check whether we're in CAD Object draw mode first
-    if (draw_CAD_objects_flag
-            && (event->xbutton.button == Button2 || event->xbutton.button == Button1)) {
-            //two button mice are mapped to Button1 and Button3, and may lack Button2
-            //&& event->xbutton.button == Button2) {
+    if (draw_CAD_objects_flag && event->xbutton.button == Button2) {
 
         if (event->type == ButtonRelease) {
             // We don't want to do anything for ButtonRelease.  Most
