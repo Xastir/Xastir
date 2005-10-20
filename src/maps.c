@@ -5829,7 +5829,6 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
 
 
 
-
 /*******************************************************************
  * load_alert_maps()
  *
@@ -5924,8 +5923,10 @@ void load_alert_maps (Widget w, char *dir) {
             // The last parameter denotes drawing into pixmap_alert
             // instead of pixmap or pixmap_final.
 
-//            fprintf(stderr,"load_alert_maps() Drawing %s\n",temp->filename);
-//            fprintf(stderr,"load_alert_maps() Title4:%s\n",temp->title);
+		if (debug_level & 16) {
+	            fprintf(stderr,"load_alert_maps() Drawing %s\n",temp->filename);
+	            fprintf(stderr,"load_alert_maps() Title4:%s\n",temp->title);
+		}
 
             // Attempt to draw alert
             if ( (temp->alert_level != 'C')             // Alert not cancelled
@@ -5952,13 +5953,13 @@ void load_alert_maps (Widget w, char *dir) {
                         &mdf);  // draw filled
                 }
                 else {
-//                    fprintf(stderr,"load_alert_maps() Alert not visible\n");
+			if (debug_level & 16) fprintf(stderr,"load_alert_maps() Alert not visible\n");
                 }
             }
             else {
                 // Cancelled alert, can't find the shapefile, or not
                 // in our viewport, don't draw it!
-//                fprintf(stderr,"load_alert_maps() Alert cancelled or shape not found\n");
+		if (debug_level & 16) fprintf(stderr,"load_alert_maps() Alert cancelled or shape not found\n");
             }
         }
         temp = get_next_wx_alert(iterator);
@@ -5968,7 +5969,7 @@ void load_alert_maps (Widget w, char *dir) {
     if (iterator) free(iterator);
 #endif  // USING_LIBGC
 
-//    fprintf(stderr,"load_alert_maps() Done drawing all active alerts\n");
+	if (debug_level & 16) fprintf(stderr,"load_alert_maps() Done drawing all active alerts\n");
 
     if (alert_display_request()) {
         alert_redraw_on_update = redraw_on_new_data = 2;
