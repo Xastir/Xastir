@@ -31,6 +31,8 @@ EXTRA_DIST = \
     nwsw_ddmmyy.dbfawk \
     nwsz_ddmmyy.dbfawk \
     nwsfz_ddmmyy.dbfawk \
+    predefined_EVENT.sys \
+    predefined_SAR.sys \
     tnc-startup.aea \
     tnc-startup.d700 \
     tnc-startup.kam \
