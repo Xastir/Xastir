@@ -1,0 +1,109 @@
+#
+# $Id$
+#
+# Copyright (C) 2005  The Xastir Group
+#
+# This file contains definitions for the Create SAR objects menu
+#
+# The objects defined here are typical Public Service Event objects. 
+#
+# The objects defined here are ones that might be used in a public
+# service event such as a 5k race.  Customize this file to fit your 
+# needs.
+#
+# Typical modifications include internationalizing the names and menu text 
+# and adding your own custom objects.  
+#
+# To select this file as the source of custom objects in the Create SAR
+# objects menu, use the Load SAR objects menu options in the Configure
+# defaults dialog (File/Configure/Defaults).
+# 
+# Lines begining with # are comments and will be ignored.
+#
+# Each line contains a tab separated variable and value pair.
+# Each set of lines defines an object as specified on the prepared
+# objects menu.  Each set of lines must have variables defined in the
+# following order:
+#
+# NAME  The name of the object.
+#       Maximum length = MAX_CALLSIGN - 1 or - 2, to allow for Name1, Name2
+#       incrementing numbers with multiple objects.
+#       If name ends with a - then the first object will be called Name-1,
+#       the second Name-2, and so on.  If name does not end with a - then
+#       The first object will be called Name, the second Name2.
+# PAGE  The APRS symbol code page, / or \
+#       Maximum length = 1 character.
+# SYMBOL        The APRS symbol specifier.
+        Maximum length = 1 character.
+# DATA  Additional data (such as probability circles) to follow the symbol in
+#       the APRS string for the object
+#       Use DATA NULL if there is no additional data, or omit the DATA line.
+#       Maximum length =  PREDEFINED_OBJECT_DATA_LENGTH = 44
+# MENU  The text to appear on the prepared objects menu for this object.
+#       Maximum length = 25 characters.
+# HIDDENCHILD	NO for entries that appear on the menu.  YES for a second
+# 	object to be created at the same time as the one above it.
+#	This is a workaround to create an IPP and an IPP_ with different
+#  	probability circles in the same place at the same time.
+#       YES is case sensitive.  
+#       HIDDENCHILD must be the last line in each object.
+#
+# NAME, PAGE, SYMBOL, MENU, and HIDDENCHILD are required for each object.
+#
+# Each set of lines specifying an object should be separated by a blank line 
+# for clarity.  Blank lines are ignored.  
+#
+# The maximum number of objects that can be shown on the predefined object
+# menu is defined by the constant MAX_NUMBER_OF_PREDEFINED_OBJECTS.
+
+NAME	ICP
+PAGE	/
+SYMBOL	c
+DATA	NULL
+MENU	ICP: Command Post	
+HIDDENCHILD	NO
+
+NAME	Water
+PAGE	/
+SYMBOL	w
+DATA	NULL
+MENU	Water
+HIDDENCHILD	NO
+
+# FirstAid post
+# "FirstAid" as name will only alow FirstAid1 to FirstAid9
+# due to the default length constraint on object names.
+NAME	Aid
+#NAME	FirstAid
+#NAME	Aid-
+PAGE	/
+# A is blue field with white cross, + is red cross
+SYMBOL	A
+#SYMBOL	+
+DATA	NULL
+MENU	Aid: First Aid
+#MENU	First Aid
+#MENU	Aid-n: First Aid
+HIDDENCHILD	NO
+
+NAME	Staging
+PAGE	S
+SYMBOL	0
+DATA	NULL
+MENU	Staging
+HIDDENCHILD	NO
+
+NAME	Waypt-
+PAGE	\
+SYMBOL	m
+DATA	NULL
+MENU	Waypt-n: Waypoint
+HIDDENCHILD	NO
+
+NAME	Toilets
+PAGE	\
+SYMBOL	r
+DATA	NULL
+MENU	Toilets
+HIDDENCHILD	NO
+
