@@ -48,6 +48,7 @@
 #include "track_gui.h"
 #include "geo.h"
 #include "snprintf.h"
+#include "objects.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -943,6 +944,8 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "BULLETIN_RANGE", bulletin_range);
         store_int(fout,"VIEW_MESSAGE_RANGE",vm_range);
         store_int(fout,"VIEW_MESSAGE_LIMIT",view_message_limit);
+        store_int(fout,"PREDEF_MENU_LOAD",predefined_menu_from_file);
+        store_string(fout,"PREDEF_MENU_FILE",predefined_object_definition_filename);
 
         /* printer variables */
         store_int (fout, "PRINT_ROTATED", print_rotated);
@@ -1761,6 +1764,11 @@ void load_data_or_default(void) {
     vm_range = get_int("VIEW_MESSAGE_RANGE", 0,99999,0);
 
     view_message_limit = get_int("VIEW_MESSAGE_LIMIT", 10000,99999,10000);
+    predefined_menu_from_file = get_int("PREDEF_MENU_LOAD",0,1,0);
+    if (!get_string ("PREDEF_MENU_FILE", predefined_object_definition_filename, sizeof(predefined_object_definition_filename)))
+        xastir_snprintf(predefined_object_definition_filename,
+            sizeof(predefined_object_definition_filename),
+            "predefined_SAR.sys");
 
 
     /* printer variables */

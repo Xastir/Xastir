@@ -90,6 +90,14 @@ if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (
 // number_of_predefined_objects holds the actual number of predefined
 // objects available to display on the Create/Move popup menu.
 int number_of_predefined_objects;  
+// File name of ~/.xastir/config file containing definitions for 
+// a predefined object menu.
+extern char predefined_object_definition_filename[256];
+// Flag to indicate whether or not to load the predefined objects menu
+// from the file specified by predefined_object_definition_filename or 
+// to use the hardcoded SAR object set.  0=use hardcoded SAR
+// 1=use predefined_object_definition_filename
+extern int predefined_menu_from_file;
 
 //extern void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Create_SAR_Object(Widget w, XtPointer clientData, XtPointer calldata);
@@ -118,7 +126,6 @@ typedef struct {
 // other user interface controls.
 //
 extern predefinedObject predefinedObjects[MAX_NUMBER_OF_PREDEFINED_OBJECTS];
-
 extern void Populate_predefined_objects(predefinedObject *predefinedObjects);
 
 // --------------------------------------------------------------------

@@ -454,6 +454,8 @@ typedef struct _VerticeRow{
     struct  _VerticeRow *next;  // Pointer to next record in list
 } VerticeRow;
 
+#define CAD_LABEL_MAX_SIZE 40
+#define CAD_COMMENT_MAX_SIZE 256
 
 
 // CAD Objects
@@ -469,8 +471,8 @@ typedef struct _CADRow {
                                 // detection (POD)
     long label_latitude;        // Latitude for label placement
     long label_longitude;       // Longitude for label placement
-    char label[40];             // Name of polygon
-    char comment[256];          // Comments associated with polygon
+    char label[CAD_LABEL_MAX_SIZE];             // Name of polygon
+    char comment[CAD_COMMENT_MAX_SIZE];          // Comments associated with polygon
 } CADRow;
 
 

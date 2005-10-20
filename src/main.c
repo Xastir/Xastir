@@ -302,6 +302,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data);
 void da_resize(Widget w, XtPointer client_data, XtPointer call_data);
 void da_expose(Widget w, XtPointer client_data, XtPointer call_data);
 
+void BuildPredefinedSARMenu_UI(Widget *parent_menu);
+Widget *predefined_object_menu_parent;
+Widget sar_object_sub;
+Widget predefined_object_menu_items[MAX_NUMBER_OF_PREDEFINED_OBJECTS];
+
 int debug_level;
 
 //Widget hidden_shell = (Widget) NULL;
@@ -790,6 +795,8 @@ Widget compressed_objects_items_tx;
 Widget new_bulletin_popup_enable;
 Widget zero_bulletin_popup_enable;
 Widget warn_about_mouse_modifiers_enable;
+Widget load_predefined_objects_menu_from_file_enable;
+Widget load_predefined_objects_menu_from_file;
 int pop_up_new_bulletins = 0;
 int view_zero_distance_bulletins = 0;
 int warn_about_mouse_modifiers = 1;
@@ -4873,13 +4880,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
-    Widget sar_object_menu, sar_object_sub;
+    //Widget sar_object_menu, sar_object_sub;
+    Widget sar_object_menu;
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
-    int i;
     /*menu widgets */
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane,
@@ -4942,7 +4949,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
         help_button, help_about, help_help;
 
-    Widget predefined_object_menu_items[number_of_predefined_objects];
 
     char *title, *t;
     int t_size;
@@ -8138,42 +8144,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-
-    for (i=0; i<number_of_predefined_objects; i++) {
-        // Walk through array of predefined objects and
-        // build a menu item for each predefined object.
-        if (predefinedObjects[i].show_on_menu==1) {
-            // Some predefined objects are hidden to allow construction
-            // of two predefined objects in the same place at the same
-            // time with one menu item.
-            if(debug_level & 1)
-                fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
-
-            predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
-                xmPushButtonGadgetClass,
-                sar_object_sub,
-                al,
-                ac);
-
-            XtAddCallback(predefined_object_menu_items[i],
-                XmNactivateCallback,
-                Create_SAR_Object,
-                (int *)predefinedObjects[i].index);
-
-            if (predefinedObjects[i].index_of_child>-1) {
-                // This second callback allows stacking of two
-                // objects such as a PLS with 0.25 and 0.5 and a
-                // PLS_ with 0.75 and 1.0 mile probability circles.
-                if (predefinedObjects[i].index_of_child<number_of_predefined_objects) {
-                    XtAddCallback(predefined_object_menu_items[i],
-                        XmNactivateCallback,
-                        Create_SAR_Object,
-                        (int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
-                }
-            }
-        }
-    }
-
+    BuildPredefinedSARMenu_UI(&sar_object_sub);
 
     CAD_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell CAD sub",
@@ -8534,6 +8505,65 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     if(debug_level & 8)
         fprintf(stderr,"Create appshell stop\n");
 }   // end of create_appshell()
+
+
+
+
+
+void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
+    int i;   // number of items in menu
+    int ac;  // number of arguments
+    Arg al[100];  // arguments
+    // Set standard menu item arguments to use with each widget.
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    // Before building menu, make sure that any existing menu items are removed
+    // this allows the menu to be changed on the fly while the program is running.
+    for (i=0;i<MAX_NUMBER_OF_PREDEFINED_OBJECTS;i++) {
+        if (predefined_object_menu_items[i]!=NULL) {
+             XtDestroyWidget(predefined_object_menu_items[i]);
+             predefined_object_menu_items[i]=NULL;
+        }
+    }
+    // Now build a menu item for each entry in the predefinedObjects array.
+    for (i=0; i<number_of_predefined_objects; i++) {
+        // Walk through array of predefined objects and
+        // build a menu item for each predefined object.
+        if (predefinedObjects[i].show_on_menu==1) {
+            // Some predefined objects are hidden to allow construction
+            // of two predefined objects in the same place at the same
+            // time with one menu item.
+            if(debug_level & 1)
+                fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
+
+            predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
+                xmPushButtonGadgetClass,
+                *parent_menu,
+                al,
+                ac);
+
+            XtAddCallback(predefined_object_menu_items[i],
+                XmNactivateCallback,
+                Create_SAR_Object,
+                (int *)predefinedObjects[i].index);
+
+            if (predefinedObjects[i].index_of_child>-1) {
+                // This second callback allows stacking of two
+                // objects such as a PLS with 0.25 and 0.5 and a
+                // PLS_ with 0.75 and 1.0 mile probability circles.
+                if (predefinedObjects[i].index_of_child<number_of_predefined_objects) {
+                    XtAddCallback(predefined_object_menu_items[i],
+                        XmNactivateCallback,
+                        Create_SAR_Object,
+                        (int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -8978,7 +9008,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     // ButtonRelease code handlers here, for this mode only.
     // Check whether we're in CAD Object draw mode first
     if (draw_CAD_objects_flag
-            && event->xbutton.button == Button2) {
+            && (event->xbutton.button == Button2 || event->xbutton.button == Button1)) {
+            //two button mice are mapped to Button1 and Button3, and may lack Button2
+            //&& event->xbutton.button == Button2) {
 
         if (event->type == ButtonRelease) {
             // We don't want to do anything for ButtonRelease.  Most
@@ -20328,6 +20360,33 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     pop_up_new_bulletins = (int)XmToggleButtonGetState(new_bulletin_popup_enable);
     view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_popup_enable);
 
+    // Predefined (SAR/EVENT) objects menu loading (default hardcoded SAR objects or objects from file)
+    predefined_menu_from_file = (int)XmToggleButtonGetState(load_predefined_objects_menu_from_file_enable);
+    // Use the file specified on the picklist if one is selected.
+    int load_predefined_cb_selected = 0;
+
+// ??????????????
+// Should this be XmStringCreateLocalized, or another XmString creation function with XmCHARSET_TEXT??
+// Not sure of the implications of using localization or not when creating and extracting the picklist values.
+// ??????????????
+
+    XmString load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
+    XtVaGetValues(load_predefined_objects_menu_from_file, 
+                  XmNselectedPosition, &load_predefined_cb_selected);
+    // Use the file specified on the picklist if one is selected.
+    if (load_predefined_cb_selected>0) {
+        XtVaGetValues(load_predefined_objects_menu_from_file, 
+                      XmNselectedItem,&load_predefined_cb_selection);
+    }
+    xastir_snprintf(predefined_object_definition_filename,
+                   sizeof(predefined_object_definition_filename),
+                   XmStringUnparse(load_predefined_cb_selection,NULL,XmCHARSET_TEXT,XmCHARSET_TEXT,NULL,0,XmOUTPUT_ALL));
+    XmStringFree(load_predefined_cb_selection);
+    /* Repopulate the predefined object (SAR/Public service) struct */
+    Populate_predefined_objects(predefinedObjects); 
+    // Rebuild the predefined objects SAR/Public service menu.
+    BuildPredefinedSARMenu_UI(&sar_object_sub);
+
     warn_about_mouse_modifiers = (int)XmToggleButtonGetState(warn_about_mouse_modifiers_enable);
 
     altnet = (int)(XmToggleButtonGetState(altnet_active));
@@ -20631,15 +20690,58 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-
+       
+        char loadfrom[300];
+        // Check box to load predefined (SAR/Event) objects menu from a file or not.
+        xastir_snprintf(loadfrom,
+                        sizeof(loadfrom),
+                        "%s %s",
+                        langcode("WPUPCFD031"),get_user_base_dir("config"));
+        load_predefined_objects_menu_from_file_enable = XtVaCreateManagedWidget(loadfrom,
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, zero_bulletin_popup_enable,
+                XmNtopOffset,5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // Combo box to pick file from which to load predefined objects menu
+        load_predefined_objects_menu_from_file = XtVaCreateManagedWidget("Load objects menu filename ComboBox",
+                xmComboBoxWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, zero_bulletin_popup_enable,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, load_predefined_objects_menu_from_file_enable,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNcomboBoxType, XmDROP_DOWN_LIST,
+                XmNpositionMode, XmONE_BASED,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XmString cb_item = XmStringCreateLocalized("predefined_SAR.sys");
+        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,1,1);  
+        cb_item = XmStringCreateLocalized("predefined_EVENT.sys");
+        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,2,1);  
+        cb_item = XmStringCreateLocalized("predefined_USER.sys");
+        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,3,1);  
+        XmStringFree(cb_item);
 
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),
                 xmToggleButtonWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, zero_bulletin_popup_enable,
+                XmNtopWidget, load_predefined_objects_menu_from_file,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 10,
@@ -20711,7 +20813,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
 #else   // TRANSMIT_RAW_WX
-                XmNtopWidget, zero_bulletin_popup_enable,
+                XmNtopWidget, load_predefined_objects_menu_from_file,
 #endif  // TRANSMIT_RAW_WX
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
@@ -20733,7 +20835,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
 #else   // TRANSMIT_RAW_WX
-                XmNtopWidget, zero_bulletin_popup_enable,
+                XmNtopWidget, load_predefined_objects_menu_from_file,
 #endif  // TRANSMIT_RAW_WX
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
@@ -20814,6 +20916,21 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         else
             XmToggleButtonSetState(warn_about_mouse_modifiers_enable,FALSE,FALSE);
 
+        if(predefined_menu_from_file) {
+            // Option to load the predefined SAR objects menu items from a file.
+            // Display the filename if one is currently selected and option is enabled.
+            if (predefined_object_definition_filename != NULL ) {
+                XmString tempSelection = XmStringCreateLocalized(predefined_object_definition_filename);
+                XmComboBoxSelectItem(load_predefined_objects_menu_from_file, tempSelection);
+                XmStringFree(tempSelection);
+            }
+            XmToggleButtonSetState(load_predefined_objects_menu_from_file_enable,TRUE,FALSE);
+        } else {
+            // by default combo box is created with no selection
+            // make sure that toggle button is unchecked
+            XmToggleButtonSetState(load_predefined_objects_menu_from_file_enable,FALSE,FALSE);
+        }
+ 
         XmToggleButtonSetState(altnet_active, altnet, FALSE);
 
         XmToggleButtonSetState(disable_dupe_check, skip_dupe_checking, FALSE);

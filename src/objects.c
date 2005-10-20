@@ -198,6 +198,8 @@ void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
 predefinedObject predefinedObjects[MAX_NUMBER_OF_PREDEFINED_OBJECTS];
 void Populate_predefined_objects(predefinedObject *predefinedObjects);
 int number_of_predefined_objects;  
+char predefined_object_definition_filename[256] = "predefined_SAR.sys";
+int predefined_menu_from_file = 0;
 
 int Area_object_enabled = 0;
 int Map_View_object_enabled = 0;
@@ -221,8 +223,11 @@ int polygon_last_y = -1;        // Draw CAD Objects functions
 int doing_move_operation = 0;
 
 Widget draw_CAD_objects_dialog = (Widget)NULL;
+Widget cad_dialog = (Widget)NULL;
+Widget cad_label_data, cad_comment_data, cad_probability_data;
 int draw_CAD_objects_flag = 0;
 void Draw_All_CAD_Objects(Widget w);
+void Save_CAD_Objects_to_file(void);
  
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1830,9 +1835,107 @@ void CAD_object_join_two(void) {
 void CAD_object_move(void) {
 }
 
-// Compute the area enclosed by a CAD object.  Check that it is a
-// closed, non-intersecting polygon first.
-void CAD_object_compute_area(void) {
+
+
+
+
+/* Compute the area enclosed by a CAD object.  Check that it is a
+   closed, non-intersecting polygon first. */
+double CAD_object_compute_area(CADRow *CAD_list_head) {
+    VerticeRow *tmp;
+    double area;
+    char temp_course[20];
+    // Walk the linked list again, computing the area of the
+    // polygon.  Greene's Theorem is how we can compute the area of
+    // a polygon using the vertices.  We could also compute whether
+    // we're going clockwise or counter-clockwise around the polygon
+    // using Greene's Theorem.  In fact I think we do that for
+    // Shapefile hole polygons.  Remember that here we're walking
+    // around the vertices backwards due to the ordering of the
+    // list.  Shouldn't matter for our purposes though.
+    //
+    area = 0.0;
+    tmp = CAD_list_head->start;
+    while (tmp->next != NULL) {
+        double dx0, dy0, dx1, dy1;
+                                                                                                                        
+        // Because lat/long units can vary drastically w.r.t. real
+        // units, we need to multiply the terms by the real units in
+        // order to get real area.
+                                                                                                                        
+        // Compute real distances from a fixed point.  Convert to
+        // the current measurement units.  We'll use the starting
+        // vertice as our fixed point.
+        //
+        dx0 = calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                CAD_list_head->start->latitude,
+                tmp->longitude,
+                temp_course,
+                sizeof(temp_course));
+                                                                                                                        
+        if (tmp->longitude < CAD_list_head->start->longitude)
+            dx0 = -dx0;
+                                                                                                                        
+        dy0 = calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                tmp->latitude,
+                CAD_list_head->start->longitude,
+                temp_course,
+                sizeof(temp_course));
+                                                                                                                        
+        if (tmp->latitude < CAD_list_head->start->latitude)
+            dx0 = -dx0;
+                                                                                                                        
+        dx1 = calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                CAD_list_head->start->latitude,
+                tmp->next->longitude,
+                temp_course,
+                sizeof(temp_course));
+                                                                                                                        
+        if (tmp->next->longitude < CAD_list_head->start->longitude)
+            dx0 = -dx0;
+                                                                                                                        
+        dy1 = calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                tmp->next->latitude,
+                CAD_list_head->start->longitude,
+                temp_course,
+                sizeof(temp_course));
+                                                                                                                        
+        // Add the minus signs back in, if any
+        if (tmp->longitude < CAD_list_head->start->longitude)
+            dx0 = -dx0;
+        if (tmp->latitude < CAD_list_head->start->latitude)
+            dy0 = -dy0;
+        if (tmp->next->longitude < CAD_list_head->start->longitude)
+            dx1 = -dx1;
+        if (tmp->next->latitude < CAD_list_head->start->latitude)
+            dy1 = -dy1;
+                                                                                                                        
+        // Greene's Theorem:  Summation of the following, then
+        // divide by two:
+        //
+        // A = X Y    - X   Y
+        //  i   i i+1    i+1 i
+        //
+        area += (dx0 * dy1) - (dx1 * dy0);
+                                                                                                                        
+        tmp = tmp->next;
+    }
+    area = 0.5 * area;
+                                                                                                                        
+    if (area < 0.0)
+        area = -area;
+                                                                                                                        
+    return area;
+                                                                                                                        
+
 }
 
 // Allocate a label for an object, and place it according to the
@@ -1841,19 +1944,43 @@ void CAD_object_compute_area(void) {
 void CAD_object_allocate_label(void) {
 }
 
-// Set the probability for an object.  We should probably allocate
-// the raw probability to small "buckets" within the closed polygon.
-// This will allow us to split/join polygons later without messing
-// up the probablity assigned to each area originally.  Check that
-// it is a closed polygon first.
-void CAD_object_set_raw_probability(void) {
+
+
+
+
+/* Set the probability for an object.  We should probably allocate
+   the raw probability to small "buckets" within the closed polygon.
+   This will allow us to split/join polygons later without messing
+   up the probablity assigned to each area originally.  Check that
+   it is a closed polygon first. */
+void CAD_object_set_raw_probability(CADRow *object_ptr, float probability) {
+   // initial implementation just assigns a single raw probability to the whole polygon.
+   object_ptr->raw_probability = probability;
 }
 
-// Get the raw probability for an object.  Sum up the raw
-// probability "buckets" contained within the closed polygon.  Check
-// that it _is_ a closed polygon first.
-void CAD_object_get_raw_probability(void) {
+
+
+
+                                                                                                                        
+/* Get the raw probability for an object.  Sum up the raw
+   probability "buckets" contained within the closed polygon.  Check
+   that it _is_ a closed polygon first. */
+float CAD_object_get_raw_probability(CADRow *object_ptr) {
+   float result = 0.0;
+   // not checking yet for closure
+   if (object_ptr != NULL) {
+      // initial implementation returns just the single raw probability
+      result = object_ptr->raw_probability;
+   }
+#ifdef CAD_DEBUG
+   fprintf(stderr,"Getting Probability: %01.5f\n",result);
+#endif
+   return result;
 }
+
+
+
+
 
 void CAD_object_set_line_width(void) {
 }
@@ -1876,6 +2003,281 @@ void CAD_vertice_insert_new(void) {
 // recompute it.
 void CAD_vertice_move(void) {
     // Check whether a line segment will cross another?
+}
+
+
+
+
+
+/* Set the location for drawing the label of an area to the
+   center of the area. 
+   Takes a pointer to a CAD object as a parameter.
+   Sets the label_latitude and label_longitude attributes 
+   of the CAD object to the center of the region described
+   by the vertices of the object. */
+void CAD_object_set_label_at_centroid(CADRow *CAD_object) {
+    // *** current implementation approximates the center as the 
+    // average of the largest and smallest of each of latitude
+    // and longitude rather than correctly computing the centroid,
+    // that is, it places the label at the centroid of a bounding
+    // box for the area.  ***
+    // We can't use a simple x=sum(x)/n, y=sum(y)/n as the 
+    // points on the outline shouldn't be weighted equally.
+    VerticeRow *vertex_pointer;
+    long min_lat, min_long;
+    long max_lat, max_long;
+    // Walk the linked list and compute the centroid of the bounding box.
+    vertex_pointer = CAD_object->start;
+    min_lat = 0.0;
+    min_long = 0.0;
+                                                                                                                        
+    // Set the latitude and longitude of the label to the
+    // centroid of the bounding box.
+    // Start by setting lat and long of label to first point.
+    CAD_object->label_latitude = vertex_pointer->latitude;
+    CAD_object->label_longitude = vertex_pointer->longitude;
+    if (vertex_pointer != NULL) {
+        // Iterate through the vertices and calculate the center x and y position
+        // based on an average of the largest and smallest latitudes and longitudes.
+        min_lat = vertex_pointer->latitude;
+        min_long = vertex_pointer->longitude;
+        max_lat = vertex_pointer->latitude;
+        max_long = vertex_pointer->longitude;
+        while (vertex_pointer != NULL) {
+            if (vertex_pointer->next != NULL) {
+                if (vertex_pointer->longitude < min_long )
+                    min_long = vertex_pointer->longitude;
+                if (vertex_pointer->latitude < min_lat )
+                    min_lat = vertex_pointer->latitude;
+                if (vertex_pointer->longitude > max_long )
+                    max_long = vertex_pointer->longitude;
+                if (vertex_pointer->latitude > max_lat )
+                    max_lat = vertex_pointer->latitude;
+            }
+            vertex_pointer = vertex_pointer->next;
+        }
+        CAD_object->label_latitude = (max_lat + min_lat)/2.0;
+        CAD_object->label_longitude = (max_long + min_long)/2.0;
+    }
+}
+
+
+
+
+
+/* This is the callback for the CAD objects parameters dialog.
+   It takes the values entered in the dialog and stores them 
+   in the most recently created object. */
+void Set_CAD_object_parameters (Widget widget,
+                     XtPointer clientData,
+                     XtPointer calldata) {
+    float probability = 0.0;
+    // set label, comment, and probability for area
+    xastir_snprintf(CAD_list_head->label,
+                sizeof(CAD_list_head->label),
+                XmTextGetString(cad_label_data)
+                );
+    xastir_snprintf(CAD_list_head->comment,
+                sizeof(CAD_list_head->comment),
+                XmTextGetString(cad_comment_data)
+                );
+    // Is more error checking needed?  atof appears to correctly handle
+    // empty input, reasonable probability values, and text (0.00).  
+    // Convert probabilities expressed as percent to probability?
+    // Code here would render 1% as 1.00, not 0.01.
+    probability = atof(XmTextGetString(cad_probability_data));
+    CAD_object_set_raw_probability(CAD_list_head, probability);
+                                                                                                                        
+    // close object_paramenters dialog
+    XtPopdown(cad_dialog);
+    XtDestroyWidget(cad_dialog);
+    cad_dialog = (Widget)NULL;
+
+    Save_CAD_Objects_to_file();
+    // Reload symbols/tracks/CAD objects so that object name will show on map.
+    redraw_symbols(da);
+}
+
+
+
+
+
+/* Create a dialog to obtain information about a newly created CAD object from 
+   the user.  Values of probability, name, and comment are initially blank.
+   Takes as a parameter a string describing the area of the object.
+   There is a single button with a callback to Set_CAD_object_parameters,
+   which stores values from the dialog in the object's struct.
+   Should be generalized to allow editing of a pre-existing CAD object 
+   (except for the name).  Parameter should be a pointer to the object. */
+void Set_CAD_object_parameters_dialog(char *area_description) {
+Widget cad_pane, cad_form,
+       cad_label,
+       cad_comment,
+       cad_probability,
+       button_done;
+                                                                                                                        
+if (cad_dialog) {
+    (void)XRaiseWindow(XtDisplay(cad_dialog), XtWindow(cad_dialog));
+} else {
+
+        // Area Object"
+        cad_dialog = XtVaCreatePopupShell(langcode("CADPUD001"),
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,          XmDESTROY,
+                XmNdefaultPosition,         FALSE,
+                NULL);
+                                                                                                                        
+        cad_pane = XtVaCreateWidget("Set_Del_Object pane",
+                xmPanedWindowWidgetClass,
+                cad_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+                                                                                                                        
+        cad_form =  XtVaCreateWidget("Set_Del_Object ob_form",
+                xmFormWidgetClass,
+                cad_pane,
+                XmNfractionBase,            3,
+                XmNautoUnmanage,            FALSE,
+                XmNshadowThickness,         1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // Area of polygon, already scaled and internationalized.
+        cad_label = XtVaCreateManagedWidget(area_description,
+                xmLabelWidgetClass,
+                cad_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // "Area Label:"
+        cad_label = XtVaCreateManagedWidget(langcode("CADPUD002"),
+                xmLabelWidgetClass,
+                cad_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               50,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // label text field
+        cad_label_data = XtVaCreateManagedWidget("Set_Del_Object name_data",
+                xmTextFieldWidgetClass,
+                cad_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 20,
+                XmNmaxLength,               CAD_LABEL_MAX_SIZE - 1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               50,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              cad_label,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
+        // "Comment"
+        cad_comment = XtVaCreateManagedWidget(langcode("CADPUD003"),
+                xmLabelWidgetClass,
+                cad_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               90,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // comment text field
+        cad_comment_data = XtVaCreateManagedWidget("Set_Del_Object name_data",
+                xmTextFieldWidgetClass,
+                cad_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 40,
+                XmNmaxLength,               CAD_COMMENT_MAX_SIZE - 1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               90,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              cad_comment,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
+        // "Probability"
+        cad_probability = XtVaCreateManagedWidget(langcode("CADPUD004"),
+                xmLabelWidgetClass,
+                cad_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               130,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // probability field
+        cad_probability_data = XtVaCreateManagedWidget("Set_Del_Object name_data",
+                xmTextFieldWidgetClass,
+                cad_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 5,
+                XmNmaxLength,               5,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               130,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              cad_probability,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                 NULL);
+        // "OK"
+        button_done = XtVaCreateManagedWidget(langcode("CADPUD005"),
+                xmPushButtonGadgetClass,
+                cad_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         cad_probability_data,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_POSITION,
+                XmNleftPosition,      1,
+                XmNrightAttachment,   XmATTACH_POSITION,
+                XmNrightPosition,     2,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+       XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, Set_CAD_object_parameters_dialog);
+                                                                                                                        
+       pos_dialog(cad_dialog);
+       XmInternAtom(XtDisplay(cad_dialog),"WM_DELETE_WINDOW", FALSE);
+
+       XtManageChild(cad_form);
+       XtManageChild(cad_pane);
+                                                                                                                        
+       XtPopup(cad_dialog,XtGrabNone);
+   }
+                                                                                                                        
 }
 
 
@@ -2168,7 +2570,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     VerticeRow *tmp;
     double area;
     int n;
-    char temp_course[20];
+    //char temp_course[20];
     char temp[200];
  
 
@@ -2212,7 +2614,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     }
 
 #ifdef CAD_DEBUG
-    fprintf(stderr,"n = %d\n",n);
+    fprintf(stderr,"Points in closed polygon: n = %d\n",n);
 #endif
 
     if (n < 3) {
@@ -2225,96 +2627,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 
         return;
     }
- 
-    // Walk the linked list again, computing the area of the
-    // polygon.  Greene's Theorem is how we can compute the area of
-    // a polygon using the vertices.  We could also compute whether
-    // we're going clockwise or counter-clockwise around the polygon
-    // using Greene's Theorem.  In fact I think we do that for
-    // Shapefile hole polygons.  Remember that here we're walking
-    // around the vertices backwards due to the ordering of the
-    // list.  Shouldn't matter for our purposes though.
-    //
-    area = 0.0;
-    tmp = CAD_list_head->start;
-    while (tmp->next != NULL) {
-        double dx0, dy0, dx1, dy1;
-
-        // Because lat/long units can vary drastically w.r.t. real
-        // units, we need to multiply the terms by the real units in
-        // order to get real area.
-
-        // Compute real distances from a fixed point.  Convert to
-        // the current measurement units.  We'll use the starting
-        // vertice as our fixed point.
-        //
-        dx0 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                CAD_list_head->start->latitude,
-                tmp->longitude,
-                temp_course,
-                sizeof(temp_course));
-
-        if (tmp->longitude < CAD_list_head->start->longitude)
-            dx0 = -dx0;
-
-        dy0 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                tmp->latitude,
-                CAD_list_head->start->longitude,
-                temp_course,
-                sizeof(temp_course));
-
-        if (tmp->latitude < CAD_list_head->start->latitude)
-            dx0 = -dx0;
-
-        dx1 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                CAD_list_head->start->latitude,
-                tmp->next->longitude,
-                temp_course,
-                sizeof(temp_course));
-
-        if (tmp->next->longitude < CAD_list_head->start->longitude)
-            dx0 = -dx0;
-
-        dy1 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                tmp->next->latitude,
-                CAD_list_head->start->longitude,
-                temp_course,
-                sizeof(temp_course));
-
-        // Add the minus signs back in, if any
-        if (tmp->longitude < CAD_list_head->start->longitude)
-            dx0 = -dx0;
-        if (tmp->latitude < CAD_list_head->start->latitude)
-            dy0 = -dy0;
-        if (tmp->next->longitude < CAD_list_head->start->longitude)
-            dx1 = -dx1;
-        if (tmp->next->latitude < CAD_list_head->start->latitude)
-            dy1 = -dy1;
-
-        // Greene's Theorem:  Summation of the following, then
-        // divide by two:
-        //
-        // A = X Y    - X   Y 
-        //  i   i i+1    i+1 i
-        //
-
-        area += (dx0 * dy1) - (dx1 * dy0);
- 
-        tmp = tmp->next;
-    }
-    area = 0.5 * area;
-
-    if (area < 0.0)
-        area = -area;
-
+    area =  CAD_object_compute_area(CAD_list_head);
 
     // Save it in the object.  Convert nautical square miles to
     // square kilometers.
@@ -2341,7 +2654,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 langcode("POPUPMA037"), // Area
                 area,
                 langcode("POPUPMA039") ); // square feet
-            popup_message_always(langcode("POPUPMA020"),temp);
+            //popup_message_always(langcode("POPUPMA020"),temp);
         }
         else {  // Square meters
             area = area * 1000 * 1000;  // Square meters
@@ -2351,7 +2664,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 langcode("POPUPMA037"), // Area
                 area,
                 langcode("POPUPMA040") ); // square meters
-            popup_message_always(langcode("POPUPMA020"),temp);
+            //popup_message_always(langcode("POPUPMA020"),temp);
         }
     }
     else {  // Not small
@@ -2362,7 +2675,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             area,
             langcode("POPUPMA038"), // square
             un_dst);
-        popup_message_always(langcode("POPUPMA020"),temp);
+        //popup_message_always(langcode("POPUPMA020"),temp);
     }
 
     // Also write the area to stderr
@@ -2373,10 +2686,11 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     polygon_last_x = -1;    // Invalid position
     polygon_last_y = -1;    // Invalid position
 
-
-    // Make the objects persistent by saving/restoring them to flat
-    // files.
-    Save_CAD_Objects_to_file();
+    CAD_object_set_label_at_centroid(CAD_list_head);
+    // CAD object vertices are ready, needs associated data
+    // obtain label, comment, and probability for this polygon
+    // from user through a dialog.
+    Set_CAD_object_parameters_dialog(temp);
 }
 
 
@@ -2388,6 +2702,11 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 //
 void Draw_All_CAD_Objects(Widget w) {
     CADRow *object_ptr = CAD_list_head;
+    long x_long, y_lat;
+    long x_offset, y_offset;
+    float probability;
+    char probability_string[5];
+
 
     // Start at CAD_list_head, iterate through entire linked list,
     // drawing as we go.  Respect the line
@@ -2396,6 +2715,41 @@ void Draw_All_CAD_Objects(Widget w) {
 //fprintf(stderr,"Drawing CAD objects\n");
 
     while (object_ptr != NULL) {
+        probability = CAD_object_get_raw_probability(object_ptr);
+        xastir_snprintf(probability_string,
+            sizeof(probability_string),
+            "%01.2f",
+            probability);
+        // draw label and probability
+        if (object_ptr->label != NULL) {
+             x_long = object_ptr->label_longitude;
+             y_lat = object_ptr->label_latitude;
+#ifdef CAD_DEBUG
+             fprintf(stderr,"Drawing object %s\n", object_ptr->label);
+#endif
+             //fprintf(stderr,"Lat: %d\n", y_lat);
+             //fprintf(stderr,"Long: %d\n", x_long);
+             if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
+                 if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
+                     if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+                         if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+                             x_offset=((x_long-x_long_offset)/scale_x)-(10);
+                             y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
+                             if ( (int)strlen(object_ptr->label)>0) {
+                                 x_offset=((x_long-x_long_offset)/scale_x);
+                                 y_offset=((y_lat -y_lat_offset) /scale_y);
+                                 draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,object_ptr->label,0x08,0x48,strlen(object_ptr->label));
+                                                                                                                        
+                                 x_offset=((x_long-x_long_offset)/scale_x)+12;
+                                 y_offset=((y_lat -y_lat_offset) /scale_y)+15;
+                                 draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,probability_string,0x03,0x50,strlen(probability_string));
+                             }
+                         }
+                     }
+                 }
+             }
+        }
+
         // Iterate through the vertices and draw the lines
         VerticeRow *vertice = object_ptr->start;
  
@@ -5093,112 +5447,251 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     // and less than MAX_NUMBER_OF_PREDEFINED_OBJECTS.
     // using counter j for this seems inelegant **
 
-    // could implement using multiple optional sets of predefined objects (SAR/public service event)
+    // A set of predefined SAR objects are hardcoded and used by default
+    // other sets of predefined objects (SAR in km, public service event, 
+    // and user defined objects) can be loaded from a file.
+    // 
+    // Detailed instructions for the format of the files can be found in
+    // the two example files provided: predefined_SAR.sys and 
+    // predefined_EVENT.sys
+    char predefined_object_definition_file[263];
+    //xastir_snprintf(predefined_object_definition_filename,sizeof(predefined_object_definition_filename),"predefined_SAR.sys");
 
+    int read_file_ok = 0;
+    int line_max_length = 255;
+    int object_read_ok = 0;
+    char line[line_max_length];
+    char *value;
+    char *variable;
+    FILE *fp_file;
+
+    xastir_snprintf(line,sizeof(line),"%s","\0");
+    xastir_snprintf(predefined_object_definition_file,sizeof(predefined_object_definition_file),"config/%s",predefined_object_definition_filename);
     int j = 0;
 
     number_of_predefined_objects = 0;
 
-    // command post
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"ICP");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"c");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"ICP: Command Post");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
-
-    // Staging area
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Staging");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"S");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Staging");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
-
-    // Initial Planning Point
-    // set up to draw as two objects with different probability circles
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"IPP_");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data)," Pmin0.75,Pmax1.0");
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"[not shown]");
-    // show on menu = 0 will hide this entry on menu
-    predefinedObjects[j].show_on_menu = 0;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"IPP");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data)," Pmin0.25,Pmax0.5");
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"IPP: Initial Planning Point");
-    predefinedObjects[j].show_on_menu = 1;
-    // index of child j - 1 will add additional callback to IPP_
-    predefinedObjects[j].index_of_child = j - 1;
-    predefinedObjects[j].index = j;
-    j++;
+    if (predefined_menu_from_file == 1 ) {
+        // Check to see if a file containing predefined object definitions 
+        // exists, if it does, open it and try to read the definitions
+        // if this fails, use the hardcoded SAR default instead.
+        fprintf(stderr,"Checking for predefined objects menu file\n");
+        if (filethere(get_user_base_dir(predefined_object_definition_file))) {
+            fp_file = fopen(get_user_base_dir(predefined_object_definition_file),"r");
     
-    // Point last seen
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"PLS");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"PLS: Point Last Seen");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
+            fprintf(stderr,"Loading from %s \n",predefined_object_definition_file);
+            while (!feof(fp_file)) {
+                // read lines to end of file
+                (void)get_line(fp_file, line, line_max_length);
+                // ignore blank lines and lines starting with #
+                if ((strncmp("#",line,1)!=0) && (strlen(line) > 2)) {
+                    // if line starts "NAME" begin an object
+                    // next five lines should be PAGE, SYMBOL, DATA, MENU, HIDDENCHILD 
+                    // NAME, PAGE, SYMBOL, MENU, and HIDDENCHILD are required.
+                    // HIDDENCHILD must come last (it is being used to identify the
+                    // end of one object).
+                    // split line into variable/value pairs on tab
+                    // See predefined_SAR.sys and predefined_event.sys for more details.
+                    variable = strtok((char *)&line,"\t");
+                    if (strcmp("NAME",variable)==0) {
+                        value = strtok(NULL,"\t\r\n");
+                        if (value != NULL) {
+                            xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),value);
+                            // by default, set data to an empty string, allowing DATA to be ommitted
+                            xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+                            object_read_ok ++;
+                        }
+                    }
+                    if (strcmp("PAGE",variable)==0) {
+                        value = strtok(NULL,"\t\r\n");
+                        if (value != NULL) {
+                            xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),value);
+                            object_read_ok ++;
+                        }
+                    }
+                    if (strcmp("SYMBOL",variable)==0) {
+                        value = strtok(NULL,"\t\r\n");
+                        if (value != NULL) {
+                            xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),value);
+                            object_read_ok ++;
+                        }
+                    }
+                    if (strcmp("DATA",variable)==0) {
+                        value = strtok(NULL,"\t\r\n");
+                        if (value == NULL || strcmp(value,"NULL")==0) {
+                             xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+                        } else {
+                             xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),value);
+                        }
+                    }
+                    if (strcmp("MENU",variable)==0) {
+                        value = strtok(NULL,"\t\r\n");
+                        if (value != NULL) {
+                             xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),value);
+                            object_read_ok ++;
+                        }
+                    }
+                    if (strcmp("HIDDENCHILD",variable)==0) {
+                        value = strtok(NULL,"\t\r\n");
+                        if (strcmp(value,"YES")==0) {
+                            predefinedObjects[j].show_on_menu = 0;
+                            predefinedObjects[j].index_of_child = j - 1;
+                            predefinedObjects[j].index = j;
+                        } else {
+                            predefinedObjects[j].show_on_menu = 1;
+                            predefinedObjects[j].index_of_child = -1;
+                            predefinedObjects[j].index = j;
+                        }
+                        if (object_read_ok == 4) { 
+                           // All elements for an object were read correctly.
+                           // Begin filling next element in array.
+                           j++; 
+                           // Read of at least one object was successful, 
+                           // don't display default hardcoded menu items.
+                           read_file_ok = 1;
+                           // Reset value counter for next object.
+                           object_read_ok = 0;
+                        } else {
+                           // Something was missing or HIDDENCHILD was out of order.
+                           // Don't increment array (overwrite a partly filled entry).
+                           fprintf(stderr,"Error in reading predefined object menu file:\nAn object is not correctly defined.\n");
+                        }
+                    }
+                }
+            } // end while !feof()
+            fclose(fp_file);
+            if (read_file_ok==0) {
+                fprintf(stderr,"Error in reading predefined objects menu file:\nNo valid objects found.\n");
+            }
+        } else {
+             fprintf(stderr,"Error: Predefined objects menu file not found.\n");
+             char error_correct_location[256];
+             xastir_snprintf(error_correct_location,
+                        sizeof(error_correct_location),
+                        "File should be in %s\n",
+                        get_user_base_dir("config"));
+             fprintf(stderr,error_correct_location);
+        }
+    }
 
+    if (read_file_ok==0) {
+        // file read failed or was not requested, display default SAR menu
 
-    // Last known point
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"LKP");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),".");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"LKP: Last Known Point");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
-
-    // Base
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Base");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"B");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Base");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
-
-    // Helibase
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Helibase");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"H");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Helibase");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
-
-    // Camp
-    xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Camp");
-    xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"C");
-    xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
-    xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-    xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Camp");
-    predefinedObjects[j].show_on_menu = 1;
-    predefinedObjects[j].index_of_child = -1;
-    predefinedObjects[j].index = j;
-    j++;
+        // command post
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"ICP");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"c");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"ICP: Command Post");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+        // Staging area
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Staging");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"S");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Staging");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+        // Initial Planning Point
+        // set up to draw as two objects with different probability circles
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"IPP_");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data)," Pmin0.75,Pmax1.0");
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"[not shown]");
+        // show on menu = 0 will hide this entry on menu
+        predefinedObjects[j].show_on_menu = 0;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"IPP");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data)," Pmin0.25,Pmax0.5");
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"IPP: InitialPlanningPoint");
+        predefinedObjects[j].show_on_menu = 1;
+        // index of child j - 1 will add additional callback to IPP_
+        predefinedObjects[j].index_of_child = j - 1;
+        predefinedObjects[j].index = j;
+        j++;
+        
+        // Point last seen
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"PLS");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"PLS: Point Last Seen");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+    
+        // Last known point
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"LKP");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),".");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"LKP: Last Known Point");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+        // Base
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Base");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"B");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Base");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+        // Helibase (helicopter support base)
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Helibase");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"H");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Helibase");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+        
+        // Helipoint  (helicopter landing spot)
+        // Heli- will be created as Heli-1, Heli-2, Heli-3, etc.  
+        // terminal - on a call is a magic character. see Create_SAR+Object.
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Heli-");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Heli-n: Helipoint");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+        // Camp
+        xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Camp");
+        xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"C");
+        xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"0");
+        xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Camp");
+        predefinedObjects[j].show_on_menu = 1;
+        predefinedObjects[j].index_of_child = -1;
+        predefinedObjects[j].index = j;
+        j++;
+    
+    }
 
     // Could read additional entries from a file here.
     // The total number of entries should be left fairly small 
@@ -5216,7 +5709,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
 
 
 
-/* Create or Move predefined SAR object
+/* Create a predefined SAR/Public Event object
    Create an object of the specified type at the current mouse position 
    without a dialog.  
    Current undesirable behavior: If an object of the same name exists, 
@@ -5289,6 +5782,19 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         "%s",
         call);
 
+    // '-' is a magic character.
+    //
+    // If the last character in call is a "-", the symbol is expected
+    // to be a numeric series starting with call-1, so change call to 
+    // call-1.  This lets us describe Heli- and create Heli-1, Heli-2
+    // and similar series.  Storing call to orig_call before appending 
+    // the number should allow the sequence to increment normally.
+    if ((int)'-'==(int)*(call+(strlen(call)-1))) {
+        // make sure that we don't write past the end of call
+        if (strlen(call)<MAX_CALLSIGN) {
+            strcat(call,"1");
+        }
+    }
     // Check object names against our station database until we find
     // a unique name or a killed object name we can use.
     //
@@ -5402,7 +5908,12 @@ fprintf(stderr, "Object with same name exists, owned by %s\n", p_station->origin
             "%s%d",
             orig_call,
             extra_num);
-
+// ****** Bug ********
+// need to check length of call - if it has gone over 9 characters only 
+// the first 9 will be treated as unique, thus FirstAid11 will become FirstAid1 
+// and become new position for existing FirstAid1.
+// MAX_CALLSIGN is the constraining global.
+// In that case, need to fail gracefully and throw an error message.
         iterations_left--;
 
     }   // End of while loop

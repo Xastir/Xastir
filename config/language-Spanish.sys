@@ -413,6 +413,7 @@ WPUPCFD027|Mostrar bulletines Nuevo||
 WPUPCFD028|Avisar si hay teclas Modificadora||
 WPUPCFD029|Ver boletines de zero-distancia||
 WPUPCFD030|Disable Posit Dupe-Checks||
+WPUPCFD031|Load SAR objects menu from file||
 #
 # Menu "Configurar - Cronómetro"
 WPUPCFTM01|Configurar Cronómetro||
@@ -1236,3 +1237,9 @@ GPSS006|Fix||
 GPSS007|!GPS data is older than 30 seconds!||
 #
 #
+# Popup cad_dialog to obtain CAD object data
+CADPUD001|Area Object||
+CADPUD002|Area Label:||
+CADPUD003|Comment:||
+CADPUD004|Probability:||
+CADPUD005|OK||

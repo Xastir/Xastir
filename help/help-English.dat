@@ -436,7 +436,8 @@ Dead-Reckoning Timeout adjusts how long a position is assumed valid for the
 purpose of estimating its current position.
 
 New Track Time adjusts how many minutes must elapse before a new
-separate track is started.
+separate track is started.  Caution: setting the new track time to 0 will turn
+off the display of all tracks.
 
 RINO -> Objects Interval adjusts how often waypoints are downloaded from an
 attached Garmin RINO radio/GPS unit.  APRS(tm) Objects are created out of any
@@ -455,7 +456,8 @@ Serial Inter-Char Delay specifies a wait time in milliseconds between each
 character sent to an attached TNC.
 
 New Track Interval (degrees) specifies distance in lat/long degrees at which
-a new track segment is started.
+a new track segment is started.   Caution: setting new track interval to 0
+degreees will turn off the display of all tracks.
 
 HELP-INDEX>Configure Audio Alarms
 

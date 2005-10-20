@@ -414,6 +414,7 @@ WPUPCFD027|Pop up de novos boletins||
 WPUPCFD028|Avisar se teclas foram modificadas||
 WPUPCFD029|Ver boletins de distancia zero||
 WPUPCFD030|Desactivar dupe-checks de  posit||
+WPUPCFD031|Load SAR objects menu from file||
 #
 # PopUp "Configurar - momento certo"
 WPUPCFTM01|Configurar momento certo|||
@@ -1244,3 +1245,9 @@ GPSS006|Fix||
 GPSS007|!GPS data is older than 30 seconds!||
 #
 #
+# Popup cad_dialog to obtain CAD object data
+CADPUD001|Area Object||
+CADPUD002|Area Label:||
+CADPUD003|Comment:||
+CADPUD004|Probability:||
+CADPUD005|OK||

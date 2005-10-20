@@ -410,6 +410,7 @@ WPUPCFD027|Apparizione nuovi bollettini||
 WPUPCFD028|Avvisa per utilizzo tasti inadatti||
 WPUPCFD029|Vedi bollettini a distanza zero||
 WPUPCFD030|Disattiva Posit Dupe-Checks||
+WPUPCFD031|Load SAR objects menu from file||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
@@ -1240,3 +1241,9 @@ GPSS006|Fix||
 GPSS007|!GPS data is older than 30 seconds!||
 #
 #
+# Popup cad_dialog to obtain CAD object data
+CADPUD001|Area Object||
+CADPUD002|Area Label:||
+CADPUD003|Comment:||
+CADPUD004|Probability:||
+CADPUD005|OK||

@@ -418,6 +418,7 @@ WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
 WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
 WPUPCFD030|Position Dubletten-Prüfung aus||
+WPUPCFD031|Load SAR objects menu from file||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||
@@ -1248,3 +1249,9 @@ GPSS006|Fest||
 GPSS007|!GPS-Daten sind älter als 30 Sekunden!||
 #
 #
+# Popup cad_dialog to obtain CAD object data
+CADPUD001|Area Object||
+CADPUD002|Area Label:||
+CADPUD003|Comment:||
+CADPUD004|Probability:||
+CADPUD005|OK||
