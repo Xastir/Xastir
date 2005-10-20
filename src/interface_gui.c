@@ -1498,7 +1498,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
-            XmTextFieldSetString(TNC_unproto1_data,"WIDE");
+            XmTextFieldSetString(TNC_unproto1_data,"WIDE2-2");
             XmTextFieldSetString(TNC_unproto2_data,"");
             XmTextFieldSetString(TNC_unproto3_data,"");
             XmTextFieldSetString(TNC_igate_data,"");
@@ -4440,7 +4440,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
             XmTextFieldSetString(AX25_comment,"");
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
-            XmTextFieldSetString(AX25_unproto1_data,"WIDE");
+            XmTextFieldSetString(AX25_unproto1_data,"WIDE2-2");
             XmTextFieldSetString(AX25_unproto2_data,"");
             XmTextFieldSetString(AX25_unproto3_data,"");
             XmTextFieldSetString(AX25_igate_data,"");
@@ -6189,7 +6189,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             XmToggleButtonSetState(AGWPE_relay_digipeat, FALSE, FALSE);
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
-            XmTextFieldSetString(AGWPE_unproto1_data,"WIDE");
+            XmTextFieldSetString(AGWPE_unproto1_data,"WIDE2-2");
             XmTextFieldSetString(AGWPE_unproto2_data,"");
             XmTextFieldSetString(AGWPE_unproto3_data,"");
             XmTextFieldSetString(AGWPE_igate_data,"");
