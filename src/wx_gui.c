@@ -314,15 +314,54 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 }
 
 
+static int alert_comp(const void *a, const void *b) {
+    alert_entry *a_entry = *(alert_entry **)a;
+    alert_entry *b_entry = *(alert_entry **)b;
+    int a_active, b_active;
 
+    if (a_entry->title[on_screen] && !b_entry->title[on_screen])
+        return (-1);
+
+    if (!a_entry->title[0] && b_entry->title[0])
+        return (1);
+
+    if (a_entry->flags[on_screen] == 'Y' && b_entry->flags[on_screen] != 'Y')
+        return (-1);
+
+    if (a_entry->flags[on_screen] != 'Y' && b_entry->flags[on_screen] == 'Y')
+        return (1);
+
+    if (a_entry->flags[on_screen] == '?' && b_entry->flags[on_screen] == 'N')
+        return (-1);
+
+    if (a_entry->flags[on_screen] == 'N' && b_entry->flags[on_screen] == '?')
+        return (1);
+
+    a_active = alert_active(a_entry, ALERT_ALL);
+    b_active = alert_active(b_entry, ALERT_ALL);
+    if (a_active && b_active) {
+        if (a_active - b_active) {
+            return (a_active - b_active);
+        }
+    } else if (a_active) {
+        return (-1);
+    }
+    else if (b_active) {
+        return (1);
+    }
+
+    return (strcmp(a_entry->title, b_entry->title));
+}
 
 
 void wx_alert_update_list(void) {
-//    int nn;         // index into alert table.  Starts at 0
+    int nn;         // index into alert table.  Starts at 0
     int ii;         // index into dialog lines.  Starts at 1
     int max_item_count; // max dialog lines
     char temp[600];
     XmString item;
+    static alert_entry **alert_list;
+    static int alert_list_limit;
 
     if (wx_alert_shell) {
         struct hashtable_itr *iterator;
@@ -333,14 +372,21 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
         // Get the previous alert count from the alert list window
         XtVaGetValues(wx_alert_list, XmNitemCount, &max_item_count, NULL);
 
-        ii = 0; // Current dialog count
+	if ((nn = alert_list_count()) > alert_list_limit) {
+	    alert_entry **tmp = realloc(alert_list, nn * sizeof(alert_entry *));
+	    if (tmp) {
+		alert_list = tmp;
+		alert_list_limit = nn;
+	    } else {
+		fprintf(stderr, "wx_gui: Alert list allocation error\n");
+		exit(1);
+	    }
 
+	}
         // Iterate through the alert hash.  Create a string for each
         // non-expired/non-blank entry.
         iterator = create_wx_alert_iterator();
-        alert = get_next_wx_alert(iterator);
-        while (iterator != NULL && alert) {
-            char status[10];
+        for (nn = 0, alert = get_next_wx_alert(iterator); iterator != NULL && alert; alert = get_next_wx_alert(iterator)) {
 
             // Check whether alert record is empty/filled.  This
             // code is from the earlier array implementation.  If
@@ -348,21 +394,22 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // probably don't need this anymore.
             //
             if (alert->title[0] == '\0') {    // It's empty
-                alert = get_next_wx_alert(iterator);
-                continue;
+		fprintf(stderr, "wx_gui:alert->title NULL\n");
+                break;
             }
-
+	    alert_list[nn++] = alert;
+	}
+	qsort(alert_list, nn, sizeof(alert_entry *), alert_comp);
+	for (ii = 0; ii < nn; 
+) {
+            alert = alert_list[ii];
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
             //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
 
-            xastir_snprintf(status,
-                sizeof(status),
-                "   ");
-
             xastir_snprintf(temp,
                 sizeof(temp),
-                "%-9s%s   %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %s   %s%s%s%s",
+                "%-9s %-5s %-9s %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %c%c %-7s %s %s%s%s%s",
                 alert->from,
                 alert->seq,
                 alert->to,
@@ -378,14 +425,14 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 alert->activity[3],
                 alert->activity[4],
                 alert->activity[5],
-                status,
+                alert->flags[on_screen],
+		alert->flags[source],
                 alert->title,
                 alert->alert_tag,
                 alert->desc0,
                 alert->desc1,
                 alert->desc2,
                 alert->desc3);
-
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
 
@@ -396,15 +443,12 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // window yet.  Add it.
             if (max_item_count < ii) {
                 XmListAddItemUnselected(wx_alert_list, item, 0);
-            }
-            else {  // Replace it in the window.  Note: This might
-                    // re-order the list each time.
+            } else {
+		// Replace it in the window.  Note: This might re-order the list each time.
                 XmListReplaceItemsPosUnselected(wx_alert_list, &item, 1, ii);
             }
 
             XmStringFree(item);
-
-            alert = get_next_wx_alert(iterator);
 
         }   // End of for loop
 #ifndef USING_LIBGC

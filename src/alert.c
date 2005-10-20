@@ -325,19 +325,7 @@
 //
 #define ALERT_HASH_SIZE 4096
 static struct hashtable *wx_alert_hash = NULL;
-//
-// Old method (alert_list is still used in one place, soon to be
-// phased out)
-//
-alert_entry *alert_list = NULL;
 
-// alert_list_count probably needs to be taken out of use, and a
-// function created to replace it.  The function could just make one
-// call to the hash functions to determine how many active alerts
-// are in the hash.
-static int alert_list_count = 0;           // Count of active alerts
-
-int alert_max_count = 0;     // Alerts we've allocated space for
 int alert_redraw_on_update = 0;
 
 
@@ -509,19 +497,6 @@ alert_entry *get_wx_alert_from_hash(char *unique_string) {
 //fprintf(stderr,"   searching for %s...",unique_string);
 
     result = hashtable_search(wx_alert_hash, unique_string);
-
-/*
-        if (result) {
-            fprintf(stderr,"\t\tFound it, %s, len=%d\n",
-                unique_string,
-                strlen(unique_string));
-        } else {
-            fprintf(stderr,"\t\tNot found, %s, len=%d\n",
-                unique_string,
-                strlen(unique_string));
-        }
-*/
-
     return (result);
 }
 
@@ -647,66 +622,6 @@ alert_entry *get_next_wx_alert(struct hashtable_itr *iterator) {
 
 
 
-
-/*
-// normal_title_CWA()
-//
-// Function to convert "County Warning Area " to "CWA" in a string.
-// Called from alert_match() function.
-//
-void normal_title_CWA(char *incoming_title, char *outgoing_title, int outgoing_title_size) {
-    char *c_ptr;
-
-
-    if (debug_level & 2)
-        fprintf(stderr,"normal_title_CWA: Incoming: %s\n",incoming_title);
-
-    xastir_snprintf(outgoing_title,
-        outgoing_title_size,
-        "%s",
-        incoming_title);
-
-    // Check whether string we're interested in.  If not, skip the rest.
-    if (outgoing_title[0] != 'C' || outgoing_title[1] != 'o') {
-        return;
-    }
-
-    if ((c_ptr = strstr(outgoing_title, "County Warning Area ")) && c_ptr == outgoing_title) {
-
-        c_ptr = &outgoing_title[strlen("County Warning Area ")]; // Find end of text
-        // Add "CWA" to output string instead
-        xastir_snprintf(outgoing_title,
-            4,
-            "CWA");
-        // Copy remaining portion of input string to the output string
-        strncat(outgoing_title, c_ptr, 32-strlen("County Warning Area "));
-        outgoing_title[32] = '\0';  // Make sure string is terminated
-    }
-
-    // Remove ". " strings ( .<space> )
-    while ((c_ptr = strstr(outgoing_title, ". ")))
-        memmove(c_ptr, c_ptr+2, strlen(c_ptr)+1);
-
-    // Terminate string at '>' character
-    if ((c_ptr = strpbrk(outgoing_title, " >")))
-        *c_ptr = '\0';
-
-    // Remove these characters from the string
-    while ((c_ptr = strpbrk(outgoing_title, "_.-}!")))
-        memmove(c_ptr, c_ptr+1, strlen(c_ptr)+1);
-
-    // Truncate the string to eight characters always
-    outgoing_title[8] = '\0';
-
-//    if (debug_level & 2)
-//        fprintf(stderr,"normal_title_CWA: Outgoing: %s\n",outgoing_title);
-}
-*/
-
-
-
-
-
 // alert_print_list()
 //
 // Debug routine.  Currently attached to the Test() function in
@@ -715,45 +630,7 @@ void normal_title_CWA(char *incoming_title, char *outgoing_title, int outgoing_t
 // xterm.
 //
 void alert_print_list(void) {
-/*
-    int i;
-    char title[100], *c_ptr;
 
-//WE7U
-    fprintf(stderr,"Alert counts: %d/%d\n", alert_list_count, alert_max_count);
-
-//WE7U
-    for (i = 0; i < alert_max_count; i++) {
-
-        // Check whether it's an active alert
-        if (alert_list[i].title[0] != '\0') {
-
-            xastir_snprintf(title,
-                sizeof(title),
-                "%s",
-                alert_list[i].title);
-
-            for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
-                *c_ptr = '\0';
-
-// Alert: 10Y, MSPTOR> NWS-TEST, TAG: T  TORNDO, ACTIVITY: 191915z, Expiration: 1019234700, Title: WI_Z003
-            fprintf(stderr,"Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
-                i,                                          // 10
-                alert_list[i].flags[on_screen],             // Y
-                alert_list[i].from,                         // MSPTOR
-                alert_list[i].to,                           // NWS-TEST
-
-                alert_list[i].alert_level,                  // T
-                alert_list[i].alert_tag,                    // TORNDO
-
-                alert_list[i].activity,                     // 191915z (expiration)
-
-                (unsigned long)(alert_list[i].expiration),  // 1019234700
-
-                title);                                     // WI_Z003
-        }
-    }
-*/
 }
 
 
@@ -788,32 +665,6 @@ int alert_expire(void) {
 
     if (debug_level & 2)
         fprintf(stderr,"Checking for expired alerts...\n");
-
-
-/*
-    // Delete stored alerts that have expired (zero the title string)
-//WE7U
-    for (ii = 0; ii < alert_max_count; ii++) {
-        if ( (alert_list[ii].title[0] != '\0')
-                && (alert_list[ii].expiration < time(NULL)) ) {
-            if (debug_level & 2) {
-                fprintf(stderr,
-                    "alert_expire: Clearing slot %d, current: %lu, alert: %lu\n",
-                    ii,
-                    time(NULL),
-                    alert_list[ii].expiration );
-            }
-            alert_list[ii].title[0] = '\0'; // Clear this alert
-            alert_list_count--;
-
-//WE7U
-//fprintf(stderr,"alerts:%d\tmax:%d\n",alert_list_count,alert_max_count);
-
-            expire_count++;
-        }
-    }
-*/
-
 
     iterator = create_wx_alert_iterator();
     while (iterator) {
@@ -934,56 +785,6 @@ clear_dangerous();
         return(NULL);
     }
 
-
-/*
-    // Allocate more space if we're at our maximum already.
-    // Allocate space for ALERT_COUNT_INCREMENT more alerts.
-    if (alert_list_count == alert_max_count) {
-        ptr = realloc(alert_list, (alert_max_count+ALERT_COUNT_INCREMENT)*sizeof(alert_entry));
-        if (ptr) {
-            int ii;
-            alert_list = ptr;
-
-            // Zero out the new added entries
-            for (ii = alert_max_count; ii < alert_max_count+ALERT_COUNT_INCREMENT; ii++) {
-                alert_list[ii].title[0] = '\0';
-                alert_list[ii].top_boundary = 0.0;
-                alert_list[ii].left_boundary = 0.0;
-                alert_list[ii].bottom_boundary = 0.0;
-                alert_list[ii].right_boundary = 0.0;
-                alert_list[ii].expiration = (time_t)0;
-                alert_list[ii].activity[0] = '\0';
-                alert_list[ii].alert_tag[0] = '\0';
-                alert_list[ii].alert_level = '\0';
-                alert_list[ii].from[0] = '\0';
-                alert_list[ii].to[0] = '\0';
-                alert_list[ii].flags[0] = '\0';
-                alert_list[ii].filename[0] = '\0';
-                alert_list[ii].index = 0;
-                alert_list[ii].seq[0] = '\0';
-                alert_list[ii].issue_date_time[0] = '\0';
-                alert_list[ii].desc0[0] = '\0';
-                alert_list[ii].desc1[0] = '\0';
-                alert_list[ii].desc2[0] = '\0';
-                alert_list[ii].desc3[0] = '\0';
-            }
-            alert_max_count += ALERT_COUNT_INCREMENT;
-
-//fprintf(stderr, "        Max Alert Array: %d\n", alert_max_count);
-
-        }
-        else {
-            fprintf(stderr,"Couldn't realloc alert_list\n");
-        }
-
-        if (debug_level & 2) {
-            fprintf(stderr,"Allocated %d more slots for alerts, Max=%d\n",
-                ALERT_COUNT_INCREMENT,
-                alert_max_count);
-        }
-    }
-*/
-
     // Check for non-zero alert title, non-expired alert time in new
     // alert.
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
@@ -1001,23 +802,6 @@ clear_dangerous();
 
 return(entry);
 
-/*
-        // Scan for an empty entry, fill it in if found
-//WE7U
-        for (i = 0; i < alert_max_count; i++) {
-            if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
-                memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
-                alert_list_count++;
-//WE7U
-//fprintf(stderr,"alerts:%d\tmax:%d\n",alert_list_count,alert_max_count);
-
-                if (debug_level & 2) {
-                    fprintf(stderr,"Found empty alert slot %d, filling it\n", i);
-                }
-                return( &alert_list[i]);
-            }
-        }
-*/
     }
 
     // If we got to here, the title was empty or the alert has
@@ -1034,161 +818,6 @@ clear_dangerous();
 
     return(NULL);
 }
-
-
-
-
-
-/*
-// alert_match()
-//
-// Function used for matching on alerts.
-// Returns address of matching entry in alert_list or NULL.
-// Called from alert_build_list() and alert_active() functions.
-//
-static alert_entry *alert_match(alert_entry *alert, alert_match_level match_level) {
-    int i;
-    char *ptr, title_e[33], title_m[33], alert_f[33], filename[33];
-
-
-    if (strlen(alert->title) == 0) {
-        if (debug_level & 2)
-            fprintf(stderr,"alert_match:NULL\n");
-        return(NULL);
-    }
- 
-    if (debug_level & 2)
-        fprintf(stderr, "alert_match:%s\n", alert->title);
-
-    // Shorten the title while copying into title_e
-    normal_title_CWA(alert->title, title_e, sizeof(title_e));
-
-    xastir_snprintf(filename,
-        sizeof(filename),
-        "%s",
-        alert->filename);
-    title_e[32] = title_m[32] = '\0';
-
-    // Truncate at '.'
-    if ((ptr = strpbrk(filename, ".")))
-        *ptr = '\0';
-
-    // Get rid of '/' characters
-    if ((ptr = strrchr(filename, '/'))) {
-        ptr++;
-        memmove(filename, ptr, strlen(ptr)+1);
-    }
-
-    // Get rid of ' ', '_', or '-' characters
-    while ((ptr = strpbrk(filename, "_ -")))
-        memmove(ptr, ptr+1, strlen(ptr)+1);
-
-//WE7U
-    for (i = 0; i < alert_max_count; i++) {
-
-        if (alert_list[i].title[0] == '\0') {
-            // Found a blank alert list entry, skip it.
-            continue;
-        }
-
-// We shouldn't need to call normal_title_CWA here, as this one
-// should already have the short title.  Just copy it directly to
-// the title_m variable instead.
-        // Shorten the title while copying into title_m
-//        normal_title_CWA(alert_list[i].title, title_m, sizeof(title_m));
-        xastir_snprintf(title_m,
-            sizeof(title_m),
-            "%s",
-            alert_list[i].title);
-
-        xastir_snprintf(alert_f,
-            sizeof(alert_f),
-            "%s",
-            alert_list[i].filename);
-
-        // Truncate at '.'
-        if ((ptr = strpbrk(alert_f, ".")))
-            *ptr = '\0';
-
-        // Get rid of '/' characters
-        if ((ptr = strrchr(alert_f, '/'))) {
-            ptr++;
-            memmove(alert_f, ptr, strlen(ptr)+1);
-        }
-
-        // Get rid of ' ', '_', or '-' characters
-        while ((ptr = strpbrk(alert_f, "_ -")))
-            memmove(ptr, ptr+1, strlen(ptr)+1);
-
-        // Look for non-cancelled alerts that match fairly closely
-        if ((match_level < ALERT_FROM || strcmp(alert_list[i].from, alert->from) == 0) &&
-                (match_level < ALERT_TO   || strcasecmp(alert_list[i].to, alert->to) == 0) &&
-                (match_level < ALERT_TAG  || strcmp(alert_list[i].alert_tag, alert->alert_tag) == 0) &&
-                (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0 ||
-                strcasecmp(title_m, filename) == 0 || strcasecmp(alert_f, title_e) == 0 ||
-                (alert_f[0] && filename[0] && strcasecmp(alert_f, filename) == 0)))) {
-            return (&alert_list[i]);
-        }
-
-        // Now check whether a new CANCL alert passed to us might match one
-        // of the existing alerts.  We use a much looser match for this.
-        if (    (alert->alert_level == 'C')         // Cancelled alert
-                && (match_level < ALERT_FROM
-                    || strcmp(alert_list[i].from, alert->from) == 0)
-
-                && (match_level < ALERT_TAG
-                    || strncasecmp(alert_list[i].alert_tag,
-                            alert->alert_tag,
-                            strlen(alert_list[i].alert_tag)) == 0
-                    || strncasecmp(alert_list[i].alert_tag,
-                            alert->alert_tag,
-                            strlen(alert->alert_tag)) == 0)
-
-                && (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0
-                    || strcasecmp(title_m, filename) == 0
-                    || strcasecmp(alert_f, title_e) == 0))) {
-            if (debug_level & 2)
-                fprintf(stderr,"Found a cancellation: %s\t%s\n",title_e,title_m);
-
-            return (&alert_list[i]);
-        }
-
-
-//
-// I've been told by Dale Huguely that this might occur:  A new
-// alert that shouldn't match the cancelled alert.  Tabling this
-// ammendment for now.  ;-)
-//
-
-        // Now check whether a new alert passed to us might match a
-        // cancelled existing alert.  We use a much looser match for
-        // this.
-        if (    (alert_list[i].alert_level == 'C')         // Cancelled alert
-                && (match_level < ALERT_FROM
-                    || strcmp(alert_list[i].from, alert->from) == 0)
-
-                && (match_level < ALERT_TAG
-                    || strncasecmp(alert_list[i].alert_tag,
-                            alert->alert_tag,
-                            strlen(alert_list[i].alert_tag)) == 0
-                    || strncasecmp(alert_list[i].alert_tag,
-                            alert->alert_tag,
-                            strlen(alert->alert_tag)) == 0)
-
-                && (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0
-                    || strcasecmp(title_m, filename) == 0
-                    || strcasecmp(alert_f, title_e) == 0))) {
-            if (debug_level & 2)
-                fprintf(stderr,"New alert that matches a cancel: %s\t%s\n",title_e,title_m);
-
-            return (&alert_list[i]);
-        }
-    }
-    return (NULL);
-}
-*/
-
-
 
 
 
@@ -1236,11 +865,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
             a_ptr->title[0] = '\0';                     // so delete it from list by clearing
                                                         // out the title.
-            // Knock the active count down by one
-            alert_list_count--;
-
 //WE7U
-//fprintf(stderr,"alerts:%d\tmax:%d\n",alert_list_count,alert_max_count);
 
             // Schedule an update 'cuz we need to delete an expired
             // alert from the list.
@@ -1274,20 +899,6 @@ int alert_display_request(void) {
     if (debug_level & 2)
         fprintf(stderr,"alert_display_request\n");
 
-/*
-    // Iterate through entire alert_list
-//WE7U
-    for (i = 0, alert_count = 0; i < alert_max_count; i++) {
-
-        // If it's an active alert (not expired), and flags == 'Y'
-        // (meaning it is within our viewport), or flags == '?' (indicating unmatched).
-        if (alert_active(&alert_list[i], ALERT_ALL) && (alert_list[i].flags[on_screen] == 'Y' ||
-                alert_list[i].flags[on_screen] == '?')) {
-            alert_count++;
-        }
-    }
-*/
-
 //WE7U
     if (wx_alert_hash)
         alert_count = hashtable_count(wx_alert_hash);
@@ -1304,7 +915,14 @@ int alert_display_request(void) {
 }
 
 
-
+// alert_list_count
+int alert_list_count(void) {
+    int count = 0;
+    if (wx_alert_hash)
+      return(hashtable_count(wx_alert_hash));
+    else
+      return count;
+}
 
 
 // alert_on_screen()
@@ -1325,14 +943,6 @@ int alert_on_screen(void) {
         fprintf(stderr,"alert_on_screen\n");
 
 //WE7U
-/*
-    for (i = 0, alert_count = 0; i < alert_max_count; i++) {
-        if (alert_active(&alert_list[i], ALERT_ALL)
-                && alert_list[i].flags[on_screen] == 'Y') {
-            alert_count++;
-        }
-    }
-*/
 
     iterator = create_wx_alert_iterator();
     temp = get_next_wx_alert(iterator);
@@ -1435,6 +1045,7 @@ void alert_build_list(Message *fill) {
     DataRow *p_station;
     int compressed_wx_packet = 0;
     char uncompressed_wx[10000];
+    struct hashtable_itr *iterator;
 
 
     //fprintf(stderr,"Message_line:%s\n",fill->message_line);
@@ -1480,36 +1091,37 @@ void alert_build_list(Message *fill) {
         // case as well.
         //
 
-        // Run through the alert_list looking for a match to the
+        // Run through the alert list looking for a match to the
         // FROM and first four chars of SEQ
 //WE7U
-        for (ii = 0; ii < alert_max_count; ii++) {
-            if ( (strcasecmp(alert_list[ii].from, fill->from_call_sign) == 0)
-                    && ( strncmp(alert_list[ii].seq,fill->seq,4) == 0 ) ) {
+        iterator = create_wx_alert_iterator();
+        for (list_ptr = get_next_wx_alert(iterator); iterator != NULL && list_ptr; list_ptr = get_next_wx_alert(iterator)) {
+            if ( (strcasecmp(list_ptr->from, fill->from_call_sign) == 0)
+                    && ( strncmp(list_ptr->seq,fill->seq,4) == 0 ) ) {
 
                 if (debug_level & 2)
-                    fprintf(stderr,"%d:Found a matching alert to a SKY message:\t",ii);
+                    fprintf(stderr,"%s:Found a matching alert to a SKY message:\t",list_ptr->seq);
 
                 switch (fill->seq[4]) {
                     case 'B':
-                        xastir_snprintf(alert_list[ii].desc0,
-                            sizeof(alert_list[ii].desc0),
+                        xastir_snprintf(list_ptr->desc0,
+                            sizeof(list_ptr->desc0),
                             "%s",
                             fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
-                        xastir_snprintf(alert_list[ii].desc1,
-                            sizeof(alert_list[ii].desc1),
+                        xastir_snprintf(list_ptr->desc1,
+                            sizeof(list_ptr->desc1),
                             "%s",
                             fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
-                        xastir_snprintf(alert_list[ii].desc2,
-                            sizeof(alert_list[ii].desc2),
+                        xastir_snprintf(list_ptr->desc2,
+                            sizeof(list_ptr->desc2),
                             "%s",
                             fill->message_line);
                         if (debug_level & 2)
@@ -1517,19 +1129,22 @@ void alert_build_list(Message *fill) {
                         break;
                     case 'E':
                     default:
-                        xastir_snprintf(alert_list[ii].desc3,
-                            sizeof(alert_list[ii].desc3),
+                        xastir_snprintf(list_ptr->desc3,
+                            sizeof(list_ptr->desc3),
                             "%s",
                             fill->message_line);
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                         break;
                 }
-//                return; // All done with this sky message
             }
         }
         if (debug_level & 2)
             fprintf(stderr,"alert_build_list return 1\n");
+#ifndef USING_LIBGC
+//fprintf(stderr,"free iterator a4\n");
+        if (iterator) free(iterator);
+#endif  // USING_LIBGC
         return;
     }
 
@@ -1547,6 +1162,15 @@ void alert_build_list(Message *fill) {
             fprintf(stderr,"2\n");
 
         memset(&entry, 0, sizeof(entry));
+        // flags[0] specifies whether it's onscreen or not
+        memset(entry.flags, (int)'?', sizeof(entry.flags));
+
+        // flags[source] specifies source of the alert DATA_VIA_TNC or
+        // DATA_VIA_LOCAL
+        entry.flags[source] = fill->heard_via_tnc;
+        p_station = NULL;
+        if (search_station_name(&p_station,fill->from_call_sign,1))
+            entry.flags[source] = p_station->data_via;
 
         // Zero the title strings.  We can have up to five alerts in
         // a non-compressed weather alert.
@@ -1570,7 +1194,7 @@ void alert_build_list(Message *fill) {
                 &title[4][0]);       // ...
 
         if (ret < 3)
-            fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok)\n", ret);
+          fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s, %s\n", ret, fill->from_call_sign, fill->message_line);
 
         // Force a termination for each
         entry.activity[20]  = '\0';
@@ -2029,15 +1653,6 @@ if (debug_level & 2)
         if (debug_level & 2)
             fprintf(stderr,"6\n");
 
-        // flags[0] specifies whether it's onscreen or not
-        memset(entry.flags, (int)'?', sizeof(entry.flags));
-        p_station = NULL;
-
-        // flags[source] specifies source of the alert DATA_VIA_TNC or
-        // DATA_VIA_LOCAL
-        if (search_station_name(&p_station,fill->from_call_sign,1))
-            entry.flags[source] = p_station->data_via;
-
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
@@ -2187,9 +1802,6 @@ if (debug_level & 2)
 // alert and a cancelled alert.  "to" and "alert_tag" change.  Since
 // we're comparing all four fields, the cancels don't match any
 // existing alerts.
-
-
-//            if ((list_ptr = alert_match(&entry, ALERT_ALL))) {
 
 
 //WE7U
