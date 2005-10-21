@@ -181,6 +181,14 @@
 #define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\nhttp://www.xastir.org\n\n1999-2005, The Xastir Group"
 
 
+// Define this if you want an xastir.pid file created in the
+// ~/.xastir directory and want to check that there's not another
+// copy of Xastir running before a new one starts up.  You can also
+// use this to send SIGHUP or SIGUSR1 signals to a running Xastir
+// from scripts.
+#define USE_PID_FILE_CHECK 1
+
+
 #define DOS_HDR_LINES 8
 
 #define STATUSLINE_ACTIVE 10    /* status line is cleared after 10 seconds */
@@ -11123,6 +11131,48 @@ void shut_down_server(void) {
 
 
 
+
+void restart(int sig) {
+
+    save_data();
+
+    /* shutdown all interfaces */
+    shutdown_all_active_or_defined_port(-1);
+
+    shut_down_server();
+
+
+#ifdef USE_PID_FILE_CHECK 
+    /* remove the PID file */ 
+    unlink(get_user_base_dir("xastir.pid")); 
+#endif
+
+//    if (debug_level & 1)
+        fprintf(stderr,"Restarting Xastir...\n");
+
+#ifdef HAVE_LIBCURL
+    curl_global_cleanup();
+#endif
+
+#ifdef USING_LIBGC
+    CHECK_LEAKS();
+#endif  // USING LIBGC
+
+
+    // Start up Xastir again.
+//
+// WE7U
+// argv gets messed up by the processing done in main(), so we'll
+// need to copy argv to a separate array in order to be able to
+// restart here with the same command-line variables.
+//
+    execve("/usr/local/bin/xastir", my_argv, my_envp);
+}
+
+
+
+
+
 void quit(int sig) {
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
@@ -11141,7 +11191,7 @@ void quit(int sig) {
 #endif
 
     if (debug_level & 1)
-        fprintf(stderr,"Exiting..\n");
+        fprintf(stderr,"Exiting Xastir...\n");
 
 #ifdef HAVE_LIBCURL
     curl_global_cleanup();
@@ -11153,6 +11203,7 @@ void quit(int sig) {
 
     exit(sig);  // Main exit from the program
 }
+
 
 
 
@@ -25182,6 +25233,8 @@ fprintf(stderr,
     (void) signal(SIGINT,quit);         // set signal on stop
     (void) signal(SIGQUIT,quit);
     (void) signal(SIGTERM,quit);
+
+    (void) signal(SIGHUP,restart);      // Shut down/restart if SIGHUP received
 
 #ifndef OLD_PTHREADS
     (void) signal(SIGUSR1,usr1sig);     // take a snapshot on demand 
