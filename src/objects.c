@@ -2706,7 +2706,7 @@ void Draw_All_CAD_Objects(Widget w) {
     long x_offset, y_offset;
     float probability;
     char probability_string[5];
-
+    VerticeRow *vertice;
 
     // Start at CAD_list_head, iterate through entire linked list,
     // drawing as we go.  Respect the line
@@ -2751,7 +2751,7 @@ void Draw_All_CAD_Objects(Widget w) {
         }
 
         // Iterate through the vertices and draw the lines
-        VerticeRow *vertice = object_ptr->start;
+        vertice = object_ptr->start;
  
         // Set up line color/width/type here
         (void)XSetLineAttributes (XtDisplay (da),
@@ -5464,10 +5464,10 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     char *value;
     char *variable;
     FILE *fp_file;
+    int j = 0;
 
     xastir_snprintf(line,sizeof(line),"%s","\0");
     xastir_snprintf(predefined_object_definition_file,sizeof(predefined_object_definition_file),"config/%s",predefined_object_definition_filename);
-    int j = 0;
 
     number_of_predefined_objects = 0;
 
@@ -5564,8 +5564,8 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                 fprintf(stderr,"Error in reading predefined objects menu file:\nNo valid objects found.\n");
             }
         } else {
-             fprintf(stderr,"Error: Predefined objects menu file not found.\n");
              char error_correct_location[256];
+             fprintf(stderr,"Error: Predefined objects menu file not found.\n");
              xastir_snprintf(error_correct_location,
                         sizeof(error_correct_location),
                         "File should be in %s\n",

@@ -20333,6 +20333,8 @@ void Configure_defaults_destroy_shell( /*@unused@*/ Widget widget, XtPointer cli
 void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
 
+    int load_predefined_cb_selected;
+    XmString load_predefined_cb_selection;
 
     output_station_type = Station_transmit_type;
     if ((output_station_type >= 1) && (output_station_type <= 3)) {
@@ -20360,14 +20362,14 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     // Predefined (SAR/EVENT) objects menu loading (default hardcoded SAR objects or objects from file)
     predefined_menu_from_file = (int)XmToggleButtonGetState(load_predefined_objects_menu_from_file_enable);
     // Use the file specified on the picklist if one is selected.
-    int load_predefined_cb_selected = 0;
+    load_predefined_cb_selected = 0;
 
 // ??????????????
 // Should this be XmStringCreateLocalized, or another XmString creation function with XmCHARSET_TEXT??
 // Not sure of the implications of using localization or not when creating and extracting the picklist values.
 // ??????????????
 
-    XmString load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
+    load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
     XtVaGetValues(load_predefined_objects_menu_from_file, 
                   XmNselectedPosition, &load_predefined_cb_selected);
     // Use the file specified on the picklist if one is selected.
@@ -20458,6 +20460,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     register unsigned int ac = 0;   /* Arg Count */
 
     if (!configure_defaults_dialog) {
+        char loadfrom[300];
+        XmString cb_item;
 
         // Set args for color
         ac = 0;
@@ -20688,7 +20692,6 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
        
-        char loadfrom[300];
         // Check box to load predefined (SAR/Event) objects menu from a file or not.
         xastir_snprintf(loadfrom,
                         sizeof(loadfrom),
@@ -20725,7 +20728,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XmString cb_item = XmStringCreateLocalized("predefined_SAR.sys");
+        cb_item = XmStringCreateLocalized("predefined_SAR.sys");
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,1,1);  
         cb_item = XmStringCreateLocalized("predefined_EVENT.sys");
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,2,1);  
