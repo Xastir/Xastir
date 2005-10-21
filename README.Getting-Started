@@ -488,7 +488,10 @@ ArrowRight      PanRight
 Other Possible External Stimuli:
 --------------------------------
 Send a SIGUSR1 to cause a snapshot to be taken.
-Connect to Port 2023 if Server Port is enabled.
+Send a SIGHUP to cause Xastir to save/quit/restart.
+Send a SIGINT, SIGQUIT, or SIGTERM to cause Xastir to quit.
+Connect to TCP port 2023 if Server Port is enabled to send/receive packets.
+Send to UDP port 2023 via the xastir_udp_client program to inject packets.
 
 
 Note that you can also tweak a define/recompile to reverse the
