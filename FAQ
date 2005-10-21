@@ -99,7 +99,7 @@ The Questions
 
     5.4  What is that yellow circle on my map?
 
-    5.5 How can I restart Xastir remotely?
+    5.5 How can I restart Xastir remotely/from a script/command-line?
 
 
 The Answers
@@ -896,6 +896,7 @@ The Answers
     press a button on a web page and cause Xastir to make a new snapshot.
 
     For Example, from the shell you can do: 
+
         kill -SIGUSR1 `cat ~/.xastir/xastir.pid`
 
     Snapshots will are stored under ~/.xastir/tmp/
@@ -920,15 +921,16 @@ The Answers
     circle can be turned off from the Station->Filter Display menu
     but it will be enabled again each time you restart Xastir.
 
-    5.5 How can I restart Xastir remotely?
+    5.5 How can I restart Xastir remotely/from a script/command-line?
 
     Send a SIGHUP to the process.  This will cause Xastir to save
-    it's configs, exit, and restart with the same enviroment as it
-    was initially started with.  Unfortunately the command-line
-    parameters aren't saved at present, but everything else should
-    be identical to the earlier run of Xastir.
+    its configs, exit, then restart with the same enviroment as it
+    initially had.  Unfortunately the command-line parameters aren't
+    saved at present but everything else should be identical to the
+    initial run of Xastir.
 
     For Example, from the shell you can do: 
+
         kill -SIGHUP `cat ~/.xastir/xastir.pid`
 
 
