@@ -2350,7 +2350,11 @@ void Save_CAD_Objects_to_file(void) {
         fprintf(f,"label_latitude:  %lu\n",object_ptr->label_latitude);
         fprintf(f,"label_longitude: %lu\n",object_ptr->label_longitude);
         fprintf(f,"label: %s\n",object_ptr->label);
-        fprintf(f,"comment: %s\n",object_ptr->comment);
+        if (strlen(object_ptr->comment)>1) { 
+            fprintf(f,"comment: %s\n",object_ptr->comment);
+        } else {
+            fprintf(f,"comment: NULL\n");
+        }
 
         // Iterate through the vertices:
         while (vertice != NULL) {
@@ -2420,71 +2424,77 @@ void Restore_CAD_Objects_from_file(void) {
             //fprintf(stderr,"Found creation_time:\n");
             if (1 != sscanf(line+15, "%lu",
                     (unsigned long *)&CAD_list_head->creation_time)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [creation_time]\n");
             }
         }
         else if (strncasecmp(line,"line_color:",11) == 0) {
             //fprintf(stderr,"Found line_color:\n");
             if (1 != sscanf(line+12,"%d",
                     &CAD_list_head->line_color)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [line_color]\n");
             }
         }
         else if (strncasecmp(line,"line_type:",10) == 0) {
             //fprintf(stderr,"Found line_type:\n");
             if (1 != sscanf(line+11,"%d",
                     &CAD_list_head->line_type)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [line_type]\n");
             }
         }
         else if (strncasecmp(line,"line_width:",11) == 0) {
             //fprintf(stderr,"Found line_width:\n");
             if (1 != sscanf(line+12,"%d",
                     &CAD_list_head->line_width)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [line_width]\n");
             }
         }
         else if (strncasecmp(line,"computed_area:",14) == 0) {
             //fprintf(stderr,"Found computed_area:\n");
             if (1 != sscanf(line+15,"%f",
                     &CAD_list_head->computed_area)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [computed_area]\n");
             }
         }
         else if (strncasecmp(line,"raw_probability:",16) == 0) {
             //fprintf(stderr,"Found raw_probability:\n");
             if (1 != sscanf(line+17,"%f",
                     &CAD_list_head->raw_probability)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [raw_probability]\n");
             }
         }
         else if (strncasecmp(line,"label_latitude:",15) == 0) {
             //fprintf(stderr,"Found label_latitude:\n");
             if (1 != sscanf(line+16,"%lu",
                     (unsigned long *)&CAD_list_head->label_latitude)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [label_latitude]\n");
             }
         }
         else if (strncasecmp(line,"label_longitude:",16) == 0) {
             //fprintf(stderr,"Found label_longitude:\n");
             if (1 != sscanf(line+17,"%lu",
                     (unsigned long *)&CAD_list_head->label_longitude)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [label_longitude]\n");
             }
         }
         else if (strncasecmp(line,"label:",6) == 0) {
             //fprintf(stderr,"Found label:\n");
             if (1 != sscanf(line+7,"%s",
                     CAD_list_head->label)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [label]\n");
             }
         }
         else if (strncasecmp(line,"comment:",8) == 0) {
             //fprintf(stderr,"Found comment:\n");
             if (1 != sscanf(line+9,"%s",
                     CAD_list_head->comment)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [comment]\n");
             }
+            if (strcmp(CAD_list_head->comment,"NULL")==0)
+                xastir_snprintf(CAD_list_head->comment,
+                    sizeof(CAD_list_head->comment),
+                    "%c",
+                    '\0'
+                    );
         }
         else if (strncasecmp(line,"Vertice:",8) == 0) {
             long latitude, longitude;
@@ -2493,7 +2503,7 @@ void Restore_CAD_Objects_from_file(void) {
             if (2 != sscanf(line+9,"%lu %lu",
                     (unsigned long *)&latitude,
                     (unsigned long *)&longitude)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [vertex]\n");
             }
             CAD_vertice_allocate(latitude,longitude);
         }
