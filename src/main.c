@@ -11160,12 +11160,6 @@ void restart(int sig) {
 
 
     // Start up Xastir again.
-//
-// WE7U
-// argv gets messed up by the processing done in main(), so we'll
-// need to copy argv to a separate array in order to be able to
-// restart here with the same command-line variables.
-//
     execve("/usr/local/bin/xastir", my_argv, my_envp);
 }
 
@@ -24763,6 +24757,59 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
 
 
+// Borrowed from the libiberty library, a GPL'ed program.
+//
+void freeargv (char **vector) {
+    register char **scan;
+
+    if (vector != NULL) {
+        for (scan = vector; *scan != NULL; scan++) {
+            free (*scan);
+        }
+        free (vector);
+    }
+}
+
+
+
+
+
+// Borrowed from the libiberty library, a GPL'ed program.
+//
+char **dupargv (char **argv) {
+    int argc;
+    char **copy;
+  
+    if (argv == NULL)
+        return NULL;
+  
+    /* the vector */
+    for (argc = 0; argv[argc] != NULL; argc++);
+
+    copy = (char **) malloc ((argc + 1) * sizeof (char *));
+
+    if (copy == NULL)
+        return NULL;
+  
+    /* the strings */
+    for (argc = 0; argv[argc] != NULL; argc++) {
+        int len = strlen (argv[argc]);
+
+        copy[argc] = malloc (sizeof (char *) * (len + 1));
+        if (copy[argc] == NULL) {
+            freeargv (copy);
+            return NULL;
+        }
+        strcpy (copy[argc], argv[argc]);
+    }
+    copy[argc] = NULL;
+    return copy;
+}
+
+
+
+
+
 /////////////////////////////////////////////   main   /////////////////////////////////////////////
 
 
@@ -24919,11 +24966,18 @@ int main(int argc, char *argv[], char *envp[]) {
 #ifdef USE_MAP_CACHE
     map_cache_init();
 #endif  // USE_MAP_CACHE
- 
 
+
+
+    // Make copies of argc/argv/envp so that we can start other
+    // processes and know the environment we were started with. 
+    //
     my_argc = argc;
-    my_argv = (void *)&argv[0];
+//    my_argv = argv;
+    my_argv = dupargv(argv);
     my_envp = (void *)&envp[0];
+
+
 
     euid = geteuid();
     egid = getegid();
