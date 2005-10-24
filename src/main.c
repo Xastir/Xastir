@@ -274,8 +274,9 @@ gid_t egid;
 
 
 int   my_argc;
-void *my_argv;
-void *my_envp;
+char **my_argv;
+char **my_envp;
+int  restart_xastir_now = 0;
 
 
 // A count of the stations currently on the screen.  Counted by
@@ -9993,6 +9994,35 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #endif // __CYGWIN__
 
 
+
+    if (restart_xastir_now) {
+
+
+// Debug:  Print out the first string in argv, which should be the
+// name of the program "xastir".
+//temp = (char *)my_argv[0];
+//fprintf(stderr, "%s\n", (char *)temp );
+
+
+// WE7U:
+// We need to snag the path to the executable from somewhere so that
+// we can start up again on a variety of systems.  Trying to get it
+// from argv[0] doesn't work as that ends up as "xastir" with no
+// path.
+
+
+
+        // Start up Xastir again in this process space.  This is
+        // triggered by receiving a SIGHUP signal to the main
+        // process, which causes the signal handler restart() to
+        // run.  restart() shuts down most things nicely and then
+        // sets the restart_xastir_now  global variable.
+        //
+        execve("/usr/local/bin/xastir", my_argv, my_envp);
+    }
+
+
+
     current_time = sec_now();
 
     if (last_updatetime > current_time) {
@@ -11132,23 +11162,34 @@ void shut_down_server(void) {
 
 
 
+// This is the SIGHUP handler.  We restart Xastir if we receive a
+// SIGHUP, hopefully with the same environment that the original
+// Xastir had.  We set a global variable, then UpdateTime() is the
+// process that actually calls execve() in order to replace our
+// current process with the new one.  This assures that the signal
+// handler gets reset.  We can't call execve() from inside the
+// signal handler and have the restart work more than once.
+//
+// This function should be nearly identical to the quit() function
+// below.
+//
 void restart(int sig) {
+
+//    if (debug_level & 1)
+    fprintf(stderr,"Shutting down Xastir...\n");
 
     save_data();
 
-    /* shutdown all interfaces */
+    // shutdown all interfaces
     shutdown_all_active_or_defined_port(-1);
 
     shut_down_server();
 
 
 #ifdef USE_PID_FILE_CHECK 
-    /* remove the PID file */ 
+    // remove the PID file
     unlink(get_user_base_dir("xastir.pid")); 
 #endif
-
-//    if (debug_level & 1)
-        fprintf(stderr,"Restarting Xastir...\n");
 
 #ifdef HAVE_LIBCURL
     curl_global_cleanup();
@@ -11159,8 +11200,14 @@ void restart(int sig) {
 #endif  // USING LIBGC
 
 
-    // Start up Xastir again.
-    execve("/usr/local/bin/xastir", my_argv, my_envp);
+//    if (debug_level & 1)
+        fprintf(stderr,"Attempting to restart Xastir...\n");
+
+
+    // Set the global variable which tells UpdateTime() to do a
+    // restart.
+    //
+    restart_xastir_now++;
 }
 
 
@@ -11173,14 +11220,14 @@ void quit(int sig) {
 
     save_data();
 
-    /* shutdown all interfaces */
+    // shutdown all interfaces
     shutdown_all_active_or_defined_port(-1);
 
     shut_down_server();
 
 
 #ifdef USE_PID_FILE_CHECK 
-    /* remove the PID file */ 
+    // remove the PID file
     unlink(get_user_base_dir("xastir.pid")); 
 #endif
 

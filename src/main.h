@@ -108,8 +108,8 @@ extern void init_set_proc_title(int argc, char *argv[], char *envp[]);
 
 // New stuff defined by Xastir project:
 extern int my_argc;
-extern void *my_argv;
-extern void *my_envp;
+extern char **my_argv;
+extern char **my_envp;
 //////////////////////////////////////////////////////////////////////
 
 extern int input_x;
