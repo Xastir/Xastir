@@ -30,9 +30,17 @@
 static char last_speech_text[8000];
 static time_t last_speech_time = (time_t)0;
 static SpeechChannel channel;
+int macspeech_processes = 0;
+
+
+
+
 
 int SayText(char *text) {
     OSErr err;
+    pid_t child_pid;
+
+
     //if (debug_level & 2)
     //fprintf(stderr,"SayText: %s\n",text);
 
@@ -56,10 +64,61 @@ int SayText(char *text) {
         text);
     last_speech_time = sec_now();
 
-    err = SpeakText(channel, text, strlen(text));
-    while (SpeechBusy() == true);
-    return(0);
+    // Check for the variable going out-of-bounds
+    if (macspeech_processes < 0) {
+        macspeech_processes = 0;
+    }
+
+    // Allow only so many processes to be queued up ready to send
+    // text to the speech subsystem.
+    //
+    if (macspeech_processes > 10) { // Too many processes queued up!
+        return(1);  // Don't send this string, return to calling program
+    }
+
+    // Create a separate process to handle the speech so that our
+    // main process can continue processing packets and displaying
+    // maps.
+    //
+    child_pid = fork();
+
+    if (child_pid == -1) {  // The fork failed
+        return(1);
+    }
+
+    if (child_pid == 0) {   // Child process
+
+        macspeech_processes++;
+
+        // Wait for the speech system to be freed up.  Note that if
+        // we have multiple processes queued up we don't know in
+        // which order they'll get access to the speech subsystem.
+        //
+        while (SpeechBusy() == true) {
+            usleep(1000000);
+        }
+
+        // The speech system is free, so send it our text.  Right
+        // now we ignore any errors.
+        //
+        err = SpeakText(channel, text, strlen(text));
+
+        macspeech_processes--;
+
+        // Exit this child process.  We don't need it anymore.
+        exit(0);
+    }
+
+    else {                  // Parent process
+        // Drop through to the return
+    }
+
+    return(0);  // Return to the calling program
 }
+
+
+
+
 
 int SayTextInit(void) {
     OSErr err;
@@ -96,3 +155,5 @@ int SayTextInit(void) {
 }
 
 /* cleanup should err = DisposeSpeechChannel( channel ); */
+
+
