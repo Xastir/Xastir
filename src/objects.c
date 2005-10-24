@@ -228,6 +228,8 @@ Widget cad_label_data, cad_comment_data, cad_probability_data;
 int draw_CAD_objects_flag = 0;
 void Draw_All_CAD_Objects(Widget w);
 void Save_CAD_Objects_to_file(void);
+Widget cad_erase_dialog;
+Widget list_of_existing_CAD_objects;
  
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1802,24 +1804,52 @@ void CAD_object_delete_all(void) {
     // alert the user of that fact and ask if they wish to close it.
 //}
 
-// Delete one CAD object and all of its vertices.
-//
-// We don't handle objects properly here unless they're at the head
-// of the list.  We could do a compare of every object along the
-// chain until we hit one with the same title.  Would have to save
-// the pointer to the object ahead of it on the chain to be able to
-// do a delete out of the middle of the chain.  Either that or make
-// it a doubly-linked list.
-//
+
+
+
+
+/* Delete one CAD object and all of its vertices. */
 void CAD_object_delete(CADRow *object) {
+    CADRow *all_objects_ptr = CAD_list_head;
+    CADRow *previous_object_ptr = CAD_list_head;
     VerticeRow *v = object->start;
+    int done = 0;
 
-    CAD_vertice_delete_all(v); // Free's the memory also
+#ifdef CAD_DEBUG
+    fprintf(stderr,"Deleting CAD object %s\n",object->label);
+#endif
+    // check to see if the object we were given was the first object
+    if (object==all_objects_ptr) {
+#ifdef CAD_DEBUG
+        fprintf(stderr,"Deleting first CAD object %s\n",object->label);
+#endif
+        CAD_vertice_delete_all(v); // Frees the memory also
 
-    // Unlink the object from the chain and free the memory.
-    CAD_list_head = object->next;  // Unlink
-    free(object);   // Free the object memory
+        // Unlink the object from the chain and free the memory.
+        CAD_list_head = object->next;  // Unlink
+        free(object);   // Free the object memory
+    } else {
+#ifdef CAD_DEBUG
+        fprintf(stderr,"Deleting other than first CAD object %s\n",object->label);
+#endif
+        // walk through the list and delete the object when found
+        while (all_objects_ptr != NULL && done==0) {
+            if (object==all_objects_ptr) {
+                v = object->start;
+                CAD_vertice_delete_all(v);
+                previous_object_ptr->next = object->next;
+                free(object);
+                done = 1;
+            } else {
+                all_objects_ptr = all_objects_ptr->next;
+            }
+        }
+    }
 }
+
+
+
+
 
 // Split an existing CAD object into two objects.  Can we trigger
 // this by drawing a line across a closed polygon?
@@ -2519,6 +2549,9 @@ void Restore_CAD_Objects_from_file(void) {
 
 
 
+/* Callback for the end CAD draw mode menu option
+   Writes all CAD objects to file and turns off 
+   the pencil cursor.  */
 void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
@@ -2540,15 +2573,253 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 
 
 
-// Free the object and vertice lists then do a screen update.
-//
-// It would be good to ask the user whether to delete all CAD
-// objects or a single CAD object.  If single, present a list to
-// choose from.
-//
+/* popdown and destroy the cad_erase_dialog */
+void Draw_CAD_Objects_erase_dialog_close ( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    if (cad_erase_dialog!=NULL) {
+        // close cad_erase_dialog
+        XtPopdown(cad_erase_dialog);
+        XtDestroyWidget(cad_erase_dialog);
+        cad_erase_dialog = (Widget)NULL;
+    }
+
+}
+
+
+
+
+/* Call back for delete selected button on Draw_CAD_Objects_erase_dialog.
+   Iterates through the list of selected CAD objects and deletes them. */
+void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+    int itemCount;       // number of items in list of CAD objects.
+    XmString *listItems; // names of CAD objects on list 
+    char *cadName;       // the text name of a CAD object
+    Position x;          // position on list
+    char *selectedName;  // the text name of a selected CAD object
+    CADRow *object_ptr = CAD_list_head;  // pointer to the linked list of CAD objects
+    int done = 0;        // has a cad object with a name matching the current selection been found
+
+    // For more than a few objects this loop/save/redraw will need to move
+    // off to a separate thread.
+
+    XtVaGetValues(list_of_existing_CAD_objects,
+               XmNitemCount,&itemCount,
+               XmNitems,&listItems,
+               NULL);
+    // iterate through list and delete each first object with a name matching 
+    // those that are selected on the list.
+    //
+    // *** Note: If names are not unique the results may not be what the user expects.
+    // The first match to a selection will be deleted, not necessaraly the selection.
+    for (x=1; x<=itemCount;x++) {
+        if (XmListPosSelected(list_of_existing_CAD_objects,x)) {
+            XmStringGetLtoR(listItems[(x-1)],XmFONTLIST_DEFAULT_TAG,&selectedName);
+
+            object_ptr = CAD_list_head;
+            done = 0;
+            while (object_ptr != NULL && done == 0) {
+                cadName = object_ptr->label;
+                if (strcmp(cadName,selectedName)==0) {
+                    // delete CAD object matching the selected name
+                    CAD_object_delete(object_ptr);
+                    done = 1;
+                } else {
+                   object_ptr = object_ptr->next;
+                }
+            }
+        }
+    }
+
+    Draw_CAD_Objects_erase_dialog_close(w,clientData,callData);
+
+    // Save the altered list to file.
+    Save_CAD_Objects_to_file();
+    // Reload symbols/tracks/CAD objects
+    redraw_symbols(da);
+}
+
+
+
+
+
+/* Callback for delete CAD objects menu option. 
+   Dialog to allow users to delete all CAD objects or select
+   individual CAD objects to delete.  */
+void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    Widget cad_erase_pane, cad_erase_form, cad_erase_label,
+           button_delete_all, button_delete_selected, button_cancel;
+    Arg al[100];       /* Arg List */
+    unsigned int ac;   /* Arg Count */
+    CADRow *object_ptr = CAD_list_head;
+    int counter = 1;
+    XmString cb_item;
+
+    if (cad_erase_dialog) {
+        (void)XRaiseWindow(XtDisplay(cad_erase_dialog), XtWindow(cad_erase_dialog));
+    } else {
+
+        // Delete CAD Objects
+        cad_erase_dialog = XtVaCreatePopupShell("Delete CAD Objects",
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,          XmDESTROY,
+                XmNdefaultPosition,         FALSE,
+                NULL);
+                                                                                                                        
+        cad_erase_pane = XtVaCreateWidget("CAD erase Object pane",
+                xmPanedWindowWidgetClass,
+                cad_erase_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+                                                                                                                        
+        cad_erase_form =  XtVaCreateWidget("Cad erase Object form",
+                xmFormWidgetClass,
+                cad_erase_pane,
+                XmNfractionBase,            3,
+                XmNautoUnmanage,            FALSE,
+                XmNshadowThickness,         1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // heading: Delete CAD Objects 
+        cad_erase_label = XtVaCreateManagedWidget("Delete CAD objects?",
+                xmLabelWidgetClass,
+                cad_erase_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // *** need to handle the special case of no CAD objects ? ***
+
+        // scrolled pick list to allow selection of current objects
+        /*set args for list */
+        ac=0;
+        XtSetArg(al[ac], XmNvisibleItemCount, 11); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+        XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
+        XtSetArg(al[ac], XmNselectionPolicy, XmEXTENDED_SELECT); ac++;
+        XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
+        XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
+        XtSetArg(al[ac], XmNtopWidget, cad_erase_label); ac++;
+        XtSetArg(al[ac], XmNtopOffset, 5); ac++;
+        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
+        XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNrightOffset, 5); ac++;
+        XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        //XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, colors[0x0f]); ac++;
+
+        list_of_existing_CAD_objects = XmCreateScrolledList(cad_erase_form,
+                "CAD objects for deletion scrolled list",
+                al,
+                ac);
+        // make sure list is empty
+        XmListDeleteAllItems(list_of_existing_CAD_objects);
+
+        // iterate through list of objects to populate scrolled list
+        while (object_ptr != NULL) {
+            cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+            XmListAddItem(list_of_existing_CAD_objects,
+                          cb_item,
+                          counter);  
+            counter++;
+            XmStringFree(cb_item);
+            object_ptr = object_ptr->next;
+        }
+
+        // "Delete All"
+        button_delete_all = XtVaCreateManagedWidget("Delete All",
+                xmPushButtonGadgetClass,
+                cad_erase_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         list_of_existing_CAD_objects,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_FORM,
+                XmNleftOffset,        5,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(button_delete_all, XmNactivateCallback, Draw_CAD_Objects_erase, Draw_CAD_Objects_erase_dialog);
+
+        // "Delete Selected"
+        button_delete_selected = XtVaCreateManagedWidget("Delete Selected",
+                xmPushButtonGadgetClass,
+                cad_erase_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         list_of_existing_CAD_objects,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_WIDGET,
+                XmNleftWidget,        button_delete_all,
+                XmNleftOffset,        10,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(button_delete_selected, XmNactivateCallback, Draw_CAD_Objects_erase_selected, Draw_CAD_Objects_erase_dialog);
+
+        // "Cancel"
+        button_cancel = XtVaCreateManagedWidget("Cancel",
+                xmPushButtonGadgetClass,
+                cad_erase_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         list_of_existing_CAD_objects,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_WIDGET,
+                XmNleftWidget,        button_delete_selected,
+                XmNleftOffset,        10,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(button_cancel, XmNactivateCallback, Draw_CAD_Objects_erase_dialog_close, Draw_CAD_Objects_erase_dialog);                        
+        pos_dialog(cad_erase_dialog);
+        XmInternAtom(XtDisplay(cad_erase_dialog),"WM_DELETE_WINDOW", FALSE);
+
+        XtManageChild(cad_erase_form);
+        XtManageChild(list_of_existing_CAD_objects);
+        XtManageChild(cad_erase_pane);
+                                                                                                                        
+        XtPopup(cad_erase_dialog,XtGrabNone);
+    }
+}
+
+
+
+
+
+/* Free the object and vertice lists then do a screen update.
+   callback from delete all button on cad_erase_dialog  */
 void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
+    
+    // if we were called from the cad_erase_dialog, make sure it is closed properly
+    if (cad_erase_dialog) 
+        Draw_CAD_Objects_erase_dialog_close(w,clientData,callData);
 
     CAD_object_delete_all();
     polygon_last_x = -1;    // Invalid position

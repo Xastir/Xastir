@@ -8213,7 +8213,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             CAD_sub,
             al,
             ac);
-    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_erase,NULL);
+    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_erase_dialog,NULL);
 
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
@@ -20412,9 +20412,11 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 // ??????????????
 // Should this be XmStringCreateLocalized, or another XmString creation function with XmCHARSET_TEXT??
 // Not sure of the implications of using localization or not when creating and extracting the picklist values.
+// XmStringCreateLtoR, allthough depreciated appears to be in standard use in xastir, use it pending 
+// global conversion.
 // ??????????????
 
-    load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
+    load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
     XtVaGetValues(load_predefined_objects_menu_from_file, 
                   XmNselectedPosition, &load_predefined_cb_selected);
     // Use the file specified on the picklist if one is selected.
@@ -20425,6 +20427,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     xastir_snprintf(predefined_object_definition_filename,
                    sizeof(predefined_object_definition_filename),
                    XmStringUnparse(load_predefined_cb_selection,NULL,XmCHARSET_TEXT,XmCHARSET_TEXT,NULL,0,XmOUTPUT_ALL));
+                   //XmStringGetLtoR(load_predefined_cb_selection,XmFONTLIST_DEFAULT_TAG,temp));
     XmStringFree(load_predefined_cb_selection);
     /* Repopulate the predefined object (SAR/Public service) struct */
     Populate_predefined_objects(predefinedObjects); 
@@ -20773,11 +20776,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        cb_item = XmStringCreateLocalized("predefined_SAR.sys");
+        cb_item = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,1,1);  
-        cb_item = XmStringCreateLocalized("predefined_EVENT.sys");
+        cb_item = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,2,1);  
-        cb_item = XmStringCreateLocalized("predefined_USER.sys");
+        cb_item = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,3,1);  
         XmStringFree(cb_item);
 
@@ -20965,7 +20968,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             // Option to load the predefined SAR objects menu items from a file.
             // Display the filename if one is currently selected and option is enabled.
             if (predefined_object_definition_filename != NULL ) {
-                XmString tempSelection = XmStringCreateLocalized(predefined_object_definition_filename);
+                XmString tempSelection = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
                 XmComboBoxSelectItem(load_predefined_objects_menu_from_file, tempSelection);
                 XmStringFree(tempSelection);
             }
