@@ -4889,7 +4889,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
-    //Widget sar_object_menu, sar_object_sub;
     Widget sar_object_menu;
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
@@ -8144,7 +8143,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    // "Create SAR Objects"
+    // "Predefined Objects"
     sar_object_menu=XtVaCreateManagedWidget(langcode("POPUPMA045"),
             xmCascadeButtonGadgetClass,
             right_menu_popup,
@@ -8153,6 +8152,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
     BuildPredefinedSARMenu_UI(&sar_object_sub);
 
     CAD_sub=XmCreatePulldownMenu(right_menu_popup,
@@ -8523,30 +8523,40 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
     int i;   // number of items in menu
     int ac;  // number of arguments
     Arg al[100];  // arguments
+
+
     // Set standard menu item arguments to use with each widget.
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
     // Before building menu, make sure that any existing menu items are removed
     // this allows the menu to be changed on the fly while the program is running.
-    for (i=0;i<MAX_NUMBER_OF_PREDEFINED_OBJECTS;i++) {
-        if (predefined_object_menu_items[i]!=NULL) {
+    //
+    for (i = 0; i < MAX_NUMBER_OF_PREDEFINED_OBJECTS; i++) {
+        if (predefined_object_menu_items[i] != NULL) {
              XtDestroyWidget(predefined_object_menu_items[i]);
-             predefined_object_menu_items[i]=NULL;
+             predefined_object_menu_items[i] = NULL;
         }
     }
     // Now build a menu item for each entry in the predefinedObjects array.
-    for (i=0; i<number_of_predefined_objects; i++) {
+    for (i = 0; i < number_of_predefined_objects; i++) {
+
         // Walk through array of predefined objects and
         // build a menu item for each predefined object.
-        if (predefinedObjects[i].show_on_menu==1) {
+        //
+        if (predefinedObjects[i].show_on_menu == 1) {
+
             // Some predefined objects are hidden to allow construction
             // of two predefined objects in the same place at the same
             // time with one menu item.
+
             if(debug_level & 1)
-                fprintf(stderr,"Menu item with name: %s \n",predefinedObjects[i].menu_call);
+                fprintf(stderr,
+                    "Menu item with name: %s \n",
+                    predefinedObjects[i].menu_call);
 
             predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
                 xmPushButtonGadgetClass,
@@ -8559,11 +8569,13 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
                 Create_SAR_Object,
                 (int *)predefinedObjects[i].index);
 
-            if (predefinedObjects[i].index_of_child>-1) {
+            if (predefinedObjects[i].index_of_child > -1) {
+
                 // This second callback allows stacking of two
                 // objects such as a PLS with 0.25 and 0.5 and a
                 // PLS_ with 0.75 and 1.0 mile probability circles.
-                if (predefinedObjects[i].index_of_child<number_of_predefined_objects) {
+                //
+                if (predefinedObjects[i].index_of_child < number_of_predefined_objects) {
                     XtAddCallback(predefined_object_menu_items[i],
                         XmNactivateCallback,
                         Create_SAR_Object,
@@ -20424,15 +20436,16 @@ void Configure_defaults_destroy_shell( /*@unused@*/ Widget widget, XtPointer cli
 
 void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
-
     int load_predefined_cb_selected;
     XmString load_predefined_cb_selection;
+
 
     output_station_type = Station_transmit_type;
     if ((output_station_type >= 1) && (output_station_type <= 3)) {
         next_time = 60;
         max_transmit_time = (time_t)120l;       // shorter beacon interval for mobile stations
-    } else {
+    }
+    else {
         max_transmit_time = (time_t)900l;
     }
 
@@ -20453,31 +20466,59 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     // Predefined (SAR/EVENT) objects menu loading (default hardcoded SAR objects or objects from file)
     predefined_menu_from_file = (int)XmToggleButtonGetState(load_predefined_objects_menu_from_file_enable);
+
     // Use the file specified on the picklist if one is selected.
     load_predefined_cb_selected = 0;
 
-// ??????????????
-// Should this be XmStringCreateLocalized, or another XmString creation function with XmCHARSET_TEXT??
-// Not sure of the implications of using localization or not when creating and extracting the picklist values.
-// XmStringCreateLtoR, allthough depreciated appears to be in standard use in xastir, use it pending 
-// global conversion.
-// ??????????????
-
-    load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
     XtVaGetValues(load_predefined_objects_menu_from_file, 
-                  XmNselectedPosition, &load_predefined_cb_selected);
+        XmNselectedPosition,
+        &load_predefined_cb_selected);
+
+
     // Use the file specified on the picklist if one is selected.
-    if (load_predefined_cb_selected>0) {
+    if (load_predefined_cb_selected > 0) {
+
+        // XtVaGetValues() expects to be able to write into
+        // allocated memory.
+        //
+        load_predefined_cb_selection = (XmString)malloc(MAX_FILENAME);
+
         XtVaGetValues(load_predefined_objects_menu_from_file, 
-                      XmNselectedItem,&load_predefined_cb_selection);
+            XmNselectedItem,
+            &load_predefined_cb_selection);
     }
+    else {
+
+        // ??????????????
+        // Should this be XmStringCreateLocalized, or another
+        // XmString creation function with XmCHARSET_TEXT??  Not
+        // sure of the implications of using localization or not
+        // when creating and extracting the picklist values.
+        // XmStringCreateLtoR, allthough deprecated appears to be in
+        // standard use in Xastir, use it pending global
+        // conversion.
+        // ??????????????
+
+        load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+    }
+
     xastir_snprintf(predefined_object_definition_filename,
-                   sizeof(predefined_object_definition_filename),
-                   XmStringUnparse(load_predefined_cb_selection,NULL,XmCHARSET_TEXT,XmCHARSET_TEXT,NULL,0,XmOUTPUT_ALL));
-                   //XmStringGetLtoR(load_predefined_cb_selection,XmFONTLIST_DEFAULT_TAG,temp));
+        sizeof(predefined_object_definition_filename),
+        XmStringUnparse(load_predefined_cb_selection,
+            NULL,
+            XmCHARSET_TEXT,
+            XmCHARSET_TEXT,
+            NULL,
+            0,
+            XmOUTPUT_ALL) );
+
+        //XmStringGetLtoR(load_predefined_cb_selection,XmFONTLIST_DEFAULT_TAG,temp));
+
     XmStringFree(load_predefined_cb_selection);
-    /* Repopulate the predefined object (SAR/Public service) struct */
+
+    // Repopulate the predefined object (SAR/Public service) struct
     Populate_predefined_objects(predefinedObjects); 
+
     // Rebuild the predefined objects SAR/Public service menu.
     BuildPredefinedSARMenu_UI(&sar_object_sub);
 
@@ -20791,7 +20832,9 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         xastir_snprintf(loadfrom,
                         sizeof(loadfrom),
                         "%s %s",
-                        langcode("WPUPCFD031"),get_user_base_dir("config"));
+                        langcode("WPUPCFD031"),
+                        get_user_base_dir("config"));
+
         load_predefined_objects_menu_from_file_enable = XtVaCreateManagedWidget(loadfrom,
                 xmToggleButtonWidgetClass,
                 my_form,
@@ -20806,6 +20849,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
         // Combo box to pick file from which to load predefined objects menu
         load_predefined_objects_menu_from_file = XtVaCreateManagedWidget("Load objects menu filename ComboBox",
                 xmComboBoxWidgetClass,
@@ -20823,10 +20867,15 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
         cb_item = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,1,1);  
+        XmStringFree(cb_item);
+
         cb_item = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,2,1);  
+        XmStringFree(cb_item);
+
         cb_item = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,3,1);  
         XmStringFree(cb_item);
