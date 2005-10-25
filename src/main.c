@@ -20863,7 +20863,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNcomboBoxType, XmDROP_DOWN_LIST,
-                XmNpositionMode, XmONE_BASED,
+                XmNpositionMode, XmONE_BASED, 
+                XmNvisibleItemCount, 3,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
