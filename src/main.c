@@ -167,6 +167,7 @@
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>
+#include <Xm/ComboBox.h>
 
 // Must be last include file
 #include "leak_detection.h"
