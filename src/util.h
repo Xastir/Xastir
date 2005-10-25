@@ -145,7 +145,7 @@ extern int check_unproto_path( char *data );
 
 extern void set_dangerous( char *ptr );
 extern void clear_dangerous(void);
-
+extern void *rpl_malloc (size_t size);
 
 
 #endif // __XASTIR_UTIL_H

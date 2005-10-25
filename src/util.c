@@ -76,6 +76,10 @@ extern int pthread_mutexattr_setkind_np(pthread_mutexattr_t *attr, int kind);
 #include <curl/curl.h>
 #endif  // HAVE_LIBCURL
 
+// Needed for size_t
+#include <sys/types.h>
+
+
 // Must be last include file
 #include "leak_detection.h"
 
@@ -4924,7 +4928,6 @@ void clear_dangerous(void) {
 
 
 
-#if (HAVE_MALLOC == 0)
 //
 // Work around bug on some systems where malloc (0) fails.
 // written by Jim Meyering
@@ -4934,21 +4937,14 @@ void clear_dangerous(void) {
 // passed a 0 value, the Autoconf macro will do this:
 //      #define malloc rpl_malloc
 // We then need to have an rpl_malloc function defined.  Here it is:
- 
-#undef malloc
-#include <sys/types.h>
- 
-char *malloc ();
-
- 
+//
 // Allocate an N-byte block of memory from the heap.
 // If N is zero, allocate a 1-byte block.
- 
-char * rpl_malloc (size_t n) {
-    if (n == 0)
-    n = 1;
-    return malloc (n);
+// 
+void *rpl_malloc (size_t size) {
+    if (size == 0)
+        size++;
+    return malloc (size);
 }
-#endif  // HAVE_MALLOC==0
 
 
