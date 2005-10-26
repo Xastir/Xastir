@@ -11196,7 +11196,7 @@ void shut_down_server(void) {
 //
 void restart(int sig) {
 
-    if (debug_level & 1)
+//    if (debug_level & 1)
         fprintf(stderr,"Shutting down Xastir...\n");
 
     save_data();
@@ -11219,7 +11219,7 @@ void restart(int sig) {
     CHECK_LEAKS();
 #endif  // USING LIBGC
 
-    if (debug_level & 1)
+//    if (debug_level & 1)
         fprintf(stderr,"Attempting to restart Xastir...\n");
 
     // Set the global variable which tells UpdateTime() to do a
@@ -25395,7 +25395,17 @@ fprintf(stderr,
     (void) signal(SIGQUIT,quit);
     (void) signal(SIGTERM,quit);
 
+
+    // Make sure that we reset to SIG_DFL handler any time we spawn
+    // a child process.  This is so the child process doesn't call
+    // restart() as well.  Only the main process needs to call
+    // restart() on receiving a SIGHUP.  We can do this via the
+    // following call:
+    //
+    //          (void)signal(SIGHUP,SIG_DFL);
+    //
     (void) signal(SIGHUP,restart);      // Shut down/restart if SIGHUP received
+
 
 #ifndef OLD_PTHREADS
     (void) signal(SIGUSR1,usr1sig);     // take a snapshot on demand 
