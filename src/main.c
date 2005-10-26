@@ -11186,10 +11186,18 @@ void shut_down_server(void) {
 // This function should be nearly identical to the quit() function
 // below.
 //
+// One strangeness is that this routine gets called when any of the
+// spawned processes get a SIGHUP also, which means when we shut
+// down the TCP/UDP servers or similar.  For some reason it still
+// appears to work, even though restart() gets called multiple
+// times when we shut down Xastir or the servers.  We probably need
+// to call signal() from outside any signal handlers to tell it to
+// ignore further SIGHUP's.
+//
 void restart(int sig) {
 
-//    if (debug_level & 1)
-    fprintf(stderr,"Shutting down Xastir...\n");
+    if (debug_level & 1)
+        fprintf(stderr,"Shutting down Xastir...\n");
 
     save_data();
 
@@ -11197,7 +11205,6 @@ void restart(int sig) {
     shutdown_all_active_or_defined_port(-1);
 
     shut_down_server();
-
 
 #ifdef USE_PID_FILE_CHECK 
     // remove the PID file
@@ -11212,10 +11219,8 @@ void restart(int sig) {
     CHECK_LEAKS();
 #endif  // USING LIBGC
 
-
-//    if (debug_level & 1)
+    if (debug_level & 1)
         fprintf(stderr,"Attempting to restart Xastir...\n");
-
 
     // Set the global variable which tells UpdateTime() to do a
     // restart.
@@ -11228,6 +11233,7 @@ void restart(int sig) {
 
 
 void quit(int sig) {
+
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
 
