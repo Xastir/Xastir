@@ -1445,15 +1445,15 @@ time_t time_from_aprsstring(char *aprs_time) {
     // tm_gmtoff is seconds EAST of UTC.
     zone = time_now->tm_gmtoff;
     //fprintf(stderr,"gmtoff: %ld, tm_isdst: %d\n",
-    //    time_now->tm_gmtoff,
-    //    time_now->tm_isdst);
+    //time_now->tm_gmtoff,
+    //time_now->tm_isdst);
 #else   // HAVE_TM_GMTOFF
     // Note:  timezone is seconds WEST of UTC.  Need to negate
     // timezone to have the offset occur in the correct direction.
     zone = -((int)timezone - 3600 * (int)(time_now->tm_isdst > 0));
     //fprintf(stderr,"timezone: %d, tm_isdst: %d\n",
-    //    timezone,
-    //    time_now->tm_isdst);
+    //timezone,
+    //time_now->tm_isdst);
 #endif  // HAVE_TM_GMTOFF
     // zone should now be the number to subtract in order to get
     // localtime, in seconds.  For PST, I get -28800 which equals -8
@@ -1529,12 +1529,26 @@ time_t time_from_aprsstring(char *aprs_time) {
             // already has the sign set correctly to get the correct
             // time by using addition (PDT zone = -28800).
 
-//WE7U
             // Initialize daylight savings time to 0 in this
             // instance, 'cuz we're starting with Zulu time and we
             // want the localtime conversion to change it correctly.
             // Zulu time has no daylight savings time offset.
-            alert_time.tm_isdst = 0;
+            //
+// WE7U:
+// No, it gave us an offset of 6 hours from UTC when we set this to
+// zero, 7 hours (correct) when we set it to one, during the summer.
+// Hopefully it will give us an 8-hour offset during the wintertime
+// but that remains to be seen...
+//
+// FYI:  We're in daylight savings time during the summer, when
+// we're at a 7-hour offset.  Winter is actual time and a -8 hour
+// offset.
+//
+// One on-line resource suggested setting it to -1 for automatic
+// determination of DST.  This works too, during the summer.  Again,
+// check during the wintertime too when we're at normal time.
+            //
+            alert_time.tm_isdst = -1;
 
 
             // Do the hour offset
