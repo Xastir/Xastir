@@ -23,7 +23,15 @@
 # perhaps even distribution-specific, so perhaps we should have a
 # command-line flag to enable those tests too.
 
+# Use this command to tail the status file through multiple
+# compiles:
+#
+#  tail -F --max-unchanged-stats=1 -s 0.05 regression.log
+#
 
+
+
+date
 nice ./bootstrap.sh
 
 
@@ -563,4 +571,5 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 rm -rf autom4te.cache
 rm regression.log
 
+date
 
