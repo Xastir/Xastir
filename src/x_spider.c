@@ -1053,6 +1053,12 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             // child process
             //
 
+
+            // Go back to default signal handler instead of calling
+            // restart() on SIGHUP
+            (void) signal(SIGHUP,SIG_DFL);
+
+
 /*
             fprintf(stderr,
                 "Client address: %s\n",
@@ -1426,6 +1432,11 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         //
 
 
+        // Go back to default signal handler instead of calling
+        // restart() on SIGHUP
+        (void) signal(SIGHUP,SIG_DFL);
+
+
         // Change the name of the new child process.  So far this
         // only works for "ps" listings, not for "top".  This code
         // only works on Linux.  For BSD use setproctitle(3), NetBSD
@@ -1533,6 +1544,11 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
         //
         // Child process
         //
+
+
+        // Go back to default signal handler instead of calling
+        // restart() on SIGHUP
+        (void) signal(SIGHUP,SIG_DFL);
 
 
         // Change the name of the new child process.  So far this

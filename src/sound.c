@@ -57,6 +57,11 @@ pid_t play_sound(char *sound_cmd, char *soundfile) {
 // This is the child process
 
 
+                    // Go back to default signal handler instead of
+                    // calling restart() on SIGHUP
+                    (void) signal(SIGHUP,SIG_DFL);
+
+
                     // Change the name of the new child process.  So
                     // far this only works for "ps" listings, not
                     // for "top".  This code only works on Linux.

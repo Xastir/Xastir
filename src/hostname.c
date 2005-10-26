@@ -150,6 +150,11 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
             if (host_pid==0) {  // We're in the child process
 
 
+                // Go back to default signal handler instead of
+                // calling restart() on SIGHUP
+                (void) signal(SIGHUP,SIG_DFL);
+
+
                 // Change the name of the new child process.  So far
                 // this only works for "ps" listings, not for "top".
                 // This code only works on Linux.  For BSD use

@@ -90,6 +90,12 @@ int SayText(char *text) {
 
         macspeech_processes++;
 
+
+        // Go back to default signal handler instead of calling
+        // restart() on SIGHUP
+        (void) signal(SIGHUP,SIG_DFL);
+
+
         // Wait for the speech system to be freed up.  Note that if
         // we have multiple processes queued up we don't know in
         // which order they'll get access to the speech subsystem.
