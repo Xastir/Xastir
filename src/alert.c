@@ -1194,7 +1194,8 @@ void alert_build_list(Message *fill) {
                 &title[4][0]);       // ...
 
         if (ret < 3)
-          fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s, %s\n", ret, fill->from_call_sign, fill->message_line);
+          fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s->%s: %s\n", ret, 
+			fill->from_call_sign, fill->call_sign, fill->message_line);
 
         // Force a termination for each
         entry.activity[20]  = '\0';
