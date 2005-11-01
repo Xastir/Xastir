@@ -4563,9 +4563,6 @@ void split_string( char *data, char *cptr[], int max ) {
 
   for (ii = 1; ii < max; ii++) {
     temp = strchr(current,',');  // Find next comma
-    if (!temp) {
-	temp = strchr(current, '/'); // Find / for band separator
-    }
 
     if(!temp) { // No commas found 
       return; // All done with string
