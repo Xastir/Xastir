@@ -258,7 +258,6 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
     type, FromCall, ToCall, Path, Data);
 */
 
-
     // Check size of data
     if (length > 512)
         return;
@@ -5117,6 +5116,18 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
 //fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
+
+    // Check whether transmits are disabled globally
+    if (transmit_disable) {
+        return;
+    }    
+
+    // Check whether transmit has been enabled for this interface.
+    // If not, get out while the gettin's good.
+    if (devices[port].transmit_data != 1) {
+        return;
+    }
+
     transmit_txt[0] = '\0';
 
     // Format the destination callsign
@@ -7875,6 +7886,11 @@ void output_my_aprs_data(void) {
     char my_comment_tx[MAX_COMMENT+1];
 
 
+    // Check whether transmits are disabled globally
+    if (transmit_disable) {
+        return;
+    }
+
     header_txt_save[0] = '\0';
     data_txt_save[0] = '\0';
     sec = sec_now();
@@ -8641,6 +8657,12 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     char output_net[100];
     int ok, start, finish, port;
     int done;
+
+
+    // Check whether transmits are disabled globally
+    if (transmit_disable) {
+        return;
+    }
 
     //// cbell- if path is null, strlen/printf segv in solaris
     if (path == NULL) { 

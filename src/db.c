@@ -15045,6 +15045,11 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     char big_string[2000];
 
 
+    // Check whether transmits are disabled globally
+    if (transmit_disable) {
+        return;
+    }
+
     // Check whether relay_digipeat has been enabled for this interface.
     // If not, get out while the gettin's good.
     if (devices[port].relay_digipeat != 1) {
