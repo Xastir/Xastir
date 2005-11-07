@@ -560,34 +560,28 @@ char *remove_trailing_asterisk(char *data) {
 
 
 
-// Removes trailing zeroes from string, then removes trailing
-// dashes.  If multiple zeroes it removes them all.  Same for
-// multiple dashes.
+// Removes trailing "-0" from string.
 //
 // Modifies "data" variable.
 //
 char *remove_trailing_dash_zero(char *data) {
     char *ptr;
+    char *ptr2;
+    int len = strlen(data);
 
-    // Check for '-' character in string.
-    if (strchr(data, '-')) {
 
-        // Check for trailing zeroes and remove.
- 
-        ptr = data + (strlen(data) - 1);
+    // String too short?
+    if (len < 2)
+        return(data);
 
-        // Remove trailing zeroes
-        while (ptr >= data && *ptr == '0') {
-            *ptr = '\0'; // Terminate at zero char
-            ptr--;
-        }
+    ptr2 = data + len - 1; // Point to last char
+    ptr = ptr2 - 1; // Point to next-to-last char
 
-        // Remove trailing dashes
-        while (ptr >= data && *ptr == '-') {
-            *ptr = '\0';  // Terminate at dash
-            ptr--;
-        }
+    // Check for "-0" at end.  Remove if found.
+    if (*ptr == '-' && *ptr2 == '0') {
+        *ptr = '\0';    // Terminate
     }
+
     return(data);
 }
 
