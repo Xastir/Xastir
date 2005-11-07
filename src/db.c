@@ -14847,10 +14847,11 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 //
 // 6-PACK
 //
-// Multi-Drop KISS    8-bit XOR Checksum, multiport TNC's -,
-// G8BPQ KISS         8-bit XOR Checksum, multiport TNC's -|-- All the same!
-// XKISS (Kantronics) 8-bit XOR Checksum, multiport TNC's -'
-// JKISS (G8BPQ KISS)
+// KISS Multi-drop (Kantronics) 8-bit XOR Checksum, multiport TNC's (AGWPE compatible)
+// BPQKISS (Multi-drop)         8-bit XOR Checksum, multiport TNC's
+// XKISS (Kantronics)           8-bit XOR Checksum, multiport TNC's
+//
+// JKISS              (AGWPE and BPQ32 compatible)
 //
 // MKISS              Linux driver which supports KISS/BPQ and
 //                    hardware handshaking?  Also Paccomm command to
