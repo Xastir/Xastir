@@ -20479,7 +20479,8 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     XtVaGetValues(load_predefined_objects_menu_from_file, 
         XmNselectedPosition,
-        &load_predefined_cb_selected);
+        &load_predefined_cb_selected,
+        NULL);
 
 
     // Use the file specified on the picklist if one is selected.
@@ -20492,7 +20493,8 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
         XtVaGetValues(load_predefined_objects_menu_from_file, 
             XmNselectedItem,
-            &load_predefined_cb_selection);
+            &load_predefined_cb_selection,
+            NULL);
     }
     else {
 
