@@ -529,8 +529,8 @@ Cell Name
                         // lines will get you into trouble.
                         x = coord_lon - x_long_offset;
                         y = coord_lat - y_lat_offset;
-                        x = x / scale_x;
-                        y = y / scale_y;
+                        x /= scale_x;
+                        y /= scale_y;
 
                         ok = 1;
                         if (x >  16000) ok = 0;     // Skip this point
