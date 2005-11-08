@@ -25178,7 +25178,6 @@ int main(int argc, char *argv[], char *envp[]) {
 
     delay_time = 0;
     last_weather_cycle = sec_now();
-    packet_data_display = 0;
     redraw_on_new_packet_data = 0;
     next_file_read = sec_now();         // init file replay timing
     redraw_on_new_data = 0;

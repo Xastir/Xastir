@@ -521,7 +521,6 @@ extern void mem_display(void);
 extern long sort_input_database(char *filename, char *fill, int size);
 extern void sort_display_file(char *filename, int size);
 extern void clear_sort_file(char *filename);
-extern int  packet_data_display;
 extern void display_packet_data(void);
 extern int  redraw_on_new_packet_data;
 extern int decode_ax25_header(unsigned char *incoming_data, int length);

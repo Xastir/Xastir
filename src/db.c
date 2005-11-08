@@ -121,11 +121,10 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station);
 int  new_message_data;
 time_t last_message_remove;     // last time we did a check for message removing
 
-// Save most recent 100 packets in an array called packet_data[]
+// Save most recent 100 packets in an array called packet_data_string[]
 #define MAX_PACKET_DATA_DISPLAY 100
-char packet_data[MAX_PACKET_DATA_DISPLAY][MAX_LINE_SIZE+1];
 char packet_data_string[MAX_PACKET_DATA_DISPLAY * (MAX_LINE_SIZE+1)];
-int  packet_data_display;   // Last line filled in array (high water mark)
+static int  packet_data_display = MAX_PACKET_DATA_DISPLAY;   // Last line filled in array (high water mark)
 int  redraw_on_new_packet_data;
 
 int station_count;              // number of stored stations
@@ -12300,7 +12299,7 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
 void display_packet_data(void) {
 
     if( (Display_data_dialog != NULL)
-            && (redraw_on_new_packet_data==1)) {
+            && (redraw_on_new_packet_data !=0)) {
         int pos;
         int last_char;
 
@@ -12341,11 +12340,11 @@ void display_packet_data(void) {
 // otherwise.  -99 should give a "**" display, meaning all ports.
 //
 void packet_data_add(char *from, char *line, int data_port) {
-    int i;
     int offset;
     char prefix[3] = "";
     int local_tnc_interface = 0;
     int network_interface = 0;
+    char *eol, *eod;
 
 
     if (data_port == -1) {  // x_spider port (server port)
@@ -12394,48 +12393,19 @@ void packet_data_add(char *from, char *line, int data_port) {
 //        Display_packet_data_type,
 //        data_port);
 
-    redraw_on_new_packet_data=1;
-    if (packet_data_display < MAX_PACKET_DATA_DISPLAY) {
-        // Array is not filled yet.  Add the new text at the
-        // next position in the array.
-        xastir_snprintf(packet_data[packet_data_display],
-            sizeof(packet_data[packet_data_display]),
-            "%s:%s-> %s\n",
-            prefix,
-            from,
-            line+offset);
-        packet_data_display++;
+    redraw_on_new_packet_data++;
+    eod = packet_data_string + strlen(packet_data_string);
+    xastir_snprintf(eod, MAX_LINE_SIZE,
+                    "%s:%s-> %s\n", prefix, from, line+offset);
+    if (!packet_data_display) {
+        // Array is filled now.  Remove the oldest
+        // line from the array.
+        eol = strchr(packet_data_string, '\n');
+        eol++;
+        memmove(packet_data_string, eol, eod-eol+MAX_LINE_SIZE);
     }
     else {
-        // Move everything up one and add the new text at the
-        // last position.
-        packet_data_display = MAX_PACKET_DATA_DISPLAY;
-        for ( i = 0; i < (MAX_PACKET_DATA_DISPLAY - 1); i++ ) {
-            xastir_snprintf(packet_data[i],
-                sizeof(packet_data[i]),
-                "%s",
-                packet_data[i+1]);
-        }
-
-        xastir_snprintf(packet_data[MAX_PACKET_DATA_DISPLAY-1],
-            sizeof(packet_data[MAX_PACKET_DATA_DISPLAY-1]),
-            "%s:%s-> %s\n",
-            prefix,
-            from,
-            line+offset);
-    }
-
-    // Write the current data in the array out to the
-    // packet_data_string variable for use in the
-    // display_packet_data() function above.
-    packet_data_string[0] = '\0';   // Empty the string
-    for ( i = 0; i <= packet_data_display; i++ ) {
-        int string_end = strlen(packet_data_string);
-
-        xastir_snprintf(&packet_data_string[string_end],
-            sizeof(packet_data_string) - string_end,
-            "%s",
-            packet_data[i]);
+        packet_data_display--;
     }
 }
 
