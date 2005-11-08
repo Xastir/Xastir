@@ -652,7 +652,7 @@ char gps_dbfawk_format[]="BEGIN_RECORD {key=\"\"; lanes=1; color=%d; name=\"%s\"
 int gps_map_color = 0;              // Chosen color of gps map
 int gps_map_color_offset;           // offset into colors array of that color.
 char gps_map_type[30];              // Type of GPS download
-void check_for_new_gps_map(void);
+void check_for_new_gps_map(int curr_sec);
 Widget GPS_operations_dialog = (Widget)NULL;
 #endif  // HAVE_GPSMAN
 
@@ -3864,15 +3864,15 @@ void statusline(char *status_text,int update) {
 // see this line for a few seconds each 10 minutes (30 minutes for
 // Canada), we should be within the ID rules.
 //
-void check_statusline_timeout(void) {
+void check_statusline_timeout(int curr_sec) {
     char status_text[100];
     int id_interval = (int)(9.5 * 60);
 //    int id_interval = (int)(1 * 5);  // Debug
 
 
     if ( (last_statusline != 0
-            && (last_statusline < sec_now() - STATUSLINE_ACTIVE))
-        || (last_id_time < sec_now() - id_interval) ) {
+            && (last_statusline < curr_sec - STATUSLINE_ACTIVE))
+        || (last_id_time < curr_sec - id_interval) ) {
 
 
         // We save last_id_time and identify for a few seconds if
@@ -3885,7 +3885,7 @@ void check_statusline_timeout(void) {
 
         XmTextFieldSetString(text, status_text);
 
-        if (last_id_time < sec_now() - id_interval) {
+        if (last_id_time < curr_sec - id_interval) {
             popup_ID_message(langcode("BBARSTA040"),status_text);
 #ifdef HAVE_FESTIVAL
             if (festival_speak_ID) {
@@ -3913,12 +3913,12 @@ void check_statusline_timeout(void) {
         // that amount of time.  The application will be unresponsive
         // during that time.
 
-        if (last_id_time < (sec_now() - (9 * 60))) {
+        if (last_id_time < (curr_sec - (9 * 60))) {
             //fprintf(stderr,"Identifying at nine minutes\n");
             //sleep(1);
         }
 
-        last_id_time = sec_now();
+        last_id_time = curr_sec;
     }
 }
 
@@ -10065,7 +10065,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     }
     else {
         // Time is behaving normally.
-        last_updatetime = sec_now();
+        last_updatetime = current_time;
         if (time_went_backwards) {
             fprintf(stderr,
                 "Xastir is done sleeping due to time reversal.\n\n");
@@ -10095,7 +10095,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // Perform the regular updates.
 
             popup_time_out_check();             // clear popup windows after timeout
-            check_statusline_timeout();         // clear statusline after timeout
+            check_statusline_timeout(current_time);     // clear statusline after timeout
             check_station_remove();             // remove old stations
             check_message_remove();             // remove old messages
 
@@ -10126,7 +10126,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Check whether we've just completed a GPS transfer and
             // have new maps to draw because of it.  This function
             // can cause a complete redraw of the maps.
-            check_for_new_gps_map();
+            check_for_new_gps_map(current_time);
 
 
             // Check whether it is time to snag RINO waypoints
@@ -10135,8 +10135,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             if (RINO_download_interval > 0) {
                 int rino_time = RINO_download_interval * 60;
 
-                if (last_RINO_download + rino_time < sec_now()) {
-                    last_RINO_download = sec_now();
+                if (last_RINO_download + rino_time < current_time) {
+                    last_RINO_download = current_time;
                     GPS_operations(NULL, "7", NULL);
                 }
             }
@@ -10150,14 +10150,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // Check on resize requests
             if (request_resize) {
-//                if (last_input_event < sec_now()) {
+//                if (last_input_event < current_time) {
                     da_resize_execute(w);
 //                }
             }
 
 
             if (request_new_image) {
-//                if (last_input_event < sec_now()) {
+//                if (last_input_event < current_time) {
                     new_image(w);
 //                }
             }
@@ -10165,9 +10165,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // check on Redraw requests
             if (         ( (redraw_on_new_data > 1)
-                        || (redraw_on_new_data && (sec_now() > last_redraw + REDRAW_WAIT))
-                        || (sec_now() > next_redraw)
-                        || (pending_ID_message && (sec_now() > remove_ID_message_time)) )
+                        || (redraw_on_new_data && (current_time > last_redraw + REDRAW_WAIT))
+                        || (current_time > next_redraw)
+                        || (pending_ID_message && (current_time > remove_ID_message_time)) )
                     && !wait_to_redraw) {
 
                 int temp_alert_count;
@@ -10177,7 +10177,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 // Cause refresh_image() to happen if no other
                 // triggers occurred, but enough time has passed.
-                if (sec_now() > next_redraw) {
+                if (current_time > next_redraw) {
                     alert_redraw_on_update++;
                 }
 
@@ -10185,18 +10185,19 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // last weather alert redraw.
                 if ( (alert_redraw_on_update
                         && !pending_ID_message
-                        && ( sec_now() > ( last_alert_redraw + WX_ALERTS_REFRESH_TIME ) ))
-                      || (pending_ID_message && (sec_now() > remove_ID_message_time)) ) {
+                        && ( current_time > ( last_alert_redraw + WX_ALERTS_REFRESH_TIME ) ))
+                      || (pending_ID_message && (current_time > remove_ID_message_time)) ) {
 
 
                     // If we got here because of the ID_message
                     // stuff, clear the variable.
-                    if (pending_ID_message && (sec_now() > remove_ID_message_time)) {
+                    if (pending_ID_message && (current_time > remove_ID_message_time)) {
                         pending_ID_message = 0;
                     }
 
                 //if (alert_redraw_on_update) {
-                    //fprintf(stderr,"Alert redraw on update: %ld\t%ld\t%ld\n",sec_now(),last_alert_redraw,WX_ALERTS_REFRESH_TIME);
+                    //fprintf(stderr,"Alert redraw on update: %ld\t%ld\t%ld\n",
+                    //          current_time, last_alert_redraw, WX_ALERTS_REFRESH_TIME);
 
                     if (!pending_ID_message) {
                         refresh_image(da);  // Much faster than create_image.
@@ -10240,8 +10241,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 }
 
                 redraw_on_new_data = 0;
-                next_redraw = sec_now()+60;     // redraw every minute, do we need that?
-                last_redraw = sec_now();
+                next_redraw = current_time+60;     // redraw every minute, do we need that?
+                last_redraw = current_time;
 
                 // This assures that we periodically check for expired alerts
                 // and schedule a screen update if we find any.
@@ -10252,20 +10253,20 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 
             if (Display_.dr_data
-                    && ((sec_now() - sec_last_dr_update) > update_DR_rate) ) {
+                    && ((current_time - sec_last_dr_update) > update_DR_rate) ) {
 
 //WE7U:  Possible slow-down here w.r.t. dead-reckoning?  If
 //update_DR_rate is too quick, we end up looking through all of the
 //stations in station list much too often and using a lot of CPU.
 
                 redraw_on_new_data = 1;
-                sec_last_dr_update = sec_now();
+                sec_last_dr_update = current_time;
             }
 
 
             // Look for packet data and check port status
+            display_packet_data();
             if (delay_time > 15) {
-                display_packet_data();
                 interface_status(w);
                 delay_time = 0;
                 // check station lists
@@ -10279,7 +10280,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // so, the GPS is powered-down, lost lock, or become
             // disconnected.  Go back to listening on the TNC port.
             //
-            if (sec_now() > (sec_last_dtr + 2)) {   // 2-3 secs
+            if (current_time > (sec_last_dtr + 2)) {   // 2-3 secs
 
                 if (!gps_stop_now) {    // No GPS strings parsed
 
@@ -10288,7 +10289,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     // a while.
 //fprintf(stderr,"1:calling dtr_all_set(0)\n");
                     dtr_all_set(0);
-                    sec_last_dtr = sec_now();
+                    sec_last_dtr = current_time;
                 }
             }
 
@@ -10299,14 +10300,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             if (gps_stop_now) {
 //fprintf(stderr,"2:calling dtr_all_set(0)\n");
                 dtr_all_set(0); // Go back to TNC listen mode
-                sec_last_dtr = sec_now();
+                sec_last_dtr = current_time;
             }
 
 
             // Start the GPS listening process again
 
             // check gps start up, GPS on GPSPORT
-            if(sec_now() > sec_next_gps) {
+            if(current_time > sec_next_gps) {
 
                 // Reset the gps good-data flag
                 if (gps_stop_now) {
@@ -10323,7 +10324,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // parsed on that interface.
 //fprintf(stderr,"3:calling dtr_all_set(1)\n");
                 dtr_all_set(1);
-                sec_last_dtr = sec_now();   // GPS listen timeout
+                sec_last_dtr = current_time;   // GPS listen timeout
 
                 for(i=0; i<MAX_IFACE_DEVICES; i++) {
                     if (port_data[i].status) {
@@ -10456,12 +10457,12 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         }
                     }
                 }
-                sec_next_gps = sec_now()+gps_time;
+                sec_next_gps = current_time+gps_time;
             }
 
             // Check to reestablish a connection
-            if(sec_now() > net_next_time) {
-                net_last_time = sec_now();
+            if(current_time > net_next_time) {
+                net_last_time = current_time;
                 net_next_time = net_last_time + 300;    // Check every five minutes
                 //net_next_time = net_last_time + 30;   // This statement is for debug
 
@@ -10471,8 +10472,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 #ifdef USING_LIBGC
             // Check for leaks?
-            if(sec_now() > gc_next_time) {
-                gc_next_time = sec_now() + 60;  // Check every minute
+            if(current_time > gc_next_time) {
+                gc_next_time = current_time + 60;  // Check every minute
 //fprintf(stderr,"Checking for leaks\n");
                 CHECK_LEAKS();
             }
@@ -10483,24 +10484,24 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 if (last_time == 0) {
                     // first update
                     next_time = 120;
-                    last_time = sec_now();
+                    last_time = current_time;
                     do_time = 1;
                 } else {
                     // check for update
-                    //fprintf(stderr,"Checking --- time %ld time to update %ld\n",sec_now(),last_time+next_time);
-                    if(sec_now() >= (last_time + next_time)) {
+                    //fprintf(stderr,"Checking --- time %ld time to update %ld\n",current_time,last_time+next_time);
+                    if(current_time >= (last_time + next_time)) {
                         next_time += next_time;
                         if (next_time > max_transmit_time)
                             next_time = max_transmit_time;
 
-                        last_time = sec_now();
+                        last_time = current_time;
                         do_time = 1;
                     }
                 }
             }
 
             // Time to spit out a posit?
-            if ( (transmit_now || (sec_now() > posit_next_time) )
+            if ( (transmit_now || (current_time > posit_next_time) )
                 && ( my_position_valid ) ) {
 
                 //fprintf(stderr,"Transmitting posit\n");
@@ -10508,7 +10509,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // Check for proper symbol in case we're a weather station
                 (void)check_weather_symbol();
 
-                posit_last_time = sec_now();
+                posit_last_time = current_time;
 
                 if (smart_beaconing) {
                     // Schedule next computed posit time based on
@@ -10569,19 +10570,19 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // to rotate through our queues.
             // We also refresh the Station_info dialog here if
             // it is currently drawn.
-            if (sec_now() >= (last_weather_cycle + 30)) {    // Every 30 seconds
+            if (current_time >= (last_weather_cycle + 30)) {    // Every 30 seconds
                 // Note that we also write timestamps out to all of the log files
                 // from this routine.  It works out well with the 30 second update
                 // rate of cycle_weather().
                 (void)cycle_weather();
-                last_weather_cycle = sec_now();
+                last_weather_cycle = current_time;
 
                 if (station_data_auto_update)
                     update_station_info(w);  // Go refresh the Station Info display
 
                 // Time to put out raw WX data ?
-                if (sec_now() > sec_next_raw_wx) {
-                    sec_next_raw_wx = sec_now()+600;
+                if (current_time > sec_next_raw_wx) {
+                    sec_next_raw_wx = current_time+600;
 
 #ifdef TRANSMIT_RAW_WX
                     if (transmit_raw_wx)
@@ -10594,13 +10595,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             }
 
             // is it time to spit out messages?
-            check_and_transmit_messages(sec_now());
+            check_and_transmit_messages(current_time);
 
             // Is it time to spit out any delayed ack's?
             check_delayed_transmit_queue();
 
             // Is it time to spit out objects/items?
-            check_and_transmit_objects_items(sec_now());
+            check_and_transmit_objects_items(current_time);
 
             // Do we have any new bulletins to display?
             check_for_new_bulletins();
@@ -10610,7 +10611,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 (void)Snapshot();
 
             // Is it time to refresh maps? 
-            if ( map_refresh_interval && (sec_now() > map_refresh_time) ) {
+            if ( map_refresh_interval && (current_time > map_refresh_time) ) {
 
                 // Reload maps
                 // Set interrupt_drawing_now because conditions have
@@ -10625,7 +10626,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 //                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);
 //                }
 
-                map_refresh_time = sec_now() + map_refresh_interval;
+                map_refresh_time = current_time + map_refresh_interval;
             }
 
             // get data from interfaces
@@ -10863,14 +10864,14 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 if (writen(pipe_xastir_to_tcp_server,
                                         (char *)incoming_data,
                                         incoming_data_length) != incoming_data_length) {
-                                    fprintf(stderr,
-                                        "UpdateTime: Writen error: %d\n",
+                                    if (errno != EPIPE) fprintf(stderr,
+                                        "UpdateTime: Writen error (Net send x_spider): %d\n",
                                         errno);
                                 }
                                 // Terminate it with a linefeed
                                 if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
-                                    fprintf(stderr,
-                                        "UpdateTime: Writen error: %d\n",
+                                    if (errno != EPIPE) fprintf(stderr,
+                                        "UpdateTime: Writen error (Net linefeed): %d\n",
                                         errno);
                                 }
                             }
@@ -10922,13 +10923,13 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                         (char *)incoming_data,
                                         incoming_data_length) != incoming_data_length) {
                                     fprintf(stderr,
-                                        "UpdateTime: Writen error: %d\n",
+                                        "UpdateTime: Writen error (TNC Send x_spider): %d\n",
                                         errno);
                                 }
                                 // Terminate it with a linefeed
                                 if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                     fprintf(stderr,
-                                        "UpdateTime: Writen error: %d\n",
+                                        "UpdateTime: Writen error(TNC linefeed): %d\n",
                                         errno);
                                 }
                             }
@@ -10971,13 +10972,13 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                             (char *)incoming_data,
                                             incoming_data_length) != incoming_data_length) {
                                         fprintf(stderr,
-                                            "UpdateTime: Writen error: %d\n",
+                                            "UpdateTime: Writen error(HSP data): %d\n",
                                             errno);
                                     }
                                     // Terminate it with a linefeed
                                     if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                         fprintf(stderr,
-                                            "UpdateTime: Writen error: %d\n",
+                                            "UpdateTime: Writen error(HSP linefeed): %d\n",
                                             errno);
                                     }
                                 }
@@ -11023,13 +11024,13 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                             (char *)incoming_data,
                                             incoming_data_length) != incoming_data_length) {
                                         fprintf(stderr,
-                                            "UpdateTime: Writen error: %d\n",
+                                            "UpdateTime: Writen error(TNC/GPS data): %d\n",
                                             errno);
                                     }
                                     // Terminate it with a linefeed
                                     if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
                                         fprintf(stderr,
-                                            "UpdateTime: Writen error: %d\n",
+                                            "UpdateTime: Writen error(TNC/GPS linefeed): %d\n",
                                             errno);
                                     }
                                 }
@@ -11100,9 +11101,9 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
             // END- get data from interface
             // READ FILE IF OPENED
             if (read_file) {
-                if (sec_now() >= next_file_read) {
+                if (current_time >= next_file_read) {
                     read_file_line(read_file_ptr);
-                    next_file_read = sec_now() + REPLAY_DELAY;
+                    next_file_read = current_time + REPLAY_DELAY;
                 }
             }
             // END- READ FILE IF OPENED
@@ -11111,7 +11112,7 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
         // If number of stations has changed, update the status
         // line, but only once per second max.
         if (station_count != station_count_save
-                && stations_status_time != sec_now()) {
+                && stations_status_time != current_time) {
             // show number of stations in status line
             xastir_snprintf(station_num,
                 sizeof(station_num),
@@ -11122,7 +11123,7 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
 
             // Set up for next time
             station_count_save = station_count;
-            stations_status_time = sec_now();
+            stations_status_time = current_time;
         }
 
         check_pointer_position();
@@ -14011,13 +14012,13 @@ time_t check_gps_map_time = (time_t)0;
 // we've just completed a GPS transfer and need to redraw maps as a
 // result.
 //
-void check_for_new_gps_map(void) {
+void check_for_new_gps_map(int curr_sec) {
 
     // Only check once per second
-    if (check_gps_map_time == sec_now()) {
+    if (check_gps_map_time == curr_sec) {
         return; // Skip it, we already checked once this second.
     }
-    check_gps_map_time = sec_now();
+    check_gps_map_time = curr_sec;
 
 
     if ( (gps_operation_pending || gps_got_data_from)
