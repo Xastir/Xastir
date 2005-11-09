@@ -31,6 +31,7 @@ EXTRA_DIST = \
     nwsozddmmyy.dbfawk \
     nwsw_ddmmyy.dbfawk \
     nwsz_ddmmyy.dbfawk \
+    nwszoddmmyy.dbfawk \
     nwsfz_ddmmyy.dbfawk \
     predefined_EVENT.sys \
     predefined_SAR.sys \
