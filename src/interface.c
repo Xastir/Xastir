@@ -8596,13 +8596,13 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 data_txt,
                 strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
-                "UpdateTime: Writen error: %d\n",
+                "my_aprs_data: Writen error: %d\n",
                 errno);
         }
         // Terminate it with a linefeed
         if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
             fprintf(stderr,
-                "UpdateTime: Writen error: %d\n",
+                "my_aprs_data: Writen error: %d\n",
                 errno);
         }
     }
@@ -9105,13 +9105,13 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
                 data_txt,
                 strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
-                "UpdateTime: Writen error: %d\n",
+                "output_my_data: Writen error: %d\n",
                 errno);
         }
         // Terminate it with a linefeed
         if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
             fprintf(stderr,
-                "UpdateTime: Writen error: %d\n",
+                "output_my_data: Writen error: %d\n",
                 errno);
         }
     }
