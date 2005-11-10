@@ -1274,8 +1274,12 @@ void draw_shapefile_map (Widget w,
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
                 keylen = strlen(key);
                 if (debug_level & 16) {
-                    fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
-                            i,key);
+                    static char old_key[4];
+                    if (strncmp(old_key, key, 4)) {
+                      fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
+                              i,key);
+                      memcpy(old_key, key, sizeof(old_key));
+                    }
                 }
                 if (strncmp(alert->title,key,keylen) == 0) {
                     // keylen was zero, so check again using length
