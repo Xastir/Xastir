@@ -453,13 +453,13 @@ static void find_zero_position_bulletins(void) {
 // range.  If any found, it updates the Bulletins dialog.
 time_t last_bulletin_check = (time_t)0l;
 
-void check_for_new_bulletins(void) {
+void check_for_new_bulletins(int curr_sec) {
 
     // Check every 15 seconds max
-    if ( (last_bulletin_check + 15) > sec_now() ) {
+    if ( (last_bulletin_check + 15) > curr_sec ) {
         return;
     }
-    last_bulletin_check = sec_now();
+    last_bulletin_check = curr_sec;
 
     // Look first to see if we might be able to fill in positions on
     // any older bulletins, then cause a popup for those that fit
@@ -475,7 +475,7 @@ void check_for_new_bulletins(void) {
 
     // Enough time passed since most recent bulletin?  Need to have
     // enough time to perhaps fill in a distance for each bulletin.
-    if ( (last_new_bulletin_time + 15) > sec_now() ) {
+    if ( (last_new_bulletin_time + 15) > curr_sec ) {
         //fprintf(stderr,"Not enough time has passed\n");
         return;
     }

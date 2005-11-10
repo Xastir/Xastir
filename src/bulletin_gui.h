@@ -31,7 +31,7 @@ extern int bulletin_range;
 // From bulletin_gui.c
 extern void bulletin_gui_init(void);
 extern void bulletin_data_add(char *call_sign, char *from_call, char *data, char *seq, char type, char from);
-extern void check_for_new_bulletins(void);
+extern void check_for_new_bulletins(int current_sec);
 
 #endif  // __XASTIR_BULLETIN_GUI_H
 

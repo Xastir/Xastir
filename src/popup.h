@@ -41,7 +41,7 @@ typedef struct
 /* from popup_gui.c */
 extern void popup_gui_init(void);
 extern void clear_popup_message_windows(void);
-extern void popup_time_out_check(void);
+extern void popup_time_out_check(int curr_sec);
 
 #endif /* XASTIR_POPUP_H */
 

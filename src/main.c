@@ -10094,10 +10094,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
         else {  // Not the first time UpdateTime was called.
                 // Perform the regular updates.
 
-            popup_time_out_check();             // clear popup windows after timeout
+            popup_time_out_check(current_time);         // clear popup windows after timeout
             check_statusline_timeout(current_time);     // clear statusline after timeout
-            check_station_remove();             // remove old stations
-            check_message_remove();             // remove old messages
+            check_station_remove(current_time);         // remove old stations
+            check_message_remove(current_time);         // remove old messages
 
 #ifdef USE_RTREE
   #ifdef HAVE_LIBSHP
@@ -10108,7 +10108,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // We need to always calculate the Aloha circle so that
             // if it is turned on by the user it will be accurate.
-            calc_aloha();
+            calc_aloha(current_time);
 
 
             //if ( (new_message_data > 0) && ( (delay_time % 2) == 0) )
@@ -10119,7 +10119,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // alerts.  This function will set redraw_on_new_data
             // and alert_redraw_on_update if any alerts are expired
             // from the list.
-            (void)alert_expire();
+            (void)alert_expire(current_time);
 
 
 #ifdef HAVE_GPSMAN
@@ -10598,13 +10598,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             check_and_transmit_messages(current_time);
 
             // Is it time to spit out any delayed ack's?
-            check_delayed_transmit_queue();
+            check_delayed_transmit_queue(current_time);
 
             // Is it time to spit out objects/items?
             check_and_transmit_objects_items(current_time);
 
             // Do we have any new bulletins to display?
-            check_for_new_bulletins();
+            check_for_new_bulletins(current_time);
 
             // Is it time to create a JPG snapshot?
             if (snapshots_enabled)

@@ -1022,16 +1022,16 @@ void transmit_message_data_delayed(char *to, char *message,
 time_t delayed_transmit_last_check = (time_t)0;
 
 
-void check_delayed_transmit_queue(void) {
+void check_delayed_transmit_queue(int curr_sec) {
     delayed_ack_record_p ptr = delayed_ack_list_head;
     int active_records = 0;
 
 
     // Skip this function if we did it during this second already.
-    if (delayed_transmit_last_check == sec_now()) {
+    if (delayed_transmit_last_check == curr_sec) {
         return;
     }
-    delayed_transmit_last_check = sec_now();
+    delayed_transmit_last_check = curr_sec;
 
 //fprintf(stderr, "Checking delayed TX queue for something to transmit.\n");
 //fprintf(stderr, ".");
@@ -1121,10 +1121,10 @@ void check_and_transmit_messages(time_t time) {
 
 
     // Skip this function if we did it during this second already.
-    if (last_check_and_transmit == sec_now()) {
+    if (last_check_and_transmit == time) {
         return;
     }
-    last_check_and_transmit = sec_now();
+    last_check_and_transmit = time;
 
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {

@@ -650,7 +650,7 @@ static time_t last_alert_expire = 0;
 //
 // Returns the quantity of alerts that were just expired.
 //
-int alert_expire(void) {
+int alert_expire(int curr_sec) {
 //    int ii;
     int expire_count = 0;
     struct hashtable_itr *iterator;
@@ -658,10 +658,10 @@ int alert_expire(void) {
 
 
     // Check only every 60 seconds
-    if ( (last_alert_expire + 60) > sec_now() ) {
+    if ( (last_alert_expire + 60) > curr_sec ) {
         return(0);
     }
-    last_alert_expire = sec_now();
+    last_alert_expire = curr_sec;
 
     if (debug_level & 2)
         fprintf(stderr,"Checking for expired alerts...\n");

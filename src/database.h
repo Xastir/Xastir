@@ -539,7 +539,7 @@ extern void update_messages(int force);
 extern void mdelete_messages_from(char *from);
 extern void mdelete_messages_to(char *to);
 extern void init_message_data(void);
-extern void check_message_remove(void);
+extern void check_message_remove(int curr_sec);
 extern int  new_message_data;
 extern time_t msg_data_add(char *call_sign, char *from_call, char *data,
                            char *seq, char type, char from, long *record_out);
@@ -564,7 +564,7 @@ extern int  next_station_time(DataRow **p_curr);
 extern int  prev_station_time(DataRow **p_curr);
 extern int  search_station_name(DataRow **p_name, char *call, int exact);
 extern int  search_station_time(DataRow **p_time, time_t heard, int serial);
-extern void check_station_remove(void);
+extern void check_station_remove(int curr_sec);
 extern void delete_all_stations(void);
 extern void station_del(char *callsign);
 extern void my_station_add(char *my_call_sign, char my_group, char my_symbol,
@@ -610,7 +610,7 @@ typedef struct {
 } aloha_stats;
 
 double calc_aloha_distance(void); //meat
-void calc_aloha(void); // periodic function
+void calc_aloha(int curr_sec); // periodic function
 void Show_Aloha_Stats(Widget w, XtPointer clientData, 
                       XtPointer callData); // popup window
 

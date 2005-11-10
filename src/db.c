@@ -1581,26 +1581,26 @@ void mdata_delete_type(const char msg_type, const time_t reference_time) {
 
 
 
-void check_message_remove(void) {       // called in timing loop
+void check_message_remove(int curr_sec) {       // called in timing loop
 
     // Time to check for old messages again?  (Currently every ten
     // minutes)
 #ifdef EXPIRE_DEBUG
-    if ( last_message_remove < (sec_now() - 15) ) {
+    if ( last_message_remove < (curr_sec - 15) ) {
 #else // EXPIRE_DEBUG
-    if ( last_message_remove < (sec_now() - MESSAGE_REMOVE_CYCLE) ) {
+    if ( last_message_remove < (curr_sec - MESSAGE_REMOVE_CYCLE) ) {
 #endif
 
         // Yes it is.  Mark all messages that are older than
         // sec_remove with the RECORD_NOTACTIVE flag.  This will
         // mark them for re-use.
 #ifdef EXPIRE_DEBUG
-        mdata_delete_type('\0', sec_now()-15);
+        mdata_delete_type('\0', curr_sec-15);
 #else   // EXPIRE_DEBUG
-        mdata_delete_type('\0', sec_now()-sec_remove);
+        mdata_delete_type('\0', curr_sec-sec_remove);
 #endif
 
-        last_message_remove = sec_now();
+        last_message_remove = curr_sec;
     }
 
     // Should we sort them at this point so that the unused ones are
@@ -2172,6 +2172,7 @@ int is_altnet(DataRow *p_station) {
 // 1 = ok to draw this station/object
 //
 int ok_to_draw_station(DataRow *p_station) {
+    time_t secs_now = sec_now();
     // Check overall flag
     if (Select_.none)
         return 0;
@@ -2199,7 +2200,7 @@ int ok_to_draw_station(DataRow *p_station) {
 
             // Check whether we wish to display directly heard stations
             if (p_station->flag & ST_DIRECT
-                    && sec_now() < (p_station->direct_heard + st_direct_timeout)) {
+                    && secs_now < (p_station->direct_heard + st_direct_timeout)) {
                 if (!Select_.direct)
                     return 0;
             }
@@ -2217,7 +2218,7 @@ int ok_to_draw_station(DataRow *p_station) {
 
         // Check if we want to display data past the clear time
         if (!Select_.old_data) {
-            if ((p_station->sec_heard + sec_clear) < sec_now())
+            if ((p_station->sec_heard + sec_clear) < secs_now)
                 return 0;
         }
     }
@@ -2309,7 +2310,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     int wx_ghost = 0;
     Pixmap drawing_target;
     WeatherRow *weather = p_station->weather_data;
-
+    time_t secs_now = sec_now();
 
     if (debug_level & 128)
         fprintf(stderr,"Display station (%s) called for Single=%d.\n", p_station->call_sign, single);
@@ -2480,7 +2481,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     if (weather != NULL) {
         // wx_ghost = 1 if the weather data is too old to display
-        wx_ghost = (int)(((sec_old + weather->wx_sec_time)) < sec_now());
+        wx_ghost = (int)(((sec_old + weather->wx_sec_time)) < secs_now);
     }
 
     if (Display_.weather
@@ -2549,14 +2550,14 @@ void display_station(Widget w, DataRow *p_station, int single) {
         orient = ' ';
 
     // Prevents my own call from "ghosting"?
-    temp_sec_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? sec_now(): p_station->sec_heard;
+    temp_sec_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? secs_now: p_station->sec_heard;
 
 
     // Check whether it's a locally-owned object/item
     if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
             && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
               || ((p_station->flag & ST_ITEM  ) != 0) ) ) { // or an item
-        temp_sec_heard = sec_now(); // We don't want our own objects/items to "ghost"
+        temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
     }
 
     // Show last heard times only for others stations and their
@@ -2579,7 +2580,7 @@ _do_the_drawing:
     if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
             && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
               || ((p_station->flag & ST_ITEM  ) != 0) ) ) { // or an item
-        temp_sec_heard = sec_now(); // We don't want our own objects/items to "ghost"
+        temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
         // This isn't quite right since if it's a moving object, passing an incorrect
         // sec_heard should give the wrong results.
     }
@@ -2621,7 +2622,7 @@ _do_the_drawing:
              && course_ok
              && speed_ok
              && atof(dr_speed) > 0) ) {
-        if ( (sec_now()-temp_sec_heard) < dead_reckoning_timeout ) {
+        if ( (secs_now-temp_sec_heard) < dead_reckoning_timeout ) {
             draw_deadreckoning_features(p_station,
                                         drawing_target,
                                         w);
@@ -3114,7 +3115,7 @@ void draw_ruler(Widget w) {
 void display_file(Widget w) {
     DataRow *p_station;         // pointer to station data
     time_t temp_sec_heard;      // time last heard
-    time_t t_clr, t_old;
+    time_t t_clr, t_old, now;
 
     if(debug_level & 1)
         fprintf(stderr,"Display File Start\n");
@@ -3129,8 +3130,9 @@ void display_file(Widget w) {
 // Draw probability of detection circle, if enabled
 //draw_pod_circle(64000000l, 32400000l, 10, colors[0x44], pixmap_final);
 
-    t_old = sec_now() - sec_old;        // precalc compare times
-    t_clr = sec_now() - sec_clear;
+    now = sec_now();
+    t_old = now - sec_old;        // precalc compare times
+    t_clr = now - sec_clear;
     temp_sec_heard = 0l;
     p_station = t_first;                // start with oldest station, have newest on top at t_last
     while (p_station != NULL) {
@@ -3140,13 +3142,13 @@ void display_file(Widget w) {
         if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
 
             // Callsign match here includes checking SSID
-            temp_sec_heard = (is_my_call(p_station->call_sign,1))? sec_now(): p_station->sec_heard;
+            temp_sec_heard = (is_my_call(p_station->call_sign,1))? now: p_station->sec_heard;
 
             // Check for my objects/items as well
             if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
                     && (   p_station->flag & ST_OBJECT    // And it's an object
                         || p_station->flag & ST_ITEM) ) ) { // or an item
-                temp_sec_heard = sec_now();
+                temp_sec_heard = now;
             }
  
             if ((p_station->flag & ST_INVIEW) != 0) {  // skip far away stations...
@@ -3168,7 +3170,7 @@ void display_file(Widget w) {
                                 if (debug_level & 256) {
                                     fprintf(stderr,"Drawing Solid trail for %s, secs old: %ld\n",
                                         p_station->call_sign,
-                                        (long)(sec_now() - temp_sec_heard) );
+                                        (long)(now - temp_sec_heard) );
                                 }
                                 draw_trail(w,p_station,1);
                             }
@@ -3176,7 +3178,7 @@ void display_file(Widget w) {
                                 if (debug_level & 256) {
                                     fprintf(stderr,"Drawing trail for %s, secs old: %ld\n",
                                         p_station->call_sign,
-                                        (long)(sec_now() - temp_sec_heard) );
+                                        (long)(now - temp_sec_heard) );
                                 }
                                 draw_trail(w,p_station,0);
                             }
@@ -8459,7 +8461,7 @@ void delete_all_stations(void) {
  *  Called from main.c:UpdateTime() on a periodic basis.
  *
  */
-void check_station_remove(void) {
+void check_station_remove(int curr_sec) {
     DataRow *p_station, *p_station_t_next;
     time_t t_rem;
     int done = 0;
@@ -8469,9 +8471,9 @@ void check_station_remove(void) {
     // seconds (currently every five minutes)
 #ifdef EXPIRE_DEBUG
     // Check every 15 seconds, useful for debug only.
-    if (last_station_remove < (sec_now() - 15)) {   // DEBUG
+    if (last_station_remove < (curr_sec - 15)) {   // DEBUG
 #else
-    if (last_station_remove < (sec_now() - STATION_REMOVE_CYCLE)) {
+    if (last_station_remove < (curr_sec - STATION_REMOVE_CYCLE)) {
 #endif
 
 
@@ -8480,11 +8482,11 @@ void check_station_remove(void) {
         // Compute the cutoff time.  Any stations older than t_rem
         // will be removed, unless they have a tactical call or
         // belong to us.
-        t_rem = sec_now() - sec_remove;
+        t_rem = curr_sec - sec_remove;
 
 #ifdef EXPIRE_DEBUG
         // Expire every 15 seconds, useful for debug only.
-        t_rem = sec_now() - (1 * 15);
+        t_rem = curr_sec - (1 * 15);
 #endif
 
         p_station = t_first;    // Oldest station in our list
@@ -8544,7 +8546,7 @@ void check_station_remove(void) {
             }
             p_station = p_station_t_next;
         }
-        last_station_remove = sec_now();
+        last_station_remove = curr_sec;
     }
 }
 
@@ -11120,7 +11122,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (from == DATA_VIA_TNC) {                     // heard via TNC
             if (!third_party) { // Not a third-party packet
                 p_station->flag |= ST_VIATNC;               // set "via TNC" flag
-                p_station->heard_via_tnc_last_time = sec_now();
+                p_station->heard_via_tnc_last_time = curr_sec;
                 p_station->heard_via_tnc_port = port;
             }
             else {  // Third-party packet
@@ -11230,7 +11232,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 fprintf(stderr,"Setting ST_DIRECT for station %s\n", 
                     p_station->call_sign);
             }
-            p_station->direct_heard = sec_now();
+            p_station->direct_heard = curr_sec;
             p_station->flag |= (ST_DIRECT);
         }
         else {
@@ -11241,7 +11243,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // all the digipeated packets.
 
             if ((p_station->flag & ST_DIRECT) != 0 &&
-                    sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+                    curr_sec > (p_station->direct_heard + st_direct_timeout)) {
                 if (debug_level & 1)
                     fprintf(stderr,"Clearing ST_DIRECT for station %s\n", 
                         p_station->call_sign);
@@ -11273,7 +11275,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if ( direct   // This packet was heard direct
                  || (p_station->flag & ST_DIRECT) == 0  // Not heard direct lately
                  || ( (p_station->flag & ST_DIRECT) != 0 // Not heard direct lately
-                      && (sec_now() > (p_station->direct_heard+st_direct_timeout) ) ) ) {
+                      && (curr_sec > (p_station->direct_heard+st_direct_timeout) ) ) ) {
 
                 // Free any old path we might have
                 if (p_station->node_path_ptr != NULL)
@@ -11303,7 +11305,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // that it has timed out on RF and we're now receiving
             // that station from an igate.
             //
-            if (sec_now() > (p_station->heard_via_tnc_last_time + 60*60)) {
+            if (curr_sec > (p_station->heard_via_tnc_last_time + 60*60)) {
 
                 // Yep, more than one hour old or is a zero,
                 // overwrite the node_path_ptr variable with the new
@@ -11327,7 +11329,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // ST_DIRECT flag.  We're only hearing this station on
             // INET now.
             // 
-            if (sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+            if (curr_sec > (p_station->direct_heard + st_direct_timeout)) {
 
                 // Yep, more than one hour old or is a zero, clear
                 // the ST_DIRECT flag.
@@ -11351,7 +11353,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // that it has timed out on RF and we're now receiving
             // that station from the INET feeds.
             //
-            if (sec_now() > (p_station->heard_via_tnc_last_time + 60*60)) {
+            if (curr_sec > (p_station->heard_via_tnc_last_time + 60*60)) {
 
                 // Yep, more than one hour old or is a zero,
                 // overwrite the node_path_ptr variable with the new
@@ -11388,7 +11390,7 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
             // ST_DIRECT flag.  We're only hearing this station on
             // INET now.
             // 
-            if (sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+            if (curr_sec > (p_station->direct_heard + st_direct_timeout)) {
 
                 // Yep, more than one hour old or is a zero, clear
                 // the ST_DIRECT flag.
@@ -11843,7 +11845,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
     time_t secs_since_beacon;
     int heading_change_since_beacon;
     int beacon_now = 0;
-
+    int curr_sec = sec_now();
 
     // Don't compute SmartBeaconing(tm) parameters or force any beacons
     // if we're not in that mode!
@@ -11855,7 +11857,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
     course = atoi(current_course);
  
-    secs_since_beacon = sec_now() - posit_last_time;
+    secs_since_beacon = curr_sec - posit_last_time;
  
     // Check for the low speed threshold, set to slow posit rate if
     // we're going slow.
@@ -11966,8 +11968,8 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
     // Check to see whether we've sped up sufficiently for the
     // posit_next_time variable to be too far out.  If so, shorten
     // that interval to match the current speed.
-    if ( (posit_next_time - sec_now()) > sb_POSIT_rate)
-        posit_next_time = sec_now() + sb_POSIT_rate;
+    if ( (posit_next_time - curr_sec) > sb_POSIT_rate)
+        posit_next_time = curr_sec + sb_POSIT_rate;
 
 
     if (beacon_now) {
@@ -12091,7 +12093,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->coord_lat = pos_lat_temp;    // DK7IN: we have it already !??
     p_station->coord_lon = pos_long_temp;
 
-    my_last_altitude_time = sec_now();
+    my_last_altitude_time = curr_sec;
     xastir_snprintf(p_station->speed,
         sizeof(p_station->speed),
         "%s",
@@ -12125,7 +12127,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
         sats);
 
     // Update "heard" time for our new position
-    p_station->sec_heard = sec_now();
+    p_station->sec_heard = curr_sec;
 
     //if (   p_station->coord_lon != last_lon
     //    || p_station->coord_lat != last_lat ) {
@@ -16149,13 +16151,12 @@ int comp_by_dist(const void *av,const void *bv) {
 
 // Called periodically by UpdateTime, we calculate our aloha radius every
 // so often.  (Bob B. recommends every 30 minutes)
-void calc_aloha(void)    {
-    time_t secs_now;
+void calc_aloha(int secs_now)    {
     char status_text[100];
 
     if (aloha_time == 0) { // first call
-        aloha_time = sec_now()+ALOHA_CALC_INTERVAL; 
-        aloha_status_time = sec_now()+ALOHA_STATUS_INTERVAL;
+        aloha_time = secs_now+ALOHA_CALC_INTERVAL; 
+        aloha_status_time = secs_now+ALOHA_STATUS_INTERVAL;
         aloha_radius = -1.0;
         the_aloha_stats.digis=0;
         the_aloha_stats.wxs = 0;
@@ -16166,7 +16167,6 @@ void calc_aloha(void)    {
         //fprintf(stderr,"Initialized aloha radius time\n");
     } 
     else {
-        secs_now = sec_now();
         if (secs_now > aloha_time) {
             aloha_radius = calc_aloha_distance(); 
             aloha_time = secs_now + ALOHA_CALC_INTERVAL;
