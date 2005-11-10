@@ -1407,13 +1407,13 @@ void check_and_transmit_objects_items(time_t time) {
     // Check every OBJECT_CHECK_RATE seconds - 20%.  No faster else
     // we'll be running through the station list too often and
     // wasting cycles.
-    if (sec_now() < (last_object_check + (int)(4.0 * OBJECT_CHECK_RATE/5.0 + 1.0) ) )
+    if (time < (last_object_check + (int)(4.0 * OBJECT_CHECK_RATE/5.0 + 1.0) ) )
         return;
 
 //fprintf(stderr,"check_and_transmit_objects_items\n");
 
     // Set up timer for next go-around
-    last_object_check = sec_now();
+    last_object_check = time;
 
     if (debug_level & 1)
         fprintf(stderr,"Checking whether to retransmit any objects/items\n");
@@ -1479,7 +1479,7 @@ void check_and_transmit_objects_items(time_t time) {
 
                 increment = p_station->transmit_time_increment;
 
-                if ( ( p_station->last_transmit_time + increment) <= sec_now() ) {
+                if ( ( p_station->last_transmit_time + increment) <= time ) {
                     // We should transmit this object/item as it has
                     // hit its transmit interval.
 
@@ -1591,7 +1591,7 @@ void check_and_transmit_objects_items(time_t time) {
 //fprintf(stderr,"Not time to TX yet:
 //%s\t%s\t",p_station->call_sign,p_station->origin);
 //fprintf(stderr, "%ld secs to go\n", p_station->last_transmit_time
-//+ increment - sec_now() );
+//+ increment - time );
                 }
             }
         }
@@ -9792,10 +9792,6 @@ void reload_object_item(void) {
 
     file = get_user_base_dir("config/object.log");
 
-    // Prevent transmission of objects until sometime after we're
-    // done with our initial load.
-    last_object_check = sec_now();
-
     f=fopen(file,"r");
     if (f!=NULL) {
 
@@ -9858,7 +9854,9 @@ void reload_object_item(void) {
     }
 
     // Start transmitting these objects in about 30 seconds.
-    last_object_check = sec_now() + 30 - OBJECT_rate;
+    // Prevent transmission of objects until sometime after we're
+    // done with our initial load.
+    last_object_check = sec_now() + 30;
 }
 
 
