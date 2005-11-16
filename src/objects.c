@@ -3038,7 +3038,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer callData) {
 
     Widget cad_list_pane, cad_list_form, cad_list_label,
-           button_list_selected, button_cancel;
+           button_list_selected, button_close;
     Arg al[100];       /* Arg List */
     unsigned int ac;   /* Arg Count */
     CADRow *object_ptr = CAD_list_head;
@@ -3145,8 +3145,8 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 NULL);
         XtAddCallback(button_list_selected, XmNactivateCallback, Show_selected_CAD_object_details, Draw_CAD_Objects_list_dialog);
 
-        // "Cancel"
-        button_cancel = XtVaCreateManagedWidget(langcode("CADPUD008"),
+        // "Close"
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                 xmPushButtonGadgetClass,
                 cad_list_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
@@ -3161,7 +3161,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(button_cancel, XmNactivateCallback, Draw_CAD_Objects_list_dialog_close, Draw_CAD_Objects_erase_dialog);                        
+        XtAddCallback(button_close, XmNactivateCallback, Draw_CAD_Objects_list_dialog_close, Draw_CAD_Objects_erase_dialog);                        
         pos_dialog(cad_list_dialog);
         XmInternAtom(XtDisplay(cad_list_dialog),"WM_DELETE_WINDOW", FALSE);
 
