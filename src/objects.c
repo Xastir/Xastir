@@ -2639,23 +2639,25 @@ void Restore_CAD_Objects_from_file(void) {
         }
         else if (strncasecmp(line,"label:",6) == 0) {
             //fprintf(stderr,"Found label:\n");
-            if (1 != sscanf(line+7,"%s",
-                    CAD_list_head->label)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [label]\n");
-            }
+            xastir_snprintf(CAD_list_head->label,
+                sizeof(CAD_list_head->label),
+                "%s",
+                line+7);
         }
         else if (strncasecmp(line,"comment:",8) == 0) {
             //fprintf(stderr,"Found comment:\n");
-            if (1 != sscanf(line+9,"%s",
-                    CAD_list_head->comment)) {
-                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [comment]\n");
-            }
-            if (strcmp(CAD_list_head->comment,"NULL")==0)
+            xastir_snprintf(CAD_list_head->comment,
+                sizeof(CAD_list_head->comment),
+                "%s",
+                line+9);
+ 
+            if (strcmp(CAD_list_head->comment,"NULL")==0) {
                 xastir_snprintf(CAD_list_head->comment,
                     sizeof(CAD_list_head->comment),
                     "%c",
                     '\0'
                     );
+            }
         }
         else if (strncasecmp(line,"Vertice:",8) == 0) {
             long latitude, longitude;
@@ -3205,8 +3207,8 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 // metric units, converting to feet or meters if the area is less
 // than 0.1 square kilometers and adding localized text.
 // Parameters: area: an area in square kilometers.
-// area_description: area reformated as a localized text string.
-// sizeof_area_description: array length of area_decription.
+// area_description: area reformatted as a localized text string.
+// sizeof_area_description: array length of area_description.
 //
 void Format_area_for_output(double *area_km2, char *area_description, int sizeof_area_description) {
     double area;
