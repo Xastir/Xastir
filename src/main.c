@@ -4901,6 +4901,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget filepane, configpane, exitpane, mappane, viewpane,
         stationspane, messagepane, ifacepane, helppane,
         filter_data_pane, filter_display_pane, map_config_pane,
+        station_config_pane,
         help_emergency_pane, help_emergency_button;
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
@@ -4924,6 +4925,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         center_zoom_button,
         Map_background_color_Pane, map_background_button,
         map_pointer_menu_button, map_config_button,
+        station_config_button,
 #if !defined(NO_GRAPHICS)
         Raster_intensity_Pane, raster_intensity_button,
 #if defined(HAVE_IMAGEMAGICK)
@@ -5659,19 +5661,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(center_zoom_button,XmNactivateCallback,Center_Zoom,NULL);
 
-    map_config_pane  = XmCreatePulldownMenu(mappane,
-            "map_config_pane",
-            al,
-            ac);
-
-    map_config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
-            xmCascadeButtonGadgetClass,
-            mappane,
-            XmNsubMenuId,map_config_pane,
-            XmNmnemonic,langcode_hotkey("PULDNFI001"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
 
     (void)XtVaCreateManagedWidget("create_appshell sep2",
             xmSeparatorGadgetClass,
@@ -5799,59 +5788,27 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-
-// Re-download Maps (Not from cache)
-    redownload_maps_button = XtVaCreateManagedWidget(langcode("PULDNMP027"),
-          xmPushButtonGadgetClass,
-          mappane,
-          XmNmnemonic,langcode_hotkey("PULDNMP027"),
-          MY_FOREGROUND_COLOR,
-          MY_BACKGROUND_COLOR,
-          NULL);
-    XtAddCallback(redownload_maps_button, XmNactivateCallback,Re_Download_Maps_Now,NULL);
- 
-
-// Flush Entire Map Cache!
-    flush_map_cache_button = XtVaCreateManagedWidget(langcode("PULDNMP028"),
-          xmPushButtonGadgetClass,
-          mappane,
-          XmNmnemonic,langcode_hotkey("PULDNMP028"),
-          MY_FOREGROUND_COLOR,
-          MY_BACKGROUND_COLOR,
-          NULL);
-    XtAddCallback(flush_map_cache_button, XmNactivateCallback,Flush_Entire_Map_Queue,NULL);
- 
-
-    //Index Maps on startup
-    index_maps_on_startup_button = XtVaCreateManagedWidget(langcode("PULDNMP022"),
-            xmToggleButtonGadgetClass,
+    (void)XtVaCreateManagedWidget("create_appshell sep2c",
+            xmSeparatorGadgetClass,
             mappane,
-            XmNvisibleWhenOff, TRUE,
-            XmNindicatorSize, 12,
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(index_maps_on_startup_button,XmNvalueChangedCallback,Index_maps_on_startup_toggle,"1");
-    if (index_maps_on_startup)
-        XmToggleButtonSetState(index_maps_on_startup_button,TRUE,FALSE);
 
 
-        map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP023"),
-          xmPushButtonGadgetClass,
-          mappane,
-          XmNmnemonic,langcode_hotkey("PULDNMP023"),
-          MY_FOREGROUND_COLOR,
-          MY_BACKGROUND_COLOR,
-          NULL);
+    map_config_pane  = XmCreatePulldownMenu(mappane,
+            "map_config_pane",
+            al,
+            ac);
 
-        map_all_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP024"),
-          xmPushButtonGadgetClass,
-          mappane,
-          XmNmnemonic,langcode_hotkey("PULDNMP024"),
-          MY_FOREGROUND_COLOR,
-          MY_BACKGROUND_COLOR,
-          NULL);
-
+    map_config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+            xmCascadeButtonGadgetClass,
+            mappane,
+            XmNsubMenuId,map_config_pane,
+            XmNmnemonic,langcode_hotkey("PULDNFI001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     // These go into the map config submenu
     Map_background_color_Pane = XmCreatePulldownMenu(map_config_pane,
@@ -6202,7 +6159,68 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 #endif  // HAVE_LIBGEOTIFF
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep2c",
+    (void)XtVaCreateManagedWidget("create_appshell sep2d",
+            xmSeparatorGadgetClass,
+            map_config_pane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+
+// Re-download Maps (Not from cache)
+    redownload_maps_button = XtVaCreateManagedWidget(langcode("PULDNMP027"),
+          xmPushButtonGadgetClass,
+          map_config_pane,
+          XmNmnemonic,langcode_hotkey("PULDNMP027"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+    XtAddCallback(redownload_maps_button, XmNactivateCallback,Re_Download_Maps_Now,NULL);
+ 
+
+// Flush Entire Map Cache!
+    flush_map_cache_button = XtVaCreateManagedWidget(langcode("PULDNMP028"),
+          xmPushButtonGadgetClass,
+          map_config_pane,
+          XmNmnemonic,langcode_hotkey("PULDNMP028"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+    XtAddCallback(flush_map_cache_button, XmNactivateCallback,Flush_Entire_Map_Queue,NULL);
+ 
+
+    //Index Maps on startup
+    index_maps_on_startup_button = XtVaCreateManagedWidget(langcode("PULDNMP022"),
+            xmToggleButtonGadgetClass,
+            map_config_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(index_maps_on_startup_button,XmNvalueChangedCallback,Index_maps_on_startup_toggle,"1");
+    if (index_maps_on_startup)
+        XmToggleButtonSetState(index_maps_on_startup_button,TRUE,FALSE);
+
+
+        map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP023"),
+          xmPushButtonGadgetClass,
+          map_config_pane,
+          XmNmnemonic,langcode_hotkey("PULDNMP023"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+
+        map_all_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP024"),
+          xmPushButtonGadgetClass,
+          map_config_pane,
+          XmNmnemonic,langcode_hotkey("PULDNMP024"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
+
+
+    (void)XtVaCreateManagedWidget("create_appshell sep2e",
             xmSeparatorGadgetClass,
             mappane,
             MY_FOREGROUND_COLOR,
@@ -6992,9 +7010,25 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+
+    station_config_pane  = XmCreatePulldownMenu(mappane,
+            "map_config_pane",
+            al,
+            ac);
+
+    station_config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+            xmCascadeButtonGadgetClass,
+            stationspane,
+            XmNsubMenuId,station_config_pane,
+            XmNmnemonic,langcode_hotkey("PULDNFI001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+
     object_history_refresh_button = XtVaCreateManagedWidget(langcode("PULDNDP048"),
             xmPushButtonGadgetClass,
-            stationspane,
+            station_config_pane,
             XmNmnemonic,langcode_hotkey("PULDNDP048"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
@@ -7002,7 +7036,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     object_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
             xmPushButtonGadgetClass,
-            stationspane,
+            station_config_pane,
             XmNmnemonic,langcode_hotkey("PULDNDP025"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
@@ -7011,7 +7045,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     // "Clear All Tactical Calls"
     tactical_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP049"),
             xmPushButtonGadgetClass,
-            stationspane,
+            station_config_pane,
 //            XmNmnemonic,langcode_hotkey("PULDNDP049"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
@@ -7021,7 +7055,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     // "Clear Tactical Call History"
     tactical_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP050"),
             xmPushButtonGadgetClass,
-            stationspane,
+            station_config_pane,
 //            XmNmnemonic,langcode_hotkey("PULDNDP050"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
@@ -7029,7 +7063,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     tracks_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP016"),
             xmPushButtonGadgetClass,
-            stationspane,
+            station_config_pane,
             XmNmnemonic,langcode_hotkey("PULDNDP016"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
@@ -7037,7 +7071,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     station_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP015"),
             xmPushButtonGadgetClass,
-            stationspane,
+            station_config_pane,
             XmNmnemonic,langcode_hotkey("PULDNDP015"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
