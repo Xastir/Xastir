@@ -8259,7 +8259,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
 
 
-    // "Erase All CAD Polygons"
+    // "Erase CAD Polygons"
     CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
             xmPushButtonGadgetClass,
             CAD_sub,
