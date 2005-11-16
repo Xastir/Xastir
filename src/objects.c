@@ -229,7 +229,11 @@ int draw_CAD_objects_flag = 0;
 void Draw_All_CAD_Objects(Widget w);
 void Save_CAD_Objects_to_file(void);
 Widget cad_erase_dialog;
-Widget list_of_existing_CAD_objects;
+Widget list_of_existing_CAD_objects = (Widget)NULL;
+Widget cad_list_dialog = (Widget)NULL;
+Widget list_of_existing_CAD_objects_edit = (Widget)NULL;
+void Format_area_for_output(double *area_km2, char *area_description, int sizeof_area_description);
+void Update_CAD_objects_list_dialog(void);
  
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1869,8 +1873,52 @@ void CAD_object_move(void) {
 
 
 
-/* Compute the area enclosed by a CAD object.  Check that it is a
-   closed, non-intersecting polygon first. */
+// Determine if a CAD object is a closed polygon.
+//
+// Takes a pointer to a CAD object as an argument.
+// Returns 1 if the object is closed.
+// Returns 0 if the object is not closed.
+//
+int is_CAD_object_open(CADRow *cad_object) {
+   VerticeRow *vertex_pointer;
+   int vertex_count = 0;
+   int result = 1;
+   int atleast_one_different = 0;
+   long start_lat, start_long;
+   long stop_lat, stop_long;
+
+   vertex_pointer = cad_object->start;
+   if (vertex_pointer!=NULL) {
+        // greater than zero points, get first point.
+        start_lat = vertex_pointer->latitude;
+        start_long = vertex_pointer->longitude;
+        stop_lat = vertex_pointer->latitude;
+        stop_long = vertex_pointer->longitude;
+        vertex_pointer = vertex_pointer->next;
+        while (vertex_pointer != NULL) {
+            //greater than one point, get current point.
+            stop_lat = vertex_pointer->latitude;
+            stop_long = vertex_pointer->longitude;
+            if (stop_lat!=start_lat || stop_long!=start_long) 
+                atleast_one_different = 1;
+            vertex_pointer = vertex_pointer->next;
+            vertex_count++;
+        }
+        if (vertex_count>2 && start_lat==stop_lat && start_long==stop_long && atleast_one_different > 0) {
+            // more than two points, and they aren't in the same place  
+            result = 0;
+        }
+   }
+   return result;
+}
+
+
+
+
+
+// Compute the area enclosed by a CAD object.  Check that it is a
+// closed, non-intersecting polygon first.
+//
 double CAD_object_compute_area(CADRow *CAD_list_head) {
     VerticeRow *tmp;
     double area;
@@ -1886,80 +1934,84 @@ double CAD_object_compute_area(CADRow *CAD_list_head) {
     //
     area = 0.0;
     tmp = CAD_list_head->start;
-    while (tmp->next != NULL) {
-        double dx0, dy0, dx1, dy1;
-                                                                                                                        
-        // Because lat/long units can vary drastically w.r.t. real
-        // units, we need to multiply the terms by the real units in
-        // order to get real area.
-                                                                                                                        
-        // Compute real distances from a fixed point.  Convert to
-        // the current measurement units.  We'll use the starting
-        // vertice as our fixed point.
-        //
-        dx0 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                CAD_list_head->start->latitude,
-                tmp->longitude,
-                temp_course,
-                sizeof(temp_course));
-                                                                                                                        
-        if (tmp->longitude < CAD_list_head->start->longitude)
-            dx0 = -dx0;
-                                                                                                                        
-        dy0 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                tmp->latitude,
-                CAD_list_head->start->longitude,
-                temp_course,
-                sizeof(temp_course));
-                                                                                                                        
-        if (tmp->latitude < CAD_list_head->start->latitude)
-            dx0 = -dx0;
-                                                                                                                        
-        dx1 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                CAD_list_head->start->latitude,
-                tmp->next->longitude,
-                temp_course,
-                sizeof(temp_course));
-                                                                                                                        
-        if (tmp->next->longitude < CAD_list_head->start->longitude)
-            dx0 = -dx0;
-                                                                                                                        
-        dy1 = calc_distance_course(
-                CAD_list_head->start->latitude,
-                CAD_list_head->start->longitude,
-                tmp->next->latitude,
-                CAD_list_head->start->longitude,
-                temp_course,
-                sizeof(temp_course));
-                                                                                                                        
-        // Add the minus signs back in, if any
-        if (tmp->longitude < CAD_list_head->start->longitude)
-            dx0 = -dx0;
-        if (tmp->latitude < CAD_list_head->start->latitude)
-            dy0 = -dy0;
-        if (tmp->next->longitude < CAD_list_head->start->longitude)
-            dx1 = -dx1;
-        if (tmp->next->latitude < CAD_list_head->start->latitude)
-            dy1 = -dy1;
-                                                                                                                        
-        // Greene's Theorem:  Summation of the following, then
-        // divide by two:
-        //
-        // A = X Y    - X   Y
-        //  i   i i+1    i+1 i
-        //
-        area += (dx0 * dy1) - (dx1 * dy0);
-                                                                                                                        
-        tmp = tmp->next;
-    }
-    area = 0.5 * area;
-                                                                                                                        
+    if (is_CAD_object_open(CAD_list_head)==0) { 
+        // Only compute the area if CAD object is a closed polygon,
+        // that is, not an open polygon.
+        while (tmp->next != NULL) {
+            double dx0, dy0, dx1, dy1;
+                                                                                                                            
+            // Because lat/long units can vary drastically w.r.t. real
+            // units, we need to multiply the terms by the real units in
+            // order to get real area.
+                                                                                                                            
+            // Compute real distances from a fixed point.  Convert to
+            // the current measurement units.  We'll use the starting
+            // vertice as our fixed point.
+            //
+            dx0 = calc_distance_course(
+                    CAD_list_head->start->latitude,
+                    CAD_list_head->start->longitude,
+                    CAD_list_head->start->latitude,
+                    tmp->longitude,
+                    temp_course,
+                    sizeof(temp_course));
+                                                                                                                            
+            if (tmp->longitude < CAD_list_head->start->longitude)
+                dx0 = -dx0;
+                                                                                                                            
+            dy0 = calc_distance_course(
+                    CAD_list_head->start->latitude,
+                    CAD_list_head->start->longitude,
+                    tmp->latitude,
+                    CAD_list_head->start->longitude,
+                    temp_course,
+                    sizeof(temp_course));
+                                                                                                                            
+            if (tmp->latitude < CAD_list_head->start->latitude)
+                dx0 = -dx0;
+                                                                                                                            
+            dx1 = calc_distance_course(
+                    CAD_list_head->start->latitude,
+                    CAD_list_head->start->longitude,
+                    CAD_list_head->start->latitude,
+                    tmp->next->longitude,
+                    temp_course,
+                    sizeof(temp_course));
+                                                                                                                            
+            if (tmp->next->longitude < CAD_list_head->start->longitude)
+                dx0 = -dx0;
+                                                                                                                            
+            dy1 = calc_distance_course(
+                    CAD_list_head->start->latitude,
+                    CAD_list_head->start->longitude,
+                    tmp->next->latitude,
+                    CAD_list_head->start->longitude,
+                    temp_course,
+                    sizeof(temp_course));
+                                                                                                                            
+            // Add the minus signs back in, if any
+            if (tmp->longitude < CAD_list_head->start->longitude)
+                dx0 = -dx0;
+            if (tmp->latitude < CAD_list_head->start->latitude)
+                dy0 = -dy0;
+            if (tmp->next->longitude < CAD_list_head->start->longitude)
+                dx1 = -dx1;
+            if (tmp->next->latitude < CAD_list_head->start->latitude)
+                dy1 = -dy1;
+                                                                                                                            
+            // Greene's Theorem:  Summation of the following, then
+            // divide by two:
+            //
+            // A = X Y    - X   Y
+            //  i   i i+1    i+1 i
+            //
+            area += (dx0 * dy1) - (dx1 * dy0);
+                                                                                                                            
+            tmp = tmp->next;
+        }
+        area = 0.5 * area;
+    } 
+                                                                                                                      
     if (area < 0.0)
         area = -area;
                                                                                                                         
@@ -1967,6 +2019,10 @@ double CAD_object_compute_area(CADRow *CAD_list_head) {
                                                                                                                         
 
 }
+
+
+
+
 
 // Allocate a label for an object, and place it according to the
 // user's requests.  Keep track of where from the origin to place
@@ -1978,11 +2034,12 @@ void CAD_object_allocate_label(void) {
 
 
 
-/* Set the probability for an object.  We should probably allocate
-   the raw probability to small "buckets" within the closed polygon.
-   This will allow us to split/join polygons later without messing
-   up the probablity assigned to each area originally.  Check that
-   it is a closed polygon first. */
+// Set the probability for an object.  We should probably allocate
+// the raw probability to small "buckets" within the closed polygon.
+// This will allow us to split/join polygons later without messing
+// up the probablity assigned to each area originally.  Check that
+// it is a closed polygon first.
+//
 void CAD_object_set_raw_probability(CADRow *object_ptr, float probability) {
    // initial implementation just assigns a single raw probability to the whole polygon.
    object_ptr->raw_probability = probability;
@@ -1991,10 +2048,11 @@ void CAD_object_set_raw_probability(CADRow *object_ptr, float probability) {
 
 
 
-                                                                                                                        
-/* Get the raw probability for an object.  Sum up the raw
-   probability "buckets" contained within the closed polygon.  Check
-   that it _is_ a closed polygon first. */
+
+// Get the raw probability for an object.  Sum up the raw
+// probability "buckets" contained within the closed polygon.  Check
+// that it _is_ a closed polygon first.
+//
 float CAD_object_get_raw_probability(CADRow *object_ptr) {
    float result = 0.0;
    // not checking yet for closure
@@ -2015,11 +2073,23 @@ float CAD_object_get_raw_probability(CADRow *object_ptr) {
 void CAD_object_set_line_width(void) {
 }
 
+
+
+
+
 void CAD_object_set_color(void) {
 }
 
+
+
+
+
 void CAD_object_set_linetype(void) {
 }
+
+
+
+
 
 // Used to break a line segment into two.  Can then move the vertice
 // if needed.  Recompute the raw probability if need be, or make it
@@ -2027,6 +2097,10 @@ void CAD_object_set_linetype(void) {
 void CAD_vertice_insert_new(void) {
     // Check whether a line segment will cross another?
 }
+
+
+
+
 
 // Move an existing vertice.  Recompute the raw probability if need
 // be, or make it an invalid value so that we know we need to
@@ -2039,12 +2113,12 @@ void CAD_vertice_move(void) {
 
 
 
-/* Set the location for drawing the label of an area to the
-   center of the area. 
-   Takes a pointer to a CAD object as a parameter.
-   Sets the label_latitude and label_longitude attributes 
-   of the CAD object to the center of the region described
-   by the vertices of the object. */
+// Set the location for drawing the label of an area to the center
+// of the area.  Takes a pointer to a CAD object as a parameter.
+// Sets the label_latitude and label_longitude attributes of the CAD
+// object to the center of the region described by the vertices of
+// the object.
+//
 void CAD_object_set_label_at_centroid(CADRow *CAD_object) {
     // *** current implementation approximates the center as the 
     // average of the largest and smallest of each of latitude
@@ -2095,20 +2169,27 @@ void CAD_object_set_label_at_centroid(CADRow *CAD_object) {
 
 
 
-/* This is the callback for the CAD objects parameters dialog.
-   It takes the values entered in the dialog and stores them 
-   in the most recently created object. */
+// This is the callback for the CAD objects parameters dialog.  It
+// takes the values entered in the dialog and stores them in the
+// most recently created object.
+//
 void Set_CAD_object_parameters (Widget widget,
                      XtPointer clientData,
                      XtPointer calldata) {
     float probability = 0.0;
+    CADRow *target_object = NULL;
+    // need to find out object to edit from call data rather than
+    // using the first object in list as the one to edit
+    //target_object = CAD_list_head;
+    target_object = (CADRow *)clientData;
+
     // set label, comment, and probability for area
-    xastir_snprintf(CAD_list_head->label,
-                sizeof(CAD_list_head->label),
+    xastir_snprintf(target_object->label,
+                sizeof(target_object->label),
                 XmTextGetString(cad_label_data)
                 );
-    xastir_snprintf(CAD_list_head->comment,
-                sizeof(CAD_list_head->comment),
+    xastir_snprintf(target_object->comment,
+                sizeof(target_object->comment),
                 XmTextGetString(cad_comment_data)
                 );
     // Is more error checking needed?  atof appears to correctly handle
@@ -2116,7 +2197,11 @@ void Set_CAD_object_parameters (Widget widget,
     // Convert probabilities expressed as percent to probability?
     // Code here would render 1% as 1.00, not 0.01.
     probability = atof(XmTextGetString(cad_probability_data));
-    CAD_object_set_raw_probability(CAD_list_head, probability);
+    CAD_object_set_raw_probability(target_object, probability);
+
+    if (cad_list_dialog) {
+        Update_CAD_objects_list_dialog();
+    }
                                                                                                                         
     // close object_paramenters dialog
     XtPopdown(cad_dialog);
@@ -2132,23 +2217,54 @@ void Set_CAD_object_parameters (Widget widget,
 
 
 
-/* Create a dialog to obtain information about a newly created CAD object from 
-   the user.  Values of probability, name, and comment are initially blank.
-   Takes as a parameter a string describing the area of the object.
-   There is a single button with a callback to Set_CAD_object_parameters,
-   which stores values from the dialog in the object's struct.
-   Should be generalized to allow editing of a pre-existing CAD object 
-   (except for the name).  Parameter should be a pointer to the object. */
-void Set_CAD_object_parameters_dialog(char *area_description) {
-Widget cad_pane, cad_form,
-       cad_label,
-       cad_comment,
-       cad_probability,
-       button_done;
+// Update the list of existing CAD objects on the cad list dialog to
+// reflect the current list of objects.
+//
+void Update_CAD_objects_list_dialog() {
+    CADRow *object_ptr = CAD_list_head;
+    int counter = 1;
+    XmString cb_item;
+
+    if (list_of_existing_CAD_objects_edit!=NULL && cad_list_dialog) {
+         XmListDeleteAllItems(list_of_existing_CAD_objects_edit);
+
+         // iterate through list of objects to populate scrolled list
+         while (object_ptr != NULL) {
+             cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+             XmListAddItem(list_of_existing_CAD_objects_edit,
+                           cb_item,
+                           counter);  
+             counter++;
+             XmStringFree(cb_item);
+             object_ptr = object_ptr->next;
+         }
+    }
+}
+
+
+
+
+
+// Create a dialog to obtain information about a newly created CAD
+// object from the user.  Values of probability, name, and comment
+// are initially blank.  Takes as a parameter a string describing
+// the area of the object.  There is a single button with a callback
+// to Set_CAD_object_parameters, which stores values from the dialog
+// in the object's struct.  Should be generalized to allow editing
+// of a pre-existing CAD object (except for the name).  Parameter
+// should be a pointer to the object.
+//
+void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object) {
+    Widget cad_pane, cad_form,
+           cad_label,
+           cad_comment,
+           cad_probability,
+           button_done;
+    char   probability_string[5];
                                                                                                                         
-if (cad_dialog) {
-    (void)XRaiseWindow(XtDisplay(cad_dialog), XtWindow(cad_dialog));
-} else {
+    if (cad_dialog) {
+        (void)XRaiseWindow(XtDisplay(cad_dialog), XtWindow(cad_dialog));
+    } else {
 
         // Area Object"
         cad_dialog = XtVaCreatePopupShell(langcode("CADPUD001"),
@@ -2297,19 +2413,34 @@ if (cad_dialog) {
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-       XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, Set_CAD_object_parameters_dialog);
-                                                                                                                        
-       pos_dialog(cad_dialog);
-       XmInternAtom(XtDisplay(cad_dialog),"WM_DELETE_WINDOW", FALSE);
+        // callback depends on whether this is a new or old object
+        //XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, Set_CAD_object_parameters_dialog);
 
-       XtManageChild(cad_form);
-       XtManageChild(cad_pane);
+        if (CAD_object!=NULL) {
+            XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, (XtPointer *)CAD_object);
+            // given an existing object, fill form with its information
+            XmTextFieldSetString(cad_label_data,CAD_object->label);
+            XmTextFieldSetString(cad_comment_data,CAD_object->comment);
+            xastir_snprintf(probability_string,
+                sizeof(probability_string),
+                "%01.2f",
+                CAD_object_get_raw_probability(CAD_object));
+            XmTextFieldSetString(cad_probability_data,probability_string);
+        } else {
+            // called to get information for a newly created cad object
+            // pass pointer to the head of the list, which contains
+            // the most recently created cad object.
+            XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, CAD_list_head);
+        }                                                                                                                   
+        pos_dialog(cad_dialog);
+        XmInternAtom(XtDisplay(cad_dialog),"WM_DELETE_WINDOW", FALSE);
+
+        XtManageChild(cad_form);
+        XtManageChild(cad_pane);
                                                                                                                         
-       XtPopup(cad_dialog,XtGrabNone);
-   }
-                                                                                                                        
+        XtPopup(cad_dialog,XtGrabNone);
+    } // end if ! caddialog
 }
-
 
 
 
@@ -2549,9 +2680,9 @@ void Restore_CAD_Objects_from_file(void) {
 
 
 
-/* Callback for the end CAD draw mode menu option
-   Writes all CAD objects to file and turns off 
-   the pencil cursor.  */
+// Callback for the end CAD draw mode menu option Writes all CAD
+// objects to file and turns off the pencil cursor.
+//
 void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
@@ -2573,7 +2704,8 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 
 
 
-/* popdown and destroy the cad_erase_dialog */
+// popdown and destroy the cad_erase_dialog.
+//
 void Draw_CAD_Objects_erase_dialog_close ( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
@@ -2590,8 +2722,11 @@ void Draw_CAD_Objects_erase_dialog_close ( /*@unused@*/ Widget w,
 
 
 
-/* Call back for delete selected button on Draw_CAD_Objects_erase_dialog.
-   Iterates through the list of selected CAD objects and deletes them. */
+
+// Call back for delete selected button on
+// Draw_CAD_Objects_erase_dialog.  Iterates through the list of
+// selected CAD objects and deletes them.
+//
 void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
@@ -2646,9 +2781,10 @@ void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
 
 
 
-/* Callback for delete CAD objects menu option. 
-   Dialog to allow users to delete all CAD objects or select
-   individual CAD objects to delete.  */
+// Callback for delete CAD objects menu option.  Dialog to allow
+// users to delete all CAD objects or select individual CAD objects
+// to delete.
+//
 void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
@@ -2691,7 +2827,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
                 NULL);
 
         // heading: Delete CAD Objects 
-        cad_erase_label = XtVaCreateManagedWidget("Delete CAD objects?",
+        cad_erase_label = XtVaCreateManagedWidget(langcode("CADPUD009"),
                 xmLabelWidgetClass,
                 cad_erase_form,
                 XmNtopAttachment,           XmATTACH_FORM,
@@ -2745,7 +2881,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
         }
 
         // "Delete All"
-        button_delete_all = XtVaCreateManagedWidget("Delete All",
+        button_delete_all = XtVaCreateManagedWidget(langcode("CADPUD010"),
                 xmPushButtonGadgetClass,
                 cad_erase_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
@@ -2762,7 +2898,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
         XtAddCallback(button_delete_all, XmNactivateCallback, Draw_CAD_Objects_erase, Draw_CAD_Objects_erase_dialog);
 
         // "Delete Selected"
-        button_delete_selected = XtVaCreateManagedWidget("Delete Selected",
+        button_delete_selected = XtVaCreateManagedWidget(langcode("CADPUD011"),
                 xmPushButtonGadgetClass,
                 cad_erase_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
@@ -2780,7 +2916,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
         XtAddCallback(button_delete_selected, XmNactivateCallback, Draw_CAD_Objects_erase_selected, Draw_CAD_Objects_erase_dialog);
 
         // "Cancel"
-        button_cancel = XtVaCreateManagedWidget("Cancel",
+        button_cancel = XtVaCreateManagedWidget(langcode("CADPUD008"),
                 xmPushButtonGadgetClass,
                 cad_erase_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
@@ -2811,8 +2947,237 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
 
 
 
-/* Free the object and vertice lists then do a screen update.
-   callback from delete all button on cad_erase_dialog  */
+// popdown and destroy the cad_erase_dialog
+//
+void Draw_CAD_Objects_list_dialog_close ( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    if (cad_list_dialog!=NULL) {
+        // close cad_erase_dialog
+        XtPopdown(cad_list_dialog);
+        XtDestroyWidget(cad_list_dialog);
+        cad_list_dialog = (Widget)NULL;
+    }
+
+}
+
+
+
+
+
+// Show details for selected CAD object.  Callback for the show/edit
+// details button on the Draw_CAD_Objects_list dialog.
+//
+void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    static int sizeof_area_description = 200;
+    int itemCount;       // number of items in list of CAD objects.
+    XmString *listItems; // names of CAD objects on list 
+    char *cadName;       // the text name of a CAD object
+    Position x;          // position on list
+    char *selectedName;  // the text name of a selected CAD object
+    CADRow *object_ptr = CAD_list_head;  // pointer to the linked list of CAD objects
+    int done = 0;        // has a cad object with a name matching the current selection been found
+    double area;
+    char area_description[sizeof_area_description];
+    xastir_snprintf(area_description, sizeof_area_description, "Area");
+
+    if (cad_list_dialog!=NULL) {
+        // get the selected object
+        XtVaGetValues(list_of_existing_CAD_objects_edit,
+                   XmNitemCount,&itemCount,
+                   XmNitems,&listItems,
+                   NULL);
+        // iterate through list and delete each first object with a name matching 
+        // those that are selected on the list.
+        //
+        // *** Note: If names are not unique the results may not be what the user expects.
+        // The first match to a selection will be deleted, not necessarily the selection.
+        for (x=1; x<=itemCount;x++) {
+            if (XmListPosSelected(list_of_existing_CAD_objects_edit,x)) {
+                XmStringGetLtoR(listItems[(x-1)],XmFONTLIST_DEFAULT_TAG,&selectedName);
+    
+                object_ptr = CAD_list_head;
+                done = 0;
+                while (object_ptr != NULL && done == 0) {
+                    cadName = object_ptr->label;
+                    if (strcmp(cadName,selectedName)==0) {
+                        // get the area for the CAD object matching the selected name
+                        // and format it as a localized string.
+                        area = CAD_list_head->computed_area;
+                        Format_area_for_output(&area, area_description,sizeof_area_description);
+                        // open the CAD object details dialog for the matching CAD object
+                        Set_CAD_object_parameters_dialog(area_description,object_ptr);
+                        done = 1;
+                    } else {
+                       object_ptr = object_ptr->next;
+                    }
+                }
+            }
+        }
+
+        // leave the list dialog open
+    }
+
+}
+
+
+
+
+
+// Callback for edit CAD objects menu option.  Dialog to allow users
+// to select individual CAD objects in order to edit their metadata.
+//
+void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    Widget cad_list_pane, cad_list_form, cad_list_label,
+           button_list_selected, button_cancel;
+    Arg al[100];       /* Arg List */
+    unsigned int ac;   /* Arg Count */
+    CADRow *object_ptr = CAD_list_head;
+    int counter = 1;
+    XmString cb_item;
+
+    if (cad_list_dialog) {
+        (void)XRaiseWindow(XtDisplay(cad_list_dialog), XtWindow(cad_list_dialog));
+    } else {
+
+        // List CAD Objects
+        cad_list_dialog = XtVaCreatePopupShell("List CAD Objects",
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,          XmDESTROY,
+                XmNdefaultPosition,         FALSE,
+                NULL);
+                                                                                                                        
+        cad_list_pane = XtVaCreateWidget("CAD list Object pane",
+                xmPanedWindowWidgetClass,
+                cad_list_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+                                                                                                                        
+        cad_list_form =  XtVaCreateWidget("Cad list Object form",
+                xmFormWidgetClass,
+                cad_list_pane,
+                XmNfractionBase,            3,
+                XmNautoUnmanage,            FALSE,
+                XmNshadowThickness,         1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // heading: CAD Objects 
+        cad_list_label = XtVaCreateManagedWidget(langcode("CADPUD006"), 
+                xmLabelWidgetClass,
+                cad_list_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // *** need to handle the special case of no CAD objects ? ***
+
+        // scrolled pick list to allow selection of current objects
+        /*set args for list */
+        ac=0;
+        XtSetArg(al[ac], XmNvisibleItemCount, 11); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+        XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
+        XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
+        XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
+        XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
+        XtSetArg(al[ac], XmNtopWidget, cad_list_label); ac++;
+        XtSetArg(al[ac], XmNtopOffset, 5); ac++;
+        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
+        XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNrightOffset, 5); ac++;
+        XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        //XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, colors[0x0f]); ac++;
+
+        list_of_existing_CAD_objects_edit = XmCreateScrolledList(cad_list_form,
+                "CAD objects for deletion scrolled list",
+                al,
+                ac);
+        // make sure list is empty
+        XmListDeleteAllItems(list_of_existing_CAD_objects_edit);
+
+        // iterate through list of objects to populate scrolled list
+        while (object_ptr != NULL) {
+            cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+            XmListAddItem(list_of_existing_CAD_objects_edit,
+                          cb_item,
+                          counter);  
+            counter++;
+            XmStringFree(cb_item);
+            object_ptr = object_ptr->next;
+        }
+
+        // "Show/edit details"
+        button_list_selected = XtVaCreateManagedWidget(langcode("CADPUD007"),
+                xmPushButtonGadgetClass,
+                cad_list_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         list_of_existing_CAD_objects_edit,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_FORM,
+                XmNleftOffset,        10,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(button_list_selected, XmNactivateCallback, Show_selected_CAD_object_details, Draw_CAD_Objects_list_dialog);
+
+        // "Cancel"
+        button_cancel = XtVaCreateManagedWidget(langcode("CADPUD008"),
+                xmPushButtonGadgetClass,
+                cad_list_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         list_of_existing_CAD_objects_edit,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_WIDGET,
+                XmNleftWidget,        button_list_selected,
+                XmNleftOffset,        10,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(button_cancel, XmNactivateCallback, Draw_CAD_Objects_list_dialog_close, Draw_CAD_Objects_erase_dialog);                        
+        pos_dialog(cad_list_dialog);
+        XmInternAtom(XtDisplay(cad_list_dialog),"WM_DELETE_WINDOW", FALSE);
+
+        XtManageChild(cad_list_form);
+        XtManageChild(list_of_existing_CAD_objects_edit);
+        XtManageChild(cad_list_pane);
+                                                                                                                        
+        XtPopup(cad_list_dialog,XtGrabNone);
+    }
+}
+
+
+
+
+
+// Free the object and vertice lists then do a screen update.
+// callback from delete all button on cad_erase_dialog.
+//
 void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
@@ -2836,6 +3201,64 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 
 
 
+// Formats an area in square kilometers as a string in english or
+// metric units, converting to feet or meters if the area is less
+// than 0.1 square kilometers and adding localized text.
+// Parameters: area: an area in square kilometers.
+// area_description: area reformated as a localized text string.
+// sizeof_area_description: array length of area_decription.
+//
+void Format_area_for_output(double *area_km2, char *area_description, int sizeof_area_description) {
+    double area;
+    // Format it for output and dump it out.  We're using square
+    // terms, so apply the conversion factor twice to convert from
+    // nautical square miles to the units of interest.
+    area = *area_km2 * cvt_kn2len * cvt_kn2len;
+
+    // We could be measuring a very small or a very large object.
+    // In the case of very small, convert it to square feet or
+    // square meters.
+    if (area < 0.1) {
+
+        // Small area.  Convert to square feet or square meters
+
+        if (english_units) { // Square feet
+            area = area * 5280 * 5280;
+            xastir_snprintf(area_description,
+                sizeof_area_description,
+                "%s: %0.2f %s",
+                langcode("POPUPMA037"), // Area
+                area,
+                langcode("POPUPMA039") ); // square feet
+            //popup_message_always(langcode("POPUPMA020"),area_description);
+        }
+        else {  // Square meters
+            area = area * 1000 * 1000;  // Square meters
+            xastir_snprintf(area_description,
+                sizeof_area_description,
+                "%s: %0.2f %s",
+                langcode("POPUPMA037"), // Area
+                area,
+                langcode("POPUPMA040") ); // square meters
+            //popup_message_always(langcode("POPUPMA020"),area_description);
+        }
+    }
+    else {  // Not small
+        xastir_snprintf(area_description,
+            sizeof_area_description,
+            "%s: %0.2f %s %s",
+            langcode("POPUPMA037"), // Area
+            area,
+            langcode("POPUPMA038"), // square
+            un_dst);
+        //popup_message_always(langcode("POPUPMA020"),area_description);
+    }
+}
+
+
+
+
+
 // Add an ending vertice that is the same as the starting vertice.
 // Best not to use the screen coordinates we captured first, as the
 // user may have zoomed or panned since then.  Better to copy the
@@ -2848,13 +3271,14 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
+    static int sizeof_area_description = 200;
     VerticeRow *tmp;
     double area;
     int n;
     //char temp_course[20];
-    char temp[200];
+    char area_description[sizeof_area_description];
+    xastir_snprintf(area_description, sizeof_area_description, "Area");
  
-
     // Check whether we're currently working on a polygon.  If not,
     // get out of here.
     if (polygon_last_x == -1 || polygon_last_y == -1) {
@@ -2912,55 +3336,15 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 
     // Save it in the object.  Convert nautical square miles to
     // square kilometers.
-    CAD_list_head->computed_area = area * 1.852 * 1.852; //km2
+    area = area * 1.852 * 1.852; //km2
+    CAD_list_head->computed_area = area;
 
+    Format_area_for_output(&area, area_description, sizeof_area_description);
 
-    // Format it for output and dump it out.  We're using square
-    // terms, so apply the conversion factor twice to convert from
-    // nautical square miles to the units of interest.
-    area = area * cvt_kn2len * cvt_kn2len;
-
-    // We could be measuring a very small or a very large object.
-    // In the case of very small, convert it to square feet or
-    // square meters.
-    if (area < 0.1) {
-
-        // Small area.  Convert to square feet or square meters
-
-        if (english_units) { // Square feet
-            area = area * 5280 * 5280;
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s: %0.2f %s",
-                langcode("POPUPMA037"), // Area
-                area,
-                langcode("POPUPMA039") ); // square feet
-            //popup_message_always(langcode("POPUPMA020"),temp);
-        }
-        else {  // Square meters
-            area = area * 1000 * 1000;  // Square meters
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s: %0.2f %s",
-                langcode("POPUPMA037"), // Area
-                area,
-                langcode("POPUPMA040") ); // square meters
-            //popup_message_always(langcode("POPUPMA020"),temp);
-        }
-    }
-    else {  // Not small
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%s: %0.2f %s %s",
-            langcode("POPUPMA037"), // Area
-            area,
-            langcode("POPUPMA038"), // square
-            un_dst);
-        //popup_message_always(langcode("POPUPMA020"),temp);
-    }
-
+#ifdef CAD_DEBUG
     // Also write the area to stderr
-    fprintf(stderr,"%s\n",temp);
+    fprintf(stderr,"New CAD object %s\n",area_description);
+#endif
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
@@ -2971,7 +3355,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     // CAD object vertices are ready, needs associated data
     // obtain label, comment, and probability for this polygon
     // from user through a dialog.
-    Set_CAD_object_parameters_dialog(temp);
+    Set_CAD_object_parameters_dialog(area_description,NULL);
 }
 
 
@@ -5736,8 +6120,6 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     // the two example files provided: predefined_SAR.sys and 
     // predefined_EVENT.sys
     char predefined_object_definition_file[263];
-    //xastir_snprintf(predefined_object_definition_filename,sizeof(predefined_object_definition_filename),"predefined_SAR.sys");
-
     int read_file_ok = 0;
     int line_max_length = 255;
     int object_read_ok = 0;
@@ -5757,11 +6139,13 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
         // exists, if it does, open it and try to read the definitions
         // if this fails, use the hardcoded SAR default instead.
         fprintf(stderr,"Checking for predefined objects menu file\n");
-//        if (filethere(get_user_base_dir(predefined_object_definition_file))) {
-//            fp_file = fopen(get_user_base_dir(predefined_object_definition_file),"r");
+#ifdef OBJECT_DEF_FILE_USER_BASE
+        if (filethere(get_user_base_dir(predefined_object_definition_file))) {
+            fp_file = fopen(get_user_base_dir(predefined_object_definition_file),"r");
+#else   // OBJECT_DEF_FILE_USER_BASE
         if (filethere(get_data_base_dir(predefined_object_definition_file))) {
             fp_file = fopen(get_data_base_dir(predefined_object_definition_file),"r");
- 
+#endif  // OBJECT_DEF_FILE_USER_BASE
     
             fprintf(stderr,"Loading from %s \n",predefined_object_definition_file);
             while (!feof(fp_file)) {

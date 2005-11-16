@@ -308,6 +308,7 @@ POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position ambiguity is on, your new position may appear to jump.||
 POPUPMA045|Predefined Objects||
+POPUPMA046|List All CAD Polygons||
 #
 #
 # Status line labels
@@ -1250,9 +1251,16 @@ GPSS006|Fix||
 GPSS007|!GPS data is older than 30 seconds!||
 #
 #
-# Popup cad_dialog to obtain CAD object data
+# Popup cad_dialog to obtain CAD object data and other CAD dialogs
 CADPUD001|Area Object||
 CADPUD002|Area Label:||
 CADPUD003|Comment:||
 CADPUD004|Probability:||
 CADPUD005|OK||
+CADPUD006|CAD Dialog||
+CADPUD007|Show/Edit Details||
+CADPUD008|Cancel||
+CADPUD009|Delete CAD objects?||
+CADPUD010|Delete All||
+CADPUD011|Delete Selected||
+

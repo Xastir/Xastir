@@ -319,6 +319,7 @@ POPUPMA042|Graden||
 POPUPMA043|Pas meerduidige positie aan||# origineel ambigious mag ook meervoudige zijn?
 POPUPMA044|Positie meerduidigheid is aan, uw nieuwe positie kan verspringen.||
 POPUPMA045|Predefined Objecten||
+POPUPMA046|List All CAD Polygons||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -1263,3 +1264,9 @@ CADPUD002|Area Label:||
 CADPUD003|Comment:||
 CADPUD004|Probability:||
 CADPUD005|OK||
+CADPUD006|CAD Dialog||
+CADPUD007|Show/Edit Details||
+CADPUD008|Cancel||
+CADPUD009|Delete CAD objects?||
+CADPUD010|Delete All||
+CADPUD011|Delete Selected||

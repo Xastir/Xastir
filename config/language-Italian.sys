@@ -308,6 +308,7 @@ POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position abiguity is on, your new position may appear to jump.||
 POPUPMA045|Predefined Objects||
+POPUPMA046|List All CAD Polygons||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||
@@ -1247,3 +1248,9 @@ CADPUD002|Area Label:||
 CADPUD003|Comment:||
 CADPUD004|Probability:||
 CADPUD005|OK||
+CADPUD006|CAD Dialog||
+CADPUD007|Show/Edit Details||
+CADPUD008|Cancel||
+CADPUD009|Delete CAD objects?||
+CADPUD010|Delete All||
+CADPUD011|Delete Selected||

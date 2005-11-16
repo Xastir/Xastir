@@ -48,6 +48,10 @@
 //
 //#define TRANSMIT_RAW_WX
 
+// To use predefined object configuration files from within the 
+// user's base directory e.g. ~/.xastir/config/predefined_SAR.sys
+// rather than from the main base directory, enable this definition.
+//#define OBJECT_DEF_FILE_USER_BASE
 
 extern int enable_server_port;
 

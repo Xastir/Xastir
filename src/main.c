@@ -8207,7 +8207,23 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA046")); ac++;
+
+    // "List All CAD Polygons"
+    CAD2=XtCreateManagedWidget(langcode("POPUPMA046"),
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            al,
+            ac);
+    XtAddCallback(CAD2,XmNactivateCallback,Draw_CAD_Objects_list_dialog,NULL);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
+
 
     // "Erase All CAD Polygons"
     CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
@@ -20843,7 +20859,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                         sizeof(loadfrom),
                         "%s %s",
                         langcode("WPUPCFD031"),
+#ifdef OBJECT_DEF_FILE_USER_BASE
                         get_user_base_dir("config"));
+#else   // OBJECT_DEF_FILE_USER_BASE
+                        get_data_base_dir("config"));
+#endif  // OBJECT_DEF_FILE_USER_BASE
 
         load_predefined_objects_menu_from_file_enable = XtVaCreateManagedWidget(loadfrom,
                 xmToggleButtonWidgetClass,
