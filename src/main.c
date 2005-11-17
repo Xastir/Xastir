@@ -5703,6 +5703,51 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(center_zoom_button,XmNactivateCallback,Center_Zoom,NULL);
 
+    CAD_sub=XmCreatePulldownMenu(mappane,
+            "create_appshell CAD sub",
+            al,
+            ac);
+
+    // "Draw CAD Objects"
+    draw_CAD_objects_menu=XtVaCreateManagedWidget(langcode("POPUPMA029"),
+            xmCascadeButtonGadgetClass,
+            mappane,
+            XmNsubMenuId,CAD_sub,
+//            XmNmnemonic,langcode_hotkey("POPUPMA029"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // "Draw Mode"
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA031")); ac++;
+
+    // "Close Polygon"
+    CAD2=XtCreateManagedWidget(langcode("POPUPMA031"),
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            al,
+            ac);
+    XtAddCallback(CAD2,XmNactivateCallback,Draw_CAD_Objects_close_polygon,NULL);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
+
+    // "Erase CAD Polygons"
+    CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            al,
+            ac);
+    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_erase_dialog,NULL);
 
     (void)XtVaCreateManagedWidget("create_appshell sep2",
             xmSeparatorGadgetClass,
@@ -8222,52 +8267,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
 
     BuildPredefinedSARMenu_UI(&sar_object_sub);
-
-    CAD_sub=XmCreatePulldownMenu(right_menu_popup,
-            "create_appshell CAD sub",
-            al,
-            ac);
-
-    // "Draw CAD Objects"
-    draw_CAD_objects_menu=XtVaCreateManagedWidget(langcode("POPUPMA029"),
-            xmCascadeButtonGadgetClass,
-            right_menu_popup,
-            XmNsubMenuId,CAD_sub,
-//            XmNmnemonic,langcode_hotkey("POPUPMA029"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-    // "Draw Mode"
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA031")); ac++;
-
-    // "Close Polygon"
-    CAD2=XtCreateManagedWidget(langcode("POPUPMA031"),
-            xmPushButtonGadgetClass,
-            CAD_sub,
-            al,
-            ac);
-    XtAddCallback(CAD2,XmNactivateCallback,Draw_CAD_Objects_close_polygon,NULL);
-
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
-
-    // "Erase CAD Polygons"
-    CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
-            xmPushButtonGadgetClass,
-            CAD_sub,
-            al,
-            ac);
-    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_erase_dialog,NULL);
 
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
