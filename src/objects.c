@@ -2975,14 +2975,14 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
 
 
 
-// popdown and destroy the cad_erase_dialog
+// popdown and destroy the cad_list_dialog
 //
 void Draw_CAD_Objects_list_dialog_close ( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
 
     if (cad_list_dialog!=NULL) {
-        // close cad_erase_dialog
+        // close cad_list_dialog
         XtPopdown(cad_list_dialog);
         XtDestroyWidget(cad_list_dialog);
         cad_list_dialog = (Widget)NULL;
@@ -3397,7 +3397,7 @@ void Draw_All_CAD_Objects(Widget w) {
     long x_long, y_lat;
     long x_offset, y_offset;
     float probability;
-    char probability_string[5];
+    char probability_string[8];
     VerticeRow *vertice;
 
     // Start at CAD_list_head, iterate through entire linked list,
@@ -3410,36 +3410,49 @@ void Draw_All_CAD_Objects(Widget w) {
         probability = CAD_object_get_raw_probability(object_ptr);
         xastir_snprintf(probability_string,
             sizeof(probability_string),
-            "%01.2f",
+            "%01.2f%%",
             probability);
+
         // draw label and probability
         if (object_ptr->label != NULL) {
-             x_long = object_ptr->label_longitude;
-             y_lat = object_ptr->label_latitude;
+            x_long = object_ptr->label_longitude;
+            y_lat = object_ptr->label_latitude;
 #ifdef CAD_DEBUG
-             fprintf(stderr,"Drawing object %s\n", object_ptr->label);
+            fprintf(stderr,"Drawing object %s\n", object_ptr->label);
 #endif
-             //fprintf(stderr,"Lat: %d\n", y_lat);
-             //fprintf(stderr,"Long: %d\n", x_long);
-             if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
-                 if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
-                     if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                         if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
-                             x_offset=((x_long-x_long_offset)/scale_x)-(10);
-                             y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
-                             if ( (int)strlen(object_ptr->label)>0) {
-                                 x_offset=((x_long-x_long_offset)/scale_x);
-                                 y_offset=((y_lat -y_lat_offset) /scale_y);
-                                 draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,object_ptr->label,0x08,0x48,strlen(object_ptr->label));
+            //fprintf(stderr,"Lat: %d\n", y_lat);
+            //fprintf(stderr,"Long: %d\n", x_long);
+            if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
+
+                if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
+
+                    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+
+                        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+
+                            x_offset=((x_long-x_long_offset)/scale_x)-(10);
+                            y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
+
+                            if ( (int)strlen(object_ptr->label)>0) {
+
+                                x_offset=((x_long-x_long_offset)/scale_x);
+                                y_offset=((y_lat -y_lat_offset) /scale_y);
+
+                                // 0x08 is background color
+                                // 0x40 is foreground color (yellow)
+                                draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,object_ptr->label,0x08,0x40,strlen(object_ptr->label));
                                                                                                                         
-                                 x_offset=((x_long-x_long_offset)/scale_x)+12;
-                                 y_offset=((y_lat -y_lat_offset) /scale_y)+15;
-                                 draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,probability_string,0x03,0x50,strlen(probability_string));
-                             }
-                         }
-                     }
-                 }
-             }
+                                x_offset=((x_long-x_long_offset)/scale_x)+12;
+                                y_offset=((y_lat -y_lat_offset) /scale_y)+15;
+
+                                // 0x08 is background color
+                                // 0x40 is foreground color (yellow)
+                                draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,probability_string,0x08,0x40,strlen(probability_string));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Iterate through the vertices and draw the lines
