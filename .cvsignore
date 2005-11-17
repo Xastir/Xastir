@@ -9,6 +9,7 @@ devel
 install-sh
 Makefile.in
 Makefile
+make.log
 missing
 mkinstalldirs
 nwr
@@ -21,3 +22,4 @@ config.status
 summary.log
 stamp-h1
 xastir.spec
+xastir-min.spec
