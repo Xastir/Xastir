@@ -2203,7 +2203,7 @@ void Set_CAD_object_parameters (Widget widget,
         Update_CAD_objects_list_dialog();
     }
                                                                                                                         
-    // close object_paramenters dialog
+    // close object_parameters dialog
     XtPopdown(cad_dialog);
     XtDestroyWidget(cad_dialog);
     cad_dialog = (Widget)NULL;
@@ -2245,6 +2245,16 @@ void Update_CAD_objects_list_dialog() {
 
 
 
+void close_object_params_dialog(Widget widget, XtPointer clientData, XtPointer calldata) {
+    XtPopdown(cad_dialog);
+    XtDestroyWidget(cad_dialog);
+    cad_dialog = (Widget)NULL;
+}
+
+
+
+
+
 // Create a dialog to obtain information about a newly created CAD
 // object from the user.  Values of probability, name, and comment
 // are initially blank.  Takes as a parameter a string describing
@@ -2259,7 +2269,8 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
            cad_label,
            cad_comment,
            cad_probability,
-           button_done;
+           button_done,
+           button_cancel;
     char   probability_string[5];
                                                                                                                         
     if (cad_dialog) {
@@ -2284,7 +2295,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
         cad_form =  XtVaCreateWidget("Set_Del_Object ob_form",
                 xmFormWidgetClass,
                 cad_pane,
-                XmNfractionBase,            3,
+                XmNfractionBase,            2,
                 XmNautoUnmanage,            FALSE,
                 XmNshadowThickness,         1,
                 MY_FOREGROUND_COLOR,
@@ -2396,8 +2407,27 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
                  NULL);
-        // "OK"
+
+       // "OK"
         button_done = XtVaCreateManagedWidget(langcode("CADPUD005"),
+                xmPushButtonGadgetClass,
+                cad_form,
+                XmNtopAttachment,     XmATTACH_WIDGET,
+                XmNtopWidget,         cad_probability_data,
+                XmNtopOffset,         5,
+                XmNbottomAttachment,  XmATTACH_FORM,
+                XmNbottomOffset,      5,
+                XmNleftAttachment,    XmATTACH_POSITION,
+                XmNleftPosition,      0,
+                XmNrightAttachment,   XmATTACH_POSITION,
+                XmNrightPosition,     1,
+                XmNnavigationType,    XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // "Cancel"
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
                 xmPushButtonGadgetClass,
                 cad_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
@@ -2413,6 +2443,8 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+
         // callback depends on whether this is a new or old object
         //XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, Set_CAD_object_parameters_dialog);
 
@@ -2431,7 +2463,10 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
             // pass pointer to the head of the list, which contains
             // the most recently created cad object.
             XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, CAD_list_head);
-        }                                                                                                                   
+        } 
+
+        XtAddCallback(button_cancel, XmNactivateCallback, close_object_params_dialog, NULL);
+
         pos_dialog(cad_dialog);
         XmInternAtom(XtDisplay(cad_dialog),"WM_DELETE_WINDOW", FALSE);
 
@@ -2993,11 +3028,11 @@ void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
                    XmNitemCount,&itemCount,
                    XmNitems,&listItems,
                    NULL);
-        // iterate through list and delete each first object with a name matching 
-        // those that are selected on the list.
+        // iterate through list and find each object with a name
+        // matching one selected on the list.
         //
         // *** Note: If names are not unique the results may not be what the user expects.
-        // The first match to a selection will be deleted, not necessarily the selection.
+        // The first match to a selection will be used, not necessarily the selection.
         for (x=1; x<=itemCount;x++) {
             if (XmListPosSelected(list_of_existing_CAD_objects_edit,x)) {
                 XmStringGetLtoR(listItems[(x-1)],XmFONTLIST_DEFAULT_TAG,&selectedName);
@@ -3009,7 +3044,7 @@ void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
                     if (strcmp(cadName,selectedName)==0) {
                         // get the area for the CAD object matching the selected name
                         // and format it as a localized string.
-                        area = CAD_list_head->computed_area;
+                        area = object_ptr->computed_area;
                         Format_area_for_output(&area, area_description,sizeof_area_description);
                         // open the CAD object details dialog for the matching CAD object
                         Set_CAD_object_parameters_dialog(area_description,object_ptr);
@@ -3023,7 +3058,6 @@ void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
 
         // leave the list dialog open
     }
-
 }
 
 
@@ -3128,7 +3162,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
             object_ptr = object_ptr->next;
         }
 
-        // "Show/edit details"
+       // "Show/edit details"
         button_list_selected = XtVaCreateManagedWidget(langcode("CADPUD007"),
                 xmPushButtonGadgetClass,
                 cad_list_form,
