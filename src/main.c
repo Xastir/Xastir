@@ -4892,7 +4892,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
     Widget sar_object_menu;
-    Widget CAD_sub, CAD1, CAD2, CAD3;
+    Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
@@ -5748,6 +5748,16 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
     XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_erase_dialog,NULL);
+
+    // "List All CAD Polygons"
+    CAD4 = XtVaCreateManagedWidget(langcode("POPUPMA046"),
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            XmNmnemonic,langcode_hotkey("POPUPMA046"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(CAD4,XmNactivateCallback,Draw_CAD_Objects_list_dialog,NULL);
 
     (void)XtVaCreateManagedWidget("create_appshell sep2",
             xmSeparatorGadgetClass,
