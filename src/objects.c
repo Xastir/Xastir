@@ -2480,29 +2480,44 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
 
 
 
-// This is the callback for the Draw CAD Objects menu option
-//
-void Draw_CAD_Objects_start_mode( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer calldata) {
 
+// This is the callback for the Draw togglebutton
+//
+void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
+        XtPointer clientData,
+        XtPointer callData) {
+
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     static Cursor cs_CAD = (Cursor)NULL;
 
 
-//    fprintf(stderr,"Draw_CAD_Objects_start_mode function enabled\n");
+    if(state->set) {
+        draw_CAD_objects_flag = 1;
 
-    // Create the "pencil" cursor so we know what mode we're in.
-    //
-    if(!cs_CAD) {
-        cs_CAD=XCreateFontCursor(XtDisplay(da),XC_pencil);
+        // Create the "pencil" cursor so we know what mode we're in.
+        //
+        if(!cs_CAD) {
+            cs_CAD=XCreateFontCursor(XtDisplay(da),XC_pencil);
+        }
+
+        (void)XDefineCursor(XtDisplay(da),XtWindow(da),cs_CAD);
+        (void)XFlush(XtDisplay(da));
+
+        draw_CAD_objects_flag = 1;
+        polygon_last_x = -1;    // Invalid position
+        polygon_last_y = -1;    // Invalid position
     }
+    else {
+        draw_CAD_objects_flag = 0;
+        polygon_last_x = -1;    // Invalid position
+        polygon_last_y = -1;    // Invalid position
 
-    (void)XDefineCursor(XtDisplay(da),XtWindow(da),cs_CAD);
-    (void)XFlush(XtDisplay(da));
+        Save_CAD_Objects_to_file();
  
-    draw_CAD_objects_flag = 1;
-    polygon_last_x = -1;    // Invalid position
-    polygon_last_y = -1;    // Invalid position
+        // Remove the special "pencil" cursor.
+        (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
+        (void)XFlush(XtDisplay(da));
+    }
 }
 
 
@@ -2711,30 +2726,6 @@ void Restore_CAD_Objects_from_file(void) {
         }
     }
     (void)fclose(f);
-}
-
-
-
-
-
-// Callback for the end CAD draw mode menu option Writes all CAD
-// objects to file and turns off the pencil cursor.
-//
-void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
-
-//    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
-
-    draw_CAD_objects_flag = 0;
-    polygon_last_x = -1;    // Invalid position
-    polygon_last_y = -1;    // Invalid position
-
-    Save_CAD_Objects_to_file();
- 
-    // Remove the special "pencil" cursor.
-    (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
-    (void)XFlush(XtDisplay(da));
 }
 
 

@@ -308,7 +308,7 @@ POPUPMA042|degrees||
 POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position abiguity is on, your new position may appear to jump.||
 POPUPMA045|Predefined Objects||
-POPUPMA046|List All CAD Polygons||
+POPUPMA046|CAD Polygons||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||

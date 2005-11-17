@@ -339,6 +339,7 @@ Widget right_menu_popup              = (Widget)NULL;    // Button one or left mo
 Widget trackme_button;
 Widget measure_button;
 Widget move_button;
+Widget cad_draw_button;
 
 
 int Station_transmit_type;
@@ -4891,7 +4892,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
     Widget sar_object_menu;
-    Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
+    Widget CAD_sub, CAD1, CAD2, CAD3;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
@@ -4904,7 +4905,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         station_config_pane,
         help_emergency_pane, help_emergency_button;
 
-    Widget trackme_frame, measure_frame, move_frame, display_button,
+    Widget display_button,
         track_button, download_trail_button, station_clear_button,
         tracks_clear_button, object_history_refresh_button,
         object_history_clear_button, tactical_clear_button,
@@ -5387,13 +5388,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
 
     /* View */
-    bullet_button = XtVaCreateManagedWidget(langcode("PULDNVI001"),
-            xmPushButtonGadgetClass,
-            viewpane,
-            XmNmnemonic,langcode_hotkey("PULDNVI001"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
     packet_data_button = XtVaCreateManagedWidget(langcode("PULDNVI002"),
             xmPushButtonGadgetClass,
             viewpane,
@@ -5401,6 +5395,28 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+    view_messages_button = XtVaCreateManagedWidget(langcode("PULDNVI011"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI011"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    bullet_button = XtVaCreateManagedWidget(langcode("PULDNVI001"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+ 
+    (void)XtVaCreateManagedWidget("create_appshell sep?",
+            xmSeparatorGadgetClass,
+            viewpane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
     mobile_button = XtVaCreateManagedWidget(langcode("PULDNVI003"),
             xmPushButtonGadgetClass,
             viewpane,
@@ -5429,6 +5445,14 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
+    (void)XtVaCreateManagedWidget("create_appshell sep?",
+            xmSeparatorGadgetClass,
+            viewpane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
     objectstations_button = XtVaCreateManagedWidget(langcode("LHPUPNI005"),
             xmPushButtonGadgetClass,
             viewpane,
@@ -5443,6 +5467,23 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
+    // "List All CAD Polygons"
+    CAD1 = XtVaCreateManagedWidget(langcode("POPUPMA046"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("POPUPMA046"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    (void)XtVaCreateManagedWidget("create_appshell sep?",
+            xmSeparatorGadgetClass,
+            viewpane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
     weather_button = XtVaCreateManagedWidget(langcode("PULDNVI005"),
             xmPushButtonGadgetClass,
             viewpane,
@@ -5464,13 +5505,14 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    view_messages_button = XtVaCreateManagedWidget(langcode("PULDNVI011"),
-            xmPushButtonGadgetClass,
+
+    (void)XtVaCreateManagedWidget("create_appshell sep?",
+            xmSeparatorGadgetClass,
             viewpane,
-            XmNmnemonic,langcode_hotkey("PULDNVI011"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
     gps_status_button = XtVaCreateManagedWidget(langcode("PULDNVI015"),
             xmPushButtonGadgetClass,
             viewpane,
@@ -7386,6 +7428,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(laststations_button,  XmNactivateCallback,Station_List,"4");
     XtAddCallback(objectstations_button,XmNactivateCallback,Station_List,"5");
     XtAddCallback(objectmystations_button,XmNactivateCallback,Station_List,"6");
+    XtAddCallback(CAD1,XmNactivateCallback,Draw_CAD_Objects_list_dialog,NULL);
 
     /* button callbacks */
     XtAddCallback(General_q_button,     XmNactivateCallback,General_query,"");
@@ -7469,12 +7512,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             xmFormWidgetClass,
             form,
             XmNtopAttachment, XmATTACH_FORM,
+            XmNtopOffset, 0,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, menubar,
             XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
-            XmNfractionBase, 3,
             XmNautoUnmanage, FALSE,
             XmNshadowThickness, 1,
             XmNnavigationType, XmTAB_GROUP,
@@ -7483,28 +7526,17 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-    trackme_frame = XtVaCreateManagedWidget("Trackme frame",
-            xmFrameWidgetClass,
+    trackme_button=XtVaCreateManagedWidget(langcode("POPUPMA022"),
+            xmToggleButtonGadgetClass,
             toolbar,
             XmNtopAttachment, XmATTACH_FORM,
-            XmNbottomAttachment, XmATTACH_FORM,
+            XmNtopOffset, -3,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNbottomOffset, 0,
             XmNleftAttachment, XmATTACH_FORM,
             XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
-            XmNnavigationType, XmTAB_GROUP,
-            XmNtraversalOn, FALSE,
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-    trackme_button=XtVaCreateManagedWidget(langcode("POPUPMA022"),
-            xmToggleButtonGadgetClass,
-            trackme_frame,
-            XmNtopAttachment, XmATTACH_FORM,
-            XmNbottomAttachment, XmATTACH_FORM,
-            XmNleftAttachment, XmATTACH_FORM,
-            XmNleftOffset, 0,
-            XmNrightAttachment, XmATTACH_FORM,
+            XmNrightOffset, 0,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             XmNnavigationType, XmTAB_GROUP,
@@ -7514,29 +7546,18 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(trackme_button,XmNvalueChangedCallback,Track_Me,"1");
 
-    measure_frame = XtVaCreateManagedWidget("Measure frame",
-            xmFrameWidgetClass,
-            toolbar,
-            XmNtopAttachment, XmATTACH_FORM,
-            XmNbottomAttachment, XmATTACH_FORM,
-            XmNleftAttachment, XmATTACH_WIDGET,
-            XmNleftWidget, trackme_frame,
-            XmNleftOffset, 0,
-            XmNrightAttachment, XmATTACH_NONE,
-            XmNnavigationType, XmTAB_GROUP,
-            XmNtraversalOn, FALSE,
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
     measure_button=XtVaCreateManagedWidget(langcode("POPUPMA020"),
             xmToggleButtonGadgetClass,
-            measure_frame,
-            XmNtopAttachment, XmATTACH_FORM,
+            toolbar,
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, trackme_button,
+            XmNtopOffset, -10,
             XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset, -4,
             XmNleftAttachment, XmATTACH_FORM,
             XmNleftOffset, 0,
-            XmNrightAttachment, XmATTACH_FORM,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNrightOffset, 0,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             XmNnavigationType, XmTAB_GROUP,
@@ -7546,29 +7567,41 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(measure_button,XmNvalueChangedCallback,Measure_Distance,"1");
 
-    move_frame = XtVaCreateManagedWidget("Move frame",
-            xmFrameWidgetClass,
+//    cad_draw_button=XtVaCreateManagedWidget(langcode("POPUPMA021"),
+    cad_draw_button=XtVaCreateManagedWidget("Draw",
+            xmToggleButtonGadgetClass,
             toolbar,
             XmNtopAttachment, XmATTACH_FORM,
-            XmNbottomAttachment, XmATTACH_FORM,
+            XmNtopOffset, -3,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNbottomOffset, 0,
             XmNleftAttachment, XmATTACH_WIDGET,
-            XmNleftWidget, measure_frame,
+            XmNleftWidget, trackme_button,
             XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
+            XmNrightOffset, 0,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, FALSE,
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-
+    XtAddCallback(cad_draw_button,XmNvalueChangedCallback,Draw_CAD_Objects_mode,NULL);
+ 
     move_button=XtVaCreateManagedWidget(langcode("POPUPMA021"),
             xmToggleButtonGadgetClass,
-            move_frame,
-            XmNtopAttachment, XmATTACH_FORM,
+            toolbar,
+            XmNtopAttachment, XmATTACH_WIDGET,
+            XmNtopWidget, cad_draw_button,
+            XmNtopOffset, -10,
             XmNbottomAttachment, XmATTACH_FORM,
-            XmNleftAttachment, XmATTACH_FORM,
+            XmNbottomOffset, -4,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, trackme_button,
             XmNleftOffset, 0,
-            XmNrightAttachment, XmATTACH_FORM,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNrightOffset, 0,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
             XmNnavigationType, XmTAB_GROUP,
@@ -7587,7 +7620,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             XmNtopAttachment, XmATTACH_FORM,
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_WIDGET,
-            XmNleftWidget, move_frame,
+            XmNleftWidget, cad_draw_button,
             XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
@@ -8211,21 +8244,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA030")); ac++;
-
-    // "Start Draw Mode"
-    CAD1=XtCreateManagedWidget(langcode("POPUPMA030"),
-            xmPushButtonGadgetClass,
-            CAD_sub,
-            al,
-            ac);
-    XtAddCallback(CAD1,XmNactivateCallback,Draw_CAD_Objects_start_mode,NULL);
-
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA031")); ac++;
 
     // "Close Polygon"
@@ -8241,23 +8259,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA046")); ac++;
-
-    // "List All CAD Polygons"
-    CAD2=XtCreateManagedWidget(langcode("POPUPMA046"),
-            xmPushButtonGadgetClass,
-            CAD_sub,
-            al,
-            ac);
-    XtAddCallback(CAD2,XmNactivateCallback,Draw_CAD_Objects_list_dialog,NULL);
-
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
-
 
     // "Erase CAD Polygons"
     CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
@@ -8272,16 +8274,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA033")); ac++;
-
-    // "End Draw Mode"
-    CAD4=XtCreateManagedWidget(langcode("POPUPMA033"),
-            xmPushButtonGadgetClass,
-            CAD_sub,
-            al,
-            ac);
-    XtAddCallback(CAD4,XmNactivateCallback,Draw_CAD_Objects_end_mode,NULL);
-
 
     XtCreateManagedWidget("create_appshell sep7b",
             xmSeparatorWidgetClass,
