@@ -294,10 +294,10 @@ POPUPMA026|Centre & zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
 POPUPMA029|Dessiner objets CAD||
-POPUPMA030|Commencer mode de dessin||
+POPUPMA030|Draw||
 POPUPMA031|Fermer polygone||
 POPUPMA032|Erase CAD Polygons||
-POPUPMA033|Finir mode de dessin||
+POPUPMA033|**NOT USED**||
 POPUPMA034|Changer niveau de zoom||
 POPUPMA035|10% arrière||
 POPUPMA036|10% avant||

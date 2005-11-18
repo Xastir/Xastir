@@ -303,10 +303,10 @@ POPUPMA026|Centreer & zoom||
 POPUPMA027|Breedtegraden||
 POPUPMA028| Lengtegraden||
 POPUPMA029|Teken CAD objecten||
-POPUPMA030|Zet teken modus aan||
+POPUPMA030|Draw||
 POPUPMA031|Sluit polygoon||
 POPUPMA032|Erase CAD Polygons||
-POPUPMA033|Beeindig teken modus||
+POPUPMA033|**NOT USED**||
 POPUPMA034|Handmatig Zoom Niveau||
 POPUPMA035|10% uit||
 POPUPMA036|10% in||
