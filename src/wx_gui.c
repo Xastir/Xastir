@@ -426,7 +426,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 alert->activity[4],
                 alert->activity[5],
                 alert->flags[on_screen],
-		alert->flags[source],
+                alert->flags[source],
                 alert->title,
                 alert->alert_tag,
                 alert->desc0,
