@@ -5703,6 +5703,13 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(center_zoom_button,XmNactivateCallback,Center_Zoom,NULL);
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+
     CAD_sub=XmCreatePulldownMenu(mappane,
             "create_appshell CAD sub",
             al,
@@ -5892,6 +5899,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     map_config_pane  = XmCreatePulldownMenu(mappane,
             "map_config_pane",
@@ -5906,6 +5919,13 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     // These go into the map config submenu
     Map_background_color_Pane = XmCreatePulldownMenu(map_config_pane,
@@ -6020,6 +6040,14 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(map_bgcolor[9],  XmNactivateCallback,Map_background,"9");
 
 #if !defined(NO_GRAPHICS)
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+
     Raster_intensity_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell raster_intensity",
             al,
@@ -6148,6 +6176,13 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(map_font_button, XmNactivateCallback, Map_font, NULL);
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+
     Map_station_label_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_station_label",
             al,
@@ -6185,6 +6220,13 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(map_station_label0,   XmNactivateCallback,Map_station_label,"0");
     XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
     XtAddCallback(map_station_label2,   XmNactivateCallback,Map_station_label,"2");
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     Map_icon_outline_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_icon_outline",
@@ -6370,6 +6412,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     // Filter Data pulldown/tearoff
     filter_data_pane = XmCreatePulldownMenu(stationspane,
@@ -6661,6 +6709,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     // End of Data Filtering
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     // Displayed Info Filtering
     filter_display_pane = XmCreatePulldownMenu(stationspane,
@@ -7107,6 +7161,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     station_config_pane  = XmCreatePulldownMenu(mappane,
             "map_config_pane",
@@ -7448,6 +7508,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
     help_emergency_pane = XmCreatePulldownMenu(helppane,
             "help_emergency_pane",
             al,
@@ -7585,7 +7651,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             xmToggleButtonGadgetClass,
             toolbar,
             XmNtopAttachment, XmATTACH_FORM,
-            XmNtopOffset, -3,
+            XmNtopOffset, -5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNbottomOffset, 0,
             XmNleftAttachment, XmATTACH_FORM,
@@ -7606,9 +7672,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             toolbar,
             XmNtopAttachment, XmATTACH_WIDGET,
             XmNtopWidget, trackme_button,
-            XmNtopOffset, -10,
+            XmNtopOffset, -7,
             XmNbottomAttachment, XmATTACH_FORM,
-            XmNbottomOffset, -4,
+            XmNbottomOffset, -5,
             XmNleftAttachment, XmATTACH_FORM,
             XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
@@ -7622,12 +7688,11 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(measure_button,XmNvalueChangedCallback,Measure_Distance,"1");
 
-//    cad_draw_button=XtVaCreateManagedWidget(langcode("POPUPMA021"),
-    cad_draw_button=XtVaCreateManagedWidget("Draw",
+    cad_draw_button=XtVaCreateManagedWidget(langcode("POPUPMA030"),
             xmToggleButtonGadgetClass,
             toolbar,
             XmNtopAttachment, XmATTACH_FORM,
-            XmNtopOffset, -3,
+            XmNtopOffset, -5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNbottomOffset, 0,
             XmNleftAttachment, XmATTACH_WIDGET,
@@ -7649,9 +7714,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             toolbar,
             XmNtopAttachment, XmATTACH_WIDGET,
             XmNtopWidget, cad_draw_button,
-            XmNtopOffset, -10,
+            XmNtopOffset, -7,
             XmNbottomAttachment, XmATTACH_FORM,
-            XmNbottomOffset, -4,
+            XmNbottomOffset, -5,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, trackme_button,
             XmNleftOffset, 0,
@@ -7952,6 +8017,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     // Right menu popup (right mouse button or button 3)
     right_menu_popup = XmCreatePopupMenu(da,
@@ -8021,6 +8087,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(jump_button2,XmNactivateCallback,Jump_location, NULL);
  
 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     zoom_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell zoom sub",
@@ -8044,6 +8116,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA002")); ac++;
+
     zoom_in=XtCreateManagedWidget(langcode("POPUPMA002"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8058,6 +8131,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA003")); ac++;
+
     zoom_out=XtCreateManagedWidget(langcode("POPUPMA003"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8072,6 +8146,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA005")); ac++;
+
     zl1=XtCreateManagedWidget(langcode("POPUPMA005"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8086,6 +8161,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA006")); ac++;
+
     zl2=XtCreateManagedWidget(langcode("POPUPMA006"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8100,6 +8176,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA007")); ac++;
+
     zl3=XtCreateManagedWidget(langcode("POPUPMA007"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8114,6 +8191,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA008")); ac++;
+
     zl4=XtCreateManagedWidget(langcode("POPUPMA008"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8128,6 +8206,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA009")); ac++;
+
     zl5=XtCreateManagedWidget(langcode("POPUPMA009"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8142,6 +8221,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA010")); ac++;
+
     zl6=XtCreateManagedWidget(langcode("POPUPMA010"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8156,6 +8236,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA017")); ac++;
+
     zl7=XtCreateManagedWidget(langcode("POPUPMA017"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8170,6 +8251,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'o'); ac++;
+
     zl8=XtCreateManagedWidget(langcode("POPUPMA035"),   // 10% out
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8184,6 +8266,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
+
     zl9=XtCreateManagedWidget(langcode("POPUPMA036"),   // 10% in
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8198,6 +8281,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
+
     zlC=XtCreateManagedWidget(langcode("POPUPMA034"),
             xmPushButtonGadgetClass,
             zoom_sub,
@@ -8212,6 +8296,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA016")); ac++;
+
     last_loc=XtCreateManagedWidget(langcode("POPUPMA016"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -8253,14 +8338,14 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
-
-    // Display a list of predefined SAR or Public service event objects.
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
+    // Display a list of predefined SAR or Public service event objects.
     sar_object_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell sar_object_sub",
             al,
@@ -8295,6 +8380,13 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             right_menu_popup,
             al,
             ac);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     pan_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell pan sub",
