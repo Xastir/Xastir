@@ -1270,29 +1270,48 @@ void draw_shapefile_map (Widget w,
         for( i = 0; i < recordcount && !done; i++ ) {
 #ifdef WITH_DBFAWK
             int keylen;
+
             if (sig_info) {
+                char modified_title[50];
+
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
+
                 keylen = strlen(key);
                 if (debug_level & 16) {
-                    static char old_key[4];
+                    static char old_key[4]; // Used to limit number of output lines in debug mode
+
                     if (strncmp(old_key, key, 4)) {
                       fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
                               i,key);
                       memcpy(old_key, key, sizeof(old_key));
                     }
                 }
-                if (strncmp(alert->title,key,keylen) == 0) {
+
+                // Tweak for RED_FLAG alerts:  If RED_FLAG alert
+                // we've changed the 'Z' to an 'F' in our
+                // alert->title already.  Change the 'F' back to a
+                // 'Z' temporarily (modified_title) for our
+                // compares.
+                //
+                xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
+                if (alert->title[3] == 'F' && strncmp(alert->filename, "fz", 2) == 0) {
+                    modified_title[3] = 'Z';
+                }
+
+                if (strncmp(modified_title,key,keylen) == 0) {
                     // keylen was zero, so check again using length
                     // of title instead
                     int titlelen;
 
                     titlelen = strlen(alert->title);
-                    if (strncmp(alert->title,key,titlelen) == 0) {
+                    if (strncmp(modified_title,key,titlelen) == 0) {
+ 
                         found_shape = i;
                         done++;
                         if (debug_level & 16) {
                             fprintf(stderr,"dbfawk alert found it: %d \n",i);
-                            fprintf(stderr,"Title %s, key %s\n",alert->title,key);
+                            fprintf(stderr,"Title %s, key %s\n",modified_title,key);
+ 
                         }
                     }
                 }
