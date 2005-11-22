@@ -49,6 +49,9 @@ SEWWSW>APRS::NWS-WATCH:302119z,DENSE_FOG,WA_Z023, {OKoAB
 #
 # Cyan "ALERT", WA, along Columbia river.
 SEWWSW>APRS::NWS-ADVIS:302119z,DENSE_FOG,WA_Z022, {OKoAB
+#
+# "NWS-     " works also, giving a Green alert just like
+# "NWS-CURT " did.
 
 
 
@@ -121,10 +124,10 @@ SEWWSW>APRS::NWS-CURT :302119z,SNOW,CW_ABOI, {OKoAB
 # Blue "ALERT" in OR, along coast
 SEWWSW>APRS::NWS-TEST :302119z,DENSE_FOG,OR_Z001,OR_Z002,OR_Z003,OR_Z004,OR_Z005 {OKoAB
 #
-# This one ends up yellow because "WATCH" is found
-####SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM_WATCH_C,OR_Z011,OR_Z013 {OKoAB
-# But this one ends up Green
-####SEWWSW>APRS::NWS-CURT :302119z,DENSE_FOG,OR_Z011,OR_Z013 {OKoAB
+# This one ends up yellow because "WATCH" is found.
+#//////#SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM_WATCH_C,OR_Z011,OR_Z013 {OKoAB
+# But this one ends up Green.
+#//////#SEWWSW>APRS::NWS-CURT :302119z,DENSE_FOG,OR_Z011,OR_Z013 {OKoAB
 #
 # Blue "ALERT", upper portion of Idaho
 SEWWSW>APRS::NWS_TEST :302119z,DENSE_FOG,IDZ1-2-3-4-5-IDZ6>9 {OKoAB
