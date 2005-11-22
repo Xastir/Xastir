@@ -31,22 +31,22 @@
 # Islands (upper Puget Sound) in Blue.
 SEWWSW>APRS::NWS-TEST :302119z,DENSE_FOG,WA_Z001, {OKoAB
 SEWWSW>APRS::NWS-CANCL:302119z,DENSE_FOG,WA_Z001, {OKoAB
-
+#
 # Blue "ALERT", WA, WA, lower left.
 SEWWSW>APRS::NWS-TEST :302119z,DENSE_FOG,WA_Z020, {OKoAB
-
+#
 # Red "ALERT", WA, lower left.
 SEWWSW>APRS::NWS-WARN :302119z,DENSE_FOG,WA_Z021, {OKoAB
-
+#
 # Green "ALERT", WA, above Portland.
 SEWWSW>APRS::NWS-CURT :302119z,DENSE_FOG,WA_Z019, {OKoAB
-
+#
 # Red "ALERT", WA, along Columbia river.
 SEWWSW>APRS::NWS-CIVIL:302119z,DENSE_FOG,WA_Z024, {OKoAB
-
+#
 # Yellow "ALERT", WA, along Columbia river.
 SEWWSW>APRS::NWS-WATCH:302119z,DENSE_FOG,WA_Z023, {OKoAB
-
+#
 # Cyan "ALERT", WA, along Columbia river.
 SEWWSW>APRS::NWS-ADVIS:302119z,DENSE_FOG,WA_Z022, {OKoAB
 
@@ -56,28 +56,28 @@ SEWWSW>APRS::NWS-ADVIS:302119z,DENSE_FOG,WA_Z022, {OKoAB
 # -------------------------------------------------------
 # Blue "FLOOD", WA, lower middle.
 SEWWSW>APRS::NWS-TEST :302119z,FLOOD,WA_Z026, {OKoAB
-
+#
 # Red "SNOW", WA, bottom middle.
 SEWWSW>APRS::NWS-WARN :302119z,SNOW,WA_Z027, {OKoAB
-
+#
 # Yellow "TORNDO", WA, lower middle.
 SEWWSW>APRS::NWS-WATCH:302119z,TORNDO,WA_Z028, {OKoAB
-
+#
 # Cyan "WIND", WA, lower right.
 SEWWSW>APRS::NWS-ADVIS:302119z,WIND,WA_Z029, {OKoAB
-
+#
 # Green "WNTR STRM", WA, lower right.
 SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM,WA_Z030, {OKoAB
-
+#
 # Blue "WINTER WX", WA, lower right.
 SEWWSW>APRS::NWS-TEST :302119z,WINTER_WEATHER,WA_Z031, {OKoAB
-
+#
 # Red "ALERT", WA, lower right.
 SEWWSW>APRS::NWS-WARN :302119z,SVRTSM,WA_Z032, {OKoAB
-
+#
 # Green "ALERT", WA, lower right.
 SEWWSW>APRS::NWS-CURT :302119z,CURT,WA_Z033, {OKoAB
-
+#
 # "RED FLAG", Yellow/Cyan/Red respectively.  WA, left edge.
 SEWWSW>APRS::NWS-WATCH:302119z,RED_FLAG,WA_Z650, {OKoAB
 SEWWSW>APRS::NWS-ADVIS:302119z,RED_FLAG,WA_Z651, {OKoAB
@@ -94,11 +94,11 @@ SEWWSW>APRS::NWS-ADVIS:302119z,WINTER_STORM,WA_C007, {OKoAB
 #
 # Green "WNTR STRM", WA, lower middle right.
 SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM,WA_Z034, {OKoAB
-
+#
 # fz20se05.shp
 # Red "RED FLAG", WA lower Puget Sound.
 SEWWSW>APRS::NWS-CIVIL:302119z,RED_FLAG,WA_Z654, {OKoAB
-
+#
 # mz12se05.shp
 # Yellow "WNTR STRM", WA, Whidbey Island.
 SEWWSW>APRS::NWS-WATCH:302119z,WINTER_STORM,PZ_Z134, {OKoAB
@@ -106,11 +106,11 @@ SEWWSW>APRS::NWS-WATCH:302119z,WINTER_STORM,PZ_Z134, {OKoAB
 # oz15de04.shp
 # Green "WNTR STRM", WA, off west coast out in the Pacific.
 SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM,PZ_Z082, {OKoAB
-
+#
 # w_28de04.shp
 # Green "SNOW", ID & OR, around the Boise area.
 SEWWSW>APRS::NWS-CURT :302119z,SNOW,CW_ABOI, {OKoAB
-
+#
 # hz28au04.shp (not implemented)
 
 
@@ -118,8 +118,13 @@ SEWWSW>APRS::NWS-CURT :302119z,SNOW,CW_ABOI, {OKoAB
 # Test multiple alerts in one packet, in WSSVR normal and compressed
 # format (dash/underline).
 #
-# Yellow "WNTR STRM" in OR, S of Portland and upper left corner.
-SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM_WATCH_C,OR_Z011,OR_Z013,OR_Z003,OR_Z004 {OKoAB
+# Blue "ALERT" in OR, along coast
+SEWWSW>APRS::NWS-TEST :302119z,DENSE_FOG,OR_Z001,OR_Z002,OR_Z003,OR_Z004,OR_Z005 {OKoAB
+#
+# This one ends up yellow because "WATCH" is found
+####SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM_WATCH_C,OR_Z011,OR_Z013 {OKoAB
+# But this one ends up Green
+####SEWWSW>APRS::NWS-CURT :302119z,DENSE_FOG,OR_Z011,OR_Z013 {OKoAB
 #
 # Blue "ALERT", upper portion of Idaho
 SEWWSW>APRS::NWS_TEST :302119z,DENSE_FOG,IDZ1-2-3-4-5-IDZ6>9 {OKoAB
