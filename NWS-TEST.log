@@ -38,7 +38,8 @@ SEWWSW>APRS::NWS-TEST :302119z,DENSE_FOG,WA_Z020, {OKoAB
 # Red "ALERT", WA, lower left.
 SEWWSW>APRS::NWS-WARN :302119z,DENSE_FOG,WA_Z021, {OKoAB
 #
-# Green "ALERT", WA, above Portland.
+# Green "ALERT", WA, above Portland.  "NWS-     " works here also,
+# giving a Green alert just like "NWS-CURT ".
 SEWWSW>APRS::NWS-CURT :302119z,DENSE_FOG,WA_Z019, {OKoAB
 #
 # Red "ALERT", WA, along Columbia river.
@@ -49,9 +50,6 @@ SEWWSW>APRS::NWS-WATCH:302119z,DENSE_FOG,WA_Z023, {OKoAB
 #
 # Cyan "ALERT", WA, along Columbia river.
 SEWWSW>APRS::NWS-ADVIS:302119z,DENSE_FOG,WA_Z022, {OKoAB
-#
-# "NWS-     " works also, giving a Green alert just like
-# "NWS-CURT " did.
 
 
 
@@ -114,7 +112,8 @@ SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM,PZ_Z082, {OKoAB
 # Green "SNOW", ID & OR, around the Boise area.
 SEWWSW>APRS::NWS-CURT :302119z,SNOW,CW_ABOI, {OKoAB
 #
-# hz28au04.shp (not implemented)
+# hz28au04.shp
+# Support for this filename is not implemented in Xastir.
 
 
 
@@ -124,7 +123,8 @@ SEWWSW>APRS::NWS-CURT :302119z,SNOW,CW_ABOI, {OKoAB
 # Blue "ALERT" in OR, along coast
 SEWWSW>APRS::NWS-TEST :302119z,DENSE_FOG,OR_Z001,OR_Z002,OR_Z003,OR_Z004,OR_Z005 {OKoAB
 #
-# This one ends up yellow because "WATCH" is found.
+# This one ends up yellow because "WATCH" is found later in the
+# string:
 #//////#SEWWSW>APRS::NWS-CURT :302119z,WINTER_STORM_WATCH_C,OR_Z011,OR_Z013 {OKoAB
 # But this one ends up Green.
 #//////#SEWWSW>APRS::NWS-CURT :302119z,DENSE_FOG,OR_Z011,OR_Z013 {OKoAB
