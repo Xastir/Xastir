@@ -69,6 +69,12 @@
 int map_cache_fetch_disable = 0;
 
 
+// Used to disable map caching entirely if the header and dblib
+// versions don't match, in order to avoid segfaults when the map
+// caching is used.
+int map_cache_disabled = 0;
+
+
 
 
 
@@ -85,7 +91,11 @@ void map_cache_init(void) {
             "\n\n***** WARNING *****\n");
         fprintf(stderr,
             "Berkeley DB header files/shared library file do NOT match!\n");
+        fprintf(stderr,
+            "Disabling use of the map cache.\n");
+        popup_message_always(langcode("POPEM00034"),langcode("POPEM00046"));
         warn_now++;
+        map_cache_disabled++;
     }
 
     if (debug_level & 5 || warn_now) {
@@ -133,6 +143,10 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     struct stat file_status;
     char mc_buf[128];
 
+
+    if (map_cache_disabled) {
+        return(1);
+    }
 
     mc_space_used=0; 
 
@@ -380,6 +394,9 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
 // map_cache_get()
 //
+// Queries URL->Filename db 
+// Calls map_cache_del to cleanup expired maps 
+//
 // Inputs:
 //
 // Outputs: 0 if cached file is retrieved successfully
@@ -389,16 +406,16 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 //          return value from dbp->get if record not found
 //
 int map_cache_get( char * map_cache_url, char * map_cache_file ){
-
-// Queries URL->Filename db 
-// Calls map_cache_del to cleanup expired maps 
-
     DBT mc_key, mc_data ; 
     DB *dbp;
     int mc_ret, mc_t_ret, mc_file_stat ;
     char mc_database_filename[MAX_FILENAME]; 
     struct stat file_status;
 
+
+    if (map_cache_disabled) {
+        return(1);
+    }
 
 set_dangerous("map_cache_get: xastir_snprintf 1");
     xastir_snprintf(mc_database_filename,
@@ -621,6 +638,10 @@ int map_cache_del( char * map_cache_url ){
     struct stat file_status;
     char mc_buf[128];
 
+
+    if (map_cache_disabled) {
+        return(1);
+    }
 
     mc_space_used = 0 ; 
 
@@ -907,19 +928,22 @@ char * map_cache_fileid(void) {
 
 
 
+// check for files old enough to expire 
+// this is lame but it should work for now. 
+// expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
+//
+// writing this proved a good example of why pointer arithmetic is tricky
+// and a good example of why I should avoid it - n8ysz 20041110
+// 
 int map_cache_expired( char * mc_filename, time_t mc_max_age ){
-
-    // check for files old enough to expire 
-    // this is lame but it should work for now. 
-    // expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
-
-    // writing this proved a good example of why pointer arithmetic is tricky
-    // and a good example of why I should avoid it - n8ysz 20041110
-    
     time_t mc_t,mc_file_age; 
     char *mc_filename_tmp, *mc_time_buf_tmp, *mc_time_buf;
-    
-    
+
+
+    if (map_cache_disabled) {
+        return(0);
+    }
+
     mc_time_buf=malloc(MAX_FILENAME);
     mc_time_buf_tmp=mc_time_buf; 
 
@@ -974,9 +998,12 @@ int map_cache_expired( char * mc_filename, time_t mc_max_age ){
 // Functions that need writing 
 
 int mc_check_space_used (void) {
-    
-   return(0); 
 
+    if (map_cache_disabled) {
+        return(0);
+    }
+    
+    return(0); 
 }
 
 
@@ -984,9 +1011,12 @@ int mc_check_space_used (void) {
 
 
 int mc_update_space_used (void) {
-    
-   return(0); 
 
+    if (map_cache_disabled) {
+        return(0);
+    }
+    
+    return(0); 
 }
 
 

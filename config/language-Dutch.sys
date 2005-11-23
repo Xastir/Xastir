@@ -1067,6 +1067,7 @@ POPEM00042|Niet een eigen object! Probeer het object eerst over te nemen.||
 POPEM00043|Geen Object/Item!||
 POPEM00044|Fetch Findu Trail: Mislukt||
 POPEM00045|Fetch Findu Trail: Gereed||
+POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||

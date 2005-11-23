@@ -1060,6 +1060,7 @@ POPEM00042|Object not owned by me! Try adopting the object first.||
 POPEM00043|Not an Object/Item!||
 POPEM00044|Fetch Findu Trail: Failed||
 POPEM00045|Fetch Findu Trail: Complete||
+POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
 #
 # Jump Location 
 JMLPO00001|Map Display Bookmarks||

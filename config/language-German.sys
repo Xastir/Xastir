@@ -1063,6 +1063,7 @@ POPEM00042|Kein eigenes Objekt! Versuchen Sie erst das Obkekt zu übernehmen.||
 POPEM00043|Kein Objekt/Item!||
 POPEM00044|Findu-Wegdaten: fehlgeschlagen||
 POPEM00045|Findu-Wegdaten: fertig||
+POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||

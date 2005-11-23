@@ -1062,6 +1062,7 @@ POPEM00042|L'object ne m'appartient pas ! Essayez d'adopter l'objet d'abord.||
 POPEM00043|Ce n'est pas un objet ou article !||
 POPEM00044|Récupération de piste Findu : Echec||
 POPEM00045|Récupération de piste Findu : Terminé||
+POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||
