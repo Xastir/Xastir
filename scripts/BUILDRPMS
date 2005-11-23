@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# $Id$
+
+# This is an example script used by one of the developers to ease
+# the workload.  It's not intended to be used by the general
+# userbase.  It's included with the Xastir sources so that it
+# doesn't get lost if the developer should suddenly drop out of
+# sight.
+
+
+# Run this as root from the xastir source directory.  It runs some
+# of the below commands as "archer", and others as root.  When the
+# build is complete it copies the RPM files to the Eskimo server.
+
+
+
+# Run these commands as "archer".
+#
+# These are just to get the configure and spec files in shape.
+# Configure options don't matter yet here.
+echo
+echo
+echo "********************************************"
+echo "***** Setting up CONFIG and SPEC files *****"
+echo "********************************************"
+su -c=" cd xastir;./bootstrap.sh;./configure;make dist" archer
+
+
+
+# Run these commands as "root":
+#
+rm -rf /usr/src/packages/SOURCES/xastir*
+cp xastir-*.tar.gz /usr/src/packages/SOURCES/.
+#
+#
+# Build minimum system (only ImageMagick included), binary package
+# only.  Rename this file so that the following rpmbuild doesn't
+# overwrite it.
+echo
+echo
+echo "*******************************************"
+echo "***** Creating MINIMUM binary package *****"
+echo "*******************************************"
+(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -bb --clean xastir-1.7.1/xastir-min.spec)
+mv /usr/src/packages/RPMS/i586/xastir-1.7.1-1.i586.rpm /usr/src/packages/RPMS/i586/xastir-1.7.1-min.i586.rpm
+#
+#
+# Build maximum system (all optional libraries included), binary and
+# source packages.
+echo
+echo
+echo "***************************************************************"
+echo "***** Creating MAXIMUM binary package plus source package *****"
+echo "***************************************************************"
+(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -ba --clean xastir-1.7.1/xastir.spec)
+mv /usr/src/packages/RPMS/i586/xastir-1.7.1-1.i586.rpm /usr/src/packages/RPMS/i586/xastir-1.7.1-max.i586.rpm
+
+
+
+# Run these commands as "archer":
+#
+echo
+echo
+echo "**************************************************************"
+echo "***** Copying packages to Eskimo and setting permissions *****"
+echo "**************************************************************"
+su -c=" cd /usr/bin;scp /usr/src/packages/RPMS/i586/xastir-1.7.1-max.i586.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-9.0/." archer
+su -c=" cd /usr/bin;scp /usr/src/packages/RPMS/i586/xastir-1.7.1-min.i586.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-9.0/." archer
+su -c=" cd /usr/bin;scp /usr/src/packages/SRPMS/xastir-1.7.1-1.src.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-9.0/." archer
+su -c=" cd /usr/bin;ssh eskimo 'chmod 644 ftp/aprs/xastir/SUSE-RPM/SuSE-9.0/*.rpm'" archer
+ 
