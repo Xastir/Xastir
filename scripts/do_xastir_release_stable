@@ -1,0 +1,117 @@
+#!/usr/bin/perl
+
+# $Id$
+
+# This is an example script used by one of the developers to ease
+# the workload.  It's not intended to be used by the general
+# userbase.  It's included with the Xastir sources so that it
+# doesn't get lost if the developer should suddenly drop out of
+# sight.
+
+
+# Release a new version of Xastir by downloading, configuring, and
+# compiling the latest CVS version, then creating the tarball.
+# Upload it via anonymous FTP to "upload.sourceforge.net/incoming"
+# and then finish the release process on SourceForge:
+#
+#   Admin
+#   Edit/Add File Releases
+#   Edit Releases (xastir-stable)
+#   Edit This Release (xastir-1.7.0)
+#
+
+
+&Get_release();
+
+if ( (length($release) <3) || !($release =~ /\./) ) {
+  die("Must be at least 3 characters long with a '.' or two as well.\n");
+}
+
+$release_short = $release;
+$release_short =~ s/\.//g;
+
+
+#$file_prefix = `date +xastir$release_short-%Y-%b-%d`;
+$file_prefix = "xastir-$release";
+chomp($file_prefix);
+$file_prefix_short = "xastir$release_short";
+chomp($file_prefix_short);
+print "\n\n CVS Tag will be: $file_prefix_short\n";
+print "Filename will be: $file_prefix.tar.gz\n";
+
+#$file_prefix =~ tr/A-Z/a-z/;
+$filename = $file_prefix . "\.tar.gz";
+
+printf("\n\n\n*** Creating release:  $filename\n");
+&Proceed;
+
+printf("\n*** Removing xastir/, $file_prefix/ directories, $filename, xastir.tgz files\n");
+`rm -rf $file_prefix $filename xastir xastir.tgz`;
+
+printf("\n*** CVS Checkout\n\n");
+#`cvs -z3 -d:pserver:anonymous\@cvs.xastir.sourceforge.net:/cvsroot/xastir co xastir`;
+`export CVS_RSH=ssh;cvs -z3 -d:ext:we7u\@cvs.sourceforge.net:/cvsroot/xastir co xastir`;
+&Proceed;
+
+printf("\n*** Bootstrapping\n\n");
+system("(cd xastir; ./bootstrap.sh)");
+&Proceed;
+
+printf("\n*** Configuring\n\n");
+system("(cd xastir; ./configure)");
+
+printf("\n*** Make Distribution\n");
+&Proceed;
+
+system("(cd xastir; make dist 2>&1 | tee make.log)");
+&Proceed;
+
+printf("\n*** Renaming file\n");
+`cp xastir/xastir-$release.tar.gz $filename`;
+
+printf("\n*** Uploading $filename to SourceForge\n");
+&Proceed;
+
+`ncftpput upload.sourceforge.net incoming $filename`;
+
+printf("\n*** Tagging repository using $file_prefix tag\n");
+&Proceed;
+#printf("\n\n*** Please type:  \"cvs tag $file_prefix\" from the developer's CVS directory ***\n\n");
+# Note that we can't have '.' in the tag itself so must use a
+# shortened name.
+# Earlier tags were like this: "xastir130"
+`export CVS_RSH=ssh; cd xastir; cvs tag $file_prefix_short`;
+#
+# Add or move the "RELEASE" tag.  We need to force it here so that
+# if the tag is on older revisions, it gets moved to newer ones.
+#
+# Here's the trick to removing one tag from a deleted file in the
+# Attic:
+# "cvs rtag -d -a RELEASE xastir/src/db.h"
+#
+# Clear the STABLE tag from all files including deleted files in the
+# Attic:
+`export CVS_RSH=ssh; cd xastir; cvs rtag -a RELEASE xastir`;
+#
+# Mark the latest revisions with the RELEASE tag:
+`export CVS_RSH=ssh; cd xastir; cvs tag -F RELEASE`;
+
+printf("\n*** Removing xastir/ directory\n");
+&Proceed;
+`rm -rf xastir`;
+
+
+
+sub Get_release {
+  printf("\nRelease number (i.e. 1.7.0)?\n");
+  $release = <>;
+  chomp($release);
+}
+
+
+
+sub Proceed {
+  printf("\nProceed? (<ENTER> = yes, Ctrl-C = Quit)\n");
+  $temp = <>;
+}
+
