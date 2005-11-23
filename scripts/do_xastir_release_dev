@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+# $Id$
+
+# This is an example script used by one of the developers to ease
+# the workload.  It's not intended to be used by the general
+# userbase.  It's included with the Xastir sources so that it
+# doesn't get lost if the developer should suddenly drop out of
+# sight.
+
+
+# Release a new version of Xastir by downloading, configuring, and
+# compiling the latest CVS version, then creating the tarball.
+# Upload it via anonymous FTP to "upload.sourceforge.net/incoming"
+# and then finish the release process on SourceForge:
+#
+#   Admin
+#   Edit/Add File Releases
+#   Edit Releases (xastir-development)
+#   Edit This Release (xastir-1.7.1)
+#
+
+
+&Get_release();
+
+if ( (length($release) <3) || !($release =~ /\./) ) {
+  die("Must be at least 3 characters long with a '.' or two as well.\n");
+}
+
+$release_short = $release;
+$release_short =~ s/\.//g;
+
+
+$file_prefix = `date +xastir$release_short-%Y-%b-%d`;
+chomp($file_prefix);
+#$file_prefix =~ tr/A-Z/a-z/;
+$filename = $file_prefix . "\.tgz";
+
+printf("\n\n\n*** Creating release:  $filename\n");
+&Proceed;
+
+printf("\n*** Removing xastir/, $file_prefix/ directories, $filename, xastir.tgz files\n");
+`rm -rf $file_prefix $filename xastir xastir.tgz`;
+
+printf("\n*** CVS Checkout\n\n");
+#`cvs -z3 -d:pserver:anonymous\@cvs.xastir.sourceforge.net:/cvsroot/xastir co xastir`;
+`export CVS_RSH=ssh;cvs -z3 -d:ext:we7u\@cvs.sourceforge.net:/cvsroot/xastir co xastir`;
+&Proceed;
+
+printf("\n*** Bootstrapping\n\n");
+system("(cd xastir; ./bootstrap.sh)");
+&Proceed;
+
+printf("\n*** Configuring\n\n");
+system("(cd xastir; ./configure)");
+
+printf("\n*** Make Distribution\n");
+&Proceed;
+
+system("(cd xastir; make dist 2>&1 | tee make.log)");
+&Proceed;
+
+printf("\n*** Renaming file\n");
+`cp xastir/xastir-$release.tar.gz $filename`;
+
+printf("\n*** Uploading $filename to SourceForge\n");
+&Proceed;
+
+`ncftpput upload.sourceforge.net incoming $filename`;
+
+printf("\n*** Tagging repository using $file_prefix tag\n");
+&Proceed;
+#printf("\n\n*** Please type:  \"cvs tag $file_prefix\" from the developer's CVS directory ***\n\n");
+`export CVS_RSH=ssh; cd xastir; cvs tag $file_prefix`;
+
+printf("\n*** Removing xastir/ directory\n");
+&Proceed;
+`rm -rf xastir`;
+
+printf("\n*** Consider running the STABLE script to update that tag, if appropriate.\n");
+
+
+
+sub Get_release {
+  printf("\nRelease number (i.e. 1.7.1)?\n");
+  $release = <>;
+  chomp($release);
+}
+
+
+
+sub Proceed {
+  printf("\nProceed? (<ENTER> = yes, Ctrl-C = Quit)\n");
+  $temp = <>;
+}
+
