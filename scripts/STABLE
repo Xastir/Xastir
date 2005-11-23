@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# $Id$
+
+# This is an example script used by one of the developers to ease
+# the workload.  It's not intended to be used by the general
+# userbase.  It's included with the Xastir sources so that it
+# doesn't get lost if the developer should suddenly drop out of
+# sight.
+
+
+# To remove the RELEASE tag from only one deleted file in the Attic:
+# "cvs rtag -d -a RELEASE xastir/src/db.h"
+
+
+
+# Clear the STABLE tag from all files including files in the Attic
+# (deleted files):
+export CVS_RSH=ssh; cvs rtag -a STABLE xastir
+
+# Assign the STABLE tag to the latest revisions:
+export CVS_RSH=ssh; cvs tag -F STABLE
+
