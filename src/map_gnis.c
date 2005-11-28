@@ -238,6 +238,24 @@ Cell Name
     if (f != NULL) {
         while (!feof (f)) {     // Loop through entire file
 
+            // Check whether map drawing should be interrupted
+            HandlePendingEvents(app_context);
+            if (interrupt_drawing_now) {
+                (void)fclose (f);
+                // Update to screen
+                (void)XCopyArea(XtDisplay(da),
+                    pixmap,
+                    XtWindow(da),
+                    gc,
+                    0,
+                    0,
+                    (unsigned int)screen_width,
+                    (unsigned int)screen_height,
+                    0,
+                    0);
+                return;
+            }
+
             if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
 
                 // It is common for these lines to have incredible
