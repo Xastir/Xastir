@@ -1801,6 +1801,32 @@ void draw_shapefile_map (Widget w,
         int skip_it = 0;
         int skip_label = 0;
 
+
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now) {
+            DBFClose( hDBF );   // Clean up open file descriptors
+            SHPClose( hSHP );
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
+#ifdef WITH_DBFAWK
+            dbfawk_free_info(fld_info);
+            if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+                dbfawk_free_sigs(sig_info);
+            }
+#endif
+            return;
+        }
+
+
 #ifdef USE_RTREE
         if (si) {
             structure=RTree_hitarray[RTree_hitarray_index];
