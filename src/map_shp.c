@@ -93,10 +93,10 @@
 #endif /* HAVE_LIBPCRE */
 #ifdef HAVE_SHAPEFIL_H
 #include <shapefil.h>
-#else
+#else   // HAVE_SHAPEFIL_H
 #ifdef HAVE_LIBSHP_SHAPEFIL_H
 #include <libshp/shapefil.h>
-#else
+#else   // HAVE_LIBSHP_SHAPEFIL_H
 #error HAVE_LIBSHP defined but no corresponding include defined
 #endif // HAVE_LIBSHP_SHAPEFIL_H
 #endif // HAVE_SHAPEFIL_H
@@ -656,7 +656,7 @@ static awk_rule dbfawk_default_rules[] = {
 };
 #define dbfawk_default_nrules (sizeof(dbfawk_default_rules)/sizeof(dbfawk_default_rules[0]))
 static dbfawk_sig_info *dbfawk_default_sig = NULL;
-#endif
+#endif  // WITH_DBFAWK
 
 void draw_shapefile_map (Widget w,
                         char *dir,
@@ -738,7 +738,7 @@ void draw_shapefile_map (Widget w,
 
 
     int draw_filled_orig;
-#endif
+#endif  // WITH_DBFAWK
     int draw_filled;
     static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
     static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
@@ -791,7 +791,7 @@ void draw_shapefile_map (Widget w,
     label_level=0;
     label_color=8;
     font_size=FONT_DEFAULT;
-#endif
+#endif  // WITH_DBFAWK
 
 #ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
@@ -814,7 +814,7 @@ void draw_shapefile_map (Widget w,
         // once per runtime.
         dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
     }
-#endif
+#endif  // WITH_DBFAWK
 
     //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
 
@@ -879,7 +879,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     *dbfsig = '\0';
     fieldcount = dbfawk_sig(hDBF,dbfsig,sizeof(dbfsig));
-#else
+#else   // WITH_DBFAWK
     fieldcount = DBFGetFieldCount(hDBF);
 #endif /* !WITH_DBFAWK */
     if (fieldcount == 0) {
@@ -896,7 +896,7 @@ void draw_shapefile_map (Widget w,
         fprintf(stderr,"%d Columns,  %d Records in file\n", fieldcount, recordcount);
 #ifdef WITH_DBFAWK
         fprintf(stderr,"DBF signature: %s\n",dbfsig);
-#endif
+#endif  // WITH_DBFAWK
     }
 #ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
@@ -1417,7 +1417,7 @@ void draw_shapefile_map (Widget w,
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             dbfawk_free_sigs(sig_info);
         }
-#endif
+#endif  // WITH_DBFAWK
 
         return;
     }
@@ -1453,7 +1453,7 @@ void draw_shapefile_map (Widget w,
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             dbfawk_free_sigs(sig_info);
         }
-#endif
+#endif  // WITH_DBFAWK
 
         return; // Done indexing this file
     }
@@ -1538,7 +1538,7 @@ void draw_shapefile_map (Widget w,
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
                 dbfawk_free_sigs(sig_info);
             }
-#endif
+#endif  // WITH_DBFAWK
 
             return; // Multipoint type.  Not implemented yet.
             break;
@@ -1552,7 +1552,7 @@ void draw_shapefile_map (Widget w,
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
                 dbfawk_free_sigs(sig_info);
             }
-#endif
+#endif  // WITH_DBFAWK
 
             return; // Unknown type.  Don't know how to process it.
             break;
@@ -1587,7 +1587,7 @@ void draw_shapefile_map (Widget w,
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             dbfawk_free_sigs(sig_info);
         }
-#endif
+#endif  // WITH_DBFAWK
 
         return;     // The file contains no shapes in our viewport
     }
@@ -1725,7 +1725,7 @@ void draw_shapefile_map (Widget w,
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             dbfawk_free_sigs(sig_info);
         }
-#endif
+#endif  // WITH_DBFAWK
 
         return;
     }
@@ -1772,7 +1772,7 @@ void draw_shapefile_map (Widget w,
         }
     }
     //fprintf(stderr," Done with decision, nhits is %d\n",nhits);
-#else
+#else   // USE_RTREE
     if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
         if (found_shape != -1) {    // Found the record
             start_record = found_shape;
@@ -1787,17 +1787,18 @@ void draw_shapefile_map (Widget w,
         start_record = 0;
         end_record = nEntities;
     }
-#endif
+#endif  // USE_RTREE
 
 #ifdef USE_RTREE
     // only iterate over the hits found by RTreeSearch, not all of them
     for (RTree_hitarray_index=0; RTree_hitarray_index<nhits; 
          RTree_hitarray_index++) {
-#else
+#else   // USE_RTREE
+
     // Here's where we actually iterate through the entire file, drawing
     // each structure as we find it.
     for (structure = start_record; structure < end_record; structure++) {
-#endif
+#endif  // USE_RTREE
         int skip_it = 0;
         int skip_label = 0;
 
@@ -1822,7 +1823,7 @@ void draw_shapefile_map (Widget w,
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
                 dbfawk_free_sigs(sig_info);
             }
-#endif
+#endif  // WITH_DBFAWK
             return;
         }
 
@@ -1835,7 +1836,7 @@ void draw_shapefile_map (Widget w,
         } else {
             structure = RTree_hitarray_index;
         }
-#endif
+#endif  // USE_RTREE
 
         // Have had segfaults before at the SHPReadObject() call
         // when the Shapefile was corrupted.
@@ -2074,9 +2075,9 @@ void draw_shapefile_map (Widget w,
                                 symbol(w,0,sym[0],sym[1],sym[2],pixmap,1,x-10,y-10,' ');
                             else
                                 symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
-#else
+#else // WITH_DBFAWK
                             symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
-#endif /*!WITH_DBFAWK*/
+#endif //WITH_DBFAWK
 
                             // Fine-tuned this string so that it is
                             // to the right of the 'X' and aligned
@@ -3026,7 +3027,7 @@ void draw_shapefile_map (Widget w,
                             break;
                         }
                     }
-#endif
+#endif  // WITH_DBFAWK
 
                     // Each polygon can be made up of multiple
                     // rings, and each ring has multiple points that
@@ -3628,9 +3629,9 @@ if (on_screen) {
                                 // Draw as a black dashed line.
 #ifdef WITH_DBFAWK
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-#else
+#else   // WITH_DBFAWK
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
-#endif
+#endif  // WITH_DBFAWK
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -3661,9 +3662,9 @@ if (on_screen) {
                                     if (polygon_hole_flag) {
 #ifdef WITH_DBFAWK
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-#else
+#else   // WITH_DBFAWK
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[color]);
-#endif
+#endif  // WITH_DBFAWK
                                         if (i >= 3) {
                                             (void)XFillPolygon(XtDisplay(w),
                                                 pixmap,
@@ -3684,7 +3685,7 @@ if (on_screen) {
                                             /* draw the filled polygon */
 #ifdef WITH_DBFAWK
                                             (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-#endif
+#endif  // WITH_DBFAWK
                                             (void)XFillPolygon(XtDisplay(w),
                                                 pixmap,
                                                 gc,
@@ -3735,7 +3736,7 @@ if (on_screen) {
                                         (void)XSetForeground(XtDisplay(w), gc_temp, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0xff]); // grey
-#else
+#else   // WITH_DBFAWK
                                     (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
 #endif /* WITH_DBFAWK */
                                     if (i >= 3) {
@@ -3759,7 +3760,7 @@ if (on_screen) {
                                         (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
-#else
+#else   // WITH_DBFAWK
                                     (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
 #endif /* !WITH_DFBAWK */
                                     if (i >= 3) {
@@ -3780,7 +3781,7 @@ if (on_screen) {
 
 #ifdef WITH_DBFAWK
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
-#endif
+#endif  // WITH_DBFAWK
 
                                 // Draw a thicker border for city boundaries
 #ifndef WITH_DBFAWK
@@ -3800,7 +3801,7 @@ if (on_screen) {
                                 else {
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 }
-#else
+#else   // WITH_DBFAWK
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border
                                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
 #endif /* WITH_DBFAWK */
@@ -3942,7 +3943,7 @@ if (on_screen) {
                                 &my_lat,
                                 (float)object->padfX[0],
                                 (float)object->padfY[0]);
-#endif
+#endif  // notdef
                         }
                         //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
@@ -3988,7 +3989,7 @@ if (on_screen) {
                                         strlen(temp),
                                         colors[label_color],
                                         (char *)temp);
-#endif
+#endif  // notdef
                                     if (debug_level & 16) {
                                         fprintf(stderr,
                                        "  displaying label %s with color %x\n",
@@ -4042,7 +4043,7 @@ if (on_screen) {
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
         dbfawk_free_sigs(sig_info);
     }
-#endif
+#endif  // WITH_DBFAWK
 
     DBFClose( hDBF );
     SHPClose( hSHP );

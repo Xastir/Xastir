@@ -2530,6 +2530,17 @@ right_crop = width - 1;
         int skip = 0;
 
 
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now) {
+            if (imageMemory)
+                free(imageMemory);
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            return;
+        }
+
         // Our offset from the top row of the map neatline
         // (kind of... ignoring rotation anyway).
         row_offset = row - top_crop;

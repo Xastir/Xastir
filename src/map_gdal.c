@@ -472,6 +472,17 @@ scr_s_x_min = 0;
 
 
 
+    // Check for map draw interrupts.  Clean up and exit if found.
+    // Put this also inside the raster-line processing loop so that
+    // it gets check once per raster line.  That makes for fast
+    // zooming/panning even with a lot of maps selected.
+    //
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+        return; // Exit early
+    }
+
+
 
 
     GDALClose(hDataset);

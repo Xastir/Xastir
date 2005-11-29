@@ -2256,6 +2256,31 @@ fprintf(stderr,"2 ");
                 (map_y_0 <= map_y_max) || (map_proj == 1 && !map_done && scr_y < screen_height);
                 map_y_0++, c_y += map_c_dy) {
 
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now) {
+#ifdef HAVE_IMAGEMAGICK
+            if (image)
+                DestroyImage(image);
+            if (image_info)
+                DestroyImageInfo(image_info);
+#else   // HAVE_IMAGEMAGICK
+            if (xi)
+                XDestroyImage (xi);
+#endif // HAVE_IMAGEMAGICK
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
+            return;
+        }
+
         scr_y = (c_y - y_lat_offset) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice
             scr_yp = scr_y;                     // remember as previous y
