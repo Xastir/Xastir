@@ -117,7 +117,7 @@
 #include "gdal.h"
 #include "ogr_api.h"
 #include "ogr_srs_api.h"
-#include "cpl_string.h"
+//#include "cpl_string.h"
 
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
