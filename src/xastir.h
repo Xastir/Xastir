@@ -71,6 +71,8 @@
 #define M_PI 3.14159265358979323846
 #endif  // M_PI
 
+#define SPEECH_TEST_STRING      "Greeteengz frum eggzaster"
+
 /* GLOBAL DEFINES */
 extern char dangerous_operation[200];
 extern GC gc;

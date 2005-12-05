@@ -22791,6 +22791,17 @@ void Configure_speech_destroy_shell( /*@unused@*/ Widget widget, XtPointer clien
 }
 
 
+
+
+
+void Test_speech(Widget widget, XtPointer clientData, XtPointer callData) {
+    SayText(SPEECH_TEST_STRING);
+}
+
+
+
+
+
 void Configure_speech_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
     if(XmToggleButtonGetState(speech_config_play_on_new_station))
@@ -22833,12 +22844,15 @@ void Configure_speech_change_data(Widget widget, XtPointer clientData, XtPointer
 
 
 
+
+
 //Make it helpful - Gray the config selections, but add a choice
 //that basicly pops up a box that says where to get Festival, have
 //it be ungrayed if Festival isn't installed.
 
 void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    static Widget  pane, my_form, button_ok, button_cancel, file1, sep;
+    static Widget  pane, my_form, button_ok, button_cancel, file1,
+        sep, button_test;
     Atom delw;
 
     if (!configure_speech_dialog) {
@@ -23018,6 +23032,23 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        button_test = XtVaCreateManagedWidget(langcode("PULDNFI003"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 my_form,
@@ -23027,9 +23058,9 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 1,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 2,
+                XmNrightPosition, 3,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23044,14 +23075,15 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 3,
+                XmNleftPosition, 4,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 4,
+                XmNrightPosition, 5,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        XtAddCallback(button_test, XmNactivateCallback, Test_speech, configure_speech_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, Configure_speech_change_data, configure_speech_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_speech_destroy_shell, configure_speech_dialog);
 

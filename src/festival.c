@@ -424,8 +424,11 @@ int SayText(char *text) {
         fprintf(stderr,"SayText: %s\n",text);
 
     // Check whether the last text was the same and it hasn't been
-    // enough time between them (30 seconds).
+    // enough time between them (30 seconds).  We include our speech
+    // system test string here so that we don't have to wait 30
+    // seconds between Test button-presses.
     if ( (strcmp(last_speech_text,text) == 0) // Strings match
+            && (strcmp(text,SPEECH_TEST_STRING) != 0)
             && (last_speech_time + 30 > sec_now()) ) {
 
 /*
