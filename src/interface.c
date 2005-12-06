@@ -2841,6 +2841,220 @@ int OpenTrac_decode_units(int           unitnum,
 
 
 
+// Construct a Base-91 compressed APRS-format packet out of
+// the parsed information (to attempt to represent some of
+// the better resolution available with OpenTrac).  We may
+// need to construct several APRS packets out of the
+// OpenTrac packet, as there may be several entity ID's or
+// other types of info that can't fit into one APRS packet.
+// Later we'll change this so that we don't create an APRS
+// packet out of the OpenTrac packet at all, but instead
+// decode and use the OpenTrac information directly.
+//
+// Inputs:   Lots!
+// Outputs:  buffer
+//
+void process_opentrac_aprs(unsigned char *origin_call,
+        unsigned char origin_ssid,
+        char *buffer,
+        unsigned char *dest,
+        unsigned int digis,
+        unsigned char digi[10][10],
+        unsigned char *digi_h,
+        int have_position,
+        double latitude,
+        double longitude,
+        unsigned int entity_serial,
+        char *displayname,
+        char aprs_symbol_table,
+        char aprs_symbol_char,
+        int course,
+        float speed,
+        float altitude,
+        char *comment) {
+
+    int i;
+
+    // Note that if we got an Origination Station element, the path
+    // here is not representative of the entire path the packet
+    // took, and in fact we don't know who the transmitting station
+    // was for this packet anymore, just the originating station for
+    // the packet.
+
+fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
+
+    // The passed in value includes the SSID, but the
+    // size of the char[] is 7, which is bad - overflow
+    // Either need to fix how we deal with the origin_call
+    // or fix what it means. (with ssid or without)!!
+    // For now, I changed origin_call and source_call
+    // to be 10 bytes since that is what the rest of Xastir uses
+    // FIXME: Check if all of the OpenTrac_decode functions
+    //        expect callsign to have ssid already or not
+    // KJ5O
+
+    strncat(buffer,(char *)origin_call,10);
+
+    strncat(buffer,">",1);
+    strncat(buffer,(char *)dest,10);
+
+    for(i = 0; i < (int)digis; i++) {
+        strncat(buffer,",",1);
+        strncat(buffer,(char *)digi[i],10);
+        /* at the last digi always put a '*' when h_bit is set */
+        if (i == (int)(digis - 1)) {
+            if (digi_h[i] == (unsigned char)0x80) {
+                /* this digi must have transmitted the packet */
+                strncat(buffer,"*",1);
+            }
+        } else {
+            if (digi_h[i] == (unsigned char)0x80) {
+                /* only put a '*' when the next digi has no h_bit */
+                if (digi_h[i + 1] != (unsigned char)0x80) {
+                    /* this digi must have transmitted the packet */
+                    strncat(buffer,"*",1);
+                }
+            }
+        }
+    }
+    strncat(buffer,":",1);
+
+
+    // If we parsed a position, finish creating an APRS packet.
+    if (have_position) {
+        // We have latitude/longitude/altitude
+        // lat/lon are doubles, alt is a float
+        int ok;
+        unsigned long temp_lat, temp_lon;
+        char lat_str[20];
+        char lon_str[20];
+        char alt_str[20];
+
+
+fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
+ 
+        // Format it first in DDMM.MMMMN/DDDMM.MMMMW format
+        // lat/lon are doubles, alt is a float
+        //
+        // Convert lat/long to Xastir coordinate system first.
+        // We pass in floats and get returned longs, which
+        // represent 1/100 sec resolution lat/long.
+        ok = convert_to_xastir_coordinates (
+            &temp_lon,
+            &temp_lat,
+            (float)longitude,
+            (float)latitude);
+
+        if (ok) {
+            // Convert to a Base-91 compressed position so that
+            // we can use part of the extra resolution provided
+            // by OpenTrac.
+
+            // Convert to very high precision format, DDMM.MMMMN
+            convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_VHP_NOSP);
+            convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_VHP_NOSP);
+            if (entity_serial) {
+                // We have an entity that is non-zero.  Create a
+                // compressed APRS "Item" from the data.  NOTE:
+                // Items have to have at minimum 3, maximum 9
+                // characters for the name.
+                char entity_name[10];
+
+                if (strlen(displayname)) {
+                    xastir_snprintf(entity_name,
+                        sizeof(entity_name),
+                        "%s",
+                        displayname);
+                }
+                else {
+                    xastir_snprintf(entity_name,
+                        sizeof(entity_name),
+                        "Ent. %04x",    // Short for "Entity"
+                        entity_serial);
+                }
+
+                strncat(buffer,")",1);          // APRS Item packet
+                strncat(buffer,entity_name,9);  // Entity name
+                strncat(buffer,"!",1);
+
+                // Convert the high-resolution lat/long data to
+                // Base-91 compressed position:
+                strncat(buffer,
+                    compress_posit(lat_str,
+                        aprs_symbol_table,
+                        lon_str,
+                        aprs_symbol_char,
+                        course % 360,           // Course
+                        (int)(speed / 1.852),   // kph -> knots
+                        ""),    // PHG, we don't use it here
+                    13);
+            }
+            else {
+                // Entity is zero.  Create an APRS position packet.
+
+                strncat(buffer,"!",1); // APRS non-messaging position packet
+
+                // Convert the high-resolution lat/long data to
+                // Base-91 compressed position:
+                strncat(buffer,
+                    compress_posit(lat_str,
+                        aprs_symbol_table,
+                        lon_str,
+                        aprs_symbol_char,
+                        course % 360,           // Course
+                        (int)(speed / 1.852),   // kph -> knots
+                        ""),    // PHG, we don't use it here
+                    13);
+
+                if (strlen(displayname)) {
+                    // Add displayname
+                    strncat(buffer," ",1);
+                    strncat(buffer,displayname,40);
+                }
+            }
+
+            // Append the comment to the end.
+
+            // We must check length here.  APRS packets can't
+            // handle much.
+
+            // Altitude should be in feet "/A=001234", and placed in
+            // the comment field of an APRS packet.
+            xastir_snprintf(alt_str,
+                sizeof(alt_str),
+                " /A=%06d",
+                (int)(altitude * 3.28084)); // meters to feet
+            strncat(buffer,alt_str,10);
+
+            // We must limit the length here.  APRS Item packets
+            // can handle 43 chars in the comment field, Base-91
+            // compressed position packets can handle 40.
+            //
+            // Wait a minute!  We don't care how long they are
+            // as long as they fit through our APRS decoding.
+            // We're not transmitting these as APRS packets, so
+            // the max length in the APRS Spec doesn't matter
+            // here!
+            //
+            strncat(buffer,comment,126);
+        }
+    }
+
+    // Null-terminate the buffer string to make sure.
+    buffer[MAX_DEVICE_BUFFER - 1] = '\0';
+
+fprintf(stderr, "\n***** %s\n\n", buffer);
+
+    decode_ax25_line( buffer, DATA_VIA_TNC, 0, 1);
+
+    // Clear the buffer for the next round.
+    buffer[0] = '\0';
+}
+
+
+
+
+
 //WE7U: Protect "buffer" from getting overrun!!!
 //
 //***********************************************************
@@ -2884,7 +3098,7 @@ char *process_OpenTrac_packet( unsigned char *data,
                                unsigned int  digis,
                                unsigned char digi[10][10],
                                unsigned char *digi_h) {
-    int           i;
+
     int           elen;
     int           etype;
     unsigned int  decoded         = 0;
@@ -2915,200 +3129,6 @@ char *process_OpenTrac_packet( unsigned char *data,
     char          aprs_symbol_table = '/';
     char          aprs_symbol_char = '/';   // A "dot"
     char          comment[127];
-
-
-
-
-
-    void process_opentrac_aprs(void) {
-        // Construct a Base-91 compressed APRS-format packet out of
-        // the parsed information (to attempt to represent some of
-        // the better resolution available with OpenTrac).  We may
-        // need to construct several APRS packets out of the
-        // OpenTrac packet, as there may be several entity ID's or
-        // other types of info that can't fit into one APRS packet.
-        // Later we'll change this so that we don't create an APRS
-        // packet out of the OpenTrac packet at all, but instead
-        // decode and use the OpenTrac information directly.
-
-        // Note that if we got an Origination Station element, the path
-        // here is not representative of the entire path the packet
-        // took, and in fact we don't know who the transmitting station
-        // was for this packet anymore, just the originating station for
-        // the packet.
-
-fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
-
-        // The passed in value includes the SSID, but the
-        // size of the char[] is 7, which is bad - overflow
-        // Either need to fix how we deal with the origin_call
-        // or fix what it means. (with ssid or without)!!
-        // For now, I changed origin_call and source_call
-        // to be 10 bytes since that is what the rest of Xastir uses
-        // FIXME: Check if all of the OpenTrac_decode functions
-        //        expect callsign to have ssid already or not
-        // KJ5O
-
-        strncat(buffer,(char *)origin_call,10);
-
-        strncat(buffer,">",1);
-        strncat(buffer,(char *)dest,10);
-
-        for(i = 0; i < (int)digis; i++) {
-            strncat(buffer,",",1);
-            strncat(buffer,(char *)digi[i],10);
-            /* at the last digi always put a '*' when h_bit is set */
-            if (i == (int)(digis - 1)) {
-                if (digi_h[i] == (unsigned char)0x80) {
-                    /* this digi must have transmitted the packet */
-                    strncat(buffer,"*",1);
-                }
-            } else {
-                if (digi_h[i] == (unsigned char)0x80) {
-                    /* only put a '*' when the next digi has no h_bit */
-                    if (digi_h[i + 1] != (unsigned char)0x80) {
-                        /* this digi must have transmitted the packet */
-                        strncat(buffer,"*",1);
-                    }
-                }
-            }
-        }
-        strncat(buffer,":",1);
-
-
-        // If we parsed a position, finish creating an APRS packet.
-        if (have_position) {
-            // We have latitude/longitude/altitude
-            // lat/lon are doubles, alt is a float
-            int ok;
-            unsigned long temp_lat, temp_lon;
-            char lat_str[20];
-            char lon_str[20];
-            char alt_str[20];
-
-
-fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
- 
-            // Format it first in DDMM.MMMMN/DDDMM.MMMMW format
-            // lat/lon are doubles, alt is a float
-            //
-            // Convert lat/long to Xastir coordinate system first.
-            // We pass in floats and get returned longs, which
-            // represent 1/100 sec resolution lat/long.
-            ok = convert_to_xastir_coordinates (
-                &temp_lon,
-                &temp_lat,
-                (float)longitude,
-                (float)latitude);
-
-            if (ok) {
-                // Convert to a Base-91 compressed position so that
-                // we can use part of the extra resolution provided
-                // by OpenTrac.
-
-                // Convert to very high precision format, DDMM.MMMMN
-                convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_VHP_NOSP);
-                convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_VHP_NOSP);
-                if (entity_serial) {
-                    // We have an entity that is non-zero.  Create a
-                    // compressed APRS "Item" from the data.  NOTE:
-                    // Items have to have at minimum 3, maximum 9
-                    // characters for the name.
-                    char entity_name[10];
-
-                    if (strlen(displayname)) {
-                        xastir_snprintf(entity_name,
-                            sizeof(entity_name),
-                            "%s",
-                            displayname);
-                    }
-                    else {
-                        xastir_snprintf(entity_name,
-                            sizeof(entity_name),
-                            "Ent. %04x",    // Short for "Entity"
-                            entity_serial);
-                    }
-
-                    strncat(buffer,")",1);          // APRS Item packet
-                    strncat(buffer,entity_name,9);  // Entity name
-                    strncat(buffer,"!",1);
-
-                    // Convert the high-resolution lat/long data to
-                    // Base-91 compressed position:
-                    strncat(buffer,
-                        compress_posit(lat_str,
-                            aprs_symbol_table,
-                            lon_str,
-                            aprs_symbol_char,
-                            course % 360,           // Course
-                            (int)(speed / 1.852),   // kph -> knots
-                            ""),    // PHG, we don't use it here
-                        13);
-                }
-                else {
-                    // Entity is zero.  Create an APRS position packet.
-
-                    strncat(buffer,"!",1); // APRS non-messaging position packet
-
-                    // Convert the high-resolution lat/long data to
-                    // Base-91 compressed position:
-                    strncat(buffer,
-                        compress_posit(lat_str,
-                            aprs_symbol_table,
-                            lon_str,
-                            aprs_symbol_char,
-                            course % 360,           // Course
-                            (int)(speed / 1.852),   // kph -> knots
-                            ""),    // PHG, we don't use it here
-                        13);
-
-                    if (strlen(displayname)) {
-                        // Add displayname
-                        strncat(buffer," ",1);
-                        strncat(buffer,displayname,40);
-                    }
-                }
-
-                // Append the comment to the end.
-
-                // We must check length here.  APRS packets can't
-                // handle much.
-
-                // Altitude should be in feet "/A=001234", and placed in
-                // the comment field of an APRS packet.
-                xastir_snprintf(alt_str,
-                    sizeof(alt_str),
-                    " /A=%06d",
-                    (int)(altitude * 3.28084)); // meters to feet
-                strncat(buffer,alt_str,10);
-
-                // We must limit the length here.  APRS Item packets
-                // can handle 43 chars in the comment field, Base-91
-                // compressed position packets can handle 40.
-                //
-                // Wait a minute!  We don't care how long they are
-                // as long as they fit through our APRS decoding.
-                // We're not transmitting these as APRS packets, so
-                // the max length in the APRS Spec doesn't matter
-                // here!
-                //
-                strncat(buffer,comment,126);
-            }
-        }
-
-        // Null-terminate the buffer string to make sure.
-        buffer[MAX_DEVICE_BUFFER - 1] = '\0';
-
-fprintf(stderr, "\n***** %s\n\n", buffer);
-
-        decode_ax25_line( buffer, DATA_VIA_TNC, 0, 1);
-
-        // Clear the buffer for the next round.
-        buffer[0] = '\0';
-    }
-
-
-
 
 
     fprintf(stderr, "process_OpenTrac_packet()\n");
@@ -3169,7 +3189,25 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     &temp_entity_sequence);
 
                 if (temp_entity_sequence != entity_sequence) {
-                    process_opentrac_aprs();
+
+                    process_opentrac_aprs(origin_call,
+                        origin_ssid,
+                        buffer,
+                        dest,
+                        digis,
+                        digi,
+                        digi_h,
+                        have_position,
+                        latitude, longitude,
+                        entity_serial,
+                        displayname,
+                        aprs_symbol_table,
+                        aprs_symbol_char,
+                        course,
+                        speed,
+                        altitude,
+                        comment);
+
                     entity_sequence = temp_entity_sequence;
                 }
 
@@ -3190,7 +3228,25 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     &network);
 
                 if (temp_entity_sequence != entity_sequence) {
-                    process_opentrac_aprs();
+
+                    process_opentrac_aprs(origin_call,
+                        origin_ssid,
+                        buffer,
+                        dest,
+                        digis,
+                        digi,
+                        digi_h,
+                        have_position,
+                        latitude, longitude,
+                        entity_serial,
+                        displayname,
+                        aprs_symbol_table,
+                        aprs_symbol_char,
+                        course,
+                        speed,
+                        altitude,
+                        comment);
+
                     entity_sequence = temp_entity_sequence;
                 }
 
@@ -3212,7 +3268,25 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     &temp_entity_sequence);
 
                 if (temp_entity_sequence != entity_sequence) {
-                    process_opentrac_aprs();
+
+                    process_opentrac_aprs(origin_call,
+                        origin_ssid,
+                        buffer,
+                        dest,
+                        digis,
+                        digi,
+                        digi_h,
+                        have_position,
+                        latitude, longitude,
+                        entity_serial,
+                        displayname,
+                        aprs_symbol_table,
+                        aprs_symbol_char,
+                        course,
+                        speed,
+                        altitude,
+                        comment);
+
                     entity_sequence = temp_entity_sequence;
                 }
 
@@ -3422,7 +3496,23 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
         data+=elen;
     }
 
-    process_opentrac_aprs();
+    process_opentrac_aprs(origin_call,
+        origin_ssid,
+        buffer,
+        dest,
+        digis,
+        digi,
+        digi_h,
+        have_position,
+        latitude, longitude,
+        entity_serial,
+        displayname,
+        aprs_symbol_table,
+        aprs_symbol_char,
+        course,
+        speed,
+        altitude,
+        comment);
 
     return( buffer );
 }
