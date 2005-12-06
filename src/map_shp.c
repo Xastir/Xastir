@@ -1287,20 +1287,20 @@ void draw_shapefile_map (Widget w,
                     }
                 }
 
+                xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
+
                 // Tweak for RED_FLAG alerts:  If RED_FLAG alert
                 // we've changed the 'Z' to an 'F' in our
                 // alert->title already.  Change the 'F' back to a
                 // 'Z' temporarily (modified_title) for our
                 // compares.
                 //
-                xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
                 if (alert->title[3] == 'F' && strncmp(alert->filename, "fz", 2) == 0) {
                     modified_title[3] = 'Z';
                 }
 
+                // If fine using keylen, try using titlelen as well
                 if (strncmp(modified_title,key,keylen) == 0) {
-                    // keylen was zero, so check again using length
-                    // of title instead
                     int titlelen;
 
                     titlelen = strlen(alert->title);
@@ -1312,6 +1312,19 @@ void draw_shapefile_map (Widget w,
                             fprintf(stderr,"dbfawk alert found it: %d \n",i);
                             fprintf(stderr,"Title %s, key %s\n",modified_title,key);
  
+                        }
+                    }
+                    else {
+                        // Match using keylen, but no match using
+                        // titlelen
+                        if (debug_level & 16) {
+                            fprintf(stderr,
+                                "dbfawk alert: match w/keylen, not w/titlelen: %s=%d %s=%d\n",
+                                key,
+                                keylen,
+                                modified_title,
+                                titlelen);
+                            fprintf(stderr,"Title %s, key %s\n",modified_title,key);
                         }
                     }
                 }
