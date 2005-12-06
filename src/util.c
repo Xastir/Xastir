@@ -4576,6 +4576,39 @@ void split_string( char *data, char *cptr[], int max ) {
 
 
 
+// Function to check for proper relations between the n-N
+// numbers.  Called from check_unproto_path() function below.
+//
+int check_n_N (int prev, int last) {
+    int bad_path = 0;
+
+
+    if (prev < last) {
+        // Whoa, n < N, not good
+        bad_path = 1;
+    }
+    else if (last > MAX_WIDES) {
+        // N is greater than MAX_WIDES
+        bad_path = 1;
+    }
+    else if (prev > MAX_WIDES) {
+        // n is greater than MAX_WIDES
+        bad_path = 1;
+    }
+    else if (last == 0) {
+        // N is 0, it's a used-up digipeater slot
+        bad_path = 1;
+    }
+    if (debug_level & 1 && bad_path)
+        fprintf(stderr,"n-N wrong\n");
+
+    return(bad_path);
+}
+
+
+
+
+
 // This function checks to make sure an unproto path falls within
 // the socially acceptable values, such as only one RELAY or
 // WIDE1-1 which may appear only as the first option, use of WIDE4-4
@@ -4597,34 +4630,6 @@ int check_unproto_path ( char *data ) {
     int last = 0;
     int prev = 0;
     int total_digi_length = 0;
-
-
-
-    // Function to check for proper relations between the n-N
-    // numbers.
-    //
-    int check_n_N (void ) {
-        if (prev < last) {
-            // Whoa, n < N, not good
-            bad_path = 1;
-        }
-        else if (last > MAX_WIDES) {
-            // N is greater than MAX_WIDES
-            bad_path = 1;
-        }
-        else if (prev > MAX_WIDES) {
-            // n is greater than MAX_WIDES
-            bad_path = 1;
-        }
-        else if (last == 0) {
-            // N is 0, it's a used-up digipeater slot
-            bad_path = 1;
-        }
-        if (debug_level & 1 && bad_path)
-            fprintf(stderr,"n-N wrong\n");
-
-        return(bad_path);
-    }
 
 
     if (debug_level & 1)
@@ -4759,7 +4764,8 @@ int check_unproto_path ( char *data ) {
 
                     // Check for proper relations between the n-N
                     // numbers.
-                    if ( check_n_N() ) {
+                    if ( check_n_N(prev, last) ) {
+                        bad_path = 1;
                         if (debug_level & 1)
                             fprintf(stderr,"In WIDEn-N checks, slot %d\n", ii);
                         break;
@@ -4785,7 +4791,8 @@ int check_unproto_path ( char *data ) {
 
                     // Check for proper relations between the n-N
                     // numbers.
-                    if ( check_n_N() ) {
+                    if ( check_n_N(prev, last) ) {
+                        bad_path = 1;
                         if (debug_level & 1)
                             fprintf(stderr,"In TRACEn-N checks, slot %d\n", ii);
                         break;
@@ -4868,7 +4875,8 @@ int check_unproto_path ( char *data ) {
 
                     // Check for proper relations between the n-N
                     // numbers.
-                    if ( check_n_N() ) {
+                    if ( check_n_N(prev, last) ) {
+                        bad_path = 1;
                         if (debug_level & 1)
                             fprintf(stderr,"In OTHER checks\n");
                         break;
