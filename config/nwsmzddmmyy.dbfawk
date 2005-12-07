@@ -36,5 +36,5 @@ dbffields="ID:NAME"}
 # Use this rule to re-initialize variables between records.
 BEGIN_RECORD {key="BOGUS"; lanes=2; fill_color=7; color=8; name=""; filled=0; fill_style=0; pattern=0; display_level=65536; label_level=512; label_color=20; font_size=2; symbol=""}
 
-/^ID=(.*)$/ {key="$1"; next}
+/^ID=(..)(.*)$/ {key="$1_$2"; next}
 /^NAME=(.*)$/ {name="$1"; next}
