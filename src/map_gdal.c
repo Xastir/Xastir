@@ -2591,6 +2591,143 @@ extern void draw_shapefile_map (Widget w,
 #endif /* HAVE_LIBSHP */
 
 
+// For AreaLandmarks and Landmarks data.  Allows us to look
+// up the POLYID integer given the LAND integer.
+typedef struct _landmarkinfo {
+    int LAND;        // From AreaLandmarks
+    int POLYID;      // From AreaLandmarks
+    char CENID[6];   // From AreaLandmarks
+}landmarkinfo;
+
+typedef struct _tlid_struct {
+    int TLID;  // Max value is 2^31 or 2,147,483,647
+    struct _tlid_struct *next;
+}tlid_struct;
+
+typedef struct _polyinfo {
+    int POLYID;      // From Polygon, polygon ID
+    char CENID[6];   // From Polygon, many others
+    double POLYLONG; // From PIP
+    double POLYLAT;  // From PIP
+    int WATER;       // From PIP, 1 or 2 = water
+    int LAND;        // From AreaLandmarks, Landmark ID
+    char CFCC[4];    // From Landmarks
+    char LANAME[31]; // From Landmarks, Landmark name
+    struct _tlid_struct *tlid_list; // From PolyChainLink
+}polyinfo;
+
+typedef struct _tlidinfo {
+    int TLID;      // Tiger/Line ID
+    char FEDIRP[3]; // Size from Tiger 2003 definitions
+    char FENAME[31];// Size from Tiger 2003 definitions
+    char FETYPE[5]; // Size from Tiger 2003 definitions
+    char FEDIRS[3]; // Size from Tiger 2003 definitions
+    OGRGeometryH geometryH;
+}tlidinfo;
+
+#define LAND_HASH_SIZE     5000
+#define POLYID_HASH_SIZE  64000
+#define TLID_HASH_SIZE   240000
+
+ 
+
+
+
+// Create hash from key.  LAND is unique within each county.
+// We perform the modulus function on it with the size of
+// our hash to derive the hash key.
+//
+unsigned int landmark_hash_from_key(void *key) {
+    landmarkinfo *temp = key;
+
+    return(temp->LAND % LAND_HASH_SIZE);
+}
+
+
+
+
+
+// Test equality of hash keys.  In this case LAND is the key
+// we care about.
+//
+int landmark_keys_equal(void *key1, void *key2) {
+    landmarkinfo *temp1 = key1;
+    landmarkinfo *temp2 = key2;
+
+    if (temp1->LAND == temp2->LAND)
+        return(1);  // LAND fields match
+    else
+        return(0);  // No match
+}
+
+
+
+
+
+// FUNCTION:
+// Create hash from key.  POLYID is unique within each
+// CENID.  We perform the modulus function on it with the
+// size of our hash to derive the hash key.
+//
+unsigned int polyid_hash_from_key(void *key) {
+    polyinfo *temp = key;
+
+    return(temp->POLYID % POLYID_HASH_SIZE);
+}
+
+
+
+
+
+// FUNCTION:
+// Test equality of hash keys.  In this case POLYID (and
+// CENID?) are the keys we care about.
+//
+int polyid_keys_equal(void *key1, void *key2) {
+    polyinfo *temp1 = key1;
+    polyinfo *temp2 = key2;
+
+    if (temp1->POLYID == temp2->POLYID)
+        return(1);  // POLYID fields match
+    else
+        return(0);  // No match
+}
+
+
+
+
+
+// FUNCTION:
+// Create hash from key.  TLID is unique across the U.S.  We
+// perform the modulus function on it with the size of our
+// hash to derive the hash key.
+//
+unsigned int tlid_hash_from_key(void *key) {
+    tlidinfo *temp = key;
+
+    return(temp->TLID % TLID_HASH_SIZE);
+}
+
+
+
+
+
+// FUNCTION:
+// Test equality of hash keys.  In this case TLID is the
+// absolute key that we care about.
+//
+int tlid_keys_equal(void *key1, void *key2) {
+    tlidinfo *temp1 = key1;
+    tlidinfo *temp2 = key2;
+
+    if (temp1->TLID == temp2->TLID)
+        return(1);  // TLID fields match
+    else
+        return(0);  // No match
+}
+
+
+
 
 
 // For TIGER, we must create polygons from the vector lines.  Use
@@ -3369,9 +3506,6 @@ clear_dangerous();
 //DONE!
     //
     if (draw_filled && strcasecmp(driver_type,"TIGER") == 0) {
-#define POLYID_HASH_SIZE  64000
-#define TLID_HASH_SIZE   240000
-#define LAND_HASH_SIZE     5000
         struct hashtable *polyid_hash;
         struct hashtable *landmark_hash;
         struct hashtable *tlid_hash;
@@ -3379,117 +3513,6 @@ clear_dangerous();
         OGRLayerH layerH;
         OGRFeatureH featureH;
         struct hashtable_itr *iterator = NULL;
-
-        typedef struct _tlid_struct {
-            int TLID;  // Max value is 2^31 or 2,147,483,647
-            struct _tlid_struct *next;
-        }tlid_struct;
-
-        typedef struct _polyinfo {
-            int POLYID;      // From Polygon, polygon ID
-            char CENID[6];   // From Polygon, many others
-            double POLYLONG; // From PIP
-            double POLYLAT;  // From PIP
-            int WATER;       // From PIP, 1 or 2 = water
-            int LAND;        // From AreaLandmarks, Landmark ID
-            char CFCC[4];    // From Landmarks
-            char LANAME[31]; // From Landmarks, Landmark name
-            struct _tlid_struct *tlid_list; // From PolyChainLink
-        }polyinfo;
-
-        typedef struct _tlidinfo {
-            int TLID;      // Tiger/Line ID
-            char FEDIRP[3]; // Size from Tiger 2003 definitions
-            char FENAME[31];// Size from Tiger 2003 definitions
-            char FETYPE[5]; // Size from Tiger 2003 definitions
-            char FEDIRS[3]; // Size from Tiger 2003 definitions
-            OGRGeometryH geometryH;
-        }tlidinfo;
-
-        // For AreaLandmarks and Landmarks data.  Allows us to look
-        // up the POLYID integer given the LAND integer.
-        typedef struct _landmarkinfo {
-            int LAND;        // From AreaLandmarks
-            int POLYID;      // From AreaLandmarks
-            char CENID[6];   // From AreaLandmarks
-        }landmarkinfo;
-
-// FUNCTION:
-        // Create hash from key.  LAND is unique within each county.
-        // We perform the modulus function on it with the size of
-        // our hash to derive the hash key.
-        //
-        unsigned int landmark_hash_from_key(void *key) {
-            landmarkinfo *temp = key;
-
-            return(temp->LAND % LAND_HASH_SIZE);
-        }
-
-// FUNCTION:
-        // Test equality of hash keys.  In this case LAND is the key
-        // we care about.
-        //
-        int landmark_keys_equal(void *key1, void *key2) {
-            landmarkinfo *temp1 = key1;
-            landmarkinfo *temp2 = key2;
-
-            if (temp1->LAND == temp2->LAND)
-                return(1);  // LAND fields match
-            else
-                return(0);  // No match
-        }
-
-// FUNCTION:
-        // Create hash from key.  POLYID is unique within each
-        // CENID.  We perform the modulus function on it with the
-        // size of our hash to derive the hash key.
-        //
-        unsigned int polyid_hash_from_key(void *key) {
-            polyinfo *temp = key;
-
-            return(temp->POLYID % POLYID_HASH_SIZE);
-        }
-
-// FUNCTION:
-        // Test equality of hash keys.  In this case POLYID (and
-        // CENID?) are the keys we care about.
-        //
-        int polyid_keys_equal(void *key1, void *key2) {
-            polyinfo *temp1 = key1;
-            polyinfo *temp2 = key2;
-
-            if (temp1->POLYID == temp2->POLYID)
-                return(1);  // POLYID fields match
-            else
-                return(0);  // No match
-        }
-
-// FUNCTION:
-        // Create hash from key.  TLID is unique across the U.S.  We
-        // perform the modulus function on it with the size of our
-        // hash to derive the hash key.
-        //
-        unsigned int tlid_hash_from_key(void *key) {
-            tlidinfo *temp = key;
-
-            return(temp->TLID % TLID_HASH_SIZE);
-        }
-
-// FUNCTION:
-        // Test equality of hash keys.  In this case TLID is the
-        // absolute key that we care about.
-        //
-        int tlid_keys_equal(void *key1, void *key2) {
-            tlidinfo *temp1 = key1;
-            tlidinfo *temp2 = key2;
-
-            if (temp1->TLID == temp2->TLID)
-                return(1);  // TLID fields match
-            else
-                return(0);  // No match
-        }
-
-
 
         // Create the empty hash table for polyid
         polyid_hash = create_hashtable(POLYID_HASH_SIZE,
