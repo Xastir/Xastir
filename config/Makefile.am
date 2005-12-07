@@ -53,3 +53,6 @@ EXTRA_DIST = \
 
 config_DATA = ${EXTRA_DIST}
 
+install-exec-hook:
+	rm -f \$(configdir)/nwsfzddmmyy.dbfawk
+
