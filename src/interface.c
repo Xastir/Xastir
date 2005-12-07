@@ -8750,7 +8750,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
 
 
     // Check whether transmits are disabled globally
-    if (transmit_disable) {
+    if (transmit_disable && !loopback_only) {
         return;
     }
 
