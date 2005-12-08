@@ -781,7 +781,13 @@ and the APRSdos documentation for details on these useful techniques.
 (FIXME: Separate section on DF'ing techniques?)
 
 = Probability Circles =
-FIXME: Write this part
+This allows you to define the radius (in miles) of two circles centered on 
+the object or item.  Min is the radius (in miles) of the smaller, inner 
+circle, and Max is the radius (in miles) of the larger, outer circle.  
+These circles are drawn in red.  They can be used to assist in planning 
+Search and Rescue operations.  To create more than two circles, add additional
+probability circle objects to the same location.  Probability circles may not
+be displayed by other client software.
 
 = Name =
 This is the name of the object or item. It may be up to 9 characters long,
@@ -860,19 +866,20 @@ HELP-INDEX>CAD Objects
 
                      CAD Objects
 
-The right click menu includes a submenu for creating CAD objects. 
+[CAD object support has moved from the right click menu to 
+Map/Draw CAD Objects]. 
 
-CAD object support is preliminary at this time.  
-
+CAD object support is preliminary at this time.  Features and the user 
+interface are subject to change.  
+ 
 CAD objects are arbitrary shapes that you can draw on maps in xastir, but 
 can't transmit by APRS.  
 
 Currently supported CAD objects are:
 Polygons: Closed areas of at least three points.  
 
-To create a CAD object, first right click anywhere on the map window to bring 
-up the right click menu.  Select Draw CAD Objects/Start CAD Mode from the
-menu.  This will change the cursor to a pencil.  Begin drawing a polygon by 
+To create a CAD object, first press the Draw radio button on the toolbar.
+This will change the cursor to a pencil.  Begin drawing a polygon by 
 clicking with the middle mouse button (or both buttons on a two button mouse,
 for which you will need to have three button mouse emulation enabled).  This 
 places a point on the map.  Now move the cursor somewhere else (the normal
@@ -880,17 +887,16 @@ left click/right click navigation and zoom functions still work normaly) and
 click the middle mouse button again.  This draws a line between the two points
 you have selected.  Middle click again to draw another line segment and keep 
 repeating until you have drawn all except for the closing line segment of your
-polygon.  To close the polygon, bring up the right click menu and select Draw
+polygon.  To close the polygon, select Map/Draw
 CAD Objects/Close Polygon.  This will close your polygon and bring up a dialog
 that will allow you to enter a name, comment, and probability for the polygon.
 
-When you have finished drawing CAD objects, exit the CAD drawing mode by right
-clicking and selecting Draw CAD Objects/End CAD Mode from the right click
-menu. 
+When you have finished drawing CAD objects, exit the CAD drawing mode by 
+deselecting the Draw radio button on the toolbar.
 
-CAD objects can be deleted by right clicking on the map and selecting Draw CAD
-Objects/Erase All CAD Polygons.
-
+CAD objects can be edited from the View/CAD Polygons menu and from the 
+Map/Draw CAD Objects/CAD Polygons menu.  CAD objects can be  deleted from the 
+Map/Draw CAD Objects/Erase CAD Polygons menu.
 
 HELP-INDEX>View Menu
 
