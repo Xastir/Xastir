@@ -8811,7 +8811,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-                    if (port_data[port].status == DEVICE_UP && !loopback_only) {
+                    if (port_data[port].status == DEVICE_UP && !loopback_only && !transmit_disable) {
                         port_dtr(port,0);           // make DTR normal (talk to TNC)
                     }
 
