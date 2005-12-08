@@ -6661,7 +6661,7 @@ fprintf(stderr, "No more iterations left\n");
     log_object_item(data,0,last_object);
 
     if (object_tx_disable)
-            output_my_data(data,-1,0,1,0,NULL); // Local loopback only, not igating
+        output_my_data(data,-1,0,1,0,NULL); // Local loopback only, not igating
     else
         output_my_data(data,-1,0,0,0,NULL); // Transmit/loopback object data, not igating
 }
