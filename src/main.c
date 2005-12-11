@@ -7168,8 +7168,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
-    station_config_pane  = XmCreatePulldownMenu(mappane,
-            "map_config_pane",
+    station_config_pane  = XmCreatePulldownMenu(stationspane,
+            "stations_config_pane",
             al,
             ac);
 
