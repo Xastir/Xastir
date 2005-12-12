@@ -224,7 +224,11 @@ int doing_move_operation = 0;
 
 Widget draw_CAD_objects_dialog = (Widget)NULL;
 Widget cad_dialog = (Widget)NULL;
-Widget cad_label_data, cad_comment_data, cad_probability_data;
+Widget cad_label_data, 
+       cad_comment_data, 
+       cad_probability_data, 
+       cad_line_style_data;
+       // Values entered in the cad_dialog
 int draw_CAD_objects_flag = 0;
 void Draw_All_CAD_Objects(Widget w);
 void Save_CAD_Objects_to_file(void);
@@ -234,7 +238,12 @@ Widget cad_list_dialog = (Widget)NULL;
 Widget list_of_existing_CAD_objects_edit = (Widget)NULL;
 void Format_area_for_output(double *area_km2, char *area_description, int sizeof_area_description);
 void Update_CAD_objects_list_dialog(void);
- 
+void CAD_object_set_raw_probability(CADRow *object_ptr, float probability, int as_percent);
+int CAD_draw_objects = TRUE;
+int CAD_show_label = TRUE;
+int CAD_show_raw_probability = TRUE;
+int CAD_show_comment = TRUE;
+int CAD_show_area = TRUE; 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1691,10 +1700,10 @@ void CAD_object_allocate(long latitude, long longitude) {
     p_new->creation_time = sec_now();
     p_new->start = NULL;
     p_new->line_color = colors[0x27];
-    p_new->line_type = 0;
+    p_new->line_type = LineOnOffDash;
     p_new->line_width = 4;
     p_new->computed_area = 0;
-    p_new->raw_probability = 0.0;
+    CAD_object_set_raw_probability(p_new,0.0,FALSE);
     p_new->label_latitude = 0l;
     p_new->label_longitude = 0l;
     p_new->label[0] = '\0';
@@ -1812,6 +1821,55 @@ void CAD_object_delete_all(void) {
 
 
 
+/* Test to see if a CAD object of the name (label) provided exists.
+   Parameter: label, the label text to be checked.
+   Returns 0 if no CAD object with a name matching the 
+   provided name is found.
+   Returns 1 if a CAD object with a name matching the 
+   provided name is found.  */
+int exists_CAD_object_by_label(char *label) {
+    CADRow *object_pointer = CAD_list_head;
+    int result = 0;  // function return value
+    int done = 0;    // flag to stop loop when a match is found
+    while (object_pointer != NULL && done==0) {
+        if (strcmp(object_pointer->label,label)==0) {
+            // a matching name was found
+            result = 1;
+            done = 1;
+        }
+        object_pointer = object_pointer->next;
+    } 
+    return result;
+}
+
+
+
+
+
+/* Counts to see how many CAD objects of the name (label) provided exist.
+   Parameter: label, the label text to be checked.
+   Returns 0 if no CAD object with a name matching the 
+   provided name is found.
+   Returns count of the number of CAD objects with a matching label if
+   one or more is found.  */
+int count_CAD_object_with_matching_label(char *label) {
+    CADRow *object_pointer = CAD_list_head;
+    int result = 0;
+    while (object_pointer != NULL) {
+        // iterate through all CAD objects
+        if (strcmp(object_pointer->label,label)==0) {
+            // a matching name was found
+            result++;
+            object_pointer = object_pointer->next;
+        }
+    } 
+    return result;
+}
+
+
+
+
+
 /* Delete one CAD object and all of its vertices. */
 void CAD_object_delete(CADRow *object) {
     CADRow *all_objects_ptr = CAD_list_head;
@@ -1832,7 +1890,8 @@ void CAD_object_delete(CADRow *object) {
         // Unlink the object from the chain and free the memory.
         CAD_list_head = object->next;  // Unlink
         free(object);   // Free the object memory
-    } else {
+    } 
+    else {
 #ifdef CAD_DEBUG
         fprintf(stderr,"Deleting other than first CAD object %s\n",object->label);
 #endif
@@ -1844,7 +1903,8 @@ void CAD_object_delete(CADRow *object) {
                 previous_object_ptr->next = object->next;
                 free(object);
                 done = 1;
-            } else {
+            }
+            else {
                 all_objects_ptr = all_objects_ptr->next;
             }
         }
@@ -2039,10 +2099,25 @@ void CAD_object_allocate_label(void) {
 // This will allow us to split/join polygons later without messing
 // up the probablity assigned to each area originally.  Check that
 // it is a closed polygon first.
+// if as_percent==TRUE, then probability is treated as a percent
+// (expected to be a value between 0 and 100).
+// otherwise, then probability is treated as a probability 
+// (expected to be a value between 0 and 1).
 //
-void CAD_object_set_raw_probability(CADRow *object_ptr, float probability) {
+void CAD_object_set_raw_probability(CADRow *object_ptr, float probability, int as_percent) {
    // initial implementation just assigns a single raw probability to the whole polygon.
-   object_ptr->raw_probability = probability;
+   // internal storage is as a probability between 0 and 1
+   // users will usually want to manipulate this as a percent (between 0 and 100)
+   // thus the get and set functions are aware of both internal storage and
+   // the user's request and return an appropriately scaled value.  
+   if (as_percent==TRUE) {
+       // convert from a percent to a probability between 0 and 1
+       object_ptr->raw_probability = (probability/100.00);
+   } 
+   else {
+       // treat as in internal storage form
+       object_ptr->raw_probability = probability;
+   }
 }
 
 
@@ -2053,12 +2128,17 @@ void CAD_object_set_raw_probability(CADRow *object_ptr, float probability) {
 // probability "buckets" contained within the closed polygon.  Check
 // that it _is_ a closed polygon first.
 //
-float CAD_object_get_raw_probability(CADRow *object_ptr) {
+float CAD_object_get_raw_probability(CADRow *object_ptr, int as_percent) {
    float result = 0.0;
    // not checking yet for closure
    if (object_ptr != NULL) {
       // initial implementation returns just the single raw probability
       result = object_ptr->raw_probability;
+      if (as_percent > 0) {
+          // raw probability is a probability between 0 an 1, 
+          // this may be desired as a percent.
+          result = result * 100;
+      }
    }
 #ifdef CAD_DEBUG
    fprintf(stderr,"Getting Probability: %01.5f\n",result);
@@ -2127,6 +2207,11 @@ void CAD_object_set_label_at_centroid(CADRow *CAD_object) {
     // box for the area.  ***
     // We can't use a simple x=sum(x)/n, y=sum(y)/n as the 
     // points on the outline shouldn't be weighted equally.
+    // Ideal would be to place the label at the central point within
+    // the area itslef, apparently this is a hard prbolem.
+    // alternative would be to use the centroid, which like the 
+    // average of maximum and minimum values may lie outside of
+    // the area. 
     VerticeRow *vertex_pointer;
     long min_lat, min_long;
     long max_lat, max_long;
@@ -2178,6 +2263,7 @@ void Set_CAD_object_parameters (Widget widget,
                      XtPointer calldata) {
     float probability = 0.0;
     CADRow *target_object = NULL;
+    int cb_selected;
     // need to find out object to edit from call data rather than
     // using the first object in list as the one to edit
     //target_object = CAD_list_head;
@@ -2194,10 +2280,27 @@ void Set_CAD_object_parameters (Widget widget,
                 );
     // Is more error checking needed?  atof appears to correctly handle
     // empty input, reasonable probability values, and text (0.00).  
-    // Convert probabilities expressed as percent to probability?
-    // Code here would render 1% as 1.00, not 0.01.
+    // User side probabilities are expressed as percent.
     probability = atof(XmTextGetString(cad_probability_data));
-    CAD_object_set_raw_probability(target_object, probability);
+    CAD_object_set_raw_probability(target_object, probability, TRUE);
+
+    // Use the selected line type, default is dashed
+    cb_selected = FALSE;
+    XtVaGetValues(cad_line_style_data, 
+        XmNselectedPosition,
+        &cb_selected,
+        NULL);
+    if (cb_selected) {
+        if (cb_selected==1) 
+           target_object->line_type=LineSolid;
+        if (cb_selected==2) 
+           target_object->line_type=LineOnOffDash;
+        if (cb_selected==3) 
+           target_object->line_type=LineDoubleDash;
+    } 
+    else {
+        target_object->line_type=LineOnOffDash;
+    }
 
     if (cad_list_dialog) {
         Update_CAD_objects_list_dialog();
@@ -2269,13 +2372,16 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
            cad_label,
            cad_comment,
            cad_probability,
+           cad_line_style,
            button_done,
            button_cancel;
     char   probability_string[5];
+    XmString cb_item;
                                                                                                                         
     if (cad_dialog) {
         (void)XRaiseWindow(XtDisplay(cad_dialog), XtWindow(cad_dialog));
-    } else {
+    } 
+    else {
 
         // Area Object"
         cad_dialog = XtVaCreatePopupShell(langcode("CADPUD001"),
@@ -2376,7 +2482,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
                 NULL);
-        // "Probability"
+        // "Probability (as %)"
         cad_probability = XtVaCreateManagedWidget(langcode("CADPUD004"),
                 xmLabelWidgetClass,
                 cad_form,
@@ -2407,13 +2513,58 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
                  NULL);
+        // Boundary Line Type
+        cad_line_style = XtVaCreateManagedWidget("Line Type:",
+                xmLabelWidgetClass,
+                cad_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               cad_probability_data,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        // Combo box to pick line style
+        cad_line_style_data = XtVaCreateManagedWidget("select line style",
+                xmComboBoxWidgetClass,
+                cad_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               cad_probability_data,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              cad_line_style,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNnavigationType,          XmTAB_GROUP,
+                XmNcomboBoxType,            XmDROP_DOWN_LIST,
+                XmNpositionMode,            XmONE_BASED, 
+                XmNvisibleItemCount,        3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        cb_item = XmStringCreateLtoR("Solid", XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(cad_line_style_data,cb_item,1,1);  
+        XmStringFree(cb_item);
+
+        cb_item = XmStringCreateLtoR("Dashed", XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(cad_line_style_data,cb_item,2,1);  
+        XmStringFree(cb_item);
+
+        cb_item = XmStringCreateLtoR("Double Dash", XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(cad_line_style_data,cb_item,3,1);  
+        XmStringFree(cb_item);
 
        // "OK"
         button_done = XtVaCreateManagedWidget(langcode("CADPUD005"),
                 xmPushButtonGadgetClass,
                 cad_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
-                XmNtopWidget,         cad_probability_data,
+                XmNtopWidget,         cad_line_style_data,
                 XmNtopOffset,         5,
                 XmNbottomAttachment,  XmATTACH_FORM,
                 XmNbottomOffset,      5,
@@ -2431,7 +2582,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 xmPushButtonGadgetClass,
                 cad_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
-                XmNtopWidget,         cad_probability_data,
+                XmNtopWidget,         cad_line_style_data,
                 XmNtopOffset,         5,
                 XmNbottomAttachment,  XmATTACH_FORM,
                 XmNbottomOffset,      5,
@@ -2456,9 +2607,10 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
             xastir_snprintf(probability_string,
                 sizeof(probability_string),
                 "%01.2f",
-                CAD_object_get_raw_probability(CAD_object));
+                CAD_object_get_raw_probability(CAD_object,1));
             XmTextFieldSetString(cad_probability_data,probability_string);
-        } else {
+        } 
+        else {
             // called to get information for a newly created cad object
             // pass pointer to the head of the list, which contains
             // the most recently created cad object.
@@ -2557,13 +2709,14 @@ void Save_CAD_Objects_to_file(void) {
         fprintf(f,"line_type:       %d\n",object_ptr->line_type);
         fprintf(f,"line_width:      %d\n",object_ptr->line_width);
         fprintf(f,"computed_area:   %f\n",object_ptr->computed_area);
-        fprintf(f,"raw_probability: %f\n",object_ptr->raw_probability);
+        fprintf(f,"raw_probability: %f\n",CAD_object_get_raw_probability(object_ptr,TRUE));
         fprintf(f,"label_latitude:  %lu\n",object_ptr->label_latitude);
         fprintf(f,"label_longitude: %lu\n",object_ptr->label_longitude);
         fprintf(f,"label: %s\n",object_ptr->label);
         if (strlen(object_ptr->comment)>1) { 
             fprintf(f,"comment: %s\n",object_ptr->comment);
-        } else {
+        } 
+        else {
             fprintf(f,"comment: NULL\n");
         }
 
@@ -2592,7 +2745,6 @@ void Restore_CAD_Objects_from_file(void) {
     FILE *f;
     char *file;
     char line[MAX_FILENAME];
-
 
 #ifdef CAD_DEBUG
     fprintf(stderr,"Restoring CAD objects from file\n");
@@ -2629,7 +2781,7 @@ void Restore_CAD_Objects_from_file(void) {
             // vertices when all done.
             CAD_vertice_delete_all(CAD_list_head->start);
             CAD_list_head->start = NULL;
-
+            
         }
         else if (strncasecmp(line,"creation_time:",14) == 0) {
             //fprintf(stderr,"Found creation_time:\n");
@@ -2671,6 +2823,13 @@ void Restore_CAD_Objects_from_file(void) {
             if (1 != sscanf(line+17,"%f",
                     &CAD_list_head->raw_probability)) {
                 fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [raw_probability]\n");
+            } 
+            else {
+                // External storage is as percent, need to make sure that this
+                // fits the expected internal storage format.
+                // Thus take given value and store using method that knows 
+                // how to handle percents
+                CAD_object_set_raw_probability(CAD_list_head,CAD_list_head->raw_probability,TRUE);
             }
         }
         else if (strncasecmp(line,"label_latitude:",15) == 0) {
@@ -2790,7 +2949,8 @@ void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
                     // delete CAD object matching the selected name
                     CAD_object_delete(object_ptr);
                     done = 1;
-                } else {
+                } 
+                else {
                    object_ptr = object_ptr->next;
                 }
             }
@@ -3072,7 +3232,8 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
 
     if (cad_list_dialog) {
         (void)XRaiseWindow(XtDisplay(cad_list_dialog), XtWindow(cad_list_dialog));
-    } else {
+    } 
+    else {
 
         // List CAD Objects
         cad_list_dialog = XtVaCreatePopupShell("List CAD Objects",
@@ -3399,97 +3560,118 @@ void Draw_All_CAD_Objects(Widget w) {
     float probability;
     char probability_string[8];
     VerticeRow *vertice;
+    double area;
+    static int sizeof_area_description = 50; // define here as local static to limit size of display on map 
+                                              // independent of size as shown on form
+    char area_description[sizeof_area_description];
 
     // Start at CAD_list_head, iterate through entire linked list,
     // drawing as we go.  Respect the line
     // width/line_color/line_type variables for each object.
 
 //fprintf(stderr,"Drawing CAD objects\n");
-
-    while (object_ptr != NULL) {
-        probability = CAD_object_get_raw_probability(object_ptr);
-        xastir_snprintf(probability_string,
-            sizeof(probability_string),
-            "%01.2f%%",
-            probability);
-
-        // draw label and probability
-        if (object_ptr->label != NULL) {
+    if (CAD_draw_objects==TRUE) {
+        while (object_ptr != NULL) {
+            probability = CAD_object_get_raw_probability(object_ptr,1);
+            xastir_snprintf(probability_string,
+                sizeof(probability_string),
+                "%01.1f%%",
+                probability);
+    
+            // find point at which to draw label and other descriptive text
             x_long = object_ptr->label_longitude;
             y_lat = object_ptr->label_latitude;
-#ifdef CAD_DEBUG
+    #ifdef CAD_DEBUG
             fprintf(stderr,"Drawing object %s\n", object_ptr->label);
-#endif
+    #endif
             //fprintf(stderr,"Lat: %d\n", y_lat);
             //fprintf(stderr,"Long: %d\n", x_long);
             if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
-
+    
                 if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
-
+    
                     if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-
+    
                         if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
-
+    
+                            // ok to draw label and assocated data, point is on screen
                             x_offset=((x_long-x_long_offset)/scale_x)-(10);
                             y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
-
-                            if ( (int)strlen(object_ptr->label)>0) {
-
-                                x_offset=((x_long-x_long_offset)/scale_x);
-                                y_offset=((y_lat -y_lat_offset) /scale_y);
-
+                            // ****** ?? use -10 or point ??
+                            x_offset=((x_long-x_long_offset)/scale_x);
+                            y_offset=((y_lat -y_lat_offset) /scale_y);
+    
+                            if ((object_ptr->label!=NULL) & ((int)strlen(object_ptr->label)>0) & (CAD_show_label==TRUE)) {
+                                // Draw Label   
                                 // 0x08 is background color
                                 // 0x40 is foreground color (yellow)
                                 draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,object_ptr->label,0x08,0x40,strlen(object_ptr->label));
                                                                                                                         
-                                x_offset=((x_long-x_long_offset)/scale_x)+12;
-                                y_offset=((y_lat -y_lat_offset) /scale_y)+15;
-
-                                // 0x08 is background color
-                                // 0x40 is foreground color (yellow)
-                                draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,probability_string,0x08,0x40,strlen(probability_string));
+                                x_offset=x_offset+12;
+                                y_offset=y_offset+15;
                             }
+    
+                            if (CAD_show_raw_probability==TRUE) {
+                                // draw probability
+                                draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,probability_string,0x08,0x40,strlen(probability_string));
+                                y_offset=y_offset+15;
+                            }
+    
+                            if ((CAD_show_comment==TRUE) & (object_ptr->comment!=NULL) & ((int)strlen(object_ptr->comment)>0)) {
+                                // draw comment
+                                draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,object_ptr->comment,0x08,0x40,strlen(object_ptr->comment));
+                                y_offset=y_offset+15;
+                            }
+    
+    
+                            if (CAD_show_area==TRUE) {
+                                area = object_ptr->computed_area;
+                                Format_area_for_output(&area, area_description, sizeof_area_description);
+                                draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,area_description,0x08,0x40,strlen(area_description));
+                                y_offset=y_offset+15;
+                            }
+    
                         }
                     }
                 }
             }
-        }
-
-        // Iterate through the vertices and draw the lines
-        vertice = object_ptr->start;
- 
-        // Set up line color/width/type here
-        (void)XSetLineAttributes (XtDisplay (da),
-            gc_tint,
-            object_ptr->line_width,
-            LineOnOffDash,
-//            LineSolid,
-// object_ptr->line_type,
-            CapButt,
-            JoinMiter);
-
-        (void)XSetForeground (XtDisplay (da),
-            gc_tint,
-            object_ptr->line_color);
-
-        (void)XSetFunction (XtDisplay (da),
-            gc_tint,
-            GXxor);
-
-        while (vertice != NULL) {
-            if (vertice->next != NULL) {
-                // Use the draw_vector function from maps.c
-                draw_vector(w,
-                    vertice->longitude,
-                    vertice->latitude,
-                    vertice->next->longitude,
-                    vertice->next->latitude, 
-                    gc_tint,
-                    pixmap_final);
+    
+            // Iterate through the vertices and draw the lines
+            vertice = object_ptr->start;
+     
+            // Set up line color/width/type here
+            (void)XSetLineAttributes (XtDisplay (da),
+                gc_tint,
+                object_ptr->line_width,
+    //            LineOnOffDash,
+    //            LineSolid,
+                object_ptr->line_type,
+                CapButt,
+                JoinMiter);
+    
+            (void)XSetForeground (XtDisplay (da),
+                gc_tint,
+                object_ptr->line_color);
+    
+            (void)XSetFunction (XtDisplay (da),
+                gc_tint,
+                GXxor);
+    
+            while (vertice != NULL) {
+                if (vertice->next != NULL) {
+                    // Use the draw_vector function from maps.c
+                    draw_vector(w,
+                        vertice->longitude,
+                        vertice->latitude,
+                        vertice->next->longitude,
+                        vertice->next->latitude, 
+                        gc_tint,
+                        pixmap_final);
+                }
+                vertice = vertice->next;
             }
-            vertice = vertice->next;
+            object_ptr = object_ptr->next;
         }
-        object_ptr = object_ptr->next;
     }
 }
 
@@ -6659,6 +6841,9 @@ fprintf(stderr, "No more iterations left\n");
 //fprintf(stderr,"Packet:%s\n", data);
 
     log_object_item(data,0,last_object);
+
+// *********** New objects not being displayed on map untill restart
+
 
     if (object_tx_disable)
         output_my_data(data,-1,0,1,0,NULL); // Local loopback only, not igating

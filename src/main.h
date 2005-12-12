@@ -94,7 +94,6 @@ extern int interrupt_drawing_now;
 #define MAX_WX_CHARS 4
 
 
-
 //////////////////////////////////////////////////////////////////////
 // These globals and prototypes are from:
 // http://lightconsulting.com/~thalakan/process-title-notes.html
@@ -396,7 +395,6 @@ extern Widget object_symbol_data;
 extern void updateObjectPictureCallback(Widget w,XtPointer clientData,XtPointer callData);
 
 extern void Draw_All_CAD_Objects(Widget w);
-
 
 // unit conversion
 extern char un_alt[2+1];

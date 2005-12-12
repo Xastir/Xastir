@@ -468,7 +468,11 @@ typedef struct _CADRow {
     int line_width;             // Border line width
     float computed_area;        // Area in square kilometers
     float raw_probability;      // Probability of area (POA) or probability of
-                                // detection (POD)
+                                // detection (POD) stored as probability 
+                                // with a value between 0 and 1.
+                                // Set and get with CAD_object_get_raw_probability()
+                                // and CAD_object_set_raw_probability(), rather 
+                                // than by a direct request for CADRow->raw_probability.
     long label_latitude;        // Latitude for label placement
     long label_longitude;       // Longitude for label placement
     char label[CAD_LABEL_MAX_SIZE];             // Name of polygon

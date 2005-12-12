@@ -1256,7 +1256,7 @@ GPSS007|!GPS data is older than 30 seconds!||
 CADPUD001|Area Object||
 CADPUD002|Area Label:||
 CADPUD003|Comment:||
-CADPUD004|Probability:||
+CADPUD004|Probability (%):||
 CADPUD005|OK||
 CADPUD006|CAD Dialog||
 CADPUD007|Show/Edit Details||

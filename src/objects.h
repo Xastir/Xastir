@@ -58,6 +58,11 @@ extern int doing_move_operation;
 extern char last_object[9+1];
 extern char last_obj_grp;
 extern char last_obj_sym;
+extern int CAD_draw_objects;
+extern int CAD_show_label;
+extern int CAD_show_raw_probability;
+extern int CAD_show_comment;
+extern int CAD_show_area; 
 
 
 /* JMT - works in FreeBSD */

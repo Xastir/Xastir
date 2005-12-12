@@ -412,6 +412,7 @@ Widget grid_on, grid_off;
 static void Grid_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int long_lat_grid;              // Switch for Map Lat and Long grid display
 
+static void CAD_draw_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int disable_all_maps = 0;
 static void Map_disable_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -4927,6 +4928,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         Map_background_color_Pane, map_background_button,
         map_pointer_menu_button, map_config_button,
         station_config_button,
+        cad_draw_button, cad_show_label_button,
+        cad_show_probability_button, cad_show_area_button,
+        cad_show_comment_button,
 #if !defined(NO_GRAPHICS)
         Raster_intensity_Pane, raster_intensity_button,
 #if defined(HAVE_IMAGEMAGICK)
@@ -5765,6 +5769,71 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(CAD4,XmNactivateCallback,Draw_CAD_Objects_list_dialog,NULL);
+   
+    // Toggles for CAD object information display on map
+    // Draw CAD Objects 
+    cad_draw_button = XtVaCreateManagedWidget("Draw CAD Objects",
+            xmToggleButtonGadgetClass,
+            CAD_sub,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(cad_draw_button,XmNvalueChangedCallback,CAD_draw_toggle,"CAD_draw_objects");
+    if (CAD_draw_objects==TRUE)
+        XmToggleButtonSetState(cad_draw_button,TRUE,FALSE);
+    // Draw CAD Labels 
+    cad_show_label_button = XtVaCreateManagedWidget("Draw CAD Labels",
+            xmToggleButtonGadgetClass,
+            CAD_sub,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(cad_show_label_button,XmNvalueChangedCallback,CAD_draw_toggle,"CAD_show_label");
+    if (CAD_show_label==TRUE)
+        XmToggleButtonSetState(cad_show_label_button,TRUE,FALSE);
+
+    // Draw CAD Probability
+    cad_show_probability_button = XtVaCreateManagedWidget("Draw CAD Probability",
+            xmToggleButtonGadgetClass,
+            CAD_sub,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(cad_show_probability_button,XmNvalueChangedCallback,CAD_draw_toggle,"CAD_show_raw_probability");
+    if (CAD_show_raw_probability==TRUE)
+        XmToggleButtonSetState(cad_show_probability_button,TRUE,FALSE);
+
+    // Draw CAD Comments
+    cad_show_comment_button = XtVaCreateManagedWidget("Draw CAD Comments",
+            xmToggleButtonGadgetClass,
+            CAD_sub,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(cad_show_comment_button,XmNvalueChangedCallback,CAD_draw_toggle,"CAD_show_comment");
+    if (CAD_show_comment==TRUE)
+        XmToggleButtonSetState(cad_show_comment_button,TRUE,FALSE);
+
+    // Draw CAD Size of Area
+    cad_show_area_button = XtVaCreateManagedWidget("Draw CAD Area Size",
+            xmToggleButtonGadgetClass,
+            CAD_sub,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(cad_show_area_button,XmNvalueChangedCallback,CAD_draw_toggle,"CAD_show_area");
+    if (CAD_show_area==TRUE)
+        XmToggleButtonSetState(cad_show_area_button,TRUE,FALSE);
 
     (void)XtVaCreateManagedWidget("create_appshell sep2",
             xmSeparatorGadgetClass,
@@ -5772,8 +5841,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-
-
+    
     map_disable_button = XtVaCreateManagedWidget(langcode("PULDNMP013"),
             xmToggleButtonGadgetClass,
             mappane,
@@ -12894,6 +12962,34 @@ void Grid_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callDat
         (unsigned int)screen_height,
         0,
         0);
+}
+
+
+
+
+
+void  CAD_draw_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+
+    if (strcmp(which,"CAD_draw_objects")==0) { 
+         CAD_draw_objects = state->set;
+    }
+    if (strcmp(which,"CAD_show_label")==0) { 
+         CAD_show_label = state->set;
+    }
+    if (strcmp(which,"CAD_show_raw_probability")==0) { 
+         CAD_show_raw_probability = state->set;
+    }
+    if (strcmp(which,"CAD_show_comment")==0) { 
+         CAD_show_comment = state->set;
+    }
+    if (strcmp(which,"CAD_show_area")==0) { 
+         CAD_show_area = state->set;
+    }
+
+    //request_new_image++;
 }
 
 
