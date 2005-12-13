@@ -3582,7 +3582,7 @@ void Draw_All_CAD_Objects(Widget w) {
             x_long = object_ptr->label_longitude;
             y_lat = object_ptr->label_latitude;
     #ifdef CAD_DEBUG
-            fprintf(stderr,"Drawing object %s\n", object_ptr->label);
+            fprintf(stderr,"Drawing object %s\n", (object_ptr->label) ? object_ptr->label : "NULL" );
     #endif
             //fprintf(stderr,"Lat: %d\n", y_lat);
             //fprintf(stderr,"Long: %d\n", x_long);
