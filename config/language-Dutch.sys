@@ -320,6 +320,11 @@ POPUPMA043|Pas meerduidige positie aan||# origineel ambigious mag ook meervoudig
 POPUPMA044|Positie meerduidigheid is aan, uw nieuwe positie kan verspringen.||
 POPUPMA045|Predefined Objecten||
 POPUPMA046|CAD Polygons||
+POPUPMA047|Enable CAD objects||
+POPUPMA048|Enable CAD labels||
+POPUPMA049|Enable CAD comments||
+POPUPMA050|Enable CAD probability||
+POPUPMA051|Enable CAD area size||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

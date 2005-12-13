@@ -5772,7 +5772,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
    
     // Toggles for CAD object information display on map
     // Draw CAD Objects 
-    cad_draw_button = XtVaCreateManagedWidget("Draw CAD Objects",
+    cad_draw_button = XtVaCreateManagedWidget(langcode("POPUPMA047"),
             xmToggleButtonGadgetClass,
             CAD_sub,
             XmNvisibleWhenOff, TRUE,
@@ -5783,8 +5783,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(cad_draw_button,XmNvalueChangedCallback,CAD_draw_toggle,"CAD_draw_objects");
     if (CAD_draw_objects==TRUE)
         XmToggleButtonSetState(cad_draw_button,TRUE,FALSE);
+
     // Draw CAD Labels 
-    cad_show_label_button = XtVaCreateManagedWidget("Draw CAD Labels",
+    cad_show_label_button = XtVaCreateManagedWidget(langcode("POPUPMA048"),
             xmToggleButtonGadgetClass,
             CAD_sub,
             XmNvisibleWhenOff, TRUE,
@@ -5797,7 +5798,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         XmToggleButtonSetState(cad_show_label_button,TRUE,FALSE);
 
     // Draw CAD Probability
-    cad_show_probability_button = XtVaCreateManagedWidget("Draw CAD Probability",
+    cad_show_probability_button = XtVaCreateManagedWidget(langcode("POPUPMA050"),
             xmToggleButtonGadgetClass,
             CAD_sub,
             XmNvisibleWhenOff, TRUE,
@@ -5810,7 +5811,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         XmToggleButtonSetState(cad_show_probability_button,TRUE,FALSE);
 
     // Draw CAD Comments
-    cad_show_comment_button = XtVaCreateManagedWidget("Draw CAD Comments",
+    cad_show_comment_button = XtVaCreateManagedWidget(langcode("POPUPMA049"),
             xmToggleButtonGadgetClass,
             CAD_sub,
             XmNvisibleWhenOff, TRUE,
@@ -5823,7 +5824,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         XmToggleButtonSetState(cad_show_comment_button,TRUE,FALSE);
 
     // Draw CAD Size of Area
-    cad_show_area_button = XtVaCreateManagedWidget("Draw CAD Area Size",
+    cad_show_area_button = XtVaCreateManagedWidget(langcode("POPUPMA051"),
             xmToggleButtonGadgetClass,
             CAD_sub,
             XmNvisibleWhenOff, TRUE,
@@ -12967,15 +12968,18 @@ void Grid_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callDat
 
 
 
-
+// Callback from menu buttons that allow user to turn on or off the 
+// global display of CAD objects and their metadata on the map.
 void  CAD_draw_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-
+    // turn on or off dsiplay of cad objects 
     if (strcmp(which,"CAD_draw_objects")==0) { 
          CAD_draw_objects = state->set;
     }
+
+    // uurn on or off display of standard metadata
     if (strcmp(which,"CAD_show_label")==0) { 
          CAD_show_label = state->set;
     }
@@ -12989,7 +12993,8 @@ void  CAD_draw_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
          CAD_show_area = state->set;
     }
 
-    //request_new_image++;
+    // redraw objects on the current base maps
+    redraw_symbols(da);
 }
 
 

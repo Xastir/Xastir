@@ -309,6 +309,11 @@ POPUPMA043|Modify ambiguous position||
 POPUPMA044|Position abiguity is on, your new position may appear to jump.||
 POPUPMA045|Predefined Objects||
 POPUPMA046|CAD Polygons||
+POPUPMA047|Enable CAD objects||
+POPUPMA048|Enable CAD labels||
+POPUPMA049|Enable CAD comments||
+POPUPMA050|Enable CAD probability||
+POPUPMA051|Enable CAD area size||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||

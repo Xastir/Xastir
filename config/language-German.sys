@@ -317,6 +317,11 @@ POPUPMA043|Bearbeite mehrdeutige Position||
 POPUPMA044|Mehrdeutige Position, Ihre Position kann sich sprunghaft verändern.||
 POPUPMA045|Predefined-Objekte||
 POPUPMA046|CAD Polygons||
+POPUPMA047|Enable CAD objects||
+POPUPMA048|Enable CAD labels||
+POPUPMA049|Enable CAD comments||
+POPUPMA050|Enable CAD probability||
+POPUPMA051|Enable CAD area size||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
