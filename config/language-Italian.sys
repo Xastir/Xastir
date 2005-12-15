@@ -90,6 +90,7 @@ PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Find Address||
 PULDNMP030|Configure USGS DRG||
+PULDNMP031|Enable Map Border||
 #
 #
 # PopUp "Configure Tigermap"

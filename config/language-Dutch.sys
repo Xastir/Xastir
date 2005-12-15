@@ -102,6 +102,7 @@ PULDNMP027|Download Kaarten opnieuw (niet uit cache)||
 PULDNMP028|Leeg de gehele kaarten cache!||
 PULDNMP029|Zoek Adres||
 PULDNMP030|Configureer USGS DRG||
+PULDNMP031|Enable Map Border||
 #
 #
 # PopUp "Configure Tigermap"

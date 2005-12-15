@@ -93,6 +93,7 @@ PULDNMP027|Recharger les cartes (pas à partir du cache)||
 PULDNMP028|Vider le cache des cartes||
 PULDNMP029|Trouver l'adresse||
 PULDNMP030|Configurer USGS DRG||
+PULDNMP031|Enable Map Border||
 #
 # PopUp "Configure Tigermap"
 MPUPTGR001|Quadrillage||

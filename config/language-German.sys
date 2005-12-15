@@ -98,6 +98,7 @@ PULDNMP027|Karten neu laden (nicht vom Cache)||
 PULDNMP028|Lösche gesamten Karten-Cache!||
 PULDNMP029|Finde Adresse||
 PULDNMP030|Konfiguration USGS DRG||
+PULDNMP031|Enable Map Border||
 #
 #
 # PopUp "Einstellungen Tigermaps"
