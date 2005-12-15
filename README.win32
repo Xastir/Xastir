@@ -677,7 +677,7 @@ weather alert maps.
     
 [ ] Fetch "shapelib-1.2.10.tar.gz" from one of these sites:
 
-    http:///shapelib.maptools.org/
+    http://shapelib.maptools.org/
 or  http://wetnet.net/~we7u/xastir/shapelib/
 
 [ ] Put it in the C:\cygwin\home\<user>\src\shapelib directory.
