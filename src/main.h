@@ -173,6 +173,8 @@ extern int view_zero_distance_bulletins;
 extern int warn_about_mouse_modifiers;
 extern int predefined_menu_from_file;
 
+extern int draw_labeled_grid_border;  // used to turn on or off border on map
+
 extern int output_station_type;
 
 extern int emergency_beacon;

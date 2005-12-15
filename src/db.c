@@ -2840,6 +2840,11 @@ void draw_ruler_text(Widget w, char * text, long ofs) {
     y = screen_height - 10;
     x -= len * 3;
     y -= 3;
+    if (draw_labeled_grid_border==TRUE) { 
+        // move text up a few pixels to leave space for labeled border
+        y = y - 15;
+        x = x - 10;
+    }
     draw_nice_string(w,pixmap_final,0,x,y,text,0x10,0x20,len);
 }
 
@@ -3010,7 +3015,15 @@ void draw_range_scale(Widget w) {
     len = (int)strlen(text);
     x_screen = 10;
     y_screen = screen_height - 5;
-    draw_nice_string(w,pixmap_final,0,x_screen,y_screen,text,0x10,0x20,len);
+    if (draw_labeled_grid_border==TRUE) { 
+        // don't draw range scale right on tom of labeled border, move into map
+        draw_nice_string(w,pixmap_final,0,x_screen-3,y_screen-12,text,0x10,0x20,len);
+    } 
+    else { 
+        // don't draw range scale right on tom of labeled border, move into map
+        draw_nice_string(w,pixmap_final,0,x_screen,y_screen,text,0x10,0x20,len);
+    }
+
 }
 
 
@@ -3082,6 +3095,11 @@ void draw_ruler(Widget w) {
     for (i = 8; i >= 0; i--) {
         dx = (((i / 3)+1) % 3)-1;         // looks complicated...
         dy = (((i % 3)+1) % 3)-1;         // I want 0 / 0 as last entry
+        if (draw_labeled_grid_border==TRUE) { 
+            // move ruler up a few pixels to leave space for labeled border
+            dy = dy - 15;
+            dx = dx - 10;
+        }
 
         if (i == 0)
             (void)XSetForeground(XtDisplay(w),gc,colors[0x10]);         // black

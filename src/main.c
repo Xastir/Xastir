@@ -412,6 +412,10 @@ Widget grid_on, grid_off;
 static void Grid_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int long_lat_grid;              // Switch for Map Lat and Long grid display
 
+void Map_border_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData);
+int draw_labeled_grid_border = FALSE;   // Toggle labeled border around map.
+
+
 static void CAD_draw_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int disable_all_maps = 0;
 static void Map_disable_toggle( Widget w, XtPointer clientData, XtPointer calldata);
@@ -421,6 +425,7 @@ int map_auto_maps;              /* toggle use of auto_maps */
 static void Map_auto_skip_raster_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int auto_maps_skip_raster;
 Widget map_auto_skip_raster_button;
+Widget map_border_button;
 
 Widget map_levels_on, map_levels_off;
 static void Map_levels_toggle( Widget w, XtPointer clientData, XtPointer calldata);
@@ -5895,6 +5900,23 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(map_grid_button,XmNvalueChangedCallback,Grid_toggle,"1");
     if (long_lat_grid)
         XmToggleButtonSetState(map_grid_button,TRUE,FALSE);
+
+    // Enable Map Border
+    map_border_button = XtVaCreateManagedWidget(langcode("PULDNMP031"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(map_border_button,XmNvalueChangedCallback,Map_border_toggle,"1");
+    if (draw_labeled_grid_border)  
+        XmToggleButtonSetState(map_border_button,TRUE,FALSE);
+    if (!long_lat_grid) 
+        XtSetSensitive(map_border_button,FALSE);
+    else 
+        XtSetSensitive(map_border_button,TRUE);
 
 
     map_levels_button = XtVaCreateManagedWidget(langcode("PULDNMP004"),
@@ -12938,6 +12960,20 @@ void Menu_Quit( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 
 
 
+// Turn on or off map border, callback from map_border_button.
+void Map_border_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+    
+    if(state->set)
+        draw_labeled_grid_border = TRUE;
+    else
+        draw_labeled_grid_border = FALSE;
+
+    redraw_symbols(da);
+}
+
+
+
 void Grid_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -12947,10 +12983,14 @@ void Grid_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callDat
     else
         long_lat_grid = 0;
 
-    if (long_lat_grid)
+    if (long_lat_grid) {
         statusline(langcode("BBARSTA005"),1);   // Map Lat/Long Grid On
-    else
+        XtSetSensitive(map_border_button,TRUE);
+    }
+    else {
         statusline(langcode("BBARSTA006"),2);   // Map Lat/Long Grid Off
+        XtSetSensitive(map_border_button,FALSE);
+    }
 
     redraw_symbols(da);
     (void)XCopyArea(XtDisplay(da),
