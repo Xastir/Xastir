@@ -136,7 +136,7 @@
 #endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
 
 
-void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap);
+void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color);
 
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
@@ -1475,11 +1475,12 @@ utm_grid_draw:
                 // ******* when zone boundaries are on screen.
                 // ******* Also needs to add rotated nice string to match bottom and 
                 // ******* right sides and to properly round numbers for scale.
+                // ******* This block is redrawing the same information too many times.
                 //
                 // start at the lower left corner
                 // users can easily follow left to right to get easting, then bottom to top to get northing
                 xx = (utm_grid.zone[zone].col[0].point[0].x * scale_x) + x_long_offset;
-                yy = (utm_grid.zone[zone].col[0].point[0].y * scale_y) +  y_lat_offset;
+                yy = (utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[i].npoints-1].y * scale_y) +  y_lat_offset;
                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx + border_width, yy + border_width);
                 xastir_snprintf(grid_label,
                     sizeof(grid_label),
@@ -1561,8 +1562,9 @@ utm_grid_draw:
                              draw_rotated_label_text_to_target (w, 180, 
                                  screen_width-2, 
                                  utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
-                                 sizeof(grid_label),0x08,grid_label,FONT_SMALL,
-                                 pixmap_final);
+                                 sizeof(grid_label),colors[0x20],grid_label,FONT_SMALL,
+                                 pixmap_final,
+                                 1, colors[0x08]);
                          }
                     }
                 }
@@ -1947,12 +1949,19 @@ static char current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontna
  *
  * Use "xfontsel" or other tools to figure out what fonts
  * to use here.
+ * Paramenters:
+ * target_pixmap specifies the pixmap the text is to be drawn to.
+ * draw_outline specifies whether a 1 pixel outline around the
+ *    text.
+ * outline_bg_color is the color of the outline.
  **********************************************************/
 /* common code used by the two entries --- a result of retrofitting a new
    feature (centered) */
-static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align, int fontsize, Pixmap target_pixmap) {
+static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
 //    XPoint *corner;
 //    int i;
+    int x_outline;
+    int y_outline;
 
     /* see if fontname has changed */
     if (rotated_label_font[fontsize] && 
@@ -1973,6 +1982,27 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
                 rotated_label_fontname[fontsize]);
             return;
         }
+    }
+
+    if (draw_outline) {
+        // make outline style
+        (void)XSetForeground(XtDisplay(w),gc,outline_bg_color);
+        // Draw the string repeatedly with 1 pixel offsets in the
+        // background color to make an outline. 
+        for (x_outline=-1;x_outline<2;x_outline++) {
+            for (y_outline=-1;y_outline<2;y_outline++) {
+                // draws one extra copy at x,y
+                (void)XRotDrawAlignedString(XtDisplay (w),
+                                rotated_label_font[fontsize],
+                                my_rotation,
+                                target_pixmap,
+                                gc,
+                                x+x_outline,
+                                y+y_outline,
+                                label_text,
+                                align);
+            }
+       }
     }
 
 
@@ -2003,7 +2033,7 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
 
 
 // draw a rotated label onto the specified pixmap
-void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap) {
+void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
     float my_rotation = (float)((-rotation)-90);
 
     if ( ( (my_rotation < -90.0) && (my_rotation > -270.0) )
@@ -2018,7 +2048,9 @@ void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, in
             label_text,
             BRIGHT,
             fontsize,
-            target_pixmap);
+            target_pixmap,
+            draw_outline,
+            outline_bg_color);
     } else {
         (void)draw_rotated_label_text_common(w,
             my_rotation,
@@ -2029,7 +2061,9 @@ void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, in
             label_text,
             BLEFT,
             fontsize,
-            target_pixmap);
+            target_pixmap,
+            draw_outline,
+            outline_bg_color);
     }
 }
 
@@ -2052,7 +2086,7 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
             label_text,
             BRIGHT,
             fontsize,
-            pixmap);
+            pixmap, 0, 0);
     } else {
         (void)draw_rotated_label_text_common(w,
             my_rotation,
@@ -2063,7 +2097,7 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
             label_text,
             BLEFT,
             fontsize,
-            pixmap);
+            pixmap, 0, 0);
     }
 }
 
@@ -2079,7 +2113,7 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
             label_text,
             BCENTRE,
             fontsize,
-            pixmap);
+            pixmap, 0, 0);
 }
 
 static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
