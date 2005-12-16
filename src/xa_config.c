@@ -525,6 +525,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
 
         /* maps */
         store_int (fout, "MAPS_LONG_LAT_GRID", long_lat_grid);
+        store_int (fout, "MAPS_LABELED_GRID_BORDER", draw_labeled_grid_border);
         store_int (fout, "MAPS_LEVELS", map_color_levels);
         store_int (fout, "MAPS_LABELS", map_labels);
         store_int (fout, "MAPS_AUTO_MAPS", map_auto_maps);
@@ -1208,6 +1209,8 @@ void load_data_or_default(void) {
 
     /* maps */
     long_lat_grid = get_int ("MAPS_LONG_LAT_GRID", 0, 1, 1);
+
+    draw_labeled_grid_border = get_int ("MAPS_LABELED_GRID_BORDER", 0, 1, 0);
 
     map_color_levels = get_int ("MAPS_LEVELS", 0, 1, 0);
 
