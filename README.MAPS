@@ -789,6 +789,20 @@ Getting Maps and other Data Files for Xastir:
       and some topo maps in obscure state plane coordinates from various state
       GIS departments.
 
+      Some geotiff files contain multiple bands or multiple bytes per pixel.
+      Xastir currently uses only BYTE format, so you may need to convert the
+      geotiff file with gdal_translate.  The number of bands, bytes per 
+      pixel and other information about geotiff files can be obtained using
+      gdalinfo.  The command "gdal_translate -ot BYTE original.tif new.tif" 
+      can convert 16 and 32 bit per pixel geotiffs to ones that can be used
+      by xastir, the command "gdal_translate -ot BYTE -b 1 old.tif new.tif" 
+      can extract a single band as a grey scale layer from a multi-band 
+      geotiff file, the command "rgb2pct.py old.tif new.tif" can create a 
+      single band palette based geotiff from a three band rgb tif.  See the
+      gdal documentation for further information.  Many useful US maps can 
+      be downloaded from the National Map Viewer: 
+      http://nmviewogc.cr.usgs.gov/viewer.htm
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget or libcurl installed, .geo files
