@@ -894,8 +894,7 @@ void draw_grid(Widget w) {
 
         // Draw the prime meridian in the same manner
         draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final);
-
-
+ 
         // Set the line width and style in the GC to 1 pixel wide
         // for drawing the smaller grid
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
@@ -1437,6 +1436,7 @@ utm_grid_draw:
         // negative values, bypassing segfaults.
         //
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
+
             for (i=0; i < (int)utm_grid.zone[zone].ncols; i++) {
                 if (utm_grid.zone[zone].col[i].npoints > 1) {
 
@@ -1469,18 +1469,22 @@ utm_grid_draw:
                 }
             }
             if (draw_labeled_grid_border==TRUE) { 
-                // write the zone on the border
+                // Label the UTM grid on the border.
+                // Since the coordinate of the current mouse pointer position is 
+                // continually updated, labeling the grid is primarily for the 
+                // purpose of printing maps and saving screenshots.
                 //
                 // ******* Currently does not work well at certain magnifications and
                 // ******* when zone boundaries are on screen.
-                // ******* Also needs to add rotated nice string to match bottom and 
-                // ******* right sides and to properly round numbers for scale.
+                // ******* Also needs to properly round numbers for scale.
                 // ******* This block is redrawing the same information too many times.
                 //
+                
+                // write the zone on the border
                 // start at the lower left corner
                 // users can easily follow left to right to get easting, then bottom to top to get northing
                 xx = (utm_grid.zone[zone].col[0].point[0].x * scale_x) + x_long_offset;
-                yy = (utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[i].npoints-1].y * scale_y) +  y_lat_offset;
+                yy = (utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[0].npoints-1].y * scale_y) +  y_lat_offset;
                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx + border_width, yy + border_width);
                 xastir_snprintf(grid_label,
                     sizeof(grid_label),
@@ -1500,7 +1504,7 @@ utm_grid_draw:
                     xx2, yy2);
                 xastir_snprintf(grid_label,
                     sizeof(grid_label),
-                    "%s %0.0f %0.0f",
+                    "%s %07.0f %07.0f",
                     zone_str,easting,northing);
                 // find location of lower right corner of map, convert to UTM
                 xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
@@ -1509,7 +1513,7 @@ utm_grid_draw:
                     xx2, yy2);
                 xastir_snprintf(top_label,
                     sizeof(top_label),
-                    "XASTIR Map of %s (upper left) to %s %0.0f %0.0f (lower right).  UTM %d m grid, WGS84 datum. ",
+                    "XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, WGS84 datum. ",
                     grid_label,zone_str,easting,northing,utm_grid_spacing_m);
                 draw_nice_string(w,pixmap_final,0,
                     half,
@@ -1528,8 +1532,8 @@ utm_grid_draw:
                          // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
                          xastir_snprintf(grid_label,
                              sizeof(grid_label),
-                             "%0.0f0",
-                             easting/10);
+                             "%06.0f0",
+                             (easting/10));
                          // draw each number at the bottom of the screen just to the right of the 
                          // relevant grid line at its location at the bottom of the screen
                          draw_nice_string(w,pixmap_final,0,
@@ -1548,7 +1552,7 @@ utm_grid_draw:
                          // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
                          xastir_snprintf(grid_label,
                              sizeof(grid_label),
-                             "%0.0f00",
+                             "%05.0f00",
                              northing/100);
                          //draw_nice_string(w,pixmap_final,0,
                          //    screen_width-30,
@@ -1941,6 +1945,9 @@ char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
 static char current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontname)] = {"","","","",""};
 
 /**********************************************************
+ * draw_rotated_label_text_common()
+ * call through wrappers:
+ * draw_rotated_label_text_to_pixmap()
  * draw_rotated_label_text()
  * draw_centered_label_text()
  *
@@ -1949,11 +1956,14 @@ static char current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontna
  *
  * Use "xfontsel" or other tools to figure out what fonts
  * to use here.
+ * 
  * Paramenters:
  * target_pixmap specifies the pixmap the text is to be drawn to.
  * draw_outline specifies whether a 1 pixel outline around the
- *    text.
+ *    text, TRUE to draw outline.
  * outline_bg_color is the color of the outline.
+ * color is the color of the text inside the outline, or the 
+ *    color of the text itself if no outline is added.
  **********************************************************/
 /* common code used by the two entries --- a result of retrofitting a new
    feature (centered) */
@@ -2032,7 +2042,8 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
 
 
 
-// draw a rotated label onto the specified pixmap
+// Draw a rotated label onto the specified pixmap.
+// Wrapper for draw_rotated_label_text-common().
 void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
     float my_rotation = (float)((-rotation)-90);
 
