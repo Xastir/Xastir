@@ -176,11 +176,19 @@ int grid_size = 0;
 // UTM Grid stuff
 inline int  max_i(int  a, int  b) { return (a > b ? a : b); }
 #define UTM_GRID_EQUATOR 10000000
+// the maximum number of UTM zones that will appear on a screen that has a 
+// high enough resolution to display the within-zone utm grid
 #define UTM_GRID_MAX_ZONES      4
+// the maximum number of grid lines in each direction shown in each zone
+// on the screen at one time
 #define UTM_GRID_MAX_COLS_ROWS 64
 #define UTM_GRID_DEF_NALLOCED   8
 #define UTM_GRID_RC_EMPTY  0xffff
 
+// the hash stores the upper left and lower right boundaries of the 
+// display of a utm grid to determine whether it matches the current
+// screen boundaries or whether the grid needs to be recalcuated for
+// the current screen
 typedef struct {
     long ul_x;
     long ul_y;
@@ -188,6 +196,10 @@ typedef struct {
     long lr_y;
 } hash_t;
 
+// The utm grid is drawn by connecting a grid of points marking the
+// intersection of the easting and northing lines.  col_or_row holds
+// this grid of points for the portion of a utm zone visible on the
+// screen.  Zone boundaries are not directly represented here.
 typedef struct {
     int firstpoint;
     int npoints;
@@ -195,6 +207,13 @@ typedef struct {
     XPoint *point;
 } col_or_row_t;
 
+// The portion of a utm zone visible on the screen has some number of
+// visible easting lines and northing lines forming a grid that covers
+// part or all of the screen.  Zone holds arrays of the coordinates
+// of the visible easting and northing intersections, and the next set
+// of intersections off screen.  The coarseness or fineness of this 
+// grid is determined by the current scale, and stored in 
+// utm_grid_spacing_m.
 typedef struct {
     unsigned int ncols;
     col_or_row_t col[UTM_GRID_MAX_COLS_ROWS];
@@ -203,6 +222,10 @@ typedef struct {
     int          boundary_x;
 } zone_t;
 
+// A utm grid is represented by its hash (upper left and lower right corrdinates)
+// which are used to check whether or not it fits the current screen or needs to 
+// be recalculatd, and an array of the zones visible on the screen, each containing
+// arrays of the points marking the easting/northing intersections 
 typedef struct {
     hash_t       hash;
     unsigned int nzones;
@@ -780,7 +803,7 @@ void draw_grid(Widget w) {
 
     if (!long_lat_grid)
         return;
-
+    
     if (draw_labeled_grid_border==TRUE) { 
         // draw a white border around the map.
         (void)XSetLineAttributes(XtDisplay(w),gc,border_width,LineSolid,CapRound,JoinRound);
@@ -1468,108 +1491,113 @@ utm_grid_draw:
                                      CoordModeOrigin);
                 }
             }
-            if (draw_labeled_grid_border==TRUE) { 
-                // Label the UTM grid on the border.
-                // Since the coordinate of the current mouse pointer position is 
-                // continually updated, labeling the grid is primarily for the 
-                // purpose of printing maps and saving screenshots.
-                //
-                // ******* Currently does not work well at certain magnifications and
-                // ******* when zone boundaries are on screen.
-                // ******* Also needs to properly round numbers for scale.
-                // ******* This block is redrawing the same information too many times.
-                //
-                
-                // write the zone on the border
-                // start at the lower left corner
-                // users can easily follow left to right to get easting, then bottom to top to get northing
-                xx = (utm_grid.zone[zone].col[0].point[0].x * scale_x) + x_long_offset;
-                yy = (utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[0].npoints-1].y * scale_y) +  y_lat_offset;
-                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx + border_width, yy + border_width);
-                xastir_snprintf(grid_label,
-                    sizeof(grid_label),
-                    "%s",
-                    zone_str);
-                draw_nice_string(w,pixmap_final,0,
-                    utm_grid.zone[zone].col[0].point[0].x,
-                    screen_height-2,
-                    grid_label,
-                    0x10,0x20,(int)strlen(grid_label));
-   
-                // Put metadata in top border.
-                // find location of upper left corner of map, convert to UTM
-                xx2 = x_long_offset  + (border_width * scale_x);
-                yy2 = y_lat_offset   + (border_width * scale_y);
-                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
-                    xx2, yy2);
-                xastir_snprintf(grid_label,
-                    sizeof(grid_label),
-                    "%s %07.0f %07.0f",
-                    zone_str,easting,northing);
-                // find location of lower right corner of map, convert to UTM
-                xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-                yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
-                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
-                    xx2, yy2);
-                xastir_snprintf(top_label,
-                    sizeof(top_label),
-                    "XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, WGS84 datum. ",
-                    grid_label,zone_str,easting,northing,utm_grid_spacing_m);
-                draw_nice_string(w,pixmap_final,0,
-                    half,
-                    border_width-2,
-                    top_label,
-                    0x10,0x20,(int)strlen(top_label));
 
-                // Label the grid lines on the border.
-                // Put easting along the bottom for easier correct ordering of easting and northing
-                // by people who are reading the map.
-                for (i=1; i < (int)utm_grid.zone[zone].ncols; i++) {
-                    if (utm_grid.zone[zone].col[i].npoints > 1) {
-                         xx = (utm_grid.zone[zone].col[i].point[0].x * scale_x) + x_long_offset;
-                         yy = (utm_grid.zone[zone].col[i].point[0].y * scale_y) +  y_lat_offset;
-                         convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                         // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
-                         xastir_snprintf(grid_label,
-                             sizeof(grid_label),
-                             "%06.0f0",
-                             (easting/10));
-                         // draw each number at the bottom of the screen just to the right of the 
-                         // relevant grid line at its location at the bottom of the screen
-                         draw_nice_string(w,pixmap_final,0,
-                             utm_grid.zone[zone].col[i].point[utm_grid.zone[zone].col[i].npoints-1].x+1,
-                             screen_height-2,
-                             grid_label,
-                             0x10,0x20,(int)strlen(grid_label));
+            // Check each of the 4 possible utm_grid.zones that might contain a grid
+            if (utm_grid.zone[zone].nrows>0 && utm_grid.zone[zone].ncols>0) {
+                if (draw_labeled_grid_border==TRUE) { 
+                    // Label the UTM grid on the border.
+                    // Since the coordinate of the current mouse pointer position is 
+                    // continually updated, labeling the grid is primarily for the 
+                    // purpose of printing maps and saving screenshots.
+                    //
+                    // ******* Currently does not work well at certain magnifications and
+                    // ******* when zone boundaries are on screen.
+                    // ******* Also needs to properly round numbers for scale.
+                    //
+                    // ******* This block is redrawing the same information too many times.
+                    // ******* draw_grid() is being called repeatedly about 20 times at 30 second intervals.
+                    //
+                    
+                    // start at the lower left corner
+                    // users can easily follow left to right to get easting, then bottom to top to get northing
+                    xx = (utm_grid.zone[zone].col[0].point[0].x * scale_x) + x_long_offset;
+                    yy = (utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[0].npoints-1].y * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx + border_width, yy + border_width);
+                    xastir_snprintf(grid_label,
+                        sizeof(grid_label),
+                        "%s",
+                        zone_str);
+                    draw_nice_string(w,pixmap_final,0,
+                        utm_grid.zone[zone].col[0].point[0].x,
+                        screen_height-2,
+                        grid_label,
+                        0x10,0x20,(int)strlen(grid_label));
+       
+                    // Put metadata in top border.
+                    // find location of upper left corner of map, convert to UTM
+                    xx2 = x_long_offset  + (border_width * scale_x);
+                    yy2 = y_lat_offset   + (border_width * scale_y);
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+                        xx2, yy2);
+                    xastir_snprintf(grid_label,
+                        sizeof(grid_label),
+                        "%s %07.0f %07.0f",
+                        zone_str,easting,northing);
+                    // find location of lower right corner of map, convert to UTM
+                    xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
+                    yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+                        xx2, yy2);
+                    xastir_snprintf(top_label,
+                        sizeof(top_label),
+                        "XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, WGS84 datum. ",
+                        grid_label,zone_str,easting,northing,utm_grid_spacing_m);
+                    draw_nice_string(w,pixmap_final,0,
+                        half,
+                        border_width-2,
+                        top_label,
+                        0x10,0x20,(int)strlen(top_label));
+    
+                    // Label the grid lines on the border.
+                    // Put easting along the bottom for easier correct ordering of easting and northing
+                    // by people who are reading the map.
+                    for (i=1; i < (int)utm_grid.zone[zone].ncols; i++) {
+                        if (utm_grid.zone[zone].col[i].npoints > 1) {
+                             xx = (utm_grid.zone[zone].col[i].point[0].x * scale_x) + x_long_offset;
+                             yy = (utm_grid.zone[zone].col[i].point[0].y * scale_y) +  y_lat_offset;
+                             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                             // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
+                             xastir_snprintf(grid_label,
+                                 sizeof(grid_label),
+                                 "%06.0f0",
+                                 (easting/10));
+                             // draw each number at the bottom of the screen just to the right of the 
+                             // relevant grid line at its location at the bottom of the screen
+                             draw_nice_string(w,pixmap_final,0,
+                                 utm_grid.zone[zone].col[i].point[utm_grid.zone[zone].col[i].npoints-1].x+1,
+                                 screen_height-2,
+                                 grid_label,
+                                 0x10,0x20,(int)strlen(grid_label));
+                        }
                     }
-                }
-                // put northing along the right border, again for easier correct ordering of easting and northing.
-                for (i=0; i < (int)utm_grid.zone[zone].nrows; i++) {
-                    if (utm_grid.zone[zone].row[i].npoints > 1) {
-                         xx = (utm_grid.zone[zone].row[i].point[0].x * scale_x) + x_long_offset;
-                         yy = (utm_grid.zone[zone].row[i].point[0].y * scale_y) +  y_lat_offset;
-                         convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                         // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
-                         xastir_snprintf(grid_label,
-                             sizeof(grid_label),
-                             "%05.0f00",
-                             northing/100);
-                         //draw_nice_string(w,pixmap_final,0,
-                         //    screen_width-30,
-                         //    utm_grid.zone[zone].row[i].point[0].y,
-                         //    grid_label,
-                         //    0x10,0x20,(int)strlen(grid_label));
-                         // draw each nomber just above the relevant grid line along the right side
-                         // of the screen.
-                         if ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) > 30) {
-                             // don't overwrite the zone designator in  the lower left corder
-                             draw_rotated_label_text_to_target (w, 180, 
-                                 screen_width-2, 
-                                 utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
-                                 sizeof(grid_label),colors[0x20],grid_label,FONT_SMALL,
-                                 pixmap_final,
-                                 1, colors[0x08]);
-                         }
+                    // put northing along the right border, again for easier correct ordering of easting and northing.
+                    for (i=0; i < (int)utm_grid.zone[zone].nrows; i++) {
+                        if (utm_grid.zone[zone].row[i].npoints > 1) {
+                             xx = (utm_grid.zone[zone].row[i].point[0].x * scale_x) + x_long_offset;
+                             yy = (utm_grid.zone[zone].row[i].point[0].y * scale_y) +  y_lat_offset;
+                             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                             // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
+                             xastir_snprintf(grid_label,
+                                 sizeof(grid_label),
+                                 "%05.0f00",
+                                 northing/100);
+                             //draw_nice_string(w,pixmap_final,0,
+                             //    screen_width-30,
+                             //    utm_grid.zone[zone].row[i].point[0].y,
+                             //    grid_label,
+                             //    0x10,0x20,(int)strlen(grid_label));
+                             // draw each nomber just above the relevant grid line along the right side
+                             // of the screen.
+                             if ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) > 30) {
+                                 // don't overwrite the zone designator in  the lower left corder
+                                 draw_rotated_label_text_to_target (w, 180, 
+                                     screen_width-2, 
+                                     utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
+                                     sizeof(grid_label),colors[0x20],grid_label,FONT_SMALL,
+                                     pixmap_final,
+                                     1, colors[0x08]);
+                             }
+                        }
                     }
                 }
             }
