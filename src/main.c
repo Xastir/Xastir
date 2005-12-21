@@ -9304,6 +9304,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     &lat,
                     &lon);
                 CAD_vertice_allocate(lat, lon);
+                // Reload symbols/tracks/CAD objects
+                redraw_symbols(da);
             }
             else {  // First point of a polygon.  Save it.
 
