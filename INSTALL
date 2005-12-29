@@ -381,11 +381,25 @@ First Time Install:
             export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/usr/X11R6/lib
 
        This will let the loader find the shared libraries when it tries to
-       load Xastir into memory.  Check that you aren't already defining
-       LD_LIBRARY_PATH somewhere else.  If so, just add the paths above to
-       it.  Make sure this environment variable is defined in the current
-       shell you're using to compile Xastir.  Note that if you're running
-       Xastir SUID root, the LD_LIBRARY_PATH variable is ignored.
+       load Xastir into memory.
+
+       If you instead have a /etc/ld.so.conf.d directory, then this will add
+       the /usr/local/lib directory to the search:  Create a file in the
+       /etc/ld.so.conf.d called "local.conf".  The file should contain exactly
+       one line:
+
+            /usr/local/lib
+
+       Use your favorite text editor or use these commands:
+
+           echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+           ldconfig -v
+
+       Check that you aren't already defining LD_LIBRARY_PATH somewhere else.
+       If so, just add the paths above to it.  Make sure this environment
+       variable is defined in the current shell you're using to compile Xastir.
+       Note that if you're running Xastir SUID root, the LD_LIBRARY_PATH
+       variable is ignored.
 
 
        3b. Install libproj:
@@ -534,7 +548,8 @@ First Time Install:
      to the libraries and then run /sbin/ldconfig to update "/etc/ld.so.cache".
      Once this is done the loader should be able to find the Shapelib library.
      Must run /sbin/ldconfig as root for the system to be able to re-create its
-     cache file.
+     cache file.  See the instructions earlier in this file if you have an
+     /etc/ld.so.conf.d directory instead (section 3A).
 
      For MacOSX:  Bill Owen, N2RKL, suggested the following for
      ShapeLib:
@@ -1216,11 +1231,12 @@ First Time Install:
      "/usr/local/bin/xastir" to start the program.
 
      If you see errors at this point that say something like "Can't load
-     xxx library" this means you forgot to either update /etc/ld.so.conf
-     and run /sbin/ldconfig, or add the LD_LIBRARY_PATH variable for your shell,
-     and the "ld" loader can't link the libraries with the Xastir executable
-     to get it running in memory.  Note that if you're running Xastir as
-     SUID root, the LD_LIBRARY_PATH variable is ignored.
+     xxx library" this means you forgot to either update /etc/ld.so.conf (or
+     /etc/ld.so.conf.d directory on some systems) and run /sbin/ldconfig, or
+     add the LD_LIBRARY_PATH variable for your shell, and the "ld" loader
+     can't link the libraries with the Xastir executable to get it running in
+     memory.  Note that if you're running Xastir as SUID root, the
+     LD_LIBRARY_PATH variable is ignored.
 
      To set a new language or change the language current choice, use
      this command line:
