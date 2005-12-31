@@ -137,6 +137,7 @@
 
 
 void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color);
+int get_rotated_label_text_length_pixels(Widget w, char *label_text, int fontsize);
 
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
@@ -200,6 +201,8 @@ typedef struct {
 // intersection of the easting and northing lines.  col_or_row holds
 // this grid of points for the portion of a utm zone visible on the
 // screen.  Zone boundaries are not directly represented here.
+// In particular, the paralels separating lettered zone rows are not
+// directly represented here.
 typedef struct {
     int firstpoint;
     int npoints;
@@ -225,7 +228,8 @@ typedef struct {
 // A utm grid is represented by its hash (upper left and lower right corrdinates)
 // which are used to check whether or not it fits the current screen or needs to 
 // be recalculatd, and an array of the zones visible on the screen, each containing
-// arrays of the points marking the easting/northing intersections 
+// arrays of the points marking the easting/northing intersections of a zone (with
+// one or more lettered zone rows).
 typedef struct {
     hash_t       hash;
     unsigned int nzones;
@@ -786,7 +790,7 @@ void draw_grid(Widget w) {
     int coord;
     char dash[2];
     int i, j;
-    char place_str[10], zone_str[10];
+    char place_str[10], zone_str[10], zone_str2[10];
     long xx, yy, xx1, yy1, xx2, yy2;
     int done, zone_changed, z1, z2, zone, col, col_point, row, row_point, row_point_start;
     double e[4], n[4];
@@ -799,7 +803,22 @@ void draw_grid(Widget w) {
 //    int draw_labeled_grid_border = TRUE;   // flag to draw labeled border, move to a global
     char grid_label[25];        // String to draw labels on grid lines
     char top_label[180];        // String to draw metadata on top border
-    double easting, northing;
+    double easting, northing;   
+    int  skip_alternate_label;  // Skip alternate easting and northing labels
+                                // if they would overlap on the display.
+    int last_line_labeled;      // Marks lines that were labeled when alternate lines
+                                // are not being labeled.
+    char seven_zeroes[7] = "0000000";
+    int string_width_pixels;    // Width of the seven_zeroes label string in pixels.
+    int grid_spacing_pixels;    // Spacing of fine grid lines in pixels.
+    int easting_color;          // Colors for the grid labels
+    int northing_color;
+    int zone_color;             // zone label color
+    int numberofzones = 0;      // number of elements in utm_grid.zone[] that are used
+    int bottom_point;           // utm_grid.zone[].col[].npoints can extend past the 
+                                // bottom of the screen, this is the lowest point in the
+                                // points array that is on the screen.
+    int label_on_left;          // if true, draw northing labels on left
 
     if (!long_lat_grid)
         return;
@@ -1025,7 +1044,7 @@ void draw_grid(Widget w) {
             //
             if (done == 1) {
 
-               xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
+                xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
 
                 yy = y_lat_offset;
                 convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
@@ -1311,8 +1330,14 @@ void draw_grid(Widget w) {
             e[1] += utm_grid_spacing_m;
 
         }
+        // utm_grid.zone[] now contains an array of points marking fine grid 
+        // line intersections for parts of 1 to 4 zones that appear on 
+        // the screen.  Each utm_grid.zone[] is a vertical stripe, and may include
+        // more than one zone letter, e.g. zone[0] might include 15U and 15T,
+        // while zone[1] might include 16U and 16T.    
 
 //#define UT_DEBUG_VERB
+
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
 
 #ifdef UT_DEBUG_VERB
@@ -1458,6 +1483,14 @@ utm_grid_draw:
         // Changed it to an int so that we can get and check for
         // negative values, bypassing segfaults.
         //
+        numberofzones = 0;
+        for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
+
+            if (utm_grid.zone[zone].ncols > 0) {
+                // find out how many zones are actually drawn on the map
+                numberofzones++;
+            }
+        }
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
 
             for (i=0; i < (int)utm_grid.zone[zone].ncols; i++) {
@@ -1492,7 +1525,8 @@ utm_grid_draw:
                 }
             }
 
-            // Check each of the 4 possible utm_grid.zones that might contain a grid
+            // Check each of the 4 possible utm_grid.zone array elements 
+            // that might contain a grid, and label the grid if it exists.
             if (utm_grid.zone[zone].nrows>0 && utm_grid.zone[zone].ncols>0) {
                 if (draw_labeled_grid_border==TRUE) { 
                     // Label the UTM grid on the border.
@@ -1500,29 +1534,120 @@ utm_grid_draw:
                     // continually updated, labeling the grid is primarily for the 
                     // purpose of printing maps and saving screenshots.
                     //
-                    // ******* Currently does not work well at certain magnifications and
-                    // ******* when zone boundaries are on screen.
+                    // ******* Currently isn't pretty when two lettered rows of two different
+                    // ******* zones are on screen (e.g. 18T,18U,19T,19U).
+                    // ******* Doesn't work properly near poles when 3 zones are on screen
+                    // ******* (e.g. 13,14,15) - overlaps northings for 14 and 15.
+                    // ******* Doesn't work properly in one zone with 2 lettered rows
+                    // ******* (e.g. 18T,18U) needs color distinction between northings
+                    // ******* and demarcation of which northings are in which lettered row.
                     // ******* Also needs to properly round numbers for scale.
                     //
-                    // ******* This block is redrawing the same information too many times.
-                    // ******* draw_grid() is being called repeatedly about 20 times at 30 second intervals.
-                    //
                     
-                    // start at the lower left corner
-                    // users can easily follow left to right to get easting, then bottom to top to get northing
-                    xx = (utm_grid.zone[zone].col[0].point[0].x * scale_x) + x_long_offset;
-                    yy = (utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[0].npoints-1].y * scale_y) +  y_lat_offset;
-                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx + border_width, yy + border_width);
-                    xastir_snprintf(grid_label,
-                        sizeof(grid_label),
-                        "%s",
-                        zone_str);
-                    draw_nice_string(w,pixmap_final,0,
-                        utm_grid.zone[zone].col[0].point[0].x,
-                        screen_height-2,
-                        grid_label,
-                        0x10,0x20,(int)strlen(grid_label));
-       
+                    // Default labels for just one zone on screen are white with
+                    // zone at lower left corner, eastings on bottom, and northings
+                    // at right.
+                    // Idea is to normally start at the lower left corner
+                    // users can then easily follow left to right to get easting, 
+                    // and bottom to top to get northing.
+                    easting_color = 0x20;
+                    northing_color = 0x20;
+                    zone_color = 0x0e;
+                    label_on_left = FALSE;
+
+                    if (numberofzones>1) {
+                        // check to see if the upper left and lower left corners are in the same zone
+                        // if not, label the upper left corner
+                        xx = (border_width * scale_x) +  x_long_offset;
+                        yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                        yy = (border_width * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
+                        if (strcmp(zone_str,zone_str2)!=0) {
+                            xastir_snprintf(grid_label,
+                                sizeof(grid_label),
+                                "%s",
+                                zone_str2);
+                            draw_nice_string(w,pixmap_final,0,
+                                border_width+2,
+                                (2*border_width)+2,
+                                grid_label,
+                                0x10,zone_color,(int)strlen(grid_label));
+                        }
+
+                        // likewise for upper and lower right corners
+                        xx = ((screen_width - border_width) * scale_x) +  x_long_offset;
+                        yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                        yy = (border_width * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
+                        if (strcmp(zone_str,zone_str2)!=0) {
+                            xastir_snprintf(grid_label,
+                                sizeof(grid_label),
+                                "%s",
+                                zone_str2);
+                            draw_nice_string(w,pixmap_final,0,
+                                screen_width - (border_width * 3) ,
+                                (2*border_width)+2,
+                                grid_label,
+                                0x10,zone_color,(int)strlen(grid_label));
+                        }
+                        
+                        // are we currently the same zone as the upper left corner
+                        // if so, we need to place the northing labels on the left side
+                        xx = (utm_grid.zone[zone].col[0].point[0].x * scale_x) +  x_long_offset;
+                        yy = (utm_grid.zone[zone].col[0].point[0].y * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                        convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), x_long_offset, y_lat_offset);
+                        if (strcmp(zone_str,zone_str2)==0) {
+                            northing_color = 0x20;
+                            label_on_left = TRUE;
+                        }
+
+                    }    
+                    // check to see if there is a horizontal boundary 
+                    // compare xone of upper left and lower left corners
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), x_long_offset, y_lat_offset);
+
+                    // Overwrite defaults as appropriate and 
+                    // label zones differently if more than one appears on the screen.
+
+                    if (zone > 0) {
+                        // write the zone label on the bottom border
+                        zone_color = 0x0e;
+                        easting_color = 0x0e;
+                        northing_color = 0x0e;
+                        xx2 = utm_grid.zone[zone].col[0].point[0].x;
+                        xx = (xx2 * scale_x) + x_long_offset;
+                        yy2 = utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[0].npoints-1].y;
+                        yy = (yy2 * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx,yy);
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s",
+                            zone_str);
+                        draw_nice_string(w,pixmap_final,0,
+                            xx2,
+                            screen_height - 2,
+                            grid_label,
+                            0x10,zone_color,(int)strlen(grid_label));
+                    }
+
+                    if (zone==0) {
+                        // write the zone of the lower left corner of the map
+                        xx = (border_width * scale_x) +  x_long_offset;
+                        yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s",
+                            zone_str);
+                        draw_nice_string(w,pixmap_final,0,
+                            1,
+                            screen_height - 2,
+                            grid_label,
+                            0x10,0x20,(int)strlen(grid_label));
+                    }
                     // Put metadata in top border.
                     // find location of upper left corner of map, convert to UTM
                     xx2 = x_long_offset  + (border_width * scale_x);
@@ -1543,65 +1668,114 @@ utm_grid_draw:
                         "XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, WGS84 datum. ",
                         grid_label,zone_str,easting,northing,utm_grid_spacing_m);
                     draw_nice_string(w,pixmap_final,0,
-                        half,
+                        border_width+2,
                         border_width-2,
                         top_label,
                         0x10,0x20,(int)strlen(top_label));
+
+                    // deterimne whether the easting and northing strings will fit
+                    // in a grid box, or whether easting strings in adjacent boxes
+                    // will overlap (so that alternate strings can be skipped).  
+                    string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_SMALL);
+                    if (utm_grid.zone[zone].ncols > 1) {
+                        // find out the number of pixels beteen two grid lines
+                        grid_spacing_pixels = 
+                                   utm_grid.zone[zone].col[1].point[0].x  -
+                                   utm_grid.zone[zone].col[0].point[0].x;
+                    } else {
+                        // only one column in this zone, skip alternate doesn't matter
+                        grid_spacing_pixels = -1;
+                    }
+                    if (string_width_pixels>grid_spacing_pixels) {
+                        skip_alternate_label = TRUE;
+                    } else {
+                        skip_alternate_label = FALSE;
+                    }
     
                     // Label the grid lines on the border.
                     // Put easting along the bottom for easier correct ordering of easting and northing
                     // by people who are reading the map.
+                    last_line_labeled = FALSE;
                     for (i=1; i < (int)utm_grid.zone[zone].ncols; i++) {
                         if (utm_grid.zone[zone].col[i].npoints > 1) {
-                             xx = (utm_grid.zone[zone].col[i].point[0].x * scale_x) + x_long_offset;
-                             yy = (utm_grid.zone[zone].col[i].point[0].y * scale_y) +  y_lat_offset;
-                             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                             // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
-                             xastir_snprintf(grid_label,
-                                 sizeof(grid_label),
-                                 "%06.0f0",
-                                 (easting/10));
-                             // draw each number at the bottom of the screen just to the right of the 
-                             // relevant grid line at its location at the bottom of the screen
-                             draw_nice_string(w,pixmap_final,0,
-                                 utm_grid.zone[zone].col[i].point[utm_grid.zone[zone].col[i].npoints-1].x+1,
-                                 screen_height-2,
-                                 grid_label,
-                                 0x10,0x20,(int)strlen(grid_label));
-                        }
-                    }
-                    // put northing along the right border, again for easier correct ordering of easting and northing.
-                    for (i=0; i < (int)utm_grid.zone[zone].nrows; i++) {
-                        if (utm_grid.zone[zone].row[i].npoints > 1) {
-                             xx = (utm_grid.zone[zone].row[i].point[0].x * scale_x) + x_long_offset;
-                             yy = (utm_grid.zone[zone].row[i].point[0].y * scale_y) +  y_lat_offset;
-                             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                             // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
-                             xastir_snprintf(grid_label,
-                                 sizeof(grid_label),
-                                 "%05.0f00",
-                                 northing/100);
-                             //draw_nice_string(w,pixmap_final,0,
-                             //    screen_width-30,
-                             //    utm_grid.zone[zone].row[i].point[0].y,
-                             //    grid_label,
-                             //    0x10,0x20,(int)strlen(grid_label));
-                             // draw each nomber just above the relevant grid line along the right side
-                             // of the screen.
-                             if ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) > 30) {
-                                 // don't overwrite the zone designator in  the lower left corder
-                                 draw_rotated_label_text_to_target (w, 180, 
-                                     screen_width-2, 
-                                     utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
-                                     sizeof(grid_label),colors[0x20],grid_label,FONT_SMALL,
-                                     pixmap_final,
-                                     1, colors[0x08]);
+                             // adjust up in case npoints goes far below the screen
+                             bottom_point = (int)(screen_height/grid_spacing_pixels);
+                             if (bottom_point >= utm_grid.zone[zone].col[i].npoints) 
+                                 bottom_point = utm_grid.zone[zone].col[i].npoints - 1;
+                             if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
+                                 last_line_labeled = FALSE; 
+                             } else {
+                                 last_line_labeled = TRUE;
+                                 xx = (utm_grid.zone[zone].col[i].point[bottom_point].x * scale_x) + x_long_offset;
+                                 yy = (utm_grid.zone[zone].col[i].point[bottom_point].y * scale_y) +  y_lat_offset;
+                                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                                 // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
+                                 xastir_snprintf(grid_label,
+                                     sizeof(grid_label),
+                                     "%06.0f0",
+                                     (easting/10));
+                                 // draw each number at the bottom of the screen just to the right of the 
+                                 // relevant grid line at its location at the bottom of the screen
+                                 draw_nice_string(w,pixmap_final,0,
+                                     utm_grid.zone[zone].col[i].point[bottom_point].x+1,
+                                     screen_height-2,
+                                     grid_label,
+                                     0x10,easting_color,(int)strlen(grid_label));
                              }
                         }
                     }
-                }
-            }
-        }
+                    last_line_labeled = FALSE;
+                    // put northing along the right border, again for easier correct ordering of easting and northing.
+                    for (i=0; i < (int)utm_grid.zone[zone].nrows; i++) {
+                        if (utm_grid.zone[zone].row[i].npoints > 1) {
+                             if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
+                                 last_line_labeled = FALSE; 
+                             } else {
+                                 last_line_labeled = TRUE;
+                                 if (label_on_left==TRUE) { 
+                                     xx = (utm_grid.zone[zone].row[i].point[0].x * scale_x) + x_long_offset;
+                                 } else {
+                                     xx = (utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].x * scale_x) + x_long_offset;
+                                 }
+                                 yy = (utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y * scale_y) +  y_lat_offset;
+                                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                                 // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
+                                 xastir_snprintf(grid_label,
+                                     sizeof(grid_label),
+                                     "%05.0f00",
+                                     northing/100);
+                                 // draw each number just above the relevant grid line along the right side
+                                 // of the screen.
+                                 if (((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
+                                     < (screen_height - border_width))
+                                     &&
+                                     ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
+                                     > (3 * border_width))
+                                    ) {
+                                     // don't overwrite the zone designator in  the lower left border
+                                     if (label_on_left==TRUE) { 
+                                         draw_rotated_label_text_to_target (w, 180, 
+                                             border_width, 
+                                             utm_grid.zone[zone].row[i].point[0].y,
+                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_SMALL,
+                                             pixmap_final,
+                                             1, colors[0x08]);
+                                     } 
+                                     else {
+                                         draw_rotated_label_text_to_target (w, 180, 
+                                             screen_width-2, 
+                                             utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
+                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_SMALL,
+                                             pixmap_final,
+                                             1, colors[0x08]);
+                                     }
+                                 }
+                             }
+                        }
+                    } // for i=0 to nrows
+                } // if draw labeled grid border
+            } // if utm_grid.zone[zone] is non-empty
+        } // for each zone in utm_grid.zone 
     }   // End of UTM grid section
 
     else { // Lat/Long coordinate system, draw lat/long lines
@@ -2027,6 +2201,7 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
         (void)XSetForeground(XtDisplay(w),gc,outline_bg_color);
         // Draw the string repeatedly with 1 pixel offsets in the
         // background color to make an outline. 
+    
         for (x_outline=-1;x_outline<2;x_outline++) {
             for (y_outline=-1;y_outline<2;y_outline++) {
                 // draws one extra copy at x,y
@@ -2064,6 +2239,47 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
                                 y,
                                 label_text,
                                 align);
+}
+
+
+
+
+
+// Find the pixel length of an unrotated string in the rotated_label_font.
+// Parameters:
+//    w - the XtDisplay.
+//    label_text - the string of which the length is to be found.
+//    fontsize - the fontsize in the rotated_label_font in which the string
+//    is to be rendered.
+// Returns: the length in pixels of the string, -1 on an error.
+int get_rotated_label_text_length_pixels(Widget w, char *label_text, int fontsize) {
+    int dir, asc, desc;   // parameters returned by XTextExtents, but not used here.
+    XCharStruct overall;  // description of the space occupied by the string.
+    int return_value;     // value to return
+    int got_font;         // flag indicating that a font is available
+
+    return_value = -1;
+    got_font = TRUE;
+
+    /* load font */
+    if(!rotated_label_font[fontsize]) {
+        rotated_label_font[fontsize]=(XFontStruct *)XLoadQueryFont(XtDisplay (w),
+                                                rotated_label_fontname[fontsize]);
+        if (rotated_label_font[fontsize] == NULL) {    // Couldn't get the font!!!
+            fprintf(stderr,"get_rotated_label_text_length_pixels: Couldn't get font %s\n",
+                rotated_label_fontname[fontsize]);
+            got_font = FALSE;
+        }
+    }
+   
+    if (got_font) {
+        // find out the width in pixels of the unrotated label_text string.
+        XTextExtents(rotated_label_font[fontsize], label_text, strlen(label_text), &dir, &asc, &desc,
+             &overall);
+        return_value = overall.width;
+    }
+
+    return return_value;
 }
 
 
