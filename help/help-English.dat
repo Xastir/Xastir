@@ -1103,9 +1103,17 @@ This option prevents Auto Maps from loading maps which are graphics (images).
 Only vector maps will be displayed in this case.
 
 Enable Map Grid
-When enabled, this option will display a grid line every 10 degrees.  As you
-zoom in it switches to a 1 degree spacing. The spacing may be manually adjusted
-with the "+" and "-" keys.
+When enabled, this option will display a grid on the map.   If the coordinate
+system is UTM a UTM grid will be displayed.  If the coordinate system is 
+latitude/longitude then a latitude and longitude grid will be displayed.  As you
+zoom in the grid switches to a finer resolution.  The spacing of the latitude 
+and longitude grid may be manually adjusted with the "+" and "-" keys.
+
+Enable Map Border
+When both Enable Map Grid and Enable Map Border are enabled, a narrow white 
+border is drawn around the map and when the coordinate system is UTM (File/
+Configure/Coordinate System) the grid lines will be labeled with easting
+and northing values in the border.  
 
 Enable Map Levels
 When enabled, this option will try to filter out data when the zoom level
