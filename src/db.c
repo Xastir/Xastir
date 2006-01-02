@@ -6447,12 +6447,25 @@ static void extract_multipoints(DataRow *p_station,
 
     char *p, *p2;
     int found = 0;
-    char *end = data + (strlen(data) - 7);  // 7 == 3 lead-in chars, plus 2 points
-    int data_size = strlen(data);
+    char *end;
+    int data_size;
 
+
+    if (debug_level && MULTI_DEBUG)
+        fprintf(stderr,"extract_multipoints: start\n");
+
+    if (data == NULL) {
+        if (debug_level && MULTI_DEBUG)
+            fprintf(stderr,"extract_multipoints: Return\n");
+        return;
+    }
 
 //fprintf(stderr,"Data: %s\t\t", data);
 
+    data_size = strlen(data);
+
+    end = data + (strlen(data) - 7);  // 7 == 3 lead-in chars, plus 2 points
+ 
     p_station->num_multipoints = 0;
 
     /*
@@ -6492,7 +6505,6 @@ static void extract_multipoints(DataRow *p_station,
         char *m_start = p;    // Start of multipoint string
         char ok = 1;
  
-
         if (debug_level & MULTI_DEBUG)
             fprintf(stderr,"station %s contains \"%s\"\n", p_station->call_sign, p);
 
@@ -6526,6 +6538,7 @@ static void extract_multipoints(DataRow *p_station,
             ok = 0; // Failure
         }
         else {
+
             d = (double)(*p);
             d = pow(10.0, ((d - 33) / 20)) / 10000.0 * 360000.0;
             multiplier = (long)d;
@@ -6580,6 +6593,8 @@ static void extract_multipoints(DataRow *p_station,
                     if (p_station->multipoint_data == NULL) {
                         p_station->num_multipoints = 0;
                         fprintf(stderr,"Couldn't malloc MultipointRow'\n");
+                        if (debug_level && MULTI_DEBUG)
+                            fprintf(stderr,"extract_multipoints: Return\n");
                         return;
                     }
                 }
@@ -6621,7 +6636,7 @@ static void extract_multipoints(DataRow *p_station,
 
             // Make 'p' point to just after the end of the chars
             while ( (p < data+strlen(data)) && (*p != ' ') ) {
-                p++;
+               p++;
             }
             // The string that 'p' points to now may be empty
 
@@ -6640,6 +6655,9 @@ static void extract_multipoints(DataRow *p_station,
         if (debug_level & MULTI_DEBUG)
             fprintf(stderr,"    station has %d points\n", p_station->num_multipoints);
     }
+
+    if (debug_level && MULTI_DEBUG)
+        fprintf(stderr,"extract_multipoints: Return\n");
 }
 
 #undef MULTI_DEBUG
@@ -10601,6 +10619,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
     if (search_station_name(&p_station,call,1)) {       // If we found the station in our list
 
+        if (debug_level & 1)
+            fprintf(stderr,"data_add: Found existing station record.\n");
+ 
         // Check whether it's a locally-owned object/item
         if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
                 && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
@@ -10626,11 +10647,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
     } else {
 //fprintf(stderr,"data_add()\n");
+
+        if (debug_level & 1)
+            fprintf(stderr,"data_add: No existing station record found.\n");
+ 
         p_station = add_new_station(p_station,p_time,call);     // create storage
         new_station = (char)TRUE;                       // for new station
     }
 
     if (p_station != NULL) {
+
         last_lat = p_station->coord_lat;                // remember last position
         last_lon = p_station->coord_lon;
         last_stn_sec = p_station->sec_heard;
@@ -10654,11 +10680,13 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         p_station->course[0] = '\0';
 
         ok = 1;                         // succeed as default
+
         switch (type) {
 
             case (APRS_MICE):           // Mic-E format
             case (APRS_FIXED):          // '!'
             case (APRS_MSGCAP):         // '='
+
                 if (!extract_position(p_station,&data,type)) {          // uncompressed lat/lon
                     compr_pos = 1;
                     if (!extract_comp_position(p_station,&data,type))   // compressed lat/lon
@@ -10724,6 +10752,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
             case (APRS_DF):             // '@'
             case (APRS_MOBILE):         // '@'
+
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
                     if (!extract_position(p_station,&data,type)) {      // uncompressed lat/lon
@@ -10753,6 +10782,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_GRID):
+
                 ok = extract_position(p_station, &data, type);
                 if (ok) { 
                     if (debug_level & 1)
@@ -10770,11 +10800,13 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (STATION_CALL_DATA):
+
                 p_station->record_type = NORMAL_APRS;
                 found_pos = 0;
                 break;
 
             case (APRS_STATUS):         // '>' Status Reports     [APRS Reference, chapter 16]
+
                 (void)extract_time(p_station, data, type);              // we need a time
                 // todo: could contain Maidenhead or beam heading+power
 
@@ -10789,6 +10821,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (OTHER_DATA):          // Other Packets          [APRS Reference, chapter 19]
+
                 // non-APRS beacons, treated as status reports until we get a real one
 
                 if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
@@ -10804,6 +10837,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_OBJECT):
+
                 // If old match is a killed Object (owner doesn't
                 // matter), new one is an active Object and owned by
                 // us, remove the old record and create a new one
@@ -10892,6 +10926,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_ITEM):
+
                 // If old match is a killed Item (owner doesn't
                 // matter), new one is an active Item and owned by
                 // us, remove the old record and create a new one
@@ -10976,6 +11011,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_WX1):    // weather in '@' or '/' packet
+
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
                     if (!extract_position(p_station,&data,type)) {      // uncompressed lat/lon
@@ -10999,6 +11035,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_WX2):            // '_'
+
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
                     (void)extract_storm(p_station,data,compr_pos);
@@ -11015,6 +11052,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             case (APRS_WX6):            // '*'          Peet Bros U-II (km/h)
             case (APRS_WX3):            // '!'          Peet Bros Ultimeter 2000 (data logging mode)
             case (APRS_WX5):            // '$ULTW'      Peet Bros Ultimeter 2000 (packet mode)
+
                 if (get_weather_record(p_station)) {    // get existing or create new weather record
                     weather = p_station->weather_data;
                     if (type == APRS_WX3)   // Peet Bros Ultimeter 2000 data logging mode
@@ -11047,6 +11085,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             default:
+
                 fprintf(stderr,"ERROR: UNKNOWN TYPE in data_add\n");
                 ok = 0;
                 break;
@@ -11060,8 +11099,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // extract_multipoints().
         if (ok && (p_station->coord_lat > 0)
                 && (p_station->coord_lon > 0)
-                && (p_station->num_multipoints == 0) )  // No multipoints found yet
+                && (p_station->num_multipoints == 0) ) {  // No multipoints found yet
+
             extract_multipoints(p_station, data, type, 0);
+        }
     }
 
     if (!ok) {  // non-APRS beacon, treat it as Other Packet   [APRS Reference, chapter 19]
@@ -11092,6 +11133,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
     curr_sec = sec_now();
     if (ok) {
+
         // data packet is valid
         // announce own echo, we soon discard that packet...
         if (!new_station && is_my_call(p_station->call_sign,1) // Check SSID as well
@@ -11111,6 +11153,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         delete_station_memory(p_station);       // remove unused record
 
     if (store) {
+
         // we now have valid data to store into database
         // make time index unique by adding a serial number
 
