@@ -3015,8 +3015,8 @@ void draw_range_scale(Widget w) {
     len = (int)strlen(text);
     x_screen = 10;
     y_screen = screen_height - 5;
-    if (draw_labeled_grid_border==TRUE) { 
-        // don't draw range scale right on tom of labeled border, move into map
+    if ((draw_labeled_grid_border==TRUE) && long_lat_grid) {
+        // don't draw range scale right on top of labeled border, move into map
         draw_nice_string(w,pixmap_final,0,x_screen-3,y_screen-12,text,0x10,0x20,len);
     } 
     else { 
@@ -3095,7 +3095,7 @@ void draw_ruler(Widget w) {
     for (i = 8; i >= 0; i--) {
         dx = (((i / 3)+1) % 3)-1;         // looks complicated...
         dy = (((i % 3)+1) % 3)-1;         // I want 0 / 0 as last entry
-        if (draw_labeled_grid_border==TRUE) { 
+        if ((draw_labeled_grid_border==TRUE) && long_lat_grid) {
             // move ruler up a few pixels to leave space for labeled border
             dy = dy - 15;
             dx = dx - 10;
