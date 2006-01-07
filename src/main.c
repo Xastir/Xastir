@@ -4645,29 +4645,70 @@ time_t gps_status_save_time = 0;
 
 
 
+
+
 char *report_gps_status(void) {
     static char gps_temp[100];
     char temp2[20];
 
     switch (gps_valid) {
-        case 3: // 3D Fix
+
+        case 8: // Simulation Mode
             xastir_snprintf(temp2,
                 sizeof(temp2),
                 "%s",
-                langcode("GPSS001") );  // "3D"
+                langcode("GPSS008") );  // "Simulation"
             break;
-        case 2: // 2D Fix
+
+        case 7: // Manual Input Mode
             xastir_snprintf(temp2,
                 sizeof(temp2),
                 "%s",
-                langcode("GPSS002") );  // "2D"
+                langcode("GPSS009") );  // "Manual"
             break;
-        case 1: // Valid
+ 
+        case 6: // Estimated Fix (dead reckoning)
             xastir_snprintf(temp2,
                 sizeof(temp2),
                 "%s",
-                langcode("GPSS003") );  // "Valid"
+                langcode("GPSS010") );  // "Estimated"
             break;
+
+        case 5: // Float RTK
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS011") );  // "Float RTK"
+            break;
+
+        case 4: // RTK
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS012") );  // "RTK"
+            break;
+ 
+        case 3: // WAAS or PPS Fix
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS001") );  // "WAAS or PPS"
+            break;
+
+        case 2: // DGPS Fix
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS002") );  // "DGPS"
+            break;
+
+        case 1: // Valid SPS Fix
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                langcode("GPSS003") );  // "Valid SPS"
+            break;
+
         case 0: // Invalid
         default:
             xastir_snprintf(temp2,

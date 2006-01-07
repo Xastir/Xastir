@@ -1256,13 +1256,18 @@ RANGE001|BEREIK SCHAAL||
 #
 #
 # GPS Status
-GPSS001|3D||
-GPSS002|2D||
-GPSS003|Geldig||
+GPSS001|WAAS or PPS||
+GPSS002|DGPS||
+GPSS003|Geldig SPS||
 GPSS004|Ongeldig||
 GPSS005|Sats/beeld||
 GPSS006|Fix||
 GPSS007|!GPS data is ouder dan 30 seconden!||
+GPSS008|Simulation||
+GPSS009|Manual||
+GPSS010|Estimated||
+GPSS011|Float RTK||
+GPSS012|RTK||
 #
 #
 # Popup cad_dialog to obtain CAD object data
