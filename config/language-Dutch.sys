@@ -18,6 +18,7 @@
 # Modified 1.3.x : Sept 1 2004, Han Sytsma <h.l.sytsma@hetnet.nl> / # Henk de Groot <pe1dnn@amsat.org>
 # Modified 1.4.2 : Feb 14 2005, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.7.0 : Oct 15 2005, Han Sytsma <h.l.sytsma@hetnet.nl>
+# Modified 1.8.0 : Jan  9 2006, Han Sytsma <h.l.sytsma@hetnet.nl>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -102,7 +103,7 @@ PULDNMP027|Download Kaarten opnieuw (niet uit cache)||
 PULDNMP028|Leeg de gehele kaarten cache!||
 PULDNMP029|Zoek Adres||
 PULDNMP030|Configureer USGS DRG||
-PULDNMP031|Enable Map Border||
+PULDNMP031|Zet kaart begrenzing aan||
 #
 #
 # PopUp "Configure Tigermap"
@@ -218,7 +219,7 @@ PULDNDP009|Weer informatie|W|
 PULDNDP046|- Weer tekst||
 PULDNDP018|-- Geef alleen temperatuur weer||
 PULDNDP047|- Wind indicator||
-PULDNDP054|Display Aloha Circle||
+PULDNDP054|Geef Aloha cirkels weer||
 PULDNDP013|Zet stations nadering aan||
 PULDNDP008|Stations Vermogen/Winst|V|
 PULDNDP021|- Activeer standaard vermogen/winst||
@@ -306,8 +307,8 @@ POPUPMA028| Lengtegraden||
 POPUPMA029|Teken CAD objecten||
 POPUPMA030|Draw||
 POPUPMA031|Sluit polygoon||
-POPUPMA032|Erase CAD Polygons||
-POPUPMA033|**NOT USED**||
+POPUPMA032|Wis CAD polygonen||
+POPUPMA033|**NIET GEBRUIKT**||
 POPUPMA034|Handmatig Zoom Niveau||
 POPUPMA035|10% uit||
 POPUPMA036|10% in||
@@ -318,14 +319,14 @@ POPUPMA040|Vierkante meters||
 POPUPMA041|Richting||
 POPUPMA042|Graden||
 POPUPMA043|Pas meerduidige positie aan||# origineel ambigious mag ook meervoudige zijn?
-POPUPMA044|Positie meerduidigheid is aan, uw nieuwe positie kan verspringen.||
-POPUPMA045|Predefined Objecten||
-POPUPMA046|CAD Polygons||
-POPUPMA047|Enable CAD objects||
-POPUPMA048|Enable CAD labels||
-POPUPMA049|Enable CAD comments||
-POPUPMA050|Enable CAD probability||
-POPUPMA051|Enable CAD area size||
+POPUPMA044|Positie meerduidigheid is aan, uw nieuwe positie kan verspringen.||# idem
+POPUPMA045|Voor gedefinierde objecten||
+POPUPMA046|CAD polygonen||
+POPUPMA047|Zet CAD objecten aan||
+POPUPMA048|Zet CAD labels aan||
+POPUPMA049|Zet CAD opemerkingen aan||
+POPUPMA050|Zet CAD waarschijnlijkheid aan||
+POPUPMA051|Zet CAD omgevingsgrootte aan||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -428,7 +429,7 @@ WPUPCFD027|Nieuwe berichten weergeven||
 WPUPCFD028|Waarschuw als speciale functie toetsen aanstaan||
 WPUPCFD029|Geef bulletins zonder afstand weer||
 WPUPCFD030|Zet positie duplicaat controle uit||
-WPUPCFD031|Load predefined objects from file||
+WPUPCFD031|Laad voor gedefinierde objecten uit bestand||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configureer tijdsinstelling|||
@@ -1071,9 +1072,9 @@ POPEM00040|Handmatig ingestelde uitgaande route is verloren gegaan||
 POPEM00041|Bezig met een ander bestand te bewerken.  Wacht even en probeer opnieuw||
 POPEM00042|Niet een eigen object! Probeer het object eerst over te nemen.||
 POPEM00043|Geen Object/Item!||
-POPEM00044|Fetch Findu Trail: Mislukt||
-POPEM00045|Fetch Findu Trail: Gereed||
-POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
+POPEM00044|Opzoeken in Findu database: Mislukt||
+POPEM00045|Opzoeken in Findu database: Gereed||
+POPEM00046|Berkeley DB headers en gedeelde bibliotheek komen niet overeen! Kaart cache uitgeschakeld.||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||
@@ -1256,16 +1257,16 @@ RANGE001|BEREIK SCHAAL||
 #
 #
 # GPS Status
-GPSS001|WAAS or PPS||
+GPSS001|WAAS of PPS||
 GPSS002|DGPS||
 GPSS003|Geldig SPS||
 GPSS004|Ongeldig||
 GPSS005|Sats/beeld||
-GPSS006|Fix||
+GPSS006|Repareer||
 GPSS007|!GPS data is ouder dan 30 seconden!||
-GPSS008|Simulation||
-GPSS009|Manual||
-GPSS010|Estimated||
+GPSS008|Simulatie||
+GPSS009|Handmatig||
+GPSS010|Ingeschat op||
 GPSS011|Float RTK||
 GPSS012|RTK||
 #
@@ -1273,12 +1274,12 @@ GPSS012|RTK||
 # Popup cad_dialog to obtain CAD object data
 CADPUD001|Area Object||
 CADPUD002|Area Label:||
-CADPUD003|Comment:||
-CADPUD004|Probability (%):||
+CADPUD003|Opmerking:||
+CADPUD004|Waarschijnlijkheid (%):||
 CADPUD005|OK||
 CADPUD006|CAD Dialog||
-CADPUD007|Show/Edit Details||
-CADPUD008|Cancel||
-CADPUD009|Delete CAD objects?||
-CADPUD010|Delete All||
-CADPUD011|Delete Selected||
+CADPUD007|Toon/Bewerk details||
+CADPUD008|Afbreken||
+CADPUD009|Wis CAD objecten?||
+CADPUD010|Wis alles||
+CADPUD011|Wis selectie||
