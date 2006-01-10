@@ -37,7 +37,7 @@ PULDNFI010|Activer archivage TNC|T|
 PULDNFI011|Activer archivage réseau|r|
 PULDNFI012|Activer archivage IGate|I|
 PULDNFI013|Activer archivage météo|m|
-PULDNFI014|Activer instantanés PNG||
+PULDNFI014|Activer copie d'écran PNG||
 PULDNFI015|Imprimer carte|p|
 #
 # Menu "View"
@@ -67,7 +67,7 @@ PULDNCF008|Sauvegarder la configuration maintenant !|a|
 # (Units see PULDNDP006)
 #
 # Menu "Maps"
-PULDNMP001|Choisir carte(s)|C|
+PULDNMP001|Choix des cartes|C|
 PULDNMP012|Aller à|l|
 PULDNMP014|Localiser élément cartographique|F|
 PULDNMP013|Désactiver cartes|D|
@@ -93,7 +93,7 @@ PULDNMP027|Recharger les cartes (pas à partir du cache)||
 PULDNMP028|Vider le cache des cartes||
 PULDNMP029|Trouver l'adresse||
 PULDNMP030|Configurer USGS DRG||
-PULDNMP031|Enable Map Border||
+PULDNMP031|Activer bordure des cartes||
 #
 # PopUp "Configure Tigermap"
 MPUPTGR001|Quadrillage||
@@ -261,7 +261,7 @@ PULDNHEL01|Information|I|
 PULDNHEL02|Index de l'Aide|A|#'
 PULDNHEL03|ACTIVER MODE BALISE DE DETRESSE|E|
 PULDNHEL04|!!! MODE BALISE DE DETRESSE !!!||
-PULDNHEL05|A propos de Xastir||
+PULDNHEL05|À propos de Xastir||
 #
 #
 # Mouse Menu Popup
@@ -295,9 +295,9 @@ POPUPMA026|Centre & zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
 POPUPMA029|Dessiner objets CAD||
-POPUPMA030|Draw||
+POPUPMA030|Dessiner||
 POPUPMA031|Fermer polygone||
-POPUPMA032|Erase CAD Polygons||
+POPUPMA032|Effacer polygones CAD||
 POPUPMA033|**NOT USED**||
 POPUPMA034|Changer niveau de zoom||
 POPUPMA035|10% arrière||
@@ -310,13 +310,13 @@ POPUPMA041|Relèvement||
 POPUPMA042|degrés||
 POPUPMA043|Modifier ambiguïté de position||
 POPUPMA044|Ambiguïté de position est active, votre nouvelle position pourra sauter.||
-POPUPMA045|Objets predefined||
-POPUPMA046|CAD Polygons||
-POPUPMA047|Enable CAD objects||
-POPUPMA048|Enable CAD labels||
-POPUPMA049|Enable CAD comments||
-POPUPMA050|Enable CAD probability||
-POPUPMA051|Enable CAD area size||
+POPUPMA045|Objets prédéfinis||
+POPUPMA046|Polygones CAD||
+POPUPMA047|Activer les objets CAD||
+POPUPMA048|Activer les étiquettes CAD||
+POPUPMA049|Activer les commentaires CAD||
+POPUPMA050|Activer la probabilité CAD||
+POPUPMA051|Activer la taille de la surface CAD||
 #
 #
 # Status line labels
@@ -344,10 +344,10 @@ BBARSTA017|Connexion terminée||
 BBARSTA018|Connexion réseau dépassement de temps !||
 BBARSTA019|Recherche de l'hôte %s||#'
 BBARSTA020|Connecté à %s||
-BBARSTA021|Echec de la connexion !||
+BBARSTA021|Échec de la connexion !||
 BBARSTA022|Incapable de relier le socket !||
 BBARSTA023|Hôte inconnu !||
-BBARSTA024|Serveur n'est pas spécifié||#'
+BBARSTA024|Serveur non spécifié||#'
 BBARSTA025|Hôte trouvé, connexion en cours %d||
 BBARSTA026|Attente de données du GPS par HSP||
 BBARSTA027|Fermeture port HSP réception donnée TNC..||
@@ -356,13 +356,13 @@ BBARSTA029|Ouverture port météo||
 BBARSTA030|Fermeture port météo||
 BBARSTA031|Recherche d'hôte %d||#'
 BBARSTA032|Données météo décodées||
-BBARSTA033|Echo de digipeater||
+BBARSTA033|Écho de digipeater||
 BBARSTA034|Chargement de cartes alertes météo||
 BBARSTA035|Attente de donées du GPS par AUX||
 BBARSTA036|Fermeture port GPS réception donnée TNC..||
 BBARSTA037|GPS météo décodées||
 BBARSTA038|Placez le changement sur ma station||
-BBARSTA039|Creation de l'index de %s||
+BBARSTA039|Création de l'index de %s||
 BBARSTA040|Station d'amateur APRS(tm) %s||#'
 BBARSTA041|Attente de données GPS..||
 BBARSTA042|Transmission objets/articles||
@@ -393,14 +393,14 @@ WPUPLSP007|Recherche FCC/RAC||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configurer défauts||
-WPUPCFD002|Après combien de temps une station sera-t-elle considérée âgée ?||
+WPUPCFD002|Au bout de combien de temps une station sera-t-elle considérée âgée ?||
 WPUPCFD003|15 min|1|
 WPUPCFD004|30 min|3|
 WPUPCFD005|45 min|4|
 WPUPCFD006|1 heure|h|
 WPUPCFD007|90 min|9|
 WPUPCFD008|2 heures|2|
-WPUPCFD009|Après combien de temps une station ne sera-t-elle plus affichée ?||
+WPUPCFD009|Au bout de combien de temps une station ne sera-t-elle plus affichée ?||
 WPUPCFD010|6 heures|6|
 WPUPCFD011|12 heures|e|
 WPUPCFD012|1 jour|j|
@@ -413,7 +413,7 @@ WPUPCFD018|Station mobile + date/heure Zulu||
 WPUPCFD019|Station mobile + heure/secondes Zulu||
 WPUPCFD021|Position de station + météo||
 WPUPCFD022|Position de station + date/heure Zulu + météo||
-WPUPCFD023|Données météo non traités ?||
+WPUPCFD023|Données météo non traitées ?||
 WPUPCFD024|Compresser données objet/article à la transmission ?||
 WPUPCFD025|Activer réseau alterne ?|A|
 WPUPCFD026|Transmettre position à quel intervalle ?||
@@ -421,13 +421,13 @@ WPUPCFD027|Afficher bulletins nouveaux||
 WPUPCFD028|Alerter si il y a des clés modificatrices||
 WPUPCFD029|Voir bulletins avec distance zéro||
 WPUPCFD030|Désactiver identif. de duplic. posit.||
-WPUPCFD031|Load predefined objects from file||
+WPUPCFD031|Charger des objets prédéfinis à partir d'un fichier||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configurer temporisation||
-WPUPCFTM02|Intervalle TX position (min)||
+WPUPCFTM02|Intervalle transmission de position (min)||
 WPUPCFTM03|Délai d'affichage faible d'une station (min)||
-WPUPCFTM04|Max Intervalle TX d'objets/articles (min)||#'
+WPUPCFTM04|Intervalle maximum de transmission des objets/articles (min)||#'
 WPUPCFTM05|Délai de suppression d'affichage d'une station (heures)||
 WPUPCFTM06|Intervalle de lecture GPS (sec)||
 WPUPCFTM07|Délai de suppression d'une station (jours)||#'
@@ -507,10 +507,10 @@ WPUPCFT031|Fichiers de configuration du TNC||
 WPUPCFT032|Nom du fichier de démarrage du TNC||
 WPUPCFT033|Nom du fichier d'arrêt du TNC||#'
 WPUPCFT034|Paramètres KISS||
-WPUPCFT035|TXDelay (unités de 10 ms)||
+WPUPCFT035|TXDelay (unité 10 ms)||
 WPUPCFT036|Persistance (0 à 255)||
-WPUPCFT037|SlotTime (unités de 10 ms)||
-WPUPCFT038|TxTail (unités de 10 ms)||
+WPUPCFT037|SlotTime (unité 10 ms)||
+WPUPCFT038|TxTail (unité 10 ms)||
 WPUPCFT039|Full duplex||
 WPUPCFT040|Configurer TNC Multi-Port KISS||
 WPUPCFT041|Port radio||
@@ -591,9 +591,9 @@ POPUPOB025|Décalage gauche (sauf '/'):||
 POPUPOB026|Couloir:||
 POPUPOB027|Options génériques||
 POPUPOB028|Placement||
-POPUPOB029|Activer enseigne||
-POPUPOB030|Texte de l'enseigne||#'
-POPUPOB031|Enseigne||
+POPUPOB029|Activer panneau||
+POPUPOB030|Texte sur le panneau||#'
+POPUPOB031|Panneau||
 POPUPOB032|Activer compression||
 POPUPOB033|Supprimer article||
 POPUPOB034|Modifier article||
@@ -695,7 +695,7 @@ WPUPTSP002|Suivre l'indicatif||#'
 WPUPTSP003|Casse exacte||
 WPUPTSP004|Correspondance exacte||
 WPUPTSP005|Suivre maintenant !||
-WPUPTSP006|Anuler suivi||
+WPUPTSP006|Annuler suivi||
 WPUPTSP007|Télécharger piste||
 WPUPTSP008|Indicatif||
 WPUPTSP009|Début de piste (depuis .. heures)||
@@ -797,15 +797,15 @@ WPUPSTI065|Indicatif tactique: %s||
 WPUPSTI066|Assigner un indicatif tactique||
 WPUPSTI067|Portée actuelle : %d milles||
 WPUPSTI068|nul||
-WPUPSTI069|defaut||
+WPUPSTI069|défaut||
 WPUPSTI070|HAAT||
 WPUPSTI071|omni||
 WPUPSTI072|portée||
-WPUPSTI073|BAD PHG||
-WPUPSTI074|BAD SHG||
+WPUPSTI073|Mauvais PHG||
+WPUPSTI074|Mauvais SHG||
 WPUPSTI075|Portée DF||
 WPUPSTI076|Pas de signal détecté||
-WPUPSTI077|Signale détecté (peut-être))||
+WPUPSTI077|Signal détecté (peut-être))||
 WPUPSTI078|Signal détecté non décodable||
 WPUPSTI079|Siganl faible, parfois décodable||
 WPUPSTI080|Signal brouillé mais copiable||
@@ -844,8 +844,8 @@ STIFCC0006|Etat:||
 STIFCC0007|Code postal:||
 STIFCC0008|License de base ||
 STIFCC0009|License avancée ||
-STIFCC0010|5 mot/min ||
-STIFCC0011|12 mot/min ||
+STIFCC0010|5 mots/min ||
+STIFCC0011|12 mots/min ||
 #
 #
 # FCC-RAC indexing/searching
@@ -1061,14 +1061,14 @@ POPEM00035|Avertissement||
 POPEM00036|Avis||
 POPEM00037|Interface HSP présente: temporisation GPS augmentée||
 POPEM00038|Conflit de nom avec un Objet/Item/Station déjà existant||
-POPEM00039|Charactère illégal, remplacé par un point||
+POPEM00039|Caractère illégal, remplacé par un point||
 POPEM00040|Le chemin de sortie personnalisé a été perdu||
 POPEM00041|Traitement d'un autre fichier en cours. Attendez, puis réessayez||
 POPEM00042|L'object ne m'appartient pas ! Essayez d'adopter l'objet d'abord.||
 POPEM00043|Ce n'est pas un objet ou article !||
-POPEM00044|Récupération de piste Findu : Echec||
+POPEM00044|Récupération de piste Findu : Échec||
 POPEM00045|Récupération de piste Findu : Terminé||
-POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
+POPEM00046|La bibliothèque Berkeley DB ne correspond pas ! Désactivation du cache des cartes.||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||
@@ -1118,8 +1118,8 @@ PRINT0002|Taille du papier||
 PRINT0003|Rotation automatique d'image||#'
 PRINT0004|Tourner image 90° à gauche||
 PRINT0005|Proportion automatique d'image||#'
-PRINT0006|Echelle:||
-PRINT0007|Forcer le fond a être blanc||
+PRINT0006|Échelle:||
+PRINT0007|Forcer le fond à être blanc||
 PRINT0008|Imprimer en noir et blanc||
 PRINT0016|Inverser couleurs||
 PRINT0009|Résolution Postscript:||
@@ -1201,7 +1201,7 @@ PULDNDB001|Etat dist/relèvement||
 #
 #
 # GPS Transfer Operations
-GPS001|Transfer GPS||
+GPS001|Transfert GPS||
 GPS002|Nom de fichier||
 GPS003|Choisir couleur||
 GPS004|Rouge||
@@ -1247,33 +1247,33 @@ CACHE003|Carte non trouvée dans le cache...||
 #
 #
 # Map Screen Misc
-RANGE001|ECHELLE||
+RANGE001|ÉCHELLE||
 #
 #
 # GPS Status
-GPSS001|WAAS or PPS||
+GPSS001|WAAS ou PPS||
 GPSS002|DGPS||
-GPSS003|Valide SPS||
+GPSS003|SPS valide||
 GPSS004|Invalide||
-GPSS005|Sats/View||
-GPSS006|Fix||
+GPSS005|Sats/vue||
+GPSS006|Repère||
 GPSS007|! Les données GPS ont plus de 30 secondes !||
 GPSS008|Simulation||
-GPSS009|Manual||
-GPSS010|Estimated||
-GPSS011|Float RTK||
+GPSS009|Manuel||
+GPSS010|Estimé||
+GPSS011|RTK flottant||
 GPSS012|RTK||
 #
 #
 # Popup cad_dialog to obtain CAD object data
 CADPUD001|Area Object||
 CADPUD002|Area Label:||
-CADPUD003|Comment:||
-CADPUD004|Probability (%):||
+CADPUD003|Commentaire:||
+CADPUD004|Probabilité (%):||
 CADPUD005|OK||
-CADPUD006|CAD Dialog||
-CADPUD007|Show/Edit Details||
-CADPUD008|Cancel||
-CADPUD009|Delete CAD objects?||
-CADPUD010|Delete All||
-CADPUD011|Delete Selected||
+CADPUD006|Dialogue CAD||
+CADPUD007|Montrer/Éditer les détails||
+CADPUD008|Annulerl||
+CADPUD009|Effacer les objets CAD ?||
+CADPUD010|Tout effacer||
+CADPUD011|Effacer la sélection||
