@@ -10737,7 +10737,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         "%s",
                         get_time(temp_data));
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
-                    process_info_field(p_station,data,type);
+                    process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
@@ -10765,7 +10765,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 if (ok) {
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
-                    process_info_field(p_station,data,type);
+                    process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
@@ -10787,6 +10787,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (ok) { 
                     if (debug_level & 1)
                         fprintf(stderr,"data_add: Got grid data for %s\n", call);
+
+                    process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
@@ -10909,7 +10911,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
-                    process_info_field(p_station,data,type);
+                    process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 0);
@@ -10994,7 +10996,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
-                    process_info_field(p_station,data,type);
+                    process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 0);
@@ -11027,6 +11029,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_weather(p_station,data,compr_pos);
                     p_station->record_type = (char)APRS_WX1;
 
+                    process_info_field(p_station,data,type);            // altitude
+
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
  
@@ -11042,6 +11046,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_weather(p_station,data,0);            // look for weather data first
                     p_station->record_type = (char)APRS_WX2;
                     found_pos = 0;
+
+                    process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
