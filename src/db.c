@@ -14345,8 +14345,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
 // Need weather decode in this section similar to the '@' section
 // below.
 
-                if ((message[14] == 'N' || message[14] == 'S') &&
-                    (message[24] == 'W' || message[24] == 'E')) {       // uncompressed format
+                if ((toupper(message[14]) == 'N' || toupper(message[14]) == 'S') &&
+                    (toupper(message[24]) == 'W' || toupper(message[24]) == 'E')) { // uncompressed format
                     if (debug_level & 1)
                         fprintf(stderr,"decode_info_field: / (uncompressed position w/timestamp no messaging)\n");
                     if (message[29] == '/') {
@@ -14373,8 +14373,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
 
             case '@':   // Position with timestamp (with APRS messaging)
                 // DK7IN: could we need to test the message length first?
-                if ((message[14] == 'N' || message[14] == 'S') &&
-                    (message[24] == 'W' || message[24] == 'E')) {       // uncompressed format
+                if ((toupper(message[14]) == 'N' || toupper(message[14]) == 'S') &&
+                    (toupper(message[24]) == 'W' || toupper(message[24]) == 'E')) {       // uncompressed format
                     if (debug_level & 1)
                         fprintf(stderr,"decode_info_field: @ (uncompressed position w/timestamp)\n");
                     if (message[29] == '/') {
