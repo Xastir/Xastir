@@ -295,7 +295,9 @@ format. This format will reduce the amount of data on the air, thereby
 increasing the capacity of the APRS(tm) network. The maximum precision of the
 transmitted position is also higher. Some older programs, including recent
 versions of WinAPRS, do not decode this format yet. Findu.com might also have
-trouble with it.
+trouble with it.  We transmit course/speed in this format but not altitude.
+In order to send course/speed AND altitude requires adding nine characters to
+the packet which negates part of the reason to use compressed posits.
 
 To select a symbol to be used for your station you need to specify
 a group and a symbol character. You can manually fill in these fields,
