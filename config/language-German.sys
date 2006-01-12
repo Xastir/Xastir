@@ -1,13 +1,13 @@
 # $Id$
 #
-# Copyright (C) 2000-2005  The Xastir Group
+# Copyright (C) 2000-2006  The Xastir Group
 #
 # This is the German Language file used for all the prompts in xastir
 # Dies ist die deutsche Sprachdatei für Menus und Textausgaben in Xastir
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 16. Oct 2005, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 11. Jan 2006, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -42,7 +42,7 @@ PULDNFI010|TNC protokollieren||
 PULDNFI011|Netz protokollieren||
 PULDNFI012|IGate protokollieren||
 PULDNFI013|Wetter protokollieren||
-PULDNFI014|PNG Schnapschüsse||
+PULDNFI014|PNG-Schnapschüsse||
 PULDNFI015|Karte drucken|d|
 #
 # Menu "Zeige"
@@ -98,7 +98,7 @@ PULDNMP027|Karten neu laden (nicht vom Cache)||
 PULDNMP028|Lösche gesamten Karten-Cache!||
 PULDNMP029|Finde Adresse||
 PULDNMP030|Konfiguration USGS DRG||
-PULDNMP031|Enable Map Border||
+PULDNMP031|Kartenrand ein||
 #
 #
 # PopUp "Einstellungen Tigermaps"
@@ -125,7 +125,7 @@ MPUPTGR018|Tiger Maps erlauben||
 MPUPDRG001|Wähle darzustellende Objekte:||
 MPUPDRG002|färbe Hintergrundkarten (XOR)||
 MPUPDRG003|Schwarz||
-MPUPDRG004|Wei||
+MPUPDRG004|Weiß||
 MPUPDRG005|Blau||
 MPUPDRG006|Rot||
 MPUPDRG007|Braun||
@@ -197,7 +197,7 @@ PULDNDP044|Stationen||
 PULDNDP028|- Feste Stationen||
 PULDNDP029|- Bewegte Stationen||
 PULDNDP030|- Wetterstationen||
-PULDNDP053|  - Select CWOP WX Stations||
+PULDNDP053|  - CWOP-Stationen||
 PULDNDP045|Objekte||
 PULDNDP026|- Wetter Objekte||
 PULDNDP039|- Regenmengen Objekte||
@@ -215,7 +215,7 @@ PULDNDP009|Wetterdaten||
 PULDNDP046|- Wetter Text||
 PULDNDP018|-- nur Temperatur||
 PULDNDP047|- Windfahne||
-PULDNDP054|Aloha Kreis anzeigen||
+PULDNDP054|ALOHA Kreis anzeigen||
 PULDNDP013|Positionsverschleierung||
 PULDNDP008|Leistung/Gewinn||
 PULDNDP021|- mit Standardwert||
@@ -301,10 +301,10 @@ POPUPMA026|Zentrieren & Zoom||
 POPUPMA027|    Breite||
 POPUPMA028|     Länge||
 POPUPMA029|CAD-Objekte zeichnen||
-POPUPMA030|Draw||
+POPUPMA030|Zeichnen||
 POPUPMA031|Polygon abschließen||
-POPUPMA032|Erase CAD Polygons||
-POPUPMA033|**NOT USED**||
+POPUPMA032|CAD-Polygone löschen||
+POPUPMA033|**NICHT BENUTZT**||
 POPUPMA034|Selbstdefinierter Zoom||
 POPUPMA035|10% verkleinern||
 POPUPMA036|10% vergrößern||
@@ -316,13 +316,14 @@ POPUPMA041|Peilung||
 POPUPMA042|Grad||
 POPUPMA043|Bearbeite mehrdeutige Position||
 POPUPMA044|Mehrdeutige Position, Ihre Position kann sich sprunghaft verändern.||
-POPUPMA045|Predefined-Objekte||
-POPUPMA046|CAD Polygons||
-POPUPMA047|Enable CAD objects||
-POPUPMA048|Enable CAD labels||
-POPUPMA049|Enable CAD comments||
-POPUPMA050|Enable CAD probability||
-POPUPMA051|Enable CAD area size||
+POPUPMA045|SAR-Objekte erstellen||
+POPUPMA045|Vordefinierte Objekte||
+POPUPMA046|CAD-Polygone||
+POPUPMA047|CAD-Objekte ein||
+POPUPMA048|CAD-Label ein||
+POPUPMA049|CAD-Kommentare ein||
+POPUPMA050|CAD-Wahrscheinlichkeit ein||
+POPUPMA051|CAD-Flächenmaß ein||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -425,7 +426,7 @@ WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
 WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
 WPUPCFD030|Position Dubletten-Prüfung aus||
-WPUPCFD031|Load predefined objects from file||
+WPUPCFD031|Vordefinierte Objekte aus Datei laden||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||
@@ -1069,7 +1070,7 @@ POPEM00042|Kein eigenes Objekt! Versuchen Sie erst das Obkekt zu übernehmen.||
 POPEM00043|Kein Objekt/Item!||
 POPEM00044|Findu-Wegdaten: fehlgeschlagen||
 POPEM00045|Findu-Wegdaten: fertig||
-POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
+POPEM00046|Berkeley DB header/shared library passen nicht! Map-Cache aus.||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -1128,7 +1129,7 @@ PRINT0011|In Datei drucken||
 PRINT0012|Gebe Bild auf Datei aus...||
 PRINT0013|Konvertiere in Postscript...||
 PRINT0014|Erstellen der Druckdatei beendet||
-PRINT0015|Drucker Status||
+PRINT0015|Druckerstatus||
 #
 # Locate Feature Dialog
 FEATURE001|Name:||
@@ -1172,7 +1173,7 @@ SMARTB004|Hohe Geschwindigkeit [km/h]    ||
 SMARTB005|Niedrige Rate [Min]            ||
 SMARTB006|Niedrige Geschwindigkeit [mph] ||
 SMARTB007|Niedrige Geschwindigkeit [km/h]||
-SMARTB008|Kurve Schwellwert [Grad]        ||
+SMARTB008|Kurvenschwellwert [Grad]       ||
 SMARTB009|Kurvenparameter (Turn Slope)   ||
 SMARTB010|Wartezeit [Sek]                ||
 SMARTB011|SmartBeaconing(tm) einschalten||
@@ -1248,7 +1249,7 @@ RANGE001|ENTFERNUNGS-SKALIERUNG||
 #
 #
 # GPS Status
-GPSS001|WAAS or PPS||
+GPSS001|WAAS oder PPS||
 GPSS002|DGPS||
 GPSS003|gültig SPS||
 GPSS004|ungültig||
@@ -1256,21 +1257,21 @@ GPSS005|Sats/Anzeige||
 GPSS006|Fest||
 GPSS007|!GPS-Daten sind älter als 30 Sekunden!||
 GPSS008|Simulation||
-GPSS009|Manual||
-GPSS010|Estimated||
+GPSS009|Manuell||
+GPSS010|Voraussichtlich||
 GPSS011|Float RTK||
 GPSS012|RTK||
 #
 #
 # Popup cad_dialog to obtain CAD object data
-CADPUD001|Area Object||
-CADPUD002|Area Label:||
-CADPUD003|Comment:||
-CADPUD004|Probability (%):||
+CADPUD001|Flächenobjekt||
+CADPUD002|Flächen-Label:||
+CADPUD003|Kommentar:||
+CADPUD004|Wahrscheinlichkeit (%):||
 CADPUD005|OK||
-CADPUD006|CAD Dialog||
-CADPUD007|Show/Edit Details||
-CADPUD008|Cancel||
-CADPUD009|Delete CAD objects?||
-CADPUD010|Delete All||
-CADPUD011|Delete Selected||
+CADPUD006|CAD-Dialog||
+CADPUD007|Details zeigen/ändern||
+CADPUD008|Abbrechen||
+CADPUD009|CAD-Objekte löschen?||
+CADPUD010|Alle löschen||
+CADPUD011|Ausgewählte löschen||
