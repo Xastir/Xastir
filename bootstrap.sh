@@ -9,20 +9,20 @@
 # order to generate the needed configure/makefiles
 #
 
-echo "Removing autom4te.cache directory"
+echo "5... Removing autom4te.cache directory"
 rm -rf autom4te.cache
 
-echo "Running aclocal"
+echo "4... Running aclocal"
 aclocal
 
-echo "Running autoheader"
+echo "3... Running autoheader"
 autoheader
 
-echo "Running autoconf"
+echo "2... Running autoconf"
 autoconf
 
 # Cygwin needs these params to be separate
-echo "Running automake"
+echo "1... Running automake"
 automake -a -c
 
 echo "Bootstrap complete."
