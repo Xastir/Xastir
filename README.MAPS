@@ -1033,7 +1033,7 @@ Getting Maps and other Data Files for Xastir:
          To sort the file, make sure you have plenty of disk space for this as
          the file is BIG!
 
-         cat EN.dat | /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t > EN.dat.sorted
+         cat EN.dat | /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t \| > EN.dat.sorted
 
          Install it in the xastir/fcc directory:
 
