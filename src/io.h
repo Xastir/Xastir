@@ -3,7 +3,7 @@
 
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
- * Portions Copyright (C)  2004-2005  The Xastir Group
+ * Portions Copyright (C)  2004-2006  The Xastir Group
  *
  * This file defines the I/O interface used for access to index files.
  * There are two implementations of this interface; io-mmap.c uses Unix

@@ -3,7 +3,7 @@
 
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
- * Portions Copyright (C) 2004-2005  The Xastir Group
+ * Portions Copyright (C) 2004-2006  The Xastir Group
  *
  * The geo_find() function is the query interface for turning addressees
  * into geographical locations using an 'address map' built from TIGER/Line

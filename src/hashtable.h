@@ -4,7 +4,7 @@
 
 
 /* Copyright (C) 2002 Christopher Clark <firstname.lastname@cl.cam.ac.uk> */
-// Portions Copyright (C) 2004-2005  The Xastir Project
+// Portions Copyright (C) 2004-2006  The Xastir Project
 
 
 
