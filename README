@@ -163,6 +163,7 @@ README
        END OF MAC OSX NOTES.
      -----------------------------------------------------------------------
 
+
      -----------------------------------------------------------------------
        FreeBSD NOTES:
 
@@ -195,6 +196,7 @@ README
 
        END OF FreeBSD NOTES.
      -----------------------------------------------------------------------
+
 
      -----------------------------------------------------------------------
        SOLARIS NOTES:
@@ -319,6 +321,7 @@ README
         END OF SOLARIS NOTES.
       ----------------------------------------------------------------------- 
 
+
       -----------------------------------------------------------------------
         MANDRAKE LINUX NOTES:
 
@@ -327,6 +330,53 @@ README
       adding "-lXp" to the LIBS line, then type "make" again.
 
         END OF MANDRAKE LINUX NOTES.
+      -----------------------------------------------------------------------
+
+
+      -----------------------------------------------------------------------
+        OpenSuSE LINUX 10.0 NOTES:
+
+        Bring up YaST2 and add more download sites via:
+
+            Software->Installation Source
+
+        Two sites that I use are:
+
+        ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.0-OSS/inst-source/suse
+        ftp://ftp.suse.com/pub/projects/ham/10.0-i386
+
+        Adding these sites will allow you to find and install the ax25
+        libraries/devel headers and the OpenMotif development headers.
+
+        You'll see this warning if you run ./bootstrap.sh:
+
+            4... Running aclocal
+            /usr/share/aclocal/pstoedit.m4:7: warning: underquoted definition of
+            AM_PATH_PSTOEDIT
+              run info '(automake)Extending aclocal'
+              or see
+            http://sources.redhat.com/automake/automake.html#Extending-aclocal
+
+        You may safely ignore this warning.
+
+        You'll may also see these when compiling the code:
+
+        map_tif.c: In function `my_GTIFProj4FromLatLong':
+        map_tif.c:391: warning: implicit declaration of function `CSLTokenizeStringComplex'
+        map_tif.c:391: warning: assignment makes pointer from integer without a cast
+        map_tif.c:394: warning: implicit declaration of function `CSLCount'
+        map_tif.c:396: warning: implicit declaration of function `CSLDestroy'
+        x_spider.c: In function `UDP_Server':
+        x_spider.c:1203: warning: pointer targets in passing argument 6 of `recvfrom' differ in signedness
+
+        You may safely ignore them as well.
+
+        Optional but highly recommended:  Install the colorgcc package, then go
+        into /usr/share/doc/packages/colorgcc and "cp colorgccrc ~/.colorgccrc"
+        This will cause any GCC warnings or errors to show up in a different
+        color in your Xterm window.  VERY handy.
+
+        END OF OpenSuSE LINUX 10.0 NOTES.
       -----------------------------------------------------------------------
 
 

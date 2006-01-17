@@ -223,7 +223,7 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
     ------------------------------------------------
         http://www.libtiff.org
 
-    libproj (proj-4.4.8):
+    libproj (proj-4.4.9):
     ---------------------
         http://www.remotesensing.org/proj/
         http://wetnet.net/~we7u/xastir/
@@ -233,7 +233,7 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
         ftp://ftp.remotesensing.org/pub/proj/
         http://wetnet.net/~we7u/xastir/
 
-    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.1):
+    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.2):
     --------------------------------------------------
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
@@ -408,12 +408,13 @@ First Time Install:
        libgeotiff uses libproj to do the datum translations. If you install
        libgeotiff first, datum translations won't work.
 
-       The proj-nad27-1.1.tar.gz must be decompressed in the nad subdirectory
-       of the proj distribution directory before you run configure.
+       proj-nad27-1.1.tar.gz or proj-datumgrid-1.3.zip must be decompressed in
+       the nad subdirectory of the proj distribution directory before you run
+       configure.
         
-        tar xzvf proj-4.4.8.tar.gz (or newer)
-        cd proj-4.4.8/nad
-        tar xzvf ../../proj-nad27-1.1.tar.gz (or newer)
+        tar xzvf proj-4.4.9.tar.gz (or newer)
+        cd proj-4.4.9/nad
+        unzip ../../proj-datumgrid-1.3.zip (or tar xzvf ../../proj-nad27-1.1.tar.gz)
         cd ..
         ./configure
         make
@@ -473,7 +474,7 @@ First Time Install:
        -----------------------
 
      NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
-       libgeotiff-1.2.1 may compile properly.  libgeotiff is intimately
+       libgeotiff-1.2.2 may compile properly.  libgeotiff is intimately
        tied to your version of libtiff.  libgeotiff 1.2.x or greater
        requires libtiff-3.6.0 BETA or later.  If your version of libtiff is
        older, get libgeotiff 1.1.4 or 1.1.5.  For the latter case you may
@@ -508,13 +509,13 @@ First Time Install:
        using private include files, yet still compile in support for your
        particular version of libtiff.
 
-       With libgeotiff-1.2.1/libtiff-3.6.0-beta or newer you shouldn't
+       With libgeotiff-1.2.2/libtiff-3.6.0-beta or newer you shouldn't
        need to copy these files across.  The newer libtiff and libgeotiff
        can work together using public interfaces.
      ------------------------
 
-        tar xzvf libgeotiff-1.1.5.tar.gz (or newer)
-        cd libgeotiff-1.1.5
+        tar xzvf libgeotiff-1.2.2.tar.gz (or newer)
+        cd libgeotiff-1.1.2
         ./configure
         make
         su (root)
