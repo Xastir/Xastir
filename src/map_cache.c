@@ -93,7 +93,13 @@ void map_cache_init(void) {
             "Berkeley DB header files/shared library file do NOT match!\n");
         fprintf(stderr,
             "Disabling use of the map cache.\n");
-        popup_message_always(langcode("POPEM00034"),langcode("POPEM00046"));
+
+
+// Can't bring up a popup here 'cuz we don't have any GUI running
+// yet by this point.
+// popup_message_always(langcode("POPEM00034"),langcode("POPEM00046"));
+
+
         warn_now++;
         map_cache_disabled++;
     }

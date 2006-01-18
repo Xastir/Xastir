@@ -25436,12 +25436,6 @@ int main(int argc, char *argv[], char *envp[]) {
 #endif  // USING_LIBGC
 
 
-#ifdef USE_MAP_CACHE
-    map_cache_init();
-#endif  // USE_MAP_CACHE
-
-
-
     // Make copies of argc/argv/envp so that we can start other
     // processes and know the environment we were started with. 
     //
@@ -25736,6 +25730,10 @@ fprintf(stderr,
 // We should probably protect redraw_on_new_data, alert_redraw_on_update, and
 // redraw_on_new_packet_data variables as well?
 // Also need to protect dialogs.
+
+#ifdef USE_MAP_CACHE
+    map_cache_init();
+#endif  // USE_MAP_CACHE
 
     (void)bulletin_gui_init();
     (void)db_init();
