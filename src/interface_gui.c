@@ -190,6 +190,7 @@ void set_port_speed(int port) {
             devices[port].sp=B38400;
             break;
 
+#ifndef __LSB__
         case(8):
             devices[port].sp=B57600;
             break;
@@ -205,6 +206,7 @@ void set_port_speed(int port) {
             devices[port].sp=B230400;
 #endif  // B230400
             break;
+#endif  // __LSB__
 
         default:
             break;
@@ -565,8 +567,11 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 setup, setup1, setup2, setup3, setup4,
                 device, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
-                speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
-                style, style_box,
+                speed_19200, speed_38400;
+#ifndef __LSB__
+    static Widget speed_57600, speed_115200, speed_230400;
+#endif  // __LSB__
+    static Widget style, style_box,
                 style_8n1, style_7e1, style_7o1,
                 igate, igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
@@ -888,6 +893,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                         NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
+#ifndef __LSB__
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
@@ -905,6 +911,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                         XmNbackground, colors[0xff],
                                         NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
+#endif  // __LSB__
 
         switch(device_type) {
             case DEVICE_SERIAL_KISS_TNC:
@@ -1629,6 +1636,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     device_speed=7;
                     break;
 
+#ifndef __LSB__
                 case(B57600):
                     XmToggleButtonSetState(speed_57600,TRUE,FALSE);
                     device_speed=8;
@@ -1645,6 +1653,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     device_speed=10;
                     break;
 #endif  // B230400
+#endif  // __LSB__
 
                 default:
                     XmToggleButtonSetState(speed_4800,TRUE,FALSE);
@@ -1868,8 +1877,11 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                 frame, frame2,
                 device, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
-                speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
-                style, style_box,
+                speed_19200, speed_38400;
+#ifndef __LSB__
+    static Widget speed_57600, speed_115200, speed_230400;
+#endif  // __LSB__
+    static Widget style, style_box,
                 style_8n1, style_7e1, style_7o1,
                 sep;
     Atom delw;
@@ -2063,6 +2075,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
+#ifndef __LSB__
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
@@ -2080,6 +2093,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNbackground, colors[0xff],
             NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
+#endif  // __LSB__
 
         frame2 = XtVaCreateManagedWidget("Config_GPS frame2", xmFrameWidgetClass, form,
             XmNtopAttachment, XmATTACH_WIDGET,
@@ -2235,6 +2249,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
                     device_speed=7;
                     break;
 
+#ifndef __LSB__
                 case(B57600):
                     XmToggleButtonSetState(speed_57600,TRUE,FALSE);
                     device_speed=8;
@@ -2251,6 +2266,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
                     device_speed=10;
                     break;
 #endif  // B230400
+#endif  // __LSB__
 
                 default:
                     XmToggleButtonSetState(speed_4800,TRUE,FALSE);
@@ -2417,8 +2433,11 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                 frame, frame2, frame3, frame4, WX_none,
                 device, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
-                speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
-                style, style_box,
+                speed_19200, speed_38400;
+#ifndef __LSB__
+    static Widget speed_57600, speed_115200, speed_230400;
+#endif  // __LSB__
+    static Widget style, style_box,
                 style_8n1, style_7e1, style_7o1,
                 data_type, data_box,
                 data_auto, data_bin, data_ascii,
@@ -2594,6 +2613,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                         NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
+#ifndef __LSB__
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
@@ -2611,6 +2631,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                         XmNbackground, colors[0xff],
                                         NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
+#endif  // __LSB__
 
         frame2 = XtVaCreateManagedWidget("Config_WX frame2", xmFrameWidgetClass, form,
                                      XmNtopAttachment, XmATTACH_WIDGET,
@@ -2848,6 +2869,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     device_speed=7;
                     break;
 
+#ifndef __LSB__
                 case(B57600):
                     XmToggleButtonSetState(speed_57600,TRUE,FALSE);
                     device_speed=8;
@@ -2864,6 +2886,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     device_speed=10;
                     break;
 #endif  // B230400
+#endif  // __LSB__
 
                 default:
                     XmToggleButtonSetState(speed_4800,TRUE,FALSE);
