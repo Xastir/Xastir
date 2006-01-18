@@ -80,9 +80,13 @@ extern int npoints;		/* tsk tsk tsk -- globals */
 extern int mag;
 
 #ifdef HAVE_LIBGEOTIFF
-//#include "cpl_csv.h"
+
+// Needed for CSLTokenizeStringComplex define
+#include "cpl_csv.h"
+
 #include "xtiffio.h"
 //#include "geotiffio.h"
+
 #include "geo_normalize.h"
 
 
