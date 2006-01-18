@@ -86,6 +86,7 @@ The Questions
     4.24 Can I run multiple copies of Xastir at once?
     4.25 Why doesn't Terraserver work for some locations?
     4.26 Some station or config settings are not getting saved, why?
+    4.27 Why are my colors messed up when running via VNC?
 
 
 5.  Features
@@ -854,6 +855,14 @@ The Answers
     If you are having more serious troubles, like for instance your
     station location setting isn't getting saved between Xastir runs,
     check your LANG setting (see question 4.13 above).
+
+    4.27 Why are my colors messed up when running via VNC?
+
+    VNC may have a different colormap or colordepth than the system Xastir is
+    running on.  Here is one invocation that a user used which worked.
+    Substitute the appropriate parameters for your system of course:
+
+    vncserver :5 -name melecom -depth 24 -geometry 800x600 -pixelformat rgb565
 
 
 5.  Features
