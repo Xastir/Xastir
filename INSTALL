@@ -308,16 +308,19 @@ features, you can add any of the following flags to configure:
     --without-ax25
     --without-festival
     --without-gpsman
-    --without-shapelib
     --without-imagemagick
     --without-libproj
     --without-geotiff
     --without-gdal
+    --without-shapelib
     --without-pcre
     --without-dbfawk
     --without-map-cache
     --with-errorpopups
+    --with-libgc
+    --with-profiling
     --with-rtree
+    --with-lsb
 
 For example, "./configure --without-ax25" will disable the AX.25
 networking code in Xastir.
