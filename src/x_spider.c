@@ -1160,7 +1160,8 @@ void send_udp_nack(int sock, struct sockaddr_in from, int fromlen) {
 // programs to inject packets into Xastir via UDP protocol.
 //
 void UDP_Server(int argc, char *argv[], char *envp[]) {
-    int sock, length, fromlen, n1, n2;
+    int sock, length, n1, n2;
+    socklen_t fromlen;
     struct sockaddr_in server;
     struct sockaddr_in from;
     char buf[1024];
@@ -1200,7 +1201,8 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
             buf,
             1024,
             0,
-            (struct sockaddr *)&from, &fromlen);
+            (struct sockaddr *)&from,
+            &fromlen);
         if (n1 < 0) {
             fprintf(stderr, "Error: recvfrom");
         }
