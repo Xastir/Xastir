@@ -81,8 +81,9 @@ extern int mag;
 
 #ifdef HAVE_LIBGEOTIFF
 
-// Needed for CSLTokenizeStringComplex define
-#include "cpl_csv.h"
+// Needed for CSLTokenizeStringComplex define (to get rid of warning
+// in gcc-4.0) but causes errors with Cygwin if left active.
+//#include "cpl_csv.h"
 
 #include "xtiffio.h"
 //#include "geotiffio.h"
