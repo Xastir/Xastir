@@ -242,6 +242,10 @@ if test "$use_err_popups" != "no"; then
  AC_DEFINE_UNQUOTED(HAVE_ERROR_POPUPS, 1, [Define if you have error popups enabled])
 fi
 
+if test "$use_lsb" != "no"; then
+ AC_DEFINE_UNQUOTED(__LSB__, 1, [Define if you're compiling for Linux Standard Base])
+fi
+
 ])
 
 # TVR - I don't think this is quite as evil as Jack thinks CHECK_IMAGEMAGICK is

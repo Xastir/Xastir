@@ -68,11 +68,14 @@ XASTIR_SET_SYSTEM
 use_festival=yes
 use_gpsman=yes
 use_err_popups=no
+use_lsb=no
 AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=$withval)
 
 AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=$withval)
 
 AC_ARG_WITH(errorpopups,[  --with-errorpopups       Send error popups to stderr.],use_err_popups=$withval)
+
+AC_ARG_WITH(lsb,[ --with-lsb       Enable Linux Standard Base.],use_lsb=$withval)
 
 
 # Now that all the various "use_" variables are set, probe for binaries.
@@ -519,6 +522,9 @@ fi
 if test "${use_rtree}" = "yes"; then
   ILIBS="$ILIBS rtree"
 fi
+if test "${use_lsb}" = "yes"; then
+  ILIBS="$ILIBS lsb"
+fi
 AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
 
 
@@ -590,22 +596,23 @@ echo
 echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured to use the following
 echo options and external libraries:
 echo
-echo "Building with AX25 .............................. : $use_ax25"
-echo "Building with Festival .......................... : $use_festival"
-echo "Building with GPSMan ............................ : $use_gpsman"
-echo "Building with ImageMagick ....................... : $use_imagemagick"
-echo "Building with libproj ........................... : $use_proj"
-echo "Building with GeoTiff ........................... : $use_geotiff"
-echo "Building with GDAL/OGR .......................... : $use_gdal"
-echo "Building with ShapeLib .......................... : $use_shapelib"
-echo "Building with pcre .............................. : $use_pcre"
-echo "Building with dbfawk ............................ : $use_dbfawk"
-echo "Building with map caching ....................... : $use_map_cache"
-echo "-------------------------------------------------------"
-echo "Building with ErrorPopups (Old Method) .......... : $use_err_popups"
-echo "Building with libgc (Debug) ..................... : $use_libgc"
-echo "Building with profiling (Debug) ................. : $use_profiling"
-echo "Building with rtree indexing (Experimental) ..... : $use_rtree"
+echo "Building with AX25 ................................. : $use_ax25"
+echo "Building with Festival ............................. : $use_festival"
+echo "Building with GPSMan ............................... : $use_gpsman"
+echo "Building with ImageMagick .......................... : $use_imagemagick"
+echo "Building with libproj .............................. : $use_proj"
+echo "Building with GeoTiff .............................. : $use_geotiff"
+echo "Building with GDAL/OGR ............................. : $use_gdal"
+echo "Building with ShapeLib ............................. : $use_shapelib"
+echo "Building with pcre ................................. : $use_pcre"
+echo "Building with dbfawk ............................... : $use_dbfawk"
+echo "Building with map caching .......................... : $use_map_cache"
+echo "----------------------------------------------------------"
+echo "Building with ErrorPopups (Old Method) ............. : $use_err_popups"
+echo "Building with libgc (Debug) ........................ : $use_libgc"
+echo "Building with profiling (Debug) .................... : $use_profiling"
+echo "Building with rtree indexing (Experimental) ........ : $use_rtree"
+echo "Building with Linux Standard Base (Experimental) ... : $use_lsb"
 #echo Building with Davis/MySQL.......... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 

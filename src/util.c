@@ -68,7 +68,7 @@
 // For mutex debugging with Linux threads only
 #ifdef MUTEX_DEBUG
 #include <asm/errno.h>
-extern int pthread_mutexattr_setkind_np(pthread_mutexattr_t *attr, int kind);
+extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 #endif  // MUTEX_DEBUG
 
 
@@ -4129,7 +4129,15 @@ void init_critical_section(xastir_mutex *lock) {
 
     // Note that this stuff is not POSIX, so is considered non-portable.
     // Exists in Linux Threads implementation only?
-    (void)pthread_mutexattr_setkind_np(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
+
+#ifdef __LSB__
+    // LSB VERSION (Linux Standard Base)
+    (void)pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+#else   // __LSB__
+    // NON_LSB VERSION
+    (void)pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
+#endif  // __LSB__
+
     (void)pthread_mutexattr_init(&attr);
     (void)pthread_mutex_init(&lock->lock, &attr);
 #else   // MUTEX_DEBUG
