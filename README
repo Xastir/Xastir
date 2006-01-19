@@ -376,6 +376,12 @@ README
         This will cause any GCC warnings or errors to show up in a different
         color in your Xterm window.  VERY handy.
 
+        Plese note that the AX.25 kernel support in SuSE 10.0 doesn't work.
+        There are patches being discussed on the linux-hams list, but these
+        patches are not currently part of SuSE.  Use the Serial KISS TNC
+        interface in Xastir instead if you're using a KISS TNC with this
+        version of SuSE.
+
         END OF OpenSuSE LINUX 10.0 NOTES.
       -----------------------------------------------------------------------
 
