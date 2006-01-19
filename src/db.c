@@ -923,6 +923,15 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         fprintf(stderr,"msg_data_add start\n");
 //fprintf(stderr,"from:%s, to:%s, seq:%s\n", from_call, call_sign, seq);
 
+    // Check for some reasonable string in call_sign parameter
+    if (call_sign == NULL || strlen(call_sign) == 0) {
+        if (debug_level & 1)
+            fprintf(stderr,"msg_data_add():call_sign was NULL or empty, exiting\n");
+        return(0);
+    }
+//else
+//fprintf(stderr,"msg_data_add():call_sign: %s\n", call_sign);
+ 
     // Set the default output condition.  We'll change this later if
     // we need to.
     if (record_out != NULL)
@@ -10586,6 +10595,13 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         return(0);  // Not an ok packet
     }
 
+    // Check for some reasonable string in call_sign parameter
+    if (call_sign == NULL || strlen(call_sign) == 0) {
+        if (debug_level & 1)
+            fprintf(stderr,"data_add():call_sign was NULL or empty, exiting\n");
+        return(0);
+    }
+ 
     if (debug_level & 1)
         fprintf(stderr,"data_add:\n\ttype: %d\n\tcall_sign: %s\n\tpath: %s\n\tdata: %s\n\tfrom: %c\n\tport: %d\n\torigin: %s\n\tthird_party: %d\n",
             type,
@@ -11125,18 +11141,20 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
 
         // GPRMC etc. without a position is here too, but it should not be stored as status!
-        
+
         // store it as status report until we get a real one
         if ((p_station->flag & (~ST_STATUS)) == 0) {         // only store it if no status yet
-
+ 
             add_status(p_station,data-1);
 
             p_station->record_type = NORMAL_APRS;               // ???
+ 
         }
+ 
         ok = 1;            
         found_pos = 0;
     }
-
+ 
     curr_sec = sec_now();
     if (ok) {
 
@@ -11144,22 +11162,25 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // announce own echo, we soon discard that packet...
         if (!new_station && is_my_call(p_station->call_sign,1) // Check SSID as well
                 && strchr(path,'*') != NULL) {
+ 
             upd_echo(path);   // store digi that echoes my signal...
             statusline(langcode("BBARSTA033"),0);   // Echo from digipeater
+
         }
         // check if data is just a secondary echo from another digi
         if ((last_flag & ST_VIATNC) == 0
                 || (curr_sec - last_stn_sec) > 15
                 || p_station->coord_lon != last_lon 
                 || p_station->coord_lat != last_lat)
+ 
             store = 1;                     // don't store secondary echos
     }
-
+ 
     if (!ok && new_station)
         delete_station_memory(p_station);       // remove unused record
-
+ 
     if (store) {
-
+ 
         // we now have valid data to store into database
         // make time index unique by adding a serial number
 
@@ -11807,7 +11828,7 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
         } // end found_pos
 
     }   // valid data into database
-
+ 
     return(ok);
 }   // End of data_add() function
 
@@ -13372,9 +13393,13 @@ void shorten_path( char *path, char *short_path, int short_path_size ) {
 
 
 
-/*
- *  Messages, Bulletins and Announcements         [APRS Reference, chapter 14]
- */
+//
+//  Messages, Bulletins and Announcements         [APRS Reference, chapter 14]
+//
+//
+// Returns 1 if successful
+//         0 if not successful
+//
 int decode_message(char *call,char *path,char *message,char from,int port,int third_party) {
     char *temp_ptr;
     char ipacket_message[300];
@@ -13422,6 +13447,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
     len = (int)strlen(message);
     ok = (int)(len > 9 && message[9] == ':');
+
     if (ok) {
         substr(addr9,message,9); // extract addressee
         xastir_snprintf(addr,
@@ -13460,13 +13486,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // also get auto-reply responses from APRS+ that just have
         // "}X" or "}XX" at the end.  We decode those as well.
         //
+
         temp_ptr = strstr(msg_id,"}"); // look for Reply Ack in msg_id
 
         if (temp_ptr != NULL) { // Found Reply/Ack protocol!
-            int zz = 1;
-            int yy = 0;
-
-
+ 
             reply_ack++;
 
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
@@ -13478,10 +13502,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
             // Separate out the extra ack so that we can deal with
             // it properly.
-            while (temp_ptr[zz] != '\0') {
-                ack_string[yy++] = temp_ptr[zz++];
-            }
-            ack_string[yy] = '\0';  // Terminate the string
+            xastir_snprintf(ack_string,
+                sizeof(ack_string),
+                "%s",
+                temp_ptr);
 
             // Terminate it here so that rest of decode works
             // properly.  We can get duplicate messages
@@ -13503,7 +13527,6 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             temp_ptr = strstr(message,"}");
 
             if (temp_ptr != NULL) {
-                int zz = 1;
                 int yy = 0;
 
 
@@ -13514,10 +13537,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 }
 
 // Put this code into the UI message area as well (if applicable).
+                xastir_snprintf(ack_string,
+                    sizeof(ack_string),
+                    "%s",
+                    temp_ptr);
 
-                while (temp_ptr[zz] != '\0') {
-                    ack_string[yy++] = temp_ptr[zz++];
-                }
                 ack_string[yy] = '\0';  // Terminate the string
 
                 // Terminate it here so that rest of decode works
@@ -13530,10 +13554,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 }
             } 
         }
- 
+
         done = 0;
-    } else
+    }
+    else {
         done = 1;                               // fall through...
+    }
+
     if (debug_level & 1)
         fprintf(stderr,"1\n");
     len = (int)strlen(message);
@@ -13926,9 +13953,9 @@ else {
             MESSAGE_MESSAGE,
             from,
             &record_out);
-
+ 
         new_message_data += look_for_open_group_data(addr);
-
+ 
         // Note that the check_popup_window() function will
         // re-create a Send Message dialog if one doesn't exist for
         // this QSO.  Only call it for the first message line or the
@@ -14075,6 +14102,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
     if (debug_level & 1)
         fprintf(stderr,"9\n");
     //--------------------------------------------------------------------------
+
     if (ok)
         (void)data_add(STATION_CALL_DATA,
             call,
@@ -14461,7 +14489,9 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             case ':':   // Message
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: : (message)\n");
+//fprintf(stderr,"Calling decode_message\n");
                 done = decode_message(call,path,message,from,port,third_party);
+//fprintf(stderr,"Back from decode_message\n");
                 // there could be messages I should not retransmit to internet... ??? Queries to me...
                 break;
 
