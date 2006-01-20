@@ -783,8 +783,10 @@ int pipe_check(char *client_address) {
 /* Globals */
 static char **Argv = ((void *)0);
 #ifdef __linux__
+#ifndef __LSB__
 extern char *__progname, *__progname_full;
-#endif
+#endif  // __LSB__
+#endif  // __linux__
 static char *LastArgv = ((void *)0);
 
 
@@ -818,10 +820,12 @@ void init_set_proc_title(int argc, char *argv[], char *envp[]) {
         LastArgv = envp[i] + strlen(envp[i]);
     }
 #ifdef __linux__
+#ifndef __LSB__
     // Pretty sure you don't need this either
     __progname = strdup("xastir");
     __progname_full = strdup(argv[0]);
-#endif
+#endif  // __LSB__
+#endif  // __linux__
 }
 
 
