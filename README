@@ -376,11 +376,17 @@ README
         This will cause any GCC warnings or errors to show up in a different
         color in your Xterm window.  VERY handy.
 
-        Plese note that the AX.25 kernel support in SuSE 10.0 doesn't work.
+        Please note that the AX.25 kernel support in SuSE 10.0 doesn't work.
         There are patches being discussed on the linux-hams list, but these
         patches are not currently part of SuSE.  Use the Serial KISS TNC
         interface in Xastir instead if you're using a KISS TNC with this
         version of SuSE.
+
+        To get rid of:  "warning: underquoted definition of AM_PATH_PSTOEDIT"
+        that you get when running bootstrap.sh, remove the "pstoedit" and
+        "pstoedit-devel" packages.  You must remove packages that depend on
+        them as well, like inkscape.  Remove them via YaST2 or by typing:
+        "rpm -e pstoedit pstoedit-devel inkscape" as root.
 
         END OF OpenSuSE LINUX 10.0 NOTES.
       -----------------------------------------------------------------------
