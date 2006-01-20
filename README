@@ -382,11 +382,14 @@ README
         interface in Xastir instead if you're using a KISS TNC with this
         version of SuSE.
 
-        To get rid of:  "warning: underquoted definition of AM_PATH_PSTOEDIT"
-        that you get when running bootstrap.sh, remove the "pstoedit" and
-        "pstoedit-devel" packages.  You must remove packages that depend on
-        them as well, like inkscape.  Remove them via YaST2 or by typing:
-        "rpm -e pstoedit pstoedit-devel inkscape" as root.
+        Note that you may see this warning when running bootstrap.sh:
+            "warning: underquoted definition of AM_PATH_PSTOEDIT"
+        but it is totally harmless.  It bothered me enough during my software
+        development that I figured out how to get rid of it, but please note
+        that the following step is totally unnecessary:  Remove the "pstoedit"
+        and "pstoedit-devel" packages plus packages that depend on them, like
+        inkscape.  Remove via YaST2 or by typing:
+            "rpm -e pstoedit pstoedit-devel inkscape" as root.
 
         END OF OpenSuSE LINUX 10.0 NOTES.
       -----------------------------------------------------------------------
