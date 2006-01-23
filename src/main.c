@@ -25771,7 +25771,9 @@ fprintf(stderr,
 
 
 #ifndef OLD_PTHREADS
-    (void) signal(SIGUSR1,usr1sig);     // take a snapshot on demand 
+    (void) signal(SIGUSR1,usr1sig);     // take a snapshot on demand
+#else   // OLD_PTHREADS
+#   warning ***** Old kernel detected: Disabling SIGUSR1 handler (snapshot on demand) *****
 #endif  // OLD_PTHREADS
 
 #ifdef HAVE_SIGIGNORE

@@ -34,10 +34,24 @@
 #endif  // __linux__
 
 
-// Define this if your pthreads implementation uses SIGUSR1 signal.
-// This will disable our SIGUSR1 handler which allows us to create
-// snapshots on receipt of that signal.
-//#define OLD_PTHREADS
+// This gets defined if pthreads implementation uses SIGUSR1/SIGUSR2
+// signals.  This disables our SIGUSR1 handler which disallows
+// creating snapshots on receipt of that signal.  Old kernels (2.0
+// and early 2.1) had only 32 signals available so only USR1/USR2
+// were available for LinuxThreads use.  Newer kernels have more
+// signals available, making USR1/USR2 available to programs again.
+// _NSIG is defined in /usr/include/bits/signum.h
+//
+#ifdef __linux__
+# ifdef _NSIG
+#  if (_NSIG <= 32)
+#   define OLD_PTHREADS
+//#   warning ***** OLD_PTHREADS DETECTED *****
+#  else
+//#   warning ***** NEW_PTHREADS DETECTED *****
+#  endif // if (_NSIG...)
+# endif  // _NSIG
+#endif  // __linux__
 
 
 // To enable the "Transmit Raw WX data" button in
