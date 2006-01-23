@@ -81,9 +81,6 @@ extern int mag;
 
 #ifdef HAVE_LIBGEOTIFF
 
-// Needed for CSLTokenizeStringComplex define (to get rid of warning
-// in gcc-4.0) but causes errors with Cygwin if left active.
-//#include "cpl_csv.h"
 
 #include "xtiffio.h"
 //#include "geotiffio.h"
@@ -377,7 +374,7 @@ int my_GTIFProj4FromLatLong( GTIFDefn * psDefn,
                              double *padfX,
                              double *padfY ) {
 
-    char    *pszProjection, **papszArgs;
+    char    *pszProjection;
     PJ      *psPJ;
     int     i;
 
@@ -389,16 +386,16 @@ int my_GTIFProj4FromLatLong( GTIFDefn * psDefn,
     if( pszProjection == NULL )
         return FALSE;
 
+//fprintf(stderr,"pszProjection:%s\n", pszProjection);
+// Returned this:
+// pszProjection:+proj=utm +zone=10 +ellps=clrk66 +units=m 
+
+
 // --------------------------------------------------------------------
-//      Parse into tokens for pj_init(), and initialize the projection
+//      Initialize the projection
 // --------------------------------------------------------------------
 
-    papszArgs = CSLTokenizeStringComplex( pszProjection, " +", TRUE, FALSE );
-    free( pszProjection );
-
-    psPJ = pj_init( CSLCount(papszArgs), papszArgs );
-
-    CSLDestroy( papszArgs );
+    psPJ = pj_init_plus(pszProjection);
 
     if( psPJ == NULL ) {
         return FALSE;
