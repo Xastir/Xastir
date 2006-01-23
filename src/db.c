@@ -2882,6 +2882,7 @@ void draw_range_scale(Widget w) {
     int x_screen, y_screen;
     int len;
     char text[80];
+    int border_offset = 0;  // number of pixels to offset the scale if a labeled map border is drawn
 
 
     // Find out the screen values
@@ -3025,11 +3026,12 @@ void draw_range_scale(Widget w) {
     x_screen = 10;
     y_screen = screen_height - 5;
     if ((draw_labeled_grid_border==TRUE) && long_lat_grid) {
+        border_offset = get_rotated_label_text_length_pixels(w, "0", FONT_BORDER) + 3;
         // don't draw range scale right on top of labeled border, move into map
-        draw_nice_string(w,pixmap_final,0,x_screen-3,y_screen-12,text,0x10,0x20,len);
+        draw_nice_string(w,pixmap_final,0,x_screen+border_offset,y_screen-border_offset-3,text,0x10,0x20,len);
     } 
     else { 
-        // don't draw range scale right on tom of labeled border, move into map
+        // draw range scale in lower left corder of map
         draw_nice_string(w,pixmap_final,0,x_screen,y_screen,text,0x10,0x20,len);
     }
 
@@ -3050,6 +3052,7 @@ void draw_ruler(Widget w) {
     int mag;
     int i;
     int dx, dy;
+    int border_offset = 0;  // number of pixels to offset the scale if a labeled map border is drawn
 
     ruler_pix = (int)(screen_width / 9);        // ruler size (in pixels)
     ruler_siz = ruler_pix * scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset); // size in meter
@@ -3106,8 +3109,9 @@ void draw_ruler(Widget w) {
         dy = (((i % 3)+1) % 3)-1;         // I want 0 / 0 as last entry
         if ((draw_labeled_grid_border==TRUE) && long_lat_grid) {
             // move ruler up a few pixels to leave space for labeled border
-            dy = dy - 15;
-            dx = dx - 10;
+            border_offset = get_rotated_label_text_length_pixels(w, "0", FONT_BORDER) + 3;
+            dy = dy - border_offset - 3;
+            dx = dx - border_offset - 3;
         }
 
         if (i == 0)

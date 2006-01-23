@@ -4494,7 +4494,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
         for (i = 0; i < FONT_MAX; i++) {
             char *fonttitle[FONT_MAX] = {"MAPFONT003","MAPFONT004","MAPFONT005",
-                                         "MAPFONT006","MAPFONT007"};
+                                         "MAPFONT006","MAPFONT007","MAPFONT008"};
             ac = 0;
             if (i == 0) {
                 XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;

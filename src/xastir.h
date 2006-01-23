@@ -144,7 +144,8 @@ extern int index_maps_on_startup;
 #define FONT_MEDIUM 2
 #define FONT_LARGE 3
 #define FONT_HUGE 4
-#define FONT_MAX 5
+#define FONT_BORDER 5
+#define FONT_MAX 6
 #define FONT_DEFAULT FONT_MEDIUM
 extern char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
 

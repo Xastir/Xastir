@@ -138,6 +138,7 @@
 
 void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color);
 int get_rotated_label_text_length_pixels(Widget w, char *label_text, int fontsize);
+int get_rotated_label_text_height_pixels(Widget w, char *label_text, int fontsize);
 
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
@@ -151,7 +152,7 @@ int   print_auto_rotation = 0;
 int   print_auto_scale = 0;
 //int   print_blank_background_color = 0; // Not used yet.
 int   print_in_monochrome = 0;
-int   print_resolution = 150;           // 72 dpi is normal for Postscript.
+int   print_resolution = 300;           // 72 dpi is normal for Postscript.
                                         // 100 or 150 dpi work well with HP printer
 int   print_invert = 0;                 // Reverses black/white
 
@@ -799,6 +800,7 @@ void draw_grid(Widget w) {
     int border_width = 14;      // The width of the border to draw around the 
                                 // map to place labeled tick marks into
                                 // should be an even number.
+                                // default here overidden by fontsize.
     int half = border_width/2;  // Center of the white lines used to draw the borders
 //    int draw_labeled_grid_border = TRUE;   // flag to draw labeled border, move to a global
     char grid_label[25];        // String to draw labels on grid lines
@@ -809,7 +811,8 @@ void draw_grid(Widget w) {
     int last_line_labeled;      // Marks lines that were labeled when alternate lines
                                 // are not being labeled.
     char seven_zeroes[7] = "0000000";
-    int string_width_pixels;    // Width of the seven_zeroes label string in pixels.
+    int string_width_pixels;    // Width of the unrotated seven_zeroes label string in pixels.
+    int string_height_pixels;   // Height of the unrotated seven_zeroes label string in pixels
     int grid_spacing_pixels;    // Spacing of fine grid lines in pixels.
     int easting_color;          // Colors for the grid labels
     int northing_color;
@@ -819,14 +822,30 @@ void draw_grid(Widget w) {
                                 // bottom of the screen, this is the lowest point in the
                                 // points array that is on the screen.
     int label_on_left;          // if true, draw northing labels on left
+    int outline_border_labels = 0;  // if true put an outline around the border labels
+    int outline_border_labels_color = 0x08; // color of outline to draw around border labels
+                                            // 0x08 is black.
+    int border_foreground_color = 0x20;     // color of the map border, if shown 
+                                            // 0x20 is white.
 
     if (!long_lat_grid)
         return;
     
     if (draw_labeled_grid_border==TRUE) { 
+        // determine some parametrs used in drawing the border
+        string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_BORDER);
+        string_height_pixels = get_rotated_label_text_height_pixels(w, seven_zeroes, FONT_BORDER);
+        // check to see if string_height_pixels is even
+        if ((float)string_height_pixels/2.0==floor((float)string_height_pixels/2.0)) { 
+            border_width = string_height_pixels + 2;
+        } else {   
+            border_width = string_height_pixels + 3;
+        }
+        if (border_width < 14) { border_width = 14; }
+        half = border_width/2; 
         // draw a white border around the map.
         (void)XSetLineAttributes(XtDisplay(w),gc,border_width,LineSolid,CapRound,JoinRound);
-        (void)XSetForeground(XtDisplay(w),gc,colors[0x20]);         // white
+        (void)XSetForeground(XtDisplay(w),gc,colors[border_foreground_color]);         // white
         (void)XDrawLine(XtDisplay(w),pixmap_final,gc,0,half,screen_width,half);
         (void)XDrawLine(XtDisplay(w),pixmap_final,gc,half,0,half,screen_height);
         (void)XDrawLine(XtDisplay(w),pixmap_final,gc,0,screen_height-half,screen_width,screen_height-half);
@@ -1550,9 +1569,11 @@ utm_grid_draw:
                     // Idea is to normally start at the lower left corner
                     // users can then easily follow left to right to get easting, 
                     // and bottom to top to get northing.
-                    easting_color = 0x20;
-                    northing_color = 0x20;
-                    zone_color = 0x0e;
+                    //easting_color = 0x20; 
+                    //northing_color = 0x20;
+                    easting_color = 0x08;  // black text
+                    northing_color = 0x08; // black text
+                    zone_color = 0x0e; 
                     label_on_left = FALSE;
 
                     if (numberofzones>1) {
@@ -1626,11 +1647,17 @@ utm_grid_draw:
                             sizeof(grid_label),
                             "%s",
                             zone_str);
-                        draw_nice_string(w,pixmap_final,0,
+                        draw_rotated_label_text_to_target (w, 270, 
                             xx2,
-                            screen_height - 2,
-                            grid_label,
-                            0x10,zone_color,(int)strlen(grid_label));
+                            screen_height, 
+                            sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                            pixmap_final,
+                            outline_border_labels, colors[outline_border_labels_color]);
+                        //draw_nice_string(w,pixmap_final,0,
+                        //    xx2,
+                        //    screen_height - 2,
+                        //    grid_label,
+                        //    0x10,zone_color,(int)strlen(grid_label));
                     }
 
                     if (zone==0) {
@@ -1642,11 +1669,17 @@ utm_grid_draw:
                             sizeof(grid_label),
                             "%s",
                             zone_str);
-                        draw_nice_string(w,pixmap_final,0,
+			draw_rotated_label_text_to_target (w, 270, 
                             1,
-                            screen_height - 2,
-                            grid_label,
-                            0x10,0x20,(int)strlen(grid_label));
+                            screen_height, 
+                            sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                            pixmap_final,
+                            outline_border_labels, colors[outline_border_labels_color]);
+                        //draw_nice_string(w,pixmap_final,0,
+                        //    1,
+                        //    screen_height - 2,
+                        //    grid_label,
+                        //    0x10,0x20,(int)strlen(grid_label));
                     }
                     // Put metadata in top border.
                     // find location of upper left corner of map, convert to UTM
@@ -1676,7 +1709,6 @@ utm_grid_draw:
                     // deterimne whether the easting and northing strings will fit
                     // in a grid box, or whether easting strings in adjacent boxes
                     // will overlap (so that alternate strings can be skipped).  
-                    string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_SMALL);
                     if (utm_grid.zone[zone].ncols > 1) {
                         // find out the number of pixels beteen two grid lines
                         grid_spacing_pixels = 
@@ -1716,11 +1748,17 @@ utm_grid_draw:
                                      (easting/10));
                                  // draw each number at the bottom of the screen just to the right of the 
                                  // relevant grid line at its location at the bottom of the screen
-                                 draw_nice_string(w,pixmap_final,0,
+                                 //draw_nice_string(w,pixmap_final,0,
+                                 //    utm_grid.zone[zone].col[i].point[bottom_point].x+1,
+                                 //    screen_height-2,
+                                 //    grid_label,
+                                 //    0x10,easting_color,(int)strlen(grid_label));
+                                 draw_rotated_label_text_to_target (w, 270, 
                                      utm_grid.zone[zone].col[i].point[bottom_point].x+1,
-                                     screen_height-2,
-                                     grid_label,
-                                     0x10,easting_color,(int)strlen(grid_label));
+                                     screen_height, 
+                                     sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                                     pixmap_final,
+                                     outline_border_labels, colors[outline_border_labels_color]);
                              }
                         }
                     }
@@ -1752,22 +1790,33 @@ utm_grid_draw:
                                      ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
                                      > (3 * border_width))
                                     ) {
-                                     // don't overwrite the zone designator in  the lower left border
+                                     // draw northing labels
                                      if (label_on_left==TRUE) { 
-                                         draw_rotated_label_text_to_target (w, 180, 
-                                             border_width, 
-                                             utm_grid.zone[zone].row[i].point[0].y,
-                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_SMALL,
-                                             pixmap_final,
-                                             1, colors[0x08]);
+                                         // label northings on left border 
+                                         // don't overwrite the zone designator in  the lower left border
+                                         if (utm_grid.zone[zone].row[i].point[0].y < (screen_height - border_width)) {
+                                             draw_rotated_label_text_to_target (w, 180, 
+                                                 border_width, 
+                                                 utm_grid.zone[zone].row[i].point[0].y,
+                                                 sizeof(grid_label),colors[northing_color],grid_label,FONT_BORDER,
+                                                 pixmap_final,
+                                                 outline_border_labels, colors[outline_border_labels_color]);
+                                         }
+                                         //draw_rotated_label_text_to_target (w, 180, 
+                                         //    border_width, 
+                                         //    utm_grid.zone[zone].row[i].point[0].y,
+                                         //    sizeof(grid_label),colors[northing_color],grid_label,FONT_MEDIUM,
+                                         //    pixmap_final,
+                                         //    1, colors[0x08]);
                                      } 
                                      else {
+                                         // label northings on right border
                                          draw_rotated_label_text_to_target (w, 180, 
-                                             screen_width-2, 
+                                             screen_width, 
                                              utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
-                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_SMALL,
+                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_BORDER,
                                              pixmap_final,
-                                             1, colors[0x08]);
+                                             outline_border_labels, colors[outline_border_labels_color]);
                                      }
                                  }
                              }
@@ -2140,7 +2189,7 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
 #define FONT_MEDIUM 2
 #define FONT_LARGE 3
 #define FONT_HUGE 4
-#define FONT_MAX 5
+#define FONT_MAX 6
 
 XFontStruct *rotated_label_font[FONT_MAX]={NULL,NULL,NULL,NULL,NULL};
 char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
@@ -2277,6 +2326,47 @@ int get_rotated_label_text_length_pixels(Widget w, char *label_text, int fontsiz
         XTextExtents(rotated_label_font[fontsize], label_text, strlen(label_text), &dir, &asc, &desc,
              &overall);
         return_value = overall.width;
+    }
+
+    return return_value;
+}
+
+
+
+
+
+// Find the pixel height of an unrotated string in the rotated_label_font.
+// Parameters:
+//    w - the XtDisplay.
+//    label_text - the string of which the length is to be found.
+//    fontsize - the fontsize in the rotated_label_font in which the string
+//    is to be rendered.
+// Returns: the height in pixels of the string, -1 on an error.
+int get_rotated_label_text_height_pixels(Widget w, char *label_text, int fontsize) {
+    int dir, asc, desc;   // parameters returned by XTextExtents, but not used here.
+    XCharStruct overall;  // description of the space occupied by the string.
+    int return_value;     // value to return
+    int got_font;         // flag indicating that a font is available
+
+    return_value = -1;
+    got_font = TRUE;
+
+    /* load font */
+    if(!rotated_label_font[fontsize]) {
+        rotated_label_font[fontsize]=(XFontStruct *)XLoadQueryFont(XtDisplay (w),
+                                                rotated_label_fontname[fontsize]);
+        if (rotated_label_font[fontsize] == NULL) {    // Couldn't get the font!!!
+            fprintf(stderr,"get_rotated_label_text_height_pixels: Couldn't get font %s\n",
+                rotated_label_fontname[fontsize]);
+            got_font = FALSE;
+        }
+    }
+   
+    if (got_font) {
+        // find out the width in pixels of the unrotated label_text string.
+        XTextExtents(rotated_label_font[fontsize], label_text, strlen(label_text), &dir, &asc, &desc,
+             &overall);
+        return_value = overall.ascent + overall.descent;
     }
 
     return return_value;

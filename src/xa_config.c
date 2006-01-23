@@ -537,6 +537,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_string (fout, "MAPS_LABEL_FONT_MEDIUM", rotated_label_fontname[FONT_MEDIUM]);
         store_string (fout, "MAPS_LABEL_FONT_LARGE", rotated_label_fontname[FONT_LARGE]);
         store_string (fout, "MAPS_LABEL_FONT_HUGE", rotated_label_fontname[FONT_HUGE]);
+        store_string (fout, "MAPS_LABEL_FONT_BORDER", rotated_label_fontname[FONT_BORDER]);
         store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT]);
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
@@ -1246,11 +1247,17 @@ void load_data_or_default(void) {
         xastir_snprintf(rotated_label_fontname[FONT_HUGE],
             sizeof(rotated_label_fontname[FONT_HUGE]),
             "-adobe-helvetica-medium-r-normal--24-*-*-*-*-*-iso8859-1");
+    
+    if (!get_string ("MAPS_LABEL_FONT_BORDER", rotated_label_fontname[FONT_BORDER], sizeof(rotated_label_fontname[FONT_BORDER])))
+        xastir_snprintf(rotated_label_fontname[FONT_BORDER],
+            sizeof(rotated_label_fontname[FONT_BORDER]),
+            "-adobe-helvetica-medium-r-normal--14-*-*-*-*-*-iso8859-1");
+
 
     if (!get_string ("MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT], sizeof(rotated_label_fontname[FONT_DEFAULT])))
         xastir_snprintf(rotated_label_fontname[FONT_DEFAULT],
             sizeof(rotated_label_fontname[FONT_DEFAULT]),
-            "-adobe-helvetica-medium-r-normal--12-*-*-*-*-*-iso8859-1");
+            "-adobe-helvetica-bold-r-normal--12-*-*-*-*-*-iso8859-1");
 
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
