@@ -1192,6 +1192,7 @@ MAPFONT004|Klein||
 MAPFONT005|Mittel||
 MAPFONT006|Groﬂ||
 MAPFONT007|Riesig||
+MAPFONT008|Border Labels||
 #
 # Entfernung/Richtung auf der Statuszeile
 PULDNDB001|Entf./Richtung in Status||

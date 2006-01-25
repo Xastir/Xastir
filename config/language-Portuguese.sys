@@ -1188,6 +1188,7 @@ MAPFONT004|Pequeno||
 MAPFONT005|Medio||
 MAPFONT006|Grande||
 MAPFONT007|Enorme||
+MAPFONT008|Border Labels||
 #
 # Distancia/rumo na linha de estados
 PULDNDB001|Estado dist/rumo||

@@ -1183,6 +1183,7 @@ MAPFONT004|Pequeño||
 MAPFONT005|Medio||
 MAPFONT006|Grande||
 MAPFONT007|Enorme||
+MAPFONT008|Border Labels||
 #
 # Distancia/Orientación en línea de estado
 PULDNDB001|Estado de Distancia/Orientación||

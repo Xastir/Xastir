@@ -1184,6 +1184,7 @@ MAPFONT004|Piccolo||
 MAPFONT005|Medio||
 MAPFONT006|Grande||
 MAPFONT007|Enorme||
+MAPFONT008|Border Labels||
 #
 # Distance/Bearing on status line
 PULDNDB001|Stato Distanza/Puntamento||
