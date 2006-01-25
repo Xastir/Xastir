@@ -170,7 +170,7 @@ BUILD open2300db2APRS
 
 It's the usual:
 
-$ cd xastir/src/LaCrosse
+$ cd xastir/LaCrosse
 $ ./bootstrap.sh
 $ ./configure
 $ make
