@@ -653,7 +653,9 @@ int main(int argc, char **argv)
     double airpressure;
     unsigned int valid_data_flgs;
     int Metric_Data = 0, dsts = 0;
-    int  pid, s, clen = sizeof(struct sockaddr_in), fd[CONNECTIONS];
+    int  pid, s;
+    socklen_t clen = sizeof(struct sockaddr_in);
+    int fd[CONNECTIONS];
     int *max = 0,  c, dly_cnt = 1;
     int not_a_daemon = 0, repetitive = 0, tcp_wx_port = PORT;
     int  i, index = 0;
