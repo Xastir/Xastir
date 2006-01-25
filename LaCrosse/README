@@ -1,0 +1,211 @@
+
+$Id$
+
+Copyright (C) 2004 Bruce Bennett <bruts@adelphia.net>
+Portions Copyright (C) 2004-2005  The Xastir Group
+(Modified for the Xastir project under GPL license)
+
+
+Davis Weather Station support for Xastir - db2APRS
+
+
+OVERVIEW
+--------
+
+This is a bridge utility between "meteo", a Davis Weather Station 
+data storage & display application by Andreas Muller (see 
+http://meteo.othello.ch) and "Xastir", the APRS package for
+Linux (see http://www.xastir.org). It allows your Davis weather 
+data to be used by Xastir for local station data.
+
+You will need to obtain and install Xastir, mysql and meteo as 
+outlined in the following sections. After Xastir and meteo are
+in working order, this utility can be run as a daemon to provide 
+weather data to Xastir (or any other APRS-format application).
+
+"db2APRS" watches for new weather data in the database, retrieves
+the new data, formats it in APRS "position less" ASCII format and
+makes it available on a TCP port of your choosing. Xastir is 
+capable of reading this data (see note under Xastir installation).
+
+
+INSTALLATION
+------------
+
+Steps in order:
+
+1) Install mysql - initial tested version mysql-3.23.58
+   although version 4 is released and has some significant 
+   improvements - and version 4 *should* work (to be tested yet). 
+   If you use an RPM or DPK binary-image version, be sure to add 
+   the mysql-devel headers. For the latest image-version, see 
+   http://www.mysql.com and follow the links to the downloads. 
+   I used mysql-3.23.58-pc-linux-i686.tar.gz from that site.   
+
+2) Install meteo - tested versions meteo-0.9.4 and meteo-0.9.8
+   Version 0.9.9 is available and based on the change documented
+   will work. See the instructions for installing & then setting 
+   up meteo that come with the tar ball. Obtain the latest meteo 
+   at http://meteo.othello.ch - the setup is rather involved but
+   worth the efort. Some SQL/XML skills can help here, but are 
+   not absolutely required...
+
+3) Install or update your installation for Xastir to the latest
+   version (http://www.sourceforge.net, project Xastir) 
+
+4) Install db2APRS -  version 0.1.2
+   See instructions below.
+
+
+SETTINGS & STARTUP
+------------------
+
+1) mysql - it is recommended by mysql to set up passwords, but for
+   this usage it doesn't matter. In fact, it's a bit of a pain.
+   TODO - db2APRS has the annoying fault of clearly displaying 
+   the password used for the mysql database for anyone to see via 
+   'ps -ef'. Start mysqld before db2APRS, meteo and Xastir in your 
+   boot-time initializations.
+
+2) meteo - my testing used a one minute data accumulation rate. 
+   Thirty seconds would more closely match Xastir, but the 
+   database growth rate would be twice as fast (about 600  
+   Mbytes/year at 30 sec rate). Set your desired rate using the 
+   meteopoll command line options. I run the full meteopoll 
+   package with  averaging, graphs and meteodequeue - but the 
+   only *required*  element is meteopoll. Start the meteopoll 
+   daemon after mysqld is up. (meteodequeue is recommended - see 
+   the doc's that come with meteo and man pages).
+
+3) db2APRS - see "db2APRS RUN OPTIONS" below. Start this daemon 
+   after mysqld and before Xastir. When meteopoll isn't running, 
+   you will get old weather data, time stamped by Xastir as new 
+   data.
+
+4) xastir - start this last, if you are auto-opening the WX port.
+   Set the weather port as a network weather station on 
+   "localhost", port number as chosen in "db2APRS RUN OPTIONS" 
+   (default is 1313). Make sure your station is set to one of the
+   "w/weather data" and your Icon is set to a weather Icon.
+
+
+db2APRS RUN OPTIONS
+-------------------
+
+The db2APRS utility takes standard short & long command line 
+options, which can be displayed by "db2APRS -?". Here's the list:
+
+  -h	--help	
+
+      Show help info and exit.
+
+  -v    --verbose
+
+      Useful with the -n switch, for trouble-shooting, not for 
+      normal operation. Tells you more than you really wanted to  
+      know, but I recommend that you use this switch while you 
+      try to initially set up db2APRS.
+
+  -c	--cport [port#]
+
+      Choose which TCP/IP port data comes out from. If not used,
+      port number 1313 is the default. HINT: "telnet localhost 
+      [port#]" is a handy way to verify db2APRS operation.
+
+  -s	--sensor [sensor group#]
+
+      Indicate what group of sensors are the outdoor ones. 
+      If not supplied, sensor number 1 is the default. 
+      HINT: Tables "station" and "sensor" in the meteo
+      database control what your "sensor" (which means 
+      sensor group) definitions are for your "station".
+      
+  -u 	--user [database user]	
+
+      Username for mysql database connection. If unspecfied 
+      defaults to "meteo" (which is per the meteo setup intended
+      to be a read-only account for meteo).
+
+  -p 	--password [db passwd]	
+
+      Password for mysql connection. If unspecfied, no password  
+      is supplied. NOTE: this password is unfortunately visible 
+      to anyone on your system running 'ps -ef'. TO BE FIXED.
+
+  -b 	--database [database]	
+
+      Database name for mysql connection. If not supplied the 
+      default is "meteo".
+
+  -n	--nodaemon
+
+      Run in the fore-ground as a program. Useful for debugging
+      or initial setup, when used with -v.
+
+  -r	--repeat
+      
+      Keep going till killed - if not specified, one pass is 
+      performed and then db2APRS exits. The only case where this  
+      switch is *not* used is during initial setup/debug.
+
+Typical example: "./db2APRS -r -u meteo -p meteo" for normal use
+or "./db2APRS -r -n -v -u test -p password" for debugging.
+
+
+OPERATIONAL DETAILS
+-------------------
+
+db2APRS connects to the specified mysql database, extracts the 
+latest timestamp and compares it to the last timestamp it read. 
+If newer, the outdoor weather data (extception: air pressure is
+taken as indoor=outdoor) bearing this timestamp is extracted 
+and formatted in the APRS "position less" string format with a  
+Davis and X-APRS tag on the end. Any connecting client is given 
+this string at 25 second intervals, after new database entries 
+are checked for.
+
+This daemon could run on any networked Linux machine instead of 
+the machine hosting Xastir, if desired (it's a good way around 
+lack of processing power, disk space or serial ports!).
+
+Note that the db2APRS daemon keeps providing data to Xastir even 
+when no new entries in the database have been made. This could 
+lead to errors in the timestamp on the data that Xastir is 
+transmitting.
+
+
+BUILD db2APRS
+-------------
+
+It's the usual:
+
+$ cd xastir/src/Davis
+$ ./bootstrap.sh
+$ ./configure
+$ make
+$ su -c 'make install'
+
+
+ACKNOWLEGEMENTS & AUTHORS
+-------------------------
+
+db2APRS is the product of Bruce Bennett, callsign KB8ROP 
+<bruts@adelphia.net> It is freely available at no charge 
+under the GNU GENERAL PUBLIC LICENSE (see "COPYING" document)
+NO WARRANTY, expressed or implied, use at your own risk.
+
+Please feel free to contact me with test results & comments 
+at the above EMAIL address
+
+Code portions and style taken from wx200d by Tim Witham 
+<twitham@quiknet.com>, et. al.
+
+meteo is the work of Andreas Muller <afm@othello.ch>, et. al.
+
+mysql is the product of MySQL - see http://www.mysql.com for
+team details.
+
+and finally, Xastir is the brain child of Frank Giannandrea et. 
+al. (see http://www.xastir.org for current EMAIL addresses)
+
+

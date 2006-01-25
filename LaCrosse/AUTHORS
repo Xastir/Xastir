@@ -1,0 +1,26 @@
+
+$Id: 
+
+
+                        Developers and Contributions
+    _________________________________________________________________
+
+    First, thanks go out to the great folks at the xastir team - a
+    wonderful APRS application set and helpful folks!
+
+    Thanks also to Andreas Muller, author of meteo and a great
+    resource for information and help.
+    
+    Elements of this software are taken from wx200d ver 1.2
+    by Tim Witham, and it is modeled after that application.
+			
+    Finally, thanks to the MySQL folks for the key element - the
+    database.
+
+    N0VH	Jim Chandler	    jim@n0vh.org
+    KB8ROP      Bruce Bennett       bruts@adelphia.net
+    _________________________________________________________________
+
+    Copyright (C) 2003-2004 Bruce Bennett KB8ROP
+    Copyright (C) 2005 Jim Chandler N0VH 
+
