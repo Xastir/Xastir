@@ -10,3 +10,7 @@ autom4te.cache
 config.h.in
 config.status
 stamp-h1
+mkinstalldirs
+depcomp
+install-sh
+missing

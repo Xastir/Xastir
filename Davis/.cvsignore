@@ -9,3 +9,7 @@ config.log
 config.status
 configure
 stamp-h1
+mkinstalldirs
+depcomp
+install-sh
+missing
