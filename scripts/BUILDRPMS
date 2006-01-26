@@ -17,6 +17,15 @@
 
 # Run these commands as "archer".
 #
+echo
+echo
+echo "***********************************"
+echo "***** Cleaning up Directories *****"
+echo "***********************************"
+echo "Davis..."
+su -c " cd Davis; ./bootstrap.sh; ./configure; make clean" archer
+echo "LaCrosse..."
+su -c " cd LaCrosse; ./bootstrap.sh; ./configure; make clean" archer
 # These are just to get the configure and spec files in shape.
 # Configure options don't matter yet here.
 echo
@@ -24,7 +33,9 @@ echo
 echo "********************************************"
 echo "***** Setting up CONFIG and SPEC files *****"
 echo "********************************************"
-su -c=" cd xastir;./bootstrap.sh;./configure;make dist" archer
+su -c " cd Davis; ./bootstrap.sh; ./configure; make clean" archer
+su -c " cd LaCrosse; ./bootstrap.sh; ./configure; make clean" archer
+su -c " ./bootstrap.sh; ./configure; make clean; make dist" archer
 
 
 
