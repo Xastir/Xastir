@@ -2,8 +2,8 @@
 # Copyright (C) 2004-2005  The Xastir Group
 #
 
-bin_PROGRAMS =
-noinst_PROGRAMS = open2300db2APRS
+bin_PROGRAMS = open2300db2APRS
+noinst_PROGRAMS = 
 
 open2300db2APRS_SOURCES = \
     open2300db2APRS.c defs.h
