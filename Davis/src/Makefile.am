@@ -3,8 +3,8 @@
 # Copyright (C) 2004-2006  The Xastir Group
 #
 
-bin_PROGRAMS =
-noinst_PROGRAMS = db2APRS
+bin_PROGRAMS = db2APRS
+noinst_PROGRAMS =
 
 db2APRS_SOURCES = \
     db2APRS.c defs.h
