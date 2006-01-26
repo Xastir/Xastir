@@ -50,7 +50,7 @@
 #include <syslog.h>
 #include <errno.h>
 #include <getopt.h>
-#include <mysql/mysql.h>
+#include <mysql.h>
 
 #define MAXARGS 20      /* maximum CGI args to parse */
 #define TMPLEN 128      /* max length of CGI */
@@ -799,7 +799,9 @@ int main(int argc, char **argv)
 
     /* catch signals to close the database connection */
     signal( SIGTERM, term_handler );/* termination */
+#if defined(SIGPWR) /* SIGPWR is linux centric */
     signal( SIGPWR, term_handler ); /* power failure */
+#endif
 
     if (debug_level & 1) fprintf(stdout,"Main Loop...\n");
     dly_cnt = 1;  //N0VH, change back to 1
