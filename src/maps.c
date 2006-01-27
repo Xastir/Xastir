@@ -151,7 +151,7 @@ int   print_auto_rotation = 0;
 int   print_auto_scale = 0;
 //int   print_blank_background_color = 0; // Not used yet.
 int   print_in_monochrome = 0;
-int   print_resolution = 300;           // 72 dpi is normal for Postscript.
+int   print_resolution = 150;           // 72 dpi is normal for Postscript.
                                         // 100 or 150 dpi work well with HP printer
 int   print_invert = 0;                 // Reverses black/white
 
@@ -836,9 +836,9 @@ void draw_grid(Widget w) {
         string_height_pixels = get_rotated_label_text_height_pixels(w, seven_zeroes, FONT_BORDER);
         // check to see if string_height_pixels is even
         if ((float)string_height_pixels/2.0==floor((float)string_height_pixels/2.0)) { 
-            border_width = string_height_pixels + 2;
+            border_width = string_height_pixels + 6;
         } else {   
-            border_width = string_height_pixels + 3;
+            border_width = string_height_pixels + 7;
         }
         if (border_width < 14) { border_width = 14; }
         half = border_width/2; 
@@ -1370,7 +1370,7 @@ void draw_grid(Widget w) {
                 int nbp = 0;
 
 #ifdef UT_DEBUG_VERB
-                fprintf(stderr,"utm_grid.zone[%d].col[%d].npoints=%d .firstpoint=%d",
+                fprintf(stderr,"utm_grid.zone[%d].col[%d].npoints=%d .firstpoint=%d\n",
                        zone, i, np, fp);
                 if (np < 2)
                     puts(" Not enough points!");
@@ -1452,7 +1452,7 @@ void draw_grid(Widget w) {
                 int np = utm_grid.zone[zone].row[i].npoints;
                 int fp = utm_grid.zone[zone].row[i].firstpoint;
 #ifdef UT_DEBUG_VERB
-                fprintf(stderr,"utm_grid.zone[%d].row[%d].npoints=%d.firstpoint=%d",
+                fprintf(stderr,"utm_grid.zone[%d].row[%d].npoints=%d.firstpoint=%d\n",
                        zone, i, np, fp);
                 if (np < 2)
                     puts(" Not enough points!");
@@ -1752,12 +1752,16 @@ utm_grid_draw:
                                  //    screen_height-2,
                                  //    grid_label,
                                  //    0x10,easting_color,(int)strlen(grid_label));
-                                 draw_rotated_label_text_to_target (w, 270, 
-                                     utm_grid.zone[zone].col[i].point[bottom_point].x+1,
-                                     screen_height, 
-                                     sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
-                                     pixmap_final,
-                                     outline_border_labels, colors[outline_border_labels_color]);
+                          
+                                 // don't overwrite the zone label 
+                                 if (utm_grid.zone[zone].col[i].point[bottom_point].x+1 > border_width * 2) {
+                                     draw_rotated_label_text_to_target (w, 270, 
+                                         utm_grid.zone[zone].col[i].point[bottom_point].x+1,
+                                         screen_height, 
+                                         sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                                         pixmap_final,
+                                         outline_border_labels, colors[outline_border_labels_color]);
+                                 }
                              }
                         }
                     }

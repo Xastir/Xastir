@@ -91,6 +91,13 @@ static int debug=0;
 #define M_PI 3.14159265358979323846
 #endif  // M_PI
 
+// constants used to check for approximate equality with 90, 180, and 270 degrees
+// (int)((M_PI/2)*1000) 
+#define INT_M_PI_2_1000   1570  
+// (int)(M_PI*1000) 
+#define INT_M_PI_1000     3141
+// (int)((3*M_PI/2)*1000)
+#define INT_3_M_PI_2_1000 4712
 
 /* ---------------------------------------------------------------------- */
 
@@ -887,6 +894,9 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     XCharStruct overall;
     int old_cols_in=0, old_rows_in=0;
     int cols_in2, rows_in2;
+    int intAngle1000;       // stores first few digits of angle, 
+                            // used to avoid problems with rounding error in 
+                            // recognition of 90 degree angles 
     
     /* allocate memory */
     item=(RotatedTextItem *)malloc((unsigned)sizeof(RotatedTextItem));
@@ -1078,8 +1088,16 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     dj=0.5-(float)item->rows_out/2;
 
     /* where abouts does text actually lie in rotated image? */
-    if(angle==0 || angle==M_PI/2 || 
-       angle==M_PI || angle==3*M_PI/2) {
+    intAngle1000 =  (int)(angle*1000);
+    if (   intAngle1000==0 
+        || intAngle1000==INT_M_PI_2_1000 
+        || intAngle1000==INT_M_PI_1000 
+        || intAngle1000==INT_3_M_PI_2_1000 ) {
+        // 0, 90, 180, 270 degrees are special cases
+        // floating point errors may prevent recognition of them unless
+        // we round off, that is a value that started as 180 may not be
+        // recognized as == M_PI/2.  Rounding to .001 radian seems a
+        // reasonable choice for the purpose of orienting text strings.  
         xl=0;
         xr=(float)item->cols_out;
         xinc=0;
@@ -1108,51 +1126,75 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     // Set up some constants for loops below
     cols_in2 = item->cols_in / 2;
     rows_in2 = item->rows_in / 2;
- 
 
-    /* loop through all relevent bits in rotated image */
-    for(j=0; j<item->rows_out; j++) {
-        float dj_sin, dj_cos;
-        float temp_it, temp_jt;
-
-        
-        /* no point re-calculating these every pass */
-        di=(float)((xl<0)?0:(int)xl)+0.5-(float)item->cols_out/2;
-        byte_out=(item->rows_out-j-1)*byte_w_out;
-
-        // New code:  Calculate these outside the inner loop for
-        // major speed gains.
-        dj_sin = dj * sin_angle;
-        dj_cos = dj * cos_angle;
-        temp_it = (float)cols_in2 + dj_sin;
-        temp_jt = (float)rows_in2 - dj_cos;
-
-        /* loop through meaningful columns */
-        for(i=((xl<0)?0:(int)xl); 
-                i<((xr>=item->cols_out)?item->cols_out:(int)xr); i++) {
-            
-            // rotate coordinates
-
-            // Original code (very slow)
-            //it=(float)item->cols_in/2 + ( di*cos_angle + dj*sin_angle);
-            //jt=(float)item->rows_in/2 - (-di*sin_angle + dj*cos_angle);
-
-            // New code (much faster)
-            //it=(float)cols_in2 + ( di*cos_angle + dj_sin);
-            //jt=(float)rows_in2 - (-di*sin_angle + dj_cos);
-            it=(float)temp_it + di*cos_angle;
-            jt=(float)temp_jt + di*sin_angle;
-            
-            /* set pixel if required */
-            if(it>=0 && it<item->cols_in && jt>=0 && jt<item->rows_in)
-                if((I_in->data[jt*byte_w_in+it/8] & 128>>(it%8))>0)
-                    item->ximage->data[byte_out+i/8]|=128>>i%8;
-            
-            di+=1;
+    // Handle special cases of 90 degree rotation
+    if ( intAngle1000 == INT_M_PI_2_1000 ) {
+        // angle is 180 degrees, text is rotated 90 degrees from horizontal and runs up x axis
+        for(j=0; j<item->rows_out; j++) {
+            di=(float)((xl<0)?0:(int)xl)+0.5-(float)item->cols_out/2;
+            byte_out=(item->rows_out-j-1)*byte_w_out;
+            for(i=((xl<0)?0:(int)xl); 
+                    i<((xr>=item->cols_out)?item->cols_out:(int)xr); i++) {
+                jt=(float)rows_in2 + di;
+                it=(float)cols_in2 + dj;
+                if(it>=0 && it<item->cols_in && jt>=0 && jt<item->rows_in)
+                    if((I_in->data[jt*byte_w_in+it/8] & 128>>(it%8))>0)
+                        item->ximage->data[byte_out+i/8]|=128>>i%8;
+                
+                di+=1;
+            }
+            dj+=1;
+            xl+=xinc;
+            xr+=xinc;
         }
-        dj+=1;
-        xl+=xinc;
-        xr+=xinc;
+        // handling for special cases of 90 and 270 not written yet.
+        // need elseif clauses here.
+    } else {
+        // not a 90 degree rotation, use sin/cos transform
+        /* loop through all relevent bits in rotated image */
+        for(j=0; j<item->rows_out; j++) {
+            float dj_sin, dj_cos;
+            float temp_it, temp_jt;
+    
+            
+            /* no point re-calculating these every pass */
+            di=(float)((xl<0)?0:(int)xl)+0.5-(float)item->cols_out/2;
+            byte_out=(item->rows_out-j-1)*byte_w_out;
+    
+            // New code:  Calculate these outside the inner loop for
+            // major speed gains.
+            dj_sin = dj * sin_angle;
+            dj_cos = dj * cos_angle;
+            temp_it = (float)cols_in2 + dj_sin;
+            temp_jt = (float)rows_in2 - dj_cos;
+    
+            /* loop through meaningful columns */
+            for(i=((xl<0)?0:(int)xl); 
+                    i<((xr>=item->cols_out)?item->cols_out:(int)xr); i++) {
+                
+                // rotate coordinates
+    
+                // Original code (very slow)
+                //it=(float)item->cols_in/2 + ( di*cos_angle + dj*sin_angle);
+                //jt=(float)item->rows_in/2 - (-di*sin_angle + dj*cos_angle);
+    
+                // New code (much faster)
+                //it=(float)cols_in2 + ( di*cos_angle + dj_sin);
+                //jt=(float)rows_in2 - (-di*sin_angle + dj_cos);
+                it=(float)temp_it + di*cos_angle;
+                jt=(float)temp_jt + di*sin_angle;
+                
+                /* set pixel if required */
+                if(it>=0 && it<item->cols_in && jt>=0 && jt<item->rows_in)
+                    if((I_in->data[jt*byte_w_in+it/8] & 128>>(it%8))>0)
+                        item->ximage->data[byte_out+i/8]|=128>>i%8;
+                
+                di+=1;
+            }
+            dj+=1;
+            xl+=xinc;
+            xr+=xinc;
+        }
     }
     XDestroyImage(I_in);
     
