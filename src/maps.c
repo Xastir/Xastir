@@ -831,15 +831,19 @@ void draw_grid(Widget w) {
         return;
     
     if (draw_labeled_grid_border==TRUE) { 
-        // determine some parametrs used in drawing the border
+        // Determine some parameters used in drawing the border.
         string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_BORDER);
         string_height_pixels = get_rotated_label_text_height_pixels(w, seven_zeroes, FONT_BORDER);
+        // Rotated text functions used to draw the border text add some 
+        // blank space at the bottom of the text so make the border wide enough 
+        // to compensate for this.
+        border_width = string_height_pixels + (string_height_pixels/2) + 1; 
         // check to see if string_height_pixels is even
-        if ((float)string_height_pixels/2.0==floor((float)string_height_pixels/2.0)) { 
-            border_width = string_height_pixels + 6;
-        } else {   
-            border_width = string_height_pixels + 7;
+        if ((float)string_height_pixels/2.0!=floor((float)string_height_pixels/2.0)) { 
+            border_width++; 
         }
+        // we are using draw nice string to write the metadata in the top border, so 
+        // make sure the border is wide enough for it, even if the grid labels are small.
         if (border_width < 14) { border_width = 14; }
         half = border_width/2; 
         // draw a white border around the map.
@@ -1735,16 +1739,18 @@ utm_grid_draw:
                                  bottom_point = utm_grid.zone[zone].col[i].npoints - 1;
                              if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
                                  last_line_labeled = FALSE; 
-                             } else {
+                             }
+                             else {
                                  last_line_labeled = TRUE;
                                  xx = (utm_grid.zone[zone].col[i].point[bottom_point].x * scale_x) + x_long_offset;
                                  yy = (utm_grid.zone[zone].col[i].point[bottom_point].y * scale_y) +  y_lat_offset;
                                  convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                                 // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
+                                 // Dividide easting by utm_grid_spacing to make sure the line is labeled 
+                                 // correctly, and not a few meters off.
                                  xastir_snprintf(grid_label,
                                      sizeof(grid_label),
                                      "%06.0f0",
-                                     (easting/10));
+                                     (float)((utm_grid_spacing_m/10) * roundf(easting/(utm_grid_spacing_m))));
                                  // draw each number at the bottom of the screen just to the right of the 
                                  // relevant grid line at its location at the bottom of the screen
                                  //draw_nice_string(w,pixmap_final,0,
@@ -1753,8 +1759,12 @@ utm_grid_draw:
                                  //    grid_label,
                                  //    0x10,easting_color,(int)strlen(grid_label));
                           
-                                 // don't overwrite the zone label 
-                                 if (utm_grid.zone[zone].col[i].point[bottom_point].x+1 > border_width * 2) {
+                                 // Don't overwrite the zone label, half the seven zeros string should give it room.
+                                 // Don't draw the label if it will go off the left edge fo the screen.
+                                 if ((utm_grid.zone[zone].col[i].point[bottom_point].x+1 > (string_width_pixels/2)) 
+                                    && (utm_grid.zone[zone].col[i].point[bottom_point].x+1 < (screen_width - string_width_pixels)) 
+                                    ) {
+                                     // ok to draw the label
                                      draw_rotated_label_text_to_target (w, 270, 
                                          utm_grid.zone[zone].col[i].point[bottom_point].x+1,
                                          screen_height, 
@@ -1771,20 +1781,22 @@ utm_grid_draw:
                         if (utm_grid.zone[zone].row[i].npoints > 1) {
                              if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
                                  last_line_labeled = FALSE; 
-                             } else {
+                             } 
+                             else {
                                  last_line_labeled = TRUE;
                                  if (label_on_left==TRUE) { 
                                      xx = (utm_grid.zone[zone].row[i].point[0].x * scale_x) + x_long_offset;
-                                 } else {
+                                 } 
+                                 else {
                                      xx = (utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].x * scale_x) + x_long_offset;
                                  }
                                  yy = (utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y * scale_y) +  y_lat_offset;
                                  convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                                 // dividing easting by 10 to make sure the line is labeled as at least a 10 m grid.
+                                 // Divide northing by utm grid spacing to make sure the line is labeled correctly.
                                  xastir_snprintf(grid_label,
                                      sizeof(grid_label),
-                                     "%05.0f00",
-                                     northing/100);
+                                     "%06.0f0",
+                                     (float)((utm_grid_spacing_m/10) * roundf(northing/(utm_grid_spacing_m))));
                                  // draw each number just above the relevant grid line along the right side
                                  // of the screen.
                                  if (((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
