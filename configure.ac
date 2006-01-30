@@ -210,6 +210,9 @@ AC_CHECK_FUNCS([pthread_mutexattr_setkind_np pthread_mutexattr_settype])
 
 # this is a GNU extension and not present on all systems.
 AC_CHECK_FUNCS([strndup])
+
+#this is also a recent extension that should not be counted on
+AC_CHECK_FUNCS([roundf])
  
 # Check for intl library (Needed for Cygwin) 
 # 

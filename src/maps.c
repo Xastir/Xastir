@@ -172,6 +172,18 @@ time_t map_index_timestamp;
 
 int grid_size = 0;
 
+// Rounding
+#ifndef HAVE_ROUNDF
+// Poor man's rounding, but rounds away from zero as roundf is supposed to.
+
+float roundf(float x) 
+{
+    int i;
+    i= (((x)>=0)?(((x)+.5)):(((x)-.5)));
+    return ((float)i);
+}
+
+#endif
 
 
 // UTM Grid stuff
