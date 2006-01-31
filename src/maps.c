@@ -833,11 +833,13 @@ void draw_grid(Widget w) {
                                 // bottom of the screen, this is the lowest point in the
                                 // points array that is on the screen.
     int label_on_left;          // if true, draw northing labels on left
-    int outline_border_labels = 0;  // if true put an outline around the border labels
-    int outline_border_labels_color = 0x08; // color of outline to draw around border labels
-                                            // 0x08 is black.
+    int outline_border_labels = TRUE;  // if true put an outline around the border labels
     int border_foreground_color = 0x20;     // color of the map border, if shown 
+                                            // 0x08 is black.
                                             // 0x20 is white.
+    int outline_border_labels_color = border_foreground_color; 
+                                // color of outline to draw around border labels
+                                // use color of border to help make text more legible.
 
     if (!long_lat_grid)
         return;
@@ -1568,27 +1570,24 @@ utm_grid_draw:
                     // continually updated, labeling the grid is primarily for the 
                     // purpose of printing maps and saving screenshots.
                     //
-                    // ******* Currently isn't pretty when two lettered rows of two different
-                    // ******* zones are on screen (e.g. 18T,18U,19T,19U).
                     // ******* Doesn't work properly near poles when 3 zones are on screen
                     // ******* (e.g. 13,14,15) - overlaps northings for 14 and 15.
-                    // ******* Doesn't work properly in one zone with 2 lettered rows
+                    // ******* Doesn't clearly distinguish one zone with 2 lettered rows
                     // ******* (e.g. 18T,18U) needs color distinction between northings
-                    // ******* and demarcation of which northings are in which lettered row.
-                    // ******* Also needs to properly round numbers for scale.
+                    // ******* to indicate which northings are in which lettered row.
                     //
                     
-                    // Default labels for just one zone on screen are white with
+                    // Default labels for just one zone on screen are black text for
                     // zone at lower left corner, eastings on bottom, and northings
                     // at right.
                     // Idea is to normally start at the lower left corner
                     // users can then easily follow left to right to get easting, 
                     // and bottom to top to get northing.
-                    //easting_color = 0x20; 
-                    //northing_color = 0x20;
+                    // For two zones, second zone uses blue text for eastings and northings.
                     easting_color = 0x08;  // black text
                     northing_color = 0x08; // black text
-                    zone_color = 0x0e; 
+                    zone_color = 0x08;     // black text 
+                                           // 0x09=blue (0x0e=yellow works well with outline, but not without).
                     label_on_left = FALSE;
 
                     if (numberofzones>1) {
@@ -1604,13 +1603,31 @@ utm_grid_draw:
                                 sizeof(grid_label),
                                 "%s",
                                 zone_str2);
-                            draw_nice_string(w,pixmap_final,0,
+                            //draw_nice_string(w,pixmap_final,0,
+                            //    border_width+2,
+                            //    (2*border_width)+2,
+                            //    grid_label,
+                            //    0x10,zone_color,(int)strlen(grid_label));
+                            draw_rotated_label_text_to_target (w, 270, 
                                 border_width+2,
                                 (2*border_width)+2,
-                                grid_label,
-                                0x10,zone_color,(int)strlen(grid_label));
+                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                                pixmap_final,
+                                1, colors[0x0f]);
                         }
-
+                        if (strcmp(zone_str,zone_str2)!=0) {
+                            xastir_snprintf(grid_label,
+                                sizeof(grid_label),
+                                "%s",
+                                zone_str);
+                            draw_rotated_label_text_to_target (w, 270, 
+                                border_width+2,
+                                screen_height - (2*border_width) - 2,
+                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                                pixmap_final,
+                                1, colors[0x0f]);
+                        }
+                        zone_color = 0x09;
                         // likewise for upper and lower right corners
                         xx = ((screen_width - border_width) * scale_x) +  x_long_offset;
                         yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
@@ -1622,11 +1639,29 @@ utm_grid_draw:
                                 sizeof(grid_label),
                                 "%s",
                                 zone_str2);
-                            draw_nice_string(w,pixmap_final,0,
+                            //draw_nice_string(w,pixmap_final,0,
+                            //    screen_width - (border_width * 3) ,
+                            //    (2*border_width)+2,
+                            //    grid_label,
+                            //    0x10,zone_color,(int)strlen(grid_label));
+                            draw_rotated_label_text_to_target (w, 270, 
                                 screen_width - (border_width * 3) ,
                                 (2*border_width)+2,
-                                grid_label,
-                                0x10,zone_color,(int)strlen(grid_label));
+                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                                pixmap_final,
+                                1, colors[0x0f]);
+                        }
+                        if (strcmp(zone_str,zone_str2)!=0) {
+                            xastir_snprintf(grid_label,
+                                sizeof(grid_label),
+                                "%s",
+                                zone_str);
+                            draw_rotated_label_text_to_target (w, 270, 
+                                screen_width - (border_width * 3) ,
+                                screen_height - (2*border_width) - 2,
+                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                                pixmap_final,
+                                1, colors[0x0f]);
                         }
                         
                         // are we currently the same zone as the upper left corner
@@ -1636,7 +1671,7 @@ utm_grid_draw:
                         convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
                         convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), x_long_offset, y_lat_offset);
                         if (strcmp(zone_str,zone_str2)==0) {
-                            northing_color = 0x20;
+                            northing_color = 0x08;  // 0x08 = black, same as lower left easting
                             label_on_left = TRUE;
                         }
 
@@ -1650,9 +1685,9 @@ utm_grid_draw:
 
                     if (zone > 0) {
                         // write the zone label on the bottom border
-                        zone_color = 0x0e;
-                        easting_color = 0x0e;
-                        northing_color = 0x0e;
+                        zone_color = 0x09;     // blue
+                        easting_color = 0x09;  // blue
+                        northing_color = 0x09; // blue
                         xx2 = utm_grid.zone[zone].col[0].point[0].x;
                         xx = (xx2 * scale_x) + x_long_offset;
                         yy2 = utm_grid.zone[zone].col[0].point[utm_grid.zone[zone].col[0].npoints-1].y;
@@ -1715,11 +1750,17 @@ utm_grid_draw:
                         sizeof(top_label),
                         "XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, WGS84 datum. ",
                         grid_label,zone_str,easting,northing,utm_grid_spacing_m);
-                    draw_nice_string(w,pixmap_final,0,
+                    //draw_nice_string(w,pixmap_final,0,
+                    //    border_width+2,
+                    //    border_width-2,
+                    //    top_label,
+                    //    0x10,0x20,(int)strlen(top_label));
+                    draw_rotated_label_text_to_target (w, 270, 
                         border_width+2,
-                        border_width-2,
-                        top_label,
-                        0x10,0x20,(int)strlen(top_label));
+                        border_width-1,
+                        sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
+                        pixmap_final,
+                        outline_border_labels, colors[outline_border_labels_color]);
 
                     // deterimne whether the easting and northing strings will fit
                     // in a grid box, or whether easting strings in adjacent boxes
@@ -1744,6 +1785,7 @@ utm_grid_draw:
                     // by people who are reading the map.
                     last_line_labeled = FALSE;
                     for (i=1; i < (int)utm_grid.zone[zone].ncols; i++) {
+                        // label meridianal grid lines with easting
                         if (utm_grid.zone[zone].col[i].npoints > 1) {
                              // adjust up in case npoints goes far below the screen
                              bottom_point = (int)(screen_height/grid_spacing_pixels);
@@ -1753,7 +1795,6 @@ utm_grid_draw:
                                  last_line_labeled = FALSE; 
                              }
                              else {
-                                 last_line_labeled = TRUE;
                                  xx = (utm_grid.zone[zone].col[i].point[bottom_point].x * scale_x) + x_long_offset;
                                  yy = (utm_grid.zone[zone].col[i].point[bottom_point].y * scale_y) +  y_lat_offset;
                                  convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
@@ -1777,6 +1818,7 @@ utm_grid_draw:
                                     && (utm_grid.zone[zone].col[i].point[bottom_point].x+1 < (screen_width - string_width_pixels)) 
                                     ) {
                                      // ok to draw the label
+                                     last_line_labeled = TRUE;
                                      draw_rotated_label_text_to_target (w, 270, 
                                          utm_grid.zone[zone].col[i].point[bottom_point].x+1,
                                          screen_height, 
@@ -1790,12 +1832,12 @@ utm_grid_draw:
                     last_line_labeled = FALSE;
                     // put northing along the right border, again for easier correct ordering of easting and northing.
                     for (i=0; i < (int)utm_grid.zone[zone].nrows; i++) {
+                        // label latitudinal grid lines with northing
                         if (utm_grid.zone[zone].row[i].npoints > 1) {
                              if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
                                  last_line_labeled = FALSE; 
                              } 
                              else {
-                                 last_line_labeled = TRUE;
                                  if (label_on_left==TRUE) { 
                                      xx = (utm_grid.zone[zone].row[i].point[0].x * scale_x) + x_long_offset;
                                  } 
@@ -1804,24 +1846,23 @@ utm_grid_draw:
                                  }
                                  yy = (utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y * scale_y) +  y_lat_offset;
                                  convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                                 // Divide northing by utm grid spacing to make sure the line is labeled correctly.
+                                 // Divide northing by utm grid spacing to make sure the line is labeled correctly
+                                 // and displays zeroes in its least significant digits.
                                  xastir_snprintf(grid_label,
                                      sizeof(grid_label),
                                      "%06.0f0",
                                      (float)((utm_grid_spacing_m/10) * roundf(northing/(utm_grid_spacing_m))));
-                                 // draw each number just above the relevant grid line along the right side
-                                 // of the screen.
-                                 if (((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
-                                     < (screen_height - border_width))
-                                     &&
-                                     ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
-                                     > (3 * border_width))
-                                    ) {
-                                     // draw northing labels
-                                     if (label_on_left==TRUE) { 
+                                 // Draw northing labels.
+                                 // Draw each number just above the relevant grid line along the right side
+                                 // of the screen.  Don't write in the bottom border or off the top of the screen.
+                                 if (label_on_left==TRUE) { 
                                          // label northings on left border 
                                          // don't overwrite the zone designator in  the lower left border
-                                         if (utm_grid.zone[zone].row[i].point[0].y < (screen_height - border_width)) {
+                                         if ((utm_grid.zone[zone].row[i].point[0].y < (screen_height - border_width)) 
+                                             &&
+                                             (utm_grid.zone[zone].row[i].point[0].y > (string_width_pixels)) 
+                                            ) {
+                                             last_line_labeled = TRUE;
                                              draw_rotated_label_text_to_target (w, 180, 
                                                  border_width, 
                                                  utm_grid.zone[zone].row[i].point[0].y,
@@ -1829,15 +1870,16 @@ utm_grid_draw:
                                                  pixmap_final,
                                                  outline_border_labels, colors[outline_border_labels_color]);
                                          }
-                                         //draw_rotated_label_text_to_target (w, 180, 
-                                         //    border_width, 
-                                         //    utm_grid.zone[zone].row[i].point[0].y,
-                                         //    sizeof(grid_label),colors[northing_color],grid_label,FONT_MEDIUM,
-                                         //    pixmap_final,
-                                         //    1, colors[0x08]);
-                                     } 
-                                     else {
+                                 } 
+                                 else {
+                                     if (((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
+                                         < (screen_height - border_width))
+                                         &&
+                                         ((utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1) 
+                                         > (string_width_pixels))
+                                        ) {
                                          // label northings on right border
+                                         last_line_labeled = TRUE;
                                          draw_rotated_label_text_to_target (w, 180, 
                                              screen_width, 
                                              utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y-1,
