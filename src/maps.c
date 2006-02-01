@@ -840,6 +840,7 @@ void draw_grid(Widget w) {
     int outline_border_labels_color = border_foreground_color; 
                                 // color of outline to draw around border labels
                                 // use color of border to help make text more legible.
+    int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
 
     if (!long_lat_grid)
         return;
@@ -1902,6 +1903,15 @@ utm_grid_draw:
         unsigned int stepsx[3];
         unsigned int stepsy[3];
         int step;
+         
+        // convert between selected coordinate format constant and display format constants
+        if (coordinate_system == USE_DDDDDD) {
+           coordinate_format = CONVERT_DEC_DEG;
+        } else if (coordinate_system == USE_DDMMSS) {
+           coordinate_format = CONVERT_DMS_NORMAL;
+        } else {
+           coordinate_format = CONVERT_HP_NORMAL;
+        }
 
         stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
         stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
@@ -1959,6 +1969,16 @@ utm_grid_draw:
             }
 
             (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
+            if (draw_labeled_grid_border==TRUE) { 
+                // draw in the longitudes
+                convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
+                draw_rotated_label_text_to_target (w, 270, 
+                    x,
+                    screen_height, 
+                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+            }
         }
 
         /* draw horizontal lines */
@@ -1996,6 +2016,16 @@ utm_grid_draw:
             }
 
             (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
+            if (draw_labeled_grid_border==TRUE) { 
+                // draw in the longitudes
+                convert_lat_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
+                draw_rotated_label_text_to_target (w, 180, 
+                    screen_width, 
+                    y,
+                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+            }
         }
     }
 }
