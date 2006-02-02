@@ -842,6 +842,7 @@ void draw_grid(Widget w) {
                                 // use color of border to help make text more legible.
     int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
 
+
     if (!long_lat_grid)
         return;
     
@@ -1125,7 +1126,9 @@ void draw_grid(Widget w) {
             convert_UTM_to_xastir(e[1], n[1]-UTM_GRID_EQUATOR, place_str, &xx, &yy);
             xx1 = xx; // Save
             yy1 = yy; // Save
+
             convert_xastir_to_UTM(&e[2], &n[2], zone_str, sizeof(zone_str), xx, yy);
+
             n[2] += UTM_GRID_EQUATOR;
             xx = (xx - x_long_offset) / scale_x;
             yy = (yy - y_lat_offset)  / scale_y;
@@ -1256,7 +1259,7 @@ void draw_grid(Widget w) {
 
 #ifdef UT_DEBUG_VERB
                 if (z1 != z2)
-                    fprintf(stderr,"Zone boundary! %s -> %s\n", place_str, zone_str);
+                    fprintf(stderr,"Zone boundary! \"%s\" -> \"%s\"\n", place_str, zone_str);
                 else
                     puts("Screen boundary!");
 #endif
