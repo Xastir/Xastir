@@ -81,6 +81,111 @@ example strips off the first two directories:
 
 
 
+DEBUGGING HINTS:
+----------------
+Xastir is a multi-threaded and multi-process application.  It uses
+both threads and forks to do it's work.  You must have a debugger
+that is capable of following these kinds of twists and turns in a
+program.  Many older versions cannot.
+
+Notes from Tom Russo:
+---------------------
+According to everything I can find about GDB, debugging of
+multithreaded apps has been supported in gdb for some time, and are
+certainly supported in gdb 6.x.  For the last couple days I've been
+running xastir inside gdb instead of at the command prompt ---
+perhaps I won't keep forgetting to start it with -t now, and when it
+crashes I'll be where I need to be.
+
+Jim --- this is possibly an option for you, too, if you're seeing
+segfaults frequently enough and can't solve the core file question.
+Try this:
+
+  gdb /usr/local/bin/xastir
+  > run -t
+
+When it crashes, it'll pop you right out into the debugger, whether
+a core file was created or not.  You could then view the active
+threads:
+  > info threads
+
+and get a stack trace of where the crash happened:
+  > where
+
+You could also probably list the code near where the crash happened:
+  > list
+
+If you send the output of those three commands to the xastir-dev
+list then it might help us narrow down the causes.
+
+
+Notes from Curt:
+----------------
+Note that the meaning of the "-t" command-line flag was just
+reversed in CVS.  Within five hours or so that should appear on the
+anon CVS server.  "xastir -?" should show the change after you
+compile the new stuff.
+
+> Also, I cannot find anything in man bash that talks about core
+> dumps nor segmentation faults.
+
+Seems like some stuff we're just supposed to know.  _How_ we're
+supposed to know I don't know either...  ;-)
+
+Perhaps that last bit about SUID/SGID might be a clue:  There are
+often exceptions to the rules for SUID/SGID programs.  Try _not_
+setting Xastir SUID (if you're not using AX.25 kernel networking
+ports that is) to see if you get a core file.  Can you send a
+SIGSEGV to the running process and make it dump?  I just tried this
+and I'm not getting a core file either.
+
+Ah, I see in the "man bash" page:
+
+  ulimit
+        -a  All current limits are reported
+
+This gives me:
+
+  core file size        (blocks, -c) 0
+  data seg size         (kbytes, -d) unlimited
+  file size             (blocks, -f) unlimited
+  max locked memory     (kbytes, -l) 32
+  max memory size       (kbytes, -m) unlimited
+  open files                    (-n) 1024
+  pipe size          (512 bytes, -p) 8
+  stack size            (kbytes, -s) unlimited
+  cpu time             (seconds, -t) unlimited
+  max user processes            (-u) 6139
+  virtual memory        (kbytes, -v) unlimited
+
+So...  Looks like I need to set "ulimit -c" and try again:
+
+  ulimit -c unlimited
+
+Now when I do "kill -11 <pid>" I get this:
+
+  [1]+  Segmentation fault      (core dumped) xastir
+
+and this:
+
+  -rw-------   1 archer users 12320768 2006-02-02 09:31 core.7586
+
+I just added "ulimit -c unlimited" to my .profile.  For what it's
+worth, if Xastir has SUID permission bit set (4755) I don't get a
+core dump, but if it is reset I do (0755).
+
+I can invoke ddd like this (it uses gdb under the hood):
+
+    ddd /usr/local/bin/xastir core.7586 &
+
+or gdb like this:
+
+    gdb -c core.7586 /usr/local/bin/xastir
+
+Another good debugger to try is "UPS". 
+
+
+
 More?
 -----
 Anything else?  Let's hear about what's still confusing or needs to
