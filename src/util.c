@@ -2129,7 +2129,7 @@ void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zo
         easting,
         zone,
         zone_len);
-    zone[zone_len] = '\0';
+    zone[zone_len-1] = '\0';
 }
 
 
