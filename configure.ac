@@ -455,12 +455,13 @@ changequote([,])
 
 
 # 
-# Remove "-g" CFLAGS/CPPFLAGS entries.
+# Remove "-g" CFLAGS/CPPFLAGS entries.  Note:  This is a _bad_ idea
+# as debuggers won't have a symbol table to work from!
 #
-changequote(,) 
-CFLAGS=`echo  "$CFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
-CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
-changequote([,]) 
+#changequote(,) 
+#CFLAGS=`echo  "$CFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
+#CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
+#changequote([,]) 
 
 
 #
