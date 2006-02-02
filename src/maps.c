@@ -818,14 +818,14 @@ void draw_grid(Widget w) {
     char grid_label1[25];       // String to draw latlong metadata 
     char grid_label2[25];       // String to draw latlong metadata 
     char top_label[180];        // String to draw metadata on top border
-    char metadata_datum[5] = "WGS84";  // datum to display in metadata on top border
+    char metadata_datum[6] = "WGS84";  // datum to display in metadata on top border
     double easting, northing;   
     int  skip_alternate_label;  // Skip alternate easting and northing labels
                                 // if they would overlap on the display.
     int last_line_labeled;      // Marks lines that were labeled when alternate lines
                                 // are not being labeled.
-    char seven_zeroes[7] = "0000000";
-    char five_zeroes[5] = "00000";
+    char seven_zeroes[8] = "0000000";
+    char five_zeroes[6] = "00000";
     int string_width_pixels = 0;// Width of the unrotated seven_zeroes label string in pixels.
     int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
     int string_height_pixels;   // Height of the unrotated seven_zeroes label string in pixels
@@ -1729,7 +1729,7 @@ utm_grid_draw:
                             sizeof(grid_label),
                             "%s",
                             zone_str);
-			draw_rotated_label_text_to_target (w, 270, 
+                        draw_rotated_label_text_to_target (w, 270, 
                             1,
                             screen_height, 
                             sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
