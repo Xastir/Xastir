@@ -25558,7 +25558,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
     last_popup_x = 0;
     last_popup_y = 0;
-    trap_segfault = 1;
+    trap_segfault = 0;          // Default is to dump core
     deselect_maps_on_startup = 0;
     debug_level = 0;
     install_colormap = 0;
@@ -25641,8 +25641,8 @@ fprintf(stderr,
         switch (ag) {
 
             case 't':
-                fprintf(stderr,"Internal SIGSEGV handler disabled\n");
-                trap_segfault = 0;
+                fprintf(stderr,"Internal SIGSEGV handler enabled\n");
+                trap_segfault = 1;
                 break;
 
             case 'v':
@@ -25715,7 +25715,7 @@ fprintf(stderr,
         fprintf(stderr,"-l Portuguese      Set the language to Portuguese\n");
         fprintf(stderr,"-l Spanish         Set the language to Spanish\n");
         fprintf(stderr,"-m                 Deselect Maps\n");
-        fprintf(stderr,"-t                 Internal SIGSEGV handler disabled\n");
+        fprintf(stderr,"-t                 Internal SIGSEGV handler enabled\n");
         fprintf(stderr,"-v level           Set the debug level\n\n");
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options

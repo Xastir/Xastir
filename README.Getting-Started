@@ -433,7 +433,7 @@ you'll see this:
   -lPortuguese       Set the language to Portuguese
   -lSpanish          Set the language to Spanish
   -m                 Deselect Maps
-  -t                 Internal SIGSEGV handler disabled
+  -t                 Internal SIGSEGV handler enabled
   -v level           Set the debug level
 
 
