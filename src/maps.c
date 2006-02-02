@@ -815,14 +815,19 @@ void draw_grid(Widget w) {
     int half = border_width/2;  // Center of the white lines used to draw the borders
 //    int draw_labeled_grid_border = TRUE;   // flag to draw labeled border, move to a global
     char grid_label[25];        // String to draw labels on grid lines
+    char grid_label1[25];       // String to draw latlong metadata 
+    char grid_label2[25];       // String to draw latlong metadata 
     char top_label[180];        // String to draw metadata on top border
+    char metadata_datum[5] = "WGS84";  // datum to display in metadata on top border
     double easting, northing;   
     int  skip_alternate_label;  // Skip alternate easting and northing labels
                                 // if they would overlap on the display.
     int last_line_labeled;      // Marks lines that were labeled when alternate lines
                                 // are not being labeled.
     char seven_zeroes[7] = "0000000";
+    char five_zeroes[5] = "00000";
     int string_width_pixels = 0;// Width of the unrotated seven_zeroes label string in pixels.
+    int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
     int string_height_pixels;   // Height of the unrotated seven_zeroes label string in pixels
     int grid_spacing_pixels;    // Spacing of fine grid lines in pixels.
     int easting_color;          // Colors for the grid labels
@@ -849,6 +854,7 @@ void draw_grid(Widget w) {
     if (draw_labeled_grid_border==TRUE) { 
         // Determine some parameters used in drawing the border.
         string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_BORDER);
+        short_width_pixels = get_rotated_label_text_length_pixels(w, five_zeroes, FONT_BORDER);
         string_height_pixels = get_rotated_label_text_height_pixels(w, seven_zeroes, FONT_BORDER);
         // Rotated text functions used to draw the border text add some 
         // blank space at the bottom of the text so make the border wide enough 
@@ -1750,10 +1756,11 @@ utm_grid_draw:
                     yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                         xx2, yy2);
+                    //"XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, %s datum. ",
                     xastir_snprintf(top_label,
                         sizeof(top_label),
-                        "XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, WGS84 datum. ",
-                        grid_label,zone_str,easting,northing,utm_grid_spacing_m);
+                        langcode("MDATA001"),
+                        grid_label,zone_str,easting,northing,utm_grid_spacing_m,metadata_datum);
                     //draw_nice_string(w,pixmap_final,0,
                     //    border_width+2,
                     //    border_width-2,
@@ -1778,7 +1785,11 @@ utm_grid_draw:
                         // only one column in this zone, skip alternate doesn't matter
                         grid_spacing_pixels = -1;
                     }
-                    if (string_width_pixels>grid_spacing_pixels) {
+   
+                    // Is truncated easting or northing larger than grid spacing?
+                    // If so, skip alternate labels
+                    // short_width_pixels+2 seems to work well.
+                    if (short_width_pixels+2>grid_spacing_pixels) {
                         skip_alternate_label = TRUE;
                     } else {
                         skip_alternate_label = FALSE;
@@ -1802,12 +1813,30 @@ utm_grid_draw:
                                  xx = (utm_grid.zone[zone].col[i].point[bottom_point].x * scale_x) + x_long_offset;
                                  yy = (utm_grid.zone[zone].col[i].point[bottom_point].y * scale_y) +  y_lat_offset;
                                  convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                                 // Dividide easting by utm_grid_spacing to make sure the line is labeled 
-                                 // correctly, and not a few meters off.
+                                 // To display full precision to one meter, use:
+                                 //xastir_snprintf(grid_label,
+                                 //    sizeof(grid_label),
+                                 //    "%06.0f0",
+                                 //    (float)((utm_grid_spacing_m/10) * roundf(easting/(utm_grid_spacing_m))));
+                                 // 
+                                 // Divide easting by utm_grid_spacing to make sure the line is labeled 
+                                 // correctly, and not a few meters off, and truncate to at least 100 m.
                                  xastir_snprintf(grid_label,
                                      sizeof(grid_label),
-                                     "%06.0f0",
-                                     (float)((utm_grid_spacing_m/10) * roundf(easting/(utm_grid_spacing_m))));
+                                     "%05.0f",
+                                     (float)((utm_grid_spacing_m/100) * roundf(easting/(utm_grid_spacing_m))));
+                                 // truncate the label to an appropriate level of precision for the grid
+                                 if (utm_grid_spacing_m ==1000) 
+                                     grid_label[4] = ' ';
+                                 if (utm_grid_spacing_m ==10000) {
+                                     grid_label[3] = ' ';
+                                     grid_label[4] = ' ';
+                                 }
+                                 if (utm_grid_spacing_m ==100000) {
+                                     grid_label[2] = ' ';
+                                     grid_label[3] = ' ';
+                                     grid_label[4] = ' ';
+                                 }
                                  // draw each number at the bottom of the screen just to the right of the 
                                  // relevant grid line at its location at the bottom of the screen
                                  //draw_nice_string(w,pixmap_final,0,
@@ -1850,12 +1879,29 @@ utm_grid_draw:
                                  }
                                  yy = (utm_grid.zone[zone].row[i].point[utm_grid.zone[zone].row[i].npoints-1].y * scale_y) +  y_lat_offset;
                                  convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                                 // To display to full 1 meter precision use:
+                                 //xastir_snprintf(grid_label,
+                                 //    sizeof(grid_label),
+                                 //    "%06.0f0",
+                                 //    (float)((utm_grid_spacing_m/10) * roundf(northing/(utm_grid_spacing_m))));
+                                 //
                                  // Divide northing by utm grid spacing to make sure the line is labeled correctly
-                                 // and displays zeroes in its least significant digits.
+                                 // and displays zeroes in its least significant digits, and truncate to 100 m
                                  xastir_snprintf(grid_label,
                                      sizeof(grid_label),
-                                     "%06.0f0",
-                                     (float)((utm_grid_spacing_m/10) * roundf(northing/(utm_grid_spacing_m))));
+                                     "%05.0f",
+                                     (float)((utm_grid_spacing_m/100) * roundf(northing/(utm_grid_spacing_m))));
+                                 if (utm_grid_spacing_m ==1000) 
+                                     grid_label[4] = ' ';
+                                 if (utm_grid_spacing_m ==10000) {
+                                     grid_label[3] = ' ';
+                                     grid_label[4] = ' ';
+                                 }
+                                 if (utm_grid_spacing_m ==100000) {
+                                     grid_label[2] = ' ';
+                                     grid_label[3] = ' ';
+                                     grid_label[4] = ' ';
+                                 }
                                  // Draw northing labels.
                                  // Draw each number just above the relevant grid line along the right side
                                  // of the screen.  Don't write in the bottom border or off the top of the screen.
@@ -1906,14 +1952,43 @@ utm_grid_draw:
         unsigned int stepsx[3];
         unsigned int stepsy[3];
         int step;
-         
+        
         // convert between selected coordinate format constant and display format constants
         if (coordinate_system == USE_DDDDDD) {
            coordinate_format = CONVERT_DEC_DEG;
         } else if (coordinate_system == USE_DDMMSS) {
-           coordinate_format = CONVERT_DMS_NORMAL;
+           coordinate_format = CONVERT_DMS_NORMAL_FORMATED;
         } else {
-           coordinate_format = CONVERT_HP_NORMAL;
+           coordinate_format = CONVERT_HP_NORMAL_FORMATED;
+        }
+
+        if (draw_labeled_grid_border==TRUE) { 
+            // Put metadata in top border.
+            // find location of upper left corner of map, convert to Lat/Long
+            xx2 = x_long_offset  + (border_width * scale_x);
+            yy2 = y_lat_offset   + (border_width * scale_y);
+            convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
+            convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
+            xastir_snprintf(grid_label,
+                sizeof(grid_label),
+                "%s %s",
+                grid_label1,grid_label2);
+            // find location of lower right corner of map, convert to Lat/Long
+            xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
+            yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+            convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
+            convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
+            //"XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum. ",
+            xastir_snprintf(top_label,
+                sizeof(top_label),
+                langcode("MDATA002"),
+                grid_label,grid_label1,grid_label2,metadata_datum);
+            draw_rotated_label_text_to_target (w, 270, 
+                border_width+2,
+                border_width-1,
+                sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
+                pixmap_final,
+                outline_border_labels, colors[outline_border_labels_color]);
         }
 
         stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
@@ -1973,7 +2048,7 @@ utm_grid_draw:
 
             (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
             if (draw_labeled_grid_border==TRUE) { 
-                // draw in the longitudes
+                // draw in the longitudes in lower border
                 convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
                 draw_rotated_label_text_to_target (w, 270, 
                     x,
@@ -2020,10 +2095,17 @@ utm_grid_draw:
 
             (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
             if (draw_labeled_grid_border==TRUE) { 
-                // draw in the longitudes
+                // draw in the latitudes on left and right borders
+                // (unlike UTM where easting before northing order is important)
                 convert_lat_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
                 draw_rotated_label_text_to_target (w, 180, 
                     screen_width, 
+                    y,
+                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+                draw_rotated_label_text_to_target (w, 180, 
+                    border_width, 
                     y,
                     sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
                     pixmap_final,

@@ -3584,14 +3584,14 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
         } else if (coordinate_system == USE_DDMMSS) {
-            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL);
-            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL);
-            str_lat[2]='°'; str_long[3]='°';
-            str_lat[5]='\''; str_long[6]='\'';
+            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL_FORMATED);
+            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL_FORMATED);
+            //str_lat[2]='°'; str_long[3]='°';
+            //str_lat[5]='\''; str_long[6]='\'';
         } else {    // Assume coordinate_system == USE_DDMMMM
-            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
-            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
-            str_lat[2]='°'; str_long[3]='°';
+            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL_FORMATED);
+            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL_FORMATED);
+            //str_lat[2]='°'; str_long[3]='°';
         }
         xastir_snprintf(my_text, sizeof(my_text), "%s  %s", str_lat, str_long);
     }

@@ -1895,31 +1895,60 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 
 
 
-
-// We'll call the above routine, then convert the result to the
-// 2-letter digraph format used for MGRS.  The ll_to_utm_ups()
-// function switches to the special irregular UTM zones for the
-// areas near Svalbard and SW Norway if the "coordinate_system"
-// variable is set to "USE_MGRS", so we'll be using the correct zone
-// boundaries for MGRS if that variable is set when we make the
-// call.
+// To produce MGRS coordinates, we'll call ll_to_utm_ups() 
+// [?? Earlier text: "the above function" ??]
+// then convert the result to the 2-letter digraph format used 
+// for MGRS.  The ll_to_utm_ups() function switches to the special 
+// irregular UTM zones for the areas near Svalbard and SW Norway 
+// if the "coordinate_system" variable is set to "USE_MGRS", 
+// so we'll be using the correct zone boundaries for MGRS if that 
+// variable is set when we make the call.
 //
 // If "nice_format" == 1, we add leading spaces plus spaces between
 // the easting and northing in order to line up more nicely with the
 // UTM output format.
 //
-void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice_format) {
+// convert_xastir_to_MGRS_str is a wrapper around the components
+// function below that returns the MGRS coordinate of x and y as a
+// single MGRS string.  
+//
+/* convert_xastir_to_MGRS_str_components returns each of the components 
+   of the MGRS string separately.
+   Example MGRS string: 18T VK 66790 55998
+   Parameters:
+   utmZone          Returns the UTM zone: e.g. 18T
+   utmZone_len      length of the utmZone char[]
+   EastingL         Returns the first letter of the MGRS digraph: e.g. V
+   EastingL_len     length of the EastingL char[]
+   NorthingL        Returns the second letter of the MGRS digraph: e.g. K
+   NorthingL_len    length of the NorthingL char[]
+   int_utmEasting   returns the MGRS easting: e.g. 66790
+   int_utmNorthing  returns the MGRS northing: e.g. 55998
+   x                xastir x coordinate to obtain MGRS coordinate for.
+   y                xastir x coordinate to obtain MGRS coordinate for.
+   nice_format      1 for populate space_string with three spaces
+                    0 to make space_string and empty string, see above.
+   space_string     Returned string that can be used to make MGRS strings
+                    allign more cleanly with UTM strings.
+   space_string_len length of the space_string char[]
+*/
+void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len, 
+       char *EastingL, int EastingL_len, 
+       char *NorthingL, int NorthingL_len, 
+       unsigned int *int_utmEasting, unsigned int *int_utmNorthing, 
+       long x,  long y, 
+       int nice_format, char *space_string, int space_string_len) {
+
     double utmNorthing;
     double utmEasting;
-    char utmZone[10];
+    //char utmZone[10];
     int start;
     int my_east, my_north;
-    unsigned int int_utmEasting, int_utmNorthing;
+    //unsigned int int_utmEasting, int_utmNorthing;
     int UPS = 0;
     int North_UPS = 0;
     int coordinate_system_save = coordinate_system;
-    char space_string[4] = "   ";    // Three spaces
-
+    //char space_string[4] = "   ";    // Three spaces
 
     // Set for correct zones
     coordinate_system = USE_MGRS;
@@ -1974,10 +2003,10 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
     // modulus 20, then use that index into our N_S array.
 
 
-    int_utmEasting = utmEasting;
-    int_utmNorthing = utmNorthing;
-    int_utmEasting = int_utmEasting % 100000;
-    int_utmNorthing = int_utmNorthing % 100000;
+    *int_utmEasting = (unsigned int)utmEasting;
+    *int_utmNorthing = (unsigned int)utmNorthing;
+    *int_utmEasting = *int_utmEasting % 100000;
+    *int_utmNorthing = *int_utmNorthing % 100000;
 
 
     // Check for South Polar UPS area, set flags if found.
@@ -2029,7 +2058,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
             my_north = (int)(utmNorthing / 100000.0);
             my_north = my_north - 13;
 
-            xastir_snprintf(str,
+            /*xastir_snprintf(str,
                 str_len,
                 "%s %c%c %05d %s%05d",
                 utmZone,
@@ -2037,7 +2066,11 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
                 UPS_N_Northing[my_north],
                 int_utmEasting,
                 space_string,
-                int_utmNorthing );
+                int_utmNorthing ); */
+           xastir_snprintf(EastingL,EastingL_len,
+                "%c", UPS_N_Easting[my_east]);
+           xastir_snprintf(NorthingL,NorthingL_len,
+                "%c", UPS_N_Northing[my_north]);
         }
         else {  // South polar UPS zone
             char UPS_S_Easting[25]  = "JKLPQRSTUXYZABCFGHJKLPQR";
@@ -2049,7 +2082,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
             my_north = (int)(utmNorthing / 100000.0);
             my_north = my_north - 8;
 
-            xastir_snprintf(str,
+            /* xastir_snprintf(str,
                 str_len,
                 "%s %c%c %05d %s%05d",
                 utmZone,
@@ -2057,7 +2090,11 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
                 UPS_S_Northing[my_north],
                 int_utmEasting,
                 space_string,
-                int_utmNorthing );
+                int_utmNorthing ); */
+           xastir_snprintf(EastingL,EastingL_len,
+                "%c", UPS_S_Easting[my_east]);
+           xastir_snprintf(NorthingL,NorthingL_len,
+                "%c", UPS_S_Northing[my_north]);
         }
     }
     else {  // UTM Area
@@ -2103,7 +2140,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
 //            N_S[start],
 //            N_S[my_north]);
 
-        xastir_snprintf(str,
+        /* xastir_snprintf(str,
             str_len,
             "%s %c%c %05d %s%05d",
             utmZone,
@@ -2111,8 +2148,51 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
             N_S[my_north],
             int_utmEasting,
             space_string,
-            int_utmNorthing );
+            int_utmNorthing ); */
+        xastir_snprintf(EastingL, EastingL_len,
+             "%c", E_W[my_east]);
+        xastir_snprintf(NorthingL, NorthingL_len,
+             "%c", N_S[my_north]);
     }
+}
+
+
+
+
+
+/* Wrapper around convert_xastir_to_MGRS_str_components 
+   to return an MGRS coordinate as a single string. 
+   Parameters:
+   str The character array to be populated with the MGRS string.
+   str_len Length of str.
+   x xastir x coordinate.
+   y xastir y coordinate.
+   If "nice_format" == 1, we add leading spaces plus spaces between
+   the easting and northing in order to line up more nicely with the
+   UTM output format.
+*/
+void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice_format) {
+    char space_string[4] = "   ";    // Three spaces
+    unsigned int intEasting = 0;
+    unsigned int intNorthing = 0;
+    char EastingL[3] = "  ";
+    char NorthingL[3] = "  ";
+    char utmZone[10];
+    convert_xastir_to_MGRS_str_components(utmZone, strlen(utmZone), 
+       EastingL, strlen(EastingL), 
+       NorthingL, strlen(NorthingL), 
+       &intEasting, &intNorthing, 
+       x,  y, 
+       nice_format, space_string, strlen(space_string)) ;
+    xastir_snprintf(str,
+       str_len,
+       "%s %c%c %05d %s%05d",
+       utmZone,
+       EastingL[0],
+       NorthingL[0],
+       intEasting,
+       space_string,
+       intNorthing );
 }
 
 
@@ -2169,6 +2249,8 @@ void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x,
 // CONVERT_UP_TRK       = NDD MM.MMMM
 // CONVERT_DEC_DEG      = DD.DDDDDN
 // CONVERT_DMS_NORMAL   = DD MM SS.SN
+// CONVERT_DMS_NORMAL_FORMATED   = DD'MM'SS.SN
+// CONVERT_HP_NORMAL_FORMATED   = DD'MM.MMMMN
 //
 void convert_lat_l2s(long lat, char *str, int str_len, int type) {
     char ns;
@@ -2263,7 +2345,26 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 sec+0.05, // (poor-man's rounding)
                 ns);
             break;
+        
+        case(CONVERT_DMS_NORMAL_FORMATED):
+            xastir_snprintf(str,
+                str_len,
+                "%02d°%02d\'%04.1f%c",
+                ideg,
+                imin,
+                sec+0.05, // (poor-man's rounding)
+                ns);
+            break;
 
+        case(CONVERT_HP_NORMAL_FORMATED):
+            xastir_snprintf(str,
+                str_len,
+                "%02d°%06.3f%c",
+                ideg,
+                min+0.0005, // (poor-man's rounding)
+                ns);
+            break;
+        
         case(CONVERT_HP_NORMAL):
         default: /* do HP normal */
             xastir_snprintf(str,
@@ -2291,6 +2392,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
 // CONVERT_UP_TRK       = EDDD MM.MMMM
 // CONVERT_DEC_DEG      = DDD.DDDDDE
 // CONVERT_DMS_NORMAL   = DDD MM SS.SN
+// CONVERT_DMS_NORMAL_FORMATED   = DDD'MM'SS.SN
 //
 void convert_lon_l2s(long lon, char *str, int str_len, int type) {
     char ew;
@@ -2382,6 +2484,25 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 ideg,
                 imin,
                 sec+0.05, // (poor-man's rounding)
+                ew);
+            break;
+
+        case(CONVERT_DMS_NORMAL_FORMATED):
+            xastir_snprintf(str,
+                str_len,
+                "%03d°%02d\'%04.1f%c",
+                ideg,
+                imin,
+                sec+0.05, // (poor-man's rounding)
+                ew);
+            break;
+        
+        case(CONVERT_HP_NORMAL_FORMATED):
+            xastir_snprintf(str,
+                str_len,
+                "%03d°%06.3f%c",
+                ideg,
+                min+0.0005, // (poor-man's rounding)
                 ew);
             break;
 

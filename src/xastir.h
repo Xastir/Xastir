@@ -57,7 +57,7 @@
 #define MY_BG_COLOR             colors[0xff]
 #define MY_BACKGROUND_COLOR     XmNbackground,colors[0xff]
 
-
+// Latitude and longitude string formats.
 #define CONVERT_HP_NORMAL       0
 #define CONVERT_HP_NOSP         1
 #define CONVERT_LP_NORMAL       2
@@ -66,6 +66,8 @@
 #define CONVERT_UP_TRK          5
 #define CONVERT_DMS_NORMAL      6
 #define CONVERT_VHP_NOSP        7
+#define CONVERT_DMS_NORMAL_FORMATED      8
+#define CONVERT_HP_NORMAL_FORMATED       9
 
 #ifndef M_PI                      /* if not defined in math.h */
 #define M_PI 3.14159265358979323846
