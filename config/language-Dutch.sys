@@ -1289,6 +1289,6 @@ CADPUD011|Wis selectie||
 #
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
-MDATA001|XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, %s datum. ||
+MDATA001|XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ||
 #"XASTIR Map of <lat/long> (upper left) to <lat/long> (lower right).  Lat/Long grid, <wgs84> datum. ",
 MDATA002|XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum.||
