@@ -2179,8 +2179,8 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
     char NorthingL[3] = "  ";
     char utmZone[10];
     convert_xastir_to_MGRS_str_components(utmZone, strlen(utmZone), 
-       EastingL, strlen(EastingL), 
-       NorthingL, strlen(NorthingL), 
+       EastingL, sizeof(EastingL), 
+       NorthingL, sizeof(NorthingL), 
        &intEasting, &intNorthing, 
        x,  y, 
        nice_format, space_string, strlen(space_string)) ;

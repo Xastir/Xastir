@@ -846,6 +846,16 @@ void draw_grid(Widget w) {
                                 // color of outline to draw around border labels
                                 // use color of border to help make text more legible.
     int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
+    // variables to support components of MGRS strings
+    char mgrs_zone[4] = "   ";   // MGRS zone letter
+    char mgrs_eastingL[3] = "  "; 
+    char mgrs_northingL[3] = "  ";
+    unsigned int int_utmEasting;
+    unsigned int int_utmNorthing; 
+    char mgrs_space_string[4] = "   ";
+    char mgrs_ul_digraph[3] = "  ";  // MGRS digraph for upper left corner of screen
+    char mgrs_lr_digraph[3] = "  ";  // MGRS digraph for lower right corner of screen
+    int mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
 
 
     if (!long_lat_grid)
@@ -1747,20 +1757,62 @@ utm_grid_draw:
                     yy2 = y_lat_offset   + (border_width * scale_y);
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                         xx2, yy2);
-                    xastir_snprintf(grid_label,
-                        sizeof(grid_label),
-                        "%s %07.0f %07.0f",
-                        zone_str,easting,northing);
+                    if (coordinate_system == USE_MGRS) {
+                        convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                            mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                            mgrs_northingL,  sizeof(mgrs_northingL), 
+                            &int_utmEasting, &int_utmNorthing, 
+                            xx2, yy2,
+                            0, mgrs_space_string, strlen(mgrs_space_string));
+                        xastir_snprintf(mgrs_ul_digraph, sizeof(mgrs_ul_digraph),
+                                       "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s %s %05.0f %05.0f",
+                            mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
+                    } 
+                    else {
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s %07.0f %07.0f",
+                            zone_str,easting,northing);
+                    }
                     // find location of lower right corner of map, convert to UTM
                     xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
                     yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                         xx2, yy2);
-                    //"XASTIR Map of %s (upper left) to %s %07.0f %07.0f (lower right).  UTM %d m grid, %s datum. ",
+                    if (coordinate_system == USE_MGRS) {
+                        convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                            mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                            mgrs_northingL,  sizeof(mgrs_northingL), 
+                            &int_utmEasting, &int_utmNorthing, 
+                            xx2, yy2,
+                            0, mgrs_space_string, strlen(mgrs_space_string));
+                        xastir_snprintf(mgrs_lr_digraph, sizeof(mgrs_lr_digraph),
+                                       "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
+                        xastir_snprintf(grid_label1,
+                            sizeof(grid_label1),
+                            "%s %s %05.0f %05.0f",
+                            mgrs_zone,mgrs_lr_digraph,(float)int_utmEasting,(float)int_utmNorthing);
+                       if (strcmp(mgrs_lr_digraph,mgrs_ul_digraph)==0) {
+                             mgrs_single_digraph = TRUE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+                       } 
+                       else {
+                             mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+                       }
+                    } 
+                    else {
+                        xastir_snprintf(grid_label1,
+                            sizeof(grid_label1),
+                            "%s %07.0f %07.0f",
+                            zone_str,easting,northing);
+                    }
+                    //"XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ",
                     xastir_snprintf(top_label,
                         sizeof(top_label),
                         langcode("MDATA001"),
-                        grid_label,zone_str,easting,northing,utm_grid_spacing_m,metadata_datum);
+                        grid_label,grid_label1,utm_grid_spacing_m,metadata_datum);
                     //draw_nice_string(w,pixmap_final,0,
                     //    border_width+2,
                     //    border_width-2,
@@ -1837,6 +1889,18 @@ utm_grid_draw:
                                      grid_label[3] = ' ';
                                      grid_label[4] = ' ';
                                  }
+                                 if (coordinate_system == USE_MGRS) {
+                                     convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                                         mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                                         mgrs_northingL,  sizeof(mgrs_northingL), 
+                                         &int_utmEasting, &int_utmNorthing, 
+                                         xx, yy,
+                                         0, mgrs_space_string, strlen(mgrs_space_string));
+                                     grid_label[0] = mgrs_eastingL[0];
+                                     grid_label[1] = mgrs_northingL[0];
+                                     if (mgrs_single_digraph==FALSE) 
+                                         grid_label[1] = '_';
+                                 }
                                  // draw each number at the bottom of the screen just to the right of the 
                                  // relevant grid line at its location at the bottom of the screen
                                  //draw_nice_string(w,pixmap_final,0,
@@ -1901,6 +1965,18 @@ utm_grid_draw:
                                      grid_label[2] = ' ';
                                      grid_label[3] = ' ';
                                      grid_label[4] = ' ';
+                                 }
+                                 if (coordinate_system == USE_MGRS) {
+                                     convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                                         mgrs_eastingL,   3, 
+                                         mgrs_northingL,  3, 
+                                         &int_utmEasting, &int_utmNorthing, 
+                                         xx, yy,
+                                         0, mgrs_space_string, strlen(mgrs_space_string));
+                                     grid_label[0] = mgrs_eastingL[0];
+                                     if (mgrs_single_digraph==FALSE) 
+                                         grid_label[0] = '_';
+                                     grid_label[1] = mgrs_northingL[0];
                                  }
                                  // Draw northing labels.
                                  // Draw each number just above the relevant grid line along the right side
