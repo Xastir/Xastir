@@ -121,10 +121,13 @@ list then it might help us narrow down the causes.
 
 Notes from Curt:
 ----------------
-Note that the meaning of the "-t" command-line flag was just
-reversed in CVS.  Within five hours or so that should appear on the
-anon CVS server.  "xastir -?" should show the change after you
-compile the new stuff.
+Note that the meaning of the "-t" command-line flag has been
+reversed.  "xastir -?" should show the change once you compile it.
+This means that we'll do core dumps by default upon segfault instead
+of using the internal Xastir segfault handler.  We've also
+re-enabled the "-g" compile option for GCC so that debugging
+information will remain embedded in the executable (unless you strip
+it).  This should aid the development team to debug problems.
 
 > Also, I cannot find anything in man bash that talks about core
 > dumps nor segmentation faults.
@@ -182,7 +185,12 @@ or gdb like this:
 
     gdb -c core.7586 /usr/local/bin/xastir
 
-Another good debugger to try is "UPS". 
+Once you have the program and core file loaded into the debugger you
+can display a backtrace to see where the program died.  In the case
+of ddd, it's Status->Backtrace, then you click on one of the entries
+to make the source code window display the exact location.
+
+Another good debugger to try is "UPS".
 
 
 
