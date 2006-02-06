@@ -12574,8 +12574,19 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
 
     // Note that the first MIC-E character was not passed to us, so we're
     // starting just past it.
-    // Check for valid symbol table character.  Should be '/' or '\' only.
-    if (info[7] != '/' && info[7] != '\\') {        // Symbol table char not in correct spot
+    // Check for valid symbol table character.  Should be '/' or '\'
+    // or 0-9, A-Z.
+    //
+    if (        info[7] == '/'                          // Primary table
+            ||  info[7] == '\\'                         // Alternate table
+            || (info[7] >= '0' && info[7] <= '9')       // Overlay char
+            || (info[7] >= 'A' && info[7] <= 'Z') ) {   // Overlay char
+
+        // We're good, keep going
+
+    }
+    else { // Symbol table or overlay char incorrect
+
         if (info[6] == '/' || info[6] == '\\') {    // Found it back one char in string
             // Don't print out the full info string here because it
             // can contain unprintable characters.  In fact, we
@@ -12590,6 +12601,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                 fprintf(stderr,"Returned from data_add, invalid symbol table character: %c\n",info[7]);
             }
         }
+
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
     }
