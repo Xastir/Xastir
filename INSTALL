@@ -28,7 +28,7 @@ before you run configure:  "./bootstrap.sh"
   make
   su (become the root user)
   make install (make install-strip can be used after the first time)
-  chmod 4555 /usr/local/bin/xastir (if you use kernel ax.25, see below) 
+  chmod 4555 /usr/local/bin/xastir (only if you use kernel ax.25, see below) 
   exit (from root)
 
 3) Xastir should be installed in /usr/local/bin (the default on most
@@ -1015,6 +1015,9 @@ First Time Install:
 
      This command makes Xastir run as user "root", no matter who actually
      started it.  This allows Xastir to talk to the kernel AX.25 networking.
+     Note however that the above chmod command will prevent you from creating
+     a core file in case Xastir of a major program fault.  This core file aids
+     in debugging to trace what went wrong.
 
      GENERAL SECURITY WARNING:
      Beware that Xastir has not been audited for security, and makes limited
@@ -1172,7 +1175,11 @@ First Time Install:
      >    /usr/local/bin/xastir' will allow xastir to run properly without
      >    changing the serial port's permissions or ownership, thus
      >    minimizing any impact on other applications that use the serial
-     >    port. 
+     >    port.
+
+Note from Curt:  This chmod command will prevent creation of "core"
+file that are useful for debugging in case Xastir crashes.
+
      > 
      >  * use groups
      >    A better way to use the setuid facilities in Unix is to set the

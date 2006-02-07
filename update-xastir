@@ -49,7 +49,8 @@ then
     echo ""                               | tee -a make.log
     (date 2>&1)                           | tee -a make.log
     (make install 2>&1)                   | tee -a make.log
-    chmod 4755 /usr/local/bin/xastir
+#    chmod 4755 /usr/local/bin/xastir
+    chmod 755 /usr/local/bin/xastir
 
     echo ""                               | tee -a make.log
     (date 2>&1)                           | tee -a make.log
@@ -64,7 +65,8 @@ else
     (date 2>&1)                           | tee -a make.log 
     (make 2>&1)                           | tee -a make.log
     (sudo make install-strip 2>&1)        | tee -a make.log
-    sudo chmod 4755 /usr/local/bin/xastir
+#    sudo chmod 4755 /usr/local/bin/xastir
+    sudo chmod 755 /usr/local/bin/xastir
 
     echo ""                               | tee -a make.log
     (date 2>&1)                           | tee -a make.log

@@ -298,16 +298,24 @@ everything.  Follow these steps:
 
     su
     make install
-    chmod 4755 /usr/local/bin/xastir
+    chmod 4755 /usr/local/bin/xastir (optional, see below)
     exit
 
 The first step takes you to root user privileges.  You'll need to
 type in the root password when it asks for it.  The "make install"
 step installs all of the pieces of Xastir in the appropriate places
-on your system.  The "chmod" step sets up the Xastir executable so
-that it can assume root privileges at the points where it needs to,
-usually when it needs to access serial ports or AX.25 kernel
-networking ports.
+on your system.
+
+The "chmod" step sets up the Xastir executable so that it can assume
+root privileges at the points where it needs to, usually when it
+needs to access serial ports or AX.25 kernel networking ports.  Note
+that if you don't need the above chmod command, don't use it.  It
+will prevent creation of "core" files in case Xastir crashes, which
+makes debugging to figure out the root cause much more difficult.
+There are also some security risks in doing "chmod 4755", as it
+makes Xastir run as the root user at times.  We've tried to minimize
+the risk by giving up root permissions when we don't absolutely
+require them, so the risks are smaller.
 
 At this point you have a minimal Xastir installed.  Jump down to the
 "Operating Xastir" step below.
