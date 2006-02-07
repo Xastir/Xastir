@@ -800,7 +800,8 @@ void draw_vector_ll(Widget w,
 void draw_grid(Widget w) {
     int coord;
     char dash[2];
-    int i, j, kk;
+    int i, j;
+//    int kk;
     char place_str[10], zone_str[10], zone_str2[10];
     long xx, yy, xx1, yy1, xx2, yy2;
     int done, zone_changed, z1, z2, Zone, col, col_point, row, row_point, row_point_start;
@@ -1202,7 +1203,7 @@ void draw_grid(Widget w) {
 //                    realloc(utm_grid.zone[Zone].col[col].point,
 //                        i * sizeof(XPoint));
 
-                if (utm_grid.zone[Zone].col[col].point != NULL) {
+//                if (utm_grid.zone[Zone].col[col].point != NULL) {
                     // Already alloc'ed, give it a new size and copy
                     // the old data over.
 
@@ -1215,15 +1216,15 @@ void draw_grid(Widget w) {
 
                     if (temp_point)
                         utm_grid.zone[Zone].col[col].point = temp_point;
-                }
-                else {  // Not alloc'ed yet, start from scratch.
-                    utm_grid.zone[Zone].col[col].point = calloc(i, sizeof(XPoint));
-                }
+//                }
+//                else {  // Not alloc'ed yet, start from scratch.
+//                    utm_grid.zone[Zone].col[col].point = calloc(i, sizeof(XPoint));
+//                }
 
-                // Initialize the new pointers
-                for (kk = utm_grid.zone[Zone].col[col].nalloced; kk < i; kk++) {
-                    utm_grid.zone[Zone].col[kk].point = NULL;
-                }
+//                // Initialize the new pointers
+//                for (kk = utm_grid.zone[Zone].col[col].nalloced; kk < i; kk++) {
+//                    utm_grid.zone[Zone].col[kk].point = NULL;
+//                }
 
                 utm_grid.zone[Zone].col[col].nalloced = i;
                 if (!utm_grid.zone[Zone].col[col].point) {
@@ -1254,7 +1255,7 @@ void draw_grid(Widget w) {
 //                    realloc(utm_grid.zone[Zone].row[row].point,
 //                        i * sizeof(XPoint));
 
-                if (utm_grid.zone[Zone].row[row].point != NULL) {
+//                if (utm_grid.zone[Zone].row[row].point != NULL) {
                     // Already alloc'ed, give it a new size and copy
                     // the old data over.
 
@@ -1263,10 +1264,15 @@ void draw_grid(Widget w) {
 
                     if (temp_point)
                         utm_grid.zone[Zone].row[row].point = temp_point;
-                }
-                else {  // Not alloc'ed yet, start from scratch.
-                    utm_grid.zone[Zone].row[row].point = calloc(i, sizeof(XPoint));
-                }
+//                }
+//                else {  // Not alloc'ed yet, start from scratch.
+//                    utm_grid.zone[Zone].row[row].point = calloc(i, sizeof(XPoint));
+//                }
+
+//                // Initialize the new pointers
+//                for (kk = utm_grid.zone[Zone].col[col].nalloced; kk < i; kk++) {
+//                    utm_grid.zone[Zone].col[kk].point = NULL;
+//                }
 
 
 
