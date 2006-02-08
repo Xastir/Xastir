@@ -11587,7 +11587,7 @@ void pid_file_check(void){
                 "Other Xastir process, pid: %d does not appear be running. \n",
                 other_pid);
 	    // nuke from orbit
-	    if (! unlink(pidfile_name)) {
+	    if (unlink(pidfile_name)) {
 	            fprintf(stderr,"Error unlinking pid file: %s, %d\n",
                         pidfile_name,errno);
             }
