@@ -14665,11 +14665,8 @@ static void* gps_transfer_thread(void *arg) {
 
 //            fprintf(stderr,"Fetch Garmin RINO waypoints\n");
 
-            // Set up the postfix string.  The files will be created in the
-            // "~/.xastir/gps/" directory.
-            xastir_snprintf(postfix, sizeof(postfix),
-                "Shapefile_2D %s/",
-                get_user_base_dir("gps"));
+            // The files will be created in the "~/.xastir/gps/"
+            // directory.
 
             xastir_snprintf(gps_temp_map_filename,
                 sizeof(gps_temp_map_filename),
