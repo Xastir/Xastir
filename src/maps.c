@@ -187,6 +187,11 @@ float roundf(float x)
 
 
 // UTM Grid stuff
+//
+//#define UTM_DEBUG
+//#define UTM_DEBUG_VERB
+//#define UTM_DEBUG_ALLOC
+//
 inline int  max_i(int  a, int  b) { return (a > b ? a : b); }
 #define UTM_GRID_EQUATOR 10000000
 // the maximum number of UTM zones that will appear on a screen that has a 
@@ -219,7 +224,7 @@ typedef struct {
     int firstpoint;
     int npoints;
     int nalloced;
-    XPoint *point;
+    XPoint *points;
 } col_or_row_t;
 
 // The portion of a utm zone visible on the screen has some number of
@@ -257,6 +262,14 @@ unsigned int utm_grid_spacing_m;
 
 
 
+// Clear out/set up the UTM/MGRS minor grid intersection arrays.
+//
+// do_alloc = 0:  Don't allocate memory
+//            1:  Allocate memory for the points
+//
+// Returns: 0 if ok
+//          1 if malloc problem
+//
 int utm_grid_clear(int do_alloc)
 {
     int i, j;
@@ -266,18 +279,31 @@ int utm_grid_clear(int do_alloc)
     utm_grid.hash.lr_x = 0;
     utm_grid.hash.lr_y = 0;
     utm_grid.nzones    = 0;
+
     for (i=0; i < UTM_GRID_MAX_ZONES; i++) {
+
         utm_grid.zone[i].ncols = utm_grid.zone[i].nrows = 0;
         utm_grid.zone[i].boundary_x = 0;
+
         for (j=0; j < UTM_GRID_MAX_COLS_ROWS; j++) {
+
+            //
+            // Clear out column arrays
+            //
             utm_grid.zone[i].col[j].firstpoint = UTM_GRID_RC_EMPTY;
             utm_grid.zone[i].col[j].npoints    = 0;
+
+            if (utm_grid.zone[i].col[j].nalloced)
+                free(utm_grid.zone[i].col[j].points);
+
             utm_grid.zone[i].col[j].nalloced   = 0;
-            free(utm_grid.zone[i].col[j].point);
-            utm_grid.zone[i].col[j].point = NULL;
+            utm_grid.zone[i].col[j].points = NULL;
+
             if (do_alloc) {
-                utm_grid.zone[i].col[j].point = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
-                if (!utm_grid.zone[i].col[j].point) {
+
+                // Allocate enough space for 8 points
+                utm_grid.zone[i].col[j].points = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
+                if (!utm_grid.zone[i].col[j].points) {
                     fprintf(stderr,"calloc(%d, %d) for z=%d col=%d FAILED!\n",
                         UTM_GRID_DEF_NALLOCED,
                         (int)sizeof(XPoint),
@@ -289,14 +315,24 @@ int utm_grid_clear(int do_alloc)
                 utm_grid.zone[i].col[j].nalloced = UTM_GRID_DEF_NALLOCED;
             }
 
+            //
+            // Clear out row arrays
+            //
             utm_grid.zone[i].row[j].firstpoint = UTM_GRID_RC_EMPTY;
             utm_grid.zone[i].row[j].npoints    = 0;
             utm_grid.zone[i].row[j].nalloced   = 0;
-            free(utm_grid.zone[i].row[j].point);
-            utm_grid.zone[i].row[j].point = NULL;
+
+            if (utm_grid.zone[i].row[j].nalloced)
+                free(utm_grid.zone[i].row[j].points);
+
+            utm_grid.zone[i].row[j].nalloced   = 0;
+            utm_grid.zone[i].row[j].points = NULL;
+
             if (do_alloc) {
-                utm_grid.zone[i].row[j].point = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
-                if (!utm_grid.zone[i].row[j].point) {
+
+                // Allocate enough space for 8 points
+                utm_grid.zone[i].row[j].points = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
+                if (!utm_grid.zone[i].row[j].points) {
                     fprintf(stderr,"calloc(%d, %d) for z=%d row=%d FAILED!\n",
                         UTM_GRID_DEF_NALLOCED,
                         (int)sizeof(XPoint),
@@ -362,6 +398,9 @@ void maps_init(void)
 #endif  // NO_XPM
 
     init_critical_section( &print_properties_dialog_lock );
+
+    // Clear the minor UTM/MGRS grid arrays.  Do _not_ allocate
+    // memory for the points.
     (void)utm_grid_clear(0);
 }
 
@@ -709,24 +748,226 @@ void draw_vector_ll(Widget w,
 
 
 
-//#define UT_DEBUG
-//#define UT_DEBUG_VERB
-//#define UT_DEBUG_ALLOC
-//*****************************************************************
-// draw_grid()
+// Lat/Long coordinate system, draw lat/long lines.  Called by
+// draw_grid() below.
 //
-// Draws a lat/lon or UTM/UPS grid on top of the view.
+void draw_complete_lat_lon_grid(Widget w,
+                        int border_width,
+                        char *metadata_datum,
+                        int outline_border_labels,
+                        int outline_border_labels_color) {
+
+    int coord;
+    char dash[2];
+    unsigned int x,x1,x2;
+    unsigned int y,y1,y2;
+    unsigned int stepsx[3];
+    unsigned int stepsy[3];
+    int step;
+    int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
+    char grid_label[25];        // String to draw labels on grid lines
+ 
+ 
+    // convert between selected coordinate format constant and display format constants
+    if (coordinate_system == USE_DDDDDD) {
+       coordinate_format = CONVERT_DEC_DEG;
+    }
+    else if (coordinate_system == USE_DDMMSS) {
+       coordinate_format = CONVERT_DMS_NORMAL_FORMATED;
+    }
+    else {
+       coordinate_format = CONVERT_HP_NORMAL_FORMATED;
+    }
+
+    if (draw_labeled_grid_border==TRUE) { 
+        char grid_label1[25];       // String to draw latlong metadata 
+        char grid_label2[25];       // String to draw latlong metadata 
+        char top_label[180];        // String to draw metadata on top border
+        long xx2, yy2;
+ 
+ 
+        // Put metadata in top border.
+        // find location of upper left corner of map, convert to Lat/Long
+        xx2 = x_long_offset  + (border_width * scale_x);
+        yy2 = y_lat_offset   + (border_width * scale_y);
+        convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
+        convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
+        xastir_snprintf(grid_label,
+            sizeof(grid_label),
+            "%s %s",
+            grid_label1,grid_label2);
+        // find location of lower right corner of map, convert to Lat/Long
+        xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
+        yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+        convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
+        convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
+        //"XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum. ",
+        xastir_snprintf(top_label,
+            sizeof(top_label),
+            langcode("MDATA002"),
+            grid_label,grid_label1,grid_label2,metadata_datum);
+        draw_rotated_label_text_to_target (w, 270, 
+            border_width+2,
+            border_width-1,
+            sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
+            pixmap_final,
+            outline_border_labels, colors[outline_border_labels_color]);
+    }
+
+    stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
+    stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
+    stepsx[2] =   300*100;    stepsy[2] =   150*100;
+
+    //fprintf(stderr,"scale_x: %ld\n",scale_x);
+    step = 0;
+    if (scale_x <= 6000) step = 1;
+    if (scale_x <= 300)  step = 2;
+
+    step += grid_size;
+    if (step < 0) {
+        grid_size -= step;
+        step = 0;
+    }
+    else if (step > 2) {
+        grid_size -= (step - 2);
+        step = 2;
+    }
+
+    // draw vertical lines
+    if (y_lat_offset >= 0)
+        y1 = 0;
+    else
+        y1 = -y_lat_offset/scale_y;
+
+    y2 = (180*60*60*100-y_lat_offset)/scale_y;
+
+    if (y2 > (unsigned int)screen_height)
+        y2 = screen_height-1;
+
+    coord = x_long_offset+stepsx[step]-(x_long_offset%stepsx[step]);
+    if (coord < 0)
+        coord = 0;
+
+    for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx[step]) {
+
+        x = (coord-x_long_offset)/scale_x;
+
+        if ((coord%(648000*100)) == 0) {
+            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
+            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+            continue;   // Go to next iteration of for loop
+        }
+        else if ((coord%(72000*100)) == 0) {
+            dash[0] = dash[1] = 8;
+            (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
+        } 
+         else if ((coord%(7200*100)) == 0) {
+            dash[0] = dash[1] = 4;
+            (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
+        }
+        else if ((coord%(300*100)) == 0) {
+            dash[0] = dash[1] = 2;
+            (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
+        }
+
+        (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
+        if (draw_labeled_grid_border==TRUE) { 
+            // draw in the longitudes in lower border
+            convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
+            draw_rotated_label_text_to_target (w, 270, 
+                x,
+                screen_height, 
+                sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                pixmap_final,
+                outline_border_labels, colors[outline_border_labels_color]);
+        }
+    }
+
+    // draw horizontal lines
+    if (x_long_offset >= 0)
+        x1 = 0;
+    else
+        x1 = -x_long_offset/scale_x;
+
+    x2 = (360*60*60*100-x_long_offset)/scale_x;
+    if (x2 > (unsigned int)screen_width)
+        x2 = screen_width-1;
+
+    coord = y_lat_offset+stepsy[step]-(y_lat_offset%stepsy[step]);
+    if (coord < 0)
+        coord = 0;
+
+    for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy[step]) {
+
+        y = (coord-y_lat_offset)/scale_y;
+
+        if ((coord%(324000*100)) == 0) {
+            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
+            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+            continue;   // Go to next iteration of for loop
+        }
+        else if ((coord%(36000*100)) == 0) {
+            dash[0] = dash[1] = 8;
+            (void)XSetDashes (XtDisplay (w), gc_tint, 4, dash, 2);
+        }
+        else if ((coord%(3600*100)) == 0) {
+            dash[0] = dash[1] = 4;
+            (void)XSetDashes (XtDisplay (w), gc_tint, 2, dash, 2);
+        }
+        else if ((coord%(150*100)) == 0) {
+            dash[0] = dash[1] = 2;
+        (void)XSetDashes (XtDisplay (w), gc_tint, 1, dash, 2);
+        }
+
+        (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
+        if (draw_labeled_grid_border==TRUE) { 
+            // draw in the latitudes on left and right borders
+            // (unlike UTM where easting before northing order is important)
+            convert_lat_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
+            draw_rotated_label_text_to_target (w, 180, 
+                screen_width, 
+                y,
+                sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                pixmap_final,
+                outline_border_labels, colors[outline_border_labels_color]);
+            draw_rotated_label_text_to_target (w, 180, 
+                border_width, 
+                y,
+                sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                pixmap_final,
+                outline_border_labels, colors[outline_border_labels_color]);
+        }
+    }
+}
+
+
+
+
+
+// Draw the major zones for UTM and MGRS.  Called by draw_grid()
+// below.
 //
-// Draw labels for each UTM/UPS zone?
+// These are based off 6-degree lat/long lines, with a few irregular
+// zones that have to be special-cased.  This part of the code
+// handles the irregular zones in SW Norway (31V/32V) and the
+// regions near Svalbard (31X/33X/35X/37X) just fine.
+
+// These are based off the central meridian running up the middle of
+// each zone (3 degrees from either side of the standard six-degree
+// zones).  Even the irregular zones key off the same medians.  UTM
+// grids are defined in terms of meters instead of lat/long, so they
+// don't line up with the left/right edges of the zones or with the
+// longitude lines.
 //
-// This routine appears to draw most of the UTM/UPS grid ok, with
-// the exceptions of:
-//
-// 1) Sometimes fails to draw vertical lines nearest zone
-// boundaries.
-// 2) Lines connect across zone boundaries in an incorrect manner,
-// jumping up one grid interval across the boundary.
-//
+// According to Peter Dana (Geographer's Craft web pages), even when
+// the major grid boundaries have been shifted, the meridian used
+// for drawing the subgrids is still based on six-degree boundaries
+// (as if the major grid hadn't been shifted at all).  That means we
+// are drawing the subgrids correctly as it stands now for the
+// irregular grids (31V/32V/31X/33X/35X/37X).  The irregular zones
+// have sizes of 3/9/12 degrees (width) instead of 6 degrees.
 //
 // UTM NOTES:  84 degrees North to 80 degrees South. 60 zones, each
 // covering six (6) degrees of longitude. Each zone extends three
@@ -736,7 +977,7 @@ void draw_vector_ll(Widget w,
 // to the respective poles, the Universal Polar Stereographic (UPS)
 // is used.
 //
-// For MGRS UTM grid only:
+// For MGRS and UTM-Special grid only:
 // UTM Zone 32 has been widened to 9° (at the expense of zone 31)
 // between latitudes 56° and 64° (band V) to accommodate southwest
 // Norway. Thus zone 32 extends westwards to 3°E in the North Sea.
@@ -795,57 +1036,167 @@ void draw_vector_ll(Widget w,
 // D    64S to 72S ( 8 degrees latitude, equator=10,000,000)
 // C    72S to 80S ( 8 degrees latitude, equator=10,000,000)
 // A/B  80S to 90S (UPS System) false N/E = 2,000,000
-// 
-//*****************************************************************
-void draw_grid(Widget w) {
-    int coord;
-    char dash[2];
-    int i, j;
-//    int kk;
-    char place_str[10], zone_str[10], zone_str2[10];
+//
+void draw_major_utm_mgrs_grid(Widget w) {
+    int ii;
+
+ 
+    // Vertical lines:
+
+    // Draw the vertical vectors (except for the irregular regions
+    // and the prime meridian).  The polar areas only have two zones
+    // each, so we don't want to draw through those areas.
+
+    for (ii = -180; ii < 0; ii += 6) {
+        draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final);
+    }
+    for (ii = 42; ii <= 180; ii += 6) {
+        draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final);
+    }
+
+    // Draw the short vertical vectors in the polar regions
+    draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
+ 
+    if (coordinate_system == USE_UTM_SPECIAL
+            || coordinate_system == USE_MGRS) {
+        // For MGRS, we need to draw irregular zones in certain
+        // areas.
+
+        // Draw the partial vectors from 80S to the irregular region
+        draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final);
+
+        // Draw the short vertical vectors in the irregular region 
+        draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final);
+
+        // Draw the short vertical vectors above the irregular region 
+        draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
+    }
+    else {
+        // Draw normal zone boundaries used for civilian UTM
+        // grid.
+        for (ii = 6; ii < 42; ii += 6) {
+            draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final);
+        }
+    }
+
+
+    // Horizontal lines:
+
+    // Draw the 8 degree spaced lines, except for the equator
+    for (ii = -80; ii < 0; ii += 8) {
+        draw_vector_ll(w, (float)ii, -180.0, (float)ii, 180.0, gc_tint, pixmap_final);
+    }
+    // Draw the 8 degree spaced lines 
+    for (ii = 8; ii <= 72; ii += 8) {
+        draw_vector_ll(w, (float)ii, -180.0, (float)ii, 180.0, gc_tint, pixmap_final);
+    }
+
+    // Draw the one 12 degree spaced line
+    draw_vector_ll(w, 84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
+
+    // Draw the pole lines
+    draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w,  90.0, -180.0,  90.0, 180.0, gc_tint, pixmap_final);
+
+    // Set to solid line for the equator.  Make it extra wide as
+    // well.
+    (void)XSetLineAttributes (XtDisplay (w), gc_tint, 3, LineSolid, CapButt,JoinMiter);
+
+    // Draw the equator as a solid line
+    draw_vector_ll(w, 0.0, -180.0, 0.0, 180.0, gc_tint, pixmap_final);
+
+    (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
+
+    // Draw the prime meridian in the same manner
+    draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final);
+ 
+    // Set the line width and style in the GC to 1 pixel wide for
+    // drawing the smaller grid
+    (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+}
+
+
+
+
+
+// Draw the minor UTM grids.  Called by draw_grid() below.
+//
+// This routine appears to draw most of the UTM/UPS grid ok, with
+// the exceptions of:
+//
+// 1) Sometimes fails to draw vertical lines nearest zone
+// boundaries.
+// 2) Lines connect across zone boundaries in an incorrect manner,
+// jumping up one grid interval across the boundary.
+// 3) Segfaults near the special zone intersections as you zoom in.
+//
+// The code currently creates a col and row array per zone visible,
+// with XPoints malloced that contain the grid intersections in
+// screen coordinates.  If the screen is zoomed or panned they are
+// recalculated.
+//
+// Perhaps we could do the same but with lat/long coordinates in the
+// future so that we'd only have to recalculate when a new Zone came
+// into view.  We'd use the lat/long vector drawing programs above
+// then, with a possible slowdown due to more calculations if we're
+// not moving around.
+//
+// Returns: 0 if successful or nothing to draw
+//          1 if some error occured
+//
+int draw_minor_utm_mgrs_grid(Widget w,
+                             int border_width,
+                             char *metadata_datum,
+                             int outline_border_labels,
+                             int outline_border_labels_color,
+                             int string_width_pixels,
+                             int string_height_pixels,
+                             int short_width_pixels) { 
+
     long xx, yy, xx1, yy1, xx2, yy2;
-    int done, zone_changed, z1, z2, Zone, col, col_point, row, row_point, row_point_start;
     double e[4], n[4];
-    float slope;
+    char place_str[10], zone_str[10], zone_str2[10];
+    int done = 0;
+    int z1, z2, Zone, col, col_point, row, row_point, row_point_start;
     int iterations = 0;
-    int border_width = 14;      // The width of the border to draw around the 
-                                // map to place labeled tick marks into
-                                // should be an even number.
-                                // default here overidden by fontsize.
-    int half = border_width/2;  // Center of the white lines used to draw the borders
-//    int draw_labeled_grid_border = TRUE;   // flag to draw labeled border, move to a global
+    int finished_with_current_zone = 0;
+    int ii, jj;
+    float slope;
+    int numberofzones = 0;      // number of elements in utm_grid.zone[] that are used
+    int easting_color;          // Colors for the grid labels
+    int northing_color;
+    int zone_color;             // zone label color
+    int label_on_left;          // if true, draw northing labels on left
+    double easting, northing;   
     char grid_label[25];        // String to draw labels on grid lines
     char grid_label1[25];       // String to draw latlong metadata 
-    char grid_label2[25];       // String to draw latlong metadata 
     char top_label[180];        // String to draw metadata on top border
-    char metadata_datum[6] = "WGS84";  // datum to display in metadata on top border
-    double easting, northing;   
+    int grid_spacing_pixels;    // Spacing of fine grid lines in pixels.
     int  skip_alternate_label;  // Skip alternate easting and northing labels
                                 // if they would overlap on the display.
     int last_line_labeled;      // Marks lines that were labeled when alternate lines
                                 // are not being labeled.
-    char seven_zeroes[8] = "0000000";
-    char five_zeroes[6] = "00000";
-    int string_width_pixels = 0;// Width of the unrotated seven_zeroes label string in pixels.
-    int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
-    int string_height_pixels;   // Height of the unrotated seven_zeroes label string in pixels
-    int grid_spacing_pixels;    // Spacing of fine grid lines in pixels.
-    int easting_color;          // Colors for the grid labels
-    int northing_color;
-    int zone_color;             // zone label color
-    int numberofzones = 0;      // number of elements in utm_grid.zone[] that are used
     int bottom_point;           // utm_grid.zone[].col[].npoints can extend past the 
                                 // bottom of the screen, this is the lowest point in the
                                 // points array that is on the screen.
-    int label_on_left;          // if true, draw northing labels on left
-    int outline_border_labels = TRUE;  // if true put an outline around the border labels
-    int border_foreground_color = 0x20;     // color of the map border, if shown 
-                                            // 0x08 is black.
-                                            // 0x20 is white.
-    int outline_border_labels_color = border_foreground_color; 
-                                // color of outline to draw around border labels
-                                // use color of border to help make text more legible.
-    int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
+ 
     // variables to support components of MGRS strings
     char mgrs_zone[4] = "   ";   // MGRS zone letter
     char mgrs_eastingL[3] = "  "; 
@@ -856,7 +1207,1100 @@ void draw_grid(Widget w) {
     char mgrs_ul_digraph[3] = "  ";  // MGRS digraph for upper left corner of screen
     char mgrs_lr_digraph[3] = "  ";  // MGRS digraph for lower right corner of screen
     int mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
-    int finished_with_current_zone = 0;
+
+ 
+    col = 0;
+    row = 0;
+    col_point = 0;
+    row_point = 0;
+    row_point_start = 0;
+    Zone = 0;
+
+    // Set up for drawing zone grid(s)
+    if (scale_x < 15)
+        utm_grid_spacing_m =    100;
+    else if (scale_x < 150)
+        utm_grid_spacing_m =   1000;
+    else if (scale_x < 1500)
+        utm_grid_spacing_m =  10000;
+    else if (scale_x < 3000)
+        utm_grid_spacing_m = 100000;
+    else {
+        utm_grid_spacing_m = 0;
+        // All done!  Don't draw the minor grids.  Major grids
+        // have already been drawn by this point.
+        return(0);
+    }
+
+    // Check hash to see if utm_grid is already set up
+    if (utm_grid.hash.ul_x == x_long_offset &&
+        utm_grid.hash.ul_y == y_lat_offset &&
+        utm_grid.hash.lr_x == x_long_offset + (screen_width  * scale_x) &&
+        utm_grid.hash.lr_y == y_lat_offset  + (screen_height * scale_y)) {
+
+        // XPoint arrays are already set up.  Skip to the
+        // drawing portion of this function.
+        goto utm_grid_draw;
+    }
+
+
+// If we get to this point, we need to re-create the minor UTM/MGRS
+// grids as they were never set up or else they don't match the
+// current view.
+
+
+    // Clear the minor UTM/MGRS grid arrays.  Alloc space for
+    // the points in the grid structure.
+    if (utm_grid_clear(1)) {
+        // Had a problem
+        return(1);
+    }
+
+    // Find top left point of current view
+    xx = x_long_offset;
+    yy = y_lat_offset;
+    convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
+    n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
+
+    // Move the coordinates to the nearest subgrid intersection,
+    // based on our current grid spacing.  The grid intersection
+    // we calculate here is northwest of our view's northwest
+    // corner.
+    e[0] /= utm_grid_spacing_m;
+    e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
+    n[0] /= utm_grid_spacing_m;
+    n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
+    n[0] += utm_grid_spacing_m;
+
+
+//WE7U
+// It appears that the horizontal grid lines get messed up in cases
+// where the top horizontal line isn't in view on it's left end.
+// That's a major clue!  Read the comment below (again with a "WE7U"
+// tag).  The problem occurs at the point where we copy the last
+// point from the previous grid over to the first point of a new
+// grid.  That can cause us to be off by one, as for the grid on the
+// left, the top horizontal line _is_ in view on the left.  We end
+// up connecting the wrong horizontal lines together because of this
+// mismatch, but again, only if the top horizontal line on the left
+// grid is above the current view.
+//
+// It also appears that the vertical lines that are missing in some
+// cases are on the right of the zone boundary.  This is probably
+// because the top of that line doesn't go to the top of the view.
+// On views where it does, the line is drawn.  I assume this is
+// because we're drawing from NW corner to the right, and then down,
+// which would cause that line to be skipped if it's not present on
+// the first line?
+
+
+    e[1] = e[0];
+    n[1] = n[0];
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+    while (!done) {
+        XPoint *temp_point;
+
+
+        // Here's our escape in case we get stuck in this loop.
+        // We can go through this loop multiple times for each
+        // zone though.
+        //
+        if (iterations++ > 1000) {
+            fprintf(stderr,
+                "draw_minor_utm_mgrs_grid() looped too many times, escaping.\n");
+            return(1);
+        }
+
+
+        if (finished_with_current_zone) {
+            // Set up to compute the next zone
+
+            xx = x_long_offset + ((utm_grid.zone[Zone].boundary_x + 1) * scale_x);
+
+            yy = y_lat_offset;
+            convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
+            n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
+
+// Again, fix the coordinates to the nearest subgrid intersection,
+// based on our current grid spacing.  Bump both the easting and
+// northing up by one subgrid.
+            e[0] /= utm_grid_spacing_m;
+            e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
+            e[0] += utm_grid_spacing_m;
+            n[0] /= utm_grid_spacing_m;
+            n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
+            n[0] += utm_grid_spacing_m;
+
+            e[1] = e[0];
+            n[1] = n[0];
+
+#ifdef UTM_DEBUG
+            fprintf(stderr,"\nFinished Zone=%d\n", Zone);
+#endif
+
+            // We're all done with the current zone.  Increment
+            // to the next zone and set up to calculate its
+            // points.
+            Zone++;
+
+#ifdef UTM_DEBUG
+            fprintf(stderr,"\nstarting Zone=%d, row_point_start=1\n", Zone);
+#endif
+
+            row_point = row_point_start = 1;
+            col = row = col_point = 0;
+            finished_with_current_zone = 0;
+
+            if (Zone >= UTM_GRID_MAX_ZONES) {
+                fprintf(stderr,"Error: Zone=%d: out of zones!\n", Zone);
+                Zone = 0;
+                done = 1;
+                return(1);
+            }
+        }   // End of if(finished_with_current_zone)
+ 
+
+
+        convert_UTM_to_xastir(e[1], n[1]-UTM_GRID_EQUATOR, place_str, &xx, &yy);
+        xx1 = xx; // Save
+        yy1 = yy; // Save
+
+        convert_xastir_to_UTM(&e[2], &n[2], zone_str, sizeof(zone_str), xx, yy);
+
+        n[2] += UTM_GRID_EQUATOR;
+        xx = (xx - x_long_offset) / scale_x;
+        yy = (yy - y_lat_offset)  / scale_y;
+
+        // Not all columns (and maybe rows) will start at point
+        // 0
+        if (utm_grid.zone[Zone].col[col].firstpoint == UTM_GRID_RC_EMPTY) {
+            utm_grid.zone[Zone].col[col].firstpoint = col_point;
+#ifdef UTM_DEBUG
+            fprintf(stderr,"col[%d] started at point %d\n", col, col_point);
+#endif
+        }
+        if (utm_grid.zone[Zone].row[row].firstpoint == UTM_GRID_RC_EMPTY) {
+            utm_grid.zone[Zone].row[row].firstpoint = row_point;
+#ifdef UTM_DEBUG
+            fprintf(stderr,"row[%d] started at point %d\n", row, row_point);
+#endif
+        }
+
+        // Check to see if we need to alloc more space for
+        // column points
+        ii = utm_grid.zone[Zone].col[col].npoints +
+            utm_grid.zone[Zone].col[col].firstpoint + 1;
+        if (ii > utm_grid.zone[Zone].col[col].nalloced) {
+#ifdef UTM_DEBUG_ALLOC
+            fprintf(stderr,"i=%d n=%d realloc(utm_grid.zone[%d].col[%d].points, ",
+                   ii, utm_grid.zone[Zone].col[col].nalloced, Zone, col);
+#endif
+            ii = ((ii / UTM_GRID_DEF_NALLOCED) + 1) * UTM_GRID_DEF_NALLOCED;
+#ifdef UTM_DEBUG_ALLOC
+            fprintf(stderr,"%d)\n", ii);
+#endif
+
+// NOTE:  The below is bad practice.  If the realloc fails, we lose
+// the pointer to what was alloc'ed before and it becomes a memory
+// leak.
+//                utm_grid.zone[Zone].col[col].points =
+//                    realloc(utm_grid.zone[Zone].col[col].points,
+//                        ii * sizeof(XPoint));
+
+                temp_point = realloc(utm_grid.zone[Zone].col[col].points,
+                    ii * sizeof(XPoint));
+
+                if (temp_point)
+                    utm_grid.zone[Zone].col[col].points = temp_point;
+
+            utm_grid.zone[Zone].col[col].nalloced = ii;
+            if (!utm_grid.zone[Zone].col[col].points) {
+                puts("realloc FAILED!");
+                (void)utm_grid_clear(0); // Clear arrays and allocate memory for points
+                return(1);
+            }
+        }
+
+        // Check to see if we need to alloc more space for row
+        // points
+        ii = utm_grid.zone[Zone].row[row].npoints +
+            utm_grid.zone[Zone].row[row].firstpoint + 1;
+        if (ii > utm_grid.zone[Zone].row[row].nalloced) {
+#ifdef UTM_DEBUG_ALLOC
+            fprintf(stderr,"i=%d n=%d realloc(utm_grid.zone[%d].row[%d].points, ",
+                   ii, utm_grid.zone[Zone].row[row].nalloced, Zone, row);
+#endif
+            ii = ((ii / UTM_GRID_DEF_NALLOCED) + 1) * UTM_GRID_DEF_NALLOCED;
+#ifdef UTM_DEBUG_ALLOC
+            fprintf(stderr,"%d)\n", ii);
+#endif
+
+// NOTE:  The below is bad practice.  If the realloc fails, we lose
+// the pointer to what was alloc'ed before and it becomes a memory
+// leak.
+//                utm_grid.zone[Zone].row[row].points =
+//                    realloc(utm_grid.zone[Zone].row[row].points,
+//                        ii * sizeof(XPoint));
+
+                temp_point = realloc(utm_grid.zone[Zone].row[row].points,
+                    ii * sizeof(XPoint));
+
+                if (temp_point)
+                    utm_grid.zone[Zone].row[row].points = temp_point;
+
+            utm_grid.zone[Zone].row[row].nalloced = ii;
+            if (!utm_grid.zone[Zone].row[row].points) {
+                puts("realloc FAILED!");
+                (void)utm_grid_clear(0); // Clear arrays and allocate memory for points
+                return(1);
+            }
+        }
+
+        // Here we check to see whether we are inserting points
+        // that are greater than about +/- 15000.  If so,
+        // truncate at that.  This prevents XDrawLines() from
+        // going nuts and drawing hundreds of extra lines.
+        //
+        if (xx < -15000)
+            xx = -15000;
+        if (xx >  15000)
+            xx =  15000;
+        if (yy < -15000)
+            yy = -15000;
+        if (yy >  15000)
+            yy = 15000;
+
+        utm_grid.zone[Zone].col[col].points[col_point].x = xx;
+        utm_grid.zone[Zone].col[col].points[col_point].y = yy;
+        utm_grid.zone[Zone].col[col].npoints++;
+        utm_grid.zone[Zone].row[row].points[row_point].x = xx;
+        utm_grid.zone[Zone].row[row].points[row_point].y = yy;
+        utm_grid.zone[Zone].row[row].npoints++;
+
+#ifdef UTM_DEBUG
+        fprintf(stderr,"utm_grid.zone[%d].col[%d].points[%d] = [ %ld,%ld ] npoints=%d\n",
+               Zone, col, col_point, xx, yy, utm_grid.zone[Zone].col[col].npoints);
+        fprintf(stderr,"utm_grid.zone[%d].row[%d].points[%d] = [ %ld,%ld ]\n",
+               Zone, row, row_point, xx, yy);
+#endif
+
+        col++;
+        row_point++;
+        if (col >= UTM_GRID_MAX_COLS_ROWS)
+            finished_with_current_zone++;
+
+        z1 = atoi(place_str);
+        z2 = atoi(zone_str);
+        if (z1 != z2 || xx > screen_width) { // We hit a boundary
+
+#ifdef UTM_DEBUG_VERB
+            if (z1 != z2)
+                fprintf(stderr,"Zone boundary! \"%s\" -> \"%s\"\n", place_str, zone_str);
+            else
+                puts("Screen boundary!");
+#endif
+
+//#warning
+//#warning I suspect that I should not use just col for the following.
+//#warning
+            if (col-2 >= 0)
+                slope = (float)(yy - utm_grid.zone[Zone].col[col-2].points[col_point].y) /
+                    (float)(xx - utm_grid.zone[Zone].col[col-2].points[col_point].x + 0.001);
+            else
+                slope = 0.0;
+
+            if (xx > screen_width)
+                xx1 = screen_width;
+            else {
+
+                // 360,000 Xastir units equals one degree.  This
+                // code appears to be adjusting xx1 to a major
+                // zone edge.
+                xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
+                xx1 = (xx1 - x_long_offset) / scale_x;
+            }
+
+            utm_grid.zone[Zone].boundary_x = xx1;
+            yy1 = yy - (xx - xx1) * slope;
+
+#ifdef UTM_DEBUG
+            fprintf(stderr,"_tm_grid.zone[%d].col[%d].points[%d] =  [ %ld,%ld ]\n",
+                   Zone, col-1, col_point, xx1, yy1);
+            fprintf(stderr,"_tm_grid.zone[%d].row[%d].points[%d] =  [ %ld,%ld ]\n",
+                   Zone, row, row_point-1, xx1, yy1);
+#endif
+
+            if (col-1 >= 0 && row_point-1 >= 0) {
+                utm_grid.zone[Zone].col[col-1].points[col_point].x = xx1;
+                utm_grid.zone[Zone].col[col-1].points[col_point].y = yy1;
+                utm_grid.zone[Zone].row[row].points[row_point-1].x = xx1;
+                utm_grid.zone[Zone].row[row].points[row_point-1].y = yy1;
+                if (z1 != z2 && Zone+1 < UTM_GRID_MAX_ZONES) {
+                    // copy over last points to start off new
+                    // zone
+#ifdef UTM_DEBUG
+                    fprintf(stderr,"ztm_grid.zone[%d].row[%d].points[%d] =  [ %ld,%ld ]\n",
+                           Zone+1, row, 0, xx1, yy1);
+#endif
+
+//WE7U
+// This is where we can end up linking up/down one grid width
+// between zones!!!  Without it though, we end up have a blank
+// section to the right of the zone boundary.  Perhaps we could do
+// this here, but when we get the next points calculated, we could
+// check to see if we're off by about one grid width in the vertical
+// direction.  If so, shift the initial point by that amount?
+//
+// Another possibility might be to draw bottom-to-top if in northern
+// hemisphere, and top-to-bottom if in southern hemisphere.  That
+// way we'd have the max amount of lines present when we start, and
+// some might peter out as we draw along N/S.  Looking at the
+// southern hemisphere right now though, that method doesn't appear
+// to work.  We get the same problems there even though we're
+// drawing top to bottom.
+//
+                    utm_grid.zone[Zone+1].row[row].points[0].x = xx1;
+                    utm_grid.zone[Zone+1].row[row].points[0].y = yy1;
+                    utm_grid.zone[Zone+1].row[row].firstpoint = 0;
+                    utm_grid.zone[Zone+1].row[row].npoints    = 1;
+                }
+            }
+
+
+            // Check last built row to see if it is all off
+            // screen
+            finished_with_current_zone++; // Assume we're done with this zone
+            for (ii=0; ii < utm_grid.zone[Zone].row[row].npoints; ii++) {
+                if (utm_grid.zone[Zone].row[row].points[ii].y <= screen_height)
+                    finished_with_current_zone = 0; // Some points were within the zone, keep computing
+            }
+
+
+            e[1]  = e[0];               // carriage return
+            n[1] -= utm_grid_spacing_m; // line feed
+// Yea, your comments are real funny Olivier...  Gets the point
+// across though!
+
+
+            row++;
+            if (row >= UTM_GRID_MAX_COLS_ROWS)
+                finished_with_current_zone++;
+
+            utm_grid.zone[Zone].ncols = max_i(col, utm_grid.zone[Zone].ncols);
+            utm_grid.zone[Zone].nrows = max_i(row, utm_grid.zone[Zone].nrows);
+            col = 0;
+            row_point = row_point_start;
+            col_point++;
+
+            if (n[1] < 0) {
+                fprintf(stderr,"n[1] < 0\n");
+                finished_with_current_zone++;
+            }
+
+            if (finished_with_current_zone && xx > screen_width)
+                done = 1;
+
+            // Go to next iteration of while loop (skip next statement)
+            continue;
+        }
+
+        e[1] += utm_grid_spacing_m;
+
+    }   // End of while (done) loop
+ 
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+
+
+//fprintf(stderr, "After while loop\n");
+
+    // utm_grid.zone[] now contains an array of points marking fine grid 
+    // line intersections for parts of 1 to 4 zones that appear on 
+    // the screen.  Each utm_grid.zone[] is a vertical stripe, and may include
+    // more than one zone letter, e.g. zone[0] might include 15U and 15T,
+    // while zone[1] might include 16U and 16T.    
+
+//#define UTM_DEBUG_VERB
+
+    for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
+
+#ifdef UTM_DEBUG_VERB
+        fprintf(stderr,"\nutm_grid.zone[%d].ncols=%d\nutm_grid.zone[%d].nrows=%d\n",
+               Zone, utm_grid.zone[Zone].ncols, Zone, utm_grid.zone[Zone].nrows);
+#endif
+
+        // Cleanup columns
+        for (ii=0; ii < (int)utm_grid.zone[Zone].ncols; ii++) {
+            int np = utm_grid.zone[Zone].col[ii].npoints;
+            int fp = utm_grid.zone[Zone].col[ii].firstpoint;
+            int nbp = 0;
+
+#ifdef UTM_DEBUG_VERB
+            fprintf(stderr,"utm_grid.zone[%d].col[%d].npoints=%d .firstpoint=%d\n",
+                   Zone, ii, np, fp);
+            if (np < 2)
+                puts(" Not enough points!");
+            else
+                puts("");
+
+            for (jj=fp; jj < fp+np; jj++) {
+                fprintf(stderr,"         col[%d].points[%d] = [ %d, %d ]", ii, jj,
+                       utm_grid.zone[Zone].col[ii].points[jj].x,
+                       utm_grid.zone[Zone].col[ii].points[jj].y);
+                if (utm_grid.zone[Zone].col[ii].points[jj].x ==
+                    utm_grid.zone[Zone].boundary_x)
+                    puts(" Boundary");
+                else
+                    puts("");
+            }
+#endif
+            for (jj=fp; jj < fp+np; jj++) {
+                if (utm_grid.zone[Zone].col[ii].points[jj].x ==
+                    utm_grid.zone[Zone].boundary_x)
+                    nbp++;
+                else if (nbp > 0) { // We had a boundary point, but not anymore
+                    fp = utm_grid.zone[Zone].col[ii].firstpoint = jj - 1;
+//fprintf(stderr,"np:%d, jj:%d\n",np,jj);
+                    // This can result in negative numbers!
+                    np = utm_grid.zone[Zone].col[ii].npoints = np - jj + 1;
+//fprintf(stderr,"new np:%d\n",np);
+                    if (np < 0) {
+                        np = 0; // Prevents segfaults in
+                                // XDrawLines() and memmove()
+                                // below.
+                    }
+                    break;  // Exit from for loop
+                }
+                if (nbp == np) { // All points are boundary points
+                    fp = utm_grid.zone[Zone].col[ii].firstpoint = 0;
+                    np = utm_grid.zone[Zone].col[ii].npoints    = 0;
+                }
+            }
+
+// What's the below code doing?  Can get a segfault without this in
+// the XDrawLines() functions below (fixed by making npoints an int
+// instead of an unsigned int).  Sometimes we get a segfault right
+// here due to the memmove() function.  In one such case, np was -2.
+// Latest code keeps some lines from getting drawn, but at least we
+// don't get a segfault.
+//
+            if (fp > 0) {
+                if (np > 0) {
+                    memmove(&utm_grid.zone[Zone].col[ii].points[0],
+                        &utm_grid.zone[Zone].col[ii].points[fp], np * sizeof(XPoint));
+                    fp = utm_grid.zone[Zone].col[ii].firstpoint = 0;
+                }
+                else {
+//fprintf(stderr,"draw_minor_utm_mgrs_grid: ii:%d, np:%d, size:%d\n",ii,np,sizeof(XPoint));
+//fprintf(stderr,"Problem1: in draw_minor_utm_mgrs_grid() memmove, np was %d.  Skipping memmove.\n",np);
+                }
+            }
+
+#ifdef UTM_DEBUG_VERB
+            fprintf(stderr,"_tm_grid.zone[%d].col[%d].npoints=%d.firstpoint=%d\n",
+                   Zone, ii, np, fp);
+            for (jj=fp; jj < fp+np; jj++) {
+                fprintf(stderr,"         col[%d].points[%d] = [ %d, %d ]", ii, jj,
+                       utm_grid.zone[Zone].col[ii].points[jj].x,
+                       utm_grid.zone[Zone].col[ii].points[jj].y);
+                if (utm_grid.zone[Zone].col[ii].points[jj].x ==
+                    utm_grid.zone[Zone].boundary_x)
+                    puts(" Boundary");
+                else
+                    puts("");
+            }
+            puts("");
+#endif
+        }
+
+        // Cleanup rows
+        for (ii=0; ii < (int)utm_grid.zone[Zone].nrows; ii++) {
+            int np = utm_grid.zone[Zone].row[ii].npoints;
+            int fp = utm_grid.zone[Zone].row[ii].firstpoint;
+#ifdef UTM_DEBUG_VERB
+            fprintf(stderr,"utm_grid.zone[%d].row[%d].npoints=%d.firstpoint=%d\n",
+                   Zone, ii, np, fp);
+            if (np < 2)
+                puts(" Not enough points!");
+            else
+                puts("");
+#endif
+// What's this doing?  This appears to be important, as things get
+// really messed up if it's commented out.
+            if (fp > 0) {   
+                if (np > 0) {
+                    memmove(&utm_grid.zone[Zone].row[ii].points[0],
+                        &utm_grid.zone[Zone].row[ii].points[fp], np * sizeof(XPoint));
+                    fp = utm_grid.zone[Zone].row[ii].firstpoint = 0;
+                }
+                else {
+//fprintf(stderr,"draw_minor_utm_mgrs_grid: ii:%d, np:%d, size:%d\n",ii,np,sizeof(XPoint));
+//fprintf(stderr,"Problem2: in draw_minor_utm_mgrs_grid() memmove, np was %d.  Skipping memmove.\n",np);
+                }
+ 
+            }
+#ifdef UTM_DEBUG_VERB
+            for (jj=fp; jj < fp+np; jj++) {
+                fprintf(stderr,"         row[%d].points[%d] = [ %d, %d ]\n", ii, jj,
+                       utm_grid.zone[Zone].row[ii].points[jj].x,
+                       utm_grid.zone[Zone].row[ii].points[jj].y);
+            }
+#endif
+        }
+    }
+
+    // Rows and columns ready to go so setup hash
+    utm_grid.hash.ul_x = x_long_offset;
+    utm_grid.hash.ul_y = y_lat_offset;
+    utm_grid.hash.lr_x = x_long_offset + (screen_width  * scale_x);
+    utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
+
+utm_grid_draw:
+
+    // OLD: Draw grid in dashed white lines.
+    // NEW: Tint the lines as they go along, making them appear
+    // no matter what color is underneath.
+    (void)XSetForeground(XtDisplay(w), gc_tint, colors[0x27]);
+
+    // Note:  npoints can be negative here!  Make sure our code
+    // checks for that.  Initially npoints was an unsigned int.
+    // Changed it to an int so that we can get and check for
+    // negative values, bypassing segfaults.
+    //
+    numberofzones = 0;
+
+    for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
+
+        if (utm_grid.zone[Zone].ncols > 0) {
+            // find out how many zones are actually drawn on the map
+            numberofzones++;
+        }
+    }
+
+    for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
+
+        for (ii=0; ii < (int)utm_grid.zone[Zone].ncols; ii++) {
+            if (utm_grid.zone[Zone].col[ii].npoints > 1) {
+
+                // We need to check for points that are more
+                // than +/- 16383.  If we have any, it can cause
+                // X11 to lock up for a while drawing lots of
+                // extra lines, due to bugs in X11.  We do that
+                // checking above with xx and yy.
+                //
+                (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
+                                 utm_grid.zone[Zone].col[ii].points,
+                                 utm_grid.zone[Zone].col[ii].npoints,
+                                 CoordModeOrigin);
+            }
+        }
+
+        for (ii=0; ii < (int)utm_grid.zone[Zone].nrows; ii++) {
+            if (utm_grid.zone[Zone].row[ii].npoints > 1) {
+
+                // We need to check for points that are more
+                // than +/- 16383.  If we have any, it can cause
+                // X11 to lock up for a while drawing lots of
+                // extra lines, due to bugs in X11.  We do that
+                // checking above with xx and yy.
+                //
+                (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
+                                 utm_grid.zone[Zone].row[ii].points,
+                                 utm_grid.zone[Zone].row[ii].npoints,
+                                 CoordModeOrigin);
+            }
+        }
+
+        // Check each of the 4 possible utm_grid.zone array elements 
+        // that might contain a grid, and label the grid if it exists.
+        if (utm_grid.zone[Zone].nrows>0 && utm_grid.zone[Zone].ncols>0) {
+            if (draw_labeled_grid_border==TRUE) { 
+                // Label the UTM grid on the border.
+                // Since the coordinate of the current mouse pointer position is 
+                // continually updated, labeling the grid is primarily for the 
+                // purpose of printing maps and saving screenshots.
+                //
+                // ******* Doesn't work properly near poles when 3 zones are on screen
+                // ******* (e.g. 13,14,15) - overlaps northings for 14 and 15.
+                // ******* Doesn't clearly distinguish one zone with 2 lettered rows
+                // ******* (e.g. 18T,18U) needs color distinction between northings
+                // ******* to indicate which northings are in which lettered row.
+                //
+                    
+                // Default labels for just one zone on screen are black text for
+                // zone at lower left corner, eastings on bottom, and northings
+                // at right.
+                // Idea is to normally start at the lower left corner
+                // users can then easily follow left to right to get easting, 
+                // and bottom to top to get northing.
+                // For two zones, second zone uses blue text for eastings and northings.
+                easting_color = 0x08;  // black text
+                northing_color = 0x08; // black text
+                zone_color = 0x08;     // black text 
+                                           // 0x09=blue (0x0e=yellow works well with outline, but not without).
+                label_on_left = FALSE;
+
+                if (numberofzones>1) {
+                    // check to see if the upper left and lower left corners are in the same zone
+                    // if not, label the upper left corner
+                    xx = (border_width * scale_x) +  x_long_offset;
+                    yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                    yy = (border_width * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
+                    if (strcmp(zone_str,zone_str2)!=0) {
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s",
+                            zone_str2);
+                        //draw_nice_string(w,pixmap_final,0,
+                        //    border_width+2,
+                        //    (2*border_width)+2,
+                        //    grid_label,
+                        //    0x10,zone_color,(int)strlen(grid_label));
+                        draw_rotated_label_text_to_target (w, 270, 
+                            border_width+2,
+                            (2*border_width)+2,
+                            sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                            pixmap_final,
+                            1, colors[0x0f]);
+                    }
+                    if (strcmp(zone_str,zone_str2)!=0) {
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s",
+                            zone_str);
+                        draw_rotated_label_text_to_target (w, 270, 
+                            border_width+2,
+                            screen_height - (2*border_width) - 2,
+                            sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                            pixmap_final,
+                            1, colors[0x0f]);
+                    }
+                    zone_color = 0x09;
+                    // likewise for upper and lower right corners
+                    xx = ((screen_width - border_width) * scale_x) +  x_long_offset;
+                    yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                    yy = (border_width * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
+                    if (strcmp(zone_str,zone_str2)!=0) {
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s",
+                            zone_str2);
+                        //draw_nice_string(w,pixmap_final,0,
+                        //    screen_width - (border_width * 3) ,
+                        //    (2*border_width)+2,
+                        //    grid_label,
+                        //    0x10,zone_color,(int)strlen(grid_label));
+                        draw_rotated_label_text_to_target (w, 270, 
+                            screen_width - (border_width * 3) ,
+                            (2*border_width)+2,
+                            sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                            pixmap_final,
+                            1, colors[0x0f]);
+                    }
+                    if (strcmp(zone_str,zone_str2)!=0) {
+                        xastir_snprintf(grid_label,
+                            sizeof(grid_label),
+                            "%s",
+                            zone_str);
+                        draw_rotated_label_text_to_target (w, 270, 
+                            screen_width - (border_width * 3) ,
+                            screen_height - (2*border_width) - 2,
+                            sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
+                            pixmap_final,
+                            1, colors[0x0f]);
+                    }
+                        
+                    // are we currently the same zone as the upper left corner
+                    // if so, we need to place the northing labels on the left side
+                    xx = (utm_grid.zone[Zone].col[0].points[0].x * scale_x) +  x_long_offset;
+                    yy = (utm_grid.zone[Zone].col[0].points[0].y * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                    convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), x_long_offset, y_lat_offset);
+                    if (strcmp(zone_str,zone_str2)==0) {
+                        northing_color = 0x08;  // 0x08 = black, same as lower left easting
+                        label_on_left = TRUE;
+                    }
+
+                }    
+                // check to see if there is a horizontal boundary 
+                // compare xone of upper left and lower left corners
+                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), x_long_offset, y_lat_offset);
+
+                // Overwrite defaults as appropriate and 
+                // label zones differently if more than one appears on the screen.
+
+                if (Zone > 0) {
+                    // write the zone label on the bottom border
+                    zone_color = 0x09;     // blue
+                    easting_color = 0x09;  // blue
+                    northing_color = 0x09; // blue
+                    xx2 = utm_grid.zone[Zone].col[0].points[0].x;
+                    xx = (xx2 * scale_x) + x_long_offset;
+                    yy2 = utm_grid.zone[Zone].col[0].points[utm_grid.zone[Zone].col[0].npoints-1].y;
+                    yy = (yy2 * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx,yy);
+                    xastir_snprintf(grid_label,
+                        sizeof(grid_label),
+                        "%s",
+                        zone_str);
+                    draw_rotated_label_text_to_target (w, 270, 
+                        xx2,
+                        screen_height, 
+                        sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                        pixmap_final,
+                        outline_border_labels, colors[outline_border_labels_color]);
+                    //draw_nice_string(w,pixmap_final,0,
+                    //    xx2,
+                    //    screen_height - 2,
+                    //    grid_label,
+                    //    0x10,zone_color,(int)strlen(grid_label));
+                }
+
+                if (Zone==0) {
+                    // write the zone of the lower left corner of the map
+                    xx = (border_width * scale_x) +  x_long_offset;
+                    yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                    xastir_snprintf(grid_label,
+                        sizeof(grid_label),
+                        "%s",
+                        zone_str);
+                    draw_rotated_label_text_to_target (w, 270, 
+                        1,
+                        screen_height, 
+                        sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                        pixmap_final,
+                        outline_border_labels, colors[outline_border_labels_color]);
+                    //draw_nice_string(w,pixmap_final,0,
+                    //    1,
+                    //    screen_height - 2,
+                    //    grid_label,
+                    //    0x10,0x20,(int)strlen(grid_label));
+                }
+                // Put metadata in top border.
+                // find location of upper left corner of map, convert to UTM
+                xx2 = x_long_offset  + (border_width * scale_x);
+                yy2 = y_lat_offset   + (border_width * scale_y);
+                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+                    xx2, yy2);
+                if (coordinate_system == USE_MGRS) {
+                    convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                        mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                        mgrs_northingL,  sizeof(mgrs_northingL), 
+                        &int_utmEasting, &int_utmNorthing, 
+                        xx2, yy2,
+                        0, mgrs_space_string, strlen(mgrs_space_string));
+                    xastir_snprintf(mgrs_ul_digraph, sizeof(mgrs_ul_digraph),
+                                   "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
+                    xastir_snprintf(grid_label,
+                        sizeof(grid_label),
+                        "%s %s %05.0f %05.0f",
+                        mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
+                } 
+                else {
+                    xastir_snprintf(grid_label,
+                        sizeof(grid_label),
+                        "%s %07.0f %07.0f",
+                        zone_str,easting,northing);
+                }
+                // find location of lower right corner of map, convert to UTM
+                xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
+                yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+                    xx2, yy2);
+                if (coordinate_system == USE_MGRS) {
+                    convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                        mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                        mgrs_northingL,  sizeof(mgrs_northingL), 
+                        &int_utmEasting, &int_utmNorthing, 
+                        xx2, yy2,
+                        0, mgrs_space_string, strlen(mgrs_space_string));
+                    xastir_snprintf(mgrs_lr_digraph, sizeof(mgrs_lr_digraph),
+                                   "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
+                    xastir_snprintf(grid_label1,
+                        sizeof(grid_label1),
+                        "%s %s %05.0f %05.0f",
+                        mgrs_zone,mgrs_lr_digraph,(float)int_utmEasting,(float)int_utmNorthing);
+                   if (strcmp(mgrs_lr_digraph,mgrs_ul_digraph)==0) {
+                         mgrs_single_digraph = TRUE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+                   } 
+                   else {
+                         mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+                   }
+                } 
+                else {
+                    xastir_snprintf(grid_label1,
+                        sizeof(grid_label1),
+                        "%s %07.0f %07.0f",
+                        zone_str,easting,northing);
+                }
+                //"XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ",
+                xastir_snprintf(top_label,
+                    sizeof(top_label),
+                    langcode("MDATA001"),
+                    grid_label,grid_label1,utm_grid_spacing_m,metadata_datum);
+                //draw_nice_string(w,pixmap_final,0,
+                //    border_width+2,
+                //    border_width-2,
+                //    top_label,
+                //    0x10,0x20,(int)strlen(top_label));
+                draw_rotated_label_text_to_target (w, 270, 
+                    border_width+2,
+                    border_width-1,
+                    sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+
+                // deterimne whether the easting and northing strings will fit
+                // in a grid box, or whether easting strings in adjacent boxes
+                // will overlap (so that alternate strings can be skipped).  
+                if (utm_grid.zone[Zone].ncols > 1) {
+                    // find out the number of pixels beteen two grid lines
+                    grid_spacing_pixels = 
+                               utm_grid.zone[Zone].col[1].points[0].x  -
+                               utm_grid.zone[Zone].col[0].points[0].x;
+
+                    if (grid_spacing_pixels == 0)
+                        grid_spacing_pixels = -1; // Skip
+
+                }
+                else {
+                    // only one column in this zone, skip alternate doesn't matter
+                    grid_spacing_pixels = -1;
+                }
+   
+                // Is truncated easting or northing larger than grid spacing?
+                // If so, skip alternate labels
+                // short_width_pixels+2 seems to work well.
+                if (short_width_pixels+2>grid_spacing_pixels) {
+                    skip_alternate_label = TRUE;
+                }
+                else {
+                    skip_alternate_label = FALSE;
+                }
+    
+                // Label the grid lines on the border.
+                // Put easting along the bottom for easier correct ordering of easting and northing
+                // by people who are reading the map.
+                last_line_labeled = FALSE;
+                for (ii=1; ii < (int)utm_grid.zone[Zone].ncols; ii++) {
+                    // label meridianal grid lines with easting
+
+                    if (utm_grid.zone[Zone].col[ii].npoints > 1) {
+
+                        // adjust up in case npoints goes far below the screen
+                        if (grid_spacing_pixels == 0)
+                            continue;   // Go to next iteration of for loop
+
+                        bottom_point = (int)(screen_height/grid_spacing_pixels);
+
+                        if (bottom_point >= utm_grid.zone[Zone].col[ii].npoints) 
+                            bottom_point = utm_grid.zone[Zone].col[ii].npoints - 1;
+                        if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
+                            last_line_labeled = FALSE; 
+                        }
+                        else {
+                             xx = (utm_grid.zone[Zone].col[ii].points[bottom_point].x * scale_x) + x_long_offset;
+                             yy = (utm_grid.zone[Zone].col[ii].points[bottom_point].y * scale_y) +  y_lat_offset;
+                             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                             // To display full precision to one meter, use:
+                             //xastir_snprintf(grid_label,
+                             //    sizeof(grid_label),
+                             //    "%06.0f0",
+                             //    (float)((utm_grid_spacing_m/10) * roundf(easting/(utm_grid_spacing_m))));
+                             // 
+                             // Divide easting by utm_grid_spacing to make sure the line is labeled 
+                             // correctly, and not a few meters off, and truncate to at least 100 m.
+                             xastir_snprintf(grid_label,
+                                 sizeof(grid_label),
+                                 "%05.0f",
+                                 (float)((utm_grid_spacing_m/100) * roundf(easting/(utm_grid_spacing_m))));
+                             // truncate the label to an appropriate level of precision for the grid
+                             if (utm_grid_spacing_m ==1000) 
+                                 grid_label[4] = ' ';
+                             if (utm_grid_spacing_m ==10000) {
+                                 grid_label[3] = ' ';
+                                 grid_label[4] = ' ';
+                             }
+                             if (utm_grid_spacing_m ==100000) {
+                                 grid_label[2] = ' ';
+                                 grid_label[3] = ' ';
+                                 grid_label[4] = ' ';
+                             }
+                             if (coordinate_system == USE_MGRS) {
+                                 convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                                     mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                                     mgrs_northingL,  sizeof(mgrs_northingL), 
+                                     &int_utmEasting, &int_utmNorthing, 
+                                     xx, yy,
+                                     0, mgrs_space_string, strlen(mgrs_space_string));
+                                 grid_label[0] = mgrs_eastingL[0];
+                                 grid_label[1] = mgrs_northingL[0];
+                                 if (mgrs_single_digraph==FALSE) 
+                                     grid_label[1] = '_';
+                             }
+                             // draw each number at the bottom of the screen just to the right of the 
+                             // relevant grid line at its location at the bottom of the screen
+                             //draw_nice_string(w,pixmap_final,0,
+                             //    utm_grid.zone[Zone].col[i].points[bottom_point].x+1,
+                             //    screen_height-2,
+                             //    grid_label,
+                             //    0x10,easting_color,(int)strlen(grid_label));
+                          
+                             // Don't overwrite the zone label, half the seven zeros string should give it room.
+                             // Don't draw the label if it will go off the left edge fo the screen.
+                             if ((utm_grid.zone[Zone].col[ii].points[bottom_point].x+1 > (string_width_pixels/2)) 
+                                && (utm_grid.zone[Zone].col[ii].points[bottom_point].x+1 < (screen_width - string_width_pixels)) 
+                                ) {
+                                 // ok to draw the label
+                                 last_line_labeled = TRUE;
+                                 draw_rotated_label_text_to_target (w, 270, 
+                                     utm_grid.zone[Zone].col[ii].points[bottom_point].x+1,
+                                     screen_height, 
+                                     sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
+                                     pixmap_final,
+                                     outline_border_labels, colors[outline_border_labels_color]);
+                             }
+                         }
+                    }
+                }
+                last_line_labeled = FALSE;
+                // put northing along the right border, again for easier correct ordering of easting and northing.
+                for (ii=0; ii < (int)utm_grid.zone[Zone].nrows; ii++) {
+                    // label latitudinal grid lines with northing
+                    if (utm_grid.zone[Zone].row[ii].npoints > 1) {
+                         if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
+                             last_line_labeled = FALSE; 
+                         } 
+                         else {
+                             if (label_on_left==TRUE) { 
+                                 xx = (utm_grid.zone[Zone].row[ii].points[0].x * scale_x) + x_long_offset;
+                             } 
+                             else {
+                                 xx = (utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].x * scale_x) + x_long_offset;
+                             }
+                             yy = (utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].y * scale_y) +  y_lat_offset;
+                             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
+                             // To display to full 1 meter precision use:
+                             //xastir_snprintf(grid_label,
+                             //    sizeof(grid_label),
+                             //    "%06.0f0",
+                             //    (float)((utm_grid_spacing_m/10) * roundf(northing/(utm_grid_spacing_m))));
+                             //
+                             // Divide northing by utm grid spacing to make sure the line is labeled correctly
+                             // and displays zeroes in its least significant digits, and truncate to 100 m
+                             xastir_snprintf(grid_label,
+                                 sizeof(grid_label),
+                                 "%05.0f",
+                                 (float)((utm_grid_spacing_m/100) * roundf(northing/(utm_grid_spacing_m))));
+                             if (utm_grid_spacing_m ==1000) 
+                                 grid_label[4] = ' ';
+                             if (utm_grid_spacing_m ==10000) {
+                                 grid_label[3] = ' ';
+                                 grid_label[4] = ' ';
+                             }
+                             if (utm_grid_spacing_m ==100000) {
+                                 grid_label[2] = ' ';
+                                 grid_label[3] = ' ';
+                                 grid_label[4] = ' ';
+                             }
+                             if (coordinate_system == USE_MGRS) {
+                                 convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                                     mgrs_eastingL,   3, 
+                                     mgrs_northingL,  3, 
+                                     &int_utmEasting, &int_utmNorthing, 
+                                     xx, yy,
+                                     0, mgrs_space_string, strlen(mgrs_space_string));
+                                 grid_label[0] = mgrs_eastingL[0];
+                                 if (mgrs_single_digraph==FALSE) 
+                                     grid_label[0] = '_';
+                                 grid_label[1] = mgrs_northingL[0];
+                             }
+                             // Draw northing labels.
+                             // Draw each number just above the relevant grid line along the right side
+                             // of the screen.  Don't write in the bottom border or off the top of the screen.
+                             if (label_on_left==TRUE) { 
+                                     // label northings on left border 
+                                     // don't overwrite the zone designator in  the lower left border
+                                     if ((utm_grid.zone[Zone].row[ii].points[0].y < (screen_height - border_width)) 
+                                         &&
+                                         (utm_grid.zone[Zone].row[ii].points[0].y > (string_width_pixels)) 
+                                        ) {
+                                         last_line_labeled = TRUE;
+                                         draw_rotated_label_text_to_target (w, 180, 
+                                             border_width, 
+                                             utm_grid.zone[Zone].row[ii].points[0].y,
+                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_BORDER,
+                                             pixmap_final,
+                                             outline_border_labels, colors[outline_border_labels_color]);
+                                     }
+                             } 
+                             else {
+                                 if (((utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].y-1) 
+                                     < (screen_height - border_width))
+                                     &&
+                                     ((utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].y-1) 
+                                     > (string_width_pixels))
+                                    ) {
+                                     // label northings on right border
+                                     last_line_labeled = TRUE;
+                                     draw_rotated_label_text_to_target (w, 180, 
+                                         screen_width, 
+                                         utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].y-1,
+                                         sizeof(grid_label),colors[northing_color],grid_label,FONT_BORDER,
+                                         pixmap_final,
+                                         outline_border_labels, colors[outline_border_labels_color]);
+                                 }
+                             }
+                         }
+                    }
+                } // for i=0 to nrows
+            } // if draw labeled grid border
+        } // if utm_grid.zone[Zone] is non-empty
+    } // for each zone in utm_grid.zone 
+    return(0);
+}   // End of draw_minor_utm_mgrs_grid
+
+
+
+
+
+//*****************************************************************
+// draw_grid()
+//
+// Draws a lat/lon or UTM/UPS grid on top of the view.
+//
+//*****************************************************************
+void draw_grid(Widget w) {
+    int border_width = 14;      // The width of the border to draw around the 
+                                // map to place labeled tick marks into
+                                // should be an even number.
+                                // default here overidden by fontsize.
+    int half = border_width/2;  // Center of the white lines used to draw the borders
+    char metadata_datum[6] = "WGS84";  // datum to display in metadata on top border
+    char seven_zeroes[8] = "0000000";
+    char five_zeroes[6] = "00000";
+    int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
+    int string_width_pixels = 0;// Width of the unrotated seven_zeroes label string in pixels.
+    int string_height_pixels = 0; // Height of the unrotated seven_zeroes label string in pixels
+    int outline_border_labels = TRUE;  // if true put an outline around the border labels
+    int border_foreground_color = 0x20;     // color of the map border, if shown 
+                                            // 0x08 is black.
+                                            // 0x20 is white.
+    int outline_border_labels_color = border_foreground_color; 
+                                // color of outline to draw around border labels
+                                // use color of border to help make text more legible.
 
 
     if (!long_lat_grid) // We don't wish to draw a map grid
@@ -889,1376 +2333,44 @@ void draw_grid(Widget w) {
     }
 
 
-    i=j=done=zone_changed=z1=z2=Zone=col=col_point=row=row_point=row_point_start = 0;
-
     // Set the line width in the GC to 2 pixels wide for the larger
     // UTM grid and the complete Lat/Long grid.
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);
     (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
 
+
     if (coordinate_system == USE_UTM
             || coordinate_system == USE_UTM_SPECIAL
             || coordinate_system == USE_MGRS) {
 
-// Draw the major UTM zones first.  These are based off 6-degree
-// lat/long lines, with a few irregular zones that have to be
-// special-cased.  This part of the code handles the irregular zones
-// in SW Norway (31V/32V) and the regions near Svalbard
-// (31X/33X/35X/37X) just fine.
-
-        // Vertical lines:
-
-        // Draw the vertical vectors (except for the irregular
-        // regions and the prime meridian).  The polar areas only
-        // have two zones each, so we don't want to draw through
-        // those areas.
-        for (i = -180; i < 0; i += 6) {
-            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
-        }
-        for (i = 42; i <= 180; i += 6) {
-            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
-        }
-
-        // Draw the short vertical vectors in the polar regions
-        draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
+        // Draw major UTM/MGRS zones
+        draw_major_utm_mgrs_grid(w);
  
-        if (coordinate_system == USE_UTM_SPECIAL
-                || coordinate_system == USE_MGRS) {
-            // For MGRS, we need to draw irregular zones in certain
-            // areas.
+        // Draw minor UTM/MGRS zones
+        if ( draw_minor_utm_mgrs_grid(w,
+                border_width,
+                metadata_datum,
+                outline_border_labels,
+                outline_border_labels_color,
+                string_width_pixels,
+                string_height_pixels,
+                short_width_pixels) ) {
 
-            // Draw the partial vectors from 80S to the irregular region
-            draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final);
-            draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final);
-            draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final);
-            draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final);
-            draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final);
-            draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final);
-
-            // Draw the short vertical vectors in the irregular region 
-            draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final);
-
-            // Draw the short vertical vectors above the irregular region 
-            draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
-            draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
-        }
-        else {
-            // Draw normal zone boundaries used for civilian UTM
-            // grid.
-            for (i = 6; i < 42; i += 6) {
-                draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
-            }
+            fprintf(stderr,"Problem drawing minor utm grid\n");
         }
 
-
-        // Horizontal lines:
-
-        // Draw the 8 degree spaced lines, except for the equator
-        for (i = -80; i < 0; i += 8) {
-            draw_vector_ll(w, (float)i, -180.0, (float)i, 180.0, gc_tint, pixmap_final);
-        }
-        // Draw the 8 degree spaced lines 
-        for (i = 8; i <= 72; i += 8) {
-            draw_vector_ll(w, (float)i, -180.0, (float)i, 180.0, gc_tint, pixmap_final);
-        }
-
-        // Draw the one 12 degree spaced line
-        draw_vector_ll(w, 84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
-
-        // Draw the pole lines
-        draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  90.0, -180.0,  90.0, 180.0, gc_tint, pixmap_final);
-
-        // Set to solid line for the equator.  Make it extra wide as
-        // well.
-        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 3, LineSolid, CapButt,JoinMiter);
-
-        // Draw the equator as a solid line
-        draw_vector_ll(w, 0.0, -180.0, 0.0, 180.0, gc_tint, pixmap_final);
-
-        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
-
-        // Draw the prime meridian in the same manner
-        draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final);
- 
-        // Set the line width and style in the GC to 1 pixel wide
-        // for drawing the smaller grid
-        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
-
-
-
-// Draw the minor UTM grids.  These are based off the central
-// meridian running up the middle of each zone (3 degrees from
-// either side of the standard six-degree zones).  Even the
-// irregular zones key off the same medians.  UTM grids are defined
-// in terms of meters instead of lat/long, so they don't line up
-// with the left/right edges of the zones or with the longitude
-// lines.
-
-// According to Peter Dana (Geographer's Craft web pages), even when
-// the major grid boundaries have been shifted, the meridian used
-// for drawing the subgrids is still based on six-degree boundaries
-// (as if the major grid hadn't been shifted at all).  That means we
-// are drawing the subgrids correctly as it stands now for the
-// irregular grids (31V/32V/31X/33X/35X/37X).  The irregular zones
-// have sizes of 3/9/12 degrees (width) instead of 6 degrees.
-
-
-        // Set up for drawing zone grid(s)
-        if (scale_x < 15)
-            utm_grid_spacing_m =    100;
-        else if (scale_x < 150)
-            utm_grid_spacing_m =   1000;
-        else if (scale_x < 1500)
-            utm_grid_spacing_m =  10000;
-        else if (scale_x < 3000)
-            utm_grid_spacing_m = 100000;
-        else {
-            utm_grid_spacing_m = 0;
-            // All done!  Don't draw the minor grids.  Major grids
-            // have already been drawn by this point.
-            return;
-        }
-
-        // Check hash to see if utm_grid is already set up
-        if (utm_grid.hash.ul_x == x_long_offset &&
-            utm_grid.hash.ul_y == y_lat_offset &&
-            utm_grid.hash.lr_x == x_long_offset + (screen_width  * scale_x) &&
-            utm_grid.hash.lr_y == y_lat_offset  + (screen_height * scale_y)) {
-            goto utm_grid_draw; // XPoint arrays already set up
-        }
-
-        // Alloc space for the points in the grid structure
-        if (utm_grid_clear(1)) {
-            // Had a problem
-            return;
-        }
-
-        // Find top left point of current view
-        xx = x_long_offset;
-        yy = y_lat_offset;
-        convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
-        n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
-
-        // Move the coordinates to the nearest subgrid intersection,
-        // based on our current grid spacing.  The grid intersection
-        // we calculate here is northwest of our view's northwest
-        // corner.
-        e[0] /= utm_grid_spacing_m;
-        e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
-        n[0] /= utm_grid_spacing_m;
-        n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
-        n[0] += utm_grid_spacing_m;
-
-
-//WE7U
-// It appears that the horizontal grid lines get messed up in cases
-// where the top horizontal line isn't in view on it's left end.
-// That's a major clue!  Read the comment below (again with a "WE7U"
-// tag).  The problem occurs at the point where we copy the last
-// point from the previous grid over to the first point of a new
-// grid.  That can cause us to be off by one, as for the grid on the
-// left, the top horizontal line _is_ in view on the left.  We end
-// up connecting the wrong horizontal lines together because of this
-// mismatch, but again, only if the top horizontal line on the left
-// grid is above the current view.
-//
-// It also appears that the vertical lines that are missing in some
-// cases are on the right of the zone boundary.  This is probably
-// because the top of that line doesn't go to the top of the view.
-// On views where it does, the line is drawn.  I assume this is
-// because we're drawing from NW corner to the right, and then down,
-// which would cause that line to be skipped if it's not present on
-// the first line?
-
-
-        e[1] = e[0];
-        n[1] = n[0];
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-        while (!done) {
-            XPoint *temp_point;
-
-
-            // Here's our escape in case we get stuck in this loop.
-            // We can go through this loop multiple times for each
-            // zone though.
-            //
-            if (iterations++ > 1000) {
-                fprintf(stderr,
-                    "draw_grid() looped too many times, escaping.\n");
-                break;
-            }
-
-
-            if (finished_with_current_zone) {
-                // Set up to compute the next zone
-
-                xx = x_long_offset + ((utm_grid.zone[Zone].boundary_x + 1) * scale_x);
-
-                yy = y_lat_offset;
-                convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
-                n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
-
-// Again, fix the coordinates to the nearest subgrid intersection,
-// based on our current grid spacing.  Bump both the easting and
-// northing up by one subgrid.
-                e[0] /= utm_grid_spacing_m;
-                e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
-                e[0] += utm_grid_spacing_m;
-                n[0] /= utm_grid_spacing_m;
-                n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
-                n[0] += utm_grid_spacing_m;
-
-                e[1] = e[0];
-                n[1] = n[0];
-
-#ifdef UT_DEBUG
-                fprintf(stderr,"\nFinished Zone=%d\n", Zone);
-#endif
-
-                // We're all done with the current zone.  Increment
-                // to the next zone and set up to calculate its
-                // points.
-                Zone++;
-
-#ifdef UT_DEBUG
-                fprintf(stderr,"\nstarting Zone=%d, row_point_start=1\n", Zone);
-#endif
-
-                row_point = row_point_start = 1;
-                col = row = col_point = 0;
-                finished_with_current_zone = 0;
-
-                if (Zone >= UTM_GRID_MAX_ZONES) {
-                    fprintf(stderr,"Zone=%d: out of zones!\n", Zone);
-                    Zone = 0;
-                    done = 1;
-                    continue;   // Go to end of while loop
-                }
-            }   // End of if(finished_with_current_zone)
- 
-
-
-            convert_UTM_to_xastir(e[1], n[1]-UTM_GRID_EQUATOR, place_str, &xx, &yy);
-            xx1 = xx; // Save
-            yy1 = yy; // Save
-
-            convert_xastir_to_UTM(&e[2], &n[2], zone_str, sizeof(zone_str), xx, yy);
-
-            n[2] += UTM_GRID_EQUATOR;
-            xx = (xx - x_long_offset) / scale_x;
-            yy = (yy - y_lat_offset)  / scale_y;
-
-            // Not all columns (and maybe rows) will start at point
-            // 0
-            if (utm_grid.zone[Zone].col[col].firstpoint == UTM_GRID_RC_EMPTY) {
-                utm_grid.zone[Zone].col[col].firstpoint = col_point;
-#ifdef UT_DEBUG
-                fprintf(stderr,"col[%d] started at point %d\n", col, col_point);
-#endif
-            }
-            if (utm_grid.zone[Zone].row[row].firstpoint == UTM_GRID_RC_EMPTY) {
-                utm_grid.zone[Zone].row[row].firstpoint = row_point;
-#ifdef UT_DEBUG
-                fprintf(stderr,"row[%d] started at point %d\n", row, row_point);
-#endif
-            }
-
-            // Check to see if we need to alloc more space for
-            // column points
-            i = utm_grid.zone[Zone].col[col].npoints +
-                utm_grid.zone[Zone].col[col].firstpoint + 1;
-            if (i > utm_grid.zone[Zone].col[col].nalloced) {
-#ifdef UT_DEBUG_ALLOC
-                fprintf(stderr,"i=%d n=%d realloc(utm_grid.zone[%d].col[%d].point, ",
-                       i, utm_grid.zone[Zone].col[col].nalloced, Zone, col);
-#endif
-                i = ((i / UTM_GRID_DEF_NALLOCED) + 1) * UTM_GRID_DEF_NALLOCED;
-#ifdef UT_DEBUG_ALLOC
-                fprintf(stderr,"%d)\n", i);
-#endif
-
-// NOTE:  The below is bad practice.  If the realloc fails, we lose
-// the pointer to what was alloc'ed before and it becomes a memory
-// leak.
-//                utm_grid.zone[Zone].col[col].point =
-//                    realloc(utm_grid.zone[Zone].col[col].point,
-//                        i * sizeof(XPoint));
-
-//                if (utm_grid.zone[Zone].col[col].point != NULL) {
-                    // Already alloc'ed, give it a new size and copy
-                    // the old data over.
-
-// Note that realloc doesn't initialize the new portion of memory.
-// This can cause segfaults when we hit this section of code again
-// and expect either NULL's or initialized pointers.
-
-                    temp_point = realloc(utm_grid.zone[Zone].col[col].point,
-                        i * sizeof(XPoint));
-
-                    if (temp_point)
-                        utm_grid.zone[Zone].col[col].point = temp_point;
-//                }
-//                else {  // Not alloc'ed yet, start from scratch.
-//                    utm_grid.zone[Zone].col[col].point = calloc(i, sizeof(XPoint));
-//                }
-
-//                // Initialize the new pointers
-//                for (kk = utm_grid.zone[Zone].col[col].nalloced; kk < i; kk++) {
-//                    utm_grid.zone[Zone].col[kk].point = NULL;
-//                }
-
-                utm_grid.zone[Zone].col[col].nalloced = i;
-                if (!utm_grid.zone[Zone].col[col].point) {
-                    puts("realloc FAILED!");
-                    (void)utm_grid_clear(0);
-                    return;
-                }
-            }
-
-            // Check to see if we need to alloc more space for row
-            // points
-            i = utm_grid.zone[Zone].row[row].npoints +
-                utm_grid.zone[Zone].row[row].firstpoint + 1;
-            if (i > utm_grid.zone[Zone].row[row].nalloced) {
-#ifdef UT_DEBUG_ALLOC
-                fprintf(stderr,"i=%d n=%d realloc(utm_grid.zone[%d].row[%d].point, ",
-                       i, utm_grid.zone[Zone].row[row].nalloced, Zone, row);
-#endif
-                i = ((i / UTM_GRID_DEF_NALLOCED) + 1) * UTM_GRID_DEF_NALLOCED;
-#ifdef UT_DEBUG_ALLOC
-                fprintf(stderr,"%d)\n", i);
-#endif
-
-// NOTE:  The below is bad practice.  If the realloc fails, we lose
-// the pointer to what was alloc'ed before and it becomes a memory
-// leak.
-//                utm_grid.zone[Zone].row[row].point =
-//                    realloc(utm_grid.zone[Zone].row[row].point,
-//                        i * sizeof(XPoint));
-
-//                if (utm_grid.zone[Zone].row[row].point != NULL) {
-                    // Already alloc'ed, give it a new size and copy
-                    // the old data over.
-
-                    temp_point = realloc(utm_grid.zone[Zone].row[row].point,
-                        i * sizeof(XPoint));
-
-                    if (temp_point)
-                        utm_grid.zone[Zone].row[row].point = temp_point;
-//                }
-//                else {  // Not alloc'ed yet, start from scratch.
-//                    utm_grid.zone[Zone].row[row].point = calloc(i, sizeof(XPoint));
-//                }
-
-//                // Initialize the new pointers
-//                for (kk = utm_grid.zone[Zone].col[col].nalloced; kk < i; kk++) {
-//                    utm_grid.zone[Zone].col[kk].point = NULL;
-//                }
-
-
-
-                utm_grid.zone[Zone].row[row].nalloced = i;
-                if (!utm_grid.zone[Zone].row[row].point) {
-                    puts("realloc FAILED!");
-                    (void)utm_grid_clear(0);
-                    return;
-                }
-            }
-
-            // Here we check to see whether we are inserting points
-            // that are greater than about +/- 15000.  If so,
-            // truncate at that.  This prevents XDrawLines() from
-            // going nuts and drawing hundreds of extra lines.
-            //
-            if (xx < -15000)
-                xx = -15000;
-            if (xx >  15000)
-                xx =  15000;
-            if (yy < -15000)
-                yy = -15000;
-            if (yy >  15000)
-                yy = 15000;
-
-            utm_grid.zone[Zone].col[col].point[col_point].x = xx;
-            utm_grid.zone[Zone].col[col].point[col_point].y = yy;
-            utm_grid.zone[Zone].col[col].npoints++;
-            utm_grid.zone[Zone].row[row].point[row_point].x = xx;
-            utm_grid.zone[Zone].row[row].point[row_point].y = yy;
-            utm_grid.zone[Zone].row[row].npoints++;
-
-#ifdef UT_DEBUG
-            fprintf(stderr,"utm_grid.zone[%d].col[%d].point[%d] = [ %ld,%ld ] npoints=%d\n",
-                   Zone, col, col_point, xx, yy, utm_grid.zone[Zone].col[col].npoints);
-            fprintf(stderr,"utm_grid.zone[%d].row[%d].point[%d] = [ %ld,%ld ]\n",
-                   Zone, row, row_point, xx, yy);
-#endif
-
-            col++;
-            row_point++;
-            if (col >= UTM_GRID_MAX_COLS_ROWS)
-                finished_with_current_zone++;
-
-            z1 = atoi(place_str);
-            z2 = atoi(zone_str);
-            if (z1 != z2 || xx > screen_width) { // We hit a boundary
-
-#ifdef UT_DEBUG_VERB
-                if (z1 != z2)
-                    fprintf(stderr,"Zone boundary! \"%s\" -> \"%s\"\n", place_str, zone_str);
-                else
-                    puts("Screen boundary!");
-#endif
-
-//#warning
-//#warning I suspect that I should not use just col for the following.
-//#warning
-                if (col-2 >= 0)
-                    slope = (float)(yy - utm_grid.zone[Zone].col[col-2].point[col_point].y) /
-                        (float)(xx - utm_grid.zone[Zone].col[col-2].point[col_point].x + 0.001);
-                else
-                    slope = 0.0;
-
-                if (xx > screen_width)
-                    xx1 = screen_width;
-                else {
-
-                    // 360,000 Xastir units equals one degree.  This
-                    // code appears to be adjusting xx1 to a major
-                    // zone edge.
-                    xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
-                    xx1 = (xx1 - x_long_offset) / scale_x;
-                }
-
-                utm_grid.zone[Zone].boundary_x = xx1;
-                yy1 = yy - (xx - xx1) * slope;
-
-#ifdef UT_DEBUG
-                fprintf(stderr,"_tm_grid.zone[%d].col[%d].point[%d] =  [ %ld,%ld ]\n",
-                       Zone, col-1, col_point, xx1, yy1);
-                fprintf(stderr,"_tm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
-                       Zone, row, row_point-1, xx1, yy1);
-#endif
-
-                if (col-1 >= 0 && row_point-1 >= 0) {
-                    utm_grid.zone[Zone].col[col-1].point[col_point].x = xx1;
-                    utm_grid.zone[Zone].col[col-1].point[col_point].y = yy1;
-                    utm_grid.zone[Zone].row[row].point[row_point-1].x = xx1;
-                    utm_grid.zone[Zone].row[row].point[row_point-1].y = yy1;
-                    if (z1 != z2 && Zone+1 < UTM_GRID_MAX_ZONES) {
-                        // copy over last points to start off new
-                        // zone
-#ifdef UT_DEBUG
-                        fprintf(stderr,"ztm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
-                               Zone+1, row, 0, xx1, yy1);
-#endif
-
-//WE7U
-// This is where we can end up linking up/down one grid width
-// between zones!!!  Without it though, we end up have a blank
-// section to the right of the zone boundary.  Perhaps we could do
-// this here, but when we get the next points calculated, we could
-// check to see if we're off by about one grid width in the vertical
-// direction.  If so, shift the initial point by that amount?
-//
-// Another possibility might be to draw bottom-to-top if in northern
-// hemisphere, and top-to-bottom if in southern hemisphere.  That
-// way we'd have the max amount of lines present when we start, and
-// some might peter out as we draw along N/S.  Looking at the
-// southern hemisphere right now though, that method doesn't appear
-// to work.  We get the same problems there even though we're
-// drawing top to bottom.
-//
-                        utm_grid.zone[Zone+1].row[row].point[0].x = xx1;
-                        utm_grid.zone[Zone+1].row[row].point[0].y = yy1;
-                        utm_grid.zone[Zone+1].row[row].firstpoint = 0;
-                        utm_grid.zone[Zone+1].row[row].npoints    = 1;
-                    }
-                }
-
-
-                // Check last built row to see if it is all off
-                // screen
-                finished_with_current_zone++; // Assume we're done with this zone
-                for (i=0; i < utm_grid.zone[Zone].row[row].npoints; i++) {
-                    if (utm_grid.zone[Zone].row[row].point[i].y <= screen_height)
-                        finished_with_current_zone = 0; // Some points were within the zone, keep computing
-                }
-
-
-                e[1]  = e[0];               // carriage return
-                n[1] -= utm_grid_spacing_m; // line feed
-// Yea, your comments are real funny Olivier...  Gets the point
-// across though!
-
-
-                row++;
-                if (row >= UTM_GRID_MAX_COLS_ROWS)
-                    finished_with_current_zone++;
-
-                utm_grid.zone[Zone].ncols = max_i(col, utm_grid.zone[Zone].ncols);
-                utm_grid.zone[Zone].nrows = max_i(row, utm_grid.zone[Zone].nrows);
-                col = 0;
-                row_point = row_point_start;
-                col_point++;
-
-                if (n[1] < 0) {
-                    fprintf(stderr,"n[1] < 0\n");
-                    finished_with_current_zone++;
-                }
-
-                if (finished_with_current_zone && xx > screen_width)
-                    done = 1;
-
-                continue; // skip the next statement
-            }
-
-            e[1] += utm_grid_spacing_m;
-
-        }   // End of while (done) loop
- 
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-
-
-
-//fprintf(stderr, "After while loop\n");
-
-        // utm_grid.zone[] now contains an array of points marking fine grid 
-        // line intersections for parts of 1 to 4 zones that appear on 
-        // the screen.  Each utm_grid.zone[] is a vertical stripe, and may include
-        // more than one zone letter, e.g. zone[0] might include 15U and 15T,
-        // while zone[1] might include 16U and 16T.    
-
-//#define UT_DEBUG_VERB
-
-        for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
-
-#ifdef UT_DEBUG_VERB
-            fprintf(stderr,"\nutm_grid.zone[%d].ncols=%d\nutm_grid.zone[%d].nrows=%d\n",
-                   Zone, utm_grid.zone[Zone].ncols, Zone, utm_grid.zone[Zone].nrows);
-#endif
-
-            // Cleanup columns
-            for (i=0; i < (int)utm_grid.zone[Zone].ncols; i++) {
-                int np = utm_grid.zone[Zone].col[i].npoints;
-                int fp = utm_grid.zone[Zone].col[i].firstpoint;
-                int nbp = 0;
-
-#ifdef UT_DEBUG_VERB
-                fprintf(stderr,"utm_grid.zone[%d].col[%d].npoints=%d .firstpoint=%d\n",
-                       Zone, i, np, fp);
-                if (np < 2)
-                    puts(" Not enough points!");
-                else
-                    puts("");
-
-                for (j=fp; j < fp+np; j++) {
-                    fprintf(stderr,"         col[%d].point[%d] = [ %d, %d ]", i, j,
-                           utm_grid.zone[Zone].col[i].point[j].x,
-                           utm_grid.zone[Zone].col[i].point[j].y);
-                    if (utm_grid.zone[Zone].col[i].point[j].x ==
-                        utm_grid.zone[Zone].boundary_x)
-                        puts(" Boundary");
-                    else
-                        puts("");
-                }
-#endif
-                for (j=fp; j < fp+np; j++) {
-                    if (utm_grid.zone[Zone].col[i].point[j].x ==
-                        utm_grid.zone[Zone].boundary_x)
-                        nbp++;
-                    else if (nbp > 0) { // We had a boundary point, but not anymore
-                        fp = utm_grid.zone[Zone].col[i].firstpoint = j - 1;
-//fprintf(stderr,"np:%d, j:%d\n",np,j);
-                        // This can result in negative numbers!
-                        np = utm_grid.zone[Zone].col[i].npoints = np - j + 1;
-//fprintf(stderr,"new np:%d\n",np);
-                        if (np < 0) {
-                            np = 0; // Prevents segfaults in
-                                    // XDrawLines() and memmove()
-                                    // below.
-                        }
-                        break;
-                    }
-                    if (nbp == np) { // All points are boundary points
-                        fp = utm_grid.zone[Zone].col[i].firstpoint = 0;
-                        np = utm_grid.zone[Zone].col[i].npoints    = 0;
-                    }
-                }
-
-// What's the below code doing?  Can get a segfault without this in
-// the XDrawLines() functions below (fixed by making npoints an int
-// instead of an unsigned int).  Sometimes we get a segfault right
-// here due to the memmove() function.  In one such case, np was -2.
-// Latest code keeps some lines from getting drawn, but at least we
-// don't get a segfault.
-//
-                if (fp > 0) {
-                    if (np > 0) {
-                        memmove(&utm_grid.zone[Zone].col[i].point[0],
-                            &utm_grid.zone[Zone].col[i].point[fp], np * sizeof(XPoint));
-                        fp = utm_grid.zone[Zone].col[i].firstpoint = 0;
-                    }
-                    else {
-//fprintf(stderr,"draw_grid: i:%d, np:%d, size:%d\n",i,np,sizeof(XPoint));
-//fprintf(stderr,"Problem1: in draw_grid() memmove, np was %d.  Skipping memmove.\n",np);
-                    }
-                }
-
-#ifdef UT_DEBUG_VERB
-                fprintf(stderr,"_tm_grid.zone[%d].col[%d].npoints=%d.firstpoint=%d\n",
-                       Zone, i, np, fp);
-                for (j=fp; j < fp+np; j++) {
-                    fprintf(stderr,"         col[%d].point[%d] = [ %d, %d ]", i, j,
-                           utm_grid.zone[Zone].col[i].point[j].x,
-                           utm_grid.zone[Zone].col[i].point[j].y);
-                    if (utm_grid.zone[Zone].col[i].point[j].x ==
-                        utm_grid.zone[Zone].boundary_x)
-                        puts(" Boundary");
-                    else
-                        puts("");
-                }
-                puts("");
-#endif
-            }
-
-            // Cleanup rows
-            for (i=0; i < (int)utm_grid.zone[Zone].nrows; i++) {
-                int np = utm_grid.zone[Zone].row[i].npoints;
-                int fp = utm_grid.zone[Zone].row[i].firstpoint;
-#ifdef UT_DEBUG_VERB
-                fprintf(stderr,"utm_grid.zone[%d].row[%d].npoints=%d.firstpoint=%d\n",
-                       Zone, i, np, fp);
-                if (np < 2)
-                    puts(" Not enough points!");
-                else
-                    puts("");
-#endif
-// What's this doing?  This appears to be important, as things get
-// really messed up if it's commented out.
-                if (fp > 0) {   
-                    if (np > 0) {
-                        memmove(&utm_grid.zone[Zone].row[i].point[0],
-                            &utm_grid.zone[Zone].row[i].point[fp], np * sizeof(XPoint));
-                        fp = utm_grid.zone[Zone].row[i].firstpoint = 0;
-                    }
-                    else {
-//fprintf(stderr,"draw_grid: i:%d, np:%d, size:%d\n",i,np,sizeof(XPoint));
-//fprintf(stderr,"Problem2: in draw_grid() memmove, np was %d.  Skipping memmove.\n",np);
-                    }
- 
-                }
-#ifdef UT_DEBUG_VERB
-                for (j=fp; j < fp+np; j++) {
-                    fprintf(stderr,"         row[%d].point[%d] = [ %d, %d ]\n", i, j,
-                           utm_grid.zone[Zone].row[i].point[j].x,
-                           utm_grid.zone[Zone].row[i].point[j].y);
-                }
-#endif
-            }
-        }
-
-        // Rows and columns ready to go so setup hash
-        utm_grid.hash.ul_x = x_long_offset;
-        utm_grid.hash.ul_y = y_lat_offset;
-        utm_grid.hash.lr_x = x_long_offset + (screen_width  * scale_x);
-        utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
-
-utm_grid_draw:
-
-        // OLD: Draw grid in dashed white lines.
-        // NEW: Tint the lines as they go along, making them appear
-        // no matter what color is underneath.
-        (void)XSetForeground(XtDisplay(w), gc_tint, colors[0x27]);
-
-        // Note:  npoints can be negative here!  Make sure our code
-        // checks for that.  Initially npoints was an unsigned int.
-        // Changed it to an int so that we can get and check for
-        // negative values, bypassing segfaults.
-        //
-        numberofzones = 0;
-
-        for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
-
-            if (utm_grid.zone[Zone].ncols > 0) {
-                // find out how many zones are actually drawn on the map
-                numberofzones++;
-            }
-        }
-
-        for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
-
-            for (i=0; i < (int)utm_grid.zone[Zone].ncols; i++) {
-                if (utm_grid.zone[Zone].col[i].npoints > 1) {
-
-                    // We need to check for points that are more
-                    // than +/- 16383.  If we have any, it can cause
-                    // X11 to lock up for a while drawing lots of
-                    // extra lines, due to bugs in X11.  We do that
-                    // checking above with xx and yy.
-                    //
-                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
-                                     utm_grid.zone[Zone].col[i].point,
-                                     utm_grid.zone[Zone].col[i].npoints,
-                                     CoordModeOrigin);
-                }
-            }
-
-            for (i=0; i < (int)utm_grid.zone[Zone].nrows; i++) {
-                if (utm_grid.zone[Zone].row[i].npoints > 1) {
-
-                    // We need to check for points that are more
-                    // than +/- 16383.  If we have any, it can cause
-                    // X11 to lock up for a while drawing lots of
-                    // extra lines, due to bugs in X11.  We do that
-                    // checking above with xx and yy.
-                    //
-                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
-                                     utm_grid.zone[Zone].row[i].point,
-                                     utm_grid.zone[Zone].row[i].npoints,
-                                     CoordModeOrigin);
-                }
-            }
-
-            // Check each of the 4 possible utm_grid.zone array elements 
-            // that might contain a grid, and label the grid if it exists.
-            if (utm_grid.zone[Zone].nrows>0 && utm_grid.zone[Zone].ncols>0) {
-                if (draw_labeled_grid_border==TRUE) { 
-                    // Label the UTM grid on the border.
-                    // Since the coordinate of the current mouse pointer position is 
-                    // continually updated, labeling the grid is primarily for the 
-                    // purpose of printing maps and saving screenshots.
-                    //
-                    // ******* Doesn't work properly near poles when 3 zones are on screen
-                    // ******* (e.g. 13,14,15) - overlaps northings for 14 and 15.
-                    // ******* Doesn't clearly distinguish one zone with 2 lettered rows
-                    // ******* (e.g. 18T,18U) needs color distinction between northings
-                    // ******* to indicate which northings are in which lettered row.
-                    //
-                    
-                    // Default labels for just one zone on screen are black text for
-                    // zone at lower left corner, eastings on bottom, and northings
-                    // at right.
-                    // Idea is to normally start at the lower left corner
-                    // users can then easily follow left to right to get easting, 
-                    // and bottom to top to get northing.
-                    // For two zones, second zone uses blue text for eastings and northings.
-                    easting_color = 0x08;  // black text
-                    northing_color = 0x08; // black text
-                    zone_color = 0x08;     // black text 
-                                           // 0x09=blue (0x0e=yellow works well with outline, but not without).
-                    label_on_left = FALSE;
-
-                    if (numberofzones>1) {
-                        // check to see if the upper left and lower left corners are in the same zone
-                        // if not, label the upper left corner
-                        xx = (border_width * scale_x) +  x_long_offset;
-                        yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                        yy = (border_width * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
-                        if (strcmp(zone_str,zone_str2)!=0) {
-                            xastir_snprintf(grid_label,
-                                sizeof(grid_label),
-                                "%s",
-                                zone_str2);
-                            //draw_nice_string(w,pixmap_final,0,
-                            //    border_width+2,
-                            //    (2*border_width)+2,
-                            //    grid_label,
-                            //    0x10,zone_color,(int)strlen(grid_label));
-                            draw_rotated_label_text_to_target (w, 270, 
-                                border_width+2,
-                                (2*border_width)+2,
-                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
-                                pixmap_final,
-                                1, colors[0x0f]);
-                        }
-                        if (strcmp(zone_str,zone_str2)!=0) {
-                            xastir_snprintf(grid_label,
-                                sizeof(grid_label),
-                                "%s",
-                                zone_str);
-                            draw_rotated_label_text_to_target (w, 270, 
-                                border_width+2,
-                                screen_height - (2*border_width) - 2,
-                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
-                                pixmap_final,
-                                1, colors[0x0f]);
-                        }
-                        zone_color = 0x09;
-                        // likewise for upper and lower right corners
-                        xx = ((screen_width - border_width) * scale_x) +  x_long_offset;
-                        yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                        yy = (border_width * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
-                        if (strcmp(zone_str,zone_str2)!=0) {
-                            xastir_snprintf(grid_label,
-                                sizeof(grid_label),
-                                "%s",
-                                zone_str2);
-                            //draw_nice_string(w,pixmap_final,0,
-                            //    screen_width - (border_width * 3) ,
-                            //    (2*border_width)+2,
-                            //    grid_label,
-                            //    0x10,zone_color,(int)strlen(grid_label));
-                            draw_rotated_label_text_to_target (w, 270, 
-                                screen_width - (border_width * 3) ,
-                                (2*border_width)+2,
-                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
-                                pixmap_final,
-                                1, colors[0x0f]);
-                        }
-                        if (strcmp(zone_str,zone_str2)!=0) {
-                            xastir_snprintf(grid_label,
-                                sizeof(grid_label),
-                                "%s",
-                                zone_str);
-                            draw_rotated_label_text_to_target (w, 270, 
-                                screen_width - (border_width * 3) ,
-                                screen_height - (2*border_width) - 2,
-                                sizeof(grid_label),colors[zone_color],grid_label,FONT_BORDER,
-                                pixmap_final,
-                                1, colors[0x0f]);
-                        }
-                        
-                        // are we currently the same zone as the upper left corner
-                        // if so, we need to place the northing labels on the left side
-                        xx = (utm_grid.zone[Zone].col[0].point[0].x * scale_x) +  x_long_offset;
-                        yy = (utm_grid.zone[Zone].col[0].point[0].y * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                        convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), x_long_offset, y_lat_offset);
-                        if (strcmp(zone_str,zone_str2)==0) {
-                            northing_color = 0x08;  // 0x08 = black, same as lower left easting
-                            label_on_left = TRUE;
-                        }
-
-                    }    
-                    // check to see if there is a horizontal boundary 
-                    // compare xone of upper left and lower left corners
-                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), x_long_offset, y_lat_offset);
-
-                    // Overwrite defaults as appropriate and 
-                    // label zones differently if more than one appears on the screen.
-
-                    if (Zone > 0) {
-                        // write the zone label on the bottom border
-                        zone_color = 0x09;     // blue
-                        easting_color = 0x09;  // blue
-                        northing_color = 0x09; // blue
-                        xx2 = utm_grid.zone[Zone].col[0].point[0].x;
-                        xx = (xx2 * scale_x) + x_long_offset;
-                        yy2 = utm_grid.zone[Zone].col[0].point[utm_grid.zone[Zone].col[0].npoints-1].y;
-                        yy = (yy2 * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx,yy);
-                        xastir_snprintf(grid_label,
-                            sizeof(grid_label),
-                            "%s",
-                            zone_str);
-                        draw_rotated_label_text_to_target (w, 270, 
-                            xx2,
-                            screen_height, 
-                            sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
-                            pixmap_final,
-                            outline_border_labels, colors[outline_border_labels_color]);
-                        //draw_nice_string(w,pixmap_final,0,
-                        //    xx2,
-                        //    screen_height - 2,
-                        //    grid_label,
-                        //    0x10,zone_color,(int)strlen(grid_label));
-                    }
-
-                    if (Zone==0) {
-                        // write the zone of the lower left corner of the map
-                        xx = (border_width * scale_x) +  x_long_offset;
-                        yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
-                        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                        xastir_snprintf(grid_label,
-                            sizeof(grid_label),
-                            "%s",
-                            zone_str);
-                        draw_rotated_label_text_to_target (w, 270, 
-                            1,
-                            screen_height, 
-                            sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
-                            pixmap_final,
-                            outline_border_labels, colors[outline_border_labels_color]);
-                        //draw_nice_string(w,pixmap_final,0,
-                        //    1,
-                        //    screen_height - 2,
-                        //    grid_label,
-                        //    0x10,0x20,(int)strlen(grid_label));
-                    }
-                    // Put metadata in top border.
-                    // find location of upper left corner of map, convert to UTM
-                    xx2 = x_long_offset  + (border_width * scale_x);
-                    yy2 = y_lat_offset   + (border_width * scale_y);
-                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
-                        xx2, yy2);
-                    if (coordinate_system == USE_MGRS) {
-                        convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
-                            mgrs_eastingL,   sizeof(mgrs_eastingL), 
-                            mgrs_northingL,  sizeof(mgrs_northingL), 
-                            &int_utmEasting, &int_utmNorthing, 
-                            xx2, yy2,
-                            0, mgrs_space_string, strlen(mgrs_space_string));
-                        xastir_snprintf(mgrs_ul_digraph, sizeof(mgrs_ul_digraph),
-                                       "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
-                        xastir_snprintf(grid_label,
-                            sizeof(grid_label),
-                            "%s %s %05.0f %05.0f",
-                            mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
-                    } 
-                    else {
-                        xastir_snprintf(grid_label,
-                            sizeof(grid_label),
-                            "%s %07.0f %07.0f",
-                            zone_str,easting,northing);
-                    }
-                    // find location of lower right corner of map, convert to UTM
-                    xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-                    yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
-                    convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
-                        xx2, yy2);
-                    if (coordinate_system == USE_MGRS) {
-                        convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
-                            mgrs_eastingL,   sizeof(mgrs_eastingL), 
-                            mgrs_northingL,  sizeof(mgrs_northingL), 
-                            &int_utmEasting, &int_utmNorthing, 
-                            xx2, yy2,
-                            0, mgrs_space_string, strlen(mgrs_space_string));
-                        xastir_snprintf(mgrs_lr_digraph, sizeof(mgrs_lr_digraph),
-                                       "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
-                        xastir_snprintf(grid_label1,
-                            sizeof(grid_label1),
-                            "%s %s %05.0f %05.0f",
-                            mgrs_zone,mgrs_lr_digraph,(float)int_utmEasting,(float)int_utmNorthing);
-                       if (strcmp(mgrs_lr_digraph,mgrs_ul_digraph)==0) {
-                             mgrs_single_digraph = TRUE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
-                       } 
-                       else {
-                             mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
-                       }
-                    } 
-                    else {
-                        xastir_snprintf(grid_label1,
-                            sizeof(grid_label1),
-                            "%s %07.0f %07.0f",
-                            zone_str,easting,northing);
-                    }
-                    //"XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ",
-                    xastir_snprintf(top_label,
-                        sizeof(top_label),
-                        langcode("MDATA001"),
-                        grid_label,grid_label1,utm_grid_spacing_m,metadata_datum);
-                    //draw_nice_string(w,pixmap_final,0,
-                    //    border_width+2,
-                    //    border_width-2,
-                    //    top_label,
-                    //    0x10,0x20,(int)strlen(top_label));
-                    draw_rotated_label_text_to_target (w, 270, 
-                        border_width+2,
-                        border_width-1,
-                        sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
-                        pixmap_final,
-                        outline_border_labels, colors[outline_border_labels_color]);
-
-                    // deterimne whether the easting and northing strings will fit
-                    // in a grid box, or whether easting strings in adjacent boxes
-                    // will overlap (so that alternate strings can be skipped).  
-                    if (utm_grid.zone[Zone].ncols > 1) {
-                        // find out the number of pixels beteen two grid lines
-                        grid_spacing_pixels = 
-                                   utm_grid.zone[Zone].col[1].point[0].x  -
-                                   utm_grid.zone[Zone].col[0].point[0].x;
-
-                        if (grid_spacing_pixels == 0)
-                            grid_spacing_pixels = -1; // Skip
-
-                    }
-                    else {
-                        // only one column in this zone, skip alternate doesn't matter
-                        grid_spacing_pixels = -1;
-                    }
-   
-                    // Is truncated easting or northing larger than grid spacing?
-                    // If so, skip alternate labels
-                    // short_width_pixels+2 seems to work well.
-                    if (short_width_pixels+2>grid_spacing_pixels) {
-                        skip_alternate_label = TRUE;
-                    }
-                    else {
-                        skip_alternate_label = FALSE;
-                    }
-    
-                    // Label the grid lines on the border.
-                    // Put easting along the bottom for easier correct ordering of easting and northing
-                    // by people who are reading the map.
-                    last_line_labeled = FALSE;
-                    for (i=1; i < (int)utm_grid.zone[Zone].ncols; i++) {
-                        // label meridianal grid lines with easting
-
-                        if (utm_grid.zone[Zone].col[i].npoints > 1) {
-
-                            // adjust up in case npoints goes far below the screen
-                            if (grid_spacing_pixels == 0)
-                                continue;
-
-                            bottom_point = (int)(screen_height/grid_spacing_pixels);
-
-                            if (bottom_point >= utm_grid.zone[Zone].col[i].npoints) 
-                                bottom_point = utm_grid.zone[Zone].col[i].npoints - 1;
-                            if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
-                                last_line_labeled = FALSE; 
-                            }
-                            else {
-                                 xx = (utm_grid.zone[Zone].col[i].point[bottom_point].x * scale_x) + x_long_offset;
-                                 yy = (utm_grid.zone[Zone].col[i].point[bottom_point].y * scale_y) +  y_lat_offset;
-                                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                                 // To display full precision to one meter, use:
-                                 //xastir_snprintf(grid_label,
-                                 //    sizeof(grid_label),
-                                 //    "%06.0f0",
-                                 //    (float)((utm_grid_spacing_m/10) * roundf(easting/(utm_grid_spacing_m))));
-                                 // 
-                                 // Divide easting by utm_grid_spacing to make sure the line is labeled 
-                                 // correctly, and not a few meters off, and truncate to at least 100 m.
-                                 xastir_snprintf(grid_label,
-                                     sizeof(grid_label),
-                                     "%05.0f",
-                                     (float)((utm_grid_spacing_m/100) * roundf(easting/(utm_grid_spacing_m))));
-                                 // truncate the label to an appropriate level of precision for the grid
-                                 if (utm_grid_spacing_m ==1000) 
-                                     grid_label[4] = ' ';
-                                 if (utm_grid_spacing_m ==10000) {
-                                     grid_label[3] = ' ';
-                                     grid_label[4] = ' ';
-                                 }
-                                 if (utm_grid_spacing_m ==100000) {
-                                     grid_label[2] = ' ';
-                                     grid_label[3] = ' ';
-                                     grid_label[4] = ' ';
-                                 }
-                                 if (coordinate_system == USE_MGRS) {
-                                     convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
-                                         mgrs_eastingL,   sizeof(mgrs_eastingL), 
-                                         mgrs_northingL,  sizeof(mgrs_northingL), 
-                                         &int_utmEasting, &int_utmNorthing, 
-                                         xx, yy,
-                                         0, mgrs_space_string, strlen(mgrs_space_string));
-                                     grid_label[0] = mgrs_eastingL[0];
-                                     grid_label[1] = mgrs_northingL[0];
-                                     if (mgrs_single_digraph==FALSE) 
-                                         grid_label[1] = '_';
-                                 }
-                                 // draw each number at the bottom of the screen just to the right of the 
-                                 // relevant grid line at its location at the bottom of the screen
-                                 //draw_nice_string(w,pixmap_final,0,
-                                 //    utm_grid.zone[Zone].col[i].point[bottom_point].x+1,
-                                 //    screen_height-2,
-                                 //    grid_label,
-                                 //    0x10,easting_color,(int)strlen(grid_label));
-                          
-                                 // Don't overwrite the zone label, half the seven zeros string should give it room.
-                                 // Don't draw the label if it will go off the left edge fo the screen.
-                                 if ((utm_grid.zone[Zone].col[i].point[bottom_point].x+1 > (string_width_pixels/2)) 
-                                    && (utm_grid.zone[Zone].col[i].point[bottom_point].x+1 < (screen_width - string_width_pixels)) 
-                                    ) {
-                                     // ok to draw the label
-                                     last_line_labeled = TRUE;
-                                     draw_rotated_label_text_to_target (w, 270, 
-                                         utm_grid.zone[Zone].col[i].point[bottom_point].x+1,
-                                         screen_height, 
-                                         sizeof(grid_label),colors[easting_color],grid_label,FONT_BORDER,
-                                         pixmap_final,
-                                         outline_border_labels, colors[outline_border_labels_color]);
-                                 }
-                             }
-                        }
-                    }
-                    last_line_labeled = FALSE;
-                    // put northing along the right border, again for easier correct ordering of easting and northing.
-                    for (i=0; i < (int)utm_grid.zone[Zone].nrows; i++) {
-                        // label latitudinal grid lines with northing
-                        if (utm_grid.zone[Zone].row[i].npoints > 1) {
-                             if (skip_alternate_label==TRUE && last_line_labeled==TRUE) {
-                                 last_line_labeled = FALSE; 
-                             } 
-                             else {
-                                 if (label_on_left==TRUE) { 
-                                     xx = (utm_grid.zone[Zone].row[i].point[0].x * scale_x) + x_long_offset;
-                                 } 
-                                 else {
-                                     xx = (utm_grid.zone[Zone].row[i].point[utm_grid.zone[Zone].row[i].npoints-1].x * scale_x) + x_long_offset;
-                                 }
-                                 yy = (utm_grid.zone[Zone].row[i].point[utm_grid.zone[Zone].row[i].npoints-1].y * scale_y) +  y_lat_offset;
-                                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                                 // To display to full 1 meter precision use:
-                                 //xastir_snprintf(grid_label,
-                                 //    sizeof(grid_label),
-                                 //    "%06.0f0",
-                                 //    (float)((utm_grid_spacing_m/10) * roundf(northing/(utm_grid_spacing_m))));
-                                 //
-                                 // Divide northing by utm grid spacing to make sure the line is labeled correctly
-                                 // and displays zeroes in its least significant digits, and truncate to 100 m
-                                 xastir_snprintf(grid_label,
-                                     sizeof(grid_label),
-                                     "%05.0f",
-                                     (float)((utm_grid_spacing_m/100) * roundf(northing/(utm_grid_spacing_m))));
-                                 if (utm_grid_spacing_m ==1000) 
-                                     grid_label[4] = ' ';
-                                 if (utm_grid_spacing_m ==10000) {
-                                     grid_label[3] = ' ';
-                                     grid_label[4] = ' ';
-                                 }
-                                 if (utm_grid_spacing_m ==100000) {
-                                     grid_label[2] = ' ';
-                                     grid_label[3] = ' ';
-                                     grid_label[4] = ' ';
-                                 }
-                                 if (coordinate_system == USE_MGRS) {
-                                     convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
-                                         mgrs_eastingL,   3, 
-                                         mgrs_northingL,  3, 
-                                         &int_utmEasting, &int_utmNorthing, 
-                                         xx, yy,
-                                         0, mgrs_space_string, strlen(mgrs_space_string));
-                                     grid_label[0] = mgrs_eastingL[0];
-                                     if (mgrs_single_digraph==FALSE) 
-                                         grid_label[0] = '_';
-                                     grid_label[1] = mgrs_northingL[0];
-                                 }
-                                 // Draw northing labels.
-                                 // Draw each number just above the relevant grid line along the right side
-                                 // of the screen.  Don't write in the bottom border or off the top of the screen.
-                                 if (label_on_left==TRUE) { 
-                                         // label northings on left border 
-                                         // don't overwrite the zone designator in  the lower left border
-                                         if ((utm_grid.zone[Zone].row[i].point[0].y < (screen_height - border_width)) 
-                                             &&
-                                             (utm_grid.zone[Zone].row[i].point[0].y > (string_width_pixels)) 
-                                            ) {
-                                             last_line_labeled = TRUE;
-                                             draw_rotated_label_text_to_target (w, 180, 
-                                                 border_width, 
-                                                 utm_grid.zone[Zone].row[i].point[0].y,
-                                                 sizeof(grid_label),colors[northing_color],grid_label,FONT_BORDER,
-                                                 pixmap_final,
-                                                 outline_border_labels, colors[outline_border_labels_color]);
-                                         }
-                                 } 
-                                 else {
-                                     if (((utm_grid.zone[Zone].row[i].point[utm_grid.zone[Zone].row[i].npoints-1].y-1) 
-                                         < (screen_height - border_width))
-                                         &&
-                                         ((utm_grid.zone[Zone].row[i].point[utm_grid.zone[Zone].row[i].npoints-1].y-1) 
-                                         > (string_width_pixels))
-                                        ) {
-                                         // label northings on right border
-                                         last_line_labeled = TRUE;
-                                         draw_rotated_label_text_to_target (w, 180, 
-                                             screen_width, 
-                                             utm_grid.zone[Zone].row[i].point[utm_grid.zone[Zone].row[i].npoints-1].y-1,
-                                             sizeof(grid_label),colors[northing_color],grid_label,FONT_BORDER,
-                                             pixmap_final,
-                                             outline_border_labels, colors[outline_border_labels_color]);
-                                     }
-                                 }
-                             }
-                        }
-                    } // for i=0 to nrows
-                } // if draw labeled grid border
-            } // if utm_grid.zone[Zone] is non-empty
-        } // for each zone in utm_grid.zone 
     }   // End of UTM grid section
 
     else { // Lat/Long coordinate system, draw lat/long lines
-        unsigned int x,x1,x2;
-        unsigned int y,y1,y2;
-        unsigned int stepsx[3];
-        unsigned int stepsy[3];
-        int step;
-        
-        // convert between selected coordinate format constant and display format constants
-        if (coordinate_system == USE_DDDDDD) {
-           coordinate_format = CONVERT_DEC_DEG;
-        } else if (coordinate_system == USE_DDMMSS) {
-           coordinate_format = CONVERT_DMS_NORMAL_FORMATED;
-        } else {
-           coordinate_format = CONVERT_HP_NORMAL_FORMATED;
-        }
 
-        if (draw_labeled_grid_border==TRUE) { 
-            // Put metadata in top border.
-            // find location of upper left corner of map, convert to Lat/Long
-            xx2 = x_long_offset  + (border_width * scale_x);
-            yy2 = y_lat_offset   + (border_width * scale_y);
-            convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
-            convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
-            xastir_snprintf(grid_label,
-                sizeof(grid_label),
-                "%s %s",
-                grid_label1,grid_label2);
-            // find location of lower right corner of map, convert to Lat/Long
-            xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-            yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
-            convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
-            convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
-            //"XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum. ",
-            xastir_snprintf(top_label,
-                sizeof(top_label),
-                langcode("MDATA002"),
-                grid_label,grid_label1,grid_label2,metadata_datum);
-            draw_rotated_label_text_to_target (w, 270, 
-                border_width+2,
-                border_width-1,
-                sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
-                pixmap_final,
-                outline_border_labels, colors[outline_border_labels_color]);
-        }
+        draw_complete_lat_lon_grid(w,
+            border_width,
+            metadata_datum,
+            outline_border_labels,
+            outline_border_labels_color);
 
-        stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
-        stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
-        stepsx[2] =   300*100;    stepsy[2] =   150*100;
-
-        //fprintf(stderr,"scale_x: %ld\n",scale_x);
-        step = 0;
-        if (scale_x <= 6000) step = 1;
-        if (scale_x <= 300)  step = 2;
-
-        step += grid_size;
-        if (step < 0) {
-            grid_size -= step;
-            step = 0;
-        }
-        else if (step > 2) {
-            grid_size -= (step - 2);
-            step = 2;
-        }
-
-        /* draw vertical lines */
-        if (y_lat_offset >= 0)
-            y1 = 0;
-        else
-            y1 = -y_lat_offset/scale_y;
-
-        y2 = (180*60*60*100-y_lat_offset)/scale_y;
-
-        if (y2 > (unsigned int)screen_height)
-            y2 = screen_height-1;
-
-        coord = x_long_offset+stepsx[step]-(x_long_offset%stepsx[step]);
-        if (coord < 0)
-            coord = 0;
-
-        for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx[step]) {
-
-            x = (coord-x_long_offset)/scale_x;
-
-            if ((coord%(648000*100)) == 0) {
-                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
-                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
-                continue;
-            }
-            else if ((coord%(72000*100)) == 0) {
-                dash[0] = dash[1] = 8;
-                (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
-            } else if ((coord%(7200*100)) == 0) {
-                dash[0] = dash[1] = 4;
-                (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
-            } else if ((coord%(300*100)) == 0) {
-                dash[0] = dash[1] = 2;
-                (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
-            }
-
-            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
-            if (draw_labeled_grid_border==TRUE) { 
-                // draw in the longitudes in lower border
-                convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
-                draw_rotated_label_text_to_target (w, 270, 
-                    x,
-                    screen_height, 
-                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
-                    pixmap_final,
-                    outline_border_labels, colors[outline_border_labels_color]);
-            }
-        }
-
-        /* draw horizontal lines */
-        if (x_long_offset >= 0)
-            x1 = 0;
-        else
-            x1 = -x_long_offset/scale_x;
-
-        x2 = (360*60*60*100-x_long_offset)/scale_x;
-        if (x2 > (unsigned int)screen_width)
-            x2 = screen_width-1;
-
-        coord = y_lat_offset+stepsy[step]-(y_lat_offset%stepsy[step]);
-        if (coord < 0)
-            coord = 0;
-
-        for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy[step]) {
-
-            y = (coord-y_lat_offset)/scale_y;
-
-            if ((coord%(324000*100)) == 0) {
-                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
-                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
-                continue;
-            } else if ((coord%(36000*100)) == 0) {
-                dash[0] = dash[1] = 8;
-                (void)XSetDashes (XtDisplay (w), gc_tint, 4, dash, 2);
-            } else if ((coord%(3600*100)) == 0) {
-                dash[0] = dash[1] = 4;
-                (void)XSetDashes (XtDisplay (w), gc_tint, 2, dash, 2);
-            } else if ((coord%(150*100)) == 0) {
-                dash[0] = dash[1] = 2;
-                (void)XSetDashes (XtDisplay (w), gc_tint, 1, dash, 2);
-            }
-
-            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
-            if (draw_labeled_grid_border==TRUE) { 
-                // draw in the latitudes on left and right borders
-                // (unlike UTM where easting before northing order is important)
-                convert_lat_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
-                draw_rotated_label_text_to_target (w, 180, 
-                    screen_width, 
-                    y,
-                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
-                    pixmap_final,
-                    outline_border_labels, colors[outline_border_labels_color]);
-                draw_rotated_label_text_to_target (w, 180, 
-                    border_width, 
-                    y,
-                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
-                    pixmap_final,
-                    outline_border_labels, colors[outline_border_labels_color]);
-            }
-        }
-    }
+    }   // End of Lat/Long section
 }
 
 
@@ -2726,7 +2838,8 @@ void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, in
             target_pixmap,
             draw_outline,
             outline_bg_color);
-    } else {
+    }
+    else {
         (void)draw_rotated_label_text_common(w,
             my_rotation,
             x,
@@ -2762,7 +2875,8 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
             BRIGHT,
             fontsize,
             pixmap, 0, 0);
-    } else {
+    }
+    else {
         (void)draw_rotated_label_text_common(w,
             my_rotation,
             x,
@@ -2925,7 +3039,8 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
             xastir_snprintf(format, sizeof(format), "--orientation=landscape " );
 #endif  // HAVE_OLD_GV
 
-        } else if ( print_auto_rotation ) {
+        }
+        else if ( print_auto_rotation ) {
             // Check whether the width or the height of the pixmap is greater.
             // If width is greater than height, rotate the image by 270 degrees.
             if (screen_width > screen_height) {
@@ -2939,12 +3054,14 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 
                 if (debug_level & 512)
                     fprintf(stderr,"Rotating\n");
-            } else {
+            }
+            else {
                 rotate[0] = '\0';   // Empty string
                 if (debug_level & 512)
                     fprintf(stderr,"Not Rotating\n");
             }
-        } else {
+        }
+        else {
             rotate[0] = '\0';   // Empty string
             if (debug_level & 512)
                 fprintf(stderr,"Not Rotating\n");
@@ -3088,7 +3205,8 @@ static void  Auto_rotate( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         print_auto_rotation = atoi(which);
         print_rotated = 0;
         XmToggleButtonSetState(rotate_90, FALSE, FALSE);
-    } else {
+    }
+    else {
         print_auto_rotation = 0;
     }
 }
@@ -3109,7 +3227,8 @@ static void  Rotate_90( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
         print_rotated = atoi(which);
         print_auto_rotation = 0;
         XmToggleButtonSetState(auto_rotate, FALSE, FALSE);
-    } else {
+    }
+    else {
         print_rotated = 0;
     }
 }
@@ -3128,7 +3247,8 @@ static void  Auto_scale( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
 
     if(state->set) {
         print_auto_scale = atoi(which);
-    } else {
+    }
+    else {
         print_auto_scale = 0;
     }
 }
@@ -3147,7 +3267,8 @@ void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
 
     if(state->set) {
         print_in_monochrome = atoi(which);
-    } else {
+    }
+    else {
         print_in_monochrome = 0;
     }
 }
@@ -3166,7 +3287,8 @@ static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
 
     if(state->set) {
         print_invert = atoi(which);
-    } else {
+    }
+    else {
         print_invert = 0;
     }
 }
@@ -3607,7 +3729,8 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
         XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
 
 
-    } else {
+    }
+    else {
         (void)XRaiseWindow(XtDisplay(print_properties_dialog), XtWindow(print_properties_dialog));
     }
 }
@@ -4009,7 +4132,8 @@ enum map_onscreen_enum map_onscreen_index(char *filename) {
 
                 onscreen = MAP_IS_VIS;
                 //fprintf(stderr,"Map in the zoom zone: %s\n",filename);
-            } else {
+            }
+            else {
                 onscreen = MAP_NOT_VIS;
                 //fprintf(stderr,"Map not in the zoom zone: %s\n",filename);
             }
@@ -6100,7 +6224,8 @@ static void index_sort(void) {
                     previous = next;  // current already moved ahead from the swap
                     next = current->next;
                     changed = 1;
-                } else {
+                }
+                else {
                     previous = current;
                     current = next;
                     next = current->next;
@@ -6427,7 +6552,8 @@ void index_restore_from_file(void) {
                     // messed us up by editting the file by hand
                     if ( last_record == NULL ) { // first record
                         map_index_head = temp_record;
-                    } else {
+                    }
+                    else {
                         last_record->next = temp_record;
                     }
                     last_record = temp_record;
