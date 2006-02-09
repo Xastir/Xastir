@@ -192,30 +192,31 @@ to make the source code window display the exact location.
 
 Another good debugger to try is "UPS".
 
+Customized debugging builds
+---------------------------
 
-Note from Tom:
---------------
-The recent suggestion here that inlining might be the issue is a
-good one, and building with "-O -g -fno-inline" might help uncover
-what's going on by preventing compiler optimizations from confusing
-the issue.
+Sometimes it is helpful to build xastir with specialized compiler
+options to aid in debugging.  For example, if you're trying to hunt
+down elusive segfaults, and you're using GCC, it might be wise to
+build with "-O -g -fno-inline" to prevent the compiler from optimizing
+quite so vigorously; aggressive optimization can sometimes lead to the
+debugger saying the code died on one line when in fact it's happening
+somewhere else.
 
-Until a few minutes ago, xastir's configure script would "help" you
-out by forcing "-O2" into CFLAGS even if you were trying to do
-something else.  I disabled that (because AC_PATH_CC puts "-g -O2"
-in if the user hasn't specified CFLAGS, and does no CFLAGS hacks if
-the user *HAS* specified CFLAGS) and committed the modified
-acinclude.m4 a few minutes ago.
+To build with custom CFLAGS like this, just tell configure what you
+want CFLAGS to be:
+ ./configure CFLAGS="-O -g -fno-inline"
 
-Until we hunt down this segfault, I'll be building with 
+Naturally, you need to build every file after changing configure like
+this, so do a make clean before building:
 
-  ./configure CFLAGS="-O -g -fno-inline"
+  make clean
+  make 
+  make install
 
-to maximize the correspondence between what GDB says the stack frame
-is and what the actual call sequence was.  I recommend that others
-hunting for the problem do the same.
-
-
+Remember not to "make install-strip" when trying to do debugging
+builds, or your core files will not have debugging symbols in them and
+it will be harder to get useful information out of the debugger.
 
 More?
 -----
