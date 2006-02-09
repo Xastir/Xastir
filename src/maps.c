@@ -1693,7 +1693,7 @@ void actually_draw_utm_minor_grid(Widget w,
             } // if draw labeled grid border
         } // if utm_grid.zone[Zone] is non-empty
     } // for each zone in utm_grid.zone 
-}
+} // End of actually_draw_utm_minor_grid() function
  
 
 
@@ -1707,9 +1707,9 @@ void actually_draw_utm_minor_grid(Widget w,
 // the exceptions of:
 //
 // 1) Sometimes fails to draw vertical lines nearest zone
-// boundaries.
+//    boundaries.
 // 2) Lines connect across zone boundaries in an incorrect manner,
-// jumping up one grid interval across the boundary.
+//    jumping up one grid interval across the boundary.
 // 3) Segfaults near the special zone intersections as you zoom in.
 //
 // The code currently creates a col and row array per zone visible,
@@ -1789,7 +1789,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
 
 
 // If we get to this point, we need to re-create the minor UTM/MGRS
-// grids as they were never set up or else they don't match the
+// grids as they haven't been set up yet or they don't match the
 // current view.
 
 
@@ -1805,6 +1805,9 @@ int draw_minor_utm_mgrs_grid(Widget w,
     yy = y_lat_offset;
     convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
     n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
+
+
+// Select starting point, NW corner of NW zone
 
     // Move the coordinates to the nearest subgrid intersection,
     // based on our current grid spacing.  The grid intersection
@@ -1847,17 +1850,20 @@ int draw_minor_utm_mgrs_grid(Widget w,
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
+    // Start filling in the row/column arrays of grid intersections
     while (!done) {
         XPoint *temp_point;
 
 
         // Here's our escape in case we get stuck in this loop.
         // We can go through this loop multiple times for each
-        // zone though.
-        //
-        if (iterations++ > 1000) {
+        // zone though, depending on our grid spacing.  64 rows * 64
+        // colums * 8 points each = 32768, which gives us our upper
+        // limit.
+        if (iterations++ > 32768) {
             fprintf(stderr,
                 "draw_minor_utm_mgrs_grid() looped too many times, escaping.\n");
+            utm_grid_clear(1);
             return(1);
         }
 
@@ -1871,9 +1877,9 @@ int draw_minor_utm_mgrs_grid(Widget w,
             convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
             n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
 
-// Again, fix the coordinates to the nearest subgrid intersection,
-// based on our current grid spacing.  Bump both the easting and
-// northing up by one subgrid.
+// Fix the coordinates to the nearest subgrid intersection based on
+// our current grid spacing.  Bump both the easting and northing up
+// by one subgrid.
             e[0] /= utm_grid_spacing_m;
             e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
             e[0] += utm_grid_spacing_m;
@@ -1905,6 +1911,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
                 fprintf(stderr,"Error: Zone=%d: out of zones!\n", Zone);
                 Zone = 0;
                 done = 1;
+                utm_grid_clear(1);
                 return(1);
             }
         }   // End of if(finished_with_current_zone)
@@ -1957,16 +1964,19 @@ int draw_minor_utm_mgrs_grid(Widget w,
 //                    realloc(utm_grid.zone[Zone].col[col].points,
 //                        ii * sizeof(XPoint));
 
-                temp_point = realloc(utm_grid.zone[Zone].col[col].points,
-                    ii * sizeof(XPoint));
+utm_grid_clear(1);
+return(1);
 
-                if (temp_point)
-                    utm_grid.zone[Zone].col[col].points = temp_point;
+            temp_point = realloc(utm_grid.zone[Zone].col[col].points,
+                ii * sizeof(XPoint));
 
-            utm_grid.zone[Zone].col[col].nalloced = ii;
-            if (!utm_grid.zone[Zone].col[col].points) {
+            if (temp_point) {
+                utm_grid.zone[Zone].col[col].points = temp_point;
+                utm_grid.zone[Zone].col[col].nalloced = ii;
+            }
+            else {
                 puts("realloc FAILED!");
-                (void)utm_grid_clear(0); // Clear arrays and allocate memory for points
+                (void)utm_grid_clear(1); // Clear arrays and allocate memory for points
                 return(1);
             }
         }
@@ -1992,16 +2002,19 @@ int draw_minor_utm_mgrs_grid(Widget w,
 //                    realloc(utm_grid.zone[Zone].row[row].points,
 //                        ii * sizeof(XPoint));
 
-                temp_point = realloc(utm_grid.zone[Zone].row[row].points,
-                    ii * sizeof(XPoint));
+utm_grid_clear(1);
+return(1);
 
-                if (temp_point)
-                    utm_grid.zone[Zone].row[row].points = temp_point;
+            temp_point = realloc(utm_grid.zone[Zone].row[row].points,
+                ii * sizeof(XPoint));
 
-            utm_grid.zone[Zone].row[row].nalloced = ii;
-            if (!utm_grid.zone[Zone].row[row].points) {
+            if (temp_point) {
+                utm_grid.zone[Zone].row[row].points = temp_point;
+                utm_grid.zone[Zone].row[row].nalloced = ii;
+            }
+            else {
                 puts("realloc FAILED!");
-                (void)utm_grid_clear(0); // Clear arrays and allocate memory for points
+                (void)utm_grid_clear(1); // Clear arrays and allocate memory for points
                 return(1);
             }
         }
@@ -2317,7 +2330,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
 
     return(0);
 
-}   // End of draw_minor_utm_mgrs_grid
+}   // End of draw_minor_utm_mgrs_grid() function
 
 
 
@@ -2404,7 +2417,7 @@ void draw_grid(Widget w) {
                 string_height_pixels,
                 short_width_pixels) ) {
 
-            fprintf(stderr,"Problem drawing minor utm grid\n");
+            fprintf(stderr,"Encountered problem while calculating minor utm grid!\n");
         }
 
     }   // End of UTM grid section
