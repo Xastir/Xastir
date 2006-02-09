@@ -1136,6 +1136,11 @@ void draw_major_utm_mgrs_grid(Widget w) {
 
 
 
+// This is the function which actually draws a minor UTM grid.
+// Called by draw_minor_utm_mgrs_grid() function below.
+// draw_minor_utm_mgrs_grid() is the function which calculates the
+// grid points.
+//
 void actually_draw_utm_minor_grid(Widget w,
                                     int border_width,
                                     char *metadata_datum,
@@ -1694,7 +1699,9 @@ void actually_draw_utm_minor_grid(Widget w,
 
 
 
-// Draw the minor UTM grids.  Called by draw_grid() below.
+// Calculate the minor UTM grids.  Called by draw_grid() below.
+// Calls actually_draw_utm_minor_grid() function above to do the
+// drawing once the grid has been calculated.
 //
 // This routine appears to draw most of the UTM/UPS grid ok, with
 // the exceptions of:
