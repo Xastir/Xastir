@@ -52,13 +52,21 @@ AC_MSG_RESULT([done])
 AC_DEFUN([XASTIR_COMPILER_FLAGS],
 [
 # notes -- gcc only! HPUX doesn't work for this so no "-Ae +O2"
-# everybody likes "-g -O2", right?
 
-for f in -g -O2; do
-# eventually write a test for these
-# gcc already checks for -g earlier!
-echo $CFLAGS | grep -- $f > /dev/null || CFLAGS="$CFLAGS $f"
-done
+
+# everybody likes "-g -O2", right?
+# TVR: Not only does "everybody" not like "-g -O2", but the code below
+# is unnecessary for GCC, which does like "-g -O2".  The autoconf macros that 
+# probe for the C  compiler will put "-g -O2" into CFLAGS if the compiler is
+# GCC and the user has not specified any CFLAGS, and leaves CFLAGS alone
+# if the user has set it him/herself.  The "##" commented code
+# below forces -g -O2 into CFLAGS even if the user has specified something
+# else.
+##for f in -g -O2; do
+## eventually write a test for these
+## gcc already checks for -g earlier!
+##echo $CFLAGS | grep -- $f > /dev/null || CFLAGS="$CFLAGS $f"
+##done
 
 # brutal!
 # check for sed maybe?
