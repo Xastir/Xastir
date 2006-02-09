@@ -193,6 +193,29 @@ to make the source code window display the exact location.
 Another good debugger to try is "UPS".
 
 
+Note from Tom:
+--------------
+The recent suggestion here that inlining might be the issue is a
+good one, and building with "-O -g -fno-inline" might help uncover
+what's going on by preventing compiler optimizations from confusing
+the issue.
+
+Until a few minutes ago, xastir's configure script would "help" you
+out by forcing "-O2" into CFLAGS even if you were trying to do
+something else.  I disabled that (because AC_PATH_CC puts "-g -O2"
+in if the user hasn't specified CFLAGS, and does no CFLAGS hacks if
+the user *HAS* specified CFLAGS) and committed the modified
+acinclude.m4 a few minutes ago.
+
+Until we hunt down this segfault, I'll be building with 
+
+  ./configure CFLAGS="-O -g -fno-inline"
+
+to maximize the correspondence between what GDB says the stack frame
+is and what the actual call sequence was.  I recommend that others
+hunting for the problem do the same.
+
+
 
 More?
 -----
