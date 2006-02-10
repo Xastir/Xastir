@@ -218,6 +218,86 @@ Remember not to "make install-strip" when trying to do debugging
 builds, or your core files will not have debugging symbols in them and
 it will be harder to get useful information out of the debugger.
 
+Segregating specialized builds
+------------------------------
+
+The automake/autoconf setup of xastir makes it easy to maintain several
+different builds of the code without having to clean out the directory and
+rebuild every time.  One does this with "build directories" and executable
+suffixes.
+
+To use this capability, make sure you're starting with a completely
+clean source directory.  In the directory where you normally do your
+"cvs update", do a make distclean.  This will remove anything that
+configure created as well as anything that make created.  From this
+point forward, you don't build xastir in the source code directory
+anymore.
+
+Make an empty directory somewhere --- this will be your build directory.  
+I put my build directories in parallel with the source code directory.  So
+my tree looks like this:
+
+   XASTIR-DEV
+    |
+    +----/xastir (source directory)
+    |
+    +---/build-normal
+    |
+    +---/build-debug
+and so on.
+
+So I would do:
+  cd XASTIR-DEV
+  mkdir build-normal
+
+In the build directory, you run configure using the path to the configure 
+script:
+
+  cd build-normal
+  ../xastir/configure
+  make
+  make-install
+
+The configure script uses the path that you gave when you ran it to figure 
+out where to find the source code.
+
+The beauty of this is you can make a second build without doing a make clean:
+  cd XASTIR-DEV
+  mkdir build-debug
+  cd build-debug
+  ../xastir/configure --program-suffix="-debug" CFLAGS="-O -g -fno-inline"
+  make && sudo  make install
+
+This will build a second binary called "xastir-debug" and install it,
+but because you've done the buil in a separate directory, your normal
+compile is untouched.
+
+  cd ~/XASTIR-DEV/xastir
+  cvs update
+  cd ../build-normal
+  make && sudo make install
+  cd ../build-debug
+  make && sudo make install
+
+will update both of your builds.
+
+I also use this technique to share a single xastir source tree over
+NFS, building the code for multiple operating systems in separate
+build directories. 
+  (log in to CYGWIN machine, mount NFS directory)
+  cd /mounted/directory/XASTIR-DEV
+  mkdir build-cygnus
+  ../xastir/configure
+  make && make install
+
+It can also be used to maintain specialized configurations, for
+example a build with "rtree" disabled, a build with map caching
+disabled, etc.  This is a good development trick to keep yourself
+honest --- make sure you can still build all your custom builds when
+you've done a large hacking run, and want to check if you have broken
+things inside ifdefs.  Doing that without build directories requires a
+huge number of configure/make/make distclean cycles.
+
 More?
 -----
 Anything else?  Let's hear about what's still confusing or needs to
