@@ -196,7 +196,7 @@ inline int  max_i(int  a, int  b) { return (a > b ? a : b); }
 #define UTM_GRID_EQUATOR 10000000
 // the maximum number of UTM zones that will appear on a screen that has a 
 // high enough resolution to display the within-zone utm grid
-#define UTM_GRID_MAX_ZONES      6
+#define UTM_GRID_MAX_ZONES      4
 // the maximum number of grid lines in each direction shown in each zone
 // on the screen at one time
 #define UTM_GRID_MAX_COLS_ROWS 64
@@ -940,7 +940,7 @@ void draw_complete_lat_lon_grid(Widget w,
                 outline_border_labels, colors[outline_border_labels_color]);
         }
     }
-}
+} // End of draw_complete_lat_lon_grid()
 
 
 
@@ -1130,7 +1130,7 @@ void draw_major_utm_mgrs_grid(Widget w) {
     // Set the line width and style in the GC to 1 pixel wide for
     // drawing the smaller grid
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
-}
+} // End of draw_major_utm_mgrs_grid()
 
 
 
@@ -1724,7 +1724,10 @@ void actually_draw_utm_minor_grid(Widget w,
 // not moving around.
 //
 // Returns: 0 if successful or nothing to draw
-//          1 if some error occured
+//          1 if malloc error
+//          2 if iterations error
+//          3 if out of zones
+//          4 if realloc failure
 //
 int draw_minor_utm_mgrs_grid(Widget w,
                              int border_width,
@@ -1744,6 +1747,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
     int finished_with_current_zone = 0;
     int ii, jj;
     float slope;
+    int coordinate_system_backup = coordinate_system;
 
  
     col = 0;
@@ -1803,7 +1807,14 @@ int draw_minor_utm_mgrs_grid(Widget w,
     // Find top left point of current view
     xx = x_long_offset;
     yy = y_lat_offset;
+
+    // Note that the minor grid depends on the STANDARD six degree
+    // UTM zones, not the UTM-Special/MGRS zones.  Force our
+    // calculations to use the standard zones.
+    coordinate_system = USE_UTM;
     convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
+    coordinate_system = coordinate_system_backup;
+
     n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
 
 
@@ -1864,7 +1875,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
             fprintf(stderr,
                 "draw_minor_utm_mgrs_grid() looped too many times, escaping.\n");
             utm_grid_clear(1);
-            return(1);
+            return(2);
         }
 
 
@@ -1874,7 +1885,14 @@ int draw_minor_utm_mgrs_grid(Widget w,
             xx = x_long_offset + ((utm_grid.zone[Zone].boundary_x + 1) * scale_x);
 
             yy = y_lat_offset;
+
+            // Note that the minor grid depends on the STANDARD six
+            // degree UTM zones, not the UTM-Special/MGRS zones.
+            // Force our calculations to use the standard zones.
+            coordinate_system = USE_UTM;
             convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
+            coordinate_system = coordinate_system_backup;
+
             n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
 
 // Fix the coordinates to the nearest subgrid intersection based on
@@ -1912,18 +1930,27 @@ int draw_minor_utm_mgrs_grid(Widget w,
                 Zone = 0;
                 done = 1;
                 utm_grid_clear(1);
-                return(1);
+                return(3);
             }
         }   // End of if(finished_with_current_zone)
- 
 
-
+        // Note that the minor grid depends on the STANDARD six
+        // degree UTM zones, not the UTM-Special/MGRS zones.  Force
+        // our calculations to use the standard zones.
+        coordinate_system = USE_UTM;
         convert_UTM_to_xastir(e[1], n[1]-UTM_GRID_EQUATOR, place_str, &xx, &yy);
+        coordinate_system = coordinate_system_backup;
+ 
         xx1 = xx; // Save
         yy1 = yy; // Save
 
+        // Note that the minor grid depends on the STANDARD six
+        // degree UTM zones, not the UTM-Special/MGRS zones.  Force
+        // our calculations to use the standard zones.
+        coordinate_system = USE_UTM;
         convert_xastir_to_UTM(&e[2], &n[2], zone_str, sizeof(zone_str), xx, yy);
-
+        coordinate_system = coordinate_system_backup;
+ 
         n[2] += UTM_GRID_EQUATOR;
         xx = (xx - x_long_offset) / scale_x;
         yy = (yy - y_lat_offset)  / scale_y;
@@ -1957,16 +1984,6 @@ int draw_minor_utm_mgrs_grid(Widget w,
             fprintf(stderr,"%d)\n", ii);
 #endif
 
-// NOTE:  The below is bad practice.  If the realloc fails, we lose
-// the pointer to what was alloc'ed before and it becomes a memory
-// leak.
-//                utm_grid.zone[Zone].col[col].points =
-//                    realloc(utm_grid.zone[Zone].col[col].points,
-//                        ii * sizeof(XPoint));
-
-utm_grid_clear(1);
-return(1);
-
             temp_point = realloc(utm_grid.zone[Zone].col[col].points,
                 ii * sizeof(XPoint));
 
@@ -1977,7 +1994,7 @@ return(1);
             else {
                 puts("realloc FAILED!");
                 (void)utm_grid_clear(1); // Clear arrays and allocate memory for points
-                return(1);
+                return(4);
             }
         }
 
@@ -1995,16 +2012,6 @@ return(1);
             fprintf(stderr,"%d)\n", ii);
 #endif
 
-// NOTE:  The below is bad practice.  If the realloc fails, we lose
-// the pointer to what was alloc'ed before and it becomes a memory
-// leak.
-//                utm_grid.zone[Zone].row[row].points =
-//                    realloc(utm_grid.zone[Zone].row[row].points,
-//                        ii * sizeof(XPoint));
-
-utm_grid_clear(1);
-return(1);
-
             temp_point = realloc(utm_grid.zone[Zone].row[row].points,
                 ii * sizeof(XPoint));
 
@@ -2015,7 +2022,7 @@ return(1);
             else {
                 puts("realloc FAILED!");
                 (void)utm_grid_clear(1); // Clear arrays and allocate memory for points
-                return(1);
+                return(4);
             }
         }
 
@@ -2404,20 +2411,25 @@ void draw_grid(Widget w) {
             || coordinate_system == USE_UTM_SPECIAL
             || coordinate_system == USE_MGRS) {
 
+        int ret_code;
+
         // Draw major UTM/MGRS zones
         draw_major_utm_mgrs_grid(w);
  
         // Draw minor UTM/MGRS zones
-        if ( draw_minor_utm_mgrs_grid(w,
-                border_width,
-                metadata_datum,
-                outline_border_labels,
-                outline_border_labels_color,
-                string_width_pixels,
-                string_height_pixels,
-                short_width_pixels) ) {
-
-            fprintf(stderr,"Encountered problem while calculating minor utm grid!\n");
+        
+        ret_code = draw_minor_utm_mgrs_grid(w,
+                            border_width,
+                            metadata_datum,
+                            outline_border_labels,
+                            outline_border_labels_color,
+                            string_width_pixels,
+                            string_height_pixels,
+                            short_width_pixels);
+        if (ret_code) {
+            fprintf(stderr,
+                "Encountered problem %d while calculating minor utm grid!\n",
+                ret_code);
         }
 
     }   // End of UTM grid section
@@ -2431,7 +2443,7 @@ void draw_grid(Widget w) {
             outline_border_labels_color);
 
     }   // End of Lat/Long section
-}
+}  // End of draw_grid()
 
 
 
