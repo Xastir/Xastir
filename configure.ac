@@ -484,61 +484,102 @@ cygwin*)
 esac
  
 
-# Create the ILIBS defined variable
+# Create the ILIBS defined variable.  We add spaces here in the else
+# clauses in order to make the REGRESSION_TESTS format nicely.  We
+# take them back out before we define the variable that Xastir uses
+# for it's Help->About dialog.
+#
 if test "${use_ax25}" = "yes"; then
   ILIBS="AX25"
+else
+  ILIBS="    "
 fi
 if test "${use_festival}" = "yes"; then
   ILIBS="$ILIBS Festival"
+else
+  ILIBS="$ILIBS         "
 fi
 if test "${use_gpsman}" = "yes"; then
   ILIBS="$ILIBS GPSMan"
+else
+  ILIBS="$ILIBS       "
 fi
 if test "${use_imagemagick}" = "yes"; then
   ILIBS="$ILIBS ImageMagick"
+else
+  ILIBS="$ILIBS            "
 fi
 if test "${use_proj}" = "yes"; then
   ILIBS="$ILIBS libProj"
+else
+  ILIBS="$ILIBS        "
 fi
 if test "${use_geotiff}" = "yes"; then
   ILIBS="$ILIBS GeoTiff"
+else
+  ILIBS="$ILIBS        "
 fi
 if test "${use_gdal}" = "yes"; then
   ILIBS="$ILIBS GDAL/OGR"
+else
+  ILIBS="$ILIBS         "
 fi
 if test "${use_shapelib}" = "yes"; then
   ILIBS="$ILIBS ShapeLib"
+else
+  ILIBS="$ILIBS         "
 fi
 if test "${use_pcre}" = "yes"; then
   ILIBS="$ILIBS PCRE"
+else
+  ILIBS="$ILIBS     "
 fi
 if test "${use_dbfawk}" = "yes"; then
   ILIBS="$ILIBS Dbfawk"
+else
+  ILIBS="$ILIBS       "
 fi
 if test "${use_map_cache}" = "yes"; then
   ILIBS="$ILIBS map_caching"
+else
+  ILIBS="$ILIBS            "
 fi
 if test "${use_err_popups}" = "yes"; then
   ILIBS="$ILIBS error_popups"
+else
+  ILIBS="$ILIBS             "
 fi
 if test "${use_libgc}" = "yes"; then
   ILIBS="$ILIBS libgc"
+else
+  ILIBS="$ILIBS      "
 fi
 if test "${use_profiling}" = "yes"; then
   ILIBS="$ILIBS profiling"
+else
+  ILIBS="$ILIBS          "
 fi
 if test "${use_rtree}" = "yes"; then
   ILIBS="$ILIBS rtree"
+else
+  ILIBS="$ILIBS      "
 fi
 if test "${use_lsb}" = "yes"; then
   ILIBS="$ILIBS lsb"
+else
+  ILIBS="$ILIBS    "
 fi
-AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
+
+# Write out the library information to "summary.log".  Here we want
+# the spaces for the undefined pieces, so REGRESSION_TESTS formats
+# nicely.
+echo "$ILIBS" >summary.log
 
 
 # 
 # Remove extraneous spaces from output variables (asthetic) 
 # 
+ILIBS=`echo $ILIBS | sed -e 's/  */ /g'` 
 X_CFLAGS=`echo $X_CFLAGS | sed -e 's/  */ /g'` 
 X_PRE_LIBS=`echo $X_PRE_LIBS | sed -e 's/  */ /g'` 
 X_LIBS=`echo $X_LIBS | sed -e 's/  */ /g'` 
@@ -552,7 +593,11 @@ LDFLAGS=`echo $LDFLAGS | sed -e 's/  */ /g'`
 TESTED_LIBS=`echo $LIBS | sed -e 's/  */ /g'` 
 MAGICK_DEP_LIBS=`echo $MAGICK_DEP_LIBS | sed -e 's/  */ /g'` 
 LIBS=`echo $LIBS | sed -e 's/  */ /g'` 
+
  
+AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
+
+
 AC_SUBST(LDFLAGS) 
 AC_SUBST(LIBS) 
 #AC_SUBST(CPPFLAGS) 
@@ -588,10 +633,6 @@ AC_OUTPUT
 #echo "      X_LIBS: $X_LIBS" 
 #echo "  X_PRE_LIBS: $X_PRE_LIBS" 
 #echo "X_EXTRA_LIBS: $X_EXTRA_LIBS" 
-
-
-# Write out the library information to "summary.log"
-echo "$ILIBS" >summary.log
 
 
 # Write a short summary of the configure tests/results to

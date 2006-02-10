@@ -42,7 +42,7 @@ nice ./bootstrap.sh
 
 # Test with ZERO options enabled
 #echo
-echo -n "  35 TEST: NONE: "
+echo -n "  54 TEST: NONE:                          "
 rm -rf autom4te.cache
 (rm regression.log 2>&1) >/dev/null
 (nice ./configure \
@@ -66,9 +66,494 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 
 
+# Test sparse + ax25
+#echo
+echo -n "  53 TEST: Sparse + ax25:                 "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + festival
+#echo
+echo -n "  52 TEST: Sparse + festival:             "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + gpsman
+#echo
+echo -n "  51 TEST: Sparse + gpsman:               "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + imagemagick
+#echo
+echo -n "  50 TEST: Sparse + imagemagick:          "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + libproj
+#echo
+echo -n "  49 TEST: Sparse + libproj:              "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + geotiff
+#echo
+echo -n "  48 TEST: Sparse + geotiff:              "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + libproj + geotiff
+#echo
+echo -n "  47 TEST: Sparse + libproj/geotiff:      "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+
+
+# Test sparse + gdal
+#echo
+echo -n "  46 TEST: Sparse + gdal:                 "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + shapelib
+#echo
+echo -n "  45 TEST: Sparse + shapelib:             "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse +  pcre
+#echo
+echo -n "  44 TEST: Sparse + pcre:                 "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-dbfawk \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + dbfawk
+#echo
+echo -n "  43 TEST: Sparse + dbfawk:               "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + pcre/dbfawk
+#echo
+echo -n "  42 TEST: Sparse + shapelib/pcre/dbfawk: "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-map-cache 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + map-cache
+#echo
+echo -n "  41 TEST: Sparse + map-cache:            "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + errorpopups
+#echo
+echo -n "  40 TEST: Sparse + errorpopups:          "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache \
+    --with-errorpopups 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + libgc
+#echo
+echo -n "  39 TEST: Sparse + libgc:                "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache \
+    --with-libgc 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + profiling
+#echo
+echo -n "  38 TEST: Sparse + profiling:            "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache \
+    --with-profiling 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + rtree
+#echo
+echo -n "  37 TEST: Sparse + rtree:                "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache \
+    --with-rtree 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparse + shapelib/rtree
+#echo
+echo -n "  36 TEST: Sparse + shapelib/rtree:       "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache \
+    --with-rtree 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
+# Test sparce + lsb
+#echo
+echo -n "  35 TEST: Sparse + lsb:                  "
+rm -rf autom4te.cache
+rm regression.log
+(nice ./configure \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --without-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map-cache \
+    --with-lsb 2>&1) >> regression.log
+#echo -n "        "
+head -1 summary.log
+(nice make clean 2>&1) >/dev/null
+(nice make 2>&1) >> regression.log
+grep -i warning regression.log
+grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
+
+
+
 # Test with ALL options enabled
 #echo
-echo -n "  34 TEST: ALL:                 "
+echo -n "  34 TEST: ALL:                           "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure \
@@ -88,7 +573,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  33 TEST: --without-ax25:          "
+echo -n "  33 TEST: --without-ax25:                "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-ax25 2>&1) >> regression.log
@@ -103,7 +588,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  32 TEST: --without-festival:           "
+echo -n "  32 TEST: --without-festival:            "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-festival 2>&1) >> regression.log
@@ -118,7 +603,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  31 TEST: --without-gpsman:           "
+echo -n "  31 TEST: --without-gpsman:              "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-gpsman 2>&1) >> regression.log
@@ -133,7 +618,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  30 TEST: --without-imagemagick:           "
+echo -n "  30 TEST: --without-imagemagick:         "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-imagemagick 2>&1) >> regression.log
@@ -148,7 +633,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  29 TEST: --without-libproj:                   "
+echo -n "  29 TEST: --without-libproj:             "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-libproj 2>&1) >> regression.log
@@ -163,7 +648,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  28 TEST: --without-geotiff:           "
+echo -n "  28 TEST: --without-geotiff:             "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-geotiff 2>&1) >> regression.log
@@ -178,7 +663,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  27 TEST: --without-gdal:               "
+echo -n "  27 TEST: --without-gdal:                "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-gdal 2>&1) >> regression.log
@@ -193,7 +678,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  26 TEST: --without-shapelib:                  "
+echo -n "  26 TEST: --without-shapelib:            "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-shapelib 2>&1) >> regression.log
@@ -208,7 +693,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  25 TEST: --without-pcre:                  "
+echo -n "  25 TEST: --without-pcre:                "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-pcre 2>&1) >> regression.log
@@ -223,7 +708,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  24 TEST: --without-dbfawk:           "
+echo -n "  24 TEST: --without-dbfawk:              "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-dbfawk 2>&1) >> regression.log
@@ -238,7 +723,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  23 TEST: --without-map-cache:             "
+echo -n "  23 TEST: --without-map-cache:           "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-map-cache 2>&1) >> regression.log
@@ -253,7 +738,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  22 TEST: --with-errorpopups:  "
+echo -n "  22 TEST: --with-errorpopups:            "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --with-errorpopups 2>&1) >> regression.log
@@ -268,7 +753,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  21 TEST: --with-libgc:        "
+echo -n "  21 TEST: --with-libgc:                  "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --with-libgc 2>&1) >> regression.log
@@ -283,7 +768,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  20 TEST: --with-profiling:    "
+echo -n "  20 TEST: --with-profiling:              "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --with-profiling 2>&1) >> regression.log
@@ -298,7 +783,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  19 TEST: --with-rtree:        "
+echo -n "  19 TEST: --with-rtree:                  "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --with-rtree 2>&1) >> regression.log
@@ -313,7 +798,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with each flag in turn, one flag at a time
 #echo
-echo -n "  18 TEST: --with-lsb:          "
+echo -n "  18 TEST: --with-lsb:                    "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --with-lsb 2>&1) >> regression.log
@@ -328,7 +813,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  17 TEST: ALL --without-ax25:      "
+echo -n "  17 TEST: ALL --without-ax25:            "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-ax25 \
@@ -348,7 +833,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  16 TEST: ALL --without-festival:       "
+echo -n "  16 TEST: ALL --without-festival:        "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-festival \
@@ -368,7 +853,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  15 TEST: ALL --without-gpsman:       "
+echo -n "  15 TEST: ALL --without-gpsman:          "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-gpsman \
@@ -388,7 +873,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  14 TEST: ALL --without-imagemagick:       "
+echo -n "  14 TEST: ALL --without-imagemagick:     "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-imagemagick \
@@ -408,7 +893,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  13 TEST: ALL --without-libproj:               "
+echo -n "  13 TEST: ALL --without-libproj:         "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-libproj \
@@ -428,7 +913,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  12 TEST: ALL --without-geotiff:       "
+echo -n "  12 TEST: ALL --without-geotiff:         "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-geotiff \
@@ -448,7 +933,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  11 TEST: ALL --without-gdal:           "
+echo -n "  11 TEST: ALL --without-gdal:            "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-gdal \
@@ -468,7 +953,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  10 TEST: ALL --without-shapelib:                    "
+echo -n "  10 TEST: ALL --without-shapelib:        "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-shapelib \
@@ -488,7 +973,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  09 TEST: ALL --without-pcre:              "
+echo -n "  09 TEST: ALL --without-pcre:            "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-pcre \
@@ -508,7 +993,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  08 TEST: ALL --without-dbfawk:       "
+echo -n "  08 TEST: ALL --without-dbfawk:          "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-dbfawk \
@@ -528,7 +1013,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  07 TEST: ALL --without-map-cache:         "
+echo -n "  07 TEST: ALL --without-map-cache:       "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-map-cache \
@@ -548,7 +1033,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  06 TEST: ALL except errorpopups:           "
+echo -n "  06 TEST: ALL except errorpopups:        "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure \
@@ -567,7 +1052,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  05 TEST: ALL except libgc:          "
+echo -n "  05 TEST: ALL except libgc:              "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure \
@@ -605,7 +1090,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  03 TEST: ALL except rtree:          "
+echo -n "  03 TEST: ALL except rtree:              "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure \
@@ -624,7 +1109,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with all but one option enabled
 #echo
-echo -n "  02 TEST: ALL except lsb:          "
+echo -n "  02 TEST: ALL except lsb:                "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure \
@@ -645,7 +1130,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 # also put the system back into a mode where a "make install" should
 # be proper for this exact system.
 #echo
-echo -n "  01 TEST: Default configure:       "
+echo -n "  01 TEST: Default configure:             "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure 2>&1) >> regression.log
