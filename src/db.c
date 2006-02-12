@@ -7801,7 +7801,7 @@ void remove_time(DataRow *p_rem) {      // todo: return pointer to next element
                 // pointers.
 
             fprintf(stderr,
-                "remove_name(): ERROR: p->t_prev == NULL but p != t_first\n");
+                "remove_time(): ERROR: p->t_prev == NULL but p != t_first\n");
 
 abort();    // Cause a core dump at this point
 // Perhaps we could do some repair to the list pointers here?  Start
@@ -7831,7 +7831,7 @@ abort();    // Cause a core dump at this point
                 // pointers.
 
             fprintf(stderr,
-                "remove_name(): ERROR: p->t_next == NULL but p != t_last\n");
+                "remove_time(): ERROR: p->t_next == NULL but p != t_last\n");
 
 abort();    // Cause a core dump at this point
 // Perhaps we could do some repair to the list pointers here?  Start
