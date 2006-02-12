@@ -260,7 +260,8 @@ int is_tracked_station(char *call_sign) {
                 call_find[ii] = tracking_station_call[ii];
         }
         call_find[ii] = '\0';
-    } else {
+    }
+    else {
         xastir_snprintf(call_find,
             sizeof(call_find),
             "%s",
@@ -575,10 +576,12 @@ void msg_input_database(Message *m_fill) {
 
 //fprintf(stderr, "Max Message Array: %ld\n", msg_index_max);
 
-            } else {
+            }
+            else {
                 XtWarning("Unable to allocate more space for message index.\n");
             }
-        } else {
+        }
+        else {
             XtWarning("Unable to allocate more space for message database.\n");
         }
     }
@@ -638,7 +641,8 @@ long msg_find_data(Message *m_fill) {
                 /*fprintf(stderr,"Before No data found!!\n");*/
                 done=1;
                 break;
-            } else { /* get data for record end */
+            }
+            else { /* get data for record end */
 
                 xastir_snprintf(tempfile, sizeof(tempfile), "%s%s%s",
                         msg_data[msg_index[record_end]].call_sign,
@@ -653,7 +657,8 @@ long msg_find_data(Message *m_fill) {
 
                     done=1;
                     break;
-                } else if ((record_mid == record_start) || (record_mid == record_end)) {
+                }
+                else if ((record_mid == record_start) || (record_mid == record_end)) {
                     /* no mid for compare check to see if in the middle */
                     done=1;
                     xastir_snprintf(tempfile, sizeof(tempfile), "%s%s%s",
@@ -1713,7 +1718,8 @@ void overlay_symbol(char symbol, char data, DataRow *fill) {
             fill->aprs_symbol.aprs_type = '\\';
             fill->aprs_symbol.special_overlay='\0';
         }
-    } else {    // No overlay character
+    }
+    else {    // No overlay character
         fill->aprs_symbol.aprs_type = data;
         fill->aprs_symbol.special_overlay='\0';
     }
@@ -2026,7 +2032,8 @@ long sort_input_database(char *filename, char *fill, int size) {
                 /* no data yet */
                 (void)fseek(pointer,0l,SEEK_SET);
                 (void)fwrite(&data_ptr,(size_t)ptr_size,1,pointer);
-            } else {
+            }
+            else {
                 /* more than one record*/
                 (void)fseek(pointer,(ptr_size*records),SEEK_SET);
                 (void)fwrite(&data_ptr,(size_t)ptr_size,1,pointer);
@@ -2051,7 +2058,8 @@ long sort_input_database(char *filename, char *fill, int size) {
                             done=1;
                             /* now place pointer before start*/
                             sort_reset_pointers(pointer,new_data_ptr,records,0,record_start);
-                        } else {
+                        }
+                        else {
                             /* get data for record end */
                             (void)fseek(pointer,(ptr_size*record_end),SEEK_SET);
                             (void)fread(&data_ptr,(size_t)ptr_size,1,pointer);
@@ -2066,7 +2074,8 @@ long sort_input_database(char *filename, char *fill, int size) {
                                     /*fprintf(stderr,"END - After end\n");*/
                                     done=1;
                                     /* now place pointer after end */
-                                } else {
+                                }
+                                else {
                                     if((record_mid==record_start) || (record_mid==record_end)) {
                                         /* no mid for compare check to see if in the middle */
                                         /*fprintf(stderr,"END - NO Middle\n");*/
@@ -2076,7 +2085,8 @@ long sort_input_database(char *filename, char *fill, int size) {
                                             sort_reset_pointers(pointer,new_data_ptr,records,0,record_mid+1);
                                         else
                                             sort_reset_pointers(pointer,new_data_ptr,records,0,record_mid-1);
-                                    } else {
+                                    }
+                                    else {
                                         /* get data for record mid */
                                         (void)fseek(pointer,(ptr_size*record_mid),SEEK_SET);
                                         (void)fread(&data_ptr,(size_t)ptr_size,1,pointer);
@@ -2092,7 +2102,8 @@ long sort_input_database(char *filename, char *fill, int size) {
                                                 record_end=record_mid;
                                                 record_mid=record_start+(record_end-record_start)/2;
                                                 /*fprintf(stderr,"TOP %ld, mid %ld\n",record_mid,record_end);*/
-                                            } else {
+                                            }
+                                            else {
                                                 /* checking comes after*/
                                                 record_start=record_mid;
                                                 /*record_end=end*/
@@ -2107,9 +2118,11 @@ long sort_input_database(char *filename, char *fill, int size) {
                     }
                 }
             }
-        } else
+        }
+        else
             fprintf(stderr,"Could not open file %s\n",filename);
-    } else
+    }
+    else
         fprintf(stderr,"Could not open file %s\n",filename);
 
     if(my_data!=NULL)
@@ -3063,13 +3076,15 @@ void draw_ruler(Widget w) {
                 sizeof(unit),
                 "mi");
             ruler_siz /= 1609.3;
-        } else {
+        }
+        else {
             xastir_snprintf(unit,
                 sizeof(unit),
                 "ft");
             ruler_siz /= 0.3048;
         }
-    } else {
+    }
+    else {
         xastir_snprintf(unit,
             sizeof(unit),
             "m");
@@ -3090,11 +3105,13 @@ void draw_ruler(Widget w) {
     if (ruler_siz > 2.0) {
         ruler_pix = (int)(ruler_pix * 5.0 / ruler_siz +0.5);
         ruler_siz = 5.0 * mag;
-    } else {
+    }
+    else {
         if (ruler_siz > 1.0) {
             ruler_pix = (int)(ruler_pix * 2.0 / ruler_siz +0.5);
             ruler_siz = 2.0 * mag;
-        } else {
+        }
+        else {
             ruler_pix = (int)(ruler_pix * 1.0 / ruler_siz +0.5);
             ruler_siz = 1.0 * mag;
         }
@@ -3793,7 +3810,8 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
 //        XmUpdateDisplay(change_tactical_dialog);
         XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
 
-    } else {
+    }
+    else {
         (void)XRaiseWindow(XtDisplay(change_tactical_dialog),
             XtWindow(change_tactical_dialog));
     }
@@ -4009,7 +4027,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             strncat(temp,
                 "\n",
                 sizeof(temp) - strlen(temp));
-        } else
+        }
+        else
             xastir_snprintf(temp, sizeof(temp), "\n");
 
         XmTextInsert(si_text, pos, temp);
@@ -4065,7 +4084,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             xastir_snprintf(temp, sizeof(temp), "\n");
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
-        } else {
+        }
+        else {
             if(last_pos!=pos) {
                 xastir_snprintf(temp, sizeof(temp), "\n");
                 XmTextInsert(si_text,pos,temp);
@@ -4245,7 +4265,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI006"),p_station->heard_via_tnc_port);
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
-    } else {
+    }
+    else {
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI007"));
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -4965,7 +4986,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             NULL);
             XtAddCallback(button_clear_track, XmNactivateCallback, Station_data_destroy_track ,(XtPointer)p_station);
 
-        } else {
+        }
+        else {
             // DK7IN: I drop the version button for mobile stations
             // we just have too much buttons...
             // and should find another solution
@@ -5062,7 +5084,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
             XtAddCallback(button_message, XmNactivateCallback, Send_message_call ,(XtPointer)p_station->call_sign);
-        } else {
+        }
+        else {
             // fprintf(stderr,"Found an object or item...\n");
             button_object_modify = XtVaCreateManagedWidget(langcode("WPUPSTI053"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
@@ -5935,7 +5958,8 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
                 fprintf(stderr,"extract_weather_item: %s\n",temp);
             }
         }
-    } else
+    }
+    else
         temp[0] = '\0';
     return(found);
 }
@@ -6067,7 +6091,8 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
             //fprintf(stderr,"No compressed wx\n");
         }
-    } else {    // Look for non-compressed weather data
+    }
+    else {    // Look for non-compressed weather data
         // Look for weather data in defined locations first
         if (strlen(data)>=15 && data[3]=='/'
                 && is_weather_data(data,3) && is_weather_data(&data[4],3)
@@ -6794,7 +6819,8 @@ int new_trail_color(char *call) {
     // an exact match.
     if (is_my_call(call,MY_TRAIL_DIFF_COLOR)) {
         color = MY_TRAIL_COLOR;    // It's my call, so use special color
-    } else {
+    }
+    else {
         // all other callsigns get some other color out of the color table
         color = current_trail_color;
         for(i=0,found=0;!found && i<MAX_TRAIL_COLORS;i++) {
@@ -7203,7 +7229,8 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
         brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
         if (brightness > 32000) {
             col_dot = trail_colors[0x05];   // black dot on light trails
-        } else {
+        }
+        else {
             col_dot = trail_colors[0x06];   // white dot on dark trail
         }
 
@@ -7542,7 +7569,8 @@ void export_trail(DataRow *p_station) {
             exp_trailstation(f,p_station);
         }
         (void)fclose(f);
-    } else
+    }
+    else
         fprintf(stderr,"Couldn't create or open tracklog file %s\n",file);
 }
 
@@ -7675,15 +7703,65 @@ void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
 
 
     // Proceed to the station record removal
-    if (p_rem->n_prev == NULL)          // first element
-        n_first = p_rem->n_next;
-    else
-        p_rem->n_prev->n_next = p_rem->n_next;
+    //
+    if (p_rem->n_prev == NULL) { // Appears to be first element in list
 
-    if (p_rem->n_next == NULL)          // last element
-        n_last = p_rem->n_prev;
-    else
+        if (n_first == p_rem) {  // Yes, head of list
+
+            // Make list head point to 2nd element in list (or NULL)
+            // so that we can delete the current record.
+            n_first = p_rem->n_next;
+        }
+        else {  // No, not first element in list.  Problem!  The
+                // list pointers are inconsistent for some reason.
+                // The chain has been broken and we have dangling
+                // pointers.
+
+            fprintf(stderr,
+                "remove_name(): ERROR: p->n_prev == NULL but p != n_first\n");
+
+abort();    // Cause a core dump at this point
+// Perhaps we could do some repair to the list pointers here?  Start
+// at the other end of the chain and navigate back to this end, then
+// fix up n_first to point to it?  This is at the risk of a memory
+// leak, but at least Xastir might continue to run.
+
+        }
+    }
+    else {  // Not the first element in the list.  Fix up pointers
+            // to skip the current record.
+        p_rem->n_prev->n_next = p_rem->n_next;
+    }
+
+
+    if (p_rem->n_next == NULL) { // Appears to be last element in list
+
+        if (n_last == p_rem) {   // Yes, tail of list
+
+            // Make list tail point to previous element in list (or
+            // NULL) so that we can delete the current record.
+            n_last = p_rem->n_prev;
+        }
+        else {  // No, not last element in list.  Problem!  The list
+                // pointers are inconsistent for some reason.  The
+                // chain has been broken and we have dangling
+                // pointers.
+
+            fprintf(stderr,
+                "remove_name(): ERROR: p->n_next == NULL but p != n_last\n");
+
+abort();    // Cause a core dump at this point
+// Perhaps we could do some repair to the list pointers here?  Start
+// at the other end of the chain and navigate back to this end, then
+// fix up n_last to point to it?  This is at the risk of a memory
+// leak, but at least Xastir might continue to run.
+
+        }
+    }
+    else {  // Not the last element in the list.  Fix up pointers to
+            // skip the current record.
         p_rem->n_next->n_prev = p_rem->n_prev;
+    }
 
 
     // Update our pointer shortcuts.  Pass the removed hash_key to
@@ -7708,15 +7786,65 @@ void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
  *  Remove element from time ordered list
  */
 void remove_time(DataRow *p_rem) {      // todo: return pointer to next element
-    if (p_rem->t_prev == NULL)          // first element
-        t_first = p_rem->t_next;
-    else
-        p_rem->t_prev->t_next = p_rem->t_next;
 
-    if (p_rem->t_next == NULL)          // last element
-        t_last = p_rem->t_prev;
-    else
+    if (p_rem->t_prev == NULL) { // Appears to be first element in list
+
+        if (t_first == p_rem) {  // Yes, head of list
+
+            // Make list head point to 2nd element in list (or NULL)
+            // so that we can delete the current record.
+            t_first = p_rem->t_next;
+        }
+        else {  // No, not first element in list.  Problem!  The
+                // list pointers are inconsistent for some reason.
+                // The chain has been broken and we have dangling
+                // pointers.
+
+            fprintf(stderr,
+                "remove_name(): ERROR: p->t_prev == NULL but p != t_first\n");
+
+abort();    // Cause a core dump at this point
+// Perhaps we could do some repair to the list pointers here?  Start
+// at the other end of the chain and navigate back to this end, then
+// fix up t_first to point to it?  This is at the risk of a memory
+// leak, but at least Xastir might continue to run.
+
+        }
+    }
+    else {  // Not the first element in the list.  Fix up pointers
+            // to skip the current record.
+        p_rem->t_prev->t_next = p_rem->t_next;
+    }
+
+
+    if (p_rem->t_next == NULL) { // Appears to be last element in list
+
+        if (t_last == p_rem) {   // Yes, tail of list
+
+            // Make list tail point to previous element in list (or
+            // NULL) so that we can delete the current record.
+            t_last = p_rem->t_prev;
+        }
+        else {  // No, not last element in list.  Problem!  The
+                // list pointers are inconsistent for some reason.
+                // The chain has been broken and we have dangling
+                // pointers.
+
+            fprintf(stderr,
+                "remove_name(): ERROR: p->t_next == NULL but p != t_last\n");
+
+abort();    // Cause a core dump at this point
+// Perhaps we could do some repair to the list pointers here?  Start
+// at the other end of the chain and navigate back to this end, then
+// fix up t_last to point to it?  This is at the risk of a memory
+// leak, but at least Xastir might continue to run.
+
+        }
+    }
+    else {  // Not the last element in the list.  Fix up pointers to
+            // skip the current record.
         p_rem->t_next->t_prev = p_rem->t_prev;
+    }
 }
 
 
@@ -7724,23 +7852,36 @@ void remove_time(DataRow *p_rem) {      // todo: return pointer to next element
 
 
 /*
- *  Insert existing element into name ordered list before p_name
+ *  Insert existing element into name ordered list before p_name.
+ *  If p_name is NULL then we add it to the end instead.
  */
 void insert_name(DataRow *p_new, DataRow *p_name) {
+
+    // Set up pointer to next record (or NULL), sorted by name
     p_new->n_next = p_name;
-    if (p_name == NULL) {               // add to end of list
+
+    if (p_name == NULL) {       // Add to end of list
+
         p_new->n_prev = n_last;
-        if (n_last == NULL)             // add to empty list
-            n_first = p_new;
-        else
+
+        if (n_last == NULL)     // If we have an empty list
+            n_first = p_new;    // Add it to the head of the list
+
+        else    // List wasn't empty, add to the end of the list.
             n_last->n_next = p_new;
+
         n_last = p_new;
-    } else {
+    }
+
+    else {  // Insert new record ahead of p_name record
+
         p_new->n_prev = p_name->n_prev;
+
         if (p_name->n_prev == NULL)     // add to begin of list
             n_first = p_new;
         else
             p_name->n_prev->n_next = p_new;
+
         p_name->n_prev = p_new;
     }
 }
@@ -7755,20 +7896,31 @@ void insert_name(DataRow *p_new, DataRow *p_name) {
  *  all done inserting (closer in the list to the t_first pointer).
  */
 void insert_time(DataRow *p_new, DataRow *p_time) {
+
+    // Set up pointer to next record (or NULL), sorted by time
     p_new->t_next = p_time;
+
     if (p_time == NULL) {               // add to end of list (becomes newest station)
+
         p_new->t_prev = t_last;         // connect to previous end of list
+
         if (t_last == NULL)             // if list empty, create list
             t_first = p_new;            // it's now our only station on the list
         else
             t_last->t_next = p_new;     // list not empty, link original last record to our new one
+
         t_last = p_new;                 // end of list (newest record pointer) points to our new record
-    } else {                            // Else we're inserting into the middle of the list somewhere
+    }
+
+    else {                            // Else we're inserting into the middle of the list somewhere
+
         p_new->t_prev = p_time->t_prev;
+
         if (p_time->t_prev == NULL)     // add to begin of list (new record becomes oldest station)
             t_first = p_new;
         else
             p_time->t_prev->t_next = p_new; // else 
+
         p_time->t_prev = p_new;
     }
 }
@@ -8179,7 +8331,7 @@ int search_station_time(DataRow **p_time, time_t heard, int serial) {
 
     (*p_time) = t_last;                                 // newest station
     if (heard == 0) {                                   // we want the newest station
-        if (t_last == 0)
+        if (t_last == NULL)
             ok = 0;                                     // empty list
     }
     else {
@@ -8202,7 +8354,8 @@ int search_station_time(DataRow **p_time, time_t heard, int serial) {
                 if ((*p_time) == NULL || (*p_time)->sec_heard != heard || (*p_time)->time_sn != serial)
                     ok = 0;                             // no perfect match
             }
-        } else
+        }
+        else
             ok = 0;                                     // no perfect match
     }
     return(ok);
@@ -8327,7 +8480,8 @@ void setup_in_view(void) {
                   || (p_station->coord_lat == 0 && p_station->coord_lon == 0)) {
             // outside view and undefined stations:
             p_station->flag &= (~ST_INVIEW);        // clear "In View" flag
-        } else
+        }
+        else
             p_station->flag |= ST_INVIEW;           // set "In View" flag
         p_station = p_station->n_next;
     }
@@ -8590,7 +8744,8 @@ void check_station_remove(int curr_sec) {
 #endif
 
                 }
-            } else {
+            }
+            else {
                 done++;                                         // all other stations are newer...
             }
             p_station = p_station_t_next;
@@ -8718,7 +8873,8 @@ int extract_position(DataRow *p_station, char **info, int type) {
 
             (*info) += 19;                  // delete position from comment
         }
-    } else { // It is a grid 
+    }
+    else { // It is a grid 
         // first sanity checks, need more
         ok = (int)(is_num_chr(my_data[2]));
         ok = (int)(ok && is_num_chr(my_data[3]));
@@ -8735,7 +8891,8 @@ int extract_position(DataRow *p_station, char **info, int type) {
                 p_station->pos_amb = 6; // 1deg lat x 2deg lon 
                 temp_grid[4] = 'L';
                 temp_grid[5] = 'L';
-            } else {
+            }
+            else {
                 p_station->pos_amb = 5; // 2.5min lat x 5min lon
                 temp_grid[4] = toupper(temp_grid[4]); 
                 temp_grid[5] = toupper(temp_grid[5]);
@@ -8884,7 +9041,8 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
             if (c < 90) {   // Found course/speed or altitude bytes
                 if ((T & 0x18) == 0x10) {   // check for GGA (with altitude)
                     xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%06.0f",pow(1.002,(double)(c*91+s))*0.3048);
-                } else { // Found compressed course/speed bytes
+                }
+                else { // Found compressed course/speed bytes
 
                     // Convert 0 degrees to 360 degrees so that
                     // Xastir will see it as a valid course and do
@@ -8908,7 +9066,8 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
                     //fprintf(stderr,"Decoded speed:%s, course:%s\n",p_station->speed,p_station->course);
 
                 }
-            } else {    // Found pre-calculated radio range bytes
+            }
+            else {    // Found pre-calculated radio range bytes
                 if (c == 90) {
                     // pre-calculated radio range
                     range = 2 * pow(1.08,(double)s);    // miles
@@ -8966,7 +9125,8 @@ int extract_speed_course(char *info, char *speed, char *course) {
             if (i==3) {                         // check separator
                 if (info[i]!='/')
                     found = 0;
-            } else {
+            }
+            else {
                 if( !( isdigit((int)info[i])
                         || (info[i] == ' ')     // Spaces and periods are allowed.  Need these
                         || (info[i] == '.') ) ) // here so that we can get the field deleted
@@ -9060,7 +9220,8 @@ int extract_altitude(char *info, char *altitude) {
         substr(altitude,info+ofs+3,6);
         for (i=ofs;i<=len-9;i++)        // delete altitude from info field
             info[i] = info[i+9];
-    } else
+    }
+    else
         altitude[0] = '\0';
     return(found);
 }
@@ -9132,7 +9293,8 @@ int extract_powergain_range(char *info, char *phgd) {
             found = 1;
             for (i=0;i<=len-7;i++)        // delete powergain from data extension field
                 info2[i] = info2[i+7];
-        } else {
+        }
+        else {
             phgd[0] = '\0';
         }
     }
@@ -9157,7 +9319,8 @@ int extract_omnidf(char *info, char *phgd) {
         for (i=0;i<=len-8;i++)        // delete omnidf from data extension field
             info[i] = info[i+8];
         return(1);
-    } else {
+    }
+    else {
         phgd[0] = '\0';
         return(0);
     }
@@ -9210,7 +9373,8 @@ int extract_signpost(char *info, char *signpost) {
             info[i] = info[i+found];
         }
         return(1);
-    } else {
+    }
+    else {
         signpost[0] = '\0';
         return(0);
     }
@@ -9525,7 +9689,8 @@ int extract_time(DataRow *p_station, char *data, int type) {
                     data[i] = data[i+8];
             }
         }
-    } else {
+    }
+    else {
         if (len > 6) {
             // Status messages only with optional zulu format
             // DK7IN: APRS ref says one of 'z' '/' 'h', but I found 'c' at HB9TJM-8   ???
@@ -10665,7 +10830,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             move_station_time(p_station,p_time);        // update time, change position in time sorted list
             new_station = (char)FALSE;                  // we have seen this one before
         }
-    } else {
+    }
+    else {
 //fprintf(stderr,"data_add()\n");
 
         if (debug_level & 1)
@@ -10815,7 +10981,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
  
                     add_comment(p_station,data);
 
-                } else {
+                }
+                else {
                     if (debug_level & 1)
                         fprintf(stderr,"data_add: Bad grid data for %s : %s\n", call, data);
                 }
@@ -11527,7 +11694,8 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                     }
                 }
             }
-        } else {        // we had seen this station before...
+        }
+        else {        // we had seen this station before...
             if (debug_level & 256) {
                 fprintf(stderr,"New Data for %s %ld %ld\n", p_station->call_sign,
                     p_station->coord_lat, p_station->coord_lon);
@@ -11708,7 +11876,8 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                     xastir_snprintf(station_id, sizeof(station_id), langcode("BBARSTA001"),p_station->call_sign);
                 else                                // new object
                     xastir_snprintf(station_id, sizeof(station_id), langcode("BBARSTA000"),p_station->call_sign);
-            } else                                  // updated data
+            }
+            else                                  // updated data
                 xastir_snprintf(station_id, sizeof(station_id), langcode("BBARSTA002"),p_station->call_sign);
 
             statusline(station_id,0);
@@ -11786,7 +11955,8 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                     else
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign, (int)(distance + 0.5),
                         langcode("SPCHSTR003")); // say it in miles with no decimal
-                } else {
+                }
+                else {
                     if (distance < 1.0)
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign,
                         (int)(distance * 1000), langcode("SPCHSTR002")); // say it in meters
@@ -12314,7 +12484,8 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
             p_station->aprs_symbol.aprs_type = my_group;
             p_station->aprs_symbol.special_overlay = '\0';
         }
-    } else {    // Normal symbol, no overlay
+    }
+    else {    // Normal symbol, no overlay
         p_station->aprs_symbol.aprs_type = my_group;
         p_station->aprs_symbol.special_overlay = '\0';
     }
@@ -12369,7 +12540,8 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
 
     if (position_on_extd_screen(p_station->coord_lat,p_station->coord_lon)) {
         p_station->flag |= (ST_INVIEW);   // set   "In View" flag
-    } else {
+    }
+    else {
         p_station->flag &= (~ST_INVIEW);  // clear "In View" flag
     }
 
@@ -12892,7 +13064,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                     "Off Duty",
                     sizeof(new_info) - strlen(new_info));
         }
-    } else {
+    }
+    else {
         xastir_snprintf(temp, sizeof(temp), "Custom%d",msg);
         strncat(new_info,
             temp,
@@ -12969,7 +13142,8 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                         strncat(temp,
                             p_station->call_sign,
                             sizeof(temp) - strlen(temp));
-                    } else {
+                    }
+                    else {
 
 // Nice to return via the reverse path here?  No!  Better to use the
 // default paths instead of a calculated reverse path.
@@ -14173,7 +14347,8 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
             temp_ptr[0] = '\0';                 // adjust message end
         }
         done = 0;
-    } else
+    }
+    else
         done = 1;                               // fall through...
     len = (int)strlen(message);
     //--------------------------------------------------------------------------
@@ -14404,9 +14579,11 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
                         else
                             done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
-                    } else
+                    }
+                    else
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
-                } else {                                                // compressed format
+                }
+                else {                                                // compressed format
                     if (debug_level & 1)
                         fprintf(stderr,"decode_info_field: / (compressed position w/timestamp no messaging)\n");
                     if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
@@ -14414,7 +14591,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
                         else
                             done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
-                    } else
+                    }
+                    else
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
                 }
 //                done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
@@ -14432,9 +14610,11 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
                         else
                             done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
-                    } else
+                    }
+                    else
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
-                } else {                                                // compressed format
+                }
+                else {                                                // compressed format
                     if (debug_level & 1)
                         fprintf(stderr,"decode_info_field: @ (compressed position w/timestamp)\n");
                     if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
@@ -14442,7 +14622,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                             done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
                         else
                             done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
-                    } else
+                    }
+                    else
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
                 }
                 ok_igate_rf = done;
@@ -14683,7 +14864,8 @@ int extract_object(char *call, char **info, char *origin) {
                 ok = 1;
             }
         }
-    } else if ((*info)[0] == ')') {             // item
+    }
+    else if ((*info)[0] == ')') {             // item
         // 3 - 9 character item name with any printable ASCII character
         if (strlen((*info)) > 1+3) {
             for (i = 1; i <= 9; i++) {
@@ -14702,7 +14884,8 @@ int extract_object(char *call, char **info, char *origin) {
                 ok = 1;
             }
         }
-    } else {
+    }
+    else {
         fprintf(stderr,"Not an object, nor an item!!! call=%s, info=%s, origin=%s.\n",
                call, *info, origin);
     }
@@ -14778,12 +14961,14 @@ int extract_third_party(char *call,
                 MAX_CALLSIGN+1,
                 "%s",
                 p_call);
-        } else if (valid_call(p_call)) {              // accept real AX.25 calls
+        }
+        else if (valid_call(p_call)) {              // accept real AX.25 calls
             xastir_snprintf(call,
                 MAX_CALLSIGN+1,
                 "%s",
                 p_call);
-        } else {
+        }
+        else {
             ok = 0;
             if (debug_level & 1) {
                 char filtered_data[MAX_LINE_SIZE + 1];
@@ -15659,12 +15844,14 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                 sizeof(call),
                 "%s",
                 call_sign);
-        } else if (valid_call(call_sign)) {                     // accept real AX.25 calls
+        }
+        else if (valid_call(call_sign)) {                     // accept real AX.25 calls
             xastir_snprintf(call,
                 sizeof(call),
                 "%s",
                 call_sign);
-        } else {
+        }
+        else {
             ok = 0;
             if (debug_level & 1) {
                 char filtered_data[MAX_LINE_SIZE + 1];
@@ -15814,7 +16001,8 @@ void  read_file_line(FILE *f) {
                 if (pos < MAX_LINE_SIZE) {
                     line[pos++] = cin;
                  }
-            } else {                                    // CR or LF
+            }
+            else {                                    // CR or LF
                 if (cin == (char)10) {                  // Found LF as EOL char
                     char *ptr;
 
@@ -15906,7 +16094,8 @@ int locate_station(Widget w, char *call, int follow_case, int get_match, int cen
             sizeof(call_find1),
             "%s",
             call_find);
-    } else
+    }
+    else
         xastir_snprintf(call_find1,
             sizeof(call_find1),
             "%s",
@@ -16003,7 +16192,8 @@ void search_tracked_station(DataRow **p_tracked) {
                                 sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
                                         langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
                                         curr->call_sign);
-                        } else {                /* metric */
+                        }
+                        else {                /* metric */
                             if (distance < 1.0)
                                 sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
                                         (int)(distance * 1000), langcode("SPCHSTR002"), 
