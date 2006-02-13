@@ -748,6 +748,36 @@ void draw_vector_ll(Widget w,
 
 
 
+// Find length of a standard string of seven zeroes in the border font
+int get_standard_border_string_width_pixels(Widget w, int length) {
+    int string_width_pixels = 0; // Width of the unrotated seven_zeroes label string in pixels.
+    char seven_zeroes[8] = "0000000";
+    char five_zeroes[6]  = "00000";
+   
+    if (length==5) 
+         string_width_pixels = get_rotated_label_text_length_pixels(w, five_zeroes, FONT_BORDER);
+    
+    string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_BORDER);
+    return string_width_pixels;
+}
+
+
+
+
+
+// Find height of a standard string in the border font
+int get_standard_border_string_height_pixels(Widget w) {
+    int string_width_pixels = 0; // Width of the unrotated seven_zeroes label string in pixels.
+    char one_zero[2] = "0";
+   
+    string_width_pixels = get_rotated_label_text_height_pixels(w, one_zero, FONT_BORDER);
+    return string_width_pixels;
+}
+
+
+
+
+
 // Lat/Long coordinate system, draw lat/long lines.  Called by
 // draw_grid() below.
 //
@@ -761,11 +791,20 @@ void draw_complete_lat_lon_grid(Widget w,
     char dash[2];
     unsigned int x,x1,x2;
     unsigned int y,y1,y2;
-    unsigned int stepsx[3];
-    unsigned int stepsy[3];
-    int step;
+    unsigned int stepsx;         // spacing of grid lines  
+    unsigned int stepsy;         // spacing of grid lines
     int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
     char grid_label[25];        // String to draw labels on grid lines
+    int screen_width_xastir;  // screen width in xastir units (1/100 of a second)
+    int screen_height_xastir; // screen height in xastir units (1/100 of a second)
+    int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
+    int string_width_pixels = 0;// Width of a grid label string in pixels.
+    int string_height_pixels = 0; // Height of the unrotated seven_zeroes label string in pixels
+    float screen_width_degrees;   // Width of the screen in degrees
+    int log_screen_width_degrees; // Log10 of the screen width in degrees, used to scale degrees
+    long xx2, yy2;
+    long xx, yy;
+    unsigned int last_label_end;  // cordinate of the end of the previous label
  
  
     // convert between selected coordinate format constant and display format constants
@@ -778,18 +817,45 @@ void draw_complete_lat_lon_grid(Widget w,
     else {
        coordinate_format = CONVERT_HP_NORMAL_FORMATED;
     }
+    // find xastir coordinates of upper left and lower right corners
+    xx = x_long_offset  + (border_width * scale_x);
+    yy = y_lat_offset   + (border_width * scale_y);
+    xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
+    yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+    screen_width_xastir = xx2 - xx;
+    screen_height_xastir = yy2 - yy;
+    // Determine some parameters used in drawing the border.
+    string_width_pixels = get_standard_border_string_width_pixels(w, 7);
+    short_width_pixels = get_standard_border_string_width_pixels(w,5);
+    string_height_pixels = get_standard_border_string_height_pixels(w);
+    // 1 xastir coordinate = 1/100 of a second  
+    // 100*60*60 xastir coordinates (=360000 xastir coordinates) = 1 degree
+    // scale_x * (screen_width/10) = one tenth of the screen width in xastir coordinates
+    // scale_x number of xastir coordinates per pixel
+    screen_width_degrees = (float)(screen_width_xastir / (float)360000);
+    log_screen_width_degrees = (int)log10(screen_width_degrees);
+        
+    //fprintf(stderr,"screenwidthdegrees=%f log10=%d\n",screen_width_degrees,log_screen_width_degrees);
+    //fprintf(stderr,"screenwidth=%d screenheight=%d, scale_x=%d, stringwidth=%d\n",screen_width,screen_height,scale_x,string_width_pixels);
+    // 64800000 = 180 degrees
+    // 360000   = 1 degree
+ 
 
     if (draw_labeled_grid_border==TRUE) { 
         char grid_label1[25];       // String to draw latlong metadata 
         char grid_label2[25];       // String to draw latlong metadata 
         char top_label[180];        // String to draw metadata on top border
-        long xx2, yy2;
- 
+        // Rotated text functions used to draw the border text add some 
+        // blank space at the bottom of the text so make the border wide enough 
+        // to compensate for this.
+        border_width = string_height_pixels + (string_height_pixels/2) + 1; 
+        // check to see if string_height_pixels is even
+        if ((float)string_height_pixels/2.0!=floor((float)string_height_pixels/2.0)) { 
+            border_width++; 
+        }
  
         // Put metadata in top border.
         // find location of upper left corner of map, convert to Lat/Long
-        xx2 = x_long_offset  + (border_width * scale_x);
-        yy2 = y_lat_offset   + (border_width * scale_y);
         convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
         convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
         xastir_snprintf(grid_label,
@@ -797,8 +863,6 @@ void draw_complete_lat_lon_grid(Widget w,
             "%s %s",
             grid_label1,grid_label2);
         // find location of lower right corner of map, convert to Lat/Long
-        xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-        yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
         convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
         convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
         //"XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum. ",
@@ -814,26 +878,58 @@ void draw_complete_lat_lon_grid(Widget w,
             outline_border_labels, colors[outline_border_labels_color]);
     }
 
-    stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
-    stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
-    stepsx[2] =   300*100;    stepsy[2] =   150*100;
+    // A crude grid spacing can be obtained from scaling one tenth of the screen width.
+    // This works, but puts the grid lines at arbitrary increments of a degree. 
+    //stepsx = (scale_x*(screen_width/10));
 
-    //fprintf(stderr,"scale_x: %ld\n",scale_x);
-    step = 0;
-    if (scale_x <= 6000) step = 1;
-    if (scale_x <= 300)  step = 2;
-
-    step += grid_size;
-    if (step < 0) {
-        grid_size -= step;
-        step = 0;
+    // Setting the grid using the base 10 log of the screen width in degrees allows 
+    // both scaling the grid to the screen and spacing the grid lines at appropriately 
+    // round increments of a degree.  
+    //
+    // Set default grid to 0.1 degree.  This will be used when the screen width is about 1 degree.
+    stepsx = 36000;
+    // Work out an appropriate grid spacing for the screen size and coordinate system.
+    if (coordinate_system == USE_DDDDDD) {
+        if (log_screen_width_degrees > 0) 
+            stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
+        if (log_screen_width_degrees < 0) {
+            stepsx = ((float)(int)(((float)screen_width_degrees / pow(10,log_screen_width_degrees)*10.0)))*pow(10,log_screen_width_degrees) * 3600;
+        }
     }
-    else if (step > 2) {
-        grid_size -= (step - 2);
-        step = 2;
+    else if (coordinate_system == USE_DDMMSS) {
+        if (log_screen_width_degrees > 0) 
+            stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
+        if (log_screen_width_degrees < 0) {
+            stepsx = ((float)(int)(((float)screen_width_degrees / pow(10,log_screen_width_degrees)*10.0)))*pow(10,log_screen_width_degrees) * 3600;
+        }
+    }
+    else {
+        if (log_screen_width_degrees > 0) 
+            stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
+        if (log_screen_width_degrees < 0) {
+            stepsx = ((float)(int)(((float)screen_width_degrees / pow(10,log_screen_width_degrees)*10.0)))*pow(10,log_screen_width_degrees) * 3600;
+        }
     }
 
-    // draw vertical lines
+    // test for too tightly or too coarsely spaced grid
+    if (stepsx<(unsigned int)(scale_x * string_width_pixels)) {
+        stepsx = stepsx * 2.0;
+    }
+    if (stepsx>(unsigned int)((scale_x * screen_width)/3.0)) {
+        stepsx = stepsx / 2.0;
+    }
+    // handle special case of very small screen - only draw a single grid line
+    if (screen_width < (string_width_pixels * 2)) {
+        stepsx = (scale_x*(screen_width/2));
+    }
+    if (stepsx==0) 
+        stepsx=36000;
+   
+    // Use the same grid spacing for both latitude and longitude grids.
+    stepsy = stepsx;
+
+    // Now draw and label the grid.
+    // Draw vertical longitude lines
     if (y_lat_offset >= 0)
         y1 = 0;
     else
@@ -844,11 +940,12 @@ void draw_complete_lat_lon_grid(Widget w,
     if (y2 > (unsigned int)screen_height)
         y2 = screen_height-1;
 
-    coord = x_long_offset+stepsx[step]-(x_long_offset%stepsx[step]);
+    coord = x_long_offset+stepsx-(x_long_offset%stepsx);
     if (coord < 0)
         coord = 0;
 
-    for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx[step]) {
+    last_label_end = 0;
+    for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx) {
 
         x = (coord-x_long_offset)/scale_x;
 
@@ -873,18 +970,24 @@ void draw_complete_lat_lon_grid(Widget w,
 
         (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
         if (draw_labeled_grid_border==TRUE) { 
-            // draw in the longitudes in lower border
+            // Label the longitudes in lower border.
             convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
-            draw_rotated_label_text_to_target (w, 270, 
-                x,
-                screen_height, 
-                sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
-                pixmap_final,
-                outline_border_labels, colors[outline_border_labels_color]);
+            string_width_pixels = get_rotated_label_text_length_pixels(w, grid_label, FONT_BORDER);
+            // test for overlap of label with previously printed label
+            if (x > last_label_end + 3 && x < (unsigned int)(screen_width - string_width_pixels)) {
+                draw_rotated_label_text_to_target (w, 270, 
+                    x,
+                    screen_height, 
+                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+                last_label_end = x + string_width_pixels;
+            }
         }
     }
 
-    // draw horizontal lines
+    // Draw horizontal latitude lines.
+    last_label_end = 0;
     if (x_long_offset >= 0)
         x1 = 0;
     else
@@ -894,11 +997,11 @@ void draw_complete_lat_lon_grid(Widget w,
     if (x2 > (unsigned int)screen_width)
         x2 = screen_width-1;
 
-    coord = y_lat_offset+stepsy[step]-(y_lat_offset%stepsy[step]);
+    coord = y_lat_offset+stepsy-(y_lat_offset%stepsy);
     if (coord < 0)
         coord = 0;
 
-    for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy[step]) {
+    for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy) {
 
         y = (coord-y_lat_offset)/scale_y;
 
@@ -923,21 +1026,26 @@ void draw_complete_lat_lon_grid(Widget w,
 
         (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
         if (draw_labeled_grid_border==TRUE) { 
-            // draw in the latitudes on left and right borders
+            // label the latitudes on left and right borders
             // (unlike UTM where easting before northing order is important)
             convert_lat_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
-            draw_rotated_label_text_to_target (w, 180, 
-                screen_width, 
-                y,
-                sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
-                pixmap_final,
-                outline_border_labels, colors[outline_border_labels_color]);
-            draw_rotated_label_text_to_target (w, 180, 
-                border_width, 
-                y,
-                sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
-                pixmap_final,
-                outline_border_labels, colors[outline_border_labels_color]);
+            string_width_pixels = get_rotated_label_text_length_pixels(w, grid_label, FONT_BORDER);
+            // check to make sure we aren't overwriting the previous label text
+            if ((y > last_label_end+3) && (y > (unsigned int)string_width_pixels)) {
+                draw_rotated_label_text_to_target (w, 180, 
+                    screen_width, 
+                    y,
+                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+                draw_rotated_label_text_to_target (w, 180, 
+                    border_width, 
+                    y,
+                    sizeof(grid_label),colors[0x09],grid_label,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+                last_label_end = y + string_width_pixels;
+            }
         }
     }
 } // End of draw_complete_lat_lon_grid()
