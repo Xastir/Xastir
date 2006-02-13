@@ -1113,9 +1113,11 @@ and longitude grid may be manually adjusted with the "+" and "-" keys.
 
 Enable Map Border
 When both Enable Map Grid and Enable Map Border are enabled, a narrow white 
-border is drawn around the map and when the coordinate system is UTM (File/
-Configure/Coordinate System) the grid lines will be labeled with easting
-and northing values in the border.  
+border is drawn around the map and the grid lines are labeled using the 
+selected coordinate system (File/Configure/Coordinate System), and the selected
+border font (Map/Configure/Map Labels font/Border Font).   If the UTM or MGRS 
+coordinate systems are selected, the grid lines will be labeled with easting
+and northing values only at zoom levels smaller than about 2048.  
 
 Enable Map Levels
 When enabled, this option will try to filter out data when the zoom level
