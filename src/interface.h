@@ -230,6 +230,7 @@ extern void send_agwpe_packet(int xastir_interface, int RadioPort, unsigned char
 extern unsigned char *incoming_data;
 extern int incoming_data_length;
 extern unsigned char incoming_data_copy[MAX_LINE_SIZE];
+extern unsigned char incoming_data_copy_previous[MAX_LINE_SIZE];
 extern int NETWORK_WAITTIME;
 extern void startup_all_or_defined_port(int port);
 extern void shutdown_all_active_or_defined_port(int port);

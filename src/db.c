@@ -127,6 +127,10 @@ char packet_data_string[MAX_PACKET_DATA_DISPLAY * (MAX_LINE_SIZE+1)];
 static int  packet_data_display = MAX_PACKET_DATA_DISPLAY;   // Last line filled in array (high water mark)
 int  redraw_on_new_packet_data;
 
+
+///////////////////
+char GUARD_BAND_ONE[MAX_LINE_SIZE];
+///////////////////
 int station_count;              // number of stored stations
 int station_count_save = 0;     // old copy of above
 DataRow *n_first;               // pointer to first element in name sorted station list
@@ -136,6 +140,11 @@ DataRow *t_last;                // pointer to last  element in time sorted stati
 time_t last_station_remove;     // last time we did a check for station removing
 time_t last_sec,curr_sec;       // for comparing if seconds in time have changed
 int next_time_sn;               // time serial number for unique time index
+///////////////////
+char GUARD_BAND_TWO[MAX_LINE_SIZE];
+///////////////////
+
+
 
 CADRow *CAD_list_head = NULL;   // pointer to first element in CAD objects list
 
@@ -171,6 +180,15 @@ static aloha_stats the_aloha_stats;
 
 void db_init(void)
 {
+    int ii;
+
+
+    // Set up guard bands around important global pointers
+    for (ii = 0; ii < MAX_LINE_SIZE; ii++) {
+        GUARD_BAND_ONE[ii] = 0x00;
+        GUARD_BAND_TWO[ii] = 0x00;
+    }
+
     init_critical_section( &db_station_info_lock );
     init_critical_section( &db_station_popup_lock );
     last_emergency_callsign[0] = '\0';
@@ -184,6 +202,43 @@ void db_init(void)
 
 
 ///////////////////////////////////  Utilities  ////////////////////////////////////////////////////
+
+
+
+// Variable used for below test code
+//int we7u_count = 50;
+
+
+
+// Check guard bands around important global pointers.
+//
+// These guard bands are initialized in db.c:db_init()
+//
+// Returns:  0 if ok
+//           1 if guard band has been tampered with
+//
+int check_guard_band(void) {
+    int ii;
+
+    for (ii = 0; ii < MAX_LINE_SIZE; ii++) {
+        if (GUARD_BAND_ONE[ii] != 0x00 || GUARD_BAND_TWO[ii] != 0x00) {
+
+fprintf(stderr, "WARNING:  Guard band around global pointers was corrupted!\n");
+fprintf(stderr, "Previous incoming line was: %s\n", incoming_data_copy_previous);
+fprintf(stderr, "    Last incoming line was: %s\n", incoming_data_copy);
+abort();    // Cause immediate exit to aid in debugging
+
+            return(1);
+        }
+    }
+
+// Test code
+//if (we7u_count-- <= 0) {
+//    GUARD_BAND_TWO[0] = 0x01;
+//}
+
+    return(0);
+}
 
 
 
@@ -15653,6 +15708,11 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char *ViaCalls[10];
 
 
+    // Check guard band around pointers.  Make sure it's pristine.
+    if ( check_guard_band() ) {
+        fprintf(stderr, "WARNING:  Guard band around global pointers was corrupted!\n");
+    }
+
     xastir_snprintf(backup,
         sizeof(backup),
         "%s",
@@ -16016,10 +16076,14 @@ void  read_file_line(FILE *f) {
                         *ptr = '\0';  // Terminate the line at that point
                     }
 
-                    // Save a backup copy of the incoming string.
-                    // Used for debugging purposes.  If we get a
-                    // segfault, we can print out the last message
-                    // received.
+                    // Save backup copies of this string and the
+                    // previous string.  Used for debugging
+                    // purposes.  If we get a segfault, we can print
+                    // out the last two messages received.
+                    xastir_snprintf((char *)incoming_data_copy_previous,
+                        MAX_LINE_SIZE,
+                        "%s",
+                        incoming_data_copy);
                     xastir_snprintf((char *)incoming_data_copy,
                         MAX_LINE_SIZE,
                         "%s",
