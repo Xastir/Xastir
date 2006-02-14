@@ -8047,6 +8047,10 @@ void delete_station_memory(DataRow *p_del) {
     p_new = (DataRow *)malloc(sizeof(DataRow));
     if (p_new != NULL) {                // we really got the memory
         p_new->call_sign[0] = '\0';     // just to be sure
+        p_new->n_next = NULL;
+        p_new->n_prev = NULL;
+        p_new->t_next = NULL;
+        p_new->t_prev = NULL;
         insert_name(p_new,p_name);      // insert element into name ordered list
         insert_time(p_new,p_time);      // insert element into time ordered list
     }
