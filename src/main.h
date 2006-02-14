@@ -100,12 +100,6 @@ extern int interrupt_drawing_now;
 #define MAX_PHG      8
 #define MAX_COMMENT  80
 
-#define MAX_UNPROTO  100
-
-#define MAX_TNC_CHARS 128
-#define MAX_NET_CHARS 128
-#define MAX_GPS_CHARS 128
-#define MAX_WX_CHARS 4
 
 
 //////////////////////////////////////////////////////////////////////
