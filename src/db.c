@@ -12666,6 +12666,7 @@ void packet_data_add(char *from, char *line, int data_port) {
     int local_tnc_interface = 0;
     int network_interface = 0;
     char *eol, *eod;
+    unsigned int new_length;
 
 
     if (data_port == -1) {  // x_spider port (server port)
@@ -12715,18 +12716,48 @@ void packet_data_add(char *from, char *line, int data_port) {
 //        data_port);
 
     redraw_on_new_packet_data++;
+
+    // Find the end of our current data in the packet_data_string
+    // array.  All of the packets are concatenated together into one
+    // long string.
     eod = packet_data_string + strlen(packet_data_string);
-    xastir_snprintf(eod, MAX_LINE_SIZE,
-                    "%s:%s-> %s\n", prefix, from, line+offset);
+
     if (!packet_data_display) {
-        // Array is filled now.  Remove the oldest
-        // line from the array.
+        // Our counter has the max number of packets in it (has
+        // counted down to zero).  Remove the oldest line from the
+        // array before we add the new one.
+        //
+        // Find the end of the first packet.
         eol = strchr(packet_data_string, '\n');
         eol++;
-        memmove(packet_data_string, eol, eod-eol+MAX_LINE_SIZE);
+
+        // Move the rest of the text to the beginning of the array.
+        memmove(packet_data_string, eol, (eod-eol)+1);
     }
     else {
         packet_data_display--;
+    }
+
+    // Add the new data onto the end.
+    //
+    // Assure that we're not going to go past the end of our array
+    new_length = strlen(packet_data_string)
+                + strlen(prefix)
+                + strlen(from)
+                + strlen(line+offset)
+                + 5;
+
+    if (sizeof(packet_data_string) > new_length) {
+        eod = packet_data_string + strlen(packet_data_string);
+        xastir_snprintf(eod,
+            MAX_LINE_SIZE,
+            "%s:%s-> %s\n",
+            prefix,
+            from,
+            line+offset);
+    }
+    else {
+        fprintf(stderr, "packet_data_add: line too long for array\n");
     }
 }
 
