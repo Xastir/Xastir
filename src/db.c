@@ -84,6 +84,13 @@
 #define MY_TRAIL_DIFF_COLOR    0    /* If 0, all my calls (SSIDs) will use one special color (0/1) */
 #define TRAIL_ECHO_TIME       30    /* check for delayed echos during last 30 minutes */
 
+
+/////////////////////////////////////
+#define GUARD_SIZE 10
+char GUARD_BAND_THREE[GUARD_SIZE];
+/////////////////////////////////////
+
+
 // Station Info
 Widget  db_station_popup = (Widget)NULL;
 char *db_station_info_callsign = NULL;
@@ -121,6 +128,10 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station);
 int  new_message_data;
 time_t last_message_remove;     // last time we did a check for message removing
 
+////////////////////////////////////
+char GUARD_BAND_FOUR[GUARD_SIZE];
+////////////////////////////////////
+
 // Save most recent 100 packets in an array called packet_data_string[]
 #define MAX_PACKET_DATA_DISPLAY 100
 char packet_data_string[MAX_PACKET_DATA_DISPLAY * (MAX_LINE_SIZE+1)];
@@ -128,9 +139,10 @@ static int  packet_data_display = MAX_PACKET_DATA_DISPLAY;   // Last line filled
 int  redraw_on_new_packet_data;
 
 
-///////////////////
-char GUARD_BAND_ONE[MAX_LINE_SIZE];
-///////////////////
+///////////////////////////////////
+char GUARD_BAND_ONE[GUARD_SIZE];
+///////////////////////////////////
+
 int station_count;              // number of stored stations
 int station_count_save = 0;     // old copy of above
 DataRow *n_first;               // pointer to first element in name sorted station list
@@ -140,9 +152,10 @@ DataRow *t_last;                // pointer to last  element in time sorted stati
 time_t last_station_remove;     // last time we did a check for station removing
 time_t last_sec,curr_sec;       // for comparing if seconds in time have changed
 int next_time_sn;               // time serial number for unique time index
-///////////////////
-char GUARD_BAND_TWO[MAX_LINE_SIZE];
-///////////////////
+
+///////////////////////////////////
+char GUARD_BAND_TWO[GUARD_SIZE];
+///////////////////////////////////
 
 
 
@@ -178,15 +191,21 @@ static aloha_stats the_aloha_stats;
 #define ALOHA_CALC_INTERVAL 1800 
 #define ALOHA_STATUS_INTERVAL 300
 
+
+
+
+
 void db_init(void)
 {
     int ii;
 
 
     // Set up guard bands around important global pointers
-    for (ii = 0; ii < MAX_LINE_SIZE; ii++) {
-        GUARD_BAND_ONE[ii] = 0x00;
-        GUARD_BAND_TWO[ii] = 0x00;
+    for (ii = 0; ii < GUARD_SIZE; ii++) {
+        GUARD_BAND_ONE[ii]   = 0x00;
+        GUARD_BAND_TWO[ii]   = 0x00;
+        GUARD_BAND_THREE[ii] = 0x00;
+        GUARD_BAND_FOUR[ii]  = 0x00;
     }
 
     init_critical_section( &db_station_info_lock );
@@ -218,12 +237,21 @@ void db_init(void)
 //           1 if guard band has been tampered with
 //
 int check_guard_band(void) {
-    int ii;
+    int ii, jj;
 
-    for (ii = 0; ii < MAX_LINE_SIZE; ii++) {
-        if (GUARD_BAND_ONE[ii] != 0x00 || GUARD_BAND_TWO[ii] != 0x00) {
+    for (ii = 0; ii < GUARD_SIZE; ii++) {
+        if (GUARD_BAND_ONE[ii] != 0x00
+            || GUARD_BAND_TWO[ii] != 0x00
+            || GUARD_BAND_THREE[ii] != 0x00
+            || GUARD_BAND_FOUR[ii] != 0x00) {
 
-fprintf(stderr, "WARNING:  Guard band around global pointers was corrupted!\n");
+            jj = 0;
+            if (GUARD_BAND_ONE[ii]   != 0x00) jj = 1;
+            if (GUARD_BAND_TWO[ii]   != 0x00) jj = 2;
+            if (GUARD_BAND_THREE[ii] != 0x00) jj = 3;
+            if (GUARD_BAND_FOUR[ii]  != 0x00) jj = 4;
+
+fprintf(stderr, "WARNING:  Guard Band %d was corrupted!\n", jj);
 fprintf(stderr, "Previous incoming line was: %s\n", incoming_data_copy_previous);
 fprintf(stderr, "    Last incoming line was: %s\n", incoming_data_copy);
 abort();    // Cause immediate exit to aid in debugging
