@@ -6621,7 +6621,7 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     char call[MAX_CALLSIGN+1];
     long x_lat,x_lon;
     char origin[MAX_CALLSIGN+1];  // mycall
-    char data[MAX_TNC_LINE_SIZE];
+    char data[MAX_LINE_SIZE];
     char page[2];
     // reserve space for probability circle as well as symbol /Pmin0.25,Pmax0.5,
     char symbol_plus[PREDEFINED_OBJECT_DATA_LENGTH];

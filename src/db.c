@@ -12819,8 +12819,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     unsigned char s_b7;
     int  north,west,long_offset;
     int  d,m,h;
-    char temp[MAX_TNC_LINE_SIZE+1];     // Note: Must be big in case we get long concatenated packets
-    char new_info[MAX_TNC_LINE_SIZE+1]; // Note: Must be big in case we get long concatenated packets
+    char temp[MAX_LINE_SIZE+1];     // Note: Must be big in case we get long concatenated packets
+    char new_info[MAX_LINE_SIZE+1]; // Note: Must be big in case we get long concatenated packets
     int  course;
     int  speed;
     int  msg1,msg2,msg3,msg;
@@ -14583,7 +14583,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 void decode_info_field(char *call, char *path, char *message, char *origin,
         char from, int port, int third_party, char *orig_message) {
 
-    char line[MAX_TNC_LINE_SIZE+1];
+    char line[MAX_LINE_SIZE+1];
     int  ok_igate_net;
     int  ok_igate_rf;
     int  done, ignore;
@@ -14600,7 +14600,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
     ok_igate_net = 0;       // if 1, send packet to internet
     ok_igate_rf  = 0;       // if 1, igate packet to RF if "from" is in nws-stations.txt
 
-    if ( (message != NULL) && (strlen(message) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.
+    if ( (message != NULL) && (strlen(message) > MAX_LINE_SIZE) ) { // Overly long message, throw it away.
         if (debug_level & 1)
             fprintf(stderr,"decode_info_field: Overly long message.  Throwing it away.\n");
         done = 1;
@@ -15814,7 +15814,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         return(FALSE);
     }
 
-    if ( (line != NULL) && (strlen(line) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.  We're done.
+    if ( (line != NULL) && (strlen(line) > MAX_LINE_SIZE) ) { // Overly long message, throw it away.  We're done.
         if (debug_level & 1)
             fprintf(stderr,"\ndecode_ax25_line: LONG packet.  Dumping it:\n%s\n",line);
         return(FALSE);

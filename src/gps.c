@@ -111,7 +111,7 @@ int decode_gps_rmc( char *data,
 
     char *temp_ptr;
     char *temp_ptr2;
-    char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
+    char temp_data[MAX_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
     char sampletime[7]; // We ignore fractional seconds
     char long_pos_x[11];
     char long_ew;
@@ -373,7 +373,7 @@ int decode_gps_gga( char *data,
 
     char *temp_ptr;
     char *temp_ptr2;
-    char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
+    char temp_data[MAX_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
     char long_pos_x[11];
     char long_ew;
     char lat_pos_y[10];

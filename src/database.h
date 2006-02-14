@@ -37,9 +37,6 @@
 #define MAX_COMMENT_LINES 20  // Save XX unique comment strings per station
 #define MAX_STATUS_LINES 20   // Save XX unique status strings per station
 
-/* define max tnc line size (should be from tnc.h) */
-#define MAX_TNC_LINE_SIZE 300
-
 /* define max size of info field */
 #define MAX_INFO_FIELD_SIZE 256
 
