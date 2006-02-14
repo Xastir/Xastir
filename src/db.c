@@ -237,7 +237,7 @@ void db_init(void)
 //           1 if guard band has been tampered with
 //
 int check_guard_band(void) {
-    int ii, jj;
+    int ii;
 
     for (ii = 0; ii < GUARD_SIZE; ii++) {
         if (GUARD_BAND_ONE[ii] != 0x00
@@ -245,15 +245,21 @@ int check_guard_band(void) {
             || GUARD_BAND_THREE[ii] != 0x00
             || GUARD_BAND_FOUR[ii] != 0x00) {
 
-            jj = 0;
-            if (GUARD_BAND_ONE[ii]   != 0x00) jj = 1;
-            if (GUARD_BAND_TWO[ii]   != 0x00) jj = 2;
-            if (GUARD_BAND_THREE[ii] != 0x00) jj = 3;
-            if (GUARD_BAND_FOUR[ii]  != 0x00) jj = 4;
+            if (GUARD_BAND_ONE[ii]   != 0x00)
+                fprintf(stderr, "WARNING: GUARD_BAND_ONE   was corrupted!\n");
 
-fprintf(stderr, "WARNING:  Guard Band %d was corrupted!\n", jj);
+            if (GUARD_BAND_TWO[ii]   != 0x00)
+                fprintf(stderr, "WARNING: GUARD_BAND_TWO   was corrupted!\n");
+
+            if (GUARD_BAND_THREE[ii] != 0x00)
+                fprintf(stderr, "WARNING: GUARD_BAND_THREE was corrupted!\n");
+
+            if (GUARD_BAND_FOUR[ii]  != 0x00)
+                fprintf(stderr, "WARNING: GUARD_BAND_FOUR  was corrupted!\n");
+
 fprintf(stderr, "Previous incoming line was: %s\n", incoming_data_copy_previous);
 fprintf(stderr, "    Last incoming line was: %s\n", incoming_data_copy);
+
 abort();    // Cause immediate exit to aid in debugging
 
             return(1);
@@ -261,9 +267,14 @@ abort();    // Cause immediate exit to aid in debugging
     }
 
 // Test code
-//if (we7u_count-- <= 0) {
-//    GUARD_BAND_TWO[0] = 0x01;
-//}
+/*
+if (we7u_count-- <= 0) {
+    GUARD_BAND_ONE[0] = 0x01;
+    GUARD_BAND_TWO[0] = 0x01;
+    GUARD_BAND_THREE[0] = 0x01;
+    GUARD_BAND_FOUR[0] = 0x01;
+}
+*/
 
     return(0);
 }
