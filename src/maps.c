@@ -139,6 +139,16 @@
 void draw_rotated_label_text_to_target (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color);
 int get_rotated_label_text_height_pixels(Widget w, char *label_text, int fontsize);
 
+// Constants defining the color of the labeled grid border.
+int outline_border_labels = TRUE;   // if true put an outline around the border labels
+int border_foreground_color = 0x20; // color of the map border, if shown 
+                                    // 0x08 is black.
+                                    // 0x20 is white.
+int outline_border_labels_color = 0x20;
+                                    // outline_border_labels_color = border_foreground_color; 
+                                    // color of outline to draw around border labels
+                                    // use color of border to help make text more legible.
+
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
 static xastir_mutex print_properties_dialog_lock;
@@ -748,7 +758,8 @@ void draw_vector_ll(Widget w,
 
 
 
-// Find length of a standard string of seven zeroes in the border font
+// Find length of a standard string of seven zeroes in the border font.
+// Supporting function for draw_grid() and the grid drawing functions.
 int get_standard_border_string_width_pixels(Widget w, int length) {
     int string_width_pixels = 0; // Width of the unrotated seven_zeroes label string in pixels.
     char seven_zeroes[8] = "0000000";
@@ -766,6 +777,7 @@ int get_standard_border_string_width_pixels(Widget w, int length) {
 
 
 // Find height of a standard string in the border font
+// Supporting function for draw_grid() and the grid drawing functions.
 int get_standard_border_string_height_pixels(Widget w) {
     int string_width_pixels = 0; // Width of the unrotated seven_zeroes label string in pixels.
     char one_zero[2] = "0";
@@ -778,14 +790,60 @@ int get_standard_border_string_height_pixels(Widget w) {
 
 
 
-// Lat/Long coordinate system, draw lat/long lines.  Called by
-// draw_grid() below.
+// Find out the width to use for the border to apply when uing a labeled grid.
+// Border width is determined from the height of the border font.
+// Supporting function for draw_grid() and the grid drawing functions.
+int get_border_width(Widget w) {
+    int border_width = 14;      // The width of the border to draw around the 
+                                // map to place labeled tick marks into
+                                // should be an even number.
+                                // The default here is overidden by size of the border font.
+    int string_height_pixels = 0; // Height of a string in the border font in pixels
+
+    string_height_pixels = get_standard_border_string_height_pixels(w);
+    // Rotated text functions used to draw the border text add some 
+    // blank space at the bottom of the text so make the border wide enough 
+    // to compensate for this.
+    border_width = string_height_pixels + (string_height_pixels/2) + 1; 
+    // check to see if string_height_pixels is even
+    if ((float)string_height_pixels/2.0!=floor((float)string_height_pixels/2.0)) { 
+        border_width++; 
+    }
+    // we are using draw nice string to write the metadata in the top border, so 
+    // make sure the border is wide enough for it, even if the grid labels are small.
+    if (border_width < 14) { border_width = 14; }
+    return border_width;
+}
+
+
+
+
+
+// ***********************************************************
 //
-void draw_complete_lat_lon_grid(Widget w,
-                        int border_width,
-                        char *metadata_datum,
-                        int outline_border_labels,
-                        int outline_border_labels_color) {
+// get_horizontal_datum()
+//
+// Provides the current map datum.  Current default is WGS84.
+// Parameters: datum, character array ponter for the string
+//             that will be filled with the current datum
+// sizeof_datum, the size of the datum character array.  
+//
+//***********************************************************
+void get_horizontal_datum(char *datum, int sizeof_datum) {
+    char metadata_datum[6] = "WGS84";  // datum to display in metadata on top border
+    xastir_snprintf(datum, sizeof_datum, "%s", metadata_datum);
+    if (sizeof_datum<6) 
+       fprintf(stderr,"Datum [%s] truncated to [%s]\n",metadata_datum,datum);
+}
+
+
+
+
+
+// Lat/Long coordinate system, draw lat/long lines.  Called by
+// draw_grid() below.  
+//
+void draw_complete_lat_lon_grid(Widget w) {
 
     int coord;
     char dash[2];
@@ -797,15 +855,20 @@ void draw_complete_lat_lon_grid(Widget w,
     char grid_label[25];        // String to draw labels on grid lines
     int screen_width_xastir;  // screen width in xastir units (1/100 of a second)
     int screen_height_xastir; // screen height in xastir units (1/100 of a second)
-    int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
+    int border_width;          // the width of the labeled border in pixels.
     int string_width_pixels = 0;// Width of a grid label string in pixels.
-    int string_height_pixels = 0; // Height of the unrotated seven_zeroes label string in pixels
     float screen_width_degrees;   // Width of the screen in degrees
     int log_screen_width_degrees; // Log10 of the screen width in degrees, used to scale degrees
     long xx2, yy2;
     long xx, yy;
     unsigned int last_label_end;  // cordinate of the end of the previous label
+    char metadata_datum[6];  // datum to display in metadata on top border
+    char grid_label1[25];       // String to draw latlong metadata 
+    char grid_label2[25];       // String to draw latlong metadata 
+    char top_label[180];        // String to draw metadata on top border
  
+    if (!long_lat_grid) // We don't wish to draw a map grid
+        return;
  
     // convert between selected coordinate format constant and display format constants
     if (coordinate_system == USE_DDDDDD) {
@@ -817,7 +880,8 @@ void draw_complete_lat_lon_grid(Widget w,
     else {
        coordinate_format = CONVERT_HP_NORMAL_FORMATED;
     }
-    // find xastir coordinates of upper left and lower right corners
+    border_width = get_border_width(w);
+    // Find xastir coordinates of upper left and lower right corners.
     xx = x_long_offset  + (border_width * scale_x);
     yy = y_lat_offset   + (border_width * scale_y);
     xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
@@ -826,33 +890,18 @@ void draw_complete_lat_lon_grid(Widget w,
     screen_height_xastir = yy2 - yy;
     // Determine some parameters used in drawing the border.
     string_width_pixels = get_standard_border_string_width_pixels(w, 7);
-    short_width_pixels = get_standard_border_string_width_pixels(w,5);
-    string_height_pixels = get_standard_border_string_height_pixels(w);
     // 1 xastir coordinate = 1/100 of a second  
     // 100*60*60 xastir coordinates (=360000 xastir coordinates) = 1 degree
+    // 64800000 xastir coordinates = 180 degrees
+    // 360000   xastir coordinates = 1 degree
     // scale_x * (screen_width/10) = one tenth of the screen width in xastir coordinates
     // scale_x number of xastir coordinates per pixel
     screen_width_degrees = (float)(screen_width_xastir / (float)360000);
     log_screen_width_degrees = (int)log10(screen_width_degrees);
-        
-    //fprintf(stderr,"screenwidthdegrees=%f log10=%d\n",screen_width_degrees,log_screen_width_degrees);
-    //fprintf(stderr,"screenwidth=%d screenheight=%d, scale_x=%d, stringwidth=%d\n",screen_width,screen_height,scale_x,string_width_pixels);
-    // 64800000 = 180 degrees
-    // 360000   = 1 degree
  
 
     if (draw_labeled_grid_border==TRUE) { 
-        char grid_label1[25];       // String to draw latlong metadata 
-        char grid_label2[25];       // String to draw latlong metadata 
-        char top_label[180];        // String to draw metadata on top border
-        // Rotated text functions used to draw the border text add some 
-        // blank space at the bottom of the text so make the border wide enough 
-        // to compensate for this.
-        border_width = string_height_pixels + (string_height_pixels/2) + 1; 
-        // check to see if string_height_pixels is even
-        if ((float)string_height_pixels/2.0!=floor((float)string_height_pixels/2.0)) { 
-            border_width++; 
-        }
+        get_horizontal_datum(metadata_datum, sizeof(metadata_datum));
  
         // Put metadata in top border.
         // find location of upper left corner of map, convert to Lat/Long
@@ -884,49 +933,63 @@ void draw_complete_lat_lon_grid(Widget w,
 
     // Setting the grid using the base 10 log of the screen width in degrees allows 
     // both scaling the grid to the screen and spacing the grid lines at appropriately 
-    // round increments of a degree.  
+    // rounded increments of a degree.  
     //
     // Set default grid to 0.1 degree.  This will be used when the screen width is about 1 degree.
-    stepsx = 36000;
+    stepsx = 36000;  // if (log_screen_width_degrees == 0)
     // Work out an appropriate grid spacing for the screen size and coordinate system.
-    if (coordinate_system == USE_DDDDDD) {
-        if (log_screen_width_degrees > 0) 
-            stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
-        if (log_screen_width_degrees < 0) {
+    if (log_screen_width_degrees > 0) {
+        // grid spacing is rounded to 10 degree increment.
+        stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
+    }
+    if (log_screen_width_degrees < 0) {
+        // Grid spacing is rounded to less than one degree.
+        if (coordinate_system == USE_DDDDDD) {
+            // Round to tenths or hundrethds or thousanths of a degree.
             stepsx = ((float)(int)(((float)screen_width_degrees / pow(10,log_screen_width_degrees)*10.0)))*pow(10,log_screen_width_degrees) * 3600;
         }
-    }
-    else if (coordinate_system == USE_DDMMSS) {
-        if (log_screen_width_degrees > 0) 
-            stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
-        if (log_screen_width_degrees < 0) {
-            stepsx = ((float)(int)(((float)screen_width_degrees / pow(10,log_screen_width_degrees)*10.0)))*pow(10,log_screen_width_degrees) * 3600;
+        else {
+            // For decimal minutes or minutes and seconds.
+            // Find screen width and log screen width in minutes.
+            screen_width_degrees = screen_width_degrees * 60.0;
+            log_screen_width_degrees = (int)log10(screen_width_degrees);
+            // round to minutes or tenths of minutes.
+            stepsx = ((float)(int)
+                      ((float)(screen_width_degrees) / pow(10,log_screen_width_degrees) * 10.0)
+                     )
+                     * pow(10,log_screen_width_degrees) * 3600;
+            if (log_screen_width_degrees==0) {
+                stepsx = 600; // 6000 = 1 minute
+            }
         }
     }
-    else {
-        if (log_screen_width_degrees > 0) 
-            stepsx = ((int)(screen_width_degrees / (pow(10,log_screen_width_degrees)))*pow(10,log_screen_width_degrees)) * 36000;
-        if (log_screen_width_degrees < 0) {
-            stepsx = ((float)(int)(((float)screen_width_degrees / pow(10,log_screen_width_degrees)*10.0)))*pow(10,log_screen_width_degrees) * 3600;
-        }
-    }
-
-    // test for too tightly or too coarsely spaced grid
-    if (stepsx<(unsigned int)(scale_x * string_width_pixels)) {
+    // Grid should now be close to reasonable spacing for screen size, but
+    // may need to be tuned. 
+    // Test for too tightly or too coarsely spaced grid.
+    if (stepsx<(unsigned int)(scale_x * string_width_pixels * 1.5)) {
         stepsx = stepsx * 2.0;
     }
-    if (stepsx>(unsigned int)((scale_x * screen_width)/3.0)) {
+    if (stepsx<(unsigned int)(scale_x * string_width_pixels * 1.5)) {
+        stepsx = stepsx * 2.0;
+    }
+    if (stepsx>(unsigned int)((scale_x * screen_width)/3.5)) {
         stepsx = stepsx / 2.0;
     }
-    // handle special case of very small screen - only draw a single grid line
+    // Handle special case of very small screen - only draw a single grid line
     if (screen_width < (string_width_pixels * 2)) {
         stepsx = (scale_x*(screen_width/2));
     }
+    // Make sure we don't pass an erronous stepsx of 0 on.
     if (stepsx==0) 
         stepsx=36000;
    
     // Use the same grid spacing for both latitude and longitude grids.
+    // We could use a scaling factor related to the screen height width ratio here.
     stepsy = stepsx;
+
+    // protect against division by zero
+    if (scale_x==0) scale_x = 1;
+    if (scale_y==0) scale_y = 1;
 
     // Now draw and label the grid.
     // Draw vertical longitude lines
@@ -972,6 +1035,20 @@ void draw_complete_lat_lon_grid(Widget w,
         if (draw_labeled_grid_border==TRUE) { 
             // Label the longitudes in lower border.
             convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
+            if (log_screen_width_degrees > 0 && strlen(grid_label) > 5) {
+                 // truncate the grid_label string
+                 if (coordinate_system==USE_DDMMMM) {
+                     // Add ' and move EW and null characters forward.
+                     grid_label[strlen(grid_label)-5] = '\'';
+                     grid_label[strlen(grid_label)-4] = grid_label[strlen(grid_label)-1];
+                     grid_label[strlen(grid_label)-3] = grid_label[strlen(grid_label)];
+                 } 
+                 else {
+                     // Move EW and null characters forward.
+                     grid_label[strlen(grid_label)-5] = grid_label[strlen(grid_label)-1];
+                     grid_label[strlen(grid_label)-4] = grid_label[strlen(grid_label)];
+                 }
+            }
             string_width_pixels = get_rotated_label_text_length_pixels(w, grid_label, FONT_BORDER);
             // test for overlap of label with previously printed label
             if (x > last_label_end + 3 && x < (unsigned int)(screen_width - string_width_pixels)) {
@@ -1029,6 +1106,20 @@ void draw_complete_lat_lon_grid(Widget w,
             // label the latitudes on left and right borders
             // (unlike UTM where easting before northing order is important)
             convert_lat_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
+            if (log_screen_width_degrees > 0 && strlen(grid_label) > 5) {
+                 // truncate the grid_label string
+                 if (coordinate_system==USE_DDMMMM) {
+                     // Add ' and move EW and null characters forward.
+                     grid_label[strlen(grid_label)-5] = '\'';
+                     grid_label[strlen(grid_label)-4] = grid_label[strlen(grid_label)-1];
+                     grid_label[strlen(grid_label)-3] = grid_label[strlen(grid_label)];
+                 } 
+                 else {
+                     // Move EW and null characters forward.
+                     grid_label[strlen(grid_label)-5] = grid_label[strlen(grid_label)-1];
+                     grid_label[strlen(grid_label)-4] = grid_label[strlen(grid_label)];
+                 }
+            }
             string_width_pixels = get_rotated_label_text_length_pixels(w, grid_label, FONT_BORDER);
             // check to make sure we aren't overwriting the previous label text
             if ((y > last_label_end+3) && (y > (unsigned int)string_width_pixels)) {
@@ -1149,6 +1240,9 @@ void draw_major_utm_mgrs_grid(Widget w) {
     int ii;
 
  
+    if (!long_lat_grid) // We don't wish to draw a map grid
+        return;
+
     // Vertical lines:
 
     // Draw the vertical vectors (except for the irregular regions
@@ -1249,16 +1343,10 @@ void draw_major_utm_mgrs_grid(Widget w) {
 // draw_minor_utm_mgrs_grid() is the function which calculates the
 // grid points.
 //
-void actually_draw_utm_minor_grid(Widget w,
-                                    int border_width,
-                                    char *metadata_datum,
-                                    int outline_border_labels,
-                                    int outline_border_labels_color,
-                                    int string_width_pixels,
-                                    int short_width_pixels) { 
+void actually_draw_utm_minor_grid(Widget w) {
 
 
-
+    int border_width;           // Width of the border to draw labels into.
     int numberofzones = 0;      // number of elements in utm_grid.zone[] that are used
     int Zone;
     int ii;
@@ -1270,6 +1358,9 @@ void actually_draw_utm_minor_grid(Widget w,
     char zone_str[10];
     char zone_str2[10];
     double easting, northing;   
+    int short_width_pixels = 0; // Width of an unrotated string of five_zeroes in the border font in pixels.
+    int string_width_pixels = 0;// Width of an unrotated string of seven_zeroes in the border font in pixels.
+    char metadata_datum[6];
     char grid_label[25];        // String to draw labels on grid lines
     char grid_label1[25];       // String to draw latlong metadata 
     char top_label[180];        // String to draw metadata on top border
@@ -1295,6 +1386,8 @@ void actually_draw_utm_minor_grid(Widget w,
     char mgrs_ul_digraph[3] = "  ";  // MGRS digraph for upper left corner of screen
     char mgrs_lr_digraph[3] = "  ";  // MGRS digraph for lower right corner of screen
 
+    if (!long_lat_grid) // We don't wish to draw a map grid
+        return;
  
     // OLD: Draw grid in dashed white lines.
     // NEW: Tint the lines as they go along, making them appear
@@ -1307,6 +1400,12 @@ void actually_draw_utm_minor_grid(Widget w,
     // negative values, bypassing segfaults.
     //
     numberofzones = 0;
+
+    // Determine the width of the border
+    border_width = get_border_width(w);
+    // Determine some parameters used in drawing the border.
+    string_width_pixels = get_standard_border_string_width_pixels(w, 7);
+    short_width_pixels = get_standard_border_string_width_pixels(w,5);
 
     for (Zone=0; Zone < UTM_GRID_MAX_ZONES; Zone++) {
 
@@ -1378,6 +1477,9 @@ void actually_draw_utm_minor_grid(Widget w,
                 zone_color = 0x08;     // black text 
                                            // 0x09=blue (0x0e=yellow works well with outline, but not without).
                 label_on_left = FALSE;
+ 
+                // Find out what the map datum is.
+                get_horizontal_datum(metadata_datum, sizeof(metadata_datum));
 
                 if (numberofzones>1) {
                     // check to see if the upper left and lower left corners are in the same zone
@@ -1808,8 +1910,11 @@ void actually_draw_utm_minor_grid(Widget w,
 
 
 // Calculate the minor UTM grids.  Called by draw_grid() below.
-// Calls actually_draw_utm_minor_grid() function above to do the
-// drawing once the grid has been calculated.
+// This function calculates and caches a within-zone UTM grid 
+// for the current map view if one does not allready exist, it 
+// then calls actually_draw_utm_minor_grid() function above to do 
+// the drawing once the grid has been calculated.  Zone boundaries
+// are drawn separately by draw_major_utm_mgrs_grid().
 //
 // This routine appears to draw most of the UTM/UPS grid ok, with
 // the exceptions of:
@@ -1837,14 +1942,7 @@ void actually_draw_utm_minor_grid(Widget w,
 //          3 if out of zones
 //          4 if realloc failure
 //
-int draw_minor_utm_mgrs_grid(Widget w,
-                             int border_width,
-                             char *metadata_datum,
-                             int outline_border_labels,
-                             int outline_border_labels_color,
-                             int string_width_pixels,
-                             int string_height_pixels,
-                             int short_width_pixels) { 
+int draw_minor_utm_mgrs_grid(Widget w) {
 
     long xx, yy, xx1, yy1;
     double e[4], n[4];
@@ -1888,13 +1986,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
         utm_grid.hash.lr_y == y_lat_offset  + (screen_height * scale_y)) {
 
         // XPoint arrays are already set up.  Go draw the grid.
-        actually_draw_utm_minor_grid(w,
-                                     border_width,
-                                     metadata_datum,
-                                     outline_border_labels,
-                                     outline_border_labels_color,
-                                     string_width_pixels,
-                                     short_width_pixels);
+        actually_draw_utm_minor_grid(w);
 
         return(0);
     }
@@ -2435,13 +2527,7 @@ int draw_minor_utm_mgrs_grid(Widget w,
     utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
 
     // XPoint arrays are set up.  Go draw the grid.
-    actually_draw_utm_minor_grid(w,
-                                 border_width,
-                                 metadata_datum,
-                                 outline_border_labels,
-                                 outline_border_labels_color,
-                                 string_width_pixels,
-                                 short_width_pixels);
+    actually_draw_utm_minor_grid(w);
 
     return(0);
 
@@ -2458,45 +2544,19 @@ int draw_minor_utm_mgrs_grid(Widget w,
 //
 //*****************************************************************
 void draw_grid(Widget w) {
+    int half;                   // Center of the white lines used to draw the borders
     int border_width = 14;      // The width of the border to draw around the 
                                 // map to place labeled tick marks into
                                 // should be an even number.
-                                // default here overidden by fontsize.
-    int half = border_width/2;  // Center of the white lines used to draw the borders
-    char metadata_datum[6] = "WGS84";  // datum to display in metadata on top border
-    char seven_zeroes[8] = "0000000";
-    char five_zeroes[6] = "00000";
-    int short_width_pixels = 0;// Width of the unrotated five_zeroes label string in pixels.
-    int string_width_pixels = 0;// Width of the unrotated seven_zeroes label string in pixels.
-    int string_height_pixels = 0; // Height of the unrotated seven_zeroes label string in pixels
-    int outline_border_labels = TRUE;  // if true put an outline around the border labels
-    int border_foreground_color = 0x20;     // color of the map border, if shown 
-                                            // 0x08 is black.
-                                            // 0x20 is white.
-    int outline_border_labels_color = border_foreground_color; 
-                                // color of outline to draw around border labels
-                                // use color of border to help make text more legible.
+                                // The default here is overidden by the border fontsize.
 
 
     if (!long_lat_grid) // We don't wish to draw a map grid
         return;
  
     if (draw_labeled_grid_border==TRUE) { 
-        // Determine some parameters used in drawing the border.
-        string_width_pixels = get_rotated_label_text_length_pixels(w, seven_zeroes, FONT_BORDER);
-        short_width_pixels = get_rotated_label_text_length_pixels(w, five_zeroes, FONT_BORDER);
-        string_height_pixels = get_rotated_label_text_height_pixels(w, seven_zeroes, FONT_BORDER);
-        // Rotated text functions used to draw the border text add some 
-        // blank space at the bottom of the text so make the border wide enough 
-        // to compensate for this.
-        border_width = string_height_pixels + (string_height_pixels/2) + 1; 
-        // check to see if string_height_pixels is even
-        if ((float)string_height_pixels/2.0!=floor((float)string_height_pixels/2.0)) { 
-            border_width++; 
-        }
-        // we are using draw nice string to write the metadata in the top border, so 
-        // make sure the border is wide enough for it, even if the grid labels are small.
-        if (border_width < 14) { border_width = 14; }
+        // Determine how wide the border should be.
+        border_width = get_border_width(w);
         half = border_width/2; 
         // draw a white border around the map.
         (void)XSetLineAttributes(XtDisplay(w),gc,border_width,LineSolid,CapRound,JoinRound);
@@ -2507,13 +2567,11 @@ void draw_grid(Widget w) {
         (void)XDrawLine(XtDisplay(w),pixmap_final,gc,screen_width-half,0,screen_width-half,screen_height);
     }
 
-
     // Set the line width in the GC to 2 pixels wide for the larger
     // UTM grid and the complete Lat/Long grid.
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);
     (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
-
 
     if (coordinate_system == USE_UTM
             || coordinate_system == USE_UTM_SPECIAL
@@ -2525,15 +2583,7 @@ void draw_grid(Widget w) {
         draw_major_utm_mgrs_grid(w);
  
         // Draw minor UTM/MGRS zones
-        
-        ret_code = draw_minor_utm_mgrs_grid(w,
-                            border_width,
-                            metadata_datum,
-                            outline_border_labels,
-                            outline_border_labels_color,
-                            string_width_pixels,
-                            string_height_pixels,
-                            short_width_pixels);
+        ret_code = draw_minor_utm_mgrs_grid(w);
         if (ret_code) {
             fprintf(stderr,
                 "Encountered problem %d while calculating minor utm grid!\n",
@@ -2541,15 +2591,8 @@ void draw_grid(Widget w) {
         }
 
     }   // End of UTM grid section
-
     else { // Lat/Long coordinate system, draw lat/long lines
-
-        draw_complete_lat_lon_grid(w,
-            border_width,
-            metadata_datum,
-            outline_border_labels,
-            outline_border_labels_color);
-
+        draw_complete_lat_lon_grid(w);
     }   // End of Lat/Long section
 }  // End of draw_grid()
 

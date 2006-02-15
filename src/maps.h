@@ -138,6 +138,7 @@ void fill_in_new_alert_entries(Widget w, char *dir);
 void load_alert_maps(Widget w, char *dir);
 void  index_update_xastir(char *filename, unsigned long bottom, unsigned long top, unsigned long left, unsigned long right, int default_map_layer);
 void  index_update_ll(char *filename, double bottom, double top, double left, double right, int default_map_layer);
+extern void get_horizontal_datum(char *datum, int sizeof_datum);
 void draw_grid (Widget w);
 void Snapshot(void);
 extern int index_retrieve(char *filename, unsigned long *bottom,
