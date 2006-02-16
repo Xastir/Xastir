@@ -1001,11 +1001,13 @@ void msg_record_interval_tries(char *to_call_sign,
 
 
 
-// Returns the time_t for last_ack_sent, or 0 if the message doesn't
-// pass our tests or if it is a new message.
+// Returns: time_t for last_ack_sent
+//          -1 if the message doesn't pass our tests
+//           0 if it is a new message.
 //
 // Also returns the record number found if not passed a NULL pointer
 // in record_out or -1L if it's a new record.
+//
 time_t msg_data_add(char *call_sign, char *from_call, char *data,
         char *seq, char type, char from, long *record_out) {
     Message m_fill;
@@ -1022,28 +1024,24 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         fprintf(stderr,"msg_data_add start\n");
 //fprintf(stderr,"from:%s, to:%s, seq:%s\n", from_call, call_sign, seq);
 
-    // Check for some reasonable string in call_sign parameter
-    if (call_sign == NULL || strlen(call_sign) == 0) {
-        if (debug_level & 1)
-            fprintf(stderr,"msg_data_add():call_sign was NULL or empty, exiting\n");
-        return(0);
-    }
-//else
-//fprintf(stderr,"msg_data_add():call_sign: %s\n", call_sign);
- 
     // Set the default output condition.  We'll change this later if
     // we need to.
     if (record_out != NULL)
         *record_out = -1l;
 
+    // Check for some reasonable string in call_sign parameter
+    if (call_sign == NULL || strlen(call_sign) == 0) {
+        if (debug_level & 1)
+            fprintf(stderr,"msg_data_add():call_sign was NULL or empty, exiting\n");
+        return((time_t)-1l);
+    }
+//else
+//fprintf(stderr,"msg_data_add():call_sign: %s\n", call_sign);
+ 
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 2)
             fprintf(stderr,"msg_data_add:  Message length too long\n");
-
-        if (record_out != NULL)
-            *record_out = -1L;
-
-        return((time_t)0l);
+        return((time_t)-1l);
     }
 
     substr(m_fill.call_sign, call_sign, MAX_CALLSIGN);
@@ -14022,14 +14020,12 @@ if (reply_ack) { // For debugging, so we only have reply-ack
                             from,
                             &record); // id_fixed
 
-
         // Here we need to know if it is a new message or an old.
         // If we've already received it, we don't want to kick off
         // the alerts or pop up the Send Message dialog again.  If
         // last_ack_sent == (time_t)0, then it is a new message.
         //
-//        if (last_ack_sent == (time_t)0) {   // New message
-        if (record == -1l) { // Msg we've never received before
+        if (last_ack_sent == (time_t)0l && record == -1l) { // Msg we've never received before
 
             new_message_data += 1;
 
@@ -14073,6 +14069,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 // Does this 30-second check work?
         //
         if ( from != 'F'  // Not from a log file
+                && (last_ack_sent != (time_t)-1l)   // Not an error
                 && (last_ack_sent + 30 ) < sec_now()
                 && !satellite_ack_mode // Disable separate ack's for satellite work
                 && port != -1 ) {   // Not from a log file
@@ -14258,14 +14255,16 @@ else {
     if (!done && strlen(msg_id) > 0) {  // Other message with linenumber. This is
                                         // probably a message for someone else.
         long record_out;
+        time_t last_ack_sent;
 
+ 
         if (debug_level & 2)
             fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",
                 addr,
                 message,
                 orig_msg_id);
 
-        (void)msg_data_add(addr,
+        last_ack_sent = msg_data_add(addr,
             call,
             message,
             msg_id,
@@ -14280,7 +14279,7 @@ else {
         // this QSO.  Only call it for the first message line or the
         // first ack, not for any repeats.
         //
-        if (record_out == -1l) { // Msg we've never received before
+        if (last_ack_sent == (time_t)0l && record_out == -1l) { // Msg we've never received before
 //fprintf(stderr,"***check_popup_window 2\n");
 
             // Callsign check here also checks SSID for exact match
@@ -14296,6 +14295,7 @@ else {
         /* time frame. If if is a station I heard and all the conditions are ok    */
         /* spit the message out on the TNC -FG                                     */
         if (operate_as_an_igate>1
+                && last_ack_sent != (time_t)-1l
                 && from==DATA_VIA_NET
                 && !is_my_call(call,1) // Check SSID also
                 && !is_my_call(addr,1) // Check SSID also
@@ -14359,6 +14359,8 @@ if (reply_ack) { // For debugging, so we only have reply-ack
     //--------------------------------------------------------------------------
     if (!done) {                                   // message without line number
         long record_out;
+        time_t last_ack_sent;
+
 
         if (debug_level & 4)
             fprintf(stderr,"found Msg: |%s| |%s|\n",addr,message);
@@ -14366,7 +14368,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 //found Msg: |WE7U-14| |Directs=|
 
 
-        (void)msg_data_add(addr,
+        last_ack_sent = msg_data_add(addr,
             call,
             message,
             "",
@@ -14381,7 +14383,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
         // this QSO.  Only call it for the first message line or the
         // first ack, not for any repeats.
         //
-        if (record_out == -1l) { // Msg we've never received before
+        if (last_ack_sent == (time_t)0l && record_out == -1l) { // Msg we've never received before
 //fprintf(stderr,"***check_popup_window 3\n");
             if (check_popup_window(addr, 1) != -1) {
                 //update_messages(1); // Force an update
@@ -14393,7 +14395,9 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 // Check addr for my_call and !third_party, then check later in the
 // packet for my_call if it is a third_party message?  Depends on
 // what the packet looks like by this point.
-        if ( (message[0] != '?') && is_my_call(addr,1) ) { // Check SSID also
+        if ( last_ack_sent != (time_t)-1l
+                && (message[0] != '?')
+                && is_my_call(addr,1) ) { // Check SSID also
 
             // We no longer wish to have both popups and the Send
             // Group Message dialogs come up for every query
@@ -14486,7 +14490,14 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         time_t last_ack_sent;
         long record;
 
-        last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record);
+        last_ack_sent = msg_data_add(addr,
+            call,
+            message,
+            msg_id,
+            MESSAGE_MESSAGE,
+            from,
+            &record);
+
         new_message_data += 1;
 
         // Note that the check_popup_window() function will
@@ -14494,42 +14505,45 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         // this QSO.  Only call it for the first message line or the
         // first ack, not for any repeats.
         //
-        if (record == -1l) { // Msg we've never received before
+        if (last_ack_sent == (time_t)0l && record == -1l) { // Msg we've never received before
 //fprintf(stderr,"***check_popup_window 4\n");
             (void)check_popup_window(call, 2);
             //update_messages(1); // Force an update
         }
 
-        if (sound_play_new_message)
-            play_sound(sound_command,sound_new_message);
+        if (last_ack_sent != (time_t)-1l) {
 
-        // Only send an ack or autoresponse once per 30 seconds
-        if ( (from != 'F')
-                && ( (last_ack_sent + 30) < sec_now()) ) {
+            if (sound_play_new_message)
+                play_sound(sound_command,sound_new_message);
 
-            //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
+            // Only send an ack or autoresponse once per 30 seconds
+            if ( (from != 'F')
+                    && ( (last_ack_sent + 30) < sec_now()) ) {
 
-            // Record the fact that we're sending an ack now
-            msg_update_ack_stamp(record);
+                //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
-            pad_callsign(from_call,call);         /* ack the message */
-            xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
+                // Record the fact that we're sending an ack now
+                msg_update_ack_stamp(record);
+
+                pad_callsign(from_call,call);         /* ack the message */
+                xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
 
 // Nice to return via the reverse path here?  No!  Better to use the
 // default paths instead of a calculated reverse path.
 
-            transmit_message_data(call,ack,NULL);
-            if (auto_reply == 1) {
-                char temp[300];
-
-                xastir_snprintf(temp, sizeof(temp), "AA:%s", auto_reply_message);
-
-                if (debug_level & 2)
-                    fprintf(stderr,"Send autoreply to <%s> from <%s> :%s\n",
-                        call, my_callsign, temp);
-
-                if (!is_my_call(call,1)) // Check SSID also
-                    output_message(my_callsign, call, temp, "");
+                transmit_message_data(call,ack,NULL);
+                if (auto_reply == 1) {
+                    char temp[300];
+    
+                    xastir_snprintf(temp, sizeof(temp), "AA:%s", auto_reply_message);
+    
+                    if (debug_level & 2)
+                        fprintf(stderr,"Send autoreply to <%s> from <%s> :%s\n",
+                            call, my_callsign, temp);
+    
+                    if (!is_my_call(call,1)) // Check SSID also
+                        output_message(my_callsign, call, temp, "");
+                }
             }
         }
         done = 1;

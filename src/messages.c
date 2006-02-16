@@ -749,7 +749,7 @@ void output_message(char *from, char *to, char *message, char *path) {
 // this lock.
 end_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
-                msg_data_add(to,
+                (void)msg_data_add(to,
                     from,
                     message_out,
                     message_pool[i].seq,
