@@ -907,6 +907,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
     //
     if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         fprintf(stderr,"x_spider: Can't open socket for listening\n");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         exit(1);
     }
 
@@ -914,6 +915,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
     //
     if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
         fprintf(stderr,"x_spider: Couldn't set socket non-blocking\n");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
     }
 
     // Set up to reuse the port number (good for debug so we can
@@ -926,6 +928,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             (char *)&sendbuff,
             sizeof(sendbuff)) < 0) {
         fprintf(stderr,"x_spider: Couldn't set socket REUSEADDR\n");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
     }
 
     // Bind our local address so that the client can send to us.
@@ -939,6 +942,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             (struct sockaddr *)&serv_addr,
             sizeof(serv_addr)) < 0) {
         fprintf(stderr,"x_spider: Can't bind local address\n");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         exit(1);
     }
 
@@ -991,6 +995,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
                 // of the loop.
                 //
                 fprintf(stderr,"x_spider: Accept error: %d\n", errno);
+                fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
                 goto finis;
             }
         }
@@ -1125,6 +1130,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         //
         if (fcntl(p->to_parent[0], F_SETFL, O_NONBLOCK) < 0) {
             fprintf(stderr,"x_spider: Couldn't set read-end of pipe_to_parent non-blocking\n");
+            fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         }
 
 finis:
@@ -1183,6 +1189,7 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
     if (sock < 0) {
         fprintf(stderr, "Error: Opening socket");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         return;
     }
 
@@ -1195,6 +1202,7 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
     if (bind(sock, (struct sockaddr *)&server, length) < 0) {
         fprintf(stderr, "Error: Binding");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         return;
     }
 
@@ -1465,6 +1473,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         //
         if (fcntl(pipe_xastir_to_tcp_server, F_SETFL, O_NONBLOCK) < 0) {
             fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_tcp_server non-blocking\n");
+            fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         }
 
         // Go into an infinite loop here which restarts the
@@ -1494,6 +1503,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
     //
     if (fcntl(pipe_tcp_server_to_xastir, F_SETFL, O_NONBLOCK) < 0) {
         fprintf(stderr,"x_spider: Couldn't set read-end of pipe_tcp_server_to_xastir non-blocking\n");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
     }
 
 //    // Set write-end of pipe to be non-blocking.
@@ -1610,6 +1620,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
     //
     if (fcntl(pipe_udp_server_to_xastir, F_SETFL, O_NONBLOCK) < 0) {
         fprintf(stderr,"x_spider: Couldn't set read-end of pipe_udp_server_to_xastir non-blocking\n");
+        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
     }
 
 //    // Set write-end of pipe to be non-blocking.
