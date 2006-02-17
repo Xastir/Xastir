@@ -138,7 +138,7 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
 
     if ((*p_station) == NULL) {                         // default start value
         if (type == LST_TIM)
-            (*p_station) = t_last;
+            (*p_station) = t_newest;
         else
             (*p_station) = n_first;
     }
@@ -231,14 +231,14 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
                     if (((*p_station)->flag & ST_ACTIVE) != 0)  // ignore deleted objects
                         found = (char)TRUE;
                     else
-                        (*p_station) = (*p_station)->t_prev;
+                        (*p_station) = (*p_station)->t_older;
                 }
             else
                 while (!found && (*p_station) != NULL) {
                     if (((*p_station)->flag & ST_ACTIVE) != 0)
                         found = (char)TRUE;
                     else
-                        (*p_station) = (*p_station)->t_next;
+                        (*p_station) = (*p_station)->t_newer;
                 }
             break;
         case LST_OBJ:

@@ -147,8 +147,8 @@ int station_count;              // number of stored stations
 int station_count_save = 0;     // old copy of above
 DataRow *n_first;               // pointer to first element in name sorted station list
 DataRow *n_last;                // pointer to last  element in name sorted station list
-DataRow *t_first;               // pointer to first element in time sorted station list (oldest)
-DataRow *t_last;                // pointer to last  element in time sorted station list (newest)
+DataRow *t_oldest;              // pointer to first element in time sorted station list (oldest)
+DataRow *t_newest;              // pointer to last  element in time sorted station list (newest)
 time_t last_station_remove;     // last time we did a check for station removing
 time_t last_sec,curr_sec;       // for comparing if seconds in time have changed
 int next_time_sn;               // time serial number for unique time index
@@ -3274,7 +3274,7 @@ void display_file(Widget w) {
     t_old = now - sec_old;        // precalc compare times
     t_clr = now - sec_clear;
     temp_sec_heard = 0l;
-    p_station = t_first;                // start with oldest station, have newest on top at t_last
+    p_station = t_oldest;                // start with oldest station, have newest on top at t_newest
     while (p_station != NULL) {
         if (debug_level & 64) {
             fprintf(stderr,"display_file: Examining %s\n", p_station->call_sign);
@@ -3352,7 +3352,7 @@ void display_file(Widget w) {
         else if (debug_level & 64) {
             fprintf(stderr,"display_file: ignored deleted %s\n", p_station->call_sign);
         }
-        p_station = p_station->t_next;  // next station
+        p_station = p_station->t_newer;  // next station
     }
 
     draw_ruler(w);
@@ -7683,8 +7683,8 @@ void init_station_data(void) {
     station_count = 0;                  // empty station list
     n_first = NULL;                     // pointer to next element in name sorted list
     n_last  = NULL;                     // pointer to previous element in name sorted list
-    t_first = NULL;                     // pointer to oldest element in time sorted list
-    t_last  = NULL;                     // pointer to newest element in time sorted list
+    t_oldest = NULL;                     // pointer to oldest element in time sorted list
+    t_newest  = NULL;                     // pointer to newest element in time sorted list
     last_sec = sec_now();               // check value for detecting changed seconds in time
     next_time_sn = 0;                   // serial number for unique time index
     current_trail_color = 0x00;         // first trail color used will be 0x01
@@ -7879,13 +7879,13 @@ abort();    // Cause a core dump at this point
  */
 void remove_time(DataRow *p_rem) {      // todo: return pointer to next element
 
-    if (p_rem->t_prev == NULL) { // Appears to be first element in list
+    if (p_rem->t_older == NULL) { // Appears to be first element in list
 
-        if (t_first == p_rem) {  // Yes, head of list
+        if (t_oldest == p_rem) {  // Yes, head of list
 
             // Make list head point to 2nd element in list (or NULL)
             // so that we can delete the current record.
-            t_first = p_rem->t_next;
+            t_oldest = p_rem->t_newer;
         }
         else {  // No, not first element in list.  Problem!  The
                 // list pointers are inconsistent for some reason.
@@ -7893,29 +7893,29 @@ void remove_time(DataRow *p_rem) {      // todo: return pointer to next element
                 // pointers.
 
             fprintf(stderr,
-                "remove_time(): ERROR: p->t_prev == NULL but p != t_first\n");
+                "remove_time(): ERROR: p->t_older == NULL but p != t_oldest\n");
 
 abort();    // Cause a core dump at this point
 // Perhaps we could do some repair to the list pointers here?  Start
 // at the other end of the chain and navigate back to this end, then
-// fix up t_first to point to it?  This is at the risk of a memory
+// fix up t_oldest to point to it?  This is at the risk of a memory
 // leak, but at least Xastir might continue to run.
 
         }
     }
     else {  // Not the first element in the list.  Fix up pointers
             // to skip the current record.
-        p_rem->t_prev->t_next = p_rem->t_next;
+        p_rem->t_older->t_newer = p_rem->t_newer;
     }
 
 
-    if (p_rem->t_next == NULL) { // Appears to be last element in list
+    if (p_rem->t_newer == NULL) { // Appears to be last element in list
 
-        if (t_last == p_rem) {   // Yes, tail of list
+        if (t_newest == p_rem) {   // Yes, tail of list
 
             // Make list tail point to previous element in list (or
             // NULL) so that we can delete the current record.
-            t_last = p_rem->t_prev;
+            t_newest = p_rem->t_older;
         }
         else {  // No, not last element in list.  Problem!  The
                 // list pointers are inconsistent for some reason.
@@ -7923,19 +7923,19 @@ abort();    // Cause a core dump at this point
                 // pointers.
 
             fprintf(stderr,
-                "remove_time(): ERROR: p->t_next == NULL but p != t_last\n");
+                "remove_time(): ERROR: p->t_newer == NULL but p != t_newest\n");
 
 abort();    // Cause a core dump at this point
 // Perhaps we could do some repair to the list pointers here?  Start
 // at the other end of the chain and navigate back to this end, then
-// fix up t_last to point to it?  This is at the risk of a memory
+// fix up t_newest to point to it?  This is at the risk of a memory
 // leak, but at least Xastir might continue to run.
 
         }
     }
     else {  // Not the last element in the list.  Fix up pointers to
             // skip the current record.
-        p_rem->t_next->t_prev = p_rem->t_prev;
+        p_rem->t_newer->t_older = p_rem->t_older;
     }
 }
 
@@ -7985,35 +7985,35 @@ void insert_name(DataRow *p_new, DataRow *p_name) {
 /*
  *  Insert existing element into time ordered list before p_time
  *  The p_new record ends up being on the "older" side of p_time when
- *  all done inserting (closer in the list to the t_first pointer).
+ *  all done inserting (closer in the list to the t_oldest pointer).
  */
 void insert_time(DataRow *p_new, DataRow *p_time) {
 
     // Set up pointer to next record (or NULL), sorted by time
-    p_new->t_next = p_time;
+    p_new->t_newer = p_time;
 
     if (p_time == NULL) {               // add to end of list (becomes newest station)
 
-        p_new->t_prev = t_last;         // connect to previous end of list
+        p_new->t_older = t_newest;         // connect to previous end of list
 
-        if (t_last == NULL)             // if list empty, create list
-            t_first = p_new;            // it's now our only station on the list
+        if (t_newest == NULL)             // if list empty, create list
+            t_oldest = p_new;            // it's now our only station on the list
         else
-            t_last->t_next = p_new;     // list not empty, link original last record to our new one
+            t_newest->t_newer = p_new;     // list not empty, link original last record to our new one
 
-        t_last = p_new;                 // end of list (newest record pointer) points to our new record
+        t_newest = p_new;                 // end of list (newest record pointer) points to our new record
     }
 
     else {                            // Else we're inserting into the middle of the list somewhere
 
-        p_new->t_prev = p_time->t_prev;
+        p_new->t_older = p_time->t_older;
 
-        if (p_time->t_prev == NULL)     // add to begin of list (new record becomes oldest station)
-            t_first = p_new;
+        if (p_time->t_older == NULL)     // add to begin of list (new record becomes oldest station)
+            t_oldest = p_new;
         else
-            p_time->t_prev->t_next = p_new; // else 
+            p_time->t_older->t_newer = p_new; // else 
 
-        p_time->t_prev = p_new;
+        p_time->t_older = p_new;
     }
 }
 
@@ -8047,8 +8047,8 @@ void delete_station_memory(DataRow *p_del) {
         p_new->call_sign[0] = '\0';     // just to be sure
         p_new->n_next = NULL;
         p_new->n_prev = NULL;
-        p_new->t_next = NULL;
-        p_new->t_prev = NULL;
+        p_new->t_newer = NULL;
+        p_new->t_older = NULL;
         insert_name(p_new,p_name);      // insert element into name ordered list
         insert_time(p_new,p_time);      // insert element into time ordered list
     }
@@ -8425,16 +8425,16 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
 int search_station_time(DataRow **p_time, time_t heard, int serial) {
     int ok = 1;
 
-    (*p_time) = t_last;                                 // newest station
+    (*p_time) = t_newest;                                 // newest station
     if (heard == 0) {                                   // we want the newest station
-        if (t_last == NULL)
+        if (t_newest == NULL)
             ok = 0;                                     // empty list
     }
     else {
         while((*p_time) != NULL) {                      // check time
             if ((*p_time)->sec_heard <= heard)          // compare
                 break;                                  // found time or earlier
-            (*p_time) = (*p_time)->t_prev;              // next element
+            (*p_time) = (*p_time)->t_older;              // next element
         }
         // we now probably have found the entry
         if ((*p_time) != NULL && (*p_time)->sec_heard == heard) {
@@ -8445,7 +8445,7 @@ int search_station_time(DataRow **p_time, time_t heard, int serial) {
                         break;                          // found it (same time, maybe earlier SN)
                     if ((*p_time)->sec_heard < heard)   // compare
                         break;                          // found it (earlier time)
-                    (*p_time) = (*p_time)->t_prev;      // consider next element
+                    (*p_time) = (*p_time)->t_older;      // consider next element
                 }
                 if ((*p_time) == NULL || (*p_time)->sec_heard != heard || (*p_time)->time_sn != serial)
                     ok = 0;                             // no perfect match
@@ -8505,9 +8505,9 @@ int prev_station_name(DataRow **p_curr) {
 int next_station_time(DataRow **p_curr) {
 
     if ((*p_curr) == NULL)
-        (*p_curr) = t_first;    // Grab oldest station if NULL passed to us???
+        (*p_curr) = t_oldest;    // Grab oldest station if NULL passed to us???
     else
-        (*p_curr) = (*p_curr)->t_next;  // Else grab newer station
+        (*p_curr) = (*p_curr)->t_newer;  // Else grab newer station
     if ((*p_curr) != NULL)
         return(1);
     else
@@ -8524,9 +8524,9 @@ int next_station_time(DataRow **p_curr) {
 int prev_station_time(DataRow **p_curr) {
     
     if ((*p_curr) == NULL)
-        (*p_curr) = t_last; // Grab newest station if NULL passed to us???
+        (*p_curr) = t_newest; // Grab newest station if NULL passed to us???
     else
-        (*p_curr) = (*p_curr)->t_prev;
+        (*p_curr) = (*p_curr)->t_older;
     if ((*p_curr) != NULL)
         return(1);
     else
@@ -8761,7 +8761,7 @@ void delete_all_stations(void) {
  *
  */
 void check_station_remove(int curr_sec) {
-    DataRow *p_station, *p_station_t_next;
+    DataRow *p_station, *p_station_t_newer;
     time_t t_rem;
     int done = 0;
 
@@ -8788,12 +8788,12 @@ void check_station_remove(int curr_sec) {
         t_rem = curr_sec - (1 * 15);
 #endif
 
-        p_station = t_first;    // Oldest station in our list
+        p_station = t_oldest;    // Oldest station in our list
         while (p_station != NULL && !done) {
 
             // Save a pointer to the next record in time-order
             // before we delete a record and lose it.
-            p_station_t_next = p_station->t_next;
+            p_station_t_newer = p_station->t_newer;
 
             if (p_station->sec_heard < t_rem) {
 
@@ -8844,7 +8844,7 @@ void check_station_remove(int curr_sec) {
             else {
                 done++;                                         // all other stations are newer...
             }
-            p_station = p_station_t_next;
+            p_station = p_station_t_newer;
         }
         last_station_remove = curr_sec;
     }
