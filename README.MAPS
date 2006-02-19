@@ -605,7 +605,9 @@ Getting Maps and other Data Files for Xastir:
     It is relatively easy to create your own shapefile maps (for example,
     if you want to highlight a walk-a-thon course).  There are several
     methods available with Xastir:
+
     1. Use GPSMan to download a GPS track to a shapefile.
+
     2. Save a station tracklog of an actual station or an object that
        you manually move along the course.  When you select Station Info,
        you are presented with the option to save the track, which gets
@@ -617,7 +619,27 @@ Getting Maps and other Data Files for Xastir:
 	BEGIN_RECORD {key=""; lanes=4; color=12; name=""; filled=0; 
            pattern=1; display_level=8192; label_level=32; symbol=""}
        This makes the track width 4 and red (12).
-    3. You can also use the shapelib tools (shpproj was presented earlier)
+
+    3. You can use xastir's "object" capability to generate shapefile maps.
+       a) Turn off object transmission using 
+          Interface->Disable Transmit:Objects
+       b) Put objects where you want.  Set the display symbol as you like it.
+       c) run the "object2shp.pl" script in the scripts directory
+           (/usr/local/lib/xastir/object2shp.pl in most installations)
+          to generate a shapefile:
+            /usr/local/lib/xastir/object2shp.pl ~/.xastir/object.log myshape
+          This requires the four shapelib utilities "dbfcreate", "shpcreate",
+          "shpadd" and "dbfadd" as described below.
+       d) EXIT XASTIR
+       e) REMOVE ~/.xastir/config/object.log
+       f) move "myshape.shp," "myshape.shx," and "myshape.dbf" to your maps
+          directory.
+       g) restart xastir.  
+       h) select your newmap in the map chooser.
+      Creating maps in this way is basically just a scripted version of the
+      manual map generation technique in (4) below.
+
+    4. You can also use the shapelib tools (shpproj was presented earlier)
        to manually create a shapefile.  For example, the following 
        marks out the mile-posts for a marathon, using tgrlpt.dbfawk
        (US Census Tiger/Line landmark points with an APRS(tm) symbol extension) 
