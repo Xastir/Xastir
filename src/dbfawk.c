@@ -200,6 +200,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         // Check for hidden files or directories
         if (e->d_name[0] == '.') {
             // Hidden, skip it
+            free(path);
             continue;
         }
 
@@ -213,11 +214,13 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
 
         if (stat(fullpath, &nfile) != 0) {
             // Couldn't stat file
+            free(path);
             continue;
         }
 
         if ((nfile.st_mode & S_IFMT) != S_IFREG) {
             // Not a regular file
+            free(path);
             continue;
         }
  
