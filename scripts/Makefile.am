@@ -14,6 +14,7 @@ pkglib_SCRIPTS = \
     kiss-off.pl \
     mapblast2geo.pl \
     mapfgd.pl \
+    object2shp.pl \
     overlay.pl \
     ozi2geo.pl \
     permutations.pl \
