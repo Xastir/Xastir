@@ -87,6 +87,10 @@ while (<INOBJ>)
     $long=substr($_,27,9);
     $sym=substr($_,36,1);
 
+#sanity check --- don't try to convert if the line doesn't conform to what
+# it should, or if it represents a killed object.  Sometimes objects get
+# commented out with #, etc.
+    next if ($semicolon ne ";");
     next if ($live_or_dead eq "_");
 
     $lat_deg=substr($lat,0,2);
