@@ -1239,10 +1239,35 @@ void draw_complete_lat_lon_grid(Widget w) {
 void draw_major_utm_mgrs_grid(Widget w) {
     int ii;
 
+// need to move metadata to its own function and put it up after grids have been drawn.
+//*******
+    // variables for metadata in grid border
+    long xx2, yy2;  // coordinates of screen corners used for metadata
+    int border_width;           // Width of the border to draw labels into.
+    double easting, northing;   // Values used in border metadata.
+    int x, y;                   // Screen coordinates for border labels.
+    char zone_str[10];
+    char zone_str2[10];
+    char metadata_datum[6];
+    char grid_label[25];        // String to draw labels on grid lines
+    char grid_label1[25];       // String to draw latlong metadata 
+    char top_label[180];        // String to draw metadata on top border
+
+    // variables to support components of MGRS strings in the metadata
+    char mgrs_zone[4] = "   ";   // MGRS zone letter
+    char mgrs_eastingL[3] = "  "; 
+    char mgrs_northingL[3] = "  ";
+    unsigned int int_utmEasting;
+    unsigned int int_utmNorthing; 
+    char mgrs_space_string[4] = "   ";
+    int mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+    char mgrs_ul_digraph[3] = "  ";  // MGRS digraph for upper left corner of screen
+    char mgrs_lr_digraph[3] = "  ";  // MGRS digraph for lower right corner of screen
+
  
     if (!long_lat_grid) // We don't wish to draw a map grid
         return;
-
+    
     // Vertical lines:
 
     // Draw the vertical vectors (except for the irregular regions
@@ -1328,6 +1353,127 @@ void draw_major_utm_mgrs_grid(Widget w) {
 
     // Draw the prime meridian in the same manner
     draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final);
+
+    // add metadata and labels
+    if (draw_labeled_grid_border==TRUE && scale_x > 3000) { 
+        // Determine the width of the border
+        border_width = get_border_width(w);
+        // Find out what the map datum is.
+        get_horizontal_datum(metadata_datum, sizeof(metadata_datum));
+
+        // Put metadata in top border.
+        // find location of upper left corner of map, convert to UTM
+        xx2 = x_long_offset  + (border_width * scale_x);
+        yy2 = y_lat_offset   + (border_width * scale_y);
+        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+            xx2, yy2);
+        if (coordinate_system == USE_MGRS) {
+            convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                mgrs_northingL,  sizeof(mgrs_northingL), 
+                &int_utmEasting, &int_utmNorthing, 
+                xx2, yy2,
+                0, mgrs_space_string, strlen(mgrs_space_string));
+            xastir_snprintf(mgrs_ul_digraph, sizeof(mgrs_ul_digraph),
+                           "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
+            xastir_snprintf(grid_label,
+                sizeof(grid_label),
+                "%s %s %05.0f %05.0f",
+                mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
+        } 
+        else {
+            xastir_snprintf(grid_label,
+                sizeof(grid_label),
+                "%s %07.0f %07.0f",
+                zone_str,easting,northing);
+        }
+        // find location of lower right corner of map, convert to UTM
+        xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
+        yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+        convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+            xx2, yy2);
+        if (coordinate_system == USE_MGRS) {
+            convert_xastir_to_MGRS_str_components(mgrs_zone, strlen(mgrs_zone), 
+                mgrs_eastingL,   sizeof(mgrs_eastingL), 
+                mgrs_northingL,  sizeof(mgrs_northingL), 
+                &int_utmEasting, &int_utmNorthing, 
+                xx2, yy2,
+                0, mgrs_space_string, strlen(mgrs_space_string));
+            xastir_snprintf(mgrs_lr_digraph, sizeof(mgrs_lr_digraph),
+                           "%c%c", mgrs_eastingL[0], mgrs_northingL[0]);
+            xastir_snprintf(grid_label1,
+                sizeof(grid_label1),
+                "%s %s %05.0f %05.0f",
+                mgrs_zone,mgrs_lr_digraph,(float)int_utmEasting,(float)int_utmNorthing);
+           if (strcmp(mgrs_lr_digraph,mgrs_ul_digraph)==0) {
+                 mgrs_single_digraph = TRUE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+           } 
+           else {
+                 mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+           }
+        } 
+        else {
+            xastir_snprintf(grid_label1,
+                sizeof(grid_label1),
+                "%s %07.0f %07.0f",
+                zone_str,easting,northing);
+        }
+        // Write metadata on upper border of map.
+        //"XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum. ",
+        xastir_snprintf(top_label,
+            sizeof(top_label),
+            langcode("MDATA003"),
+            grid_label,grid_label1,metadata_datum);
+        draw_rotated_label_text_to_target (w, 270, 
+            border_width+2,
+            border_width-1,
+            sizeof(top_label),colors[0x10],top_label,FONT_BORDER,
+            pixmap_final,
+            outline_border_labels, colors[outline_border_labels_color]);
+        // Crudely identify zone boundaries by 
+        // iterating across bottom border.
+        xastir_snprintf(zone_str2,
+            sizeof(zone_str2),
+            "%s"," ");
+        for (x=1; x<(screen_width - border_width); x++) {
+            xx2 = x_long_offset  + (x * scale_x);
+            yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+            convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+               xx2, yy2);
+            zone_str[strlen(zone_str)-1] = '\0';
+            if (strcmp(zone_str,zone_str2) !=0) {
+                draw_rotated_label_text_to_target (w, 270, 
+                    x + 1,
+                    screen_height,
+                    sizeof(zone_str),colors[0x10],zone_str,FONT_BORDER,
+                    pixmap_final,
+                    outline_border_labels, colors[outline_border_labels_color]);
+            }
+            xastir_snprintf(zone_str2,
+                sizeof(zone_str2),
+                "%s",zone_str);
+        } 
+        // Crudely identify zone letters by iterating down left border
+        for (y=(border_width*2); y<(screen_height - border_width); y++) {
+            xx2 = x_long_offset   + (border_width * scale_x);
+            yy2 = y_lat_offset   + (y * scale_y);
+            convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
+               xx2, yy2);
+            zone_str[0] = zone_str[strlen(zone_str)-1];
+            zone_str[1] = '\0';
+            if (strcmp(zone_str,zone_str2) !=0) {
+                draw_rotated_label_text_to_target (w, 270, 
+                    1,
+                    y,
+                    sizeof(zone_str),colors[0x10],zone_str,FONT_BORDER,
+                    pixmap_final,
+                   outline_border_labels, colors[outline_border_labels_color]);
+            }
+            xastir_snprintf(zone_str2,
+                sizeof(zone_str2),
+                "%s",zone_str);
+        } 
+    } // end if draw labeled border
  
     // Set the line width and style in the GC to 1 pixel wide for
     // drawing the smaller grid
