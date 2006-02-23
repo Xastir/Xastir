@@ -4630,6 +4630,8 @@ int fetch_remote_file(char *fileimg, char *local_filename) {
         if (CURLE_OK != res) {
             fprintf(stderr, "curl told us %d\n", res);
             fprintf(stderr, "curlerr: %s\n", curlerr);
+            fprintf(stderr,
+                "Perhaps a timeout? Try increasing \"Internet Map Timout\".\n");
         }
 
         if (ftpfile.stream)
@@ -4642,6 +4644,9 @@ int fetch_remote_file(char *fileimg, char *local_filename) {
 
     } else { 
         fprintf(stderr,"Couldn't download the file %s\n", fileimg);
+        fprintf(stderr,
+            "Perhaps a timeout? Try increasing \"Internet Map Timout\".\n");
+ 
         return(1);
     }
     return(0);  // Success!
@@ -4664,6 +4669,9 @@ int fetch_remote_file(char *fileimg, char *local_filename) {
 
     if ( system(tempfile) ) {   // Go get the file
         fprintf(stderr,"Couldn't download the file\n");
+        fprintf(stderr,
+            "Perhaps a timeout? Try increasing \"Internet Map Timout\".\n");
+ 
         return(1);
     }
     return(0);  // Success!
