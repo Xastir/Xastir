@@ -7881,16 +7881,16 @@ void remove_time(DataRow *p_rem) {      // todo: return pointer to next element
 
     if (p_rem->t_older == NULL) { // Appears to be first element in list
 
-        if (t_oldest == p_rem) {  // Yes, head of list
+        if (t_oldest == p_rem) {  // Yes, head of list (oldest)
 
-            // Make list head point to 2nd element in list (or NULL)
+            // Make oldest list head point to 2nd element in list (or NULL)
             // so that we can delete the current record.
             t_oldest = p_rem->t_newer;
         }
-        else {  // No, not first element in list.  Problem!  The
-                // list pointers are inconsistent for some reason.
-                // The chain has been broken and we have dangling
-                // pointers.
+        else {  // No, not first (oldest) element in list.  Problem!
+                // The list pointers are inconsistent for some
+                // reason.  The chain has been broken and we have
+                // dangling pointers.
 
             fprintf(stderr,
                 "remove_time(): ERROR: p->t_older == NULL but p != t_oldest\n");
@@ -7903,21 +7903,22 @@ abort();    // Cause a core dump at this point
 
         }
     }
-    else {  // Not the first element in the list.  Fix up pointers
-            // to skip the current record.
+    else {  // Not the first (oldest) element in the list.  Fix up
+            // pointers to skip the current record.
         p_rem->t_older->t_newer = p_rem->t_newer;
     }
 
 
-    if (p_rem->t_newer == NULL) { // Appears to be last element in list
+    if (p_rem->t_newer == NULL) { // Appears to be last (newest) element in list
 
-        if (t_newest == p_rem) {   // Yes, tail of list
+        if (t_newest == p_rem) {   // Yes, head of list (newest)
 
-            // Make list tail point to previous element in list (or
-            // NULL) so that we can delete the current record.
+            // Make newest list head point to previous element in
+            // list (or NULL) so that we can delete the current
+            // record.
             t_newest = p_rem->t_older;
         }
-        else {  // No, not last element in list.  Problem!  The
+        else {  // No, not newest element in list.  Problem!  The
                 // list pointers are inconsistent for some reason.
                 // The chain has been broken and we have dangling
                 // pointers.
@@ -7933,8 +7934,8 @@ abort();    // Cause a core dump at this point
 
         }
     }
-    else {  // Not the last element in the list.  Fix up pointers to
-            // skip the current record.
+    else {  // Not the newest element in the list.  Fix up pointers
+            // to skip the current record.
         p_rem->t_newer->t_older = p_rem->t_older;
     }
 }
@@ -7986,6 +7987,7 @@ void insert_name(DataRow *p_new, DataRow *p_name) {
  *  Insert existing element into time ordered list before p_time
  *  The p_new record ends up being on the "older" side of p_time when
  *  all done inserting (closer in the list to the t_oldest pointer).
+ *  If p_time == NULL, insert at newest end of list.
  */
 void insert_time(DataRow *p_new, DataRow *p_time) {
 
@@ -8008,7 +8010,7 @@ void insert_time(DataRow *p_new, DataRow *p_time) {
 
         p_new->t_older = p_time->t_older;
 
-        if (p_time->t_older == NULL)     // add to begin of list (new record becomes oldest station)
+        if (p_time->t_older == NULL)     // add to end of list (new record becomes oldest station)
             t_oldest = p_new;
         else
             p_time->t_older->t_newer = p_new; // else 
@@ -8025,6 +8027,8 @@ void insert_time(DataRow *p_new, DataRow *p_time) {
  *  Free station memory for one entry
  */
 void delete_station_memory(DataRow *p_del) {
+    if (p_del == NULL)
+        return;
     remove_name(p_del);
     remove_time(p_del);
     free(p_del);
@@ -8037,12 +8041,15 @@ void delete_station_memory(DataRow *p_del) {
 
 /*
  *  Create new uninitialized element in station list
- *  and insert it before p_name and p_time entries
+ *  and insert it before p_name after p_time entries.
+ *
+ *  Returns NULL if malloc error.
  */
 /*@null@*/ DataRow *insert_new_station(DataRow *p_name, DataRow *p_time) {
     DataRow *p_new;
 
     p_new = (DataRow *)malloc(sizeof(DataRow));
+
     if (p_new != NULL) {                // we really got the memory
         p_new->call_sign[0] = '\0';     // just to be sure
         p_new->n_next = NULL;
@@ -8052,8 +8059,10 @@ void delete_station_memory(DataRow *p_del) {
         insert_name(p_new,p_name);      // insert element into name ordered list
         insert_time(p_new,p_time);      // insert element into time ordered list
     }
-    if (p_new == NULL)
+    else {  // p_new == NULL
         fprintf(stderr,"ERROR: we got no memory for station storage\n");
+    }
+
     return(p_new);                      // return pointer to new element
 }
 
@@ -8063,7 +8072,9 @@ void delete_station_memory(DataRow *p_del) {
 
 /*
  *  Create new initialized element for call in station list
- *  and insert it before p_name and p_time entries
+ *  and insert it before p_name after p_time entries.
+ *
+ *  Returns NULL if mallc error.
  */
 /*@null@*/ DataRow *add_new_station(DataRow *p_name, DataRow *p_time, char *call) {
     DataRow *p_new;
@@ -8707,7 +8718,9 @@ void station_del_ptr(DataRow *p_name) {
             free(p_name->node_path_ptr);
         if (p_name->tactical_call_sign != NULL)
             free(p_name->tactical_call_sign);
-        delete_station_memory(p_name);  // free memory
+        delete_station_memory(p_name);  // free memory, update
+                                        // linked lists, update
+                                        // station_count
 
 //fprintf(stderr,"db.c:station_del_ptr(): Deleted station\n");
 
@@ -8766,7 +8779,7 @@ void check_station_remove(int curr_sec) {
     int done = 0;
 
 
-    // Only run through this routine ever STATION_REMOVE_CYCLE
+    // Run through this routine every STATION_REMOVE_CYCLE
     // seconds (currently every five minutes)
 #ifdef EXPIRE_DEBUG
     // Check every 15 seconds, useful for debug only.
