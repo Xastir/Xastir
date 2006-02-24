@@ -132,12 +132,14 @@ time_t last_message_remove;     // last time we did a check for message removing
 char GUARD_BAND_FOUR[GUARD_SIZE];
 ////////////////////////////////////
 
-// Save most recent 100 packets in an array called packet_data_string[]
+//// Save most recent 100 packets in an array called packet_data_string[]
 #define MAX_PACKET_DATA_DISPLAY 100
-char packet_data_string[MAX_PACKET_DATA_DISPLAY * (MAX_LINE_SIZE+1)];
-static int  packet_data_display = MAX_PACKET_DATA_DISPLAY;   // Last line filled in array (high water mark)
 int  redraw_on_new_packet_data;
-
+char packet_data_string[MAX_PACKET_DATA_DISPLAY][MAX_LINE_SIZE+1];
+int first_line=-1;
+int next_line=0;
+int ncharsdel=0;
+int nlinesadd=0;
 
 ///////////////////////////////////
 char GUARD_BAND_ONE[GUARD_SIZE];
@@ -12677,7 +12679,7 @@ void display_packet_data(void) {
             && (redraw_on_new_packet_data !=0)) {
         int pos;
         int last_char;
-
+        int i;
 
         // Find out the last character position in the dialog text
         // area.
@@ -12686,19 +12688,59 @@ void display_packet_data(void) {
         pos=0;
         XtVaSetValues(Display_data_text,XmNcursorPosition,&pos,NULL);
 
-        // Clear the dialog text area.
-        // Known with some versions of Motif to have a memory leak:
-        //XmTextSetString(Display_data_text,"");
-        XmTextReplace(Display_data_text,
-            (XmTextPosition) 0,
-            last_char,
-            packet_data_string);
+        //fprintf(stderr,"In display_packet_data: first_line=%d,next_line=%d,ncharsdel=%d,nlinesadd=%d\n",first_line,next_line,ncharsdel,nlinesadd);
 
-        // Find out the last character position in the dialog text
-        // area.
-        last_char = XmTextGetLastPosition(Display_data_text);
-
-        XmTextShowPosition(Display_data_text,last_char);
+        if (first_line != -1) { // there is data in the array
+            if (last_char == 0 || ncharsdel>=last_char) { 
+                //fprintf(stderr,"  Starting from clean slate...\n");
+                // but there is no text in the dialog or more chars to delete than
+                // there actually are in the dialog
+                // Clear the dialog just in case:
+                XmTextReplace(Display_data_text,0,last_char,"");
+                
+                // display all the data in the ring
+                for (i=first_line;i != next_line;
+                     i=(i+1)%MAX_PACKET_DATA_DISPLAY) {
+                    last_char=XmTextGetLastPosition(Display_data_text);
+                    XmTextReplace(Display_data_text,last_char,last_char,
+                                  packet_data_string[i]);
+                    last_char=XmTextGetLastPosition(Display_data_text);
+                    pos=last_char;
+                    XtVaSetValues(Display_data_text,XmNcursorPosition,
+                                  &pos,NULL);
+                }
+                // Now clear counters so they're always the number of lines to
+                // add or characters to delete *since last display*
+                nlinesadd=0;
+                ncharsdel=0;
+            } else { // there is stuff left over after we delete old stuff
+                if (ncharsdel) { // we have something to delete off the top
+                    //fprintf(stderr,"  Must delete %d characters\n",ncharsdel);
+                    pos=0;
+                    XtVaSetValues(Display_data_text,XmNcursorPosition,
+                                  &pos,NULL);
+                    XmTextReplace(Display_data_text,0,ncharsdel,"");
+                    ncharsdel=0;
+                }
+                if (nlinesadd) { // and there's new stuff to add at end
+                    //fprintf(stderr,"  Must add %d lines\n",nlinesadd);
+                    last_char=XmTextGetLastPosition(Display_data_text);
+                    for (i=(next_line+MAX_PACKET_DATA_DISPLAY
+                            -nlinesadd)%MAX_PACKET_DATA_DISPLAY;
+                         i != next_line;
+                         i=(i+1)%MAX_PACKET_DATA_DISPLAY) {
+                        //fprintf(stderr,"     Adding data from line %d\n",i);
+                    pos=last_char;
+                    XtVaSetValues(Display_data_text,XmNcursorPosition,
+                                  &pos,NULL);
+                    XmTextReplace(Display_data_text,last_char,last_char,
+                                  packet_data_string[i]);
+                    last_char=XmTextGetLastPosition(Display_data_text);
+                    }
+                    nlinesadd=0;
+                }
+            }
+        }
     }
     redraw_on_new_packet_data=0;
 }
@@ -12719,8 +12761,6 @@ void packet_data_add(char *from, char *line, int data_port) {
     char prefix[3] = "";
     int local_tnc_interface = 0;
     int network_interface = 0;
-    char *eol, *eod;
-    unsigned int new_length;
 
 
     if (data_port == -1) {  // x_spider port (server port)
@@ -12771,48 +12811,19 @@ void packet_data_add(char *from, char *line, int data_port) {
 
     redraw_on_new_packet_data++;
 
-    // Find the end of our current data in the packet_data_string
-    // array.  All of the packets are concatenated together into one
-    // long string.
-    eod = packet_data_string + strlen(packet_data_string);
-
-    if (!packet_data_display) {
-        // Our counter has the max number of packets in it (has
-        // counted down to zero).  Remove the oldest line from the
-        // array before we add the new one.
-        //
-        // Find the end of the first packet.
-        eol = strchr(packet_data_string, '\n');
-        eol++;
-
-        // Move the rest of the text to the beginning of the array.
-        memmove(packet_data_string, eol, (eod-eol)+1);
-    }
-    else {
-        packet_data_display--;
+   // Now save the packet in the history:
+    xastir_snprintf(packet_data_string[next_line],MAX_LINE_SIZE,"%s:%s-> %s\n",
+             prefix,from,line+offset);
+    next_line = (next_line+1)%MAX_PACKET_DATA_DISPLAY;
+    nlinesadd++;
+    if (first_line == -1) {
+        first_line = 0;
+    } 
+    else if (first_line == next_line) {
+        ncharsdel += strlen(packet_data_string[first_line]);
+        first_line = (first_line + 1) %MAX_PACKET_DATA_DISPLAY;
     }
 
-    // Add the new data onto the end.
-    //
-    // Assure that we're not going to go past the end of our array
-    new_length = strlen(packet_data_string)
-                + strlen(prefix)
-                + strlen(from)
-                + strlen(line+offset)
-                + 5;
-
-    if (sizeof(packet_data_string) > new_length) {
-        eod = packet_data_string + strlen(packet_data_string);
-        xastir_snprintf(eod,
-            MAX_LINE_SIZE,
-            "%s:%s-> %s\n",
-            prefix,
-            from,
-            line+offset);
-    }
-    else {
-        fprintf(stderr, "packet_data_add: line too long for array\n");
-    }
 }
 
 
@@ -16749,7 +16760,4 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
         // Not calculated yet
         popup_message_always(langcode("PULDNVI016"),langcode("WPUPALO666"));
     }
-}        
-
-
-
+}
