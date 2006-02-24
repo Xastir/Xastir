@@ -1261,7 +1261,7 @@ void load_data_or_default(void) {
 
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
-    net_map_timeout = get_int ("NET_MAP_TIMEOUT", 10, 300, 90);
+    net_map_timeout = get_int ("NET_MAP_TIMEOUT", 10, 300, 120);
 
     tiger_show_grid = get_int ("TIGERMAP_SHOW_GRID", 0, 1, 0);
     tiger_show_counties = get_int ("TIGERMAP_SHOW_COUNTIES", 0, 1, 1);
