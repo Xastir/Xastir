@@ -58,7 +58,7 @@ MON ON
 MRPt on
 PACLen 128
 PASSALL off
-HBAUD 1200
+HBAUD 9600
 TXDELAY 25
 #
 #--------------------------------------------------
