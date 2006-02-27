@@ -574,12 +574,22 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
 
     /* outdoor temp */
     if (data[8] != '-') {
+        int temp4;
+
         substr(temp_data1,(char *)(data+8),4);
+        temp4 = (int)strtol(temp_data1,&temp_conv,16);
+ 
+        if (data[8] > '7') {  // Negative value, convert
+            temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+        }
+
         xastir_snprintf(weather->wx_temp,
             sizeof(weather->wx_temp),
             "%03d",
-            (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
-    } else {
+            (int)((float)((temp4<<16)/65536)/10.0));
+
+    }
+    else {
         if (!from)
             weather->wx_temp[0]=0;
     }
@@ -753,12 +763,21 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
 
     /* outdoor temp */
     if (data[8] != '-') {
+        int temp4;
+
         substr(temp_data1,(char *)(data+8),4);
+        temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+        if (data[8] > '7') {  // Negative value, convert
+            temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+        }
+
         xastir_snprintf(weather->wx_temp,
             sizeof(weather->wx_temp),
             "%03d",
-            (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
-    } else {
+            (int)((float)((temp4<<16)/65536)/10.0));
+    }
+    else {
         if (!from)
             weather->wx_temp[0] = 0;
     }
@@ -940,11 +959,19 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
 
     /* outdoor temp */
     if (data[3] != '-') {
+        int temp4;
+
         substr(temp_data1,(char *)(data+3),2);
+        temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+        if (data[3] > '7') {  // Negative value, convert
+            temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+        }
+
         xastir_snprintf(weather->wx_temp,
             sizeof(weather->wx_temp),
             "%03d",
-            (int)((float)strtol(temp_data1,&temp_conv,16)-56));
+            temp4-56);
     } else {
         if (!from)
             weather->wx_temp[0] = 0;
@@ -1206,11 +1233,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             /* outdoor temp */
             if (data[4]!='-') {
+                int temp4;
+
                 substr(temp_data1,(char *)(data+4),2);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                if (data[4] > '7') {  // Negative value, convert
+                    temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                }
+
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%03d",
-                    (int)((float)strtol(temp_data1,&temp_conv,16)-56));
+                    temp4-56);
             } else {
                 if (!from)  // From local station
                     weather->wx_temp[0]=0;
@@ -1340,11 +1375,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             /* outdoor temp */
             if (data[10]!='-') {
+                int temp4;
+
                 substr(temp_data1,(char *)(data+10),4);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                if (data[10] > '7') {  // Negative value, convert
+                    temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                }
+
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%03d",
-                    (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
+                    (int)((float)((temp4<<16)/65536)/10.0));
             } else {
                 if (!from)  // From local station
                     weather->wx_temp[0]=0;
@@ -1522,11 +1565,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             /* outdoor temp */
             if (data[13]!='-') {
+                int temp4;
+
                 substr(temp_data1,(char *)(data+13),4);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                if (data[13] > '7') {  // Negative value, convert
+                    temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                }
+
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%03d",
-                    (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
+                    (int)((float)((temp4<<16)/65536)/10.0));
             } else {
                 if (!from)  // From local station
                     weather->wx_temp[0]=0;
@@ -1871,11 +1922,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                 /* outdoor temp */
                 if (data[24]!='-') {
+                    int temp4;
+
                     substr(temp_data1,(char *)(data+24),4);
+                    temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                    if (data[24] > '7') {  // Negative value, convert
+                        temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                    }
+
                     xastir_snprintf(weather->wx_temp,
                         sizeof(weather->wx_temp),
                         "%03d",
-                        (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
+                        (int)((float)((temp4<<16)/65536)/10.0));
                 } else
                     weather->wx_temp[0]=0;
 
@@ -1985,11 +2044,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                 /* dew point */
                 if (data[60]!='-') {
+                    int temp4;
+
                     substr(temp_data1,(char *)(data+60),4);
+                    temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                    if (data[60] > '7') {  // Negative value, convert
+                        temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                    }
+
                     xastir_snprintf(wx_dew_point,
                         sizeof(wx_dew_point),
                         "%03d",
-                        (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
+                        (int)((float)((temp4<<16)/65536)/10.0));
                     wx_dew_point_on = 1;
                 }
 
@@ -2005,46 +2072,78 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                 /*wind chill */
                 if (data[20]!='-') {
-                substr(temp_data1,(char *)(data+20),4);
-                xastir_snprintf(wx_wind_chill,
-                        sizeof(wx_wind_chill),
-                        "%03d",
-                    (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
-                wx_wind_chill_on = 1;
-            }
+                    int temp4;
+
+                    substr(temp_data1,(char *)(data+20),4);
+                    temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                    if (data[20] > '7') {  // Negative value, convert
+                        temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                    }
+
+                    xastir_snprintf(wx_wind_chill,
+                            sizeof(wx_wind_chill),
+                            "%03d",
+                        (int)((float)((temp4<<16)/65536)/10.0));
+                    wx_wind_chill_on = 1;
+                }
 
             /*3-Hr Barometric Change */
             if (data[36]!='-') {
+                int temp4;
+
                 substr(temp_data1,(char *)(data+36),4);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                if (data[8] > '7') {  // Negative value, convert
+                    temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                }
+
                 xastir_snprintf(wx_three_hour_baro,
                     sizeof(wx_three_hour_baro),
                     "%0.2f",
 // Old code
 //                  (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/100.0/3.38639);
 // New code, fix by Matt Werner, kb0kqa:
-                    (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0);
+                    (float)((temp4<<16)/65536)/10.0);
  
                 wx_three_hour_baro_on = 1;
             }
 
             /* High Temp for Today*/
             if (data[276]!='-') {
+                int temp4;
+
                 substr(temp_data1,(char *)(data+276),4);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                if (data[8] > '7') {  // Negative value, convert
+                    temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                }
+
                 xastir_snprintf(wx_hi_temp,
                     sizeof(wx_hi_temp),
                     "%03d",
-                    (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
+                    (int)((float)((temp4<<16)/65536)/10.0));
                 wx_hi_temp_on = 1;
             } else
                 wx_hi_temp_on = 0;
 
             /* Low Temp for Today*/
             if (data[100]!='-') {
+                int temp4;
+
                 substr(temp_data1,(char *)(data+100),4);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+
+                if (data[8] > '7') {  // Negative value, convert
+                    temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
+                }
+
                 xastir_snprintf(wx_low_temp,
                     sizeof(wx_low_temp),
                     "%03d",
-                    (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0));
+                    (int)((float)((temp4<<16)/65536)/10.0));
                 wx_low_temp_on = 1;
             } else
                 wx_low_temp_on = 0;
