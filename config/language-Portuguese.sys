@@ -436,6 +436,7 @@ WPUPCFTM09|Serie de atraso de inter-char (ms)||
 WPUPCFTM10|Novo tempo de pista (min)||
 WPUPCFTM11|Novo intervado de pista (degrees)||
 WPUPCFTM12|RINO -> Intervalo de objectos (min), 0 = Desactivado||
+WPUPCFTM13|Snapshot Interval (min)||
 #
 # PopUp "Sistema de configuracao de coordenadas"
 WPUPCFC001|Sistema de configuracao de coordenadas||

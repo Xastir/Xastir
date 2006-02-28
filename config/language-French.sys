@@ -436,6 +436,7 @@ WPUPCFTM09|Délai inter-char port série (ms)||
 WPUPCFTM10|Délai nouvelle piste (min)||
 WPUPCFTM11|Espace nouvelle piste (degrés)||
 WPUPCFTM12|RINO -> Intervalle d'objets (min), 0 = Désactivé||
+WPUPCFTM13|Snapshot Interval (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configurer système des coordonnées||

@@ -189,6 +189,7 @@ enum map_onscreen_enum {MAP_NOT_VIS=0,MAP_IS_VIS,MAP_NOT_INDEXED};
 extern enum map_onscreen_enum map_onscreen(long left, long right, long top, long bottom, int checkpercentage);
 extern enum map_onscreen_enum map_onscreen_index(char *filename);
 extern time_t last_snapshot;
+extern int snapshot_interval;
 
 extern int grid_size;
 

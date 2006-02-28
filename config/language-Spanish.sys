@@ -435,6 +435,7 @@ WPUPCFTM09|Serial Inter-Char Delay (ms)||
 WPUPCFTM10|Nuevo Tiempo Rastro (min)||
 WPUPCFTM11|Nuevo Interval Rastro (grados)||
 WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
+WPUPCFTM13|Snapshot Interval (min)||
 #
 # Configurar Sistema de Coordenada"
 WPUPCFC001|Configurar Sistema de Coordenada||

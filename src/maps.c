@@ -167,6 +167,7 @@ int   print_invert = 0;                 // Reverses black/white
 
 time_t last_snapshot = 0;               // Used to determine when to take next snapshot
 int doing_snapshot = 0;
+int snapshot_interval = 0;
 
 
 int mag;
@@ -4271,7 +4272,9 @@ void Snapshot(void) {
         return;
 
     // Time to take another snapshot?
-    if (sec_now() < (last_snapshot + 300) ) // New snapshot every five minutes
+    // New snapshot interval based on slider in Configure Timing
+    // dialog (in minutes)
+    if (sec_now() < (last_snapshot + (snapshot_interval * 60)) )
         return;
 
     last_snapshot = sec_now(); // Set up timer for next time

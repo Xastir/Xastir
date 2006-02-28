@@ -432,6 +432,7 @@ WPUPCFTM09|Serial Inter-Char Delay (ms)||
 WPUPCFTM10|Nuovo tempo della traccia (min)||
 WPUPCFTM11|Nuovo intervallo della traccia (gradi)||
 WPUPCFTM12|RINO -> Intervallo oggetto (min), 0 = Non attivo||
+WPUPCFTM13|Snapshot Interval (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||

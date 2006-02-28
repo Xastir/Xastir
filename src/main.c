@@ -1026,6 +1026,7 @@ Widget trail_segment_timeout = (Widget)NULL;
 Widget trail_segment_distance_max = (Widget)NULL;
 Widget RINO_download_timeout = (Widget)NULL;
 Widget net_map_slider = (Widget)NULL;
+Widget snapshot_interval_slider = (Widget)NULL;
 int net_map_timeout = 120;
 
 
@@ -21534,6 +21535,8 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 
     XmScaleGetValue(net_map_slider, &net_map_timeout);
 
+    XmScaleGetValue(snapshot_interval_slider, &snapshot_interval);
+
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
 }
@@ -21910,11 +21913,39 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        length = strlen(langcode("WPUPCFTM13")) + 1;
+
+        // Interval at which snapshots will be taken, in minutes
+        snapshot_interval_slider = XtVaCreateManagedWidget("Snapshot interval",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, RINO_download_timeout,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,    // 0.5 minutes
+                XmNmaximum, 30,     // 30 minutes
+                XmNshowValue, TRUE,
+                XmNvalue, snapshot_interval,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM13"), length,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, RINO_download_timeout,
+                XmNtopWidget, snapshot_interval_slider,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -21932,7 +21963,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, RINO_download_timeout,
+                XmNtopWidget, snapshot_interval_slider,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,

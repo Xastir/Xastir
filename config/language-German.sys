@@ -440,6 +440,7 @@ WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
 WPUPCFTM10|Neue Spur Zeit (Min)||
 WPUPCFTM11|Neue Spur Intervall (Grad)||
 WPUPCFTM12|RINO -> Objekt Intervall (min), 0 = Aus||
+WPUPCFTM13|Snapshot Interval (min)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||

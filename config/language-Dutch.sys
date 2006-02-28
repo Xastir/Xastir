@@ -444,6 +444,7 @@ WPUPCFTM09|Seriele Inter-Char vertraging (ms)||
 WPUPCFTM10|Nieuwe volg tijd (min)||
 WPUPCFTM11|Nieuw volg Interval (graden)||
 WPUPCFTM12|RINO -> Objecten Interval (min), 0 = Uitgeschakeld||
+WPUPCFTM13|Snapshot Interval (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer coordinaten stelsel||

@@ -986,6 +986,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "TRAIL_SEGMENT_TIME", trail_segment_time);
         store_int (fout, "TRAIL_SEGMENT_DISTANCE", trail_segment_distance);
         store_int (fout, "RINO_DOWNLOAD_INTERVAL", RINO_download_interval);
+        store_int (fout, "SNAPSHOT_INTERVAL", snapshot_interval);
 
 
         if (debug_level & 1)
@@ -1832,6 +1833,9 @@ void load_data_or_default(void) {
 
     // 0 minutes default (function disabled)
     RINO_download_interval = get_int ("RINO_DOWNLOAD_INTERVAL", 0,30,0);
+
+    // 5 minutes default
+    snapshot_interval = get_int ("SNAPSHOT_INTERVAL", 1,30,5);
 
     input_close();
 }
