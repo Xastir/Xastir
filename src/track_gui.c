@@ -435,6 +435,11 @@ static void* findu_transfer_thread(void *arg) {
         return(NULL);
     }
 
+// We need to move this message up to the main thread if possible so
+// that we don't have multiple threads writing to the GUI.  This
+// sort of operation can cause segfaults.  In practice I haven't
+// seen any segfaults due to this particular popup though.
+
     // Fetch Findu Trail: Complete
     popup_message_always(langcode("POPEM00036"),
         langcode("POPEM00045"));
