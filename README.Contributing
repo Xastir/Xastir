@@ -192,6 +192,15 @@ to make the source code window display the exact location.
 
 Another good debugger to try is "UPS".
 
+Another note about core files:  Sometimes they get written where you
+don't expect.  I just had one appear in ~/.xastir/tmp, so if you
+think you should have a core file and can't find it, try:
+
+    find . -type f | grep core
+
+The core file may be written to a directory that Xastir is currently
+in, instead of where you started Xastir from.
+
 Customized debugging builds
 ---------------------------
 
