@@ -58,7 +58,11 @@ MON ON
 MRPt on
 PACLen 128
 PASSALL off
-HBAUD 9600
+#
+# Enable this line ONLY if you're running 9600 baud packet.  It
+# changes the on-the-air speed from the default 1200 baud.
+#HBAUD 9600
+#
 TXDELAY 25
 #
 #--------------------------------------------------
