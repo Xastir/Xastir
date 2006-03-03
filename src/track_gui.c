@@ -415,19 +415,19 @@ static void* findu_transfer_thread(void *arg) {
 
         // Had trouble getting the file.  Abort.
 
-// Unfortunately we cannot do any GUI stuff from multiple
-// threads/processes at the same time.  We have to can the
-// popup_message stuff here and just write to STDERR instead.
+// We may not be able to do any GUI stuff from multiple
+// threads/processes at the same time.  If that is found to be the
+// case we can write to STDERR instead.
  
         // Dump a message to STDERR
-        fprintf(stderr,
-            "%s  %s\n",
-            langcode("POPEM00035"),
-            langcode("POPEM00044"));
+//        fprintf(stderr,
+//            "%s  %s\n",
+//            langcode("POPEM00035"),
+//            langcode("POPEM00044"));
 
         // Fetch Findu Trail: Failed
-//        popup_message_always(langcode("POPEM00035"),
-//            langcode("POPEM00044"));
+        popup_message_always(langcode("POPEM00035"),
+            langcode("POPEM00044"));
 
         // Reset global "busy" variable
         fetching_findu_trail_now = 0;
