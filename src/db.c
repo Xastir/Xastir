@@ -12827,7 +12827,7 @@ void packet_data_add(char *from, char *line, int data_port) {
  *  Decode Mic-E encoded data
  */
 int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int third_party) {
-    int  i;
+    int  ii;
     int  offset;
     unsigned char s_b1;
     unsigned char s_b2;
@@ -12938,6 +12938,40 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
 
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
+    }
+
+    // Check for 8-bit characters in the first eight slots.  Not
+    // allowed per Mic-E chapter of the spec.
+    for (ii = 0; ii < 8; ii++) {
+        if ((unsigned char)info[ii] > 0x7f) {
+            // 8-bit data was found in the lat/long/course/speed
+            // portion.  Bad packet.  Drop it.
+//fprintf(stderr, "%s: 8-bits found in Mic-E packet initial portion. Dropping it.\n", call_sign);
+            return(1);
+        }
+    }
+
+    // Check whether we have more data.  If flag character is 0x1d
+    // (8-bit telemetry flag) then don't do the 8-bit check below.
+    if (strlen(info) > 8) {
+
+        // Check for the 8-bit telemetry flag
+        if ((unsigned char)info[8] == 0x1d) {
+            // 8-bit telemetry found, skip the check loop below
+        }
+        else {  // 8-bit telemetry flag was not found.  Check that
+                // we only have 7-bit characters through the rest of
+                // the packet.
+
+            for (ii = 8; ii < (int)strlen(info); ii++) {
+
+                if ((unsigned char)info[ii] > 0x7f) {
+                    // 8-bit data was found.  Bad packet.  Drop it.
+//fprintf(stderr, "%s: 8-bits found in Mic-E packet final portion (not 8-bit telemetry). Dropping it.\n", call_sign);
+                    return(1);
+                }
+            }
+        }
     }
 
     //fprintf(stderr,"Path1:%s\n",path);
@@ -13218,8 +13252,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
 
     if (info[offset] != '\0') {
         /* Append the rest of the message to the expanded MIC-E message */
-        for (i=offset; i<info_size; i++)
-            temp[i-offset] = info[i];
+        for (ii=offset; ii<info_size; ii++)
+            temp[ii-offset] = info[ii];
 
         temp[info_size-offset] = '\0';
         strncat(new_info,
