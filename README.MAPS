@@ -963,14 +963,14 @@ Getting Maps and other Data Files for Xastir:
 
         NWSI Libraries:
         ---------------
-        County Warning Areas
-        Zone Forecast Areas
-        Fire Weather Zones
-        Coastal and Offshore Marine Zones (3 files)
+        County Warning Areas (c_*.zip)
+        Zone Forecast Areas (z_*.zip)
+        Fire Weather Zones (fz*.zip)
+        Coastal and Offshore Marine Zones (mz*.zip, oz*.zip, hz*.zip)
 
         County Libraries:
         -----------------
-        AWIPS Counties
+        AWIPS Counties (w_*.zip)
 
       Unzip those files in the /usr/local/share/xastir/Counties/ directory and
       Xastir should find them and use them for weather alerts. Be sure to
