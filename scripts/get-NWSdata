@@ -36,22 +36,30 @@ cd /usr/local/share/xastir/Counties
 #
 rm *.zip *.shp *.dbf *.shx
 
-# Fetch new copies
+# Fetch new copies, unzip into place, delete archive.
 #
 wget http://www.weather.gov/geodata/catalog/wsom/data/z_14fe06.zip
-wget http://www.weather.gov/geodata/catalog/wsom/data/w_06oc05.zip
-wget http://weather.gov/geodata/catalog/wsom/data/mz10ja06.zip
-wget http://weather.gov/geodata/catalog/wsom/data/oz15de04.zip
-wget http://weather.gov/geodata/catalog/wsom/data/hz28au04.zip
-wget http://www.weather.gov/geodata/catalog/county/data/c_10fe06.zip
-
-# Unzip them so that they're usable by Xastir
-#
 unzip z_*.zip
+rm *.zip
+
+wget http://www.weather.gov/geodata/catalog/wsom/data/w_06oc05.zip
 unzip w_*.zip
+rm *.zip
+
+wget http://weather.gov/geodata/catalog/wsom/data/mz10ja06.zip
 unzip mz*.zip
+rm *.zip
+
+wget http://weather.gov/geodata/catalog/wsom/data/oz15de04.zip
 unzip oz*.zip
+rm *.zip
+
+wget http://weather.gov/geodata/catalog/wsom/data/hz28au04.zip
 unzip hz*.zip
+rm *.zip
+
+wget http://www.weather.gov/geodata/catalog/county/data/c_10fe06.zip
 unzip c_*.zip
+rm *.zip
 
 
