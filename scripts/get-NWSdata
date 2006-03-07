@@ -62,4 +62,8 @@ wget http://www.weather.gov/geodata/catalog/county/data/c_10fe06.zip
 unzip c_*.zip
 rm *.zip
 
+wget http://www.weather.gov/geodata/catalog/wsom/data/fz12fe06.zip
+unzip fz*.zip
+rm *.zip
+
 
