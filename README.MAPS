@@ -951,6 +951,12 @@ Getting Maps and other Data Files for Xastir:
        current:
          http://wetnet.net/~we7u/xastir/Counties/
 
+       We now have a script in the xastir/scripts directory called
+       "get-NWSdata" which fetches the files you need and plops them
+       into the correct directory and unzips them.  Run that script
+       as root.  You may then try the NWS-TEST.log test shown below
+       to verify proper operation.
+
         --------------------------
         The files of interest are:
         --------------------------
