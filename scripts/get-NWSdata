@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Script to retrieve NWS data files. 
+#
+# Originally written 2006/03/07 by Steven, WM5Z, and Curt, WE7U.
+#
+# Copyright (C) 2000-2006  The Xastir Group
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+# See README.MAPS for a bit more information on the program.
+#
+#
+# NOTE:  Run this script as root.
+#
+
+
+cd /usr/local/share/xastir/Counties
+
+# Remove previous copies of files
+#
+rm *.zip *.shp *.dbf *.shx
+
+# Fetch new copies
+#
+wget http://www.weather.gov/geodata/catalog/wsom/data/z_14fe06.zip
+wget http://www.weather.gov/geodata/catalog/wsom/data/w_06oc05.zip
+wget http://weather.gov/geodata/catalog/wsom/data/mz10ja06.zip
+wget http://weather.gov/geodata/catalog/wsom/data/oz15de04.zip
+wget http://weather.gov/geodata/catalog/wsom/data/hz28au04.zip
+wget http://www.weather.gov/geodata/catalog/county/data/c_10fe06.zip
+
+# Unzip them so that they're usable by Xastir
+#
+unzip z_*.zip
+unzip w_*.zip
+unzip mz*.zip
+unzip oz*.zip
+unzip hz*.zip
+unzip c_*.zip
+
+
