@@ -333,6 +333,10 @@ local Shapefile maps, online street/topo/satellite-image maps,
 weather alerts, and audio alerts.  Optionally you can add
 synthesized speech to the mix.
 
+  You'll need to run
+xastir/scripts/get-NWSdata as root after you do the install in order
+to get the NOAA data files you'll need for the weather alerts.
+
 This is what you'd like to see at the end of the "./configure" run
 (minimum, there may be more "yes" answers):
 
@@ -451,6 +455,13 @@ OK, Xastir should show up on your screen at this point.  We're
 assuming that you're already running X-Windows graphical environment
 at this point.  If you're in command-line Linux/Unix only, Xastir
 won't run.
+
+If you've configured in ShapeLib capability, you'll need to run
+xastir/scripts/get-NWSdata as the root user in order to get the NOAA
+data files you'll need for the weather alerts.  Run this script
+periodically (once every six months perhaps?) to keep your weather
+alert maps up-to-date.  If you're not in the U.S. or one of it's
+possessions then you can safely ignore this download.
 
 
 Various ways to manipulate Xastir:

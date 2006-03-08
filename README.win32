@@ -749,7 +749,8 @@ directory.  All other shapefiles must go into the
 /cygwin/user/local/share/xastir/maps directory (and subdirectories
 below that of your choosing).
 
-See the README.MAPS file for where to get the maps.
+See the README.MAPS file for where to get the maps, and a script to
+automate the download/install for you.
 
 
 Note from Gale Wilkinson, kc4pl:

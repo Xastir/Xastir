@@ -534,9 +534,13 @@ The Answers
     4.7 When weather alerts come in, the counties on my map don't highlight.
 
     First of all, did you download and install the new shapefile weather maps
-    as described in the INSTALL file? Did you compile with shapefile support?
+    as described in the INSTALL file? (Running scripts/get-NWSdata automates
+    this somewhat for you now)
 
-    Second, check that Map|Map WX Alert Counties is turned on.
+    Did you compile with shapefile support?
+
+    Check that Map|Enable Weather Alerts is enabled, and "Map|Disable All Maps"
+    is _not_ selected .
 
     4.8 I have geoTIFF support compiled and working, but when I select a map,
         it gives me a -38 error converting the datum, and it doesn't display in
