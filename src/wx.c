@@ -575,6 +575,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     /* outdoor temp */
     if (data[8] != '-') {
         int temp4;
+        float temp5;
 
         substr(temp_data1,(char *)(data+8),4);
         temp4 = (int)strtol(temp_data1,&temp_conv,16);
@@ -583,11 +584,20 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
             temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
         }
 
+        // Convert to float
+        temp5 = (float)(((temp4<<16)/65536)/10.0);
+
+// WE7U
+        // Need proper rounding here, either add -0.5 or +0.5
+        // depending on whether we have a positive or negative value
+        // here, before the (int).
+        if (temp5 >= 0.0) temp5 +=  0.5;
+        else              temp5 += -0.5;
+
         xastir_snprintf(weather->wx_temp,
             sizeof(weather->wx_temp),
             "%03d",
-            (int)((float)((temp4<<16)/65536)/10.0));
-
+            (int)temp5);
     }
     else {
         if (!from)
@@ -764,6 +774,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     /* outdoor temp */
     if (data[8] != '-') {
         int temp4;
+        float temp5;
 
         substr(temp_data1,(char *)(data+8),4);
         temp4 = (int)strtol(temp_data1,&temp_conv,16);
@@ -772,10 +783,19 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
             temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
         }
 
+        temp5 = (float)(((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+        // Need proper rounding here, either add -0.5 or +0.5
+        // depending on whether we have a positive or negative value
+        // here, before the (int).
+        if (temp5 >= 0.0) temp5 +=  0.5;
+        else              temp5 += -0.5;
+
         xastir_snprintf(weather->wx_temp,
             sizeof(weather->wx_temp),
             "%03d",
-            (int)((float)((temp4<<16)/65536)/10.0));
+            (int)temp5);
     }
     else {
         if (!from)
@@ -962,6 +982,11 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
         int temp4;
 
         substr(temp_data1,(char *)(data+3),2);
+
+// WE7U
+// Do we need to add 0.5/-0.5 here based on whether positive or
+// negative value and truncating to an int?  (poor-man's rounding)
+
         temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
         if (data[3] > '7') {  // Negative value, convert
@@ -1065,6 +1090,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     WeatherRow *weather;
     float tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp9,tmp10,tmp11,tmp12;
     int tmp7,tmp8;
+    float temp5;
 
 
     last_speed=0.0;
@@ -1129,10 +1155,18 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
             // Temperature
+
+// WE7U
+            // Need proper rounding here, either add -0.5 or +0.5
+            // depending on whether we have a positive or negative
+            // value here, before the (int).
+            if (tmp1 >= 0.0) tmp1 = tmp1 * 9.0 / 5.0 + 32.0 +  0.5;
+            else             tmp1 = tmp1 * 9.0 / 5.0 + 32.0 + -0.5;
+
             xastir_snprintf(weather->wx_temp,
                 sizeof(weather->wx_temp),
                 "%03d",
-                (int)(tmp1 * 9.0 / 5.0 + 32.0 + 0.5));
+                (int)tmp1);
             //fprintf(stderr,"Read: %2.1f C, Storing: %s F\n",tmp1,weather->wx_temp);
 
             // Wind direction.  Each vane increment equals 22.5 degrees.
@@ -1236,7 +1270,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 int temp4;
 
                 substr(temp_data1,(char *)(data+4),2);
-                temp4 = (int)strtol(temp_data1,&temp_conv,16);
+ 
+// WE7U
+// Do we need to add 0.5/-0.5 here based on whether positive or
+// negative value and truncating to an int?  (poor-man's rounding)
+
+               temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
                 if (data[4] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
@@ -1384,10 +1423,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
+                temp5 = ((float)(((temp4<<16)/65536)/10.0));
+ 
+// WE7U
+                // Need proper rounding here, either add -0.5 or
+                // +0.5 depending on whether we have a positive or
+                // negative value here, before the (int).
+                if (temp5 >= 0.0) temp5 +=  0.5;
+                else              temp5 += -0.5;
+
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%03d",
-                    (int)((float)((temp4<<16)/65536)/10.0));
+                    (int)temp5);
             } else {
                 if (!from)  // From local station
                     weather->wx_temp[0]=0;
@@ -1574,10 +1622,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
+                temp5 = ((float)((temp4<<16)/65536)/10.0);
+
+// WE7U 
+                // Need proper rounding here, either add -0.5 or
+                // +0.5 depending on whether we have a positive or
+                // negative value here, before the (int).
+                if (temp5 >= 0.0) temp5 +=  0.5;
+                else              temp5 += -0.5;
+
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%03d",
-                    (int)((float)((temp4<<16)/65536)/10.0));
+                    (int)temp5);
             } else {
                 if (!from)  // From local station
                     weather->wx_temp[0]=0;
@@ -1931,10 +1988,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                     }
 
+                    temp5 = ((float)((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+                    // Need proper rounding here, either add -0.5 or
+                    // +0.5 depending on whether we have a positive
+                    // or negative value here, before the (int).
+                    if (temp5 >= 0.0) temp5 +=  0.5;
+                    else              temp5 += -0.5;
+
                     xastir_snprintf(weather->wx_temp,
                         sizeof(weather->wx_temp),
                         "%03d",
-                        (int)((float)((temp4<<16)/65536)/10.0));
+                        (int)temp5);
                 } else
                     weather->wx_temp[0]=0;
 
@@ -2053,10 +2119,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                     }
 
+                    temp5 = ((float)((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+                    // Need proper rounding here, either add -0.5 or
+                    // +0.5 depending on whether we have a positive
+                    // or negative value here, before the (int).
+                    if (temp5 >= 0.0) temp5 +=  0.5;
+                    else              temp5 += -0.5;
+
                     xastir_snprintf(wx_dew_point,
                         sizeof(wx_dew_point),
                         "%03d",
-                        (int)((float)((temp4<<16)/65536)/10.0));
+                        (int)temp5);
                     wx_dew_point_on = 1;
                 }
 
@@ -2081,10 +2156,20 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                     }
 
+                    temp5 = ((float)((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+                    // Need proper rounding here, either add -0.5 or
+                    // +0.5 depending on whether we have a positive
+                    // or negative value here, before the (int).
+                    if (temp5 >= 0.0) temp5 +=  0.5;
+                    else              temp5 += -0.5;
+
                     xastir_snprintf(wx_wind_chill,
                             sizeof(wx_wind_chill),
                             "%03d",
-                        (int)((float)((temp4<<16)/65536)/10.0));
+                        (int)temp5);
+
                     wx_wind_chill_on = 1;
                 }
 
@@ -2099,13 +2184,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
+                temp5 = (float)(((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+                // Need proper rounding here, either add -0.5 or
+                // +0.5 depending on whether we have a positive or
+                // negative value here, before the (int).
+                if (temp5 >= 0.0) temp5 +=  0.5;
+                else              temp5 += -0.5;
+
                 xastir_snprintf(wx_three_hour_baro,
                     sizeof(wx_three_hour_baro),
                     "%0.2f",
-// Old code
-//                  (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/100.0/3.38639);
-// New code, fix by Matt Werner, kb0kqa:
-                    (float)((temp4<<16)/65536)/10.0);
+                    temp5);
  
                 wx_three_hour_baro_on = 1;
             }
@@ -2121,11 +2212,22 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
+                temp5 = ((float)((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+                // Need proper rounding here, either add -0.5 or
+                // +0.5 depending on whether we have a positive or
+                // negative value here, before the (int).
+                if (temp5 >= 0.0) temp5 +=  0.5;
+                else              temp5 += -0.5;
+
                 xastir_snprintf(wx_hi_temp,
                     sizeof(wx_hi_temp),
                     "%03d",
-                    (int)((float)((temp4<<16)/65536)/10.0));
+                    (int)temp5);
+
                 wx_hi_temp_on = 1;
+
             } else
                 wx_hi_temp_on = 0;
 
@@ -2140,11 +2242,22 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
+                temp5 = ((float)((temp4<<16)/65536)/10.0);
+ 
+// WE7U
+                // Need proper rounding here, either add -0.5 or
+                // +0.5 depending on whether we have a positive or
+                // negative value here, before the (int).
+                if (temp5 >= 0.0) temp5 +=  0.5;
+                else              temp5 += -0.5;
+
                 xastir_snprintf(wx_low_temp,
                     sizeof(wx_low_temp),
                     "%03d",
-                    (int)((float)((temp4<<16)/65536)/10.0));
+                    (int)temp5);
+
                 wx_low_temp_on = 1;
+
             } else
                 wx_low_temp_on = 0;
 
@@ -2192,10 +2305,20 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* outdoor temp */
+
+            temp5 = (float)((temp2/10.0));
+
+// WE7U
+            // Need proper rounding here, either add -0.5 or +0.5
+            // depending on whether we have a positive or negative
+            // value here, before the (int).
+            if (temp5 >= 0.0) temp5 +=  0.5;
+            else              temp5 += -0.5;
+
             xastir_snprintf(weather->wx_temp,
                 sizeof(weather->wx_temp),
                 "%03d",
-                (int)((temp2/10.0)));
+                (int)temp5);
 
             /* baro */
             xastir_snprintf(weather->wx_baro,
@@ -2264,37 +2387,63 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         break;
 
                     case 0x9f: /* temp */
+
                         /* all data in C ?*/
                         xastir_snprintf(temp_data1,
                             sizeof(temp_data1),
                             "%c%d%0.1f",
                             ((data[17]&0x08) ? '-' : '+'),(data[17]&0x7),rswnc(data[16])/10.0);
                         /*fprintf(stderr,"temp data: <%s> %d %d %d\n", temp_data1,((data[17]&0x08)==0x08),(data[17]&0x7),rswnc(data[16]));*/
+
                         temp_temp = (float)((atof(temp_data1)*1.8)+32);
+
+// WE7U
+                        // Need proper rounding here, either add
+                        // -0.5 or +0.5 depending on whether we have
+                        // a positive or negative value here, before
+                        // the (int).
+                        if (temp_temp >= 0.0) temp_temp +=  0.5;
+                        else                  temp_temp += -0.5;
+
                         if ( (temp_temp >= -99.0) && (temp_temp < 200.0) ) {
                             xastir_snprintf(weather->wx_temp,
                                 sizeof(weather->wx_temp),
                                 "%03d",
-                                (int)((atof(temp_data1)*1.8)+32));
+                                (int)temp_temp);
+
                             /*fprintf(stderr,"Temp %s C %0.2f %03d\n",temp_data1,atof(temp_data1),(int)atof(temp_data1));
                             fprintf(stderr,"Temp F %0.2f %03d\n",(atof(temp_data1)*1.8)+32,(int)(atof(temp_data1)*1.8)+32);
                             */
                         } else {  // We don't want to save this one
                             fprintf(stderr,"Temp out-of-range, ignoring: %0.2f\n", temp_temp);
                         }
+
                         xastir_snprintf(temp_data1,
                             sizeof(temp_data1),
                             "%c%d%d.%d",
                             ((data[18]&0x80) ? '-' : '+'),(data[18]&0x70)>>4,(data[18]&0x0f),(data[17] & 0xf0) >> 4);
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                         xastir_snprintf(wx_hi_temp,
                             sizeof(wx_hi_temp),
                             "%03d",
                             (int)((atof(temp_data1)*1.8)+32));
                         wx_hi_temp_on=1;
+
                         xastir_snprintf(temp_data1,
                             sizeof(temp_data1),
                             "%c%d%d.%d",
                             ((data[23]&0x80) ? '-' : '+'),(data[23]&0x70)>>4,(data[23]&0x0f),(data[22] & 0xf0) >> 4);
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                         xastir_snprintf(wx_low_temp,
                             sizeof(wx_low_temp),
                             "%03d",
@@ -2306,6 +2455,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         // local baro pressure in mb?
                         // sprintf(weather->wx_baro,"%02d%02d",rswnc(data[2]),rswnc(data[1]));
                         // Sea Level Adjusted baro in mb
+
                         xastir_snprintf(weather->wx_baro,
                             sizeof(weather->wx_baro),
                             "%0d%02d%0.1f",
@@ -2314,6 +2464,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             ((float)rswnc(data[3])/10.0));
 
                         /* dew point in C */
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                         temp_temp = (int)((rswnc(data[18])*1.8)+32);
                         if ( (temp_temp >= 32.0) && (temp_temp < 150.0) )
                             xastir_snprintf(wx_dew_point,
@@ -2430,6 +2586,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         }
 
                         /* wind chill in C */
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                         xastir_snprintf(temp_data1,
                             sizeof(temp_data1),
                             "%c%d",
@@ -2543,6 +2705,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             if ((temp_conv=strchr((char *)data,'t'))) { // Temperature in Degrees F
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
                     "%s",
@@ -2553,6 +2721,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 if(wx_hi_temp[0] == '\0' || // first time 
                         (get_hours() == 0 && get_minutes() == 0) || // midnite
                         (atol(weather->wx_temp) > atol(wx_hi_temp))) {
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                     xastir_snprintf(wx_hi_temp,
                         sizeof(wx_hi_temp),
                         "%s",
@@ -2561,9 +2735,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 wx_hi_temp_on=1;
 
                 // compute low temp, since APRS doesn't send that
+
                 if(wx_low_temp[0] == '\0' || // first time 
                         (get_hours() == 0 && get_minutes() == 0) || // midnite
                         (atol(weather->wx_temp) < atol(wx_low_temp))) {
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
                     xastir_snprintf(wx_low_temp,
                         sizeof(wx_low_temp),
                         "%s",
@@ -2634,6 +2815,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             // now compute wind chill
+
+// WE7U
+// Do we need proper rounding here, either add -0.5 or +0.5
+// depending on whether we have a positive or negative value here?
+// (poor man's rounding)
+ 
             wind_chill = 35.74 + .6215 * atof(weather->wx_temp) - 
                 35.75 * pow(atof(weather->wx_gust), .16) + 
                 .4275 * atof(weather->wx_temp) * 
