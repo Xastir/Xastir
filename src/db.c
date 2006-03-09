@@ -161,6 +161,9 @@ char GUARD_BAND_TWO[GUARD_SIZE];
 
 
 
+int emergency_distance_check = 1;
+float emergency_range = 280.0;  // Default is 4hrs @ 70mph distance
+
 CADRow *CAD_list_head = NULL;   // pointer to first element in CAD objects list
 
 void draw_trail(Widget w, DataRow *fill, int solid);
@@ -15974,39 +15977,64 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                        || (strcmp(ViaCalls[0], "WARNING") == 0) // Checks to_field
                        || (strcmp(ViaCalls[0], "WXALARM") == 0) // Checks to_field
                        || (strcmp(ViaCalls[0], "EM") == 0) ) {  // Checks to_field
-                
-                // Do a popup to alert the operator to this condition.  Make
-                // sure we haven't popped up an emergency message for this
-                // station within the last 30 minutes.  If we pop these up
-                // constantly it gets quite annoying.
-                if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
-                     || ((last_emergency_time + 60*30) < sec_now()) ) {
-                    
-                    // Callsign is different or enough time has passed
-                    
-                    last_emergency_time = sec_now();
-                    xastir_snprintf(last_emergency_callsign,
-                    sizeof(last_emergency_callsign),
-                                    "%s",
-                                    call_sign);
-                    
-                    // Bring up the Find Station dialog so that the operator
-                    // can go to the location quickly
-                    xastir_snprintf(locate_station_call,
-                                    sizeof(locate_station_call),
-                                    "%s",
-                                    call_sign);
-                    
-                    Locate_station( (Widget)NULL,
-                        (XtPointer)NULL,
-                        (XtPointer)1 );
 
-                    // Bring up an additional popup dialog that
-                    // shows the entire packet, so the user can make
-                    // a determination as to whether the packet is
-                    // or is not a real emergency.
+                double distance;    // miles or km
+                char course_deg[5];
+
+
+                if (emergency_distance_check) {
+                    distance = distance_from_my_station(call_sign, course_deg);
+
+                    // Check whether the station is near enough to
+                    // us to require that we alert on the packet.
                     //
-                    popup_message_always(langcode("POPEM00036"), backup);
+                    if ( (float)distance <= emergency_range ) {
+
+// Do the conversion for emergency_range to mi or km as needed.
+//                        if (english_units) {
+//                        }
+//                        else {
+//                        }
+                
+                        // Do a popup to alert the operator to this
+                        // condition.  Make sure we haven't popped
+                        // up an emergency message for this station
+                        // within the last 30 minutes.  If we pop
+                        // these up constantly it gets quite
+                        // annoying.
+                        if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
+                             || ((last_emergency_time + 60*30) < sec_now()) ) {
+                    
+                            // Callsign is different or enough time
+                            // has passed
+                    
+                            last_emergency_time = sec_now();
+                            xastir_snprintf(last_emergency_callsign,
+                            sizeof(last_emergency_callsign),
+                                            "%s",
+                                            call_sign);
+                    
+                            // Bring up the Find Station dialog so
+                            // that the operator can go to the
+                            // location quickly.
+                            xastir_snprintf(locate_station_call,
+                                            sizeof(locate_station_call),
+                                            "%s",
+                                            call_sign);
+                    
+                            Locate_station( (Widget)NULL,
+                                (XtPointer)NULL,
+                                (XtPointer)1 );
+
+                            // Bring up an additional popup dialog
+                            // that shows the entire packet, so the
+                            // user can make a determination as to
+                            // whether the packet is or is not a
+                            // real emergency.
+                            //
+                            popup_message_always(langcode("POPEM00036"), backup);
+                        }
+                    }
                 }
             }
         }
