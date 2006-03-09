@@ -225,16 +225,19 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
 
     libproj (proj-4.4.9):
     ---------------------
+        http://proj.maptools.org/
         http://www.remotesensing.org/proj/
         http://wetnet.net/~we7u/xastir/
 
-    Datum translations (proj-nad27-1.1):
-    -------------------------------------
+    Datum translations (proj-nad27 or proj-datumgrid):
+    --------------------------------------------------
+        http://proj.maptools.org/
         ftp://ftp.remotesensing.org/pub/proj/
         http://wetnet.net/~we7u/xastir/
 
-    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.2):
+    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.3):
     --------------------------------------------------
+        http://dl.maptools.org/dl/geotiff/libgeotiff/
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
         http://wetnet.net/~we7u/xastir/
@@ -269,8 +272,10 @@ For ESRI Shapefile format maps/weather alert maps:
         http://www.pcre.org
 
 For GDAL/OGR:
+    http://www.gdal.org/
     http://remotesensing.org/gdal/
     http://www.maptools.org
+    http://wetnet.net/~we7u/xastir/
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
@@ -477,7 +482,7 @@ First Time Install:
        -----------------------
 
      NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
-       libgeotiff-1.2.2 may compile properly.  libgeotiff is intimately
+       libgeotiff-1.2.3 may compile properly.  libgeotiff is intimately
        tied to your version of libtiff.  libgeotiff 1.2.x or greater
        requires libtiff-3.6.0 BETA or later.  If your version of libtiff is
        older, get libgeotiff 1.1.4 or 1.1.5.  For the latter case you may
@@ -512,13 +517,13 @@ First Time Install:
        using private include files, yet still compile in support for your
        particular version of libtiff.
 
-       With libgeotiff-1.2.2/libtiff-3.6.0-beta or newer you shouldn't
+       With libgeotiff-1.2.3/libtiff-3.6.0-beta or newer you shouldn't
        need to copy these files across.  The newer libtiff and libgeotiff
        can work together using public interfaces.
      ------------------------
 
-        tar xzvf libgeotiff-1.2.2.tar.gz (or newer)
-        cd libgeotiff-1.1.2
+        tar xzvf libgeotiff-1.2.3.tar.gz (or newer)
+        cd libgeotiff-1.2.3
         ./configure
         make
         su (root)
@@ -806,6 +811,12 @@ First Time Install:
       code was fixed, having to do with Shapefiles.  Please run a version of
       GDAL/OGR that is newer than that date (or use the CVS version as
       described above).
+
+      In one case linking in GDAL caused some GTIFProj4ToLatLong calls to
+      break in an odd manner.  Basically Xastir linked that call in from the
+      GDAL library instead of the libgeotiff library, and geoTIFF's with
+      lat/long coordinates worked just fine.  GeoTIFF"s with UTM coordinates
+      didn't.  Configuring Xastir without GDAL support fixed that problem.
 
    10. OPTIONAL:  Install Berkely DB Library to enable map caching
       of internet maps.
