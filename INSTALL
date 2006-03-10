@@ -813,10 +813,11 @@ First Time Install:
       described above).
 
       In one case linking in GDAL caused some GTIFProj4ToLatLong calls to
-      break in an odd manner.  Basically Xastir linked that call in from the
-      GDAL library instead of the libgeotiff library, and geoTIFF's with
-      lat/long coordinates worked just fine.  GeoTIFF"s with UTM coordinates
-      didn't.  Configuring Xastir without GDAL support fixed that problem.
+      break in an odd manner:  Xastir linked the libgeotiff functions in that
+      call in from the GDAL library instead of the libgeotiff library.
+      GeoTIFF's with lat/long coordinates worked just fine, but geoTIFF's with
+      UTM coordinates didn't.  Configuring Xastir without GDAL support fixed
+      that problem.
 
    10. OPTIONAL:  Install Berkely DB Library to enable map caching
       of internet maps.
