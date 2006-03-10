@@ -771,7 +771,8 @@ First Time Install:
       but using the external library headers.  If the versions of each are
       sufficiently different, things may not work right.  If you run into such
       problems you can either reconfigure GDAL to use external libraries for
-      these three or configure Xastir without GDAL support.
+      these three or configure Xastir without GDAL support.  Also see the note
+      below about libtiff-3.8.0.
 
       NOTE:  This is currently being added to Xastir:  Some support is there
       now for the vector formats, but it isn't "pretty" yet.  Should you wish
