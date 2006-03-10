@@ -844,7 +844,7 @@ Getting Maps and other Data Files for Xastir:
       need to determine the coordinate system by finding external files
       called "metadata" that are associated with the images.  US
       Federal datasources have a standardized file format (".fgd") that
-      provides this information, but man state or university GIS departments
+      provides this information, but many state or university GIS departments
       just make some other format up for themselves.  Most sources of
       map data should have such metadata available, but sometimes it is a bit 
       of a chore to find it.
@@ -928,8 +928,8 @@ Getting Maps and other Data Files for Xastir:
             rgb2pct.py old.tif new.tif
       can create a single band palette based geotiff from a three band rgb 
       tif by dithering the colors down to a small pallette.  This last
-      tool requires gdal built with Python support.  See the gdal for
-      these tools for further information.
+      tool requires gdal built with Python support.  See the gdal 
+      documentation for these tools for further information.
 
     More manipulations of GeoTIFF files:
 
