@@ -3419,30 +3419,29 @@ void Format_area_for_output(double *area_km2, char *area_description, int sizeof
             area = area * 5280 * 5280;
             xastir_snprintf(area_description,
                 sizeof_area_description,
-                "%s: %0.2f %s",
-                langcode("POPUPMA037"), // Area
+                "A:%0.2f %s %s",
                 area,
-                langcode("POPUPMA039") ); // square feet
+                langcode("POPUPMA052"),     // sq
+                langcode("POPUPMA053") );   // ft
             //popup_message_always(langcode("POPUPMA020"),area_description);
         }
         else {  // Square meters
             area = area * 1000 * 1000;  // Square meters
             xastir_snprintf(area_description,
                 sizeof_area_description,
-                "%s: %0.2f %s",
-                langcode("POPUPMA037"), // Area
+                "A:%0.2f %s %s",
                 area,
-                langcode("POPUPMA040") ); // square meters
+                langcode("POPUPMA052"),     // sq
+                langcode("POPUPMA054") );   // meters
             //popup_message_always(langcode("POPUPMA020"),area_description);
         }
     }
     else {  // Not small
         xastir_snprintf(area_description,
             sizeof_area_description,
-            "%s: %0.2f %s %s",
-            langcode("POPUPMA037"), // Area
+            "A:%0.2f %s %s",
             area,
-            langcode("POPUPMA038"), // square
+            langcode("POPUPMA052"), // sq
             un_dst);
         //popup_message_always(langcode("POPUPMA020"),area_description);
     }

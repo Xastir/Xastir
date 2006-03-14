@@ -323,6 +323,10 @@ POPUPMA048|CAD-Label ein||
 POPUPMA049|CAD-Kommentare ein||
 POPUPMA050|CAD-Wahrscheinlichkeit ein||
 POPUPMA051|CAD-Fl‰chenmaﬂ ein||
+POPUPMA052|sq||
+POPUPMA053|ft||
+POPUPMA054|meters||
+POPUPMA055|mi|
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||

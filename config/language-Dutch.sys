@@ -327,6 +327,10 @@ POPUPMA048|Zet CAD labels aan||
 POPUPMA049|Zet CAD opemerkingen aan||
 POPUPMA050|Zet CAD waarschijnlijkheid aan||
 POPUPMA051|Zet CAD omgevingsgrootte aan||
+POPUPMA052|sq||
+POPUPMA053|ft||
+POPUPMA054|meters||
+POPUPMA055|mi|
 #
 # Status line labels
 BBARZM0001|Zoom %s||

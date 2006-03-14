@@ -315,6 +315,10 @@ POPUPMA048|Enable CAD labels||
 POPUPMA049|Enable CAD comments||
 POPUPMA050|Enable CAD probability||
 POPUPMA051|Enable CAD area size||
+POPUPMA052|sq||
+POPUPMA053|ft||
+POPUPMA054|meters||
+POPUPMA055|mi|
 #
 #
 # Status line labels
