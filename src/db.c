@@ -15988,7 +15988,16 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                     // Check whether the station is near enough to
                     // us to require that we alert on the packet.
                     //
-                    if ( (float)distance <= emergency_range ) {
+                    // This may be slightly controversial, but if we
+                    // don't know WHERE a station is, we can't help
+                    // much in an emergency, can we?  The
+                    // zero-distance check helps in the case where
+                    // we haven't yet or never get a position packet
+                    // for a station.  As soon as we have a position
+                    // and it is within a reasonable range, we do
+                    // our emergency popups.
+                    //
+                    if ( distance != 0.0 && (float)distance <= emergency_range ) {
 
 // Do the conversion for emergency_range to mi or km as needed.
 //                        if (english_units) {
