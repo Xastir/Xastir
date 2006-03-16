@@ -802,7 +802,9 @@ Getting Maps and other Data Files for Xastir:
         http://www.lizardtech.com/download/dl_options.php?page=tools
 
       mrsiddecode can produce GeoTIFF output with the right command line
-      options.
+      options.  There is a Linux version of mrssiddecode, but one user
+      has observed that the Windows version running under Wine is a little 
+      more robust.  Your milage may vary.
 
       Be warned that MrSID is a very effective compression algorithm, and
       compressed MrSID files of size 5MB could easily decompress into 50MB
