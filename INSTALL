@@ -543,15 +543,20 @@ First Time Install:
 
    4. RECOMMENDED:  Install ESRI Shapefile support.  Allows using many sources
      of online polygon, polyline, and point maps, including ones from NOAA.
-     This is also the format for weather alert maps.
-     The instructions aren't clear in this package, but just installing the
-     library is sufficient:
+     This is also the format for weather alert maps.  This support is provided
+     by the shapelib package.
+
+     It isn't clear from the install instructions in shapelib, but just 
+     installing the library is sufficient, and just typing "make" and 
+     "make install" doesn't make or install the libraries.  Take these steps:
 
        make lib
        su (root)
        make lib_install
        /sbin/ldconfig
        exit (from root)
+
+     and you should have what you need.
  
      You may also need to tweak "/etc/ld.so.conf" to contain the proper path
      to the libraries and then run /sbin/ldconfig to update "/etc/ld.so.cache".
