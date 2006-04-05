@@ -528,6 +528,18 @@ the NTFS "convert.exe" program instead of the ImageMagick
 If you experience this, check your path settings and make sure that
 ImageMagick's path is first.
 
+To make the "Fetch NWS Alerts" button work for weather objects and
+to be able to double-click on a weather alert in the View->Weather
+Alerts window, type this into a Cygwin command window:
+
+    ln -s `which finger` /usr/bin/finger
+
+(the ` is a backquote, left of number 1 on keyboard. NOT single
+quote).  Without this, the NWS alert window appears with blank and
+the console will display:
+
+    "sh: /usr/bin/finger: No such file or directory".
+
 
 [ ] Step 9)  Document & Back Up the Configuration
 
@@ -592,7 +604,7 @@ or the Cygwin/XFree86 web-site:
     http://cygwin.com/xfree/
 
 
-[ ] Step 9)  Keeping up-to-date:
+[ ] Step 10)  Keeping up-to-date:
 
 Once a week or once a month, run the Cygwin network installer
 program (step 1b above).  After it finishes, open a Cygwin window
