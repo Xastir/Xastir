@@ -8,6 +8,8 @@ pkglib_SCRIPTS = \
     coord-convert.pl \
     fcc-get \
     get-gnis \
+    get-maptools.sh \
+    get-NWSdata \
     get_shapelib.sh \
     icontable.pl \
     inf2geo.pl \
