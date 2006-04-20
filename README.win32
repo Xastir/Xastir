@@ -316,7 +316,7 @@ It appears that Cygwin uses the PATH variable to look for both
 binaries and libraries.  Add this line to the file (create the
 "~/.profile" file if the file doesn't exist):
 
- export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:/usr/local/bin:.
+ export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:/bin:/usr/local/bin:.
 
 If the line already exists in your .profile, add any missing pieces
 to it from the line above.  Directories should be separated by a ':'
