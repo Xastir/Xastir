@@ -950,7 +950,7 @@ void msg_record_ack(char *to_call_sign,
 
 // Called when we receive a REJ packet (reject).  Sets the "acked"
 // field in a Message to 4 to indicate that the message has been
-// rejected by the remove station.  This gets rid of the
+// rejected by the remote station.  This gets rid of the
 // highlighting in the Send Message dialog for that message line.
 // This lets us know which messages have been rejected and which
 // have not.  We use this in update_messages() to flag that
