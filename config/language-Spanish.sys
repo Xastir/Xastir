@@ -722,6 +722,7 @@ WPUPMSB014|type||
 WPUPMSB015|Broadcast||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*CANCELLED*||
+WPUPMSB018|*REJECTED*||
 #
 # Auto Contestación
 WPUPARM001|Cambiar auto Contestación||

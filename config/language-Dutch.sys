@@ -731,6 +731,7 @@ WPUPMSB014|type||
 WPUPMSB015|Zend uit||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*AFGEBROKEN*||
+WPUPMSB018|*REJECTED*||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Automatich antwoord bericht||

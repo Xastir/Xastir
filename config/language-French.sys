@@ -724,6 +724,7 @@ WPUPMSB014|type||
 WPUPMSB015|Broadcast||
 WPUPMSB016|*EXPIRATION*||
 WPUPMSB017|*ANNULE*||
+WPUPMSB018|*REJECTED*||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||

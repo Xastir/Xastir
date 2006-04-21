@@ -727,6 +727,7 @@ WPUPMSB014|Typ||
 WPUPMSB015|Rundmeldung||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*ABBRUCH*||
+WPUPMSB018|*REJECTED*||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||
