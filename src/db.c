@@ -831,8 +831,8 @@ void msg_update_ack_stamp(long record_num) {
 
 // Called when we receive an ACK.  Sets the "acked" field in a
 // Message which gets rid of the highlighting in the Send Message
-// dialog for that line.  This lets us know which messages have
-// been acked and which have not.  If timeout is non-zero, then
+// dialog for that message line.  This lets us know which messages
+// have been acked and which have not.  If timeout is non-zero, then
 // set acked to 2:  We use this in update_messages() to flag that
 // "*TIMEOUT*" should prefix the string.  If cancelled is non-zero,
 // set acked to 3:  We use this in update_messages() to flag that
@@ -938,7 +938,123 @@ void msg_record_ack(char *to_call_sign,
         // Call check_popup_messages() here in order to pop up any
         // closed Send Message dialogs.  For first ack's or
         // CANCELLED messages it is less important, but for TIMEOUT
-        // messages it is very important.a
+        // messages it is very important.
+        //
+        (void)check_popup_window(m_fill.call_sign, 2);  // Calls update_messages()
+    }
+}
+
+
+
+
+
+// Called when we receive a REJ packet (reject).  Sets the "acked"
+// field in a Message to 4 to indicate that the message has been
+// rejected by the remove station.  This gets rid of the
+// highlighting in the Send Message dialog for that message line.
+// This lets us know which messages have been rejected and which
+// have not.  We use this in update_messages() to flag that
+// "*REJECTED*" should prefix the string.
+//
+// The most common source of REJ packets would be from sending to a
+// D700A who's buffers are full, so that it can't take another
+// message.
+//
+void msg_record_rej(char *to_call_sign,
+                    char *my_call,
+                    char *seq) {
+    Message m_fill;
+    long record;
+    int do_update = 0;
+
+    if (debug_level & 1) {
+        fprintf(stderr,"Recording rej for message to: %s, seq: %s\n",
+            to_call_sign,
+            seq);
+    }
+
+    // Find the corresponding message in msg_data[i], set the
+    // "acked" field to four.
+
+    substr(m_fill.call_sign, to_call_sign, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
+    substr(m_fill.from_call_sign, my_call, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.from_call_sign);
+
+    substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
+
+    // Look for a message with the same to_call_sign, my_call,
+    // and seq number
+    record = msg_find_data(&m_fill);
+
+    if (record == -1L) { // No match yet, try another tactic.
+        if (seq[2] == '}' && strlen(seq) == 3) {
+
+            // Try it again without the trailing '}' character
+            m_fill.from_call_sign[2] = '\0';
+
+            // Look for a message with the same to_call_sign,
+            // my_call, and seq number (minus the trailing '}')
+            record = msg_find_data(&m_fill);
+        }
+    }
+
+    if(record != -1L) {     // Found a match!
+        if (debug_level & 1) {
+            fprintf(stderr,"Found in msg db, updating acked field %d -> 4, seq %s, record %ld\n",
+                msg_data[msg_index[record]].acked,
+                seq,
+                record);
+        }
+        // Only cause an update if this is the first rej.  This
+        // reduces dialog "flashing" a great deal
+        if ( msg_data[msg_index[record]].acked == 0 ) {
+
+            // Check for my callsign (including SSID).  If found,
+            // update any open message dialogs
+            if (is_my_call(msg_data[msg_index[record]].from_call_sign, 1) ) {
+
+                //fprintf(stderr,"From: %s\tTo: %s\n",
+                //    msg_data[msg_index[record]].from_call_sign,
+                //    msg_data[msg_index[record]].call_sign);
+
+                do_update++;
+            }
+        }
+        else {  // This message has already been acked.
+        }
+
+        // Actually record the REJ here
+        msg_data[msg_index[record]].acked = (char)4;
+
+        // Set the interval to zero so that we don't display it
+        // anymore in the dialog.  Same for tries.
+        msg_data[msg_index[record]].interval = 0;
+        msg_data[msg_index[record]].tries = 0;
+
+        if (debug_level & 1) {
+            fprintf(stderr,"Found in msg db, updating acked field %d -> 4, seq %s, record %ld\n\n",
+                msg_data[msg_index[record]].acked,
+                seq,
+                record);
+        }
+    }
+    else {
+        if (debug_level & 1)
+            fprintf(stderr,"Matching message not found\n");
+    }
+
+    if (do_update) {
+
+        update_messages(1); // Force an update
+
+        // Call check_popup_messages() here in order to pop up any
+        // closed Send Message dialogs.  For first ack's or
+        // CANCELLED messages it is less important, but for TIMEOUT
+        // messages it is very important.
         //
         (void)check_popup_window(m_fill.call_sign, 2);  // Calls update_messages()
     }
@@ -1506,6 +1622,12 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                         sizeof(prefix),
                                         "%s ",
                                         langcode("WPUPMSB017") ); // "*CANCELLED*"
+                                }
+                                else if (msg_data[msg_index[j]].acked == 4) {
+                                    xastir_snprintf(prefix,
+                                        sizeof(prefix),
+                                        "%s ",
+                                        langcode("WPUPMSB018") ); // "*REJECTED*"
                                 }
                                 else prefix[0] = '\0';
 
@@ -14020,13 +14142,70 @@ if (reply_ack) { // For debugging, so we only have reply-ack
         fprintf(stderr,"2\n");
     //--------------------------------------------------------------------------
     if (!done && len > 3 && strncmp(message,"rej",3) == 0) {              // REJ
+
         substr(msg_id,message+3,5);
 
         if ( is_my_call(addr,1) ) { // Check SSID also
+            // REJ is for me!
             fprintf(stderr,"Received a REJ packet from %s: |%s| |%s|\n",call,addr,msg_id);
+
+            // This one also handles REPLY-ACK protocol just fine.
+            msg_record_rej(call,addr,msg_id);   // Record the REJ for this message
+        }
+        else {  // REJ is for another station
+            /* Now if I have Igate on and I allow to retransmit station data           */
+            /* check if this message is to a person I have heard on my TNC within an X */
+            /* time frame. If if is a station I heard and all the conditions are ok    */
+            /* spit the REJ out on the TNC                                             */
+            if (operate_as_an_igate>1
+                    && from==DATA_VIA_NET
+                    && !is_my_call(call,1) // Check SSID also
+                    && port != -1) {    // Not from a log file
+                char short_path[100];
+
+//fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",
+//    operate_as_an_igate,
+//    from,
+//    my_callsign,
+//    call,
+//    addr);
+                shorten_path(path,short_path,sizeof(short_path));
+
+                // Only send '}' and the rej_string if it's not
+                // empty, else just end the packet with the message
+                // string.  This keeps us from appending a '}' when
+                // it's not called for.
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message),
+//                    "}%s>%s,TCPIP,%s*::%s:%s%s%s",
+                    "}%s>%s,TCPIP,%s*::%s:%s",
+ 
+                    call,
+                    short_path,
+                    my_callsign,
+                    addr9,
+//                    message,
+                    message_plus_acks);
+//                    (ack_string[0] == '\0') ? "" : "}",
+//                    ack_string);
+
+if (reply_ack) { // For debugging, so we only have reply-ack
+                 // messages and acks scrolling across the screen.
+//    fprintf(stderr,"Attempting to send REJ to RF:  %s\n", ipacket_message);
+}
+
+                output_igate_rf(call,
+                    addr,
+                    path,
+                    ipacket_message,
+                    port,
+                    third_party,
+                    NULL);
+
+                igate_msgs_tx++;
+            }
         }
 
-        // We ignore it
         done = 1;
     }
     if (debug_level & 1)
