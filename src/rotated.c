@@ -42,6 +42,7 @@
 #include <string.h>
 #include "rotated.h"
 #include "snprintf.h"
+#include "rpl_malloc.h"
 
 // Must be last include file
 #include "leak_detection.h"

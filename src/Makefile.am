@@ -67,7 +67,8 @@ xastir_SOURCES = \
     wx_gui.c \
     xa_config.c xa_config.h \
     xastir.h \
-    x_spider.c x_spider.h
+    x_spider.c x_spider.h \
+    rpl_malloc.c
 
 xastir_udp_client_SOURCES = \
     xastir_udp_client.c
@@ -75,7 +76,8 @@ xastir_udp_client_SOURCES = \
 testawk_SOURCES = \
     testawk.c \
     awk.c \
-    dbfawk.c
+    dbfawk.c \
+    rpl_malloc.c
 
 xastir_LDADD=@LIBRTREE@
 

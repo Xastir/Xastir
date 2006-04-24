@@ -5096,26 +5096,3 @@ void clear_dangerous(void) {
 }
 
 
-
-
-
-//
-// Work around bug on some systems where malloc (0) fails.
-// written by Jim Meyering
-//
-// configure.ac calls out AC_FUNC_MALLOC which checks the malloc()
-// function.  If malloc() is determined to do the wrong thing when
-// passed a 0 value, the Autoconf macro will do this:
-//      #define malloc rpl_malloc
-// We then need to have an rpl_malloc function defined.  Here it is:
-//
-// Allocate an N-byte block of memory from the heap.
-// If N is zero, allocate a 1-byte block.
-// 
-void *rpl_malloc (size_t size) {
-    if (size == 0)
-        size++;
-    return malloc (size);
-}
-
-
