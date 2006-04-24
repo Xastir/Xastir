@@ -6,6 +6,10 @@
  * Portions Copyright (C) 2004-2006  The Xastir Group
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #include "io.h"
 #include <stdio.h>
 #include <fcntl.h>

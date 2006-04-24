@@ -6,6 +6,11 @@
 /*                  KB3EGH 03/24/2004                                    */
 /* needs -I/Developer/Headers/FlatCarbon                                 */
 /*=======================================================================*/
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

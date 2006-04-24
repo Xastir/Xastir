@@ -5,6 +5,11 @@
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
  * Portions Copyright (C) 2004-2006  The Xastir Group
  */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #include "io.h"
 #include <ctype.h>
 

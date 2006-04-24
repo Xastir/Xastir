@@ -22,7 +22,9 @@
  * Look at the README for more information on the program.
  */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif  // HAVE_CONFIG_H
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -23,15 +23,19 @@
  */
 
 
+/*
+//
+// We DON'T want config.h to redefine malloc in this file else we'll
+// get an infinite loop.
+//
+#ifdef HAVE_CONFIG_H
 #include "config.h"
-#include <unistd.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <sys/stat.h>
-//#include <ctype.h>
+#endif  // HAVE_CONFIG_H
+*/
 
+#include <stdlib.h>
 
-
+#include "rpl_malloc.h"
 
 //
 // Work around bug on some systems where malloc (0) fails.

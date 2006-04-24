@@ -26,7 +26,10 @@
  AX.25 Parts adopted from: aprs_tty.c by Henk de Groot - PE1DNN
 */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #include "snprintf.h"
 
 #include <stdio.h>

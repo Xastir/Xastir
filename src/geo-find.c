@@ -10,6 +10,10 @@
  * coordinates.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #include "geo.h"
 #include "io.h"
 

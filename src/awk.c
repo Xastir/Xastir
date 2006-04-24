@@ -60,7 +60,11 @@
  *   implement \t, \n, \0[x]nn etc.
  *   instantiate new symbols instead of ignoring them?
  */
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #ifdef HAVE_LIBPCRE
 #include <stdio.h>
 #include <string.h>

@@ -32,6 +32,9 @@
 
 /* ********************************************************************** */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -40,9 +43,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+
 #include "rotated.h"
 #include "snprintf.h"
-#include "rpl_malloc.h"
 
 // Must be last include file
 #include "leak_detection.h"

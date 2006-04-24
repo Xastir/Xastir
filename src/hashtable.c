@@ -6,6 +6,9 @@
 /* Copyright (C) 2004 Christopher Clark <firstname.lastname@cl.cam.ac.uk> */
 /* Portions Copyright (C) 2004-2006  The Xastir Group */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -36,7 +36,10 @@
 
 // Need this one before the #ifdef in order to get the definition of
 // USE_MAP_CACHE, if defined.
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif  // HAVE_CONFIG_H
+
 
 #ifdef  USE_MAP_CACHE
 //#warning USE_MAP_CACHE Defined

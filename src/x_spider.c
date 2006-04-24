@@ -101,7 +101,10 @@
 // multiplexer, repeater.
 
 
-//#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif  // HAVE_CONFIG_H
+
 #include "x_spider.h"
 #include "snprintf.h"
 
