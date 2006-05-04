@@ -540,6 +540,13 @@ the console will display:
 
     "sh: /usr/bin/finger: No such file or directory".
 
+When specifying serial ports to use with Xastir,
+
+    "COM1" is called "/dev/ttyS0" in Cygwin (and Linux)
+    "COM2" is called "/dev/ttyS1" in Cygwin (and Linux)
+
+Note the capital 'S'.
+
 
 [ ] Step 9)  Document & Back Up the Configuration
 
