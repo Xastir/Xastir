@@ -25,12 +25,12 @@ read
 #
 echo
 echo Press the ENTER key when asked for the CVS password below:
-cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login
+cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
 
 
 # Fetch the latest Xastir sources
 #
-cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
+cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
 
 
 # Run the update script to configure/compile/install it
