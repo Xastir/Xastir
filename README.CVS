@@ -44,13 +44,13 @@ CVS Instructions:
         For those that are Internet-challenged, here are the two commands,
         customized for the Xastir project:
 
-          cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login
+          cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
 
         Press the <ENTER> key when it asks you for a password.  That creates
         a ".cvspass" file in your home directory with the anonymous login
         information inside it.
 
-          cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
+          cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
 
         That creates a subdirectory called "xastir" that has all the latest
         sources in it.
@@ -58,12 +58,12 @@ CVS Instructions:
      You may want to use this instead, to get the sources corresponding to the
      latest release:
 
-       cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r RELEASE xastir
+       cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r RELEASE xastir
 
      or use this line to get the latest version deemed "stable" by the developers
      (generally newer than the RELEASE version):
 
-       cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r STABLE xastir
+       cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r STABLE xastir
 
      All done!  You now have the latest development sources on your computer.
      Now you can forget about all of the previous instructions unless you

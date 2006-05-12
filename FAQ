@@ -405,6 +405,10 @@ The Answers
     find -name Root -path \*CVS\* -exec perl -pi.bak -e's/cvs.xastir.sf.net/cvs.sf.net/' \{\} \;
     find -name Root -path \*CVS\* -exec perl -pi.bak -e's/cvs.xastir.sourceforge.net/cvs.sf.net/' \{\} \;
 
+    Okay, are we having fun yet?  They changed things again for us
+    on May 12, 2006.  We now want this as the name of the CVS server
+    in the CVS/Root files:   "xastir.cvs.sourceforge.net"
+
 
 4. Running Xastir
 

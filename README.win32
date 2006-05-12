@@ -374,8 +374,8 @@ Hit <ENTER> when asked for a password after typing line four (the
   touch .cvspass
   mkdir src
   cd src
-  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
-  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
+  cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login 
+  cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
 NOTE:  The "login" command must complete without errors in order to
 create a dummy blank password in your .cvspass file.  Without this
