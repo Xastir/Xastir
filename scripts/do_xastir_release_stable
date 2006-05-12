@@ -50,7 +50,8 @@ printf("\n*** Removing xastir/, $file_prefix/ directories, $filename, xastir.tgz
 
 printf("\n*** CVS Checkout\n\n");
 #`cvs -z3 -d:pserver:anonymous\@cvs.xastir.sourceforge.net:/cvsroot/xastir co xastir`;
-`export CVS_RSH=ssh;cvs -z3 -d:ext:we7u\@cvs.sourceforge.net:/cvsroot/xastir co xastir`;
+#`export CVS_RSH=ssh;cvs -z3 -d:ext:we7u\@cvs.sourceforge.net:/cvsroot/xastir co xastir`;
+`export CVS_RSH=ssh;cvs -z3 -d:ext:we7u\@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir`;
 &Proceed;
 
 printf("\n*** Bootstrapping\n\n");
