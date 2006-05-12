@@ -57,6 +57,7 @@ PACLen 128
 PASSALL off
 HBAUD 1200
 TXDELAY 25
+HEADERLN off
 # Delete following lines if without GPS
 GBAUD 4800
 GPSTEXT $GPRMC
