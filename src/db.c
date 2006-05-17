@@ -13989,7 +13989,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             reply_ack++;
 
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
-                fprintf(stderr,"Found Reply/Ack:%s\n",message);
+                fprintf(stderr,"1Found Reply/Ack:%s\n",message);
                 fprintf(stderr,"Orig_msg_id:%s\t",msg_id);
             }
 
@@ -14000,7 +14000,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             xastir_snprintf(ack_string,
                 sizeof(ack_string),
                 "%s",
-                temp_ptr);
+                temp_ptr+1); // After the '}' character!
 
             // Terminate it here so that rest of decode works
             // properly.  We can get duplicate messages
@@ -14028,14 +14028,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 reply_ack++;
 
                 if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
-                    fprintf(stderr,"Found Reply/Ack:%s\n",message);
+                    fprintf(stderr,"2Found Reply/Ack:%s\n",message);
                 }
 
 // Put this code into the UI message area as well (if applicable).
                 xastir_snprintf(ack_string,
                     sizeof(ack_string),
                     "%s",
-                    temp_ptr);
+                    temp_ptr+1);    // After the '}' character!
 
                 ack_string[yy] = '\0';  // Terminate the string
 
@@ -14086,10 +14086,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             msg_record_ack(call,addr,msg_id,0,0);   // Record the ack for this message
         }
         else {  // ACK is for another station
-            /* Now if I have Igate on and I allow to retransmit station data           */
-            /* check if this message is to a person I have heard on my TNC within an X */
-            /* time frame. If if is a station I heard and all the conditions are ok    */
-            /* spit the ACK out on the TNC -FG                                         */
+            // Now if I have Igate on and I allow to retransmit station data
+            // check if this message is to a person I have heard on my TNC within an X
+            // time frame. If if is a station I heard and all the conditions are ok
+            // spit the ACK out on the TNC -FG
             if (operate_as_an_igate>1
                     && from==DATA_VIA_NET
                     && !is_my_call(call,1) // Check SSID also
@@ -14236,10 +14236,12 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 // applicable).
 
         // Check for Reply/Ack
-        if (strlen(ack_string) != 0) { // Have a free-ride ack to deal with
+        if (reply_ack && strlen(ack_string) != 0) { // Have a free-ride ack to deal with
 
+//fprintf(stderr, "reply-ack: clear_acked_message()\n");
             clear_acked_message(call,addr,ack_string);  // got an ACK for me
 
+//fprintf(stderr, "reply-ack: msg_record_ack()\n");
             msg_record_ack(call,addr,ack_string,0,0);   // Record the ack for this message
         }
 
@@ -14249,6 +14251,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 // Note that msg_id has already been truncated by this point.
 // orig_msg_id contains the full REPLY-ACK text.
 
+//fprintf(stderr, "store_most_recent_ack()\n");
         store_most_recent_ack(call,msg_id);
  
         // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
