@@ -267,6 +267,14 @@ Cell Name
 
                 if (strlen(line) > 0) {
 
+                    // Default population, in case the field isn't
+                    // present in the file.
+                    xastir_snprintf(population,sizeof(population),"0");
+ 
+// Examples of old/new format:
+// 1462331|VA|Abingdon Elementary School|school|Arlington|51|013|385023N|0770546W|38.83972|-77.09611||||||||Alexandria
+// 1462331|VA|Abingdon Elementary School|School|Arlington|51|013|385023N|0770545W|38.8398349|-77.0958117|56|Alexandria
+
                     //NOTE:  We handle running off the end of "line"
                     //via the "continue" statement.  Skip the line
                     //if we don't find enough parameters while
@@ -344,6 +352,10 @@ Cell Name
 
                     j[0] = '\0';
 
+// Examples of old/new format:
+// 1462331|VA|Abingdon Elementary School|school|Arlington|51|013|385023N|0770546W|38.83972|-77.09611||||||||Alexandria
+// 1462331|VA|Abingdon Elementary School|School|Arlington|51|013|385023N|0770545W|38.8398349|-77.0958117|56|Alexandria
+
                     // Find end of Primary Latitude field (DDMMSSN)
                     i = index(j+1, '|');
 
@@ -379,7 +391,7 @@ Cell Name
                     i = index(j+1, '|');
 
                     if (i == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     i[0] = '\0';
@@ -389,25 +401,31 @@ Cell Name
                     j = index(i+1, '|');
 
                     if (j == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     j[0] = '\0';
 
-                    // Find end of Source Latitude field (DMS)
+// Examples of old/new format:
+// 1462331|VA|Abingdon Elementary School|school|Arlington|51|013|385023N|0770546W|38.83972|-77.09611||||||||Alexandria
+// 1462331|VA|Abingdon Elementary School|School|Arlington|51|013|385023N|0770545W|38.8398349|-77.0958117|56|Alexandria
+ 
+                    // Find end of Source Latitude field (DMS) (old
+                    // format) or elevation (new format)
                     i = index(j+1, '|');
 
                     if (i == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     i[0] = '\0';
 
-                    // Find end of Source Longitude field (DMS)
+                    // Find end of Source Longitude field (DMS) (old
+                    // format) or 
                     j = index(i+1, '|');
 
                     if (j == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     j[0] = '\0';
@@ -417,7 +435,7 @@ Cell Name
                     i = index(j+1, '|');
 
                     if (i == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     i[0] = '\0';
@@ -427,7 +445,7 @@ Cell Name
                     j = index(i+1, '|');
 
                     if (j == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     j[0] = '\0';
@@ -436,7 +454,7 @@ Cell Name
                     i = index(j+1, '|');
 
                     if (i == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     i[0] = '\0';
@@ -445,19 +463,20 @@ Cell Name
                     j = index(i+1, '|');
 
                     if (j == NULL) {    // Pipe not found
-                        continue;   // Skip this line
+                        goto FINISH;    // We have enough to process now
                     }
 
                     if ( j != NULL ) {
                         j[0] = '\0';
                         xastir_snprintf(population,sizeof(population),"%s",i+1);
-                    } else {
-                        xastir_snprintf(population,sizeof(population),"0");
-                    } 
+                    }
+
+FINISH:
                     clean_string(population);
 
-                    // There are two more field, "Federal Status"
-                    // and "Cell Name".  We ignore those for now.
+                    // There are two more fields (old format),
+                    // "Federal Status" and "Cell Name".  We ignore
+                    // those for now.
  
                     lat_dd[0] = latitude[0];
                     lat_dd[1] = latitude[1];
