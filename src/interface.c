@@ -1308,7 +1308,7 @@ void channel_data(int port, unsigned char *string, int length) {
 
         // Copy the data across
         xastir_snprintf((char *)incoming_data,
-            length,
+            length+1,
             "%s",
             string);
 
