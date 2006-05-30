@@ -11174,7 +11174,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             // Note that the length of incoming_data
                             // can increase within decode_ax25_header().
                             if ( !decode_ax25_header( (unsigned char *)incoming_data,
-                                    incoming_data_length ) ) {
+                                    &incoming_data_length ) ) {
                                 // Had a problem decoding it.  Drop
                                 // it on the floor.
                                 break;

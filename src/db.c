@@ -15527,14 +15527,14 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 // see if we're missing anything important.
 //
 //
-// Inputs:  incoming_data       Raw string
+// Inputs:  incoming_data       Raw string (must be MAX_LINE_SIZE or bigger)
 //          length              Length of raw string
 //
 // Outputs: int                 0 if it is a bad packet,
 //                              1 if it is good
 //          incoming_data       Processed string
 //
-int decode_ax25_header(unsigned char *incoming_data, int length) {
+int decode_ax25_header(unsigned char *incoming_data, int *length) {
     char temp[20];
     char result[MAX_LINE_SIZE+100];
     char dest[15];
@@ -15551,8 +15551,9 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
     // Drop the packet if it is too long.  Note that for KISS packets
     // we can't use strlen() as there can be 0x00 bytes in the
     // data itself.
-    if (length > 1024) {
+    if (*length > 1024) {
         incoming_data[0] = '\0';
+        *length = 0;
         return(0);
     }
 
@@ -15622,7 +15623,7 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 // can fix it someplace earlier in the process).  Correct the
 // current packet so we don't get the extra garbage tacked onto the
 // end.
-    for (i = ptr; i < length; i++) {
+    for (i = ptr; i < *length; i++) {
         if (incoming_data[i] == KISS_FEND) {
             fprintf(stderr,"***Found concatenated KISS packets:***\n");
             incoming_data[i] = '\0';    // Truncate the string
@@ -15638,12 +15639,16 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
     // Copy the result onto the top of the input data.  Note that
     // the length can sometimes be longer than the input string, so
     // we can't just use the "length" variable here or we'll
-    // truncate our string.
+    // truncate our string.  Make sure the incoming_data variable is
+    // MAX_LINE_SIZE or bigger.
     //
     xastir_snprintf((char *)incoming_data,
         MAX_LINE_SIZE,
         "%s",
         result);
+
+    // Write out the new length
+    *length = strlen(result); 
 
 //fprintf(stderr,"%s\n",incoming_data);
 

@@ -862,7 +862,16 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
             //
 //            input_string[data_length+36] = '\0';
 
-            if ( !decode_ax25_header( (unsigned char *)&input_string[37], data_length ) ) {
+
+// WE7U:
+// We may need to extend input_string by a few characters before it
+// is fed to us.  Something like max_callsigns * 3 or 4 characters,
+// to account for '*' and SSID characters that we might add.  This
+// keeps the string from getting truncated as we add bytes to the
+// header in decode_ax25_header.
+
+
+            if ( !decode_ax25_header( (unsigned char *)&input_string[37], &data_length ) ) {
 //                int zz;
 
                 // Had a problem decoding it.  Drop it on the floor.
@@ -1196,6 +1205,12 @@ int get_device_status(int port) {
 // string is the string of data
 // length is the length of the string.  If 0 then use strlen()
 // on the string itself to determine the length.
+//
+// Note that decode_ax25_header() and perhaps other routines may
+// increase the length of the string while processing.  We need to
+// send a COPY of our input string off to the decoding routines for
+// this reason, and the size of the buffer must be MAX_LINE_SIZE
+// for this reason also.
 //***********************************************************
 void channel_data(int port, unsigned char *string, int length) {
     int max;
@@ -1288,6 +1303,15 @@ void channel_data(int port, unsigned char *string, int length) {
             fprintf(stderr,"data_lock, Port = %d\n", port);
 
 
+        // Allocate space for our string plus some expansion
+        incoming_data = (unsigned char*)malloc(MAX_LINE_SIZE);
+
+        // Copy the data across
+        xastir_snprintf((char *)incoming_data,
+            length,
+            "%s",
+            string);
+
         // If it's any of three types of GPS ports and is a GPRMC or
         // GPGGA string, just stick it in one of two global
         // variables for holding such strings.  UpdateTime() can
@@ -1328,7 +1352,6 @@ void channel_data(int port, unsigned char *string, int length) {
                     //
                     if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
                         // Decode the string normally.
-                        incoming_data = string;
                         incoming_data_length = length;
                         data_port = port;
                         data_avail = 1;
@@ -1343,7 +1366,6 @@ void channel_data(int port, unsigned char *string, int length) {
 
             default:    // Not one of the above three types, decode
                         // the string normally.
-                incoming_data = string;
                 incoming_data_length = length;
                 data_port = port;
                 data_avail = 1;
@@ -1374,6 +1396,9 @@ void channel_data(int port, unsigned char *string, int length) {
             (void)select(0,NULL,NULL,NULL,&tmv);
             max++;
         }
+
+        // Get rid of our temporary storage
+        free(incoming_data);
     }
 
 

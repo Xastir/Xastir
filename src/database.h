@@ -524,7 +524,7 @@ extern void sort_display_file(char *filename, int size);
 extern void clear_sort_file(char *filename);
 extern void display_packet_data(void);
 extern int  redraw_on_new_packet_data;
-extern int decode_ax25_header(unsigned char *incoming_data, int length);
+extern int decode_ax25_header(unsigned char *incoming_data, int *length);
 extern int decode_ax25_line(char *line, char from, int port, int dbadd);
 
 // utilities
