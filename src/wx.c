@@ -957,21 +957,16 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
 
     /* wind speed */
     substr(temp_data1,(char *)(data+1),2);
-    if (type == APRS_WX4) {     // '#'  speed in mph
-
-// WE7U
-// The conversions may be wrong here according to Peet Bros docs!
-// Check APRS_WX4 and APRS_WX6 as well.
-
-        xastir_snprintf(weather->wx_speed,
-            sizeof(weather->wx_speed),
-            "%03d",
-            (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
-    } else {                    // '*'  speed in km/h    convert to mph
+    if (type == APRS_WX4) {     // '#'  speed in km/h, convert to mph
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
             "%03d",
             (int)(0.5 + (float)(strtol(temp_data1,&temp_conv,16)*0.62137)));
+    } else { // type == APRS_WX6,  '*'  speed in mph
+        xastir_snprintf(weather->wx_speed,
+            sizeof(weather->wx_speed),
+            "%03d",
+            (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
     }
 
     if (from) {
@@ -1198,7 +1193,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         ////////////////////////////////
         // Peet Brothers Ultimeter-II //
         ////////////////////////////////
-        case (APRS_WX4):
+        case (APRS_WX4):    // '#', Wind speed in km/h
+        case (APRS_WX6):    // '*', Wind speed in mph
+
             // This one assumes 0.1" rain gauge.  Must correct in software if
             // any other type is used.
 
@@ -1239,22 +1236,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             /* wind speed */
             substr(temp_data1,(char *)(data+2),2);
-            if (data[0]=='#') { // Data is in km/h
-// WE7U
-// The conversions may be wrong here according to Peet Bros docs!
-// Check APRS_WX4 and APRS_WX6 as well.
-
-// OLD          /* mph */
-                xastir_snprintf(weather->wx_speed,
-                    sizeof(weather->wx_speed),
-                    "%03d",
-                    (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
-            } else {    // Data is in MPH
-// OLD          /* from kph to mph */
+            if (type == APRS_WX4) { // '#', Data is in km/h, convert to mph
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
                     "%03d",
                     (int)(0.5 + (float)(strtol(temp_data1,&temp_conv,16)*0.62137)));
+            } else { // APRS_WX6 or '*', Data is in MPH
+                xastir_snprintf(weather->wx_speed,
+                    sizeof(weather->wx_speed),
+                    "%03d",
+                    (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
             }
 
             if (from) { // From remote station
@@ -2854,7 +2845,12 @@ void wx_decode(unsigned char *wx_line, int port) {
                         get_time(time_data));
                     weather->wx_sec_time=sec_now();
                     //weather->wx_data=1;
-                    wx_fill_data(0,APRS_WX4,wx_line,p_station);
+
+                    if (wx_line[0]=='#')    // Wind speed in km/h
+                        wx_fill_data(0,APRS_WX4,wx_line,p_station);
+                    else               // '*', Wind speed in mph
+                        wx_fill_data(0,APRS_WX6,wx_line,p_station);
+
                     decoded=1;
                 }
                 else if (strncmp("$ULTW",(char *)wx_line,5)==0

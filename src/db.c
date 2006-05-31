@@ -11479,8 +11479,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 break;
 
-            case (APRS_WX4):            // '#'          Peet Bros U-II (mph)
-            case (APRS_WX6):            // '*'          Peet Bros U-II (km/h)
+            case (APRS_WX4):            // '#'          Peet Bros U-II (km/h)
+            case (APRS_WX6):            // '*'          Peet Bros U-II (mph)
             case (APRS_WX3):            // '!'          Peet Bros Ultimeter 2000 (data logging mode)
             case (APRS_WX5):            // '$ULTW'      Peet Bros Ultimeter 2000 (packet mode)
 
@@ -15036,7 +15036,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 ok_igate_rf = done;
                 break;
 
-            case '#':   // Peet Bros U-II Weather Station (mph)     [APRS Reference, chapter 12]
+            case '#':   // Peet Bros U-II Weather Station (km/h)    [APRS Reference, chapter 12]
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: # (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
@@ -15044,7 +15044,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 ok_igate_rf = done;
                 break;
 
-            case '*':   // Peet Bros U-II Weather Station (km/h)
+            case '*':   // Peet Bros U-II Weather Station (mph)
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: * (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
