@@ -561,8 +561,15 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* wind direction */
+    //
+    // Note that the first two digits here may be 00, or may be FF
+    // if a direction calibration has been entered.  We should zero
+    // them.
+    //
     if (data[6] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+6),2);
+        temp_data1[0] = '0';
+        temp_data1[1] = '0';
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
             "%03d",
@@ -750,8 +757,15 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* wind direction */
+    //
+    // Note that the first two digits here may be 00, or may be FF
+    // if a direction calibration has been entered.  We should zero
+    // them.
+    //
     if (data[6] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+6),2);
+        temp_data1[0] = '0';
+        temp_data1[1] = '0';
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
             "%03d",
@@ -1354,8 +1368,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* wind direction */
+            //
+            // Note that the first two digits here may be 00, or may
+            // be FF if a direction calibration has been entered.
+            // We should zero them.
+            //
             if (data[8]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+8),2);
+                temp_data1[0] = '0';
+                temp_data1[1] = '0';
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
                     "%03d",
@@ -1544,8 +1565,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* wind direction */
+            //
+            // Note that the first two digits here may be 00, or may
+            // be FF if a direction calibration has been entered.
+            // We should zero them.
+            //
             if (data[11]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+11),2);
+                temp_data1[0] = '0';
+                temp_data1[1] = '0';
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
                     "%03d",
@@ -1804,8 +1832,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
+                    //
+                    // Note that the first two digits here may be
+                    // 00, or may be FF if a direction calibration
+                    // has been entered.  We should zero them.
+                    //
                     if (data[8]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+8),4);
+                        temp_data1[0] = '0';
+                        temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
                             "%03d",
@@ -1838,8 +1873,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
+                    //
+                    // Note that the first two digits here may be
+                    // 00, or may be FF if a direction calibration
+                    // has been entered.  We should zero them.
+                    //
                     if (data[140]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+140),4);
+                        temp_data1[0] = '0';
+                        temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
                             "%03d",
@@ -1872,8 +1914,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
+                    //
+                    // Note that the first two digits here may be
+                    // 00, or may be FF if a direction calibration
+                    // has been entered.  We should zero them.
+                    //
                     if (data[288]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+288),4);
+                        temp_data1[0] = '0';
+                        temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
                             "%03d",
@@ -1906,8 +1955,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
+                    //
+                    // Note that the first two digits here may be
+                    // 00, or may be FF if a direction calibration
+                    // has been entered.  We should zero them.
+                    //
                     if (data[8]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+8),4);
+                        temp_data1[0] = '0';
+                        temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
                             "%03d",
