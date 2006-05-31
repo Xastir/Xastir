@@ -594,9 +594,15 @@ void output_igate_net(char *line, int port, int third_party) {
         return;
     }
 
-    // Check for generic queries, which have a '?' mark as the first
-    // character in the message field.  We don't wish to gate these.
-    if (message[0] == '?') {
+    // Check for "general" queries.  We don't wish to gate these in
+    // either direction.  There are exactly three general query
+    // types defined in the spec.
+    //
+    if ( (   strstr(message,"?APRS?" ) != NULL)
+         || (strstr(message,"?IGATE?") != NULL)
+         || (strstr(message,"?WX?"   ) != NULL) ) {
+
+        // We found a general query, don't gate it.
 
         if (log_igate && (debug_level & 1024) ) {
 
@@ -609,7 +615,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: Generic Query!\n");
+                "REJECT: General Query!\n");
             log_data(LOGFILE_IGATE,temp);
 
             fprintf(stderr,temp);
@@ -779,8 +785,6 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     char temp[MAX_LINE_SIZE+20];
     int x;
     int first = 1;
-    char *ii;
-    char *jj;
 
 
     if ( (from == NULL) || (call == NULL) || (path == NULL) || (line == NULL) )
@@ -839,14 +843,15 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
         return;
     }
 
-    // Don't gate generic queries in any direction.  These packets
-    // have a '?' character after the initial ':' character.
+    // Don't gate "general" queries in any direction.  There are
+    // exactly three general query types defined in the spec.
     //
-    ii = strstr(path,":");  // Find the first ':' character
-    jj = strstr(path,":?"); // Find ":?" combination
+    if (   (strstr(line,"?APRS?" ) != NULL)
+        || (strstr(line,"?IGATE?") != NULL)
+        || (strstr(line,"?WX?"   ) != NULL) ) {
 
-    if ( (jj != NULL) && (ii == jj) ) {
-        // We found a generic query.  Don't gate it.
+        // We found a general query, don't gate it.
+
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
                 sizeof(temp),
@@ -857,7 +862,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: Generic query!\n");
+                "REJECT: General Query!\n");
             log_data(LOGFILE_IGATE,temp);
             fprintf(stderr,temp);
         }
