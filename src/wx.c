@@ -924,6 +924,9 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
         sizeof(weather->wx_station),
         "UII");
 
+    // '*' = MPH
+    // '#' = km/h
+    //
     // #  5 0B 75 0082 0082
     // *  7 00 76 0000 0000
     //    ^ ^  ^  ^
@@ -933,6 +936,12 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     //    wind dir
 
     /* wind direction */
+    //
+    // 0x00 is N
+    // 0x04 is E
+    // 0x08 is S
+    // 0x0C is W
+    //
     substr(temp_data1,(char *)data,1);
     xastir_snprintf(weather->wx_course,
         sizeof(weather->wx_course),
@@ -949,6 +958,11 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     /* wind speed */
     substr(temp_data1,(char *)(data+1),2);
     if (type == APRS_WX4) {     // '#'  speed in mph
+
+// WE7U
+// The conversions may be wrong here according to Peet Bros docs!
+// Check APRS_WX4 and APRS_WX6 as well.
+
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
             "%03d",
@@ -1185,7 +1199,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         // Peet Brothers Ultimeter-II //
         ////////////////////////////////
         case (APRS_WX4):
-            // This one assume 0.1" rain gauge.  Must correct in software if
+            // This one assumes 0.1" rain gauge.  Must correct in software if
             // any other type is used.
 
             if (debug_level & 1)
@@ -1197,13 +1211,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 "UII");
 
             /* wind direction */
+            //
+            // 0x00 is N
+            // 0x04 is E
+            // 0x08 is S
+            // 0x0C is W
+            //
             substr(temp_data1,(char *)(data+1),1);
             xastir_snprintf(weather->wx_course,
                 sizeof(weather->wx_course),
                 "%03d",
                 (int)(((float)strtol(temp_data1,&temp_conv,16)/16.0)*360.0));
 
-            // Check for course = 0.  Change to 360.
+            // Check for course == 0.  Change to 360.
             if (strncmp(weather->wx_course,"000",3) == 0) {
                 xastir_snprintf(weather->wx_course,
                 sizeof(weather->wx_course),
@@ -1219,14 +1239,18 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             /* wind speed */
             substr(temp_data1,(char *)(data+2),2);
-            if (data[0]=='#') {
-                /* mph */
+            if (data[0]=='#') { // Data is in km/h
+// WE7U
+// The conversions may be wrong here according to Peet Bros docs!
+// Check APRS_WX4 and APRS_WX6 as well.
+
+// OLD          /* mph */
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
                     "%03d",
                     (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
-            } else {
-                /* from kph to mph */
+            } else {    // Data is in MPH
+// OLD          /* from kph to mph */
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
                     "%03d",
