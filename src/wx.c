@@ -967,7 +967,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
         substr(temp_data1,(char *)(data+3),2);
         temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-        if (data[3] > '7') {  // Negative value, convert
+        if (temp_data1[0] > '7') {  // Negative value, convert
             temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
         }
 
@@ -1239,9 +1239,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 int temp4;
 
                 substr(temp_data1,(char *)(data+4),2);
-               temp4 = (int)strtol(temp_data1,&temp_conv,16);
+                temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                if (data[4] > '7') {  // Negative value, convert
+                if (temp_data1[0] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
@@ -1383,7 +1383,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+10),4);
                 temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                if (data[10] > '7') {  // Negative value, convert
+                if (temp_data1[0] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
@@ -1573,7 +1573,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+13),4);
                 temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                if (data[13] > '7') {  // Negative value, convert
+                if (temp_data1[0] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
@@ -1936,7 +1936,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+24),4);
                     temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                    if (data[24] > '7') {  // Negative value, convert
+                    if (temp_data1[0] > '7') {  // Negative value, convert
                         temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                     }
 
@@ -2058,7 +2058,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+60),4);
                     temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                    if (data[60] > '7') {  // Negative value, convert
+                    if (temp_data1[0] > '7') {  // Negative value, convert
                         temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                     }
 
@@ -2086,7 +2086,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+20),4);
                     temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                    if (data[20] > '7') {  // Negative value, convert
+                    if (temp_data1[0] > '7') {  // Negative value, convert
                         temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                     }
 
