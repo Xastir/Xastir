@@ -536,7 +536,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     // ^       ^  ^    ^    ^         ^                      ^
     // 0       6  8    12   16        24                     40
     /* wind speed */
-    if (data[0] != '-') {
+    if (data[0] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)data,4);
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
@@ -561,7 +561,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* wind direction */
-    if (data[6] != '-') {
+    if (data[6] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+6),2);
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
@@ -576,13 +576,13 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* outdoor temp */
-    if (data[8] != '-') {
+    if (data[8] != '-') { // '-' signifies invalid data
         int temp4;
 
         substr(temp_data1,(char *)(data+8),4);
         temp4 = (int)strtol(temp_data1,&temp_conv,16);
  
-        if (data[8] > '7') {  // Negative value, convert
+        if (temp_data1[0] > '7') {  // Negative value, convert
             temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
         }
 
@@ -598,7 +598,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* rain total long term */
-    if (data[12] != '-') {
+    if (data[12] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+12),4);
         xastir_snprintf(weather->wx_rain_total,
             sizeof(weather->wx_rain_total),
@@ -629,7 +629,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* baro */
-    if (data[16] != '-') {
+    if (data[16] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+16),4);
         xastir_snprintf(weather->wx_baro,
             sizeof(weather->wx_baro),
@@ -642,7 +642,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     
 
     /* outdoor humidity */
-    if (data[24] != '-') {
+    if (data[24] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+24),4);
         xastir_snprintf(weather->wx_hum,
             sizeof(weather->wx_hum),
@@ -654,7 +654,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* todays rain total */
-    if (data[40] != '-') {
+    if (data[40] != '-') { // '-' signifies invalid data
         if (from) {
             substr(temp_data1,(char *)(data+40),4);
             xastir_snprintf(weather->wx_prec_00,
@@ -715,7 +715,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     //         0       6  8     12   16                  32              44   48
 
     /* wind speed peak over last 5 min */
-    if (data[0] != '-') {
+    if (data[0] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)data,4);
         if (from) {
             xastir_snprintf(weather->wx_gust,
@@ -750,7 +750,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* wind direction */
-    if (data[6] != '-') {
+    if (data[6] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+6),2);
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
@@ -765,13 +765,13 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* outdoor temp */
-    if (data[8] != '-') {
+    if (data[8] != '-') { // '-' signifies invalid data
         int temp4;
 
         substr(temp_data1,(char *)(data+8),4);
         temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-        if (data[8] > '7') {  // Negative value, convert
+        if (temp_data1[0] > '7') {  // Negative value, convert
             temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
         }
 
@@ -785,7 +785,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
             weather->wx_temp[0] = 0;
     }
     /* todays rain total (on some units) */
-    if ((data[44]) != '-') {
+    if ((data[44]) != '-') { // '-' signifies invalid data
         if (from) {
             substr(temp_data1,(char *)(data+44),4);
             xastir_snprintf(weather->wx_prec_00,
@@ -799,7 +799,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* rain total long term */
-    if (data[12] != '-') {
+    if (data[12] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+12),4);
         xastir_snprintf(weather->wx_rain_total,
             sizeof(weather->wx_rain_total),
@@ -830,7 +830,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* baro */
-    if (data[16] != '-') {
+    if (data[16] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+16),4);
         xastir_snprintf(weather->wx_baro,
             sizeof(weather->wx_baro),
@@ -842,7 +842,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* outdoor humidity */
-    if (data[32] != '-') {
+    if (data[32] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+32),4);
         xastir_snprintf(weather->wx_hum,
             sizeof(weather->wx_hum),
@@ -854,7 +854,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     }
 
     /* 1 min wind speed avg */
-    if (len > 48 && (data[48]) != '-') {
+    if (len > 48 && (data[48]) != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+48),4);
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
@@ -961,7 +961,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     }
 
     /* outdoor temp */
-    if (data[3] != '-') {
+    if (data[3] != '-') { // '-' signifies invalid data
         int temp4;
 
         substr(temp_data1,(char *)(data+3),2);
@@ -981,7 +981,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     }
 
     // Rain divided by 100 for readings in hundredth of an inch
-    if (data[5] != '-') {
+    if (data[5] != '-') { // '-' signifies invalid data
         substr(temp_data1,(char *)(data+5),4);
         xastir_snprintf(weather->wx_rain_total,
             sizeof(weather->wx_rain_total),
@@ -1235,7 +1235,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* outdoor temp */
-            if (data[4]!='-') {
+            if (data[4]!='-') { // '-' signifies invalid data
                 int temp4;
 
                 substr(temp_data1,(char *)(data+4),2);
@@ -1257,7 +1257,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* rain div by 100 for readings 0.1 inch */
 // What?  Shouldn't this be /10?
 
-            if (data[6]!='-') {
+            if (data[6]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+6),4);
                 if (!from) {    // From local station
                     switch (WX_rain_gauge_type) {
@@ -1328,7 +1328,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* wind speed */
-            if (data[2]!='-') {
+            if (data[2]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+2),4);
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
@@ -1354,7 +1354,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* wind direction */
-            if (data[8]!='-') {
+            if (data[8]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+8),2);
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
@@ -1377,7 +1377,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* outdoor temp */
-            if (data[10]!='-') {
+            if (data[10]!='-') { // '-' signifies invalid data
                 int temp4;
 
                 substr(temp_data1,(char *)(data+10),4);
@@ -1397,7 +1397,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* rain total long term */
-            if (data[14]!='-') {
+            if (data[14]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+14),4);
                 if (!from) {  // From local station
                     switch (WX_rain_gauge_type) {
@@ -1446,7 +1446,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* baro */
-            if (data[18]!='-') {
+            if (data[18]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+18),4);
                 xastir_snprintf(weather->wx_baro,
                     sizeof(weather->wx_baro),
@@ -1455,7 +1455,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* outdoor humidity */
-            if (data[26]!='-') {
+            if (data[26]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+26),4);
                 xastir_snprintf(weather->wx_hum,
                     sizeof(weather->wx_hum),
@@ -1471,7 +1471,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // RF as well.
             /* todays rain total */
             if (strlen((const char *)data) > 45) {
-                if (data[42]!='-') {
+                if (data[42]!='-') { // '-' signifies invalid data
                     if (from) { // From remote station
                         substr(temp_data1,(char *)(data+42),4);
                         xastir_snprintf(weather->wx_prec_00,
@@ -1508,7 +1508,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* wind speed peak over last 5 min */
-            if (data[5]!='-') {
+            if (data[5]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+5),4);
                 if (from) { // From remote station
                     xastir_snprintf(weather->wx_gust,
@@ -1544,7 +1544,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* wind direction */
-            if (data[11]!='-') {
+            if (data[11]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+11),2);
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
@@ -1567,7 +1567,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* outdoor temp */
-            if (data[13]!='-') {
+            if (data[13]!='-') { // '-' signifies invalid data
                 int temp4;
 
                 substr(temp_data1,(char *)(data+13),4);
@@ -1586,7 +1586,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_temp[0]=0;
             }
             /* todays rain total (on some units) */
-            if (data[49]!='-') {
+            if (data[49]!='-') { // '-' signifies invalid data
                 if (from) { // From remote station
                     substr(temp_data1,(char *)(data+49),4);
                     xastir_snprintf(weather->wx_prec_00,
@@ -1600,7 +1600,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* rain total long term */
-            if (data[17]!='-') {
+            if (data[17]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+17),4);
                 if (!from) {    // From local station
                     switch (WX_rain_gauge_type) {
@@ -1649,7 +1649,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* baro */
-            if (data[21]!='-') {
+            if (data[21]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+21),4);
                 xastir_snprintf(weather->wx_baro,
                     sizeof(weather->wx_baro),
@@ -1661,7 +1661,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* outdoor humidity */
-            if (data[37]!='-') {
+            if (data[37]!='-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+37),4);
                 xastir_snprintf(weather->wx_hum,
                     sizeof(weather->wx_hum),
@@ -1673,7 +1673,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* 1 min wind speed avg */
-            if (len>53 && (data[53]) != '-') {
+            if (len>53 && (data[53]) != '-') { // '-' signifies invalid data
                 substr(temp_data1,(char *)(data+53),4);
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
@@ -1706,6 +1706,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         //////////////////////////////////////////////////////////
         // Peet Brothers Ultimeter 2000 in complete record mode //
         //////////////////////////////////////////////////////////
+        //
+        // In this mode most fields are 4-bytes two's complement.  A
+        // few fields are 2-bytes wide.
+        //
+        // <http://www.peetbros.com/HTML_Pages/faqs.htm>
+        //
         case(PEET_COMPLETE):
             if (debug_level & 1)
                 fprintf(stderr,"Peet Bros U-2k Packet (Complete Record Mode) %s:<%s>\n",fill->call_sign,data);
@@ -1721,7 +1727,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     "U2k");
 
 
-                if (data[12]!='-') {
+                if (data[12]!='-') { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+12),4);
                     xastir_snprintf(weather->wx_gust,
                         sizeof(weather->wx_gust),
@@ -1736,7 +1742,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 // through 455.  If so, that's the one-minute wind
                 // speed average in 0.1kph, which matches the APRS
                 // spec except for the units (which should be MPH).
-                if ( (len >= 456) && (data[452] != '-') ) {
+                if ( (len >= 456) && (data[452] != '-') ) { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+452),4);
                     xastir_snprintf(weather->wx_speed,
                         sizeof(weather->wx_speed),
@@ -1757,21 +1763,21 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 // KG9AE
                 // Peet Bros CR mode wind values should be selected based on which are highest.
                 /* Wind Speed fields 1, 34, and 71.  Wind direction fields 2, 35, 72. */
-                if (data[4] !='-') {
+                if (data[4] !='-') { // '-' signifies invalid data
                     substr(temp_data1, (char *)data+4, 4);
                     temp1 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
                 else {
                     temp1=0;
                 }
-                if (data[136] !='-') {
+                if (data[136] !='-') { // '-' signifies invalid data
                     substr(temp_data1, (char *)data+136, 4);
                     temp2 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
                 else {
                     temp2=0;
                 }
-                if (data[284] !='-') {
+                if (data[284] !='-') { // '-' signifies invalid data
                     substr(temp_data1, (char *)data+284, 4);
                     temp3 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
@@ -1798,7 +1804,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
-                    if (data[8]!='-') {
+                    if (data[8]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+8),4);
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1832,7 +1838,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
-                    if (data[140]!='-') {
+                    if (data[140]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+140),4);
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1866,7 +1872,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
-                    if (data[288]!='-') {
+                    if (data[288]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+288),4);
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1900,7 +1906,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
 
                     /* wind direction */
-                    if (data[8]!='-') {
+                    if (data[8]!='-') { // '-' signifies invalid data
                         substr(temp_data1,(char *)(data+8),4);
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1924,7 +1930,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
                 /* outdoor temp */
-                if (data[24]!='-') {
+                if (data[24]!='-') { // '-' signifies invalid data
                     int temp4;
 
                     substr(temp_data1,(char *)(data+24),4);
@@ -1949,7 +1955,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 // across more units.
 /*
                 // todays rain total (on some units)
-                if (data[28]!='-') {
+                if (data[28]!='-') { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+28),4);
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
@@ -1978,7 +1984,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 */
 
                 /* rain total long term */
-                if ((char)data[432]!='-') {
+                if ((char)data[432]!='-') { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+432),4);
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
@@ -2026,7 +2032,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_rain_total[0]=0;
 
                 /* baro */
-                if (data[32]!='-') {
+                if (data[32]!='-') { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+32),4);
                     xastir_snprintf(weather->wx_baro,
                         sizeof(weather->wx_baro),
@@ -2036,7 +2042,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_baro[0]=0;
 
                 /* outdoor humidity */
-                if (data[52]!='-') {
+                if (data[52]!='-') { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+52),4);
                     xastir_snprintf(weather->wx_hum,
                         sizeof(weather->wx_hum),
@@ -2046,7 +2052,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_hum[0]=0;
 
                 /* dew point */
-                if (data[60]!='-') {
+                if (data[60]!='-') { // '-' signifies invalid data
                     int temp4;
 
                     substr(temp_data1,(char *)(data+60),4);
@@ -2064,7 +2070,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 }
 
                 /*high winds for today*/
-                if (data[248]!='-') {
+                if (data[248]!='-') { // '-' signifies invalid data
                     substr(temp_data1,(char *)(data+248),4);
                     xastir_snprintf(wx_high_wind,
                         sizeof(wx_high_wind),
@@ -2074,7 +2080,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 }
 
                 /*wind chill */
-                if (data[20]!='-') {
+                if (data[20]!='-') { // '-' signifies invalid data
                     int temp4;
 
                     substr(temp_data1,(char *)(data+20),4);
@@ -2092,13 +2098,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 }
 
             /*3-Hr Barometric Change */
-            if (data[36]!='-') {
+            if (data[36]!='-') { // '-' signifies invalid data
                 int temp4;
 
                 substr(temp_data1,(char *)(data+36),4);
                 temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                if (data[8] > '7') {  // Negative value, convert
+                if (temp_data1[0] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
@@ -2114,13 +2120,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             /* High Temp for Today*/
-            if (data[276]!='-') {
+            if (data[276]!='-') { // '-' signifies invalid data
                 int temp4;
 
                 substr(temp_data1,(char *)(data+276),4);
                 temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                if (data[8] > '7') {  // Negative value, convert
+                if (temp_data1[0] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
@@ -2133,13 +2139,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 wx_hi_temp_on = 0;
 
             /* Low Temp for Today*/
-            if (data[100]!='-') {
+            if (data[100]!='-') { // '-' signifies invalid data
                 int temp4;
 
                 substr(temp_data1,(char *)(data+100),4);
                 temp4 = (int)strtol(temp_data1,&temp_conv,16);
 
-                if (data[8] > '7') {  // Negative value, convert
+                if (temp_data1[0] > '7') {  // Negative value, convert
                     temp4 = (temp4 & (temp4-0x7FFF)) - 0x8000;
                 }
 
