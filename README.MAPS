@@ -222,6 +222,15 @@ Getting Maps and other Data Files for Xastir:
        ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
 
    
+     Raster Maps:
+
+      For Canada theres a country wide set of topographic map images available 
+      from the "Department of Natural Resources Geomatics Canada". Running 
+      /scripts/toporama250k.pl will pull down 430mb of 1:250k map images 
+      from that departments site. If thats not enough data, running
+      /scripts/toporama50k.pl will pull down around 10gigs
+
+
      Shapefile format maps (Requires shapefile support):
 
       Shapefile format maps are slowly becoming the standard vector format of
