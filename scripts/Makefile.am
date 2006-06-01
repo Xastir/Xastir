@@ -11,6 +11,7 @@ pkglib_SCRIPTS = \
     get-maptools.sh \
     get-NWSdata \
     get_shapelib.sh \
+    gpx2shape \
     icontable.pl \
     inf2geo.pl \
     kiss-off.pl \
