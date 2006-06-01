@@ -1,0 +1,218 @@
+#!/usr/bin/perl
+
+# $Id$ 
+
+#
+# Copyright (C) 2006 James Washer
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+
+
+
+use strict;
+use XML::Simple;
+use Getopt::Std;
+use Geo::Shapelib qw/:all/;  
+
+my $routenum=1;
+my @vertices;
+my $shp;
+my ($comment,$notes,$elevation)=("no comment", "no note",-9999);
+my %shapetype = ( wpt => 1, rte => 3, trk => 3 );
+
+our ( $opt_v, $opt_t, $opt_w, $opt_r, $opt_d, $opt_s);
+getopts("vtwrds");#v=verbose t=tracks w=waypoints r=routes d=dbfawk s=shapefile_prefix
+
+
+print " args are \"@ARGV\"vals are $opt_t, $opt_w, $opt_r, $opt_d\n" if $opt_v;
+my $f = $ARGV[0];
+$opt_s =$ARGV[0];
+$opt_s =~ s/.gpx$//;
+
+print "shapename is $opt_s\n" if $opt_v;
+
+my $xml = XMLin($f,ForceArray => 1);
+
+process_rte() if $opt_r;
+process_trk()   if $opt_t;
+process_wpt()   if $opt_w;
+
+
+exit;
+sub dumpit{
+	use Data::Dumper;
+	print Dumper($xml);
+	exit;
+}
+
+
+#################################################################
+######################   SHAPEFILE SETUP  #######################
+#################################################################
+sub init_shape{
+	my $type=shift;
+
+
+	$shp = new Geo::Shapelib;
+	$shp->{Name}=${opt_s}."-".$type;
+	$shp->{Shapetype}= $shapetype{$type};
+	
+
+	$shp->{FieldNames} = [ 'Name', 'Comment', 'Notes', 'Elevation' ];
+	$shp->{FieldTypes} = [ 'String:40','String:40','String:100','Integer:8' ];
+
+}
+
+sub save_shape{
+	$shp->save();
+}
+
+sub do_shape{
+	my($type,$name,$comment,$notes,$elevation)=@_;
+
+	push @{$shp->{Shapes}}, { SHPType => $shapetype{$type}, ShapeID => $name, NVertices => scalar @vertices, Vertices => [ @vertices ] }; 
+	push @{$shp->{ShapeRecords}}, [ $name, $comment, $notes, $elevation];
+	
+	print "\t\tdo_shape $name $type ",scalar @vertices,"\n" if $opt_v;
+}
+
+#################################################################
+######################   ROUTE PROCESSING #######################
+#################################################################
+sub process_rte{
+	print "Process Route called\n";
+	unless(exists $xml->{rte}){
+		print "\tNo Routes\n" if $opt_v;
+		return;
+	}
+	my $aref=$xml->{rte};
+	return unless defined $aref;
+	die "Unepected reference $aref\n" unless ref($aref) eq  "ARRAY";
+	
+
+	init_shape('rte');
+	foreach my $rref ( @$aref ){
+		my $name="Route.$routenum++";
+		$name=$rref->{name}->[0] if defined $rref->{name};
+		print "\tProcessing route \"$name\"\n" if $opt_v;
+	
+		@vertices=();
+		do_route($rref->{rtept});
+		do_shape('rte',$name,"","","");
+	}
+	save_shape();
+
+}
+
+sub do_route{
+	my $rtept_ref=shift;
+	die "do_route Unepected reference $rtept_ref\n" unless ref($rtept_ref) eq "ARRAY";
+	foreach my $rtept ( @$rtept_ref ){
+		#print "\t\t$rtept->{lon}  $rtept->{lat}  $rtept->{name}->[0] $rtept->{sym}->[0]\n";
+		my $snell=get_snell($rtept);
+		print_snell($snell) if $opt_v;
+		push @vertices, [ $snell->{lon}, $snell->{lat} ];
+		
+	}
+}
+#################################################################
+######################  TRACK PROCESSING  #######################
+#################################################################
+sub process_trk{
+	print "Process Track called\n";
+	unless(exists $xml->{trk}){
+		print "\tNo Tracks\n" if $opt_v;
+		return;
+	}
+	my $aref=$xml->{trk};
+	
+	my $aref=$xml->{trk};
+	die "Unepected reference $aref\n" unless ref($aref) eq  "ARRAY";
+
+	init_shape('trk');
+	foreach my $tref( @$aref ){
+		print "Track $tref->{name}->[0]\n" if $opt_v;
+		
+		@vertices=();
+    
+
+		foreach my $ele ( @{$tref->{trkseg}->[0]->{trkpt}}){
+			my $snell=get_snell($ele);
+			print_snell($snell) if $opt_v;
+			push @vertices, [ $snell->{lon}, $snell->{lat} ];
+		}
+
+		do_shape('trk',$tref->{name}->[0],"","","");
+
+	}
+	save_shape();
+
+
+}
+
+sub do_trk{
+	my $trk_aref=shift;
+	die "Unepected reference $trk_aref\n" unless ref($trk_aref) eq  "ARRAY";
+}
+#################################################################
+##################### WAYPOINT PROCESSING #######################
+#################################################################
+sub process_wpt{
+	print "Process Waypoint called\n";
+	unless(exists $xml->{wpt}){
+		print "\tNo Waypoints\n" if $opt_v;
+		return;
+	}
+	my $aref=$xml->{wpt};
+	die "Unepected reference $aref\n" unless ref($aref) eq  "ARRAY";
+	init_shape('wpt');
+	foreach my $wref ( @$aref ){
+		my $snell=get_snell($wref);
+		print_snell($snell) if $opt_v;
+		@vertices=[ $snell->{lon}, $snell->{lat} ];
+		do_shape('wpt',$snell->{name},$snell->{cmt},$snell->{ele});
+	}
+	save_shape();
+}
+
+#################################################################
+#################################################################
+#################################################################
+#cute "SNELL" is Symbol Name Elevation Latitude Longitude
+
+sub get_snell { 
+	my $ref=shift;
+	my %val=(lat => "0.0", lon => "0.0", ele => "0.0", name => "NoName", sym => "Waypoint", cmt => "NoComment");
+	$val{lon}=$ref->{lon} if exists $ref->{lon};
+	$val{lat}=$ref->{lat} if exists $ref->{lat};
+	$val{name}=$ref->{name}->[0] if exists $ref->{name} and exists  $ref->{name}->[0];
+	$val{sym}=$ref->{sym}->[0] if exists $ref->{sym};
+	$val{ele}=$ref->{ele}->[0] if exists $ref->{ele};
+	$val{cmt}=$ref->{cmt}->[0] if exists $ref->{cmt};
+	return \%val;
+
+}
+
+
+sub print_snell {
+	my $snell=shift;
+	print "\t\t$snell->{lon} $snell->{lat} $snell->{ele} $snell->{name} $snell->{sym}\n";
+}
+#################################################################
+#################################################################
+#################################################################
+
+
