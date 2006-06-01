@@ -1204,6 +1204,28 @@ Getting Maps and other Data Files for Xastir:
          mv AMATEUR.RPT /usr/local/share/xastir/fcc/AMACALL.LST
 
 
+       Hiking trails from National Geographic's Topo or mapXchange:
+       ------------------------------------------------------------
+
+        For those of you who may be familiar with National Geographic's Topo!
+        program, there's a way to use the user-saved data (but not topo maps
+        themselves) from within Xastir.  Many users create TPG and/or TPO
+        files in TOPO from GPS data and/or hand-drawn routes.  They can then
+        upload them to the mapXchange site, and in fact there are many hiking
+        trails that one can download for free from that site.  Okay, how to use
+        them?
+
+        Go to <http://www.gpsbabel.org>.  Go to the Project page and then the
+        CVS page and follow the instructions for grabbing the CVS gpsbabel
+        sources.  Only CVS has the Topo version 3.x support, which was just
+        recently added (May 2006).  Follow their instructions for building/
+        installing/using the program.  It's a command-line program where you
+        specify the input and output formats and filenames.  Using this program
+        you can snag the interesting data out of the files and convert it to
+        GPX format.  Once you have that, you can use the gpx2shape.pl script to
+        convert them to Shapefiles.  Xastir can then use them as map files.
+
+
 
 WHERE TO FIND MORE INFO ON MAP DATUMS, ETC:
 
