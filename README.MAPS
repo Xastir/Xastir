@@ -1222,7 +1222,7 @@ Getting Maps and other Data Files for Xastir:
         installing/using the program.  It's a command-line program where you
         specify the input and output formats and filenames.  Using this program
         you can snag the interesting data out of the files and convert it to
-        GPX format.  Once you have that, you can use the gpx2shape.pl script to
+        GPX format.  Once you have that, you can use the "gpx2shape" script to
         convert them to Shapefiles.  Xastir can then use them as map files.
 
 
