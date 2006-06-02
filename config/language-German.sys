@@ -324,9 +324,9 @@ POPUPMA049|CAD-Kommentare ein||
 POPUPMA050|CAD-Wahrscheinlichkeit ein||
 POPUPMA051|CAD-Flächenmaß ein||
 POPUPMA052|sq||
-POPUPMA053|ft||
-POPUPMA054|meters||
-POPUPMA055|mi|
+POPUPMA053|Fuß||
+POPUPMA054|Meter||
+POPUPMA055|Meilen|
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -444,7 +444,7 @@ WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
 WPUPCFTM10|Neue Spur Zeit (Min)||
 WPUPCFTM11|Neue Spur Intervall (Grad)||
 WPUPCFTM12|RINO -> Objekt Intervall (min), 0 = Aus||
-WPUPCFTM13|Snapshot Interval (min)||
+WPUPCFTM13|Schnapschuß-Intervall (min)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||
@@ -1286,8 +1286,8 @@ CADPUD011|Ausgewählte löschen||
 #
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
-MDATA001|XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ||
+MDATA001|XASTIR Karte von %s (oben links) to %s (unten rechts).  UTM %d m Gitter, %s Datum. ||
 #"XASTIR Map of <lat/long> (upper left) to <lat/long> (lower right).  Lat/Long grid, <wgs84> datum. ",
-MDATA002|XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum.||
+MDATA002|XASTIR Karte von %s (oben links) to %s %s (unten rechts).  Breite/Länge Gitter, %s Datum.||
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM zones, <wgs84> datum. ",
-MDATA003|XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum.||
+MDATA003|XASTIR Karte von %s (oben links) to %s (unten rechts).  UTM Zonen, %s Datum.||
