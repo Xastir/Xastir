@@ -38,7 +38,7 @@ rm *.zip *.shp *.dbf *.shx
 
 # Fetch new copies, unzip into place, delete archive.
 #
-wget http://www.weather.gov/geodata/catalog/wsom/data/z_14fe06.zip
+wget http://www.weather.gov/geodata/catalog/wsom/data/z_16mr06.zip
 unzip z_*.zip
 rm *.zip
 
@@ -58,11 +58,11 @@ wget http://weather.gov/geodata/catalog/wsom/data/hz28au04.zip
 unzip hz*.zip
 rm *.zip
 
-wget http://www.weather.gov/geodata/catalog/county/data/c_10fe06.zip
+wget http://www.weather.gov/geodata/catalog/county/data/c_16mr06.zip
 unzip c_*.zip
 rm *.zip
 
-wget http://www.weather.gov/geodata/catalog/wsom/data/fz12fe06.zip
+wget http://www.weather.gov/geodata/catalog/wsom/data/fz24my06.zip
 unzip fz*.zip
 rm *.zip
 
