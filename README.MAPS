@@ -1258,6 +1258,85 @@ MAP CACHING (WORKS WITH MOST ONLINE MAPS):
 
 
 
+DRAWING YOUR OWN MAPS USING XASTIR ITSELF:
+
+    The final result here will be ESRI Shapefile vector maps that
+    you can then use within Xastir.  You'll need Shapelib compiled
+    into Xastir to make use of this feature.
+
+    Turn off Object Transmit first (Interface menu).
+
+    Place an object or item at the start location of your route.
+
+    Click on the "Move" button to active move mode, then move that
+    object around the map.  Once you're done you'll have a bunch of
+    straight lines that depict the course.
+
+    Now bring up Station Info on that object and click on the Store
+    Track button.  If you've got Shapelib compiled in, you'll get a
+    shapefile created with the track you just drew.
+
+    After you're done you can delete the object and then turn on the
+    Object Transmit toggle again.  You'll end up transmitting the
+    deleted final position of the object for a few hours unless you
+    kill/restart Xastir, but that's ok.  Nobody will see it on their
+    maps 'cuz it's a deleted object.
+ 
+    Look in ~/.xastir/tracklogs/ for the Shapefile.  Copy it to your
+    maps directory, changing the name on the three files as you
+    like, then create a dbfawk file for it if you want to change how
+    it is drawn in Xastir.
+
+    Another way would be to drive the course with a GPS and then
+    download the track via Xastir/GPSman to create a Shapefile map.
+
+    Yet another way would be to drive it with an APRS rig and then
+    Store Track as described above.  You could also drive with
+    GPS/Xastir (without APRS) to get a very detailed track and then
+    save your own track.
+
+
+
+DRAWING SAR SEARCH SEGMENTS IN XASTIR:
+
+    Turn on "Draw" mode (togglebutton at the top of the main
+    window).  The cursor should change to the Measure/Draw symbol.
+
+    Using the middle mouse button, click on each vertice until you
+    are almost done describing a polygon (don't close it yet).  If
+    you don't have a middle mouse button, clicking on BOTH mouse
+    buttons at once will do it if you have "emulate third mouse
+    button" enabled in your X-Windows configuration.
+
+    Go to Map->Draw CAD Objects->Close Polygon.  The polygon will
+    get completed, the area enclosed will be computed, and a dialog
+    will pop up asking you for more information.  You do not have to
+    enter any information in this dialog, but a name of some type is
+    helpful in order to be able to identify each segment when
+    modifying/deleting/viewing these segments.
+
+    Note that these CAD Objects get saved in a file and reloaded
+    each time you start Xastir, but they cannot currently be written
+    out as a map file and used as a general map.
+
+    Note also that these CAD Objects don't get transmitted.  They
+    are currently for local display only.
+
+    The display of various kinds of data related to these segments
+    can be modified in the Map->Draw CAD Objects menu.  Modifying
+    parameters for any segment is done in the
+    Map->Draw CAD Objects->CAD Polygons dialog.
+
+    Click on the dashed line in the menus in order to separate that
+    menu from the rest and allow you to keep the menu on the screen.
+    This is very useful when drawing CAD Objects or changing
+    display/filtering options.
+
+    Turn off "Draw" mode when you're done.  The cursor should return
+    to normal.
+
+
+
 SUMMARY OF DISTANCE/AREA/ANGLE CALCULATIONS:
 
 
