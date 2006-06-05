@@ -30,40 +30,107 @@
 #
 
 
+FILE1="z_16mr06"
+FILE2="w_06oc05"
+FILE3="mz10ja06"
+FILE4="oz15de04"
+FILE5="hz28au04"
+FILE6="c_16mr06"
+FILE7="fz24my06"
+
+
 cd /usr/local/share/xastir/Counties
 
-# Remove previous copies of files
+
+# Remove any old zip files hanging around in this directory
 #
-rm *.zip *.shp *.dbf *.shx
+rm -f *.zip 2>&1 >/dev/null
+
 
 # Fetch new copies, unzip into place, delete archive.
 #
-wget http://www.weather.gov/geodata/catalog/wsom/data/z_16mr06.zip
-unzip z_*.zip
-rm *.zip
+#
+if [ -e $FILE1.shp ]
+  then
+    echo "Already have $FILE1 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f z_*.shx z_*.shp z_*.dbf z_*.zip 2>&1 >/dev/null
+    wget http://www.weather.gov/geodata/catalog/wsom/data/$FILE1.zip
+    unzip z_*.zip
+    rm *.zip
+fi
 
-wget http://www.weather.gov/geodata/catalog/wsom/data/w_06oc05.zip
-unzip w_*.zip
-rm *.zip
 
-wget http://weather.gov/geodata/catalog/wsom/data/mz10ja06.zip
-unzip mz*.zip
-rm *.zip
+if [ -e $FILE2.shp ]
+  then
+    echo "Already have $FILE2 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f w_*.shx w_*.shp w_*.dbf w_*.zip 2>&1 >/dev/null
+    wget http://www.weather.gov/geodata/catalog/wsom/data/$FILE2.zip
+    unzip w_*.zip
+    rm *.zip
+fi
 
-wget http://weather.gov/geodata/catalog/wsom/data/oz15de04.zip
-unzip oz*.zip
-rm *.zip
 
-wget http://weather.gov/geodata/catalog/wsom/data/hz28au04.zip
-unzip hz*.zip
-rm *.zip
+if [ -e $FILE3.shp ]
+  then
+    echo "Already have $FILE3 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f mz_*.shx mz_*.shp mz_*.dbf mz_*.zip 2>&1 >/dev/null
+    wget http://weather.gov/geodata/catalog/wsom/data/$FILE3.zip
+    unzip mz*.zip
+    rm *.zip
+fi
 
-wget http://www.weather.gov/geodata/catalog/county/data/c_16mr06.zip
-unzip c_*.zip
-rm *.zip
 
-wget http://www.weather.gov/geodata/catalog/wsom/data/fz24my06.zip
-unzip fz*.zip
-rm *.zip
+if [ -e $FILE4.shp ]
+  then
+    echo "Already have $FILE4 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f oz_*.shx oz_*.shp oz_*.dbf oz_*.zip 2>&1 >/dev/null
+    wget http://weather.gov/geodata/catalog/wsom/data/$FILE4.zip
+    unzip oz*.zip
+    rm *.zip
+fi
+
+
+if [ -e $FILE5.shp ]
+  then
+    echo "Already have $FILE5 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f hz_*.shx hz_*.shp hz_*.dbf hz_*.zip 2>&1 >/dev/null
+    wget http://weather.gov/geodata/catalog/wsom/data/$FILE5.zip
+    unzip hz*.zip
+    rm *.zip
+fi
+
+
+if [ -e $FILE6.shp ]
+  then
+    echo "Already have $FILE6 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f c_*.shx c_*.shp c_*.dbf c_*.zip 2>&1 >/dev/null
+    wget http://www.weather.gov/geodata/catalog/county/data/$FILE6.zip
+    unzip c_*.zip
+    rm *.zip
+fi
+
+
+if [ -e $FILE7.shp ]
+  then
+    echo "Already have $FILE7 shapefile, skipping..."
+  else
+    # Remove possible older copies
+    rm -f fz_*.shx fz_*.shp fz_*.dbf fz_*.zip 2>&1 >/dev/null
+    wget http://www.weather.gov/geodata/catalog/wsom/data/$FILE7.zip
+    unzip fz*.zip
+    rm *.zip
+fi
 
 
