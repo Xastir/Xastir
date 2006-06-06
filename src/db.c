@@ -9162,6 +9162,8 @@ int extract_position(DataRow *p_station, char **info, int type) {
  * If a position is found, it is deleted from the data.  If a
  * compressed position is found, delete the three csT bytes as well,
  * even if all spaces.
+ * Returns 0 if the packet is NOT a properly compressed position
+ * packet, returns 1 if ok.
  */
 int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type) {
     int ok;
@@ -9175,6 +9177,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     float lat = 0;
     float range;
     int skip = 0;
+    char L;
 
 
     if (debug_level & 1)
@@ -9184,7 +9187,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
     // compressed data format  /YYYYXXXX$csT  is a fixed 13-character field
     // used for ! / @ = data IDs
-    //   /     Symbol Table ID
+    //   /     Symbol Table ID or overlay: '/' '\' A-Z a-j
     //   YYYY  compressed latitude
     //   XXXX  compressed longitude
     //   $     Symbol Code
@@ -9195,6 +9198,26 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     //   T     compression type ID
 
     my_data = (*info);
+
+    // Check leading char.  Must be one of these:
+    // '/'
+    // '\'
+    // A-Z
+    // a-j
+    //
+    L = my_data[0];
+    if (   L == '/'
+        || L == '\\'
+        || ( L >= 'A' && L <= 'Z' )
+        || ( L >= 'a' && L <= 'j' ) ) {
+        // We're good so far
+    }
+    else {
+        // Note one of the symbol table or overlay characters, so
+        // there's something funky about this packet.  It's not a
+        // properly formatted compressed position.
+        return(0);
+    }
 
     //fprintf(stderr,"my_data: %s\n",my_data);
 
