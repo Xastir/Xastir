@@ -2,10 +2,9 @@
 
 $Id$
 
-The latest version of this FAQ is always available from the Xastir web site, at
-<http://www.xastir.org/docs/FAQ.html>, soon to be available also at:
-<http://xastir.sourceforge.net> or at:
-<http://sourceforge.net/projects/xastir/>
+The latest version of this FAQ is always available from the Xastir
+project's CVS repository on SourceForge, at
+<http://xastir.cvs.sourceforge.net/xastir/xastir/FAQ?&view=auto>.
 
 The Questions
 -------------
@@ -26,8 +25,8 @@ The Questions
 
     2.1 "Why can't I...? Why won't...work?" What to do in case of problems
     2.2 How do I submit a patch to the Xastir Development Group?
-    3.3 What's the best hardware/operating system/...
-    4.4 Why isn't there a binary for my platform?
+    2.3 What's the best hardware/operating system/...
+    2.4 Why isn't there a binary for my platform?
 
 3.  Building Xastir
 
@@ -226,7 +225,7 @@ The Answers
     code is the purpose of a release, not making sure that there is a binary
     package for all of the supported platforms.
 
-
+    
 3. Building Xastir
 
     3.1  Why do I get error messages when running "bootstrap.sh"?
