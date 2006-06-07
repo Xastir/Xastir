@@ -2,7 +2,10 @@
 #
 # Copyright (C) 2004-2006  The Xastir Group
 #
-# TNC Init file for KENWOOD D700
+# TNC Init file for KENWOOD D700.  Also reported to work with the
+# Alinco DR-135TP radio (with the EJ-41U TNC which also uses a Tasco
+# TNC just like the Kenwoods).  Perhaps works with the Alinco DR-635
+# radio (with the EJ-50U TNC) too.
 #
 # NOTE:  TXD on a D700A is fixed at 500ms (1/2 second) in "APRS"
 # mode.  In "packet" mode we can change the txd to other values.
