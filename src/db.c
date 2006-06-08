@@ -306,7 +306,7 @@ int is_my_call(char *call, int exact) {
 
     if (exact) {
         // We're looking for an exact match
-        ok = (int)( !strcmp(call,my_callsign) );
+        ok = (int)( !strcmp(call,my_callsign) );    // GPROF:4.85%
         //fprintf(stderr,"My exact call found: %s\n",call);
     }
     else {
@@ -331,7 +331,7 @@ int is_my_call(char *call, int exact) {
     }
  
     return(ok);
-}
+}   // GPROF:1.51%
 
 
         
@@ -3408,13 +3408,13 @@ void display_file(Widget w) {
         if (debug_level & 64) {
             fprintf(stderr,"display_file: Examining %s\n", p_station->call_sign);
         }
-        if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
+        if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects   // GPROF:34.11%
 
             // Callsign match here includes checking SSID
-            temp_sec_heard = (is_my_call(p_station->call_sign,1))? now: p_station->sec_heard;
+            temp_sec_heard = (is_my_call(p_station->call_sign,1))?  now: p_station->sec_heard; // GPROF:2.49%
 
             // Check for my objects/items as well
-            if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
+            if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID) // GPROF:2.06%
                     && (   p_station->flag & ST_OBJECT    // And it's an object
                         || p_station->flag & ST_ITEM) ) ) { // or an item
                 temp_sec_heard = now;
@@ -7448,7 +7448,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
         XQueryColor(XtDisplay(w),cmap,&rgb);
 
         brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
-        if (brightness > 32000) {
+        if (brightness > 32000) {   // GPROF:3.44%
             col_dot = trail_colors[0x05];   // black dot on light trails
         }
         else {
@@ -7473,14 +7473,14 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
         // Traverse linked list of trail points from newest to
         // oldest
-        while ( (ptr != NULL) && (ptr->prev != NULL) ) {
+        while ( (ptr != NULL) && (ptr->prev != NULL) ) {    // GPROF:2.07%
             lon0 = ptr->trail_long_pos;         // Trail segment start
             lat0 = ptr->trail_lat_pos;
-            lon1 = ptr->prev->trail_long_pos;   // Trail segment end
+            lon1 = ptr->prev->trail_long_pos;   // Trail segment end // GPROF:7.86%
             lat1 = ptr->prev->trail_lat_pos;
             flag1 = ptr->flag; // Are we at the start of a new trail?
 
-            if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to
+            if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to // GPROF:7.86%
                 (abs(lon1 - mid_x_long_offset) < marg_lon) &&  // be in margin area
                 (abs(lat0 - mid_y_lat_offset)  < marg_lat) &&
                 (abs(lat1 - mid_y_lat_offset)  < marg_lat) ) {

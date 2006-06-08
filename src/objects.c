@@ -1594,7 +1594,7 @@ void check_and_transmit_objects_items(time_t time) {
 // Local loopback only, not igating
                         }
                         else { // Send to all active tx-enabled interfaces
-                            output_my_data(line,-1,0,0,0,NULL);
+                            output_my_data(line,-1,0,0,0,NULL); // GPROF:2.17%
 // Transmit/loopback object data, not igating
                         }
                     }
