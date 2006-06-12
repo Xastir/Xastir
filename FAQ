@@ -750,10 +750,14 @@ The Answers
     You may also connect to a remote AGWPE instance for using remote
     TNC's/soundcards.  Note that AGWPE runs only on Windows.
 
+    Yet another which looks to be netcat recoded/extended:  socat
+    
     Comfoolery:     http://www.brianpoe.com/comfoolery/
     Serproxy:       http://freshmeat.net/projects/serproxy/
     Serproxy:       http://www.lspace.nildram.co.uk/freeware.html
     Remserial:      http://lpccomp.bc.ca/remserial/
+    Socat:          http://www.dest-unreach.org/socat/
+ 
 
     4.21 I have Festival compiled in, but I can't get any speech, why?
 
