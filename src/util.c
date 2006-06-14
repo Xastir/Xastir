@@ -3544,7 +3544,7 @@ void reload_tactical_calls(void) {
 
 
 
-// Returns time in seconds since the Unix epoc.
+// Returns time in seconds since the Unix epoch.
 //
 time_t sec_now(void) {
     time_t timenw;
