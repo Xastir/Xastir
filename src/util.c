@@ -4111,7 +4111,7 @@ char *to_upper(char *data) {
     int i;
 
     for(i=strlen(data)-1;i>=0;i--)
-        if(isalpha((int)data[i]))
+        if(islower((int)data[i]))
             data[i]=toupper((int)data[i]);
 
     return(data);
