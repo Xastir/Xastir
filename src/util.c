@@ -4123,7 +4123,7 @@ char *to_upper(char *data) {
 
 
 int is_num_chr(char ch) {
-    return((int)(ch >= '0' && ch <= '9'));
+    return((int)isdigit(ch));
 }
 
 
@@ -4780,6 +4780,7 @@ int check_n_N (int prev, int last) {
 //
 int check_unproto_path ( char *data ) {
     char *tmpdata;
+    char *tmp;
     char *ViaCalls[10];
     int bad_path, ii, have_relay, have_wide, have_widen;
     int have_trace, have_tracen;
@@ -4803,6 +4804,7 @@ int check_unproto_path ( char *data ) {
     tmpdata = (char *)strdup(data);
 #endif
     (void)to_upper(tmpdata);
+    if ((tmp = strchr(tmpdata, '/'))) *tmp ='\0';// Only check VHF portion of path
     split_string(tmpdata, ViaCalls, 10);
 
     for (ii = 0; ii < 10; ii++) {
