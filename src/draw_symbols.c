@@ -1417,7 +1417,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
                                 x3,
                                 y3);
 /*
-                    }
+                   }
                 }
 */
             }
@@ -1436,42 +1436,76 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
     int scale_limit;
 
     switch (amb) {
-    case 1: // +- 1/20th minute
-        offset_lat = offset_long = 360000.0 * 0.05 / 60.0;
+    case 1: // +- 1/10th minute
+        offset_lat = offset_long = 600;
         scale_limit = 32;
+
+        // Truncate digits off the right
+        x_long = (long)(x_long / 600);
+        x_long = x_long * 600;
+        y_lat = (long)(y_lat / 600);
+        y_lat = y_lat * 600;
         break;
-    case 2: // +- 1/2 minute
-        offset_lat = offset_long = 360000.0 * 0.5 / 60.0;
+
+    case 2: // +- 1 minute
+        offset_lat = offset_long = 6000;
         scale_limit = 256;
+
+        // Truncate digits off the right
+        x_long = (long)(x_long / 6000);
+        x_long = x_long * 6000;
+        y_lat = (long)(y_lat / 6000);
+        y_lat = y_lat * 6000;
         break;
-    case 3: // +- 5 minutes
-        offset_lat = offset_long = 360000.0 * 5.0 / 60.0;
+
+    case 3: // +- 10 minutes
+        offset_lat = offset_long = 60000;
         scale_limit = 2048;
+
+        // Truncate digits off the right
+        x_long = (long)(x_long / 60000);
+        x_long = x_long * 60000;
+        y_lat = (long)(y_lat / 60000);
+        y_lat = y_lat * 60000;
         break;
-    case 4: // +- 1/2 degree
-        offset_lat = offset_long = 360000.0 * 0.5;
+
+    case 4: // +- 1 degree
+        offset_lat = offset_long = 360000;
         scale_limit = 16384;
+
+        // Truncate digits off the right
+        x_long = (long)(x_long / 360000);
+        x_long = x_long * 360000;
+        y_lat = (long)(y_lat / 360000);
+        y_lat = y_lat * 360000;
         break;
+
+// The rest of these still need fixing up
+
     case 5: // grid square: 2.5min lat x 5min lon
         offset_lat  = 360000.0 * 1.25 / 60.0;
         offset_long = 360000.0 * 2.50 / 60.0;
         scale_limit = 1024;
         break;
+
     case 6: // grid square: 1deg lat x 2deg lon
         offset_lat  = 360000.0 * 0.5;
         offset_long = 360000.0 * 1.0;
         scale_limit = 16384;
         break;
+
     case 0:
     default:
         return; // if no ambiguity, do nothing
         break;
+
     }
+
     if (scale_y > scale_limit)
         return; // the box would be about the size of the symbol
 
-    left = (x_long - x_long_offset - offset_long) / scale_x;
-    top  = (y_lat  - y_lat_offset  - offset_lat)  / scale_y;
+    left = (x_long - x_long_offset) / scale_x;
+    top  = (y_lat  - y_lat_offset)  / scale_y;
 
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
         if ((x_long>=0) && (x_long<=129600000l)) {
@@ -1483,8 +1517,8 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                 if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
                     if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
                         long width, height;
-                        width  = (2*offset_long)/scale_x;
-                        height = (2*offset_lat)/scale_y;
+                        width  = (offset_long)/scale_x;
+                        height = (offset_lat)/scale_y;
 
                         (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);
 
@@ -1509,11 +1543,17 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                             // New code.  Draws rectangle (unfilled)
                             // plus vectors from symbol to corners:
                             //
-                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
+                            (void)XSetLineAttributes(XtDisplay(da), gc,
+                                2, LineOnOffDash, CapButt,JoinMiter);
+
+//                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
+
                             (void)XDrawRectangle(XtDisplay(da), where, gc,
-                                                left, top, width, height);
+                                left, top, width, height);
+
                             (void)XDrawLine(XtDisplay(da), where, gc,
                                 left, top, left+width, top+height);
+
                             (void)XDrawLine(XtDisplay(da), where, gc,
                                 left+width, top, left, top+height);
 
