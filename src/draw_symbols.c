@@ -1487,6 +1487,8 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                         height = (2*offset_lat)/scale_y;
 
                         (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);
+
+/*
                         if (width  > 200 || height > 200)
                             (void)XSetStipple(XtDisplay(da), gc, pixmap_13pct_stipple);
                         else if (width  > 100 || height > 100)
@@ -1494,6 +1496,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                         else
                             (void)XSetStipple(XtDisplay(da), gc, pixmap_50pct_stipple);
                             (void)XSetFillStyle(XtDisplay(da), gc, FillStippled);
+*/
 
 
                             // Old code.  Draws filled-in stippled
@@ -1501,10 +1504,12 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                             //
                             //(void)XFillRectangle(XtDisplay(da), where, gc,
                             //                 left, top, width, height);
+
+
+                            // New code.  Draws rectangle (unfilled)
+                            // plus vectors from symbol to corners:
                             //
-                            // New code.  Draws unfilled rectangle +
-                            // lines from symbol to corners:
-                            //
+                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
                             (void)XDrawRectangle(XtDisplay(da), where, gc,
                                                 left, top, width, height);
                             (void)XDrawLine(XtDisplay(da), where, gc,
@@ -1512,8 +1517,8 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
                             (void)XDrawLine(XtDisplay(da), where, gc,
                                 left+width, top, left, top+height);
 
- 
-                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
+
+//                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
                     }
                 }
             }
