@@ -1433,9 +1433,9 @@ void draw_bearing(long x_long, long y_lat, char *course,
 
 // TODO:  Pass back the modified x_long/y_lat to the calling routine
 // and use the new lat/long to place the symbol.  This will knock
-// off the digits on the right that the ambiguity specifies.  This
-// will place the symbol at one corner of the rectangle.  Perhaps we
-// wish to place it at the middle instead?
+// off the digits on the right that the ambiguity specifies.  We
+// then add 1/2 the rectangle offsets in order to get the symbol
+// placed in the middle of the rectangle.
 //
 void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *amb_y_lat, time_t sec_heard, Pixmap where) {
     unsigned long left, right, top, bottom;
@@ -1516,8 +1516,8 @@ void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *a
 
     // Re-assign them here as they should have been truncated on the
     // right by the above code.  We'll use these new values
-    // externally from this function to draw the symbols and the
-    // other associated symbol data.
+    // to draw the symbols and the other associated symbol data
+    // (external to this function).
     //
     *amb_x_long = x_long + (offset_long/2);
     *amb_y_lat = y_lat + (offset_lat / 2);
