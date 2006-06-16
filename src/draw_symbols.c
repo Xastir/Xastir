@@ -222,7 +222,12 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 // of the originating station by callsign through our lists and then
 // draw the line between the two coordinates each time.
 //
-void draw_WP_line(DataRow *p_station, Pixmap where, Widget w) {
+void draw_WP_line(DataRow *p_station,
+                  int ambiguity_flag,
+                  long ambiguity_coord_lon,
+                  long ambiguity_coord_lat,
+                  Pixmap where,
+                  Widget w) {
     DataRow *transmitting_station = NULL;
     int my_course;
     long x_long, y_lat;
@@ -238,8 +243,14 @@ void draw_WP_line(DataRow *p_station, Pixmap where, Widget w) {
 
 
     // Compute screen position of waypoint symbol
-    x_long = p_station->coord_lon;
-    y_lat = p_station->coord_lat;
+    if (ambiguity_flag) {
+        x_long = ambiguity_coord_lon;
+        y_lat = ambiguity_coord_lat;
+    }
+    else {
+        x_long = p_station->coord_lon;
+        y_lat = p_station->coord_lat;
+    }
 
     // x & y are screen location of waypoint symbol
     x = (x_long - x_long_offset)/scale_x;
@@ -3046,7 +3057,12 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" 
 
 // Function to draw dead-reckoning symbols.
 //
-void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
+void draw_deadreckoning_features(DataRow *p_station,
+                                 int ambiguity_flag,
+                                 long ambiguity_coord_lon,
+                                 long ambiguity_coord_lat,
+                                 Pixmap where,
+                                 Widget w) {
     int my_course;
     long x_long, y_lat;
     long x_long2, y_lat2;
@@ -3062,8 +3078,14 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
     float temp_longitude, temp_longitude2;
 
 
-    x_long = p_station->coord_lon;
-    y_lat = p_station->coord_lat;
+//    if (ambiguity_flag) {
+//        x_long = ambiguity_coord_lon;
+//        y_lat = ambiguity_coord_lat;
+//    }
+//    else {
+        x_long = p_station->coord_lon;
+        y_lat = p_station->coord_lat;
+//    }
 
     // Compute distance in statute miles
     range = (double)((sec_now()-p_station->sec_heard)
