@@ -7854,7 +7854,7 @@ void init_station(DataRow *p_station) {
     p_station->coord_lat          = 0l;           //  90°N  \ undefined
     p_station->coord_lon          = 0l;           // 180°W  / position
     p_station->pos_amb            = 0;            // No ambiguity
-//    p_station->error_elipse_radius = 600;         // In cm, 6 meter default
+//    p_station->error_ellipse_radius = 600;         // In cm, 6 meter default
     p_station->call_sign[0]       = '\0';         // ?????
     p_station->tactical_call_sign = NULL;
     p_station->sec_heard          = 0;
