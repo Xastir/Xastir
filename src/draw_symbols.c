@@ -40,7 +40,7 @@
 #include "main.h"
 #include "util.h"
 #include "color.h"
-//#include "maps.h"
+#include "maps.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -1431,14 +1431,27 @@ void draw_bearing(long x_long, long y_lat, char *course,
 
 
 
-void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap where) {
-    long left, top, offset_lat, offset_long;
+// TODO:  Pass back the modified x_long/y_lat to the calling routine
+// and use the new lat/long to place the symbol.  This will knock
+// off the digits on the right that the ambiguity specifies.  This
+// will place the symbol at one corner of the rectangle.  Perhaps we
+// wish to place it at the middle instead?
+//
+void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *amb_y_lat, time_t sec_heard, Pixmap where) {
+    unsigned long left, right, top, bottom;
+    long offset_lat, offset_long;
     int scale_limit;
+
+
+    // Assign these first in case we do a sudden return from the
+    // function.
+    *amb_x_long = x_long;
+    *amb_y_lat = y_lat;
 
     switch (amb) {
     case 1: // +- 1/10th minute
         offset_lat = offset_long = 600;
-        scale_limit = 32;
+        scale_limit = 256;
 
         // Truncate digits off the right
         x_long = (long)(x_long / 600);
@@ -1449,7 +1462,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
 
     case 2: // +- 1 minute
         offset_lat = offset_long = 6000;
-        scale_limit = 256;
+        scale_limit = 2048;
 
         // Truncate digits off the right
         x_long = (long)(x_long / 6000);
@@ -1460,7 +1473,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
 
     case 3: // +- 10 minutes
         offset_lat = offset_long = 60000;
-        scale_limit = 2048;
+        scale_limit = 16384;
 
         // Truncate digits off the right
         x_long = (long)(x_long / 60000);
@@ -1471,7 +1484,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
 
     case 4: // +- 1 degree
         offset_lat = offset_long = 360000;
-        scale_limit = 16384;
+        scale_limit = 65536;
 
         // Truncate digits off the right
         x_long = (long)(x_long / 360000);
@@ -1480,7 +1493,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
         y_lat = y_lat * 360000;
         break;
 
-// The rest of these still need fixing up
+// TODO:  The last two cases need fixing up like the above
 
     case 5: // grid square: 2.5min lat x 5min lon
         offset_lat  = 360000.0 * 1.25 / 60.0;
@@ -1501,69 +1514,63 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
 
     }
 
-    if (scale_y > scale_limit)
-        return; // the box would be about the size of the symbol
-
-    left = (x_long - x_long_offset) / scale_x;
-    top  = (y_lat  - y_lat_offset)  / scale_y;
-
-    if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
-        if ((x_long>=0) && (x_long<=129600000l)) {
-            if ((y_lat>=0) && (y_lat<=64800000l)) {
-
-// Prevents it from being drawn when the symbol is off-screen.
-// It'd be better to check for lat/long +/- range to see if it's on the screen.
-
-                if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                    if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
-                        long width, height;
-                        width  = (offset_long)/scale_x;
-                        height = (offset_lat)/scale_y;
-
-                        (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);
-
-/*
-                        if (width  > 200 || height > 200)
-                            (void)XSetStipple(XtDisplay(da), gc, pixmap_13pct_stipple);
-                        else if (width  > 100 || height > 100)
-                            (void)XSetStipple(XtDisplay(da), gc, pixmap_25pct_stipple);
-                        else
-                            (void)XSetStipple(XtDisplay(da), gc, pixmap_50pct_stipple);
-                            (void)XSetFillStyle(XtDisplay(da), gc, FillStippled);
-*/
+    // Re-assign them here as they should have been truncated on the
+    // right by the above code.  We'll use these new values
+    // externally from this function to draw the symbols and the
+    // other associated symbol data.
+    //
+    *amb_x_long = x_long + (offset_long/2);
+    *amb_y_lat = y_lat + (offset_lat / 2);
 
 
-                            // Old code.  Draws filled-in stippled
-                            // rectangle:
-                            //
-                            //(void)XFillRectangle(XtDisplay(da), where, gc,
-                            //                 left, top, width, height);
-
-
-                            // New code.  Draws rectangle (unfilled)
-                            // plus vectors from symbol to corners:
-                            //
-                            (void)XSetLineAttributes(XtDisplay(da), gc,
-                                2, LineOnOffDash, CapButt,JoinMiter);
-
-//                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
-
-                            (void)XDrawRectangle(XtDisplay(da), where, gc,
-                                left, top, width, height);
-
-                            (void)XDrawLine(XtDisplay(da), where, gc,
-                                left, top, left+width, top+height);
-
-                            (void)XDrawLine(XtDisplay(da), where, gc,
-                                left+width, top, left, top+height);
-
-
-//                            (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
-                    }
-                }
-            }
-        }
+    if (scale_y > scale_limit) {
+        // Ambiguity box will be smaller than smallest symbol so
+        // don't draw it.
+//fprintf(stderr,"scale_y > scale_limit\n");
+        return;
     }
+
+    if ( ((sec_old+sec_heard)<=sec_now()) && !Select_.old_data ) {
+        return;
+    }
+
+    if ((x_long<0) || (x_long>129600000l)) {
+        return;
+    }
+
+    if ((y_lat<0) || (y_lat>64800000l)) {
+        return;
+    }
+
+    left   = x_long;
+    top    = y_lat;
+    right  = x_long + offset_long;
+    bottom = y_lat  + offset_lat;
+
+
+    (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);
+
+    // Draw rectangle (unfilled) plus vectors from symbol to
+    // corners.
+
+    (void)XSetLineAttributes(XtDisplay(da), gc,
+        2, LineOnOffDash, CapButt,JoinMiter);
+
+    // Top line of rectangle
+    draw_vector(da,left,top,right,top,gc,pixmap_final);
+
+    // Bottom line of rectangle
+    draw_vector(da,left,bottom,right,bottom,gc,pixmap_final);
+        
+    // Left line of rectangle
+    draw_vector(da,left,top,left,bottom,gc,pixmap_final);
+ 
+    // Right line of rectangle
+    draw_vector(da,right,top,right,bottom,gc,pixmap_final);
+
+    // Diagonal lines 
+    draw_vector(da,left,top,right,bottom,gc,pixmap_final);
+    draw_vector(da,right,top,left,bottom,gc,pixmap_final);
 }
 
 

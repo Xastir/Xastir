@@ -2554,6 +2554,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
     Pixmap drawing_target;
     WeatherRow *weather = p_station->weather_data;
     time_t secs_now = sec_now();
+    int ambiguity_flag = 0;
+    long ambiguity_coord_lon, ambiguity_coord_lat;
+ 
 
     if (debug_level & 128)
         fprintf(stderr,"Display station (%s) called for Single=%d.\n", p_station->call_sign, single);
@@ -2829,17 +2832,23 @@ _do_the_drawing:
     }
 
     if (Display_.ambiguity && p_station->pos_amb)
-        draw_ambiguity(p_station->coord_lon, p_station->coord_lat,
-                       p_station->pos_amb,temp_sec_heard,drawing_target);
+        ambiguity_flag = 1;
+        draw_ambiguity(p_station->coord_lon,
+            p_station->coord_lat,
+            p_station->pos_amb,
+            &ambiguity_coord_lon, // New longitude may get passed back to us
+            &ambiguity_coord_lat, // New latitude may get passed back to us
+            temp_sec_heard,
+            drawing_target);
 
     // Check for DF'ing data, draw DF circles if present and enabled
     if (Display_.df_data && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
         //fprintf(stderr,"SHGD:%s\n",p_station->signal_gain);
-        draw_DF_circle(p_station->coord_lon,
-                       p_station->coord_lat,
-                       p_station->signal_gain,
-                       temp_sec_heard,
-                       drawing_target);
+        draw_DF_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                        (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                        p_station->signal_gain,
+                        temp_sec_heard,
+                        drawing_target);
     }
 
     // Check for DF'ing beam heading/NRQ data
@@ -2848,14 +2857,14 @@ _do_the_drawing:
         if (p_station->df_color == -1)
             p_station->df_color = rand() % MAX_TRAIL_COLORS;
 
-        draw_bearing(p_station->coord_lon,
-                     p_station->coord_lat,
-                     p_station->course,
-                     p_station->bearing,
-                     p_station->NRQ,
-                     trail_colors[p_station->df_color],
-                     temp_sec_heard,
-                     drawing_target);
+        draw_bearing( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                      (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                      p_station->course,
+                      p_station->bearing,
+                      p_station->NRQ,
+                      trail_colors[p_station->df_color],
+                      temp_sec_heard,
+                      drawing_target);
     }
 
     // Check whether to draw dead-reckoning data by KJ5O
@@ -2873,34 +2882,35 @@ _do_the_drawing:
     }
 
     if (p_station->aprs_symbol.area_object.type != AREA_NONE)
-        draw_area(p_station->coord_lon, p_station->coord_lat,
-                  p_station->aprs_symbol.area_object.type,
-                  p_station->aprs_symbol.area_object.color,
-                  p_station->aprs_symbol.area_object.sqrt_lat_off,
-                  p_station->aprs_symbol.area_object.sqrt_lon_off,
-                  p_station->aprs_symbol.area_object.corridor_width,
-                  temp_sec_heard,
-                  drawing_target);
+        draw_area( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                   (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                   p_station->aprs_symbol.area_object.type,
+                   p_station->aprs_symbol.area_object.color,
+                   p_station->aprs_symbol.area_object.sqrt_lat_off,
+                   p_station->aprs_symbol.area_object.sqrt_lon_off,
+                   p_station->aprs_symbol.area_object.corridor_width,
+                   temp_sec_heard,
+                   drawing_target);
 
 
     // Draw additional stuff if this is the tracked station
     if (is_tracked_station(p_station->call_sign)) {
 //WE7U
-        draw_pod_circle(p_station->coord_lon,
-                        p_station->coord_lat,
-                        0.0020 * scale_y,
-                        colors[0x0e],   // Yellow
-                        drawing_target);
-        draw_pod_circle(p_station->coord_lon,
-                        p_station->coord_lat,
-                        0.0023 * scale_y,
-                        colors[0x44],   // Red
-                        drawing_target);
-        draw_pod_circle(p_station->coord_lon,
-                        p_station->coord_lat,
-                        0.0026 * scale_y,
-                        colors[0x61],   // Blue
-                        drawing_target);
+        draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                         (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                         0.0020 * scale_y,
+                         colors[0x0e],   // Yellow
+                         drawing_target);
+        draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                         (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                         0.0023 * scale_y,
+                         colors[0x44],   // Red
+                         drawing_target);
+        draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                         (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                         0.0026 * scale_y,
+                         colors[0x61],   // Blue
+                         drawing_target);
     }
 
 
@@ -2925,11 +2935,11 @@ _do_the_drawing:
 
         if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
 
-            draw_pod_circle(p_station->coord_lon,
-                            p_station->coord_lat,
-                            atof(temp) * 1.15078, // nautical miles to miles
-                            colors[0x44],   // Red
-                            drawing_target);
+            draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                             (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                             atof(temp) * 1.15078, // nautical miles to miles
+                             colors[0x44],   // Red
+                             drawing_target);
         }
 
         xastir_snprintf(temp,
@@ -2938,11 +2948,11 @@ _do_the_drawing:
             weather->wx_trop_storm_radius);
 
         if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
-            draw_pod_circle(p_station->coord_lon,
-                            p_station->coord_lat,
-                            atof(temp) * 1.15078, // nautical miles to miles
-                            colors[0x0e],   // Yellow
-                            drawing_target);
+            draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                             (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                             atof(temp) * 1.15078, // nautical miles to miles
+                             colors[0x0e],   // Yellow
+                             drawing_target);
         }
 
         xastir_snprintf(temp,
@@ -2951,11 +2961,11 @@ _do_the_drawing:
             weather->wx_whole_gale_radius);
 
         if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
-            draw_pod_circle(p_station->coord_lon,
-                            p_station->coord_lat,
-                            atof(temp) * 1.15078, // nautical miles to miles
-                            colors[0x0a],   // Green
-                            drawing_target);
+            draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                             (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                             atof(temp) * 1.15078, // nautical miles to miles
+                             colors[0x0a],   // Green
+                             drawing_target);
         }
     }
 
@@ -2966,12 +2976,12 @@ _do_the_drawing:
             && weather != NULL && atoi(weather->wx_speed) >= 5
             && !weather->wx_storm
             && !wx_ghost ) {
-        draw_wind_barb(p_station->coord_lon,
-                       p_station->coord_lat,
-                       weather->wx_speed,
-                       weather->wx_course,
-                       temp_sec_heard,
-                       drawing_target);
+        draw_wind_barb( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                        (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                        weather->wx_speed,
+                        weather->wx_course,
+                        temp_sec_heard,
+                        drawing_target);
     }
 
 
@@ -2979,8 +2989,8 @@ _do_the_drawing:
                 p_station->aprs_symbol.aprs_type,
                 p_station->aprs_symbol.aprs_symbol,
                 p_station->aprs_symbol.special_overlay,
-                p_station->coord_lon,
-                p_station->coord_lat,
+                (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                 temp_call,
                 temp_altitude,
                 temp_course,    // ??
@@ -3011,12 +3021,13 @@ _do_the_drawing:
     // Draw other points associated with the station, if any.
     // KG4NBB
     if (p_station->num_multipoints != 0) {
-        draw_multipoints(p_station->coord_lon, p_station->coord_lat,
-                         p_station->num_multipoints,
-                         p_station->multipoint_data->multipoints,
-                         p_station->type, p_station->style,
-                         temp_sec_heard,
-                         drawing_target);
+        draw_multipoints( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                          (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                          p_station->num_multipoints,
+                          p_station->multipoint_data->multipoints,
+                          p_station->type, p_station->style,
+                          temp_sec_heard,
+                          drawing_target);
     }
 
     temp_sec_heard = p_station->sec_heard;    // DK7IN: ???
@@ -3034,16 +3045,22 @@ _do_the_drawing:
         else if (strlen(p_station->power_gain) == 7) {
             // Station has PHG or RNG defined
             //
-            draw_phg_rng(p_station->coord_lon,p_station->coord_lat,
-                         p_station->power_gain,temp_sec_heard,drawing_target);
+            draw_phg_rng( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                          (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                          p_station->power_gain,
+                          temp_sec_heard,
+                          drawing_target);
         }
         else if (Display_.default_phg && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
             // No PHG defined and not an object/item.  Display a PHG
             // of 3130 as default as specified in the spec:  9W, 3dB
             // omni at 20 feet = 6.2 mile PHG radius.
             //
-            draw_phg_rng(p_station->coord_lon,p_station->coord_lat,
-                         "PHG3130",temp_sec_heard,drawing_target);
+            draw_phg_rng( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
+                          (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
+                          "PHG3130",
+                          temp_sec_heard,
+                          drawing_target);
         }
     }
 
@@ -7837,6 +7854,7 @@ void init_station(DataRow *p_station) {
     p_station->coord_lat          = 0l;           //  90°N  \ undefined
     p_station->coord_lon          = 0l;           // 180°W  / position
     p_station->pos_amb            = 0;            // No ambiguity
+//    p_station->error_elipse_radius = 600;         // In cm, 6 meter default
     p_station->call_sign[0]       = '\0';         // ?????
     p_station->tactical_call_sign = NULL;
     p_station->sec_heard          = 0;
