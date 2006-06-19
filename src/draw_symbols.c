@@ -3058,9 +3058,6 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" 
 // Function to draw dead-reckoning symbols.
 //
 void draw_deadreckoning_features(DataRow *p_station,
-                                 int ambiguity_flag,
-                                 long ambiguity_coord_lon,
-                                 long ambiguity_coord_lat,
                                  Pixmap where,
                                  Widget w) {
     int my_course;
@@ -3078,14 +3075,8 @@ void draw_deadreckoning_features(DataRow *p_station,
     float temp_longitude, temp_longitude2;
 
 
-//    if (ambiguity_flag) {
-//        x_long = ambiguity_coord_lon;
-//        y_lat = ambiguity_coord_lat;
-//    }
-//    else {
-        x_long = p_station->coord_lon;
-        y_lat = p_station->coord_lat;
-//    }
+    x_long = p_station->coord_lon;
+    y_lat = p_station->coord_lat;
 
     // Compute distance in statute miles
     range = (double)((sec_now()-p_station->sec_heard)

@@ -2874,17 +2874,14 @@ _do_the_drawing:
              && course_ok
              && speed_ok
              && atof(dr_speed) > 0) ) {
-        if ( (secs_now-temp_sec_heard) < dead_reckoning_timeout ) {
 
-// TODO:  Pass ambiguity_coord_lon/ambiguity_coord_lat off to this
-// function when necessary.  Fix up the underlying routines to
-// handle it properly.  Write back the new position to p_station as
-// well?
- 
+        // Does it make sense to try to do dead-reckoning on an
+        // object that has position ambiguity enabled?  I don't
+        // think so!
+        // 
+        if ( ! ambiguity_flag && ( (secs_now-temp_sec_heard) < dead_reckoning_timeout) ) {
+
             draw_deadreckoning_features(p_station,
-                                        ambiguity_flag,
-                                        ambiguity_coord_lon,
-                                        ambiguity_coord_lat,
                                         drawing_target,
                                         w);
         }
