@@ -334,7 +334,7 @@ README
 
 
       -----------------------------------------------------------------------
-        OpenSuSE LINUX 10.0 NOTES:
+        OpenSuSE LINUX 10.0/10.1 NOTES:
 
         Bring up YaST2 and add more download sites via:
 
@@ -344,6 +344,11 @@ README
 
         ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.0-OSS/inst-source/suse
         ftp://ftp.suse.com/pub/projects/ham/10.0-i386
+
+        For OpenSuSE 10.1:
+
+        ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.1/inst-source/suse
+        http://dg7gt.osth.de/suse-10.1-ham/
 
         Adding these sites will allow you to find and install the ax25
         libraries/devel headers, the OpenMotif development headers, and the
