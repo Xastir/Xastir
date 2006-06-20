@@ -2361,9 +2361,13 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 
 
     if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
+
         if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
+
             if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+
                 if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+
                     x_offset=((x_long-x_long_offset)/scale_x)-(10);
                     y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
                     ghost = (int)(((sec_old+sec_heard)) < sec_now());
@@ -2547,7 +2551,6 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         // Draw red circle
                         draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
                     }
-
 
 // DEBUG STUFF
 //                    draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);

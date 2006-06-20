@@ -2991,6 +2991,27 @@ _do_the_drawing:
     }
 
 
+    // Initial try at drawing the error_ellipse_radius circles
+    // around the posit.  error_ellipse_radius is in centimeters.
+    // We must convert from cm to miles for draw_pod_circle().
+    //
+    if (!ambiguity_flag) {
+
+        // Check whether we're at a close enough zoom level to have
+        // the circle be visible, else skip drawing it for
+        // efficiency reasons.
+        //
+//fprintf(stderr,"scale_y: %ld\t", scale_y);
+        if (scale_y < 17) { // 60' circles are good out to about zoom 16
+            draw_pod_circle( p_station->coord_lon,
+                             p_station->coord_lat,
+                             p_station->error_ellipse_radius / 100000.0 * 0.62137,
+                             colors[0x08],  // Black
+                             drawing_target);
+        }
+    }
+
+
     draw_symbol(w,
                 p_station->aprs_symbol.aprs_type,
                 p_station->aprs_symbol.aprs_symbol,
@@ -7866,7 +7887,7 @@ void init_station(DataRow *p_station) {
     p_station->coord_lat          = 0l;           //  90°N  \ undefined
     p_station->coord_lon          = 0l;           // 180°W  / position
     p_station->pos_amb            = 0;            // No ambiguity
-//    p_station->error_ellipse_radius = 600;         // In cm, 6 meter default
+    p_station->error_ellipse_radius = 600;        // In cm, default 6 meters
     p_station->call_sign[0]       = '\0';         // ?????
     p_station->tactical_call_sign = NULL;
     p_station->sec_heard          = 0;
@@ -11171,7 +11192,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     else
                         p_station->pos_amb = 0; // No ambiguity in compressed posits
                 }
+
                 if (ok) {
+
                     // Create a timestamp from the current time
                     xastir_snprintf(p_station->pos_time,
                         sizeof(p_station->pos_time),
@@ -11192,6 +11215,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         p_station->flag |= ST_MSGCAP;           // set "message capable" flag
                     else
                         p_station->flag &= (~ST_MSGCAP);        // clear "message capable" flag
+
+                    // Assign a non-default value for the error
+                    // ellipse?
+                    if (type == APRS_MICE || !compr_pos) {
+                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
+
                 }
                 break;
 
@@ -11207,7 +11240,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             p_station->pos_amb = 0; // No ambiguity in compressed posits
                     }
                 }
+
                 if (ok) {
+
                     // Create a timestamp from the current time
                     xastir_snprintf(p_station->pos_time,
                         sizeof(p_station->pos_time),
@@ -11223,6 +11258,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
                     p_station->record_type = DOWN_APRS;
                     p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
+
+                    // Assign a non-default value for the error
+                    // ellipse?
+                    if (!compr_pos) {
+                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
                 }
                 break;
 */
@@ -11241,6 +11285,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
                 }
                 if (ok) {
+
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);            // altitude
 
@@ -11255,6 +11300,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         p_station->record_type = DF_APRS;
                     //@ stations have messaging per spec
                     p_station->flag |= (ST_MSGCAP);            // set "message capable" flag
+
+                    // Assign a non-default value for the error
+                    // ellipse?
+                    if (!compr_pos) {
+                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
                 }
                 break;
 
@@ -11262,6 +11316,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
                 ok = extract_position(p_station, &data, type);
                 if (ok) { 
+
                     if (debug_level & 1)
                         fprintf(stderr,"data_add: Got grid data for %s\n", call);
 
@@ -11272,6 +11327,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
  
                     add_comment(p_station,data);
 
+                    // Assign a non-default value for the error
+                    // ellipse?
+//                    p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
                 }
                 else {
                     if (debug_level & 1)
@@ -11402,6 +11460,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // and don't added a '\n' in interface.c
                     p_station->record_type = NORMAL_APRS;
                     p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
+
+                    // Assign a non-default value for the error
+                    // ellipse?
+                    if (!compr_pos) {
+                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
                 }
                 break;
 
@@ -11487,6 +11554,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // and don't added a '\n' in interface.c
                     p_station->record_type = NORMAL_APRS;
                     p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
+
+                    // Assign a non-default value for the error
+                    // ellipse?
+                    if (!compr_pos) {
+                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
                 }
                 break;
 
@@ -11503,6 +11579,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
                 }
                 if (ok) {
+
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);
                     p_station->record_type = (char)APRS_WX1;
@@ -11513,6 +11590,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         extract_multipoints(p_station, data, type, 1);
  
                     add_comment(p_station,data);
+
+                    // Assign a non-default value for the error
+                    // ellipse?
+                    if (!compr_pos) {
+                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
                 }
                 break;
 
@@ -11556,16 +11642,103 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 break;
 
+
+// GPRMC, digits after decimal point
+// ---------------------------------
+// 2  = 25.5 meter error ellipse
+// 3  =  6.0 meter error ellipse
+// 4+ =  6.0 meter error ellipse
+
+
             case (GPS_RMC):             // $GPRMC
+
+// WE7U
+// Change this function to return HDOP and the number of characters
+// after the decimal point.
                 ok = extract_RMC(p_station,data,call_sign,path);
+
+                if (ok) {
+                    // Assign a non-default value for the error
+                    // ellipse?
+//
+// WE7U
+// Degrade based on the precision provided in the sentence.  If only
+// 2 digits after decimal point, give it 2550 as a radius (25.5m).
+// Best (smallest) circle should be 600 as we have no augmentation
+// flag to check here for anything better.
+//
+                    if (1) {
+//                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
+                }
                 break;
 
+
+// GPGGA, digits after decimal point, w/o augmentation
+// ---------------------------------------------------
+// 2   = 25.5 meter error ellipse
+// 3   =  6.0 meter error ellipse unless HDOP>4, then 10.0 meters
+// 4+  =  6.0 meter error ellipse unless HDOP>4, then 10.0 meters
+// 
+// 
+// GPGGA, digits after decimal point, w/augmentation
+// --------------------------------------------------
+// 2   = 25.5 meter error ellipse
+// 3   =  2.5 meter error ellipse unless HDOP>4, then 10.0 meters
+// 4+  =  0.6 meter error ellipse unless HDOP>4, then 10.0 meters
+
+
             case (GPS_GGA):             // $GPGGA
+
+// WE7U
+// Change this function to return HDOP and the number of characters
+// after the decimal point.
                 ok = extract_GGA(p_station,data,call_sign,path);
+
+                if (ok) {
+                    // Assign a non-default value for the error
+                    // ellipse?
+//
+// WE7U
+// Degrade based on the precision provided in the sentence.  If only
+// 2 digits after decimal point, give it 2550 as a radius (25.5m).
+// 3 digits: 6m w/o augmentation unless HDOP >4 = 10m, 2.5m w/augmentation.
+// 4+ digits: 6m w/o augmentation unless HDOP >4 = 10m, 0.6m w/augmentation.
+//
+                    if (1) {
+//                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                    }
+                    else {
+                        p_station->error_ellipse_radius = 600; // Default of 6m
+                    }
+                }
                 break;
+
+
+// GPGLL, digits after decimal point
+// ---------------------------------
+// 2  = 25.5 meter error ellipse
+// 3  =  6.0 meter error ellipse
+// 4+ =  6.0 meter error ellipse
+
 
             case (GPS_GLL):             // $GPGLL
                 ok = extract_GLL(p_station,data,call_sign,path);
+
+                if (ok) {
+                    // Assign a non-default value for the error
+                    // ellipse?
+//
+// WE7U
+// Degrade based on the precision provided in the sentence.  If only
+// 2 digits after decimal point, give it 2550 as a radius, otherwise
+// give it 600.
+//
+                    p_station->error_ellipse_radius = 600; // Default of 6m
+                }
                 break;
 
             default:
