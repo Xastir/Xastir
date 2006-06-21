@@ -2301,7 +2301,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 str_len,
                 "%02d%05.2f%c",
                 ideg,
-                min+0.001, // (poor-man's rounding)
+                min+0.001, // Correct possible unbiased rounding
                 ns);
             break;
 
@@ -2310,7 +2310,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 str_len,
                 "%02d %05.2f%c",
                 ideg,
-                min+0.001, // (poor-man's rounding)
+                min+0.001, // Correct possible unbiased rounding
                 ns);
             break;
 
@@ -2319,7 +2319,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 str_len,
                 "%02d%06.3f%c",
                 ideg,
-                min+0.0001, // (poor-man's rounding)
+                min+0.0001, // Correct possible unbiased rounding
                 ns);
             break;
 
@@ -2328,7 +2328,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 str_len,
                 "%02d%07.4f%c",
                 ideg,
-                min+0.00001, // (poor-man's rounding)
+                min+0.00001, // Correct possible unbiased rounding
                 ns);
             break;
 
@@ -2338,14 +2338,14 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 "%c%02d %07.4f",
                 ns,
                 ideg,
-                min+0.00001); // (poor-man's rounding)
+                min+0.00001); // Correct possible unbiased rounding
             break;
 
         case(CONVERT_DEC_DEG):
             xastir_snprintf(str,
                 str_len,
                 "%08.5f%c",
-                (ideg+min/60.0)+0.000001, // (poor-man's rounding)
+                (ideg+min/60.0)+0.000001, // Correct possible unbiased rounding
                 ns);
             break;
 
@@ -2355,7 +2355,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 "%02d %02d %04.1f%c",
                 ideg,
                 imin,
-                sec+0.01, // (poor-man's rounding)
+                sec+0.01, // Correct possible unbiased rounding
                 ns);
             break;
         
@@ -2365,7 +2365,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 "%02d°%02d\'%04.1f%c",
                 ideg,
                 imin,
-                sec+0.01, // (poor-man's rounding)
+                sec+0.01, // Correct possible unbiased rounding
                 ns);
             break;
 
@@ -2374,7 +2374,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 str_len,
                 "%02d°%06.3f%c",
                 ideg,
-                min+0.0001, // (poor-man's rounding)
+                min+0.0001, // Correct possible unbiased rounding
                 ns);
             break;
         
@@ -2384,7 +2384,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
                 str_len,
                 "%02d %06.3f%c",
                 ideg,
-                min+0.0001, // (poor-man's rounding)
+                min+0.0001, // Correct possible unbiased rounding
                 ns);
             break;
     }
@@ -2442,7 +2442,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 str_len,
                 "%03d%05.2f%c",
                 ideg,
-                min+0.001, // (poor-man's rounding)
+                min+0.001, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2451,7 +2451,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 str_len,
                 "%03d %05.2f%c",
                 ideg,
-                min+0.001, // (poor-man's rounding)
+                min+0.001, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2460,7 +2460,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 str_len,
                 "%03d%06.3f%c",
                 ideg,
-                min+0.0001, // (poor-man's rounding)
+                min+0.0001, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2469,7 +2469,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 str_len,
                 "%03d%07.4f%c",
                 ideg,
-                min+0.00001, // (poor-man's rounding)
+                min+0.00001, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2479,14 +2479,14 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 "%c%03d %07.4f",
                 ew,
                 ideg,
-                min+0.00001); // (poor-man's rounding)
+                min+0.00001); // Correct possible unbiased rounding
             break;
 
         case(CONVERT_DEC_DEG):
             xastir_snprintf(str,
                 str_len,
                 "%09.5f%c",
-                (ideg+min/60.0)+0.000001, // (poor-man's rounding)
+                (ideg+min/60.0)+0.000001, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2496,7 +2496,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 "%03d %02d %04.1f%c",
                 ideg,
                 imin,
-                sec+0.01, // (poor-man's rounding)
+                sec+0.01, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2506,7 +2506,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 "%03d°%02d\'%04.1f%c",
                 ideg,
                 imin,
-                sec+0.01, // (poor-man's rounding)
+                sec+0.01, // Correct possible unbiased rounding
                 ew);
             break;
         
@@ -2515,7 +2515,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 str_len,
                 "%03d°%06.3f%c",
                 ideg,
-                min+0.0001, // (poor-man's rounding)
+                min+0.0001, // Correct possible unbiased rounding
                 ew);
             break;
 
@@ -2525,7 +2525,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
                 str_len,
                 "%03d %06.3f%c",
                 ideg,
-                min+0.0001, // (poor-man's rounding)
+                min+0.0001, // Correct possible unbiased rounding
                 ew);
             break;
     }
@@ -2616,7 +2616,7 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
         n[4] = '\0';
 //fprintf(stderr,"Lat: %s\n", n);
 
-        // Add 0.5 (poor man's rounding)
+        // Add 0.5 (Poor man's rounding)
         centi_sec += (long)((atoi(n) * 0.6) + 0.5);
 
         if (       (char)toupper((int)copy[7])=='N'
@@ -2721,7 +2721,7 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
         n[4] = '\0';    // Make sure substring is terminated
 //fprintf(stderr,"Lon: %s\n", n);
 
-        // Add 0.5 (poor man's rounding)
+        // Add 0.5 (Poor man's rounding)
         centi_sec += (long)((atoi(n) * 0.6) + 0.5);
 
         if (       (char)toupper((int)copy[ 8])=='W'
