@@ -8037,19 +8037,78 @@ void output_my_aprs_data(void) {
 
 
     // Format latitude string for transmit later
-    xastir_snprintf(my_output_lat,
-        sizeof(my_output_lat),
-        "%s",
-        my_lat);
+    if (transmit_compressed_posit) {    // High res version
+        xastir_snprintf(my_output_lat,
+            sizeof(my_output_lat),
+            "%s",
+            my_lat);
+    }
+    else {  // Create a low-res version of the latitude string
+        long my_temp_lat;
+        char temp_data[20];
+
+        // Convert to long
+        my_temp_lat = convert_lat_s2l(my_lat);
+
+        // Convert to low-res string
+        convert_lat_l2s(my_temp_lat,
+            temp_data,
+            sizeof(temp_data),
+            CONVERT_LP_NORMAL);
+
+//fprintf(stderr," Latitude temp_data:%s\n", temp_data);
+
+        xastir_snprintf(my_output_lat,
+            sizeof(my_output_lat),
+            "%c%c%c%c.%c%c%c",
+            temp_data[0],
+            temp_data[1],
+            temp_data[3],
+            temp_data[4],
+            temp_data[6],
+            temp_data[7],
+            temp_data[8]);
+    }
+
     (void)output_lat(my_output_lat,transmit_compressed_posit);
     if (debug_level & 128)
         fprintf(stderr,"OUT LAT <%s>\n",my_output_lat);
 
     // Format longitude string for transmit later
-    xastir_snprintf(my_output_long,
-        sizeof(my_output_long),
-        "%s",
-        my_long);
+    if (transmit_compressed_posit) {    // High res version
+        xastir_snprintf(my_output_long,
+            sizeof(my_output_long),
+            "%s",
+            my_long);
+    }
+    else {  // Create a low-res version of the longitude string
+        long my_temp_long;
+        char temp_data[20];
+
+        // Convert to long
+        my_temp_long = convert_lon_s2l(my_long);
+
+        // Convert to low-res string
+        convert_lon_l2s(my_temp_long,
+            temp_data,
+            sizeof(temp_data),
+            CONVERT_LP_NORMAL);
+
+//fprintf(stderr,"Longitude temp_data:%s\n", temp_data);
+
+        xastir_snprintf(my_output_long,
+            sizeof(my_output_long),
+            "%c%c%c%c%c.%c%c%c",
+            temp_data[0],
+            temp_data[1],
+            temp_data[2],
+            temp_data[4],
+            temp_data[5],
+            temp_data[7],
+            temp_data[8],
+            temp_data[9]);
+    }
+
     (void)output_long(my_output_long,transmit_compressed_posit);
     if (debug_level & 128)
         fprintf(stderr,"OUT LONG <%s>\n",my_output_long);
