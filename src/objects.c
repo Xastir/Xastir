@@ -1370,8 +1370,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 // It would be nice if the create/modify object dialog and this
 // routine went
 // through the same functions to create the transmitted packets:
-//      main.c:Setup_object_data
-//      main.c:Setup_item_data
+//      objects.c:Setup_object_data
+//      objects.c:Setup_item_data
 // Unfortunately those routines snag their data directly from the
 // dialog.
 // In order to make them use the same code we'd have to separate out
@@ -3868,7 +3868,8 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2), line[0]);
+            atof(temp_ptr2) + 0.001,
+            line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
 
@@ -3876,7 +3877,8 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2), line[0]);
+            atof(temp_ptr2) + 0.0001,
+            line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
 
@@ -3914,7 +3916,8 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2), line[0]);
+            atof(temp_ptr2) + 0.001,
+            line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
 
@@ -3922,7 +3925,8 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2), line[0]);
+            atof(temp_ptr2) + 0.0001,
+            line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
     }
@@ -4648,7 +4652,8 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2),line[0]);
+                atof(temp_ptr2) + 0.001,
+                line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
 
@@ -4656,7 +4661,8 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2),line[0]);
+                atof(temp_ptr2) + 0.0001,
+                line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
 
@@ -4689,7 +4695,8 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2),line[0]);
+                atof(temp_ptr2) + 0.001,
+                line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
 
@@ -4697,7 +4704,8 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2),line[0]);
+                atof(temp_ptr2) + 0.0001,
+                line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
     }
