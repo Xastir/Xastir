@@ -2991,23 +2991,45 @@ _do_the_drawing:
     }
 
 
-    // Initial try at drawing the error_ellipse_radius circles
-    // around the posit.  error_ellipse_radius is in centimeters.
-    // We must convert from cm to miles for draw_pod_circle().
     //
+    // Draw truncation/rounding rectangles plus error ellipses.
+    //
+//
+// We need to keep track of ellipse northing/easting radii plus
+// rectangle northing/easting offsets.  If both sets are present
+// we'll need to draw the summation of both geometric figures.
+// Check that the math works at/near the poles.  We may need to keep
+// track of truncation/rounding rectangles separately if some
+// devices or software use one method, some the other.
+//
     if (!ambiguity_flag) {
 
         // Check whether we're at a close enough zoom level to have
-        // the circle be visible, else skip drawing it for
-        // efficiency reasons.
+        // the ellipses/rectangles be visible, else skip drawing for
+        // efficiency.
         //
 //fprintf(stderr,"scale_y: %ld\t", scale_y);
         if (scale_y < 17) { // 60' circles are good out to about zoom 16
+
+            // Initial try at drawing the error_ellipse_radius
+            // circles around the posit.  error_ellipse_radius is in
+            // centimeters.  Convert from cm to miles for
+            // draw_pod_circle().
+            //
             draw_pod_circle( p_station->coord_lon,
                              p_station->coord_lat,
-                             p_station->error_ellipse_radius / 100000.0 * 0.62137,
-                             colors[0x08],  // Black
+                             p_station->error_ellipse_radius / 100000.0 * 0.62137, // cm to mi
+                             colors[0x0f],  // White
                              drawing_target);
+
+// Perhaps draw vectors from the symbol out to the borders of these
+// odd figures?  Draw an outline without vectors to the symbol?
+// Have the color match the track color assigned to that station so
+// the geometric figures can be kept separate from nearby stations?
+//
+// draw_truncation_rectangle + error_ellipse (symbol at corner)
+// draw_rounding_rectangle + error_ellipse (symbol in middle)
+
         }
     }
 
