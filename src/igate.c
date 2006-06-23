@@ -785,6 +785,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     char temp[MAX_LINE_SIZE+20];
     int x;
     int first = 1;
+    int found_in_nws_file = 0;
 
 
     if ( (from == NULL) || (call == NULL) || (path == NULL) || (line == NULL) )
@@ -796,29 +797,6 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     // Should we Igate from NET->RF?
     if (operate_as_an_igate <= 1)
         return;
-
-    // Check for TCPXX in string.  If found, we have an
-    // unregistered net user.
-    // I removed the trailing asterisk -we7u
-    if (strstr(path,"TCPXX") != NULL) {
-        // "TCPXX" was found in the header.  We have an
-        // unregistered user.
-        if (log_igate && (debug_level & 1024) ) {
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "IGATE NET->RF(%c):%s\n",
-                third_party ? 'T':'N',
-                line);
-            log_data(LOGFILE_IGATE,temp);
-
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "REJECT: Unregistered net user!\n");
-            log_data(LOGFILE_IGATE,temp);
-            fprintf(stderr,temp);
-        }
-        return;
-    }
 
     // Don't gate anything with NOGATE in it, in either direction.
     // Same for OpenTrac packets.
@@ -878,12 +856,72 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     }
 
 
+    // Check whether gating of packets from this station has been
+    // specifically authorized via the nws-stations.txt mechanism.
+    //
+    if ( (!object_name && check_NWS_stations(from)) // Source call in nws-stations.txt
+         || (object_name && check_NWS_stations(object_name))) { // Object/item in nws-stations.txt
+
+        found_in_nws_file++;
+    }
+
+ 
+    // Check for TCPXX in string only if station wasn't found in the
+    // nws-stations.txt file.  If TCPXX found, we have an
+    // unregistered net user and the packet shouldn't normally head
+    // to RF.
+    //
+    // I removed the trailing asterisk -we7u
+    //
+    // Note that we CAN now gate stations to RF that have TCPXX in
+    // the string if they are authorized via the nws-stations.txt
+    // mechanism.
+    //
+    if (!found_in_nws_file) {
+
+        if (strstr(path,"TCPXX") != NULL) {
+
+            // "TCPXX" was found in the header.  We have an
+            // unregistered user.
+
+            if (log_igate && (debug_level & 1024) ) {
+                xastir_snprintf(temp,
+                    sizeof(temp),
+                    "IGATE NET->RF(%c):%s\n",
+                    third_party ? 'T':'N',
+                    line);
+                log_data(LOGFILE_IGATE,temp);
+    
+                xastir_snprintf(temp,
+                    sizeof(temp),
+                    "REJECT: Unregistered net user!\n");
+                log_data(LOGFILE_IGATE,temp);
+                fprintf(stderr,temp);
+            }
+            return;
+        }
+    }
+
+
+
+// If we made it to this point, the packet is from an authorized net
+// user (no TCPXX found in the path), or the callsign has been
+// authorized via the nws-stations.txt file (whether or not TCPXX
+// was found in the path).
+//
+// Found in file: Gate always
+//
+// Not found:     Gate if TCPXX not in path -AND- if destination
+//                station was heard in last hour on RF -AND- if
+//                source station was NOT heard in last hour on RF.
+
+
+
     // Check whether the source and destination calls have been
     // heard on local RF.
-    if (  (   (!object_name && !check_NWS_stations(from)) // Source call not in nws-stations.txt
-            || (object_name && !check_NWS_stations(object_name))) // Object/item not in nws-stations.txt
-        && (!heard_via_tnc_in_past_hour(call)==1        // Haven't heard destination call in previous hour
-            || heard_via_tnc_in_past_hour(from))) {  // Have heard source call in previous hour
+    if ( !found_in_nws_file // Station not authorized to gate ALWAYS via nws-stations.txt file
+         && ( !heard_via_tnc_in_past_hour(call)==1    // Haven't heard destination call in previous hour
+            || heard_via_tnc_in_past_hour(from)) ) {  // Have heard source call in previous hour
 
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
