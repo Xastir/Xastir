@@ -2991,6 +2991,7 @@ _do_the_drawing:
     }
 
 
+// WE7U
     //
     // Draw truncation/rounding rectangles plus error ellipses.
     //
@@ -3010,6 +3011,71 @@ _do_the_drawing:
         //
 //fprintf(stderr,"scale_y: %ld\t", scale_y);
         if (scale_y < 17) { // 60' circles are good out to about zoom 16
+
+// Here we may have to check what type of device is being used (if
+// possible to determine) to decide whether to draw a truncation/
+// rounding rectangles or GPS error ellipses.  Truncation rectangles
+// have the symbol at one corner, rounding have it in the middle.
+// Based on the precision inherent in the packet we wish to draw a
+// GPS error ellipse instead, the decision point is when the packet
+// precision is adequate to show ~6 meters.
+//
+// OpenTracker APRS:  Truncation, rectangle
+// OpenTracker Base91:Truncation, ellipse
+// OpenTracker OpenTrac: Truncation, ellipse
+// TinyTrak APRS:     Truncation, rectangle
+// TinyTrak NMEA:     Truncation, ellipse/rectangle based on precision
+// TinyTrak Mic-E:    Truncation, rectangle
+// GPGGA:             Truncation, ellipse/rectangle based on precision/HDOP/Augmentation
+// GPRMC:             Truncation, ellipse/rectangle based on precision
+// GPGLL:             Truncation, ellipse/rectangle based on precision
+// Xastir APRS:       Rounding, rectangle
+// Xastir Base91:     Rounding, ellipse
+// UI-View APRS:      ??, rectangle
+// UI-View Base91:    ??, ellipse
+// APRS+SA APRS:      ??, rectangle
+// APRS+SA Base91:    ??, ellipse
+// PocketAPRS:        ??, rectangle
+// SmartAPRS:         ??, rectangle
+// HamHUD:            ??, ??
+// HamHUD GPRMC:      Truncation, ellipse/rectangle based on precision
+// Linksys NSLU2:     ??, rectangle
+// AGW Tracker:       ??, ??
+// APRSPoint:         ??, rectangle
+// APRSce:            ??, rectangle
+// APRSdos APRS:      ??, rectangle
+// APRSdos Base91:    ??, ellipse
+// BalloonTrack:      ??, ??
+// DMapper:           ??, ??
+// JavAPRS APRS:      ??, rectangle
+// JavAPRS Base91:    ??, ellipse
+// WinAPRS APRS:      ??, rectangle
+// WinAPRS Base91:    ??, ellipse
+// MacAPRS APRS:      ??, rectangle
+// MacAPRS Base91:    ??, ellipse
+// MacAPRSOSX APRS:   ??, rectangle
+// MacAPRSOSX Base91: ??, ellipse
+// X-APRS APRS:       ??, rectangle
+// X-APRS Base91:     ??, ellipse
+// OziAPRS:           ??, rectangle
+// NetAPRS:           ??, rectangle
+// APRS SCS:          ??, ??
+// RadioMobile:       ??, rectangle
+// KPC-3:             ??, rectangle
+// MicroTNC:          ??, rectangle
+// TigerTrak:         ??, rectangle
+// PicoPacket:        ??, rectangle
+// MIM:               ??, rectangle
+// Mic-Encoder:       ??, rectangle
+// Pic-Encoder:       ??, rectangle
+// Generic Mic-E:     ??, rectangle
+// D7A/D7E:           ??, rectangle
+// D700A:             ??, rectangle
+// Alinco DR-135:     ??, rectangle
+// Alinco DR-620:     ??, rectangle
+// Alinco DR-635:     ??, rectangle
+// Other:             ??, ??
+
 
             // Initial try at drawing the error_ellipse_radius
             // circles around the posit.  error_ellipse_radius is in
