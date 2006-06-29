@@ -1439,8 +1439,10 @@ void load_data_or_default(void) {
             "%s",
             name_temp);
         strncat (name, "UNPROTO_IGATE", sizeof(name) - strlen(name));
-        if (!get_string (name, devices[i].unproto_igate, sizeof(devices[i].unproto_igate)))
-            devices[i].unproto_igate[0] = '\0';
+        if (!get_string (name, devices[i].unproto_igate, sizeof(devices[i].unproto_igate))
+                || devices[i].unproto_igate[0] == '\0') {
+            xastir_snprintf(devices[i].unproto_igate, sizeof(devices[i].unproto_igate), "WIDE2-1");
+        }
 
         xastir_snprintf(name,
             sizeof(name),
