@@ -11,7 +11,7 @@ DIST_SUBDIRS = rtree
 
 EXTRA_DIST=icon.xbm
 
-xastir_SOURCES = \
+XASTIR_SRC = \
     alert.c alert.h \
     awk.c awk.h \
     bulletin_gui.c bulletin_gui.h \
@@ -70,14 +70,22 @@ xastir_SOURCES = \
     x_spider.c x_spider.h \
     rpl_malloc.c rpl_malloc.h
 
+xastir_SOURCES = $(XASTIR_SRC) compiledate.c
+
 xastir_udp_client_SOURCES = \
     xastir_udp_client.c
- 
+
 testawk_SOURCES = \
     testawk.c \
     awk.c \
     dbfawk.c \
     rpl_malloc.c rpl_malloc.h
+
+compiledate.c: $(XASTIR_SRC)
+	echo 'char compiledate[] = "'"Compiled: `date`"'";' > compiledate.c
+
+remove_compiledate:
+	rm -f compiledate.c compiledate.o
 
 xastir_LDADD=@LIBRTREE@
 
@@ -86,4 +94,3 @@ xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 xastir_udp_client_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 testawk_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-
