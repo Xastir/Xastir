@@ -633,6 +633,7 @@ void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) 
 void Download_findu_trail( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget pane, my_form, button_ok, button_cancel, call, sep;
     Atom delw;
+    XmString x_str;
 
 
     if (!download_findu_dialog) {
@@ -697,6 +698,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNtraversalOn, TRUE,
                 NULL);
 
+        x_str = XmStringCreateLocalized(langcode("WPUPTSP009"));
         posit_start_value = XtVaCreateManagedWidget("Start of Trail (hrs ago)", 
                 xmScaleWidgetClass, 
                 my_form,
@@ -719,11 +721,17 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNmaximum, MAX_FINDU_START_TIME,
                 XmNshowValue, TRUE,
                 XmNvalue, posit_start,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP009"), 22,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP009"), 22,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmStringFree(x_str);
 
+        x_str = XmStringCreateLocalized(langcode("WPUPTSP010"));
         posit_length_value = XtVaCreateManagedWidget("Length of trail (hrs)", 
                 xmScaleWidgetClass, 
                 my_form,
@@ -746,10 +754,15 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNmaximum, MAX_FINDU_DURATION,
                 XmNshowValue, TRUE,
                 XmNvalue, posit_length,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP010"), 19,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP010"), 19,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmStringFree(x_str);
 
         sep = XtVaCreateManagedWidget("Download_findu_trail sep", 
                 xmSeparatorGadgetClass,

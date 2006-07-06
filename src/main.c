@@ -21552,6 +21552,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     Atom delw;
     int length;
     int timeout_length;
+    XmString x_str;
 
 
     if (!configure_timing_dialog) {
@@ -21578,9 +21579,9 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        length = strlen(langcode("WPUPCFTM02")) + 1;
-
         // Posit Time
+        length = strlen(langcode("WPUPCFTM02")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM02"));
         posit_interval = XtVaCreateManagedWidget("Posit Interval",
                 xmScaleWidgetClass,
                 my_form,
@@ -21601,14 +21602,20 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNdecimalPoints, 1,    // Move decimal point over one
                 XmNshowValue, TRUE,
                 XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM02"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM02"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmStringFree(x_str);
 
-        length = strlen(langcode("WPUPCFTM03")) + 1;
 
         // Interval for stations being considered old (symbol ghosting)
+        length = strlen(langcode("WPUPCFTM03")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM03"));
         ghosting_time = XtVaCreateManagedWidget("Station Ghosting Time",
                 xmScaleWidgetClass,
                 my_form,
@@ -21628,14 +21635,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 3*60,   // Three hours
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_old/60),
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM03"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM03"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM04")) + 1;
+        XmStringFree(x_str);
 
         // Object Item Transmit Interval
+        length = strlen(langcode("WPUPCFTM04")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM04"));
         object_item_interval = XtVaCreateManagedWidget("Object/Item Transmit Interval (min)",
                 xmScaleWidgetClass,
                 my_form,
@@ -21656,14 +21668,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 120,    // 120 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(OBJECT_rate / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM04"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM04"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
- 
-        length = strlen(langcode("WPUPCFTM05")) + 1;
+        XmStringFree(x_str);
 
         // Interval for station not being displayed
+        length = strlen(langcode("WPUPCFTM05")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM05"));
         clearing_time = XtVaCreateManagedWidget("Station Clear Time",
                 xmScaleWidgetClass,
                 my_form,
@@ -21684,14 +21701,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 24*7,   // One week
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_clear/(60*60)),
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM05"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM05"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM06")) + 1;
+        XmStringFree(x_str);
 
         // GPS Time
+        length = strlen(langcode("WPUPCFTM06")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM06"));
         gps_interval = XtVaCreateManagedWidget("GPS Interval",
                 xmScaleWidgetClass,
                 my_form,
@@ -21712,14 +21734,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty seconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)gps_time,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM06"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM06"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
- 
-        length = strlen(langcode("WPUPCFTM07")) + 1;
+        XmStringFree(x_str);
 
         // Interval for station being removed from database
+        length = strlen(langcode("WPUPCFTM07")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM07"));
         removal_time = XtVaCreateManagedWidget("Station Delete Time",
                 xmScaleWidgetClass,
                 my_form,
@@ -21740,14 +21767,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 14,     // Two weeks
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_remove/(60*60*24)),
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM07"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM07"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM08")) + 1;
+        XmStringFree(x_str);
 
         // Dead Reckoning Timeout
+        length = strlen(langcode("WPUPCFTM08")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM08"));
         dead_reckoning_time = XtVaCreateManagedWidget("DR Time (min)",
                 xmScaleWidgetClass,
                 my_form,
@@ -21768,14 +21800,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(dead_reckoning_timeout / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM08"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM08"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM09")) + 1;
+        XmStringFree(x_str);
 
         // Serial Pacing Time (delay between each serial character)
+        length = strlen(langcode("WPUPCFTM09")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM09"));
         serial_pacing_time = XtVaCreateManagedWidget("Serial Pacing Time (ms)",
                 xmScaleWidgetClass,
                 my_form,
@@ -21796,14 +21833,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 50,     // Fifty milliseconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(serial_char_pacing),
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM09"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM09"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM10")) + 1;
+        XmStringFree(x_str);
 
         // Time below which track segment will get drawn, in minutes
+        length = strlen(langcode("WPUPCFTM10")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM10"));
         trail_segment_timeout = XtVaCreateManagedWidget("Trail segment timeout",
                 xmScaleWidgetClass,
                 my_form,
@@ -21824,14 +21866,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 12*60, // 12 hours
                 XmNshowValue, TRUE,
                 XmNvalue, trail_segment_time,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM10"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM10"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM11")) + 1;
+        XmStringFree(x_str);
 
         // Interval at track segment will not get drawn, in degrees
+        length = strlen(langcode("WPUPCFTM11")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM11"));
         trail_segment_distance_max = XtVaCreateManagedWidget("Trail segment interval degrees",
                 xmScaleWidgetClass,
                 my_form,
@@ -21852,14 +21899,19 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 45, // 90 degrees
                 XmNshowValue, TRUE,
                 XmNvalue, trail_segment_distance,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM11"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM11"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM12")) + 1;
+        XmStringFree(x_str);
 
         // Time below which track segment will get drawn, in minutes
+        length = strlen(langcode("WPUPCFTM12")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM12"));
         RINO_download_timeout = XtVaCreateManagedWidget("RINO download interval",
                 xmScaleWidgetClass,
                 my_form,
@@ -21880,16 +21932,22 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 30,     // 30 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, RINO_download_interval,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM12"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM12"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmStringFree(x_str);
+
 #ifndef HAVE_GPSMAN
 XtSetSensitive(RINO_download_timeout, FALSE);
 #endif  // HAVE_GPSMAN
 
        timeout_length = strlen(langcode("MPUPTGR017")) + 1;
-
+       x_str = XmStringCreateLocalized(langcode("MPUPTGR017"));
        net_map_slider  = XtVaCreateManagedWidget("Net Map Timeout",
                 xmScaleWidgetClass,
                 my_form,
@@ -21910,14 +21968,19 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNmaximum, 300,
                 XmNshowValue, TRUE,
                 XmNvalue, net_map_timeout,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-        length = strlen(langcode("WPUPCFTM13")) + 1;
+        XmStringFree(x_str);
 
         // Interval at which snapshots will be taken, in minutes
+        length = strlen(langcode("WPUPCFTM13")) + 1;
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM13"));
         snapshot_interval_slider = XtVaCreateManagedWidget("Snapshot interval",
                 xmScaleWidgetClass,
                 my_form,
@@ -21938,10 +22001,15 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNmaximum, 30,     // 30 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, snapshot_interval,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM13"), length,
+// Note:  Some versions of OpenMotif (distributed with Fedora,
+// perhaps others) don't work properly with XtVaTypedArg() as used
+// here, instead showing blank labels for the Scale widgets.
+//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM13"), length,
+                XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmStringFree(x_str);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
