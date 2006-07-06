@@ -11553,7 +11553,7 @@ void quit(int sig) {
 
 #ifdef USE_PID_FILE_CHECK
 
-void pid_file_check(void){
+int pid_file_check(void){
 
     int killret=0; 
     int other_pid=0;
@@ -11607,27 +11607,27 @@ void pid_file_check(void){
             exit(-1);  // Quick exit from the program
         }
 
-    }
-
+    } else {
+    	
     // if we're here - ok to truncate & open pidfile. 
 
-
 #ifdef N8YSZ
-     fprintf(stderr, "other_pid = <%d> killret == <%d> errno == <%d>\n",
-            other_pid,killret,errno); 
+        fprintf(stderr, "other_pid = <%d> killret == <%d> errno == <%d>\n",
+                other_pid,killret,errno); 
 #endif
 
-    PIDFILE = fopen(pidfile_name,"w");
-    if(PIDFILE != NULL){
-        fprintf(PIDFILE, "%d",getpid()); 
-    } else {
-        fprintf(stderr, "Error writing pidfile");
-        /** Do something useful here! **/ 
-    } 
-
-    (void) fclose (PIDFILE);
-    
-
+        PIDFILE = fopen(pidfile_name,"w");
+        if(PIDFILE != NULL){
+            fprintf(PIDFILE, "%d",getpid()); 
+            (void) fclose (PIDFILE);
+            return(0); 
+        } else {
+            fprintf(stderr, "Error opening pidfile: %s\n", strerror(errno) );
+            return(errno); 
+        } 
+        return(0);
+    }
+    return(0); 
 } // end pid_file_check
 
 #endif 
@@ -25581,42 +25581,81 @@ int main(int argc, char *argv[], char *envp[]) {
     /* check user directories */
     if (filethere(get_user_base_dir("")) != 1) {
         fprintf(stderr,"Making user dir\n");
-        (void)mkdir(get_user_base_dir(""),S_IRWXU);
+        if (mkdir(get_user_base_dir(""),S_IRWXU) !=0){
+                fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                    get_user_base_dir(""), strerror(errno) );
+
+               	// Creature to feep later? 
+               	// needs <libgen.h> 
+                // fprintf(stderr,"Check to see if '%s' exists \n", 
+                //    dirname(get_user_base_dir("")) );
+
+            exit(errno);
+        }
+       
     }
 
     if (filethere(get_user_base_dir("config")) != 1) {
         fprintf(stderr,"Making user config dir\n");
-        (void)mkdir(get_user_base_dir("config"),S_IRWXU);
+        if (mkdir(get_user_base_dir("config"),S_IRWXU) !=0){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("config"), strerror(errno) );
+            exit(errno);
+        }        	
     }
 
     if (filethere(get_user_base_dir("data")) != 1) {
         fprintf(stderr,"Making user data dir\n");
-        (void)mkdir(get_user_base_dir("data"),S_IRWXU);
+        if (mkdir(get_user_base_dir("data"),S_IRWXU) !=0){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("data"), strerror(errno) );
+            exit(errno);
+        }
     }
 
     if (filethere(get_user_base_dir("logs")) != 1) {
         fprintf(stderr,"Making user log dir\n");
-        (void)mkdir(get_user_base_dir("logs"),S_IRWXU);
+        if (mkdir(get_user_base_dir("logs"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("logs"), strerror(errno) );
+            exit(errno);
+        }
     }
 
     if (filethere(get_user_base_dir("tracklogs")) != 1) {
         fprintf(stderr,"Making user tracklogs dir\n");
-        (void)mkdir(get_user_base_dir("tracklogs"),S_IRWXU);
+        if (mkdir(get_user_base_dir("tracklogs"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("tracklogs"), strerror(errno) );
+            exit(errno);
+        }        	
     }
 
     if (filethere(get_user_base_dir("tmp")) != 1) {
         fprintf(stderr,"Making user tmp dir\n");
-        (void)mkdir(get_user_base_dir("tmp"),S_IRWXU);
+        if (mkdir(get_user_base_dir("tmp"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("tmp"), strerror(errno) );
+            exit(errno);
+        }        	
     }
 
     if (filethere(get_user_base_dir("gps")) != 1) {
         fprintf(stderr,"Making user gps dir\n");
-        (void)mkdir(get_user_base_dir("gps"),S_IRWXU);
+        if ( mkdir(get_user_base_dir("gps"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("gps"), strerror(errno) );
+            exit(errno);
+        }
     }
 
     if (filethere(get_user_base_dir("map_cache")) != 1) {
         fprintf(stderr,"Making map_cache dir\n");
-        (void)mkdir(get_user_base_dir("map_cache"),S_IRWXU);
+        if (mkdir(get_user_base_dir("map_cache"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("map_cache"), strerror(errno) );
+            exit(errno);
+        }
     }
 
 
@@ -25624,7 +25663,10 @@ int main(int argc, char *argv[], char *envp[]) {
 
 #ifdef USE_PID_FILE_CHECK
 
-    pid_file_check(); 
+    if (pid_file_check() !=0 ){
+        fprintf(stderr,"pid_file_check failed:\t%s \n", strerror(errno) );
+            exit(errno);
+    }
 
 #endif 
 
@@ -26119,4 +26161,3 @@ fprintf(stderr,
     quit(0);
     return 0;
 }
-
