@@ -7,7 +7,6 @@ Hello possible new developer, and welcome to the Xastir project!
 In order to get contributed patches accepted more easily by the
 Xastir developers:
 
-
 *) Read "Developer Guidelines and Notes" in the Docs section of
 Xastir's SourceForge page.  Make sure to follow the formatting and
 indentation rules, and in particular the tab format (spaces, not
@@ -15,6 +14,12 @@ tabs).  If you don't like some of the formatting rules, abide by
 them anyway for consistency (Hey, I don't like some of them either,
 but consistency is more important than ideas I might have of coding
 style!  --we7u).
+
+*) Check the Xastir pages at Sourceforge.  There are sections for bug
+reports and feature requests.  Anyone can log new bugs or feature requests,
+whether or not they are logged into Sourceforge.  This is one of the best
+places to see what needs to be worked on, and to see if anyone else has
+had a similar idea. 
 
 *) Check with the Xastir-Dev list first to see if anyone else is
 working on that particular idea or section of code.
@@ -316,4 +321,3 @@ be expanded in this document.  Thanks!
 APRS(tm) is a Trademark of Bob Bruninga
 
 Copyright (C) 2006 The Xastir Group
-
