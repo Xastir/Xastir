@@ -4235,7 +4235,7 @@ static void PosTestExpose(Widget parent, XtPointer clientData, XEvent *event, Bo
 
     // Get rid of the event handler and the test dialog
     XtRemoveEventHandler(parent, ExposureMask, True, (XtEventHandler) PosTestExpose, (XtPointer)NULL);
-    XtRemoveGrab(XtParent(parent));
+//    XtRemoveGrab(XtParent(parent));  // Not needed?
     XtDestroyWidget(XtParent(parent));
 }
 
