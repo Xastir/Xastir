@@ -1089,7 +1089,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     int heat_index;
     char format;
     WeatherRow *weather;
-    float tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp9,tmp10,tmp11,tmp12;
+    float tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15,tmp16,tmp17,tmp18,tmp19;
     int tmp7,tmp8;
 
 
@@ -1109,6 +1109,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
         /////////////////////////////////////
         // Dallas One-Wire Weather Station //
         /////////////////////////////////////
+
+// KB1MTS - Added values for T13 thru T19 for humidity and barometer,
+// however only current values (not min or max) are used.
+
+
         case (DALLAS_ONE_WIRE):
 
             if (debug_level & 1)
@@ -1119,8 +1124,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 sizeof(weather->wx_station),
                 "OWW");
 
-            if (12 != sscanf((const char *)data,
-                    "%f %f %f %f %f %f %d %d %f %f %f %f",
+            if (19 != sscanf((const char *)data,
+                    "%f %f %f %f %f %f %d %d %f %f %f %f %f %f %f %f %f %f %f",
                     &tmp1,
                     &tmp2,
                     &tmp3,
@@ -1132,7 +1137,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     &tmp9,
                     &tmp10,
                     &tmp11,
-                    &tmp12)) {
+                    &tmp12,
+                    &tmp13,
+                    &tmp14,
+                    &tmp15,
+                    &tmp16,
+                    &tmp17,
+                    &tmp18,
+                    &tmp19)) {
                 fprintf(stderr,"wx_fill_data:sscanf parsing error\n");
             }
 
@@ -1149,10 +1161,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // tmp7: vane bearing - 1 (current wind direction)
             // tmp8: vane mode (max dir)
             // tmp9: rain rate
-            // tmp10: rain total?
-            // tmp11: rain since ??
-            // tmp12: rain since ??
-
+            // tmp10: rain total today
+            // tmp11: rain total week
+            // tmp12: rain since month
+            // tmp13: Current Humidity
+            // tmp14: Max Humidity
+            // tmp15: Min Humidity
+            // tmp16: Current Barometer
+            // tmp17: Max Barometer
+            // tmp18: Min Barometer
+            // tmp19: Barometer Rate
 
             // Temperature
             xastir_snprintf(weather->wx_temp,
@@ -1183,10 +1201,23 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 "%03d",
                 (int)(tmp4 + 0.5));
 
+            // Humidity.  This is received by percentage.
+            xastir_snprintf(weather->wx_hum,      
+                sizeof(weather->wx_hum),
+                "%2.1f", (double)(tmp13));
+                    
+            // Barometer. Sent in inHg
+            xastir_snprintf(weather->wx_baro,           
+                sizeof(weather->wx_baro),
+                "%4.4f", (float)(tmp16 * 33.864)); 
+
+
 // Rain:  I don't have a rain gauge, and I couldn't tell from the
 // "OWW" docs exactly which of the four rain fields did what.  If
 // someone can help me with that I'll add rain gauge code for the
 // Dallas One-Wire.
+              		
+
 
             break;
 
@@ -2775,7 +2806,7 @@ void wx_decode(unsigned char *wx_line, int port) {
     unsigned int check_sum;
     int max;
     WeatherRow *weather;
-    float t1,t2,t3,t4,t5,t6,t9,t10,t11,t12;
+    float t1,t2,t3,t4,t5,t6,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19;
     int t7,t8;
 
 
@@ -2909,9 +2940,8 @@ void wx_decode(unsigned char *wx_line, int port) {
 //WE7U
                 // else look for ten ASCII decimal point chars in the input, or do an
                 // sscanf looking for the correct number and types of fields for the
-                // OWW server in ARNE mode.  6 %f's, 2 %d's, 4 %f's.
-                else if (sscanf((const char *)wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f",
-                        &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12) == 12) {
+                // OWW server in ARNE mode.  6 %f's, 2 %d's, 11 %f's.
+                else if (sscanf((const char *)wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f %f %f %f %f %f %f %f", &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12,&t13,&t14,&t15,&t16,&t17,&t18,&t19) == 19) {
 
                     // Found Dallas One-Wire Weather Station
                     if (debug_level & 1)
