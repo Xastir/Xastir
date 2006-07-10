@@ -55,6 +55,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <math.h>
+#include <errno.h>
 
 #include "xastir.h"
 #include "util.h"
@@ -111,8 +112,7 @@ struct timezone tz;
 static struct hashtable *tactical_hash = NULL;
 #define TACTICAL_HASH_SIZE 1024
 
-
-
+#define MAX_LOGFILE_SIZE 2048000
 
 
 /////////////////////////////////////////////////////////////////////
@@ -3350,15 +3350,78 @@ int filecreate(char *fn) {
 
 
 time_t file_time(char *fn) {
-    struct stat nfile;
+    struct stat file_status;
 
-    if(stat(fn,&nfile)==0)
-        return((time_t)nfile.st_ctime);
+    if(stat(fn,&file_status)==0)
+        return((time_t)file_status.st_ctime);
 
     return(-1);
 }
 
 
+// used by log_data 
+void rotate_file(char *file, int max_keep ){
+    int i; 
+    char file_a[MAX_FILENAME];
+    char file_b[MAX_FILENAME];
+    struct stat file_status;
+
+    if (debug_level & 1) {
+        fprintf(stderr, "Rotating: %s. Will keep %d \n", file, max_keep);
+    }
+
+    for(i=max_keep;i>=1;i--){
+
+    if (debug_level & 1) {
+        fprintf(stderr, "rotate: %s : %s\n", file_b, file_a);
+    }
+
+        xastir_snprintf(file_a,sizeof(file_a),"%s.%d",file,i); 
+        xastir_snprintf(file_b,sizeof(file_b),"%s.%d",file,i-1); 
+
+        unlink (file_a);
+        if (stat(file_a, &file_status) == 0) {
+            // We got good status.  That means it didn't get deleted!
+            fprintf(stderr,
+                "Couldn't delete file '%s': %s",
+                file_a,strerror(errno));
+        return;
+        }
+
+        // Rename previous to next
+        //
+        // Check whether file_b exists
+        if (stat(file_b, &file_status) == 0) {
+            if (!S_ISREG(file_status.st_mode)) {
+                fprintf(stderr,
+                    "Couldn't stat %s\n",
+                    file_b);
+                break; 
+            }
+            if ( rename (file_b, file_a) ) {
+                fprintf(stderr,
+                    "Couldn't rename %s to %s, cancelling log_rotate()\n",
+                    file_b,
+                    file_a);
+                return;
+            }
+        }
+    
+    }
+
+    if (debug_level & 1) {
+        fprintf(stderr, "rotate: %s : %s\n", file, file_a);
+    }
+
+    if ( rename (file, file_a) ) {
+	fprintf(stderr,
+	"Couldn't rename %s to %s, cancelling log_rotate()\n",
+		file,
+                file_a);
+    }
+  
+    return; 
+}
 
 
 
@@ -3368,7 +3431,8 @@ time_t file_time(char *fn) {
 //
 void log_data(char *file, char *line) {
     FILE *f;
-
+    struct stat file_status; 
+    int reset_setuid = 0 ; 
 
     // Check for "# Tickle" first, don't log it if found.
     // It's an idle string designed to keep the socket active.
@@ -3394,7 +3458,39 @@ void log_data(char *file, char *line) {
             timestring);
 
         // Change back to the base directory
+
         chdir(get_user_base_dir(""));
+
+        // check size and rotate if too big
+
+        if (stat(file, &file_status)==0){
+
+//            if (debug_level & 1) {
+//                fprintf(stderr, "log_data(): logfile size: %ld \n",(long) file_status.st_size);
+//            }
+
+            if (file_status.st_size > MAX_LOGFILE_SIZE){
+                if (debug_level & 1) {
+                    fprintf(stderr, "log_data(): calling rotate_file()\n");
+                }       
+
+                rotate_file(file,3);        
+            }
+
+        } else {
+            // ENOENT is ok -- we make the file below
+            if (errno != ENOENT ) {
+                fprintf(stderr,"Couldn't stat log file '%s': %s\n",
+                    file,strerror(errno));
+                return;                     
+            }
+
+        }        
+
+        if (getuid() != geteuid()){
+            reset_setuid=1; 
+            DISABLE_SETUID_PRIVILEGE;
+        }
 
         f=fopen(file,"a");
         if (f!=NULL) {
@@ -3404,6 +3500,10 @@ void log_data(char *file, char *line) {
         }
         else {
             fprintf(stderr,"Couldn't open file for appending: %s\n", file);
+        }
+
+        if(reset_setuid){
+            ENABLE_SETUID_PRIVILEGE;
         }
     }
 }
@@ -5109,5 +5209,3 @@ void set_dangerous( char *ptr ) {
 void clear_dangerous(void) {
     dangerous_operation[0] = '\0';
 }
-
-
