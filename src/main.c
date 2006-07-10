@@ -10276,16 +10276,20 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
     do_time = 0;
 
-    // Start UpdateTime again 2 milliseconds after we've
-    // completed.  Note:  Setting this to a '1' or '0' can cause
-    // some systems (RedHat/FreeBSD) to spin their wheels a lot,
-    // using up great amounts of CPU time.
+    // Start UpdateTime again 10 milliseconds after we've completed.
+    // Note:  Setting this too low can cause // some systems
+    // (RedHat/FreeBSD) to spin their wheels a lot, using up great
+    // amounts of CPU time.  This is heavily dependent on the true
+    // value of the "HZ" value, which is reported as "100" on some
+    // systems even if the kernel is using another value.
 #ifdef __CYGWIN__
     // Cygwin performance is abysmal if nexttime is lower than 50, almost
     // acceptable at 200.
     nexttime = 200;
 #else
-    nexttime = 2;
+    // Changed from 2 to 10 to fix high CPU usage problems on
+    // FreeBSD.
+    nexttime = 10;
 #endif // __CYGWIN__
 
 
