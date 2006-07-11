@@ -3148,6 +3148,7 @@ void draw_deadreckoning_features(DataRow *p_station,
             / (temp_latitude2 - temp_latitude) );
 // Check for divide-by-zero here???
 
+/*
     // Calculate course and convert to degrees
     my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
 
@@ -3182,18 +3183,25 @@ void draw_deadreckoning_features(DataRow *p_station,
 
     // Convert to screen angle
 //    my_course = my_course + 90;
+*/
 
     if (Display_.dr_arc &&
             ((x_long>=0) && (x_long<=129600000l)) &&
             ((y_lat>=0) && (y_lat<=64800000l))) {
 
-// Prevents it from being drawn when the symbol is off-screen.
-// It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-        if ((x_long>x_long_offset) &&
-                (x_long<(x_long_offset+(long)(screen_width *scale_x))) &&
-                ((y_lat>y_lat_offset) &&
-                (y_lat<(y_lat_offset+(long)(screen_height*scale_y))))) {
+// The below prevents it from being drawn when the symbol and the
+// DR'ed symbol (ghosted symbol) are off-screen.  It'd be better to
+// check for lat/long +/- range to see if it's on the screen.
+//
+        if (   (  (x_long>x_long_offset) &&     // Check symbol position
+                  (x_long<(x_long_offset+(long)(screen_width *scale_x))) &&
+                  ((y_lat>y_lat_offset) &&
+                  (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))))
+            || (  (x_long2>x_long_offset) &&    // Check DR'ed position too
+                  (x_long2<(x_long_offset+(long)(screen_width *scale_x))) &&
+                  ((y_lat2>y_lat_offset) &&
+                  (y_lat2<(y_lat_offset+(long)(screen_height*scale_y)))) ) ) {
 
             double xdiff, ydiff;
 
@@ -3256,10 +3264,9 @@ void draw_deadreckoning_features(DataRow *p_station,
 // TODO:  Sometimes when zoomed out a bit the DR arc appears in the
 // wrong place.  Might have to do with not enough pixels to compute
 // it properly?  I saw this at 179 and 181 degrees and zoom 250-300
-// or so.  It flips from section 1 above (179) to section 5 when
-// there's a problem like that.
-//
-// If longitude doesn't change, it's a divide by zero condition!
+// or so.  It changes from section 1 above to section 5 when this
+// problem occurs.  Since longitude isn't changing much in this
+// case, it's probably a divide by zero condition that's causing it.
 
 
             // Convert to screen angle for XDrawArc routines:
@@ -3284,42 +3291,52 @@ void draw_deadreckoning_features(DataRow *p_station,
                 -64/2*arc_degrees);
             }
         }
+
+
+        if (Display_.dr_course) {
+            (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+            (void)XSetForeground(XtDisplay(da),gc,color); // red3
+            (void)XDrawLine(XtDisplay(da),where,gc,
+                x,
+                y,
+                x2,
+                y2);
+        }
     }
 
-    if (Display_.dr_course) {
-        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-        (void)XSetForeground(XtDisplay(da),gc,color); // red3
-        (void)XDrawLine(XtDisplay(da),where,gc,
-            x,
-            y,
-            x2,
-            y2);
-    }
 
     if (Display_.dr_symbol) {
-        draw_symbol(w,
-            p_station->aprs_symbol.aprs_type,
-            p_station->aprs_symbol.aprs_symbol,
-            p_station->aprs_symbol.special_overlay,
-            x_long2,
-            y_lat2,
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            p_station->sec_heard-sec_old,   // Always draw it ghosted
-            0,
-            where,
-            symbol_orient(p_station->course),
-            p_station->aprs_symbol.area_object.type,
-            p_station->signpost,
-            "",
-            "",
-            0); // Don't bump the station count
+
+        if ( (x_long2>x_long_offset) &&    // Check DR'ed position too
+                (x_long2<(x_long_offset+(long)(screen_width *scale_x))) &&
+                ((y_lat2>y_lat_offset) &&
+                (y_lat2<(y_lat_offset+(long)(screen_height*scale_y)))) ) {
+
+
+            draw_symbol(w,
+                p_station->aprs_symbol.aprs_type,
+                p_station->aprs_symbol.aprs_symbol,
+                p_station->aprs_symbol.special_overlay,
+                x_long2,
+                y_lat2,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                p_station->sec_heard-sec_old,   // Always draw it ghosted
+                0,
+                where,
+                symbol_orient(p_station->course),
+                p_station->aprs_symbol.area_object.type,
+                p_station->signpost,
+                "",
+                "",
+                0); // Don't bump the station count
+        }
     }
 }
 
