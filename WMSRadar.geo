@@ -9,5 +9,5 @@ URL http://mesonet.tamu.edu/cgi-bin/CONUSradar?SERVICE=WMS&LAYERS=radar&FORMAT=i
 REFRESH 720
 #
 #
-TRANSPARENT 0x000000
+TRANSPARENT 0x010101
 
