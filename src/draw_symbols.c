@@ -3068,7 +3068,7 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" 
 void draw_deadreckoning_features(DataRow *p_station,
                                  Pixmap where,
                                  Widget w) {
-    int my_course;
+    double my_course;
     long x_long, y_lat;
     long x_long2, y_lat2;
     long x, y;
@@ -3138,62 +3138,67 @@ void draw_deadreckoning_features(DataRow *p_station,
         //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
         (void)XSetForeground(XtDisplay(da),gc,color);
 
-        // Compute angle from the two screen positions.  Guard
-        // against divide-by-zero.
-        my_course = (int)( 57.29578 * atan(xdiff/ ydiff) );
 
-//fprintf(stderr,"my_course:%d\n", my_course);
+        // Compute angle from the two screen positions.
+        //
+        if (xdiff != 0) {
+//We should guard against divide-by-zero here!
+             my_course = 57.29578 * atan(xdiff/ ydiff);
+        }
+        else {
+            if (ydiff >= 0) {
+                my_course = 180.0;
+            }
+            else {
+                my_course = 0.0;
+            }
+        }
+
+
+//fprintf(stderr,"my_course:%f\n", my_course);
         // The arctan function returns values between -90 and +90.  To
         // obtain the true course we apply the following rules:
         if (ydiff > 0 && xdiff > 0) {
 //fprintf(stderr,"1\n");  // Lower-right quadrant
-            my_course = 360 - my_course;
+            my_course = 360.0 - my_course;
         }
         else if (ydiff < 0.0 && xdiff > 0.0) {
 //fprintf(stderr,"2\n");  // Upper-right quadrant
-            my_course = 180 - my_course;
+            my_course = 180.0 - my_course;
         }
         else if (ydiff < 0.0 && xdiff < 0.0) {
 //fprintf(stderr,"3\n");  // Upper-left quadrant
-            my_course = 180 - my_course;
+            my_course = 180.0 - my_course;
         }
         else if (ydiff > 0.0 && xdiff < 0.0) {
 //fprintf(stderr,"4\n");  // Lower-left quadrant
-            my_course = 360 - my_course;
+            my_course = 360.0 - my_course;
         }
-        else {  // 0/90/180/270, wrong for 184-181/180/179-174, ok for 173/185
+        else {  // 0/90/180/270
 //fprintf(stderr,"5\n");
-            my_course = 180 + my_course;
+            my_course = 180.0 + my_course;
         }
-
-
-// TODO:  Sometimes when zoomed out a bit the DR arc appears in the
-// wrong place.  Might have to do with not enough pixels to compute
-// it properly?  I saw this at 179 and 181 degrees and zoom 250-300
-// or so.  It changes from section 1 above to section 5 when this
-// problem occurs.  Since longitude isn't changing much in this
-// case, it's probably a divide by zero condition that's causing it.
 
 
         // Convert to screen angle for XDrawArc routines:
-        my_course = my_course + 90;
+        my_course = my_course + 90.0;
 
-        if (my_course > 360)
-            my_course = my_course - 360;
+        if (my_course > 360.0)
+            my_course = my_course - 360.0;
  
-//fprintf(stderr,"\tmy_course2:%d\n", my_course);
+//fprintf(stderr,"\tmy_course2:%f\n", my_course);
 
         (void)XDrawArc(XtDisplay(da),where,gc,
             (int)(x-(diameter/2)),
             (int)(y-(diameter/2)),
             (unsigned int)diameter, (unsigned int)diameter,
-            -64*my_course,
+            (int)(-64*my_course),
             64/2*arc_degrees);
         (void)XDrawArc(XtDisplay(da),where,gc,
             (int)(x-(diameter/2)),
             (int)(y-(diameter/2)),
             (unsigned int)diameter, (unsigned int)diameter,
-            -64*my_course,
+            (int)(-64*my_course),
             -64/2*arc_degrees);
         }
     }
