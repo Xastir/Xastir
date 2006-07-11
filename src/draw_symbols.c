@@ -3071,32 +3071,34 @@ void draw_deadreckoning_features(DataRow *p_station,
     int my_course;
     long x_long, y_lat;
     long x_long2, y_lat2;
-    double lat_m;
+//    double lat_m;
     long x, y;
     long x2, y2;
     double diameter;
-    long max_x, max_y;
-    double range;
-    double temp;
+//    long max_x, max_y;
+//    double range;
+//    double temp;
     int color = trail_colors[p_station->trail_color];
-    float temp_latitude, temp_latitude2;
-    float temp_longitude, temp_longitude2;
+//    float temp_latitude, temp_latitude2;
+//    float temp_longitude, temp_longitude2;
+    int symbol_on_screen = 0;
+    int ghosted_symbol_on_screen = 0;
 
 
     x_long = p_station->coord_lon;
     y_lat = p_station->coord_lat;
 
     // Compute distance in statute miles
-    range = (double)((sec_now()-p_station->sec_heard)
-            *(1.1508/3600)*(atof(p_station->speed)));
+//    range = (double)((sec_now()-p_station->sec_heard)
+//            *(1.1508/3600)*(atof(p_station->speed)));
 
     // x/y are screen location for start position
     x = (x_long - x_long_offset)/scale_x;
     y = (y_lat - y_lat_offset)/scale_y;
 
     // max off screen values
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
+//    max_x = screen_width+800l;
+//    max_y = screen_height+800l;
 
     y_lat2 = y_lat;
     x_long2 = x_long;
@@ -3130,6 +3132,7 @@ void draw_deadreckoning_features(DataRow *p_station,
     // Convert from Xastir coordinate system
 //    lat_m = (double)( -((lat_m - 32400000l) / 360000.0) );
 
+/*
     lat_m = -((y_lat - 32400000l) / 360000.0)
             + -((y_lat2 - 32400000l) / 360000.0);
     lat_m = lat_m / 2.0;
@@ -3148,7 +3151,6 @@ void draw_deadreckoning_features(DataRow *p_station,
             / (temp_latitude2 - temp_latitude) );
 // Check for divide-by-zero here???
 
-/*
     // Calculate course and convert to degrees
     my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
 
@@ -3185,80 +3187,79 @@ void draw_deadreckoning_features(DataRow *p_station,
 //    my_course = my_course + 90;
 */
 
-    if (Display_.dr_arc &&
+
+    // Check DR'ed symbol position
+    if (    (x_long2>x_long_offset) &&
+            (x_long2<(x_long_offset+(long)(screen_width *scale_x))) &&
+            ((y_lat2>y_lat_offset) &&
+            (y_lat2<(y_lat_offset+(long)(screen_height*scale_y)))) &&
             ((x_long>=0) && (x_long<=129600000l)) &&
             ((y_lat>=0) && (y_lat<=64800000l))) {
 
+        ghosted_symbol_on_screen++;
+    }
 
-// The below prevents it from being drawn when the symbol and the
-// DR'ed symbol (ghosted symbol) are off-screen.  It'd be better to
-// check for lat/long +/- range to see if it's on the screen.
-//
-        if (   (  (x_long>x_long_offset) &&     // Check symbol position
-                  (x_long<(x_long_offset+(long)(screen_width *scale_x))) &&
-                  ((y_lat>y_lat_offset) &&
-                  (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))))
-            || (  (x_long2>x_long_offset) &&    // Check DR'ed position too
-                  (x_long2<(x_long_offset+(long)(screen_width *scale_x))) &&
-                  ((y_lat2>y_lat_offset) &&
-                  (y_lat2<(y_lat_offset+(long)(screen_height*scale_y)))) ) ) {
 
-            double xdiff, ydiff;
+    // Draw the DR arc
+    //
+    if (Display_.dr_arc && ghosted_symbol_on_screen) {
 
-            // Range is in miles.  Bottom term is in
-            // meters before the 0.0006214
-            // multiplication factor which converts it
-            // to miles.  Equation is:  2 * ( range(mi)
-            // / x-distance across window(mi) )
-//            diameter = 2.0 * ( range/
-//                (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
-            xdiff = (x2-x) * 1.0;
-            ydiff = (y2-y) * 1.0;
+        double xdiff, ydiff;
 
-            // a squared + b squared = c squared
-            diameter = 2.0 * sqrt( (double)( (ydiff*ydiff) + (xdiff*xdiff) ) );
+        // Range is in miles.  Bottom term is in
+        // meters before the 0.0006214
+        // multiplication factor which converts it
+        // to miles.  Equation is:  2 * ( range(mi)
+        // / x-distance across window(mi) )
+//        diameter = 2.0 * ( range/
+//            (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+        xdiff = (x2-x) * 1.0;
+        ydiff = (y2-y) * 1.0;
 
-            //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
+        // a squared + b squared = c squared
+        diameter = 2.0 * sqrt( (double)( (ydiff*ydiff) + (xdiff*xdiff) ) );
 
-            if (diameter > 10.0) {
-                int arc_degrees = (sec_now() - p_station->sec_heard) * 90 / (5*60);
+        //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
 
-                if (arc_degrees > 360) {
-                    arc_degrees = 360;
-            }
+        if (diameter > 10.0) {
+            int arc_degrees = (sec_now() - p_station->sec_heard) * 90 / (5*60);
 
-            (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineOnOffDash, CapButt,JoinMiter);
-            //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-            //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-            (void)XSetForeground(XtDisplay(da),gc,color);
+            if (arc_degrees > 360) {
+                arc_degrees = 360;
+        }
 
-            // Compute angle from the two screen positions.  Guard
-            // against divide-by-zero.
-            my_course = (int)( 57.29578 * atan(xdiff/ ydiff) );
+        (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+        //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+        (void)XSetForeground(XtDisplay(da),gc,color);
+
+        // Compute angle from the two screen positions.  Guard
+        // against divide-by-zero.
+        my_course = (int)( 57.29578 * atan(xdiff/ ydiff) );
 
 //fprintf(stderr,"my_course:%d\n", my_course);
-            // The arctan function returns values between -90 and +90.  To
-            // obtain the true course we apply the following rules:
-            if (ydiff > 0 && xdiff > 0) {
+        // The arctan function returns values between -90 and +90.  To
+        // obtain the true course we apply the following rules:
+        if (ydiff > 0 && xdiff > 0) {
 //fprintf(stderr,"1\n");  // Lower-right quadrant
-                my_course = 360 - my_course;
-            }
-            else if (ydiff < 0.0 && xdiff > 0.0) {
+            my_course = 360 - my_course;
+        }
+        else if (ydiff < 0.0 && xdiff > 0.0) {
 //fprintf(stderr,"2\n");  // Upper-right quadrant
-                my_course = 180 - my_course;
-            }
-            else if (ydiff < 0.0 && xdiff < 0.0) {
+            my_course = 180 - my_course;
+        }
+        else if (ydiff < 0.0 && xdiff < 0.0) {
 //fprintf(stderr,"3\n");  // Upper-left quadrant
-                my_course = 180 - my_course;
-            }
-            else if (ydiff > 0.0 && xdiff < 0.0) {
+            my_course = 180 - my_course;
+        }
+        else if (ydiff > 0.0 && xdiff < 0.0) {
 //fprintf(stderr,"4\n");  // Lower-left quadrant
-                my_course = 360 - my_course;
-            }
-            else {  // 0/90/180/270, wrong for 184-181/180/179-174, ok for 173/185
+            my_course = 360 - my_course;
+        }
+        else {  // 0/90/180/270, wrong for 184-181/180/179-174, ok for 173/185
 //fprintf(stderr,"5\n");
-                my_course = 180 + my_course;
-            }
+            my_course = 180 + my_course;
+        }
 
 
 // TODO:  Sometimes when zoomed out a bit the DR arc appears in the
@@ -3269,31 +3270,53 @@ void draw_deadreckoning_features(DataRow *p_station,
 // case, it's probably a divide by zero condition that's causing it.
 
 
-            // Convert to screen angle for XDrawArc routines:
-            my_course = my_course + 90;
+        // Convert to screen angle for XDrawArc routines:
+        my_course = my_course + 90;
 
-            if (my_course > 360)
-                my_course = my_course - 360;
+        if (my_course > 360)
+            my_course = my_course - 360;
  
 //fprintf(stderr,"\tmy_course2:%d\n", my_course);
 
-            (void)XDrawArc(XtDisplay(da),where,gc,
-                (int)(x-(diameter/2)),
-                (int)(y-(diameter/2)),
-                (unsigned int)diameter, (unsigned int)diameter,
-                -64*my_course,
-                64/2*arc_degrees);
-            (void)XDrawArc(XtDisplay(da),where,gc,
-                (int)(x-(diameter/2)),
-                (int)(y-(diameter/2)),
-                (unsigned int)diameter, (unsigned int)diameter,
-                -64*my_course,
-                -64/2*arc_degrees);
-            }
+        (void)XDrawArc(XtDisplay(da),where,gc,
+            (int)(x-(diameter/2)),
+            (int)(y-(diameter/2)),
+            (unsigned int)diameter, (unsigned int)diameter,
+            -64*my_course,
+            64/2*arc_degrees);
+        (void)XDrawArc(XtDisplay(da),where,gc,
+            (int)(x-(diameter/2)),
+            (int)(y-(diameter/2)),
+            (unsigned int)diameter, (unsigned int)diameter,
+            -64*my_course,
+            -64/2*arc_degrees);
+        }
+    }
+
+
+
+// Note that for the DR course, if we're in the middle of the symbol
+// and the DR'ed symbol (ghosted symbol), but neither of them are
+// on-screen, the DR'ed course won't display.
+//
+    // Draw the DR'ed course if either the symbol or the DR'ed
+    // symbol (ghosted symbol) are on-screen.
+    //
+    if (Display_.dr_course) {
+
+        // Check symbol position
+        if (    (x_long>x_long_offset) &&
+                (x_long<(x_long_offset+(long)(screen_width *scale_x))) &&
+                ((y_lat>y_lat_offset) &&
+                (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) &&
+                ((x_long>=0) && (x_long<=129600000l)) &&
+                ((y_lat>=0) && (y_lat<=64800000l))) {
+
+            symbol_on_screen++;
         }
 
+        if (symbol_on_screen || ghosted_symbol_on_screen) {
 
-        if (Display_.dr_course) {
             (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
             (void)XSetForeground(XtDisplay(da),gc,color); // red3
             (void)XDrawLine(XtDisplay(da),where,gc,
@@ -3305,38 +3328,34 @@ void draw_deadreckoning_features(DataRow *p_station,
     }
 
 
-    if (Display_.dr_symbol) {
+    // Draw the DR'ed symbol (ghosted symbol) if enabled and if
+    // on-screen.
+    //
+    if (Display_.dr_symbol && ghosted_symbol_on_screen) {
 
-        if ( (x_long2>x_long_offset) &&    // Check DR'ed position too
-                (x_long2<(x_long_offset+(long)(screen_width *scale_x))) &&
-                ((y_lat2>y_lat_offset) &&
-                (y_lat2<(y_lat_offset+(long)(screen_height*scale_y)))) ) {
-
-
-            draw_symbol(w,
-                p_station->aprs_symbol.aprs_type,
-                p_station->aprs_symbol.aprs_symbol,
-                p_station->aprs_symbol.special_overlay,
-                x_long2,
-                y_lat2,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                p_station->sec_heard-sec_old,   // Always draw it ghosted
-                0,
-                where,
-                symbol_orient(p_station->course),
-                p_station->aprs_symbol.area_object.type,
-                p_station->signpost,
-                "",
-                "",
-                0); // Don't bump the station count
-        }
+        draw_symbol(w,
+            p_station->aprs_symbol.aprs_type,
+            p_station->aprs_symbol.aprs_symbol,
+            p_station->aprs_symbol.special_overlay,
+            x_long2,
+            y_lat2,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            p_station->sec_heard-sec_old,   // Always draw it ghosted
+            0,
+            where,
+            symbol_orient(p_station->course),
+            p_station->aprs_symbol.area_object.type,
+            p_station->signpost,
+            "",
+            "",
+            0); // Don't bump the station count
     }
 }
 
