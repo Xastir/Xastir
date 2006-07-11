@@ -7208,7 +7208,15 @@ int new_trail_color(char *call) {
 // station record has a pointer to the oldest and the newest end of the
 // chain, and the chain can be traversed in either order.
 //
-int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *alt, char *speed, char *course, short stn_flag) {
+int store_trail_point(DataRow *p_station,
+                      long lon,
+                      long lat,
+                      time_t sec,
+                      char *alt,
+                      char *speed,
+                      char *course,
+                      short stn_flag) {
+
     char flag;
     TrackRow *ptr;
 
@@ -7393,9 +7401,10 @@ int is_trailpoint_echo(DataRow *p_station) {
 // expiring them at the other.
 //
 void expire_trail_points(DataRow *p_station, time_t sec) {
-    int i = 0;
+    int ii = 0;
     int done = 0;
     TrackRow *ptr;
+
 
     //fprintf(stderr,"expire_trail_points: %s\n",p_station->call_sign);
 
@@ -7435,7 +7444,7 @@ void expire_trail_points(DataRow *p_station, time_t sec) {
 
             //fprintf(stderr,"Free'ing a trackpoint\n");
 
-            i++;
+            ii++;
 
             // Reduce our count of mobile stations if the size of
             // the track just went to zero.
@@ -7444,8 +7453,11 @@ void expire_trail_points(DataRow *p_station, time_t sec) {
         }
     }
 
-    if ( (debug_level & 256) && i )
-        fprintf(stderr,"expire_trail_points: %d trackpoints free'd for %s\n",i,p_station->call_sign);
+    if ( (debug_level & 256) && ii ) {
+        fprintf(stderr,"expire_trail_points: %d trackpoints free'd for %s\n",
+            ii,
+            p_station->call_sign);
+    }
 }
 
 
@@ -12323,7 +12335,14 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                                     fprintf(stderr,"Storing old position for %s\n",
                                         p_station->call_sign);
                                 }
-                                (void)store_trail_point(p_station,last_lon,last_lat,last_stn_sec,last_alt,last_speed,last_course,last_flag);
+                                (void)store_trail_point(p_station,
+                                                        last_lon,
+                                                        last_lat,
+                                                        last_stn_sec,
+                                                        last_alt,
+                                                        last_speed,
+                                                        last_course,
+                                                        last_flag);
                             }
                         }
                         //if (   p_station->coord_lon != last_lon
@@ -12340,13 +12359,13 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                         //
                         if (!is_trailpoint_echo(p_station)) {
                             (void)store_trail_point(p_station,
-                                p_station->coord_lon,
-                                p_station->coord_lat,
-                                p_station->sec_heard,
-                                p_station->altitude,
-                                p_station->speed,
-                                p_station->course,
-                                p_station->flag);
+                                                    p_station->coord_lon,
+                                                    p_station->coord_lat,
+                                                    p_station->sec_heard,
+                                                    p_station->altitude,
+                                                    p_station->speed,
+                                                    p_station->course,
+                                                    p_station->flag);
                             changed_pos = 1;
 
                             // Check whether it's a locally-owned object/item
@@ -12907,6 +12926,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->coord_lat = pos_lat_temp;    // DK7IN: we have it already !??
     p_station->coord_lon = pos_long_temp;
 
+    curr_sec = sec_now();
     my_last_altitude_time = curr_sec;
     xastir_snprintf(p_station->speed,
         sizeof(p_station->speed),
@@ -12955,7 +12975,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
         (void)store_trail_point(p_station,
                                 p_station->coord_lon,
                                 p_station->coord_lat,
-                                p_station->sec_heard,
+                                curr_sec,
                                 p_station->altitude,
                                 p_station->speed,
                                 p_station->course,
