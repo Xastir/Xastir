@@ -313,6 +313,7 @@ void draw_WP_line(DataRow *p_station,
 
     temp = (double)( (temp_longitude2 - temp_longitude)
             / (temp_latitude2 - temp_latitude) );
+// Check for divide-by-zero here????
 
     // Calculate course and convert to degrees
     my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
@@ -1701,6 +1702,8 @@ void draw_area(long x_long, long y_lat, char type, char color,
         right += xoff;
         if (width > 0) {
             double angle = atan((float)xoff/(float)yoff);
+// Check for divide-by-zero here???
+
             int conv_width = width/(scale_x*calc_dscale_x(mid_x_long_offset,mid_y_lat_offset)*0.0006214);
             points[0].x = l16(left-(conv_width * cos(angle))+xoff);
             points[0].y = l16(top -(conv_width * sin(angle)));
@@ -1727,6 +1730,8 @@ void draw_area(long x_long, long y_lat, char type, char color,
     case AREA_LINE_LEFT:
         if (width > 0) {
             double angle = atan((float)xoff/(float)yoff);
+// Check for divide-by-zero here???
+
             int conv_width = width/(scale_x*calc_dscale_x(mid_x_long_offset,mid_y_lat_offset)*0.0006214);
             points[0].x = l16(left+(conv_width * cos(angle)));
             points[0].y = l16(top -(conv_width * sin(angle)));
@@ -3141,6 +3146,7 @@ void draw_deadreckoning_features(DataRow *p_station,
 
     temp = (double)( (temp_longitude2 - temp_longitude)
             / (temp_latitude2 - temp_latitude) );
+// Check for divide-by-zero here???
 
     // Calculate course and convert to degrees
     my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
@@ -3149,18 +3155,22 @@ void draw_deadreckoning_features(DataRow *p_station,
     // obtain the true course we apply the following rules:
     if (temp_latitude2 > temp_latitude
             && temp_longitude2 > temp_longitude) {
+        // Upper-right quadrant
         // Do nothing.
     }
     else if (temp_latitude2 < temp_latitude
             && temp_longitude2 > temp_longitude) {
+        // Lower-right quadrant
         my_course = 180 - my_course;
     }
     else if (temp_latitude2 < temp_latitude
             && temp_longitude2 < temp_longitude) {
+        // Lower-left quadrant
         my_course = 180 + my_course;
     }
     else if (temp_latitude2 > temp_latitude
             && temp_longitude2 < temp_longitude) {
+        // Upper-left quadrant
         my_course = 360 - my_course;
     }
     else {
@@ -3214,28 +3224,64 @@ void draw_deadreckoning_features(DataRow *p_station,
             //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
             (void)XSetForeground(XtDisplay(da),gc,color);
 
-///*
-// Commenting out the arc until the math is correct for it.  It
-// draws at the wrong angle currently.
-// TODO:  Compute angle from the two screen positions.
-my_course = (int)( 57.29578 * asin(ydiff/xdiff) );
+            // Compute angle from the two screen positions.  Guard
+            // against divide-by-zero.
+            my_course = (int)( 57.29578 * atan(xdiff/ ydiff) );
+
+//fprintf(stderr,"my_course:%d\n", my_course);
+            // The arctan function returns values between -90 and +90.  To
+            // obtain the true course we apply the following rules:
+            if (ydiff > 0 && xdiff > 0) {
+//fprintf(stderr,"1\n");  // Lower-right quadrant
+                my_course = 360 - my_course;
+            }
+            else if (ydiff < 0.0 && xdiff > 0.0) {
+//fprintf(stderr,"2\n");  // Upper-right quadrant
+                my_course = 180 - my_course;
+            }
+            else if (ydiff < 0.0 && xdiff < 0.0) {
+//fprintf(stderr,"3\n");  // Upper-left quadrant
+                my_course = 180 - my_course;
+            }
+            else if (ydiff > 0.0 && xdiff < 0.0) {
+//fprintf(stderr,"4\n");  // Lower-left quadrant
+                my_course = 360 - my_course;
+            }
+            else {  // 0/90/180/270, wrong for 184-181/180/179-174, ok for 173/185
+//fprintf(stderr,"5\n");
+                my_course = 180 + my_course;
+            }
 
 
+// TODO:  Sometimes when zoomed out a bit the DR arc appears in the
+// wrong place.  Might have to do with not enough pixels to compute
+// it properly?  I saw this at 179 and 181 degrees and zoom 250-300
+// or so.  It flips from section 1 above (179) to section 5 when
+// there's a problem like that.
+//
+// If longitude doesn't change, it's a divide by zero condition!
+
+
+            // Convert to screen angle for XDrawArc routines:
+            my_course = my_course + 90;
+
+            if (my_course > 360)
+                my_course = my_course - 360;
+ 
+//fprintf(stderr,"\tmy_course2:%d\n", my_course);
 
             (void)XDrawArc(XtDisplay(da),where,gc,
                 (int)(x-(diameter/2)),
                 (int)(y-(diameter/2)),
                 (unsigned int)diameter, (unsigned int)diameter,
                 -64*my_course,
-//                64/2*arc_degrees);
-                64*360);    // Draw a full circle for now
-//            (void)XDrawArc(XtDisplay(da),where,gc,
-//                (int)(x-(diameter/2)),
-//                (int)(y-(diameter/2)),
-//                (unsigned int)diameter, (unsigned int)diameter,
-//                -64*my_course,
-//                -64/2*arc_degrees);
-//*/
+                64/2*arc_degrees);
+            (void)XDrawArc(XtDisplay(da),where,gc,
+                (int)(x-(diameter/2)),
+                (int)(y-(diameter/2)),
+                (unsigned int)diameter, (unsigned int)diameter,
+                -64*my_course,
+                -64/2*arc_degrees);
             }
         }
     }
