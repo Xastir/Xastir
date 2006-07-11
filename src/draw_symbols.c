@@ -3071,16 +3071,10 @@ void draw_deadreckoning_features(DataRow *p_station,
     int my_course;
     long x_long, y_lat;
     long x_long2, y_lat2;
-//    double lat_m;
     long x, y;
     long x2, y2;
     double diameter;
-//    long max_x, max_y;
-//    double range;
-//    double temp;
     int color = trail_colors[p_station->trail_color];
-//    float temp_latitude, temp_latitude2;
-//    float temp_longitude, temp_longitude2;
     int symbol_on_screen = 0;
     int ghosted_symbol_on_screen = 0;
 
@@ -3088,17 +3082,9 @@ void draw_deadreckoning_features(DataRow *p_station,
     x_long = p_station->coord_lon;
     y_lat = p_station->coord_lat;
 
-    // Compute distance in statute miles
-//    range = (double)((sec_now()-p_station->sec_heard)
-//            *(1.1508/3600)*(atof(p_station->speed)));
-
-    // x/y are screen location for start position
+    // x/y are screen locations for start position
     x = (x_long - x_long_offset)/scale_x;
     y = (y_lat - y_lat_offset)/scale_y;
-
-    // max off screen values
-//    max_x = screen_width+800l;
-//    max_y = screen_height+800l;
 
     y_lat2 = y_lat;
     x_long2 = x_long;
@@ -3111,81 +3097,6 @@ void draw_deadreckoning_features(DataRow *p_station,
     // x2/y2 are screen location for ghost symbol (DR'ed position)
     x2 = (x_long2 - x_long_offset)/scale_x;
     y2 = (y_lat2 - y_lat_offset)/scale_y;
-
-
-/*
-    if ((x2 - x) > 0) {
-        my_course = (int)( 57.29578
-            * atan( (double)((y2-(y*1.0)) / (x2-(x*1.0) ) ) ) );
-    }
-    else {
-        my_course = (int)( 57.29578
-            * atan( (double)((y2-(y*1.0)) / (x-(x2*1.0) ) ) ) );
-    }
-*/
-
-    // Use the mid-latitude formulas for calculating the rhumb line
-    // course.  Modified to minimize the number of conversions we
-    // need to do.
-//    lat_m = (double)( (y_lat + y_lat2) / 2.0 );
-
-    // Convert from Xastir coordinate system
-//    lat_m = (double)( -((lat_m - 32400000l) / 360000.0) );
-
-/*
-    lat_m = -((y_lat - 32400000l) / 360000.0)
-            + -((y_lat2 - 32400000l) / 360000.0);
-    lat_m = lat_m / 2.0;
-
-    convert_from_xastir_coordinates(&temp_longitude2,
-        &temp_latitude2,
-        x_long2,
-        y_lat2);
-
-    convert_from_xastir_coordinates(&temp_longitude,
-        &temp_latitude,
-        x_long,
-        y_lat);
-
-    temp = (double)( (temp_longitude2 - temp_longitude)
-            / (temp_latitude2 - temp_latitude) );
-// Check for divide-by-zero here???
-
-    // Calculate course and convert to degrees
-    my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
-
-    // The arctan function returns values between -90 and +90.  To
-    // obtain the true course we apply the following rules:
-    if (temp_latitude2 > temp_latitude
-            && temp_longitude2 > temp_longitude) {
-        // Upper-right quadrant
-        // Do nothing.
-    }
-    else if (temp_latitude2 < temp_latitude
-            && temp_longitude2 > temp_longitude) {
-        // Lower-right quadrant
-        my_course = 180 - my_course;
-    }
-    else if (temp_latitude2 < temp_latitude
-            && temp_longitude2 < temp_longitude) {
-        // Lower-left quadrant
-        my_course = 180 + my_course;
-    }
-    else if (temp_latitude2 > temp_latitude
-            && temp_longitude2 < temp_longitude) {
-        // Upper-left quadrant
-        my_course = 360 - my_course;
-    }
-    else {
-        // ??
-        // Do nothing.
-    }
-
-//fprintf(stderr,"course:%d\n", my_course);
-
-    // Convert to screen angle
-//    my_course = my_course + 90;
-*/
 
 
     // Check DR'ed symbol position
@@ -3206,13 +3117,7 @@ void draw_deadreckoning_features(DataRow *p_station,
 
         double xdiff, ydiff;
 
-        // Range is in miles.  Bottom term is in
-        // meters before the 0.0006214
-        // multiplication factor which converts it
-        // to miles.  Equation is:  2 * ( range(mi)
-        // / x-distance across window(mi) )
-//        diameter = 2.0 * ( range/
-//            (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+
         xdiff = (x2-x) * 1.0;
         ydiff = (y2-y) * 1.0;
 
@@ -3292,7 +3197,6 @@ void draw_deadreckoning_features(DataRow *p_station,
             -64/2*arc_degrees);
         }
     }
-
 
 
 // Note that for the DR course, if we're in the middle of the symbol
