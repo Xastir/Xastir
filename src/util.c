@@ -3469,7 +3469,7 @@ void log_data(char *file, char *line) {
 //                fprintf(stderr, "log_data(): logfile size: %ld \n",(long) file_status.st_size);
 //            }
 
-            if (file_status.st_size > MAX_LOGFILE_SIZE){
+            if ((file_status.st_size + strlen(temp) + strlen(line) )> MAX_LOGFILE_SIZE){
                 if (debug_level & 1) {
                     fprintf(stderr, "log_data(): calling rotate_file()\n");
                 }       
