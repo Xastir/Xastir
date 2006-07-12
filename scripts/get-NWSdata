@@ -31,11 +31,18 @@
 
 
 FILE1="z_16mr06"
-FILE2="w_06oc05"
+
+#FILE2="w_06oc05"
+FILE2="w_28fe06"
+
 FILE3="mz10ja06"
+
 FILE4="oz15de04"
+
 FILE5="hz28au04"
+
 FILE6="c_16mr06"
+
 FILE7="fz24my06"
 
 
