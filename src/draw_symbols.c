@@ -2385,17 +2385,17 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 
                     posyr = 10;      // align symbols vertically centered to the right
                     if ( (!ghost || Select_.old_data) && strlen(alt_text)>0)
-                        posyr -= 6;
+                        posyr -= 7;
                     if (strlen(callsign_text)>0)
-                        posyr -= 6;
+                        posyr -= 7;
                     if ( (!ghost || Select_.old_data) && strlen(speed_text)>0)
-                        posyr -= 6;
+                        posyr -= 7;
                     if ( (!ghost || Select_.old_data) && strlen(course_text)>0)
-                        posyr -= 6;
+                        posyr -= 7;
                     if (area_type == AREA_LINE_RIGHT)
-                        posyr += 8;
+                        posyr += 9;
                     if (signpost[0] != '\0')    // Signpost data?
-                        posyr -=6;
+                        posyr -=7;
                     // we may eventually have more adjustments for different types of areas
 
                     length=(int)strlen(alt_text);
@@ -2403,7 +2403,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=((x_long-x_long_offset)/scale_x)+12;
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
-                        posyr += 12;
+                        posyr += 13;
                     }
 
                     length=(int)strlen(callsign_text);
@@ -2411,7 +2411,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=((x_long-x_long_offset)/scale_x)+12;
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
-                        posyr += 12;
+                        posyr += 13;
                     }
 
                     length=(int)strlen(speed_text);
@@ -2419,7 +2419,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=((x_long-x_long_offset)/scale_x)+12;
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
-                        posyr += 12;
+                        posyr += 13;
                     }
 
                     length=(int)strlen(course_text);
@@ -2427,7 +2427,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=((x_long-x_long_offset)/scale_x)+12;
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
-                        posyr += 12;
+                        posyr += 13;
                     }
  
                     length=(int)strlen(signpost);   // Make it white like callsign?
@@ -2435,31 +2435,31 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=((x_long-x_long_offset)/scale_x)+12;
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,signpost,0x08,0x0f,length);
-                        posyr += 12;
+                        posyr += 13;
                     }
  
                     posyl = 10; // distance and direction goes to the left.
                                 // Also minutes last heard.
                     if ( (!ghost || Select_.old_data) && strlen(my_distance)>0)
-                        posyl -= 6;
+                        posyl -= 7;
                     if ( (!ghost || Select_.old_data) && strlen(my_course)>0)
-                        posyl -= 6;
+                        posyl -= 7;
                     if ( (!ghost || Select_.old_data) && temp_show_last_heard)
-                        posyl -= 6;
+                        posyl -= 7;
 
                     length=(int)strlen(my_distance);
                     if ( (!ghost || Select_.old_data) && length>0) {
                         x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
                         y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
-                        posyl += 12;
+                        posyl += 13;
                     }
                     length=(int)strlen(my_course);
                     if ( (!ghost || Select_.old_data) && length>0) {
                         x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
                         y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
-                        posyl += 12;
+                        posyl += 13;
                     }
                     if ( (!ghost || Select_.old_data) && temp_show_last_heard) {
                         char age[20];
@@ -2520,7 +2520,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
                         y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
-                        posyl += 12;
+                        posyl += 13;
                     }
 
                     if (posyr < posyl)  // weather goes to the bottom, centered horizontally
@@ -2533,7 +2533,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
-                        posyr += 12;
+                        posyr += 13;
                     }
 
                     length=(int)strlen(wx_wind);
