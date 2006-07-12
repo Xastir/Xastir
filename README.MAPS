@@ -1088,10 +1088,10 @@ Getting Maps and other Data Files for Xastir:
 
         NWSI Libraries:
         ---------------
-        County Warning Areas (c_*.zip)
-        Zone Forecast Areas (z_*.zip)
-        Fire Weather Zones (fz*.zip)
+        County Warning Area Boundaries (c_*.zip)
+        Public Zone Boundaries (z_*.zip)
         Coastal and Offshore Marine Zones (mz*.zip, oz*.zip, hz*.zip)
+        Fire Weather Zone Boundaries (fz*.zip)
 
         County Libraries:
         -----------------
