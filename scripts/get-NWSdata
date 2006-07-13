@@ -31,18 +31,11 @@
 
 
 FILE1="z_16mr06"
-
-#FILE2="w_06oc05"
 FILE2="w_28fe06"
-
 FILE3="mz10ja06"
-
 FILE4="oz15de04"
-
 FILE5="hz28au04"
-
 FILE6="c_16mr06"
-
 FILE7="fz24my06"
 
 
@@ -87,7 +80,7 @@ if [ -e $FILE3.shp ]
   else
     # Remove possible older copies
     rm -f mz_*.shx mz_*.shp mz_*.dbf mz_*.zip 2>&1 >/dev/null
-    wget http://weather.gov/geodata/catalog/wsom/data/$FILE3.zip
+    wget http://www.weather.gov/geodata/catalog/wsom/data/$FILE3.zip
     unzip mz*.zip
     rm *.zip
 fi
@@ -99,7 +92,7 @@ if [ -e $FILE4.shp ]
   else
     # Remove possible older copies
     rm -f oz_*.shx oz_*.shp oz_*.dbf oz_*.zip 2>&1 >/dev/null
-    wget http://weather.gov/geodata/catalog/wsom/data/$FILE4.zip
+    wget http://www.weather.gov/geodata/catalog/wsom/data/$FILE4.zip
     unzip oz*.zip
     rm *.zip
 fi
@@ -111,7 +104,7 @@ if [ -e $FILE5.shp ]
   else
     # Remove possible older copies
     rm -f hz_*.shx hz_*.shp hz_*.dbf hz_*.zip 2>&1 >/dev/null
-    wget http://weather.gov/geodata/catalog/wsom/data/$FILE5.zip
+    wget http://www.weather.gov/geodata/catalog/wsom/data/$FILE5.zip
     unzip hz*.zip
     rm *.zip
 fi
