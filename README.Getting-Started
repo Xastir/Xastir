@@ -435,6 +435,7 @@ you'll see this:
 
   Xastir Command line Options
 
+  -c /path/dir       Xastir config dir
   -i                 Install private Colormap
   -geometry WxH+X+Y  Set Window Geometry
   -lDutch            Set the language to Dutch
@@ -751,10 +752,14 @@ dialog.  The global option sets restrictions on all igating.
 
 
 Where stuff is kept:
---------------------
-Per-user configurations are kept in each user's ~/.xastir directory.
-In particular the ~/.xastir/config/xastir.cnf file is where most of
-the configs are kept.
+-------------------- 
+
+Per-user configurations are kept in each user's ~/.xastir directory, by
+default.  In particular the ~/.xastir/config/xastir.cnf file is where most
+of the configs are kept.  This directory can be optionally specified using
+the -c /path/dir command line option.  Make sure you specify a directory,
+not a file!  Xastir will create the directory and several subdirectories if
+they do not exist when you start up. 
 
 A few executables are installed in /usr/local/bin/.
 
