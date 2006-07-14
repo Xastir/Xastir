@@ -63,7 +63,7 @@
 
 #define MAX_VALUE 300
 
-
+extern char xa_config_dir[];
 
 
 
@@ -264,16 +264,26 @@ char *get_user_base_dir(char *dir) {
     static char base[MAX_VALUE];
     char *env_ptr;
 
-    xastir_snprintf(base,
-        sizeof(base),
-        "%s",
-        ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
 
-    if (base[strlen (base) - 1] != '/')
+    if (xa_config_dir[0] != '\0' ) {
+        xastir_snprintf(base,sizeof(base),"%s", xa_config_dir);
+	if (base[strlen (base) - 1] != '/')
         strncat (base, "/", sizeof(base) - strlen(base));
 
-    strncat (base, ".xastir/", sizeof(base) - strlen(base));
+    } else {
+        xastir_snprintf(base,
+            sizeof(base),
+            "%s",
+            ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
+    
+        if (base[strlen (base) - 1] != '/')
+            strncat (base, "/", sizeof(base) - strlen(base));
+
+        strncat (base, ".xastir/", sizeof(base) - strlen(base));
+    }
+
     return strncat(base, dir, sizeof(base) - strlen(base));
+
 }
 
 
@@ -1841,5 +1851,3 @@ void load_data_or_default(void) {
 
     input_close();
 }
-
-

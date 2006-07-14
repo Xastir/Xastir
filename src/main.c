@@ -962,6 +962,7 @@ float f_center_longitude;       // Floating point map center longitude
 float f_center_latitude;        // Floating point map center latitude
 
 char user_dir[1000];            /* user directory file */
+char xa_config_dir[1000];       /* cmdline option user config dir */
 int delay_time;                 /* used to delay display data */
 time_t last_weather_cycle;      // Time of last call to cycle_weather()
 int colors[256];                /* screen colors */
@@ -25568,116 +25569,12 @@ int main(int argc, char *argv[], char *envp[]) {
     #endif  // MagickLibVersion < 0x0538
 #endif  // HAVE_IMAGEMAGICK
 
-    /* get User info */
-    user_id   = getuid();
-    user_info = getpwuid(user_id);
-    xastir_snprintf(user_dir,
-        sizeof(user_dir),
-        "%s",
-        user_info->pw_dir);
-
-    /*
-        fprintf(stderr,"User %s, Dir %s\n",user_info->pw_name,user_dir);
-        fprintf(stderr,"User dir %s\n",get_user_base_dir(""));
-        fprintf(stderr,"Data dir %s\n",get_data_base_dir(""));
-    */
-
-    /* check user directories */
-    if (filethere(get_user_base_dir("")) != 1) {
-        fprintf(stderr,"Making user dir\n");
-        if (mkdir(get_user_base_dir(""),S_IRWXU) !=0){
-                fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                    get_user_base_dir(""), strerror(errno) );
-
-               	// Creature to feep later? 
-               	// needs <libgen.h> 
-                // fprintf(stderr,"Check to see if '%s' exists \n", 
-                //    dirname(get_user_base_dir("")) );
-
-            exit(errno);
-        }
-       
-    }
-
-    if (filethere(get_user_base_dir("config")) != 1) {
-        fprintf(stderr,"Making user config dir\n");
-        if (mkdir(get_user_base_dir("config"),S_IRWXU) !=0){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("config"), strerror(errno) );
-            exit(errno);
-        }        	
-    }
-
-    if (filethere(get_user_base_dir("data")) != 1) {
-        fprintf(stderr,"Making user data dir\n");
-        if (mkdir(get_user_base_dir("data"),S_IRWXU) !=0){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("data"), strerror(errno) );
-            exit(errno);
-        }
-    }
-
-    if (filethere(get_user_base_dir("logs")) != 1) {
-        fprintf(stderr,"Making user log dir\n");
-        if (mkdir(get_user_base_dir("logs"),S_IRWXU) !=0 ){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("logs"), strerror(errno) );
-            exit(errno);
-        }
-    }
-
-    if (filethere(get_user_base_dir("tracklogs")) != 1) {
-        fprintf(stderr,"Making user tracklogs dir\n");
-        if (mkdir(get_user_base_dir("tracklogs"),S_IRWXU) !=0 ){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("tracklogs"), strerror(errno) );
-            exit(errno);
-        }        	
-    }
-
-    if (filethere(get_user_base_dir("tmp")) != 1) {
-        fprintf(stderr,"Making user tmp dir\n");
-        if (mkdir(get_user_base_dir("tmp"),S_IRWXU) !=0 ){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("tmp"), strerror(errno) );
-            exit(errno);
-        }        	
-    }
-
-    if (filethere(get_user_base_dir("gps")) != 1) {
-        fprintf(stderr,"Making user gps dir\n");
-        if ( mkdir(get_user_base_dir("gps"),S_IRWXU) !=0 ){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("gps"), strerror(errno) );
-            exit(errno);
-        }
-    }
-
-    if (filethere(get_user_base_dir("map_cache")) != 1) {
-        fprintf(stderr,"Making map_cache dir\n");
-        if (mkdir(get_user_base_dir("map_cache"),S_IRWXU) !=0 ){
-            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("map_cache"), strerror(errno) );
-            exit(errno);
-        }
-    }
-
-
-    /* done checking user dirs */
-
-#ifdef USE_PID_FILE_CHECK
-
-    if (pid_file_check() !=0 ){
-        fprintf(stderr,"pid_file_check failed:\t%s \n", strerror(errno) );
-            exit(errno);
-    }
-
-#endif 
-
     /* check fhs directories ?*/
 
     /* setup values */
     redo_list = FALSE;          // init lists
+
+    xa_config_dir[0]='\0';
 
     delay_time = 0;
     last_weather_cycle = sec_now();
@@ -25781,9 +25678,16 @@ fprintf(stderr,
     // used, which is actually parsed out by the XtIntrinsics code,
     // not directly in Xastir code.
     //
-    while ((ag = getopt(argc, argv, "v:l:g:012346789tim")) != EOF) {
+    while ((ag = getopt(argc, argv, "c:v:l:g:012346789tim")) != EOF) {
 
         switch (ag) {
+            
+            case 'c': 
+            	if (optarg) {
+	                xastir_snprintf(xa_config_dir,sizeof(xa_config_dir),optarg);
+        	        fprintf(stderr,"Using config dir %s\n",xa_config_dir);
+            	}
+                break;
 
             case 't':
                 fprintf(stderr,"Internal SIGSEGV handler enabled\n");
@@ -25850,6 +25754,7 @@ fprintf(stderr,
 
     if (ag_error){
         fprintf(stderr,"\nXastir Command line Options\n\n");
+        fprintf(stderr,"-c /path/dir       Xastir config dir\n");
         fprintf(stderr,"-i                 Install private Colormap\n");
         fprintf(stderr,"-geometry WxH+X+Y  Set Window Geometry\n");
         fprintf(stderr,"-l Dutch           Set the language to Dutch\n");
@@ -25865,6 +25770,119 @@ fprintf(stderr,
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options
     }
+
+
+
+    /* get User info */
+    user_id   = getuid();
+    user_info = getpwuid(user_id);
+    xastir_snprintf(user_dir,
+        sizeof(user_dir),
+        "%s",
+        user_info->pw_dir);
+
+    /*
+        fprintf(stderr,"User %s, Dir %s\n",user_info->pw_name,user_dir);
+        fprintf(stderr,"User dir %s\n",get_user_base_dir(""));
+        fprintf(stderr,"Data dir %s\n",get_data_base_dir(""));
+    */
+
+    /* check user directories */
+    if (filethere(get_user_base_dir("")) != 1) {
+        fprintf(stderr,"Making user dir\n");
+        if (mkdir(get_user_base_dir(""),S_IRWXU) !=0){
+                fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                    get_user_base_dir(""), strerror(errno) );
+
+               	// Creature to feep later? 
+               	// needs <libgen.h> 
+                // fprintf(stderr,"Check to see if '%s' exists \n", 
+                //    dirname(get_user_base_dir("")) );
+
+            exit(errno);
+        }
+       
+    }
+
+    if (filethere(get_user_base_dir("config")) != 1) {
+        fprintf(stderr,"Making user config dir\n");
+        if (mkdir(get_user_base_dir("config"),S_IRWXU) !=0){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("config"), strerror(errno) );
+            exit(errno);
+        }        	
+    }
+
+    if (filethere(get_user_base_dir("data")) != 1) {
+        fprintf(stderr,"Making user data dir\n");
+        if (mkdir(get_user_base_dir("data"),S_IRWXU) !=0){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("data"), strerror(errno) );
+            exit(errno);
+        }
+    }
+
+    if (filethere(get_user_base_dir("logs")) != 1) {
+        fprintf(stderr,"Making user log dir\n");
+        if (mkdir(get_user_base_dir("logs"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("logs"), strerror(errno) );
+            exit(errno);
+        }
+    }
+
+    if (filethere(get_user_base_dir("tracklogs")) != 1) {
+        fprintf(stderr,"Making user tracklogs dir\n");
+        if (mkdir(get_user_base_dir("tracklogs"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("tracklogs"), strerror(errno) );
+            exit(errno);
+        }        	
+    }
+
+    if (filethere(get_user_base_dir("tmp")) != 1) {
+        fprintf(stderr,"Making user tmp dir\n");
+        if (mkdir(get_user_base_dir("tmp"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("tmp"), strerror(errno) );
+            exit(errno);
+        }        	
+    }
+
+    if (filethere(get_user_base_dir("gps")) != 1) {
+        fprintf(stderr,"Making user gps dir\n");
+        if ( mkdir(get_user_base_dir("gps"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("gps"), strerror(errno) );
+            exit(errno);
+        }
+    }
+
+    if (filethere(get_user_base_dir("map_cache")) != 1) {
+        fprintf(stderr,"Making map_cache dir\n");
+        if (mkdir(get_user_base_dir("map_cache"),S_IRWXU) !=0 ){
+            fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
+                get_user_base_dir("map_cache"), strerror(errno) );
+            exit(errno);
+        }
+    }
+
+
+    /* done checking user dirs */
+
+
+
+
+
+#ifdef USE_PID_FILE_CHECK
+
+    if (pid_file_check() !=0 ){
+        fprintf(stderr,"pid_file_check failed:\t%s \n", strerror(errno) );
+            exit(errno);
+    }
+
+#endif 
+
 
 
     // initialize interfaces
