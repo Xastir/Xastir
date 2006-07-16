@@ -720,25 +720,6 @@ void draw_geo_image_map (Widget w,
                     fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
                 }
 
-#if 0
-                /* THIS IS INCORRECT --- one should not "mask" the transparent
-                   color.  It is necessary to "pack" it in exactly the same
-                   way that pixel colors are packed. */
-                // Mask it with the color depth so that we don't
-                // check too many bits when looking for the
-                // transparent color.
-//fprintf(stderr,"Transparent: %lx\n",trans_color);
-//fprintf(stderr,"Visual depth: %d\n", visual_depth);
-                if (visual_depth <= 8) {
-                    trans_color = trans_color & 0x0000000ffl;
-                }
-                else if (visual_depth <= 16) {
-                     trans_color = trans_color & 0x00000ffffl;
-                }
-                else if (visual_depth <= 24) {
-                     trans_color = trans_color & 0x000ffffffl;
-                }
-#else
                 {
                     unsigned short r,g,b;
                     // We'll assume the trans_color has been specified as a 
@@ -775,7 +756,7 @@ void draw_geo_image_map (Widget w,
                     }
                     //fprintf(stderr,"Packed Transparent %lx\n",trans_color);
                 }
-#endif
+
                 do_check_trans = 1;
 //fprintf(stderr,"New Transparent: %lx\n",trans_color);
             }

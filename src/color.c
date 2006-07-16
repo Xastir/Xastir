@@ -267,25 +267,19 @@ void pack_pixel_bits(unsigned short r, unsigned short g, unsigned short b, unsig
 {
     switch (visual_type) {
     case RGB_565:
-        //fprintf(stderr,"In pack_pixel_bits, RGB_565, r=%x, g=%x, b=%x\n",r,g,b);
         *pixel = (( r       & 0xf800) |
                   ((g >> 5) & 0x07e0) |
                    (b >> 11));
-        //fprintf(stderr,"In pack_pixel_bits, RGB_565, pixel=%lx\n",*pixel);
         break;
     case RGB_555:
-        //fprintf(stderr,"In pack_pixel_bits, RGB_555, r=%x, g=%x, b=%x\n",r,g,b);
         *pixel = (((r >> 1) & 0x7c00) |
                   ((g >> 6) & 0x03e0) |
                    (b >> 11));
-        //fprintf(stderr,"In pack_pixel_bits, RGB_555, pixel=%lx\n",*pixel);
         break;
     case RGB_888:
-        //fprintf(stderr,"In pack_pixel_bits, RGB_888, r=%x, g=%x, b=%x\n",r,g,b);
         *pixel = (((r << 8) & 0xff0000) |
                   ( g       & 0x00ff00) |
                    (b >> 8));
-        //fprintf(stderr,"In pack_pixel_bits, RGB_888, pixel=%lx\n",*pixel);
         break;
     case RGB_OTHER:
         if (rs >= 0)
