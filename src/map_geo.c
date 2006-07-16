@@ -720,6 +720,10 @@ void draw_geo_image_map (Widget w,
                     fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
                 }
 
+#if 0
+                /* THIS IS INCORRECT --- one should not "mask" the transparent
+                   color.  It is necessary to "pack" it in exactly the same
+                   way that pixel colors are packed. */
                 // Mask it with the color depth so that we don't
                 // check too many bits when looking for the
                 // transparent color.
@@ -734,7 +738,44 @@ void draw_geo_image_map (Widget w,
                 else if (visual_depth <= 24) {
                      trans_color = trans_color & 0x000ffffffl;
                 }
-
+#else
+                {
+                    unsigned short r,g,b;
+                    // We'll assume the trans_color has been specified as a 
+                    // 24-bit quantity
+                    r = (trans_color&0xff0000) >> 16;
+                    g = (trans_color&0x00ff00)>>8;
+                    b = trans_color&0x0000ff;
+                    // Now this is an incredible kludge, but seems to be right
+                    // Apparently, if QuantumDepth is 16 bits, r, g, and b
+                    // values are duplicated in the high and low byte, which
+                    // is just bizarre
+                    if (QuantumDepth == 16) {
+                        r=r|(r<<8);
+                        g=g|(g<<8);
+                        b=b|(b<<8);
+                    }
+                    //fprintf(stderr,"Original Transparent %lx\n",trans_color);
+                    //fprintf(stderr,"Transparent r,g,b=%x,%x,%x\n",r,g,b);
+                    if (visual_type == NOT_TRUE_NOR_DIRECT) {
+                        XColor junk;
+                        if (QuantumDepth == 16) {
+                            junk.red=r;
+                            junk.green=g;
+                            junk.blue=b;
+                        } else {
+                            junk.red= r<<8;
+                            junk.green = g<<8;
+                            junk.blue = b<<8;
+                        }
+                        XAllocColor(XtDisplay(w),cmap,&junk);
+                        trans_color = junk.pixel;
+                    } else {
+                        pack_pixel_bits(r,g,b,&trans_color);
+                    }
+                    //fprintf(stderr,"Packed Transparent %lx\n",trans_color);
+                }
+#endif
                 do_check_trans = 1;
 //fprintf(stderr,"New Transparent: %lx\n",trans_color);
             }
