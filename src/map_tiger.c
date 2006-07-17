@@ -550,6 +550,17 @@ void draw_tiger_map (Widget w,
     if (f == NULL) {
         if (debug_level & 512)
             fprintf(stderr,"File could not be read\n");
+
+#ifdef USE_MAP_CACHE
+
+        // clear from cache if bad    
+        if (map_cache_del(fileimg)) {
+            if (debug_level & 512) {
+                fprintf(stderr,"Couldn't delete unreadable map from cache\n");
+            }
+        }
+#endif
+         
         return;
     }
     (void)fclose (f);
@@ -560,6 +571,16 @@ void draw_tiger_map (Widget w,
     if (image == (Image *) NULL) {
         MagickWarning(exception.severity, exception.reason, exception.description);
         //fprintf(stderr,"MagickWarning\n");
+
+#ifdef USE_MAP_CACHE
+        // clear from cache if bad    
+        if (map_cache_del(fileimg)) {
+            if (debug_level & 512) {
+                fprintf(stderr,"Couldn't delete map from cache\n");
+            }
+        }
+#endif
+
         return;
     }
 

@@ -1182,6 +1182,15 @@ void draw_geo_image_map (Widget w,
             if (f == NULL) {
 fprintf(stderr,"1 ");
                 fprintf(stderr,"File %s could not be read\n",image_info->filename);
+
+#ifdef USE_MAP_CACHE
+            // clear from cache if bad    
+            if (map_cache_del(fileimg)) {
+	        if (debug_level & 512) {
+                    fprintf(stderr,"Couldn't delete map from cache\n");
+	        }
+            }
+#endif
                 return;
             }
             (void)fclose (f);
@@ -1191,6 +1200,16 @@ fprintf(stderr,"1 ");
             if (image == (Image *) NULL) {
                 MagickWarning(exception.severity, exception.reason, exception.description);
                 //fprintf(stderr,"MagickWarning\n");
+
+#ifdef USE_MAP_CACHE
+            // clear from cache if bad    
+            if (map_cache_del(fileimg)) {
+	        if (debug_level & 512) {
+                    fprintf(stderr,"Couldn't delete map from cache\n");
+	        }
+            }
+#endif
+
                 return;
             }
             
@@ -2433,5 +2452,3 @@ fprintf(stderr,"2 ");
 #endif  // TIMING_DEBUG
 #endif  // NO_GRAPHICS
 }
-
-
