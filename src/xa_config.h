@@ -32,3 +32,4 @@ char *get_data_base_dir(char *dir);
 void save_data(void);
 void load_data_or_default(void);
 
+char xa_config_dir[1000];       /* cmdline option user config dir */

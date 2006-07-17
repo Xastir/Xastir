@@ -63,7 +63,7 @@
 
 #define MAX_VALUE 300
 
-extern char xa_config_dir[];
+//extern char xa_config_dir[];
 
 
 
@@ -264,24 +264,47 @@ char *get_user_base_dir(char *dir) {
     static char base[MAX_VALUE];
     char *env_ptr;
 
+   // fprintf(stderr,"base: %s \nxa_config_dir: %s\n", base, xa_config_dir);
 
-    if (xa_config_dir[0] != '\0' ) {
-        xastir_snprintf(base,sizeof(base),"%s", xa_config_dir);
-	if (base[strlen (base) - 1] != '/')
-        strncat (base, "/", sizeof(base) - strlen(base));
+    switch (xa_config_dir[0]) {
+    case '/':
+	//have some path
+        xastir_snprintf(base, sizeof(base), "%s",xa_config_dir);
+        break; 
 
-    } else {
+    case '\0' : 
+        // build from scratch
         xastir_snprintf(base,
             sizeof(base),
             "%s",
             ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
-    
+
         if (base[strlen (base) - 1] != '/')
             strncat (base, "/", sizeof(base) - strlen(base));
 
         strncat (base, ".xastir/", sizeof(base) - strlen(base));
-    }
+        break ;
 
+    default: 
+        // Unqualified path
+        xastir_snprintf(base, sizeof(base), "%s",
+            ((env_ptr = getenv ("PWD")) != NULL) ? env_ptr : user_dir);
+
+       	if (base[strlen (base) - 1] != '/')
+            strncat (base, "/", sizeof(base) - strlen(base));
+
+        strncat (base, xa_config_dir, sizeof(base) - strlen(base));
+    }
+    
+    if (base[strlen (base) - 1] != '/')
+        strncat (base, "/", sizeof(base) - strlen(base));
+
+    // Save base so we monkey around less later. 
+    
+    xastir_snprintf(xa_config_dir,sizeof(xa_config_dir),"%s", base);
+
+    // Append dir and return 
+    
     return strncat(base, dir, sizeof(base) - strlen(base));
 
 }
