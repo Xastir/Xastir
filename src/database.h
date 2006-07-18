@@ -491,7 +491,9 @@ extern CADRow *CAD_list_head;
 
 
 
-// station flag definitions
+// station flag definitions.  We have 16 bits available here as
+// "flag" in "DataRow" is defined as a short.
+//
 #define ST_OBJECT       0x01    // station is an object
 #define ST_ITEM         0x02    // station is an item
 #define ST_ACTIVE       0x04    // station is active (deleted objects are
@@ -503,6 +505,7 @@ extern CADRow *CAD_list_head;
 #define ST_MSGCAP       0x80    // message capable (not used yet)
 #define ST_STATUS       0x100   // got real status message
 #define ST_INVIEW       0x200   // station is in current screen view
+#define ST_MYCALL       0x400   // station/object/item is owned by my call-SSID
 
 
 #ifdef DATA_DEBUG
