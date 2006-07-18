@@ -2873,6 +2873,7 @@ _do_the_drawing:
 //        && (p_station->newest_trackpoint!=0
              && course_ok
              && speed_ok
+             && scale_y < 8000
              && atof(dr_speed) > 0) ) {
 
         // Does it make sense to try to do dead-reckoning on an
@@ -3546,7 +3547,7 @@ void display_file(Widget w) {
         if (debug_level & 64) {
             fprintf(stderr,"display_file: Examining %s\n", p_station->call_sign);
         }
-        if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects   // GPROF:34.11%
+        if (p_station->flag & ST_ACTIVE) {       // ignore deleted objects   // GPROF:34.11%
 
             // Callsign match here includes checking SSID
             temp_sec_heard = (is_my_call(p_station->call_sign,1))?  now: p_station->sec_heard; // GPROF:2.49%
@@ -7569,6 +7570,9 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
     long brightness;
     char flag1;
     TrackRow *ptr;
+    // Caching of last point drawn, a speedup tweak
+    int last_screen_lat = -32767; // Dummy value
+    int last_screen_lon = -32767; // Dummy value
 
 
     if (!ok_to_draw_station(fill))
@@ -7598,7 +7602,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
         XQueryColor(XtDisplay(w),cmap,&rgb);
 
         brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
-        if (brightness > 32000) {   // GPROF:3.44%
+        if (brightness > 32000l) {   // GPROF:3.44%
             col_dot = trail_colors[0x05];   // black dot on light trails
         }
         else {
@@ -7643,7 +7647,9 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                     lat1 = (lat1 - y_lat_offset)  / scale_y;
 
                     if (abs(lon0) < 32700 && abs(lon1) < 32700 &&
-                            abs(lat0) < 32700 && abs(lat1) < 32700) {
+                            abs(lat0) < 32700 && abs(lat1) < 32700 &&
+                            lat1 != last_screen_lat &&  // Not the one we drew last
+                            lon1 != last_screen_lon ) { // Not the one we drew last
                         // draw trail segment
                         (void)XSetForeground(XtDisplay(w),gc,col_trail);
                         (void)XDrawLine(XtDisplay(w),pixmap_final,gc,lon0,lat0,lon1,lat1);
@@ -7693,6 +7699,9 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                         (lon0-x_long_offset)/scale_x,(lat0-y_lat_offset)/scale_y,
                         (lon1-x_long_offset)/scale_x,(lat1-y_lat_offset)/scale_y);
 */
+                    // Set up point caching for the next go-around
+                    last_screen_lat = lat1;
+                    last_screen_lon = lon1;
                 }
             }
             ptr = ptr->prev;
