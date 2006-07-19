@@ -1446,7 +1446,8 @@ void check_and_transmit_objects_items(time_t time) {
         //fprintf(stderr,"%s\t%s\n",p_station->call_sign,p_station->origin);
 
         // If station is owned by me (Exact match includes SSID)
-        if (is_my_call(p_station->origin,1)) {
+//        if (is_my_call(p_station->origin,1)) {
+        if (is_my_object_item(p_station)) {
 
             // and it's an object or item
             if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
@@ -1594,7 +1595,7 @@ void check_and_transmit_objects_items(time_t time) {
 // Local loopback only, not igating
                         }
                         else { // Send to all active tx-enabled interfaces
-                            output_my_data(line,-1,0,0,0,NULL); // GPROF:2.17%
+                            output_my_data(line,-1,0,0,0,NULL);
 // Transmit/loopback object data, not igating
                         }
                     }
@@ -6760,7 +6761,8 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 /*
         // If my_callsign (Exact match includes SSID)
-        if (is_my_call(p_station->origin,1)) {
+//        if (is_my_call(p_station->origin,1)) {
+        if (is_my_object_item(p_station)) {
 
             // The previous object with the same name is owned by
             // me.
@@ -10139,10 +10141,12 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
     // user to adopt the object first, then move it.
     //
     // Not exact match (this one is useful for testing)
-//    if (!is_my_call(p_station->origin,0)) {
+////    if (!is_my_call(p_station->origin,0)) {
+//    if (!is_my_object_item(p_station)) {
     //
     // Exact match includes SSID (this one is for production code)
-    if (!is_my_call(p_station->origin,1)) {
+//    if (!is_my_call(p_station->origin,1)) {
+    if (!is_my_object_item(p_station)) {
 
         // It's not from my callsign
         if (strncmp(calldata,"2",1) == 0) {

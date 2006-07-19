@@ -306,7 +306,7 @@ int is_my_call(char *call, int exact) {
 
     if (exact) {
         // We're looking for an exact match
-        ok = (int)( !strcmp(call,my_callsign) );    // GPROF:4.85%
+        ok = (int)( !strcmp(call,my_callsign) );
         //fprintf(stderr,"My exact call found: %s\n",call);
     }
     else {
@@ -331,10 +331,28 @@ int is_my_call(char *call, int exact) {
     }
  
     return(ok);
-}   // GPROF:1.51%
+}
 
 
-        
+
+
+
+int is_my_station(DataRow *p_station) {
+    // if station is owned by me (including SSID)
+    return(p_station->flag & ST_MYSTATION);
+}
+
+
+
+
+
+int is_my_object_item(DataRow *p_station) {
+    // If object/item is owned by me (including SSID)
+    return(p_station->flag & ST_MYOBJITEM);
+}
+
+
+
 
 
 /*
@@ -2396,7 +2414,8 @@ int is_altnet(DataRow *p_station) {
                  || !strcmp(temp_altnet_call, "local")
                  || !strncmp(temp_altnet_call, "SPC", 3)
                  || !strcmp(temp_altnet_call, "SPECL")
-                 || is_my_call(p_station->call_sign,1)); // Check SSID as well
+//                 || is_my_call(p_station->call_sign,1)); // Check SSID as well
+                 || ( is_my_station(p_station) ) ) ;  // It's my callsign/SSID
 
     if ( (debug_level & 1) && result )
         fprintf(stderr,"%s  %-9s  %s\n", altnet_call, temp_altnet_call, temp2 );
@@ -2427,10 +2446,11 @@ int ok_to_draw_station(DataRow *p_station) {
         return 0;
 
     // Check for my station and my objects/items
-    if (strcmp(p_station->call_sign, my_callsign) == 0
-        || (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
-            && (   p_station->flag & ST_OBJECT      // And it's an object
-                || p_station->flag & ST_ITEM) ) ) { // or an item
+//    if (strcmp(p_station->call_sign, my_callsign) == 0
+//        || (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
+//            && (   p_station->flag & ST_OBJECT      // And it's an object
+//                || p_station->flag & ST_ITEM) ) ) { // or an item
+    if ( is_my_station(p_station) || is_my_object_item(p_station) ) {
         if (!Select_.mine)
             return 0;
     }
@@ -2800,9 +2820,10 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
     // Check whether it's a locally-owned object/item
-    if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
-            && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
-              || ((p_station->flag & ST_ITEM  ) != 0) ) ) { // or an item
+//    if ( (is_my_call(p_station->origin,1))          // If station is owned by me (including SSID)
+//            && ( (p_station->flag & ST_OBJECT)      // And it's an object
+//              || (p_station->flag & ST_ITEM) ) ) {  // or an item
+    if ( is_my_object_item(p_station) ) {
         temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
     }
 
@@ -2823,9 +2844,10 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 _do_the_drawing:
     // Check whether it's a locally-owned object/item
-    if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
-            && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
-              || ((p_station->flag & ST_ITEM  ) != 0) ) ) { // or an item
+//    if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
+//            && ( (p_station->flag & ST_OBJECT)       // And it's an object
+//              || (p_station->flag & ST_ITEM  ) ) ) { // or an item
+    if ( is_my_object_item(p_station) ) {
         temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
         // This isn't quite right since if it's a moving object, passing an incorrect
         // sec_heard should give the wrong results.
@@ -3173,7 +3195,7 @@ _do_the_drawing:
                           temp_sec_heard,
                           drawing_target);
         }
-        else if (Display_.default_phg && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
+        else if (Display_.default_phg && !(p_station->flag & (ST_OBJECT | ST_ITEM))) {
             // No PHG defined and not an object/item.  Display a PHG
             // of 3130 as default as specified in the spec:  9W, 3dB
             // omni at 20 feet = 6.2 mile PHG radius.
@@ -3547,18 +3569,21 @@ void display_file(Widget w) {
         if (debug_level & 64) {
             fprintf(stderr,"display_file: Examining %s\n", p_station->call_sign);
         }
-        if (p_station->flag & ST_ACTIVE) {       // ignore deleted objects   // GPROF:34.11%
+        if (p_station->flag & ST_ACTIVE) {       // ignore deleted objects
 
-            // Callsign match here includes checking SSID
-            temp_sec_heard = (is_my_call(p_station->call_sign,1))?  now: p_station->sec_heard; // GPROF:2.49%
-
-            // Check for my objects/items as well
-            if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID) // GPROF:2.06%
-                    && (   p_station->flag & ST_OBJECT    // And it's an object
-                        || p_station->flag & ST_ITEM) ) ) { // or an item
+            // Check for my objects/items
+//            if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
+//                    && (   p_station->flag & ST_OBJECT    // And it's an object
+//                        || p_station->flag & ST_ITEM) ) ) { // or an item
+            if (is_my_object_item(p_station) ) {
                 temp_sec_heard = now;
             }
- 
+            else {
+                // Callsign match here includes checking SSID
+//                temp_sec_heard = (is_my_call(p_station->call_sign,1))?  now: p_station->sec_heard;
+                temp_sec_heard = (is_my_station(p_station)) ? now : p_station->sec_heard;
+            }
+
             if ((p_station->flag & ST_INVIEW) != 0) {  // skip far away stations...
                 // we make better use of the In View flag in the future
                 if ( !altnet || is_altnet(p_station) ) {
@@ -4667,7 +4692,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
     // Echoed from: ...
     // Callsign check here includes checking SSID
-    if (is_my_call(p_station->call_sign,1)) {
+//    if (is_my_call(p_station->call_sign,1)) {
+    if ( is_my_station(p_station) ) {
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI055"));
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -4813,7 +4839,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             Center_Zoom(w,NULL,(XtPointer)p_station);
         }
     }
-    else if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
+    else if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
         xastir_snprintf(temp,
             sizeof(temp),
             "%s %s",
@@ -4917,8 +4943,11 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
     // Distance ...
     last_pos = pos;
+
     // do my course
-    if (!is_my_call(p_station->call_sign,1)) { // Checks SSID as well
+//    if (!is_my_call(p_station->call_sign,1)) { // Checks SSID as well
+    if ( !(is_my_station(p_station)) ) { // Checks SSID as well
+
         l_lat = convert_lat_s2l(my_lat);
         l_lon = convert_lon_s2l(my_long);
 
@@ -5698,7 +5727,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmNactivateCallback,
             Assign_Tactical_Call,
             (XtPointer)p_station);
-        if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
+        if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
             // We don't allow setting tac-calls for objects/items,
             // so make the button insensitive.
             XtSetSensitive(button_tactical,FALSE);
@@ -7602,7 +7631,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
         XQueryColor(XtDisplay(w),cmap,&rgb);
 
         brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
-        if (brightness > 32000l) {   // GPROF:3.44%
+        if (brightness > 32000l) {
             col_dot = trail_colors[0x05];   // black dot on light trails
         }
         else {
@@ -7627,14 +7656,14 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
         // Traverse linked list of trail points from newest to
         // oldest
-        while ( (ptr != NULL) && (ptr->prev != NULL) ) {    // GPROF:2.07%
+        while ( (ptr != NULL) && (ptr->prev != NULL) ) {
             lon0 = ptr->trail_long_pos;         // Trail segment start
             lat0 = ptr->trail_lat_pos;
-            lon1 = ptr->prev->trail_long_pos;   // Trail segment end // GPROF:7.86%
+            lon1 = ptr->prev->trail_long_pos;   // Trail segment end
             lat1 = ptr->prev->trail_lat_pos;
             flag1 = ptr->flag; // Are we at the start of a new trail?
 
-            if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to // GPROF:7.86%
+            if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to
                 (abs(lon1 - mid_x_long_offset) < marg_lon) &&  // be in margin area
                 (abs(lat0 - mid_y_lat_offset)  < marg_lat) &&
                 (abs(lat1 - mid_y_lat_offset)  < marg_lat) ) {
@@ -8990,7 +9019,8 @@ void station_del_ptr(DataRow *p_name) {
         // A bit of debug code:  Attempting to find out if we're
         // deleting our own objects from time to time.  Leave this
         // in until we're sure the problem has been fixed.
-//        if (is_my_call(p_name->origin,1)) { // Check SSID as well
+////        if (is_my_call(p_name->origin,1)) { // Check SSID as well
+//        if ( is_my_object_item(p_name) ) { // Check SSID as well
 //            fprintf(stderr,"station_del_ptr: Removing my own object: %s\n",
 //                p_name->call_sign);
 //        }
@@ -9099,10 +9129,11 @@ void check_station_remove(int curr_sec) {
 
             if (p_station->sec_heard < t_rem) {
 
-                if ( (is_my_call(p_station->call_sign,1)) // It's my station (including SSID) or
-                        || ( (is_my_call(p_station->origin,1)) // Station is owned by me (including SSID)
-                          && ( ((p_station->flag & ST_OBJECT) != 0) // and it's an object
-                            || ((p_station->flag & ST_ITEM  ) != 0) ) ) ) { // or an item
+//                if ( (is_my_call(p_station->call_sign,1)) // It's my station (including SSID) or
+//                        || ( (is_my_call(p_station->origin,1)) // Station is owned by me (including SSID)
+//                          && ( ((p_station->flag & ST_OBJECT) != 0) // and it's an object
+//                            || ((p_station->flag & ST_ITEM  ) != 0) ) ) ) { // or an item
+                if ( is_my_station(p_station) || is_my_object_item(p_station) ) {
 
                     // It's one of mine, leave it alone!
 
@@ -9264,7 +9295,9 @@ int extract_position(DataRow *p_station, char **info, int type) {
 
             // Callsign check here also checks SSID for an exact
             // match
-            if (!is_my_call(p_station->call_sign,1)) {      // don't change my position, I know it better...
+//            if (!is_my_call(p_station->call_sign,1)) {      // don't change my position, I know it better...
+            if ( !(is_my_station(p_station)) ) {      // don't change my position, I know it better...
+
                 p_station->coord_lat = convert_lat_s2l(temp_lat);   // ...in case of position ambiguity
                 p_station->coord_lon = convert_lon_s2l(temp_lon);
             }
@@ -9451,7 +9484,9 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
         // Callsign check here includes checking SSID for an exact
         // match
-        if (!is_my_call(p_station->call_sign,1)) {  // don't change my position, I know it better...
+//        if (!is_my_call(p_station->call_sign,1)) {  // don't change my position, I know it better...
+        if ( !(is_my_station(p_station)) ) {  // don't change my position, I know it better...
+ 
             // Record the uncompressed lat/long that we just
             // computed.
             p_station->coord_lat = (long)((lat));               // in 1/100 sec
@@ -11149,7 +11184,17 @@ void add_comment(DataRow *p_station, char *comment_string) {
  *  Add data from APRS information field to station database
  *  Returns a 1 if successful
  */
-int data_add(int type ,char *call_sign, char *path, char *data, char from, int port, char *origin, int third_party) {
+int data_add(int type,
+             char *call_sign,
+             char *path,
+             char *data,
+             char from,
+             int port,
+             char *origin,
+             int third_party,
+             int station_is_mine,
+             int object_is_mine) {
+
     DataRow *p_station;
     DataRow *p_time;
     char call[MAX_CALLSIGN+1];
@@ -11173,9 +11218,11 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     int ok, store;
     int ok_to_display;
     int compr_pos;
-    int my_object = 0;
     char *p = NULL; // KC2ELS - used for WIDEn-N
     int direct = 0;
+    int object_is_mine_previous = 0;
+    int new_origin_is_mine = 0;
+
 
     // call and path had been validated before
     // Check "data" against the max APRS length, and dump the packet if too long.
@@ -11203,6 +11250,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             origin ? origin : "NULL",   // This parameter may be NULL
             third_party);
 
+    if (origin && is_my_call(origin, 1)) {
+        new_origin_is_mine++;   // The new object/item is owned by me
+    }
+
     weather = NULL; // only to make the compiler happy...
     found_pos = 1;
     xastir_snprintf(call,
@@ -11228,10 +11279,12 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (debug_level & 1)
             fprintf(stderr,"data_add: Found existing station record.\n");
  
-        // Check whether it's a locally-owned object/item
-        if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
-                && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
-                  || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
+        // Check whether it's already a locally-owned object/item
+//        if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
+//                && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
+//                  || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
+        if (is_my_object_item(p_station)) {
+
             // We don't want to re-order it in the time-ordered list
             // so that it'll expire from the queue normally.  Don't
             // call "move_station_time()" here.
@@ -11245,11 +11298,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // some other method as well?
 
             new_station = (char)FALSE;
-            my_object++;
+            object_is_mine_previous++;
         }
         else {
             move_station_time(p_station,p_time);        // update time, change position in time sorted list
             new_station = (char)FALSE;                  // we have seen this one before
+        }
+
+//        if (is_my_call(p_station->call_sign,1)) {   // If my callsign, including SSID
+        if (is_my_station(p_station)) {
+            station_is_mine++; // Station/object/item is owned/controlled by me
         }
     }
     else {
@@ -11287,6 +11345,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         p_station->course[0] = '\0';
 
         ok = 1;                         // succeed as default
+
 
         switch (type) {
 
@@ -11500,12 +11559,13 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // object, as data_add() won't be called on a killed
                 // object.
                 //
-                if ( is_my_call(origin,1)  // If new Object is owned by me (including SSID)
+//                if ( is_my_call(origin,1)  // If new Object is owned by me (including SSID)
+                if (new_origin_is_mine
                         && !(p_station->flag & ST_ACTIVE)
                         && (p_station->flag & ST_OBJECT) ) {  // Old record was a killed Object
                     remove_name(p_station);  // Remove old killed Object
                     redo_list = (int)TRUE;
-                    return( data_add(type, call_sign, path, data, from, port, origin, third_party) );
+                    return( data_add(type, call_sign, path, data, from, port, origin, third_party, 1, 1) );
                 }
  
                 ok = extract_time(p_station, data, type);               // we need a time
@@ -11525,15 +11585,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // is transmitting it now, write entries into
                     // the object.log file showing that we don't own
                     // this object anymore.
-                    if ( (is_my_call(p_station->origin,1))  // If station was owned by me (including SSID)
-                            && (!is_my_call(origin,1)) ) {  // But isn't now
+//                    if ( (is_my_call(p_station->origin,1))  // If station was owned by me (including SSID)
+//                            && (!is_my_call(origin,1)) ) {  // But isn't now
+                    if (is_my_object_item(p_station)    // If station was owned by me (include SSID)
+                            && !new_origin_is_mine) {   // But isn't now
 
-                        disown_object_item(call_sign,origin);
+                        disown_object_item(call_sign, origin);
                     }
 
                     // If station is owned by me (including SSID)
                     // but it's a new object/item
-                    if ( (is_my_call(p_station->origin,1))
+//                    if ( (is_my_call(p_station->origin,1))
+                    if (new_origin_is_mine
                             && (p_station->transmit_time_increment == 0) ) {
                         // This will get us transmitting this object
                         // on the decaying algorithm schedule.
@@ -11598,13 +11661,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // Item, as data_add() won't be called on a killed
                 // Item.
                 //
-                if ( is_my_call(origin,1)  // If new Item is owned by me (including SSID)
+//                if ( is_my_call(origin,1)  // If new Item is owned by me (including SSID)
+                if (new_origin_is_mine
                         && !(p_station->flag & ST_ACTIVE)
                         && (p_station->flag & ST_ITEM) ) {  // Old record was a killed Item
  
                     remove_name(p_station);  // Remove old killed Item
                     redo_list = (int)TRUE;
-                    return( data_add(type, call_sign, path, data, from, port, origin, third_party) );
+                    return( data_add(type, call_sign, path, data, from, port, origin, third_party, 1, 1) );
                 }
  
                 if (!extract_position(p_station,&data,type)) {          // uncompressed lat/lon
@@ -11621,14 +11685,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // is transmitting it now, write entries into
                     // the object.log file showing that we don't own
                     // this item anymore.
-                    if ( (is_my_call(p_station->origin,1))  // If station was owned by me (including SSID)
-                            && (!is_my_call(origin,1)) ) {  // But isn't now
+//                    if ( (is_my_call(p_station->origin,1))  // If station was owned by me (including SSID)
+//                            && (!is_my_call(origin,1)) ) {  // But isn't now
+                    if (is_my_object_item(p_station)
+                            && !new_origin_is_mine) {  // But isn't now
+
                         disown_object_item(call_sign,origin);
                     }
  
                     // If station is owned by me (including SSID)
                     // but it's a new object/item
-                    if ( (is_my_call(p_station->origin,1))
+//                    if ( (is_my_call(p_station->origin,1))
+                    if (is_my_object_item(p_station)
                             && (p_station->transmit_time_increment == 0) ) {
                         // This will get us transmitting this object
                         // on the decaying algorithm schedule.
@@ -11904,7 +11972,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
         // data packet is valid
         // announce own echo, we soon discard that packet...
-        if (!new_station && is_my_call(p_station->call_sign,1) // Check SSID as well
+//        if (!new_station && is_my_call(p_station->call_sign,1) // Check SSID as well
+        if (!new_station
+                && is_my_station(p_station) // Check SSID as well
                 && strchr(path,'*') != NULL) {
  
             upd_echo(path);   // store digi that echoes my signal...
@@ -11928,10 +11998,26 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // we now have valid data to store into database
         // make time index unique by adding a serial number
 
+        if (station_is_mine) {
+            // This station/object/item is owned by me.  Set the
+            // flag which shows that we own/control this
+            // object/item.  We use this flag later in lieu of the
+            // is_my_call() function in order to speed things up.
+            //
+            p_station->flag |= ST_MYSTATION;
+        }
+
         // Check whether it's a locally-owned object/item
-        if (my_object) {
-            // Do nothing.  We don't want to update the last-heard time
-            // so that it'll expire from the queue normally.
+        if ( object_is_mine
+                || (   new_origin_is_mine
+                    && (p_station->flag & ST_ACTIVE)
+                    && (p_station->flag & ST_OBJECT) ) ) {
+
+            p_station->flag |= ST_MYOBJITEM;
+
+            // Do nothing else.  We don't want to update the
+            // last-heard time so that it'll expire from the queue
+            // normally.
 
             // We need an exception later in this function for the
             // case where we've moved an object/item (by how much?).
@@ -11942,6 +12028,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // some other method as well?.
         }
         else {
+            // Reset the "my object" flag
+            p_station->flag &= ~ST_MYOBJITEM;
+
             p_station->sec_heard = curr_sec;    // Give it a new timestamp
         }
 
@@ -12378,7 +12467,7 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                             changed_pos = 1;
 
                             // Check whether it's a locally-owned object/item
-                            if (my_object) {
+                            if (object_is_mine) {
 
                                 // Update time, change position in
                                 // time-sorted list to change
@@ -12448,8 +12537,10 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
         }
 
         // announce stations in the status line
-        if (!is_my_call(p_station->call_sign,1) // Check SSID as well
-                && !is_my_call(p_station->origin,1) // Check SSID as well
+//        if (!is_my_call(p_station->call_sign,1) // Check SSID as well
+//                && !is_my_call(p_station->origin,1) // Check SSID as well
+        if (!is_my_station(p_station)
+                && !is_my_object_item(p_station) // Check SSID as well
                 && !wait_to_redraw) {
             if (new_station) {
                 if (p_station->origin[0] == '\0')   // new station
@@ -12489,7 +12580,10 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
         }
 
         // check for range and DX
-        if (found_pos && !is_my_call(p_station->call_sign,1)) { // Check SSID also
+//        if (found_pos && !is_my_call(p_station->call_sign,1)) { // Check SSID also
+        if (found_pos
+                && !is_my_station(p_station)) { // Check SSID also
+ 
             // if station has a position with the data
             /* Check Audio Alarms based on incoming packet */
             /* FG don't care if this is on screen or off get position */
@@ -13026,6 +13120,7 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
         p_station = add_new_station(p_station,p_time,my_callsign);
     }
     p_station->flag |= ST_ACTIVE;
+    p_station->flag |= ST_MYSTATION;
     p_station->data_via = 'L';
     p_station->flag &= (~ST_3RD_PT);            // clear "third party" flag
     p_station->record_type = NORMAL_APRS;
@@ -13747,7 +13842,11 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         // third_party: 0
     }
 
-    ok = data_add(APRS_MICE,call_sign,path,new_info,from,port,NULL,third_party);
+    // We don't transmit Mic-E protocol from Xastir, so we know it's
+    // not our station's packets or our object/item packets,
+    // therefore the last two parameters here are both zero.
+    //
+    ok = data_add(APRS_MICE,call_sign,path,new_info,from,port,NULL,third_party, 0, 0);
 
     if (debug_level & 1)
         fprintf(stderr,"Returned from data_add, end of function\n");
@@ -13782,7 +13881,8 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                 if ( ((p_station->flag & ST_VIATNC) != 0)   // test "via TNC" flag
                      && ((p_station->flag & ST_DIRECT) != 0) // And "direct" flag
                      && sec_now() < (p_station->direct_heard + st_direct_timeout) // Within the last hour
-                     && !is_my_call(p_station->call_sign,1) ) { // and not me (checks SSID too)
+//                     && !is_my_call(p_station->call_sign,1) ) { // and not me (checks SSID too)
+                    && !(is_my_station(p_station)) ) { // and not me (checks SSID too)
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
                         strncat(temp,
                             " ",
@@ -14258,6 +14358,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     char ack_string[6];
     int done;
     int reply_ack = 0;
+    int to_my_call = 0;
+    int from_my_call = 0;
 
 
     // :xxxxxxxxx:____0-67____             message              printable, except '|', '~', '{'
@@ -14287,6 +14389,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
     }
 
+    if (is_my_call(call, 1) ) { // Check SSID also
+        from_my_call++;
+    }
+ 
     ack_string[0] = '\0';   // Clear out the Reply/Ack result string
 
     len = (int)strlen(message);
@@ -14299,6 +14405,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             "%s",
             addr9);
         (void)remove_trailing_spaces(addr);
+
+        if (is_my_call(addr,1)) {
+            to_my_call++;
+        }
+
         message = message + 10; // pointer to message text
 
         // Save the message text and the acks/reply-acks before we
@@ -14337,7 +14448,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
  
             reply_ack++;
 
-            if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+//            if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+            if ( (debug_level & 1) && to_my_call) { // Check SSID also
                 fprintf(stderr,"1Found Reply/Ack:%s\n",message);
                 fprintf(stderr,"Orig_msg_id:%s\t",msg_id);
             }
@@ -14360,7 +14472,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             //
             temp_ptr[0] = '\0'; // adjust msg_id end
 
-            if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+//            if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+            if ( (debug_level & 1) && to_my_call) { // Check SSID also
                 fprintf(stderr,"New_msg_id:%s\tReply_ack:%s\n\n",
                     msg_id,ack_string);
             }
@@ -14376,7 +14489,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
                 reply_ack++;
 
-                if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+//                if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+                if ( (debug_level & 1) && to_my_call) { // Check SSID also
                     fprintf(stderr,"2Found Reply/Ack:%s\n",message);
                 }
 
@@ -14393,7 +14507,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 // otherwise.
                 temp_ptr[0] = '\0'; // adjust message end
 
-                if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+//                if ( (debug_level & 1) && (is_my_call(addr,1)) ) { // Check SSID also
+                if ( (debug_level & 1) && to_my_call) { // Check SSID also
                     fprintf(stderr,"Reply_ack:%s\n\n",ack_string);
                 }
             } 
@@ -14424,7 +14539,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
         substr(msg_id,message+3,5);
         // fprintf(stderr,"ACK: %s: |%s| |%s|\n",call,addr,msg_id);
-        if (is_my_call(addr,1)) { // Check SSID also
+//        if (is_my_call(addr,1)) { // Check SSID also
+        if (to_my_call) { // Check SSID also
 
             // Note:  This function handles REPLY-ACK protocol just
             // fine, stripping off the 2nd ack if present.  It uses
@@ -14441,7 +14557,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             // spit the ACK out on the TNC -FG
             if (operate_as_an_igate>1
                     && from==DATA_VIA_NET
-                    && !is_my_call(call,1) // Check SSID also
+//                    && !is_my_call(call,1) // Check SSID also
+                    && !from_my_call     // Check SSID also
                     && port != -1) {    // Not from a log file
                 char short_path[100];
 
@@ -14496,7 +14613,9 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 
         substr(msg_id,message+3,5);
 
-        if ( is_my_call(addr,1) ) { // Check SSID also
+//        if ( is_my_call(addr,1) ) { // Check SSID also
+        if (to_my_call) {   // Check SSID also
+
             // REJ is for me!
 //            fprintf(stderr,"Received a REJ packet from %s: |%s| |%s|\n",call,addr,msg_id);
 
@@ -14515,7 +14634,8 @@ if (reply_ack) { // For debugging, so we only have reply-ack
             /* spit the REJ out on the TNC                                             */
             if (operate_as_an_igate>1
                     && from==DATA_VIA_NET
-                    && !is_my_call(call,1) // Check SSID also
+//                    && !is_my_call(call,1) // Check SSID also
+                    && !from_my_call    // Check SSID also
                     && port != -1) {    // Not from a log file
                 char short_path[100];
 
@@ -14576,7 +14696,8 @@ if (reply_ack) { // For debugging, so we only have reply-ack
         fprintf(stderr,"4\n");
 
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) { // Message for me (including SSID check)
+//    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) { // Message for me (including SSID check)
+    if (!done && strlen(msg_id) > 0 && to_my_call) {         // Message for me (including SSID check)
                                                              // with msg_id (sequence number)
         time_t last_ack_sent;
         long record;
@@ -14748,7 +14869,8 @@ if (reply_ack) { // For debugging, so we only have reply-ack
                     fprintf(stderr,"Send autoreply to <%s> from <%s> :%s\n",
                         call, my_callsign, ipacket_message);
 
-                if (!is_my_call(call,1)) // Check SSID also
+//                if (!is_my_call(call,1)) // Check SSID also
+                if (!from_my_call) // Check SSID also
                     output_message(my_callsign, call, ipacket_message, "");
             }
         }
@@ -14779,7 +14901,8 @@ else {
         done = 1;
         if (operate_as_an_igate>1
                 && from==DATA_VIA_NET
-                && !is_my_call(call,1) // Check SSID also
+//                && !is_my_call(call,1) // Check SSID also
+                && !from_my_call // Check SSID also
                 && port != -1) { // Not from a log file
             char short_path[100];
 
@@ -14819,7 +14942,8 @@ else {
         done = 1;
         if (operate_as_an_igate>1
                 && from==DATA_VIA_NET
-                && !is_my_call(call,1) // Check SSID also
+//                && !is_my_call(call,1) // Check SSID also
+                && !from_my_call    // Check SSID also
                 && port != -1) { // Not from a log file
             char short_path[100];
 
@@ -14875,7 +14999,8 @@ else {
 //fprintf(stderr,"***check_popup_window 2\n");
 
             // Callsign check here also checks SSID for exact match
-            if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
+//            if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
+            if ((from_my_call && check_popup_window(addr, 2) != -1)
                     || check_popup_window(call, 0) != -1
                     || check_popup_window(addr, 1) != -1) {
                 //update_messages(1); // Force an update
@@ -14889,8 +15014,10 @@ else {
         if (operate_as_an_igate>1
                 && last_ack_sent != (time_t)-1l
                 && from==DATA_VIA_NET
-                && !is_my_call(call,1) // Check SSID also
-                && !is_my_call(addr,1) // Check SSID also
+//                && !is_my_call(call,1) // Check SSID also
+                && !from_my_call        // Check SSID also
+//                && !is_my_call(addr,1) // Check SSID also
+                && !to_my_call          // Check SSID also
                 && port != -1) {    // Not from a log file
             char short_path[100];
 
@@ -14937,7 +15064,8 @@ if (reply_ack) { // For debugging, so we only have reply-ack
     if (!done && len > 2
             && message[0] == '?'
             && port != -1   // Not from a log file
-            && is_my_call(addr,1)) { // directed query (check SSID also)
+//            && is_my_call(addr,1)) { // directed query (check SSID also)
+            && to_my_call) { // directed query (check SSID also)
         // Smallest query known is "?WX".
         if (debug_level & 1)
             fprintf(stderr,"Received a directed query\n");
@@ -14989,7 +15117,8 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 // what the packet looks like by this point.
         if ( last_ack_sent != (time_t)-1l
                 && (message[0] != '?')
-                && is_my_call(addr,1) ) { // Check SSID also
+//                && is_my_call(addr,1) ) { // Check SSID also
+                && to_my_call ) { // Check SSID also
 
             // We no longer wish to have both popups and the Send
             // Group Message dialogs come up for every query
@@ -15026,7 +15155,9 @@ if (reply_ack) { // For debugging, so we only have reply-ack
             from,
             port,
             NULL,
-            third_party);
+            third_party,
+            0,  // Not a packet from my station
+            0); // Not my object/item
 
     if (debug_level & 1)
         fprintf(stderr,"decode_message: finish\n");
@@ -15051,7 +15182,14 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
     int ok, len;
     char msg_id[5+1];
     int done;
+    int from_my_call = 0;
+    int to_my_call = 0;
 
+
+    if (is_my_call(call, 1) ) { // Check SSID also
+        from_my_call++;
+    }
+ 
     // I'm not sure, but I think they use 2 digit line numbers only
     // extract addr from path
     substr(addr,path,9);
@@ -15062,6 +15200,11 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
             temp_ptr[0] = '\0';                 // adjust addr end
         ok = (int)(strlen(addr) > 0);
     }
+
+    if (is_my_call(addr, 1) ) { // Check SSID also
+        to_my_call++;
+    }
+
     len = (int)strlen(message);
     ok = (int)(len >= 2);
     if (ok) {
@@ -15078,7 +15221,8 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
     len = (int)strlen(message);
     //--------------------------------------------------------------------------
     // Callsign check here checks SSID as well
-    if (!done && msg_id[0] != '\0' && is_my_call(addr,1)) {      // message for me
+//    if (!done && msg_id[0] != '\0' && is_my_call(addr,1)) {      // message for me
+    if (!done && msg_id[0] != '\0' && to_my_call) {      // message for me
         time_t last_ack_sent;
         long record;
 
@@ -15133,7 +15277,8 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
                         fprintf(stderr,"Send autoreply to <%s> from <%s> :%s\n",
                             call, my_callsign, temp);
     
-                    if (!is_my_call(call,1)) // Check SSID also
+//                    if (!is_my_call(call,1)) // Check SSID also
+                    if (!from_my_call) // Check SSID also
                         output_message(my_callsign, call, temp, "");
                 }
             }
@@ -15143,7 +15288,8 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
     //--------------------------------------------------------------------------
     if (!done && len == 2 && msg_id[0] == '\0') {                // ACK
         substr(msg_id,message,5);
-        if (is_my_call(addr,1)) { // Check SSID also
+//        if (is_my_call(addr,1)) { // Check SSID also
+        if (to_my_call) { // Check SSID also
 
             clear_acked_message(call,addr,msg_id); // got an ACK for me
 
@@ -15154,7 +15300,8 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
             /* check if this message is to a person I have heard on my TNC within an X */
             /* time frame. If if is a station I heard and all the conditions are ok    */
             /* spit the ACK out on the TNC -FG                                         */
-//            if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) {
+////            if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) {
+//            if (operate_as_an_igate>1 && from==DATA_VIA_NET && !from_my_call) {
 //                char short_path[100];
                 //fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); {
 
@@ -15168,8 +15315,19 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         done = 1;
     }
     //--------------------------------------------------------------------------
-    if (ok)
-        (void)data_add(STATION_CALL_DATA,call,path,message,from,port,NULL,third_party);
+    if (ok) {
+        (void)data_add(STATION_CALL_DATA,
+            call,
+            path,
+            message,
+            from,
+            port,
+            NULL,
+            third_party,
+            0,  // Not a packet from my station
+            0); // Not my object/item
+    }
+
     return(ok);
 }
 
@@ -15190,14 +15348,21 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
  * orig_message = Unmodified info field
  *
  */
-void decode_info_field(char *call, char *path, char *message, char *origin,
-        char from, int port, int third_party, char *orig_message) {
+void decode_info_field(char *call,
+                       char *path,
+                       char *message,
+                       char *origin,
+                       char from, int port,
+                       int third_party,
+                       char *orig_message) {
 
     char line[MAX_LINE_SIZE+1];
     int  ok_igate_net;
     int  ok_igate_rf;
     int  done, ignore;
     char data_id;
+    int station_is_mine = 0;
+    int object_is_mine = 0;
 
     /* remember fixed format starts with ! and can be up to 24 chars in the message */ // ???
     if (debug_level & 1)
@@ -15210,21 +15375,30 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
     ok_igate_net = 0;       // if 1, send packet to internet
     ok_igate_rf  = 0;       // if 1, igate packet to RF if "from" is in nws-stations.txt
 
+    if ( is_my_call(call, 1) ) {
+        station_is_mine++; // Station is controlled by me
+    }
+ 
     if ( (message != NULL) && (strlen(message) > MAX_LINE_SIZE) ) { // Overly long message, throw it away.
         if (debug_level & 1)
             fprintf(stderr,"decode_info_field: Overly long message.  Throwing it away.\n");
         done = 1;
     }
     else if (message == NULL || strlen(message) == 0) {      // we could have an empty message
-        (void)data_add(STATION_CALL_DATA,call,path,NULL,from,port,origin,third_party);
+        (void)data_add(STATION_CALL_DATA,call,path,NULL,from,port,origin,third_party, station_is_mine, 0);
         done = 1;                                       // don't report it to internet
     }
 
     // special treatment for objects/items.
     if (!done && origin[0] != '\0') {
 
+        // If station/object/item is owned by me (including SSID)
+        if ( is_my_call(origin, 1) ) {
+            object_is_mine++;
+        }
+ 
         if (message[0] == '*') {    // set object
-            (void)data_add(APRS_OBJECT,call,path,message+1,from,port,origin,third_party);
+            (void)data_add(APRS_OBJECT,call,path,message+1,from,port,origin,third_party, station_is_mine, object_is_mine);
             if (strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) {
                 ok_igate_net = 1;   // report it to internet
             }
@@ -15233,7 +15407,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
         }
 
         else if (message[0] == '!') {   // set item
-            (void)data_add(APRS_ITEM,call,path,message+1,from,port,origin,third_party);
+            (void)data_add(APRS_ITEM,call,path,message+1,from,port,origin,third_party, station_is_mine, object_is_mine);
             if (strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) {
                 ok_igate_net = 1;   // report it to internet
             }
@@ -15252,8 +15426,10 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             // anymore.
             p_station = NULL;
             if (search_station_name(&p_station,call,1)) {
-                if ( (is_my_call(p_station->origin,1))  // If station was owned by me (including SSID)
-                        && (!is_my_call(origin,1)) ) {  // But isn't now
+//                if ( (is_my_call(p_station->origin,1))  // If station was owned by me (including SSID)
+//                        && (!is_my_call(origin,1)) ) {  // But isn't now
+                if (is_my_object_item(p_station)    // If station was owned by me (including SSID)
+                        && (!object_is_mine) ) {  // But isn't now
                     disown_object_item(call,origin);
                 }
             }
@@ -15283,7 +15459,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
 //WE7U
 // Need to check for weather info in this packet type as well?
 
-                done = data_add(APRS_MSGCAP,call,path,message,from,port,origin,third_party);
+                done = data_add(APRS_MSGCAP,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15291,9 +15467,9 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: ! (position w/o timestamp or Ultimeter 2000 WX)\n");
                 if (message[0] == '!' && is_xnum_or_dash(message+1,40))   // Ultimeter 2000 WX
-                    done = data_add(APRS_WX3,call,path,message+1,from,port,origin,third_party);
+                    done = data_add(APRS_WX3,call,path,message+1,from,port,origin,third_party, station_is_mine, 0);
                 else
-                    done = data_add(APRS_FIXED,call,path,message,from,port,origin,third_party);
+                    done = data_add(APRS_FIXED,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15311,26 +15487,26 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                         fprintf(stderr,"decode_info_field: / (uncompressed position w/timestamp no messaging)\n");
                     if (message[29] == '/') {
                         if (message[33] == 'g' && message[37] == 't')
-                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                         else
-                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                     }
                     else
-                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
+                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 }
                 else {                                                // compressed format
                     if (debug_level & 1)
                         fprintf(stderr,"decode_info_field: / (compressed position w/timestamp no messaging)\n");
                     if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
                         if (message[20] == 'g' && message[24] == 't')   // Wx data
-                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                         else
-                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                     }
                     else
-                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
+                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 }
-//                done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
+//                done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15342,30 +15518,30 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                         fprintf(stderr,"decode_info_field: @ (uncompressed position w/timestamp)\n");
                     if (message[29] == '/') {
                         if (message[33] == 'g' && message[37] == 't')
-                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                         else
-                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                     }
                     else
-                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
+                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 }
                 else {                                                // compressed format
                     if (debug_level & 1)
                         fprintf(stderr,"decode_info_field: @ (compressed position w/timestamp)\n");
                     if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
                         if (message[20] == 'g' && message[24] == 't')   // Wx data
-                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                         else
-                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
+                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                     }
                     else
-                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
+                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 }
                 ok_igate_rf = done;
                 break;
 
             case '[':   // Maidenhead grid locator beacon (obsolete- but used for meteor scatter)
-                done = data_add(APRS_GRID,call,path,message,from,port,origin,third_party);
+                done = data_add(APRS_GRID,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
             case 0x27:  // Mic-E  Old GPS data (or current GPS data in Kenwood TM-D700)
@@ -15381,7 +15557,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             case '_':   // Positionless weather data                [APRS Reference, chapter 12]
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: _ (positionless wx data)\n");
-                done = data_add(APRS_WX2,call,path,message,from,port,origin,third_party);
+                done = data_add(APRS_WX2,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15389,7 +15565,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: # (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
-                    done = data_add(APRS_WX4,call,path,message,from,port,origin,third_party);
+                    done = data_add(APRS_WX4,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15397,7 +15573,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: * (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
-                    done = data_add(APRS_WX6,call,path,message,from,port,origin,third_party);
+                    done = data_add(APRS_WX6,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15405,13 +15581,13 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: $ (raw gps or ultimeter 2000)\n");
                 if (strncmp("ULTW",message,4) == 0 && is_xnum_or_dash(message+4,44))
-                    done = data_add(APRS_WX5,call,path,message+4,from,port,origin,third_party);
+                    done = data_add(APRS_WX5,call,path,message+4,from,port,origin,third_party, station_is_mine, 0);
                 else if (strncmp("GPGGA",message,5) == 0)
-                    done = data_add(GPS_GGA,call,path,message,from,port,origin,third_party);
+                    done = data_add(GPS_GGA,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 else if (strncmp("GPRMC",message,5) == 0)
-                    done = data_add(GPS_RMC,call,path,message,from,port,origin,third_party);
+                    done = data_add(GPS_RMC,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 else if (strncmp("GPGLL",message,5) == 0)
-                    done = data_add(GPS_GLL,call,path,message,from,port,origin,third_party);
+                    done = data_add(GPS_GLL,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 else {
                         // handle VTG and WPT too  (APRS Ref p.25)
                 }
@@ -15430,7 +15606,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             case '>':   // Status                                   [APRS Reference, chapter 16]
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: > (status)\n");
-                done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party);
+                done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 ok_igate_rf = done;
                 break;
 
@@ -15446,7 +15622,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
                 ok_igate_rf = 1;
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: T (telem)\n");
-                 done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party);
+                 done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party, station_is_mine, 0);
                 break;
  
             case '{':   // User-defined APRS packet format     //}
@@ -15478,7 +15654,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             fprintf(stderr,"decode_info_field: done with big switch\n");
 
         if (!done && !ignore) {         // Other Packets        [APRS Reference, chapter 19]
-            done = data_add(OTHER_DATA,call,path,message-1,from,port,origin,third_party);
+            done = data_add(OTHER_DATA,call,path,message-1,from,port,origin,third_party, station_is_mine, 0);
             ok_igate_net = 0;           // don't put data on internet       ????
             if (debug_level & 1)
                 fprintf(stderr,"decode_info_field: done with data_add(OTHER_DATA)\n");
@@ -15495,7 +15671,8 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
     if (third_party)
         ok_igate_net = 0;   // don't put third party traffic on internet
 
-    if (is_my_call(call,1)) // Check SSID as well
+//    if (is_my_call(call,1)) // Check SSID as well
+    if (station_is_mine)
         ok_igate_net = 0;   // don't put my data on internet     ???
 
     if (ok_igate_net) {
@@ -15539,7 +15716,10 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
     // dupe-check.
     //
     // Callsign check here checks SSID as well
-    if (ok_igate_rf && !is_my_call(call,1) && from == DATA_VIA_NET) {
+//    if (ok_igate_rf && !is_my_call(call,1) && from == DATA_VIA_NET) {
+    if (ok_igate_rf
+            && !station_is_mine
+            && from == DATA_VIA_NET) {
 
         char ipacket_message[300];
         char short_path[100];

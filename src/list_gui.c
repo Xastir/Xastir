@@ -275,7 +275,9 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
                     // Show deleted objects/items as well
                     if ( ( (((*p_station)->flag & ST_OBJECT) != 0)
                                 || (((*p_station)->flag & ST_ITEM) != 0) )
-                            && ( is_my_call( (*p_station)->origin,1)) ) // Exact match include SSID
+//                            && ( is_my_call( (*p_station)->origin,1)) ) // Exact match include SSID
+                            && ( is_my_object_item(*p_station)) ) // Exact match include SSID
+
                         found = (char)TRUE;
                     else
                         (*p_station) = (*p_station)->n_next;
@@ -285,7 +287,9 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
                     if (((*p_station)->flag & ST_ACTIVE) != 0
                             && ( (((*p_station)->flag & ST_VIATNC) != 0)
                                 || (((*p_station)->flag & ST_ITEM) != 0) )
-                            && ( is_my_call( (*p_station)->origin,1)) ) // Exact match includes SSID
+//                            && ( is_my_call( (*p_station)->origin,1)) ) // Exact match includes SSID
+                            && ( is_my_object_item(*p_station)) ) // Exact match include SSID
+
                         found = (char)TRUE;
                     else
                         (*p_station) = (*p_station)->n_prev;
