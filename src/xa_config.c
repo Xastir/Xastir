@@ -1202,14 +1202,28 @@ void load_data_or_default(void) {
         xastir_snprintf(SELECTED_MAP_DATA,
             sizeof(SELECTED_MAP_DATA),
             "%s",
-            get_user_base_dir ("config/selected_maps.sys"));
+            "config/selected_maps.sys");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), SELECTED_MAP_DATA, strlen(get_user_base_dir(""))) == 0)
+         xastir_snprintf(SELECTED_MAP_DATA,
+            sizeof(SELECTED_MAP_DATA),
+            "%s",
+            "config/selected_maps.sys");
 
     if (!get_string ("MAP_INDEX_DATA", MAP_INDEX_DATA, sizeof(MAP_INDEX_DATA)))
         xastir_snprintf(MAP_INDEX_DATA,
             sizeof(MAP_INDEX_DATA),
             "%s",
-            get_user_base_dir ("config/map_index.sys"));
-
+            "config/map_index.sys");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), MAP_INDEX_DATA, strlen(get_user_base_dir(""))) == 0)
+        xastir_snprintf(MAP_INDEX_DATA,
+            sizeof(MAP_INDEX_DATA),
+            "%s",
+            "config/map_index.sys");
+ 
     if (!get_string ("SYMBOLS_DIR", SYMBOLS_DIR, sizeof(SYMBOLS_DIR)))
         xastir_snprintf(SYMBOLS_DIR,
             sizeof(SYMBOLS_DIR),
@@ -1226,7 +1240,14 @@ void load_data_or_default(void) {
         xastir_snprintf(group_data_file,
             sizeof(group_data_file),
             "%s",
-            get_user_base_dir ("config/groups"));
+            "config/groups");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), group_data_file, strlen(get_user_base_dir(""))) == 0)
+        xastir_snprintf(group_data_file,
+             sizeof(group_data_file),
+            "%s",
+            "config/groups");
 
     if (!get_string ("GNIS_FILE", locate_gnis_filename, sizeof(locate_gnis_filename)))
         xastir_snprintf(locate_gnis_filename,
@@ -1618,7 +1639,14 @@ void load_data_or_default(void) {
         xastir_snprintf(LOGFILE_TNC,
             sizeof(LOGFILE_TNC),
             "%s",
-            get_user_base_dir ("logs/tnc.log"));
+            "logs/tnc.log");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), LOGFILE_TNC, strlen(get_user_base_dir(""))) == 0)
+         xastir_snprintf(LOGFILE_TNC,
+            sizeof(LOGFILE_TNC),
+            "%s",
+            "logs/tnc.log");
 
     /* NET */
     log_net_data = get_int ("NET_LOG_DATA", 0,1,0);
@@ -1636,20 +1664,41 @@ void load_data_or_default(void) {
         xastir_snprintf(LOGFILE_IGATE,
             sizeof(LOGFILE_IGATE),
             "%s",
-            get_user_base_dir ("logs/igate.log"));
+            "logs/igate.log");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), LOGFILE_IGATE, strlen(get_user_base_dir(""))) == 0)
+         xastir_snprintf(LOGFILE_IGATE,
+            sizeof(LOGFILE_IGATE),
+            "%s",
+            "logs/igate.log");
 
     if (!get_string ("LOGFILE_NET", LOGFILE_NET, sizeof(LOGFILE_NET)))
         xastir_snprintf(LOGFILE_NET,
             sizeof(LOGFILE_NET),
             "%s",
-            get_user_base_dir ("logs/net.log"));
-
+            "logs/net.log");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), LOGFILE_NET, strlen(get_user_base_dir(""))) == 0)
+        xastir_snprintf(LOGFILE_NET,
+            sizeof(LOGFILE_NET),
+            "%s",
+            "logs/net.log");
+  
     if (!get_string ("LOGFILE_WX", LOGFILE_WX, sizeof(LOGFILE_WX)))
         xastir_snprintf(LOGFILE_WX,
             sizeof(LOGFILE_WX),
             "%s",
-            get_user_base_dir ("logs/wx.log"));
-
+            "logs/wx.log");
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), LOGFILE_WX, strlen(get_user_base_dir(""))) == 0)
+        xastir_snprintf(LOGFILE_WX,
+            sizeof(LOGFILE_WX),
+            "%s",
+            "logs/wx.log");
+  
     // SNAPSHOTS
     snapshots_enabled = get_int ("SNAPSHOTS_ENABLED", 0,1,0);
 

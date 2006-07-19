@@ -6277,11 +6277,11 @@ void index_save_to_file(void) {
 
 //fprintf(stderr,"Saving map index to file\n");
 
-    f = fopen(MAP_INDEX_DATA,"w");
+    f = fopen( get_user_base_dir(MAP_INDEX_DATA), "w" );
 
     if (f == NULL) {
         fprintf(stderr,"Couldn't create/update map index file: %s\n",
-            MAP_INDEX_DATA);
+            get_user_base_dir(MAP_INDEX_DATA) );
         return;
     }
 
@@ -6332,7 +6332,7 @@ void index_save_to_file(void) {
             if (fprintf(f,"%s",out_string) < (int)strlen(out_string)) {
                 // Failed to write
                 fprintf(stderr,"Couldn't write objects to map index file: %s\n",
-                    MAP_INDEX_DATA);
+                    get_user_base_dir(MAP_INDEX_DATA) );
                 current = NULL; // All done
             }
             // Set up pointers for next loop iteration
@@ -6646,7 +6646,7 @@ void index_restore_from_file(void) {
     map_index_head = NULL;  // Starting with empty list
     last_record = NULL;
 
-    f = fopen(MAP_INDEX_DATA,"r");
+    f = fopen( get_user_base_dir(MAP_INDEX_DATA), "r" );
     if (f == NULL)  // No map_index file yet
         return;
 
@@ -7010,14 +7010,15 @@ void map_indexer(int parameter) {
 
     // Find the timestamp on the index file first.  Save it away so
     // that the timestamp for each map file can be compared to it.
-    if (stat (MAP_INDEX_DATA, &nfile) != 0) {
+    if (stat ( get_user_base_dir(MAP_INDEX_DATA), &nfile) != 0) {
 
         // File doesn't exist yet.  Create it.
-        f = fopen(MAP_INDEX_DATA,"w");
+        f = fopen( get_user_base_dir(MAP_INDEX_DATA), "w" );
         if (f != NULL)
             (void)fclose(f);
         else
-            fprintf(stderr,"Couldn't create map index file: %s\n", MAP_INDEX_DATA);
+            fprintf(stderr,"Couldn't create map index file: %s\n",
+                get_user_base_dir(MAP_INDEX_DATA) );
         
         check_times = 0; // Don't check the timestamps.  Do them all. 
     }
@@ -7662,9 +7663,9 @@ void load_maps (Widget w) {
         selected_dir[0] = '\0';
 
         // Create empty file if it doesn't exist
-        (void)filecreate(SELECTED_MAP_DATA);
+        (void)filecreate( get_user_base_dir(SELECTED_MAP_DATA) );
 
-        f = fopen (SELECTED_MAP_DATA, "r");
+        f = fopen ( get_user_base_dir(SELECTED_MAP_DATA), "r" );
         if (f != NULL) {
             if (debug_level & 16)
                 fprintf(stderr,"Load maps Open map file\n");
@@ -7780,7 +7781,7 @@ void load_maps (Widget w) {
             statusline(" ",1);      // delete status line
         }
         else
-            fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
 
         // All done sorting until something is changed in the Map
         // Chooser.

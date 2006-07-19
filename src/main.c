@@ -10949,7 +10949,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         line[n-1] = '\0';
 
                         if (log_net_data)
-                            log_data(LOGFILE_NET,
+                            log_data( get_user_base_dir(LOGFILE_NET),
                                 (char *)line);
 
 //fprintf(stderr,"TCP server data:%d: %s\n", n, line);
@@ -11089,7 +11089,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         }
 
                         if (log_net_data)
-                            log_data(LOGFILE_NET,
+                            log_data( get_user_base_dir(LOGFILE_NET),
                                 (char *)(line + line_offset));
 
 //fprintf(stderr,"UDP server data:  %s\n", line);
@@ -11138,7 +11138,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_NET_STREAM:
 
                             if (log_net_data)
-                                log_data(LOGFILE_NET,
+                                log_data( get_user_base_dir(LOGFILE_NET),
                                     (char *)incoming_data);
 
                             packet_data_add(langcode("WPUPDPD006"),
@@ -11196,7 +11196,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_AX25_TNC:
                         case DEVICE_NET_AGWPE:
                             if (log_tnc_data)
-                                log_data(LOGFILE_TNC,
+                                log_data( get_user_base_dir(LOGFILE_TNC),
                                     (char *)incoming_data);
 
                             packet_data_add(langcode("WPUPDPD005"),
@@ -11245,7 +11245,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             else {
                                 // get TNC data
                                 if (log_tnc_data)
-                                    log_data(LOGFILE_TNC,
+                                    log_data( get_user_base_dir(LOGFILE_TNC),
                                         (char *)incoming_data);
 
                                 packet_data_add(langcode("WPUPDPD005"),
@@ -11297,7 +11297,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             }
                             else {          // APRS Data
                                 if (log_tnc_data)
-                                    log_data(LOGFILE_TNC,
+                                    log_data( get_user_base_dir(LOGFILE_TNC),
                                         (char *)incoming_data);
 
                                 packet_data_add(langcode("WPUPDPD005"),
@@ -11354,7 +11354,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_NET_WX:
                             if (log_wx)
-                                log_data(LOGFILE_WX,
+                                log_data( get_user_base_dir(LOGFILE_WX),
                                     (char *)incoming_data);
 
                             wx_decode(incoming_data,
@@ -14463,7 +14463,7 @@ void check_for_new_gps_map(int curr_sec) {
                 }
             }
             // Add the new gps map to the list of selected maps
-            f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
+            f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "a" ); // Open for appending
             if (f!=NULL) {
 
 //WE7U:  Change this:
@@ -14495,7 +14495,7 @@ void check_for_new_gps_map(int curr_sec) {
 //                }
             }
             else {
-                fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
             }
         }
         else {
@@ -16521,7 +16521,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                     args,
                     n);
 
-            f=fopen(HELP_FILE,"r");
+            f=fopen( get_user_base_dir(HELP_FILE), "r" );
             if (f!=NULL) {
                 while(!feof(f)) {
                     (void)get_line(f,temp2,200);
@@ -16542,7 +16542,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                 (void)fclose(f);
             }
             else
-                fprintf(stderr,"Couldn't open file: %s\n", HELP_FILE);
+                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(HELP_FILE) );
 
             button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                     xmPushButtonGadgetClass, 
@@ -16647,7 +16647,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 ac);
 
         n=1;
-        f=fopen(HELP_FILE,"r");
+        f=fopen( get_user_base_dir(HELP_FILE), "r" );
         if (f!=NULL) {
             while (!feof(f)) {
                 (void)get_line(f,temp,600);
@@ -16659,7 +16659,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
             (void)fclose(f);
         }
         else
-            fprintf(stderr,"Couldn't open file: %s\n", HELP_FILE);
+            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(HELP_FILE) );
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPHPI002"),
                 xmPushButtonGadgetClass, 
@@ -18514,7 +18514,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 
     ptr = map_index_head;
 
-    f=fopen(SELECTED_MAP_DATA,"w+");
+    f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "w+" );
     if (f!=NULL) {
 
         while (ptr != NULL) {
@@ -18528,7 +18528,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
         (void)fclose(f);
     }
     else
-        fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
 
     map_chooser_destroy_shell(widget,clientData,callData);
 
@@ -18609,7 +18609,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
 
     ptr = map_index_head;
 
-    f=fopen(SELECTED_MAP_DATA,"w+");
+    f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "w+" );
     if (f!=NULL) {
 
         while (ptr != NULL) {
@@ -18623,7 +18623,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
         (void)fclose(f);
     }
     else
-        fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 
@@ -18971,9 +18971,9 @@ void map_chooser_init (void) {
         current = current->next;
     }
 
-    (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
+    (void)filecreate( get_user_base_dir(SELECTED_MAP_DATA) );   // Create empty file if it doesn't exist
 
-    f=fopen(SELECTED_MAP_DATA,"r");
+    f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "r" );
     if (f!=NULL) {
         while(!feof(f)) {
             int done;
@@ -18997,7 +18997,7 @@ void map_chooser_init (void) {
         (void)fclose(f);
     }
     else {
-        fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
     }
 }
 
@@ -25966,7 +25966,7 @@ fprintf(stderr,
 
 
     if (deselect_maps_on_startup) {
-        unlink(SELECTED_MAP_DATA);  // Remove the selected_maps.sys file
+        unlink( get_user_base_dir(SELECTED_MAP_DATA) );  // Remove the selected_maps.sys file
     }
 
     update_units(); // set up conversion factors and strings
@@ -26010,7 +26010,7 @@ fprintf(stderr,
     xastir_snprintf(HELP_FILE,
         sizeof(HELP_FILE),
         "%s",
-        get_user_base_dir("config/help.dat"));
+        "config/help.dat");
 
 #ifdef HAVE_FESTIVAL
     /* Initialize the festival speech synthesis port */
