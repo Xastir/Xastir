@@ -7001,6 +7001,8 @@ void map_indexer(int parameter) {
     if (debug_level & 16)
         fprintf(stderr,"map_indexer() start\n");
 
+    fprintf(stderr,"Indexing maps...\n");
+
 #ifdef HAVE_LIBSHP
 #ifdef WITH_DBFAWK
     // get rid of stored dbfawk signatures and force reload.
@@ -7082,6 +7084,8 @@ void map_indexer(int parameter) {
  
     // Save the updated index to the file
     index_save_to_file();
+
+    fprintf(stderr,"Finished indexing maps\n");
 
     if (debug_level & 16)
         fprintf(stderr,"map_indexer() end\n");
