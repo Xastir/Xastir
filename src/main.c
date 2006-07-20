@@ -10289,7 +10289,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #else
     // Changed from 2 to 10 to fix high CPU usage problems on
     // FreeBSD.
-    nexttime = 10;
+    nexttime = 50;
 #endif // __CYGWIN__
 
 
@@ -10527,7 +10527,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 }
 
                 redraw_on_new_data = 0;
-                next_redraw = current_time+60;     // redraw every minute, do we need that?
+                next_redraw = current_time+60; // redraw every minute
                 last_redraw = current_time;
 
                 // This assures that we periodically check for expired alerts
