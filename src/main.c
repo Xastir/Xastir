@@ -10289,7 +10289,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #else
     // Changed from 2 to 10 to fix high CPU usage problems on
     // FreeBSD.
-    nexttime = 50;
+    nexttime = 25;
 #endif // __CYGWIN__
 
 
