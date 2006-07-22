@@ -144,7 +144,8 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
     d = fi->name;
     while (*p && *p != ':') *d++ = *p++;
     if (*p == ':')
-      *d = *p++ = '\0';
+      *p++ = '\0';
+    *d='\0';
     fi->num = DBFGetFieldIndex(dbf, fi->name);
     fi->type = DBFGetFieldInfo(dbf, fi->num, junk, &w, &prec);
     sp = p;
