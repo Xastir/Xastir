@@ -235,7 +235,6 @@ void draw_WP_line(DataRow *p_station,
     double lat_m;
     long x, y;
     long x2, y2;
-    long max_x, max_y;
     double temp;
     int color = trail_colors[p_station->trail_color];
     float temp_latitude, temp_latitude2;
@@ -272,10 +271,6 @@ void draw_WP_line(DataRow *p_station,
     // x2 & y2 are screen location of transmitting station
     x2 = (x_long2 - x_long_offset)/scale_x;
     y2 = (y_lat2 - y_lat_offset)/scale_y;
-
-    /* max off screen values */
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
 
 
 /*
@@ -378,46 +373,46 @@ void draw_WP_line(DataRow *p_station,
 //
 void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where) {
     double diameter;
-    long max_x, max_y;
     double a,b;
 
-
-    /* max off screen values */
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
-    if ((x_long>=0) && (x_long<=129600000l)) {
-        if ((y_lat>=0) && (y_lat<=64800000l)) {
 
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-            if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
-                    // Range is in miles.  Bottom term is in meters before the 0.0006214
-                    // multiplication factor which converts it to miles.
-                    // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
-                    diameter = 2.0 * ( range/
-                        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 
-                    a=diameter;
-                    b=diameter/2;
+//            if ((x_long < 0) || (x_long > 129600000l))
+//                return;
 
-                    //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
+//            if ((y_lat < 0) || (y_lat > 64800000l))
+//                return;
 
-                    if (diameter>4.0) {
-                        (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
-                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-                        (void)XSetForeground(XtDisplay(da),gc,color);
+            // Range is in miles.  Bottom term is in meters before the 0.0006214
+            // multiplication factor which converts it to miles.
+            // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+            diameter = 2.0 * ( range/
+                (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-                        (void)XDrawArc(XtDisplay(da),where,gc,
-                            (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
-                            (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
-                            (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-                    }
-                }
-            }
+            // If less than 4 pixels across, skip drawing it.
+            if (diameter <= 4.0)
+                return;
+
+            a = diameter;
+            b = diameter / 2;
+
+            //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
+
+            (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+            //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+            //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+            (void)XSetForeground(XtDisplay(da),gc,color);
+
+            (void)XDrawArc(XtDisplay(da),where,gc,
+                (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
+                (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                (unsigned int)diameter,(unsigned int)diameter,0,64*360);
         }
     }
 }
@@ -430,143 +425,153 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
     double range, diameter;
     int offx,offy;
     long xx,yy,xx1,yy1,fxx,fyy;
-    long max_x, max_y;
     double tilt;
     double a,b;
     char is_rng;
     char *strp;
 
-    xx=0l;
-    yy=0l;
-    xx1=0l;
-    yy1=0l;
-    fxx=0l;
-    fyy=0l;
-    tilt=0.0;
-    is_rng=0;
-    offx=0;
-    offy=0;
 
-    if (phg[0] == 'R' && phg[1] == 'N' && phg[2] == 'G')
-        is_rng = 1;
-
-    /* max off screen values */
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
-        if ((x_long>=0) && (x_long<=129600000l)) {
-            if ((y_lat>=0) && (y_lat<=64800000l)) {
 
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-                if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                    if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
-                        if (is_rng) {
-                            strp = &phg[3];
-                            range = atof(strp);
-                        }
-                        else {
-                            range = phg_range(phg[3],phg[4],phg[5]);
-                        }
+            if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 
-                        // Range is in miles.  Bottom term is in meters before the 0.0006214
-                        // multiplication factor which converts it to miles.
-                        // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
-                        diameter = 2.0 * ( range/
-                            (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+                xx=0l;
+                yy=0l;
+                xx1=0l;
+                yy1=0l;
+                fxx=0l;
+                fyy=0l;
+                tilt=0.0;
+                is_rng=0;
+                offx=0;
+                offy=0;
 
-                        //fprintf(stderr,"PHG: %s, Diameter: %f\n", phg, diameter);
+                if (phg[0] == 'R' && phg[1] == 'N' && phg[2] == 'G')
+                    is_rng = 1;
 
-                        a=diameter;
-                        b=diameter/2;
-                        if (!is_rng)    // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
-                            switch (phg[6]-'0') {
-                            case(0):
-                                offx=0;
-                                offy=0;
-                                break;
+//                if ((x_long < 0) || (x_long > 129600000l))
+//                    return;
 
-                            case(1):    //  45
-                                offx=-1*(diameter/6);
-                                offy=diameter/6;
-                                tilt=5.49778;
-                                break;
+//                if ((y_lat < 0) || (y_lat > 64800000l))
+//                    return;
 
-                            case(2):    //  90
-                                offx=-1*(diameter/6);
-                                offy=0;
-                                tilt=0;
-                                break;
+                if (is_rng) {
+                    strp = &phg[3];
+                    range = atof(strp);
+                }
+                else {
+                    range = phg_range(phg[3],phg[4],phg[5]);
+                }
 
-                            case(3):    // 135
-                                offx=-1*(diameter/6);
-                                offy=-1*(diameter/6);
-                                tilt=.78539;
-                                break;
+                // Range is in miles.  Bottom term is in meters before the 0.0006214
+                // multiplication factor which converts it to miles.
+                // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+                diameter = 2.0 * ( range/
+                    (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-                            case(4):    // 180
-                                offx=0;
-                                offy=-1*(diameter/6);
-                                tilt=1.5707;
-                                break;
+                // If less than 4 pixels across, skip drawing it.
+                if (diameter <= 4.0)
+                    return;
 
-                            case(5):    // 225
-                                offx=diameter/6;
-                                offy=-1*(diameter/6);
-                                tilt=2.3561;
-                                break;
+                //fprintf(stderr,"PHG: %s, Diameter: %f\n", phg, diameter);
 
-                            case(6):    // 270
-                                offx=diameter/6;
-                                offy=0;
-                                tilt=3.14159;
-                                break;
+                a = diameter;
+                b = diameter / 2;
 
-                            case(7):    // 315
-                                offx=diameter/6;
-                                offy=diameter/6;
-                                tilt=3.92699;
-                                break;
+                if (!is_rng) {  // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
 
-                            case(8):    // 360
-                                offx=0;
-                                offy=diameter/6;
-                                tilt=4.71238;
-                                break;
+                    switch (phg[6]-'0') {
 
-                            default:
-                                offx=0;
-                                offy=0;
-                                break;
-                            }
-                        //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
-                        if (diameter>4.0) {
-                            (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineSolid, CapButt,JoinMiter);
-                            if ((sec_old+sec_heard)>sec_now())
-                                (void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                            else
-                                (void)XSetForeground(XtDisplay(da),gc,colors[0x52]);
+                        case(0):
+                            offx=0;
+                            offy=0;
+                            break;
 
-                            if (is_rng || phg[6]=='0') {    // Draw circle
-                                (void)XDrawArc(XtDisplay(da),where,gc,
-                                        (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
-                                        (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
-                                        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-                            } else {    // Draw oval to depict beam heading
+                        case(1):    //  45
+                            offx=-1*(diameter/6);
+                            offy=diameter/6;
+                            tilt=5.49778;
+                            break;
 
-                            // If phg[6] != '0' we still draw a circle, but the center
-                            // is offset in the indicated direction by 1/3 the radius.
+                        case(2):    //  90
+                            offx=-1*(diameter/6);
+                            offy=0;
+                            tilt=0;
+                            break;
+
+                        case(3):    // 135
+                            offx=-1*(diameter/6);
+                            offy=-1*(diameter/6);
+                            tilt=.78539;
+                            break;
+
+                        case(4):    // 180
+                            offx=0;
+                            offy=-1*(diameter/6);
+                            tilt=1.5707;
+                            break;
+
+                        case(5):    // 225
+                            offx=diameter/6;
+                            offy=-1*(diameter/6);
+                            tilt=2.3561;
+                            break;
+
+                        case(6):    // 270
+                            offx=diameter/6;
+                            offy=0;
+                            tilt=3.14159;
+                            break;
+
+                        case(7):    // 315
+                            offx=diameter/6;
+                            offy=diameter/6;
+                            tilt=3.92699;
+                            break;
+
+                        case(8):    // 360
+                            offx=0;
+                            offy=diameter/6;
+                            tilt=4.71238;
+                            break;
+
+                        default:
+                            offx=0;
+                            offy=0;
+                            break;
+                    }   // End of switch
+                }
+
+                //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
+
+                (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineSolid, CapButt,JoinMiter);
+
+                if ((sec_old+sec_heard)>sec_now())
+                    (void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+                else
+                    (void)XSetForeground(XtDisplay(da),gc,colors[0x52]);
+
+                if (is_rng || phg[6]=='0') {    // Draw circle
+                    (void)XDrawArc(XtDisplay(da),where,gc,
+                        (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
+                        (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                }
+                else {    // Draw oval to depict beam heading
+
+                    // If phg[6] != '0' we still draw a circle, but the center
+                    // is offset in the indicated direction by 1/3 the radius.
                                 
-                            // Draw Circle
-                            (void)XDrawArc(XtDisplay(da),where,gc,
-                                (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
-                                (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
-                                (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-                            }
-                        }
-                    }
+                    // Draw Circle
+                    (void)XDrawArc(XtDisplay(da),where,gc,
+                        (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
+                        (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
+                        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                 }
             }
         }
@@ -585,206 +590,223 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
     double range, diameter;
     int offx,offy;
     long xx,yy,xx1,yy1,fxx,fyy;
-    long max_x, max_y;
     double tilt;
     double a,b;
 
-    xx=0l;
-    yy=0l;
-    xx1=0l;
-    yy1=0l;
-    fxx=0l;
-    fyy=0l;
-    tilt=0.0;
-    offx=0;
-    offy=0;
 
-    /* max off screen values */
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
-        if ((x_long>=0) && (x_long<=129600000l)) {
-            if ((y_lat>=0) && (y_lat<=64800000l)) {
+
 
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-                if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                    if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
-                        range = shg_range(shgd[3],shgd[4],shgd[5]);
+            if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 
-                        // Range is in miles.  Bottom term is in meters before the 0.0006214
-                        // multiplication factor which converts it to miles.
-                        // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
-                        diameter = 2.0 * ( range/
-                            (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+//                if ((x_long < 0) || (x_long > 129600000l))
+//                    return;
 
-                        //fprintf(stderr,"PHG: %s, Diameter: %f\n", shgd, diameter);
+//                if ((y_lat < 0) || (y_lat > 64800000l))
+//                    return;
 
-                        a=diameter;
-                        b=diameter/2;
-                        // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
-                        switch (shgd[6]-'0') {
-                            case(0):
-                                offx=0;
-                                offy=0;
-                                break;
+                xx=0l;
+                yy=0l;
+                xx1=0l;
+                yy1=0l;
+                fxx=0l;
+                fyy=0l;
+                tilt=0.0;
+                offx=0;
+                offy=0;
 
-                            case(1):    //  45
-                                offx=-1*(diameter/6);
-                                offy=diameter/6;
-                                tilt=5.49778;
-                                break;
+                range = shg_range(shgd[3],shgd[4],shgd[5]);
 
-                            case(2):    //  90
-                                offx=-1*(diameter/6);
-                                offy=0;
-                                tilt=0;
-                                break;
+                // Range is in miles.  Bottom term is in meters before the 0.0006214
+                // multiplication factor which converts it to miles.
+                // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+                //
+                diameter = 2.0 * ( range/
+                    (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-                            case(3):    // 135
-                                offx=-1*(diameter/6);
-                                offy=-1*(diameter/6);
-                                tilt=.78539;
-                                break;
+                // If less than 4 pixels across, skip drawing it.
+                if (diameter <= 4.0)
+                    return;
 
-                            case(4):    // 180
-                                offx=0;
-                                offy=-1*(diameter/6);
-                                tilt=1.5707;
-                                break;
+                //fprintf(stderr,"PHG: %s, Diameter: %f\n", shgd, diameter);
 
-                            case(5):    // 225
-                                offx=diameter/6;
-                                offy=-1*(diameter/6);
-                                tilt=2.3561;
-                                break;
+                a = diameter;
+                b = diameter / 2;
 
-                            case(6):    // 270
-                                offx=diameter/6;
-                                offy=0;
-                                tilt=3.14159;
-                                break;
+                // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
+                switch (shgd[6]-'0') {
+                    case(0):
+                        offx=0;
+                        offy=0;
+                        break;
 
-                            case(7):    // 315
-                                offx=diameter/6;
-                                offy=diameter/6;
-                                tilt=3.92699;
-                                break;
+                    case(1):    //  45
+                        offx=-1*(diameter/6);
+                        offy=diameter/6;
+                        tilt=5.49778;
+                        break;
 
-                            case(8):    // 360
-                                offx=0;
-                                offy=diameter/6;
-                                tilt=4.71238;
-                                break;
+                    case(2):    //  90
+                        offx=-1*(diameter/6);
+                        offy=0;
+                        tilt=0;
+                        break;
 
-                            default:
-                                offx=0;
-                                offy=0;
-                                break;
-                        }
-                        //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
+                    case(3):    // 135
+                        offx=-1*(diameter/6);
+                        offy=-1*(diameter/6);
+                        tilt=.78539;
+                        break;
 
-                        //fprintf(stderr,"scale_y: %u\n",scale_y);
+                    case(4):    // 180
+                        offx=0;
+                        offy=-1*(diameter/6);
+                        tilt=1.5707;
+                        break;
 
-                        if (diameter>4.0) {
-                            if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
-                                (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 1, LineSolid, CapButt,JoinMiter);
-                            }
-                            else {
-                                (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 8, LineSolid, CapButt,JoinMiter);                            }
+                    case(5):    // 225
+                        offx=diameter/6;
+                        offy=-1*(diameter/6);
+                        tilt=2.3561;
+                        break;
 
-                            // Stipple the area instead of obscuring the map underneath
-                            (void)XSetStipple(XtDisplay(da), gc_stipple, pixmap_50pct_stipple);
-                            (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillStippled);
+                    case(6):    // 270
+                        offx=diameter/6;
+                        offy=0;
+                        tilt=3.14159;
+                        break;
 
-                            // Choose the color for the DF'ing circle
-                            // We try to choose similar colors to those used in DOSaprs,
-                            // which are qbasic or gwbasic colors.
-                            switch (shgd[3]) {
-                                case '9':   // Light Red
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
-                                   break;
-                                case '8':   // Red
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
-                                   break;
-                                case '7':   // Light Magenta
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
-                                   break;
-                                case '6':   // Magenta
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
-                             break;
-                                case '5':   // Light Cyan
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
-                              break;
-                                case '4':   // Cyan
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
-                               break;
-                                case '3':   // White
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
-                                break;
-                                case '2':   // Light Blue
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
-                                 break;
-                                case '1':   // Blue
-                                    if ((sec_old+sec_heard)>sec_now())  // New
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
-                                  break;
-                                case '0':   // DarkGray (APRSdos) or Black (looks better). We use Black.
-                                default:
-                                    if ((sec_old+sec_heard)>sec_now())  // New (was 0x30)
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
-                                    else                                // Old
-                                        (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
-                                   break;
-                            }
+                    case(7):    // 315
+                        offx=diameter/6;
+                        offy=diameter/6;
+                        tilt=3.92699;
+                        break;
 
-                            // If shgd[6] != '0' we still draw a circle, but the center
-                            // is offset in the indicated direction by 1/3 the radius.
+                    case(8):    // 360
+                        offx=0;
+                        offy=diameter/6;
+                        tilt=4.71238;
+                        break;
+
+                    default:
+                        offx=0;
+                        offy=0;
+                        break;
+                }
+                //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
+
+                //fprintf(stderr,"scale_y: %u\n",scale_y);
+
+                if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
+                    (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 1, LineSolid, CapButt,JoinMiter);
+                }
+                else {
+                    (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 8, LineSolid, CapButt,JoinMiter);
+                }
+
+                // Stipple the area instead of obscuring the map underneath
+                (void)XSetStipple(XtDisplay(da), gc_stipple, pixmap_50pct_stipple);
+                (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillStippled);
+
+                // Choose the color for the DF'ing circle
+                // We try to choose similar colors to those used in DOSaprs,
+                // which are qbasic or gwbasic colors.
+                switch (shgd[3]) {
+
+                    case '9':   // Light Red
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
+                        break;
+
+                    case '8':   // Red
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
+                        break;
+
+                    case '7':   // Light Magenta
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
+                        break;
+
+                    case '6':   // Magenta
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
+                        break;
+
+                    case '5':   // Light Cyan
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
+                        break;
+
+                    case '4':   // Cyan
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
+                        break;
+
+                    case '3':   // White
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
+                        break;
+
+                    case '2':   // Light Blue
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
+                        break;
+
+                    case '1':   // Blue
+                        if ((sec_old+sec_heard)>sec_now())  // New
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
+                        break;
+
+                    case '0':   // DarkGray (APRSdos) or Black (looks better). We use Black.
+                    default:
+                        if ((sec_old+sec_heard)>sec_now())  // New (was 0x30)
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
+                        else                                // Old
+                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
+                        break;
+                }
+
+                // If shgd[6] != '0' we still draw a circle, but the center
+                // is offset in the indicated direction by 1/3 the radius.
                                 
-                            // Draw Circle
-                            (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                                    (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
-                                    (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
-                                    (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                // Draw Circle
+                (void)XDrawArc(XtDisplay(da),where,gc_stipple,
+                    (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
+                    (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
+                    (unsigned int)diameter,(unsigned int)diameter,0,64*360);
 
-                            if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
-                                while (diameter > 1.0) {
-                                    diameter = diameter - 1.0;
-                                    (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                                        (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
-                                        (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
-                                        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-                                }
-                            }
-                        }
+                if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
+
+                    while (diameter > 1.0) {
+                        diameter = diameter - 1.0;
+                        (void)XDrawArc(XtDisplay(da),where,gc_stipple,
+                            (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
+                            (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
+                            (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                     }
                 }
             }
@@ -795,59 +817,80 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 }
 
 
+
+
+
 // Draw the ALOHA circle
 // Identical to draw_pod_circle when this was first written, but separated
 // just in case that POD functionality ever changes per the comments in it
 void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap where) {
     double diameter;
-    long max_x, max_y;
     double a,b;
 
 
-    /* max off screen values */
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
-    if ((x_long>=0) && (x_long<=129600000l)) {
-        if ((y_lat>=0) && (y_lat<=64800000l)) {
+    // Range is in miles.  Bottom term is in meters before the
+    // 0.0006214 multiplication factor which converts it to miles.
+    // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+    diameter = 2.0 * ( range/
+        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-// Prevents it from being drawn when my station is off-screen.
-// It'd be better to check for lat/long +/- range to see if it's on the screen.
+    // If less than 4 pixels across, skip drawing it.
+    if (diameter <= 4.0)
+        return;
 
-            if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+    a = diameter;
+    b = diameter / 2;
 
-                    // Range is in miles.  Bottom term is in meters before the 0.0006214
-                    // multiplication factor which converts it to miles.
-                    // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
-                    diameter = 2.0 * ( range/
-                        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
 
-                    a=diameter;
-                    b=diameter/2;
+// TODO:  Since there's only one aloha circle, it's not a big deal
+// to do the math each time and then decide whether we should draw
+// it.  Suggest we do a windowing-function check between the current
+// view and the bounding rectangle for the circle to see if any part
+// of the circle is in view, like we do for map files.  To do this
+// we need to know all four edges of the aloha circle's bounding
+// rectangle.
+//
 
-                    //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
+// The "if's" below prevent it from being drawn when my station is
+// off-screen.
+//
+    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
-                    if (diameter>4.0) {
-                        (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
-                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-                        (void)XSetForeground(XtDisplay(da),gc,color);
+        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 
-                        (void)XDrawArc(XtDisplay(da),where,gc,
-                            (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
-                            (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
-                            (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-                    }
-                }
-            }
+
+            // Check for the center of the circle being off the edge of the
+            // earth (that's _our_ station position by the way!).
+            //
+//            if ((x_long < 0) || (x_long > 129600000l))
+//                return;
+
+//            if ((y_lat < 0) || (y_lat > 64800000l))
+//                return;
+
+            //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
+
+            (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+            //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+            //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+            (void)XSetForeground(XtDisplay(da),gc,color);
+
+            (void)XDrawArc(XtDisplay(da),where,gc,
+                (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
+                (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                (unsigned int)diameter,(unsigned int)diameter,0,64*360);
         }
     }
 }
 
 
 
+
+
 static int barb_len;
 static int barb_spacing;
+
+
 
 
 
@@ -1052,10 +1095,6 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     int i;
 
 
-    // Set up the constants for our zoom level
-    set_barb_parameters();
-
- 
 // Ghost the wind barb if sec_heard is too long.
 // (TBD)
 
@@ -1067,21 +1106,19 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     // Prevents it from being drawn when the symbol is off-screen.
     // It'd be better to check for lat/long +/- range to see if it's
     // on the screen.
-    if ((x_long>=0) && (x_long<=129600000l)) {
-        if ((y_lat>=0) && (y_lat<=64800000l)) {
-            if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 
-                    // Ok to draw wind barb
+    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
-                }
-                else {
-                    return;
-                }
-            }
-            else {
-                return;
-            }
+        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+
+//            if ((x_long < 0) || (x_long > 129600000l))
+//                return;
+
+//            if ((y_lat < 0) || (y_lat > 64800000l))
+//                return;
+
+            // Ok to draw wind barb
+
         }
         else {
             return;
@@ -1091,6 +1128,8 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
         return;
     }
 
+    // Set up the constants for our zoom level
+    set_barb_parameters();
 
     // Convert from mph to knots for wind speed.
     my_speed = my_speed * 0.8689607;
@@ -1238,7 +1277,6 @@ void draw_bearing(long x_long, long y_lat, char *course,
         char *bearing, char *NRQ, int color,
         time_t sec_heard, Pixmap where) {
     double range = 0;
-    long max_x, max_y;
     double real_bearing = 0.0;
     double real_bearing_min = 0.0;
     double real_bearing_max = 0.0;
@@ -1247,193 +1285,196 @@ void draw_bearing(long x_long, long y_lat, char *course,
     long x1, y1, x2, y2, x3, y3;
     double screen_miles;
 
-    // Check for a zero value for N.  If found, the NRQ value is meaningless
-    // and we need to assume some working default values.
-    if (NRQ[0] != '0') {
 
-        // "range" as used below is in nautical miles.
-        range = (double)( pow(2.0,NRQ[1] - '0') );
-
-        switch (NRQ[2]) {
-            case('1'):
-                width = 240;    // Degrees of beam width.  What's the point?
-                break;
-            case('2'):
-                width = 120;    // Degrees of beam width.  What's the point?
-                break;
-            case('3'):
-                width = 64; // Degrees of beam width.  What's the point?
-                break;
-            case('4'):
-                width = 32; // Degrees of beam width.  Starting to be usable.
-                break;
-            case('5'):
-                width = 16; // Degrees of beam width.  Usable.
-                break;
-            case('6'):
-                width = 8;  // Degrees of beam width.  Usable.
-                break;
-            case('7'):
-                width = 4;  // Degrees of beam width.  Nice!
-                break;
-            case('8'):
-                width = 2;  // Degrees of beam width.  Nice!
-                break;
-            case('9'):
-                width = 1;  // Degrees of beam width.  Very Nice!
-                break;
-            case('0'):  // "Useless" beam width according to spec
-            default:
-                return; // Exit routine without drawing vectors
-                break;
-        }
-    }
-    else {  // Assume some default values.
-        range = 512.0;  // Assume max range of 512 nautical miles
-        width = 8;      // Assume 8 degrees for beam width
-    }
-
-    // We have the course of the vehicle and the bearing from the
-    // vehicle.  Now we need the real bearing.
-    //
-    if (atoi(course) != 0) {
-        real_bearing = atoi(course) + atoi(bearing);
-        real_bearing_min = real_bearing + 360.0 - (width/2.0);
-        real_bearing_max = real_bearing + (width/2.0);
-    }
-    else {
-        real_bearing = atoi(bearing);
-        real_bearing_min = real_bearing + 360.0 - (width/2.0);
-        real_bearing_max = real_bearing + (width/2.0);
-    }
-
-    while (real_bearing > 360.0)
-        real_bearing -= 360.0;
-
-    while (real_bearing_min > 360.0)
-        real_bearing_min -= 360.0;
-
-    while (real_bearing_max > 360.0)
-        real_bearing_max -= 360.0;
-
-    // want this in nautical miles
-    screen_miles = scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) 
-      * .5400;
-
-    // Shorten range to more closely fit the screen
-    if ( range > (3.0 * screen_miles) )
-      range = 3.0 * screen_miles;
-
-    // We now have a distance and a bearing for each vector.
-    // Compute the end points via dead-reckoning here.  It will give
-    // us points between which we can draw a vector and makes the
-    // rest of the code much easier.  Need to skip adding 270
-    // degrees if we use that method.
-    //
-    compute_DR_position(x_long, // input (long)
-        y_lat,                  // input (long)
-        range,                  // input in nautical miles (double)
-        real_bearing_min,       // input in ° true (double)
-        &x_long2,               // output (*long)
-        &y_lat2);               // output (*long)
-
-    compute_DR_position(x_long, // input (long)
-        y_lat,                  // input (long)
-        range,                  // input in nautical miles (double)
-        real_bearing_max,       // input in ° true (double)
-        &x_long3,               // output (*long)
-        &y_lat3);               // output (*long)
-
-
-    // Compute the screen locations
-    x1 = (x_long - x_long_offset)/scale_x;
-    y1 = (y_lat - y_lat_offset)/scale_y;
-
-    x2 = (x_long2 - x_long_offset)/scale_x;
-    y2 = (y_lat2 - y_lat_offset)/scale_y;
-
-    x3 = (x_long3 - x_long_offset)/scale_x;
-    y3 = (y_lat3 - y_lat_offset)/scale_y;
- 
-
-    /* max off screen values */
-    max_x = screen_width+800l;
-    max_y = screen_height+800l;
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
-        if ((x_long>=0) && (x_long<=129600000l)) {
-            if ((y_lat>=0) && (y_lat<=64800000l)) {
+
+
+        // Check for a zero value for N.  If found, the NRQ value is meaningless
+        // and we need to assume some working default values.
+        if (NRQ[0] != '0') {
+
+            // "range" as used below is in nautical miles.
+            range = (double)( pow(2.0,NRQ[1] - '0') );
+
+            switch (NRQ[2]) {
+                case('1'):
+                    width = 240;    // Degrees of beam width.  What's the point?
+                    break;
+                case('2'):
+                    width = 120;    // Degrees of beam width.  What's the point?
+                    break;
+                case('3'):
+                    width = 64; // Degrees of beam width.  What's the point?
+                    break;
+                case('4'):
+                    width = 32; // Degrees of beam width.  Starting to be usable.
+                    break;
+                case('5'):
+                    width = 16; // Degrees of beam width.  Usable.
+                    break;
+                case('6'):
+                    width = 8;  // Degrees of beam width.  Usable.
+                    break;
+                case('7'):
+                    width = 4;  // Degrees of beam width.  Nice!
+                    break;
+                case('8'):
+                    width = 2;  // Degrees of beam width.  Nice!
+                    break;
+                case('9'):
+                    width = 1;  // Degrees of beam width.  Very Nice!
+                    break;
+                case('0'):  // "Useless" beam width according to spec
+                default:
+                    return; // Exit routine without drawing vectors
+                    break;
+            }
+        }
+        else {  // Assume some default values.
+            range = 512.0;  // Assume max range of 512 nautical miles
+            width = 8;      // Assume 8 degrees for beam width
+        }
+
+        // We have the course of the vehicle and the bearing from the
+        // vehicle.  Now we need the real bearing.
+        //
+        if (atoi(course) != 0) {
+            real_bearing = atoi(course) + atoi(bearing);
+            real_bearing_min = real_bearing + 360.0 - (width/2.0);
+            real_bearing_max = real_bearing + (width/2.0);
+        }
+        else {
+            real_bearing = atoi(bearing);
+            real_bearing_min = real_bearing + 360.0 - (width/2.0);
+            real_bearing_max = real_bearing + (width/2.0);
+        }
+
+        while (real_bearing > 360.0)
+            real_bearing -= 360.0;
+
+        while (real_bearing_min > 360.0)
+            real_bearing_min -= 360.0;
+
+        while (real_bearing_max > 360.0)
+            real_bearing_max -= 360.0;
+
+        // want this in nautical miles
+        screen_miles = scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) 
+          * .5400;
+
+        // Shorten range to more closely fit the screen
+        if ( range > (3.0 * screen_miles) )
+            range = 3.0 * screen_miles;
+
+        // We now have a distance and a bearing for each vector.
+        // Compute the end points via dead-reckoning here.  It will give
+        // us points between which we can draw a vector and makes the
+        // rest of the code much easier.  Need to skip adding 270
+        // degrees if we use that method.
+        //
+        compute_DR_position(x_long, // input (long)
+            y_lat,                  // input (long)
+            range,                  // input in nautical miles (double)
+            real_bearing_min,       // input in ° true (double)
+            &x_long2,               // output (*long)
+            &y_lat2);               // output (*long)
+
+        compute_DR_position(x_long, // input (long)
+            y_lat,                  // input (long)
+            range,                  // input in nautical miles (double)
+            real_bearing_max,       // input in ° true (double)
+            &x_long3,               // output (*long)
+            &y_lat3);               // output (*long)
+
+
+        // Compute the screen locations
+        x1 = (x_long - x_long_offset)/scale_x;
+        y1 = (y_lat - y_lat_offset)/scale_y;
+
+        x2 = (x_long2 - x_long_offset)/scale_x;
+        y2 = (y_lat2 - y_lat_offset)/scale_y;
+
+        x3 = (x_long3 - x_long_offset)/scale_x;
+        y3 = (y_lat3 - y_lat_offset)/scale_y;
+
 
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
 /*
-                if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                    if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+
+            if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 */
-                        (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
-                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+//                if ((x_long < 0) || (x_long > 129600000l))
+//                    return;
+
+//                if ((y_lat < 0) || (y_lat > 64800000l))
+//                    return;
+
+                (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+                //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+                (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
 
-//                        (void)XSetLineAttributes(XtDisplay(da), gc_tint, 2, LineSolid, CapRound, JoinRound);
+//                (void)XSetLineAttributes(XtDisplay(da), gc_tint, 2, LineSolid, CapRound, JoinRound);
 
 
-//                        (void)XSetFunction (XtDisplay (da), gc_tint, GXor);
-                        /*
-                          Options are:
-                          GXclear         0                       (Don't use)
-                          GXand           src AND dst             (Darker colors, black can result from overlap)
-                          GXandReverse    src AND (NOT dst)       (Darker colors)
-                          GXcopy          src                     (Don't use)
-                          GXandInverted   (NOT src) AND dst       (Pretty colors)
-                          GXnoop          dst                     (Don't use)
-                          GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-                          GXor            src OR dst              (More pastel colors, too bright?)
-                          GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-                          GXequiv         (NOT src) XOR dst       (Bright, very readable)
-                          GXinvert        (NOT dst)               (Don't use)
-                          GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-                          GXcopyInverted  (NOT src)               (Don't use)
-                          GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-                          GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-                          GXset           1                       (Don't use)
-                        */
+//                (void)XSetFunction (XtDisplay (da), gc_tint, GXor);
+                /*
+                    Options are:
+                    GXclear         0                       (Don't use)
+                    GXand           src AND dst             (Darker colors, black can result from overlap)
+                    GXandReverse    src AND (NOT dst)       (Darker colors)
+                    GXcopy          src                     (Don't use)
+                    GXandInverted   (NOT src) AND dst       (Pretty colors)
+                    GXnoop          dst                     (Don't use)
+                    GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
+                    GXor            src OR dst              (More pastel colors, too bright?)
+                    GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
+                    GXequiv         (NOT src) XOR dst       (Bright, very readable)
+                    GXinvert        (NOT dst)               (Don't use)
+                    GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
+                    GXcopyInverted  (NOT src)               (Don't use)
+                    GXorInverted    (NOT src) OR dst        (Bright, not very readable)
+                    GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
+                    GXset           1                       (Don't use)
+                */
 
 
 
-                        // Stipple the area instead of obscuring the map underneath
-//                        (void)XSetStipple(XtDisplay(da), gc_tint, pixmap_2x2_stipple);
-//                        (void)XSetFillStyle(XtDisplay(da), gc_tint, FillStippled);
+                // Stipple the area instead of obscuring the map underneath
+//                (void)XSetStipple(XtDisplay(da), gc_tint, pixmap_2x2_stipple);
+//                (void)XSetFillStyle(XtDisplay(da), gc_tint, FillStippled);
 
-                        if ((sec_old+sec_heard)>sec_now()) {  // New
-//                            (void)XSetForeground(XtDisplay(da),gc_tint,color);
-//                            (void)XSetForeground(XtDisplay(da),gc,color);
-                        }
-                        else {                                // Old
-//                            (void)XSetForeground(XtDisplay(da),gc_tint,color);
-//                            (void)XSetForeground(XtDisplay(da),gc,color);
-                        }
-
-
-//                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
-                        (void)XDrawLine(XtDisplay(da),where,gc,
-                                x1,
-                                y1,
-                                x2,
-                                y2);
-
-//                        (void)XDrawLine(XtDisplay(da),where,gc_tint,
-                        (void)XDrawLine(XtDisplay(da),where,gc,
-                                x1,
-                                y1,
-                                x3,
-                                y3);
-/*
-                   }
+                if ((sec_old+sec_heard)>sec_now()) {  // New
+//                    (void)XSetForeground(XtDisplay(da),gc_tint,color);
+//                    (void)XSetForeground(XtDisplay(da),gc,color);
                 }
-*/
+                else {                                // Old
+//                    (void)XSetForeground(XtDisplay(da),gc_tint,color);
+//                    (void)XSetForeground(XtDisplay(da),gc,color);
+                }
+
+
+//                (void)XDrawLine(XtDisplay(da),where,gc_tint,
+                (void)XDrawLine(XtDisplay(da),where,gc,
+                    x1,
+                    y1,
+                    x2,
+                    y2);
+
+//                (void)XDrawLine(XtDisplay(da),where,gc_tint,
+                (void)XDrawLine(XtDisplay(da),where,gc,
+                    x1,
+                    y1,
+                    x3,
+                    y3);
+/*
             }
         }
+*/
     }
     // Change back to non-stipple for whatever drawing occurs after this
 //    (void)XSetFillStyle(XtDisplay(da), gc_tint, FillSolid);
@@ -1459,6 +1500,12 @@ void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *a
     // function.
     *amb_x_long = x_long;
     *amb_y_lat = y_lat;
+
+//    if ((x_long < 0) || (x_long > 129600000l))
+//        return;
+
+//    if ((y_lat < 0) || (y_lat > 64800000l))
+//        return;
 
     switch (amb) {
     case 1: // +- 1/10th minute
@@ -1543,14 +1590,6 @@ void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *a
     }
 
     if ( ((sec_old+sec_heard)<=sec_now()) && !Select_.old_data ) {
-        return;
-    }
-
-    if ((x_long<0) || (x_long>129600000l)) {
-        return;
-    }
-
-    if ((y_lat<0) || (y_lat>64800000l)) {
         return;
     }
 
@@ -1640,9 +1679,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
     int  c;
     XPoint points[4];
 
-    if ((x_long < 0) || (x_long > 129600000l) ||
-        (y_lat  < 0) || (y_lat  > 64800000l))
-        return;
+
+//    if ((x_long < 0) || (x_long > 129600000l) ||
+//        (y_lat  < 0) || (y_lat  > 64800000l))
+//        return;
 
     xoff = 360000.0 / 1500.0 * (sqrt_lon_off * sqrt_lon_off) / scale_x;
     yoff = 360000.0 / 1500.0 * (sqrt_lat_off * sqrt_lat_off) / scale_y;
@@ -2365,204 +2405,204 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
     int posyr;
 
 
-    if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
+    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
-        if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
+        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
 
-            if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+//            if ((x_long+10 < 0) || (x_long-10 > 129600000l))  // 360 deg
+//                return;
 
-                if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+//            if ((y_lat+10 < 0) || (y_lat-10 > 64800000l))     // 180 deg
+//                return;
 
-                    x_offset=((x_long-x_long_offset)/scale_x)-(10);
-                    y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
-                    ghost = (int)(((sec_old+sec_heard)) < sec_now());
+            x_offset=((x_long-x_long_offset)/scale_x)-(10);
+            y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
+            ghost = (int)(((sec_old+sec_heard)) < sec_now());
 
-                    if (bump_count)
-                        currently_selected_stations++;
+            if (bump_count)
+                currently_selected_stations++;
 
-                    if (Display_.symbol)
-                         symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
+            if (Display_.symbol)
+                symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
 
-                    posyr = 10;      // align symbols vertically centered to the right
-                    if ( (!ghost || Select_.old_data) && strlen(alt_text)>0)
-                        posyr -= 7;
-                    if (strlen(callsign_text)>0)
-                        posyr -= 7;
-                    if ( (!ghost || Select_.old_data) && strlen(speed_text)>0)
-                        posyr -= 7;
-                    if ( (!ghost || Select_.old_data) && strlen(course_text)>0)
-                        posyr -= 7;
-                    if (area_type == AREA_LINE_RIGHT)
-                        posyr += 9;
-                    if (signpost[0] != '\0')    // Signpost data?
-                        posyr -=7;
-                    // we may eventually have more adjustments for different types of areas
+            posyr = 10;      // align symbols vertically centered to the right
+            if ( (!ghost || Select_.old_data) && strlen(alt_text)>0)
+                posyr -= 7;
+            if (strlen(callsign_text)>0)
+                posyr -= 7;
+            if ( (!ghost || Select_.old_data) && strlen(speed_text)>0)
+                posyr -= 7;
+            if ( (!ghost || Select_.old_data) && strlen(course_text)>0)
+                posyr -= 7;
+            if (area_type == AREA_LINE_RIGHT)
+                posyr += 9;
+            if (signpost[0] != '\0')    // Signpost data?
+                posyr -=7;
+            // we may eventually have more adjustments for different types of areas
 
-                    length=(int)strlen(alt_text);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)+12;
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
-                        posyr += 13;
-                    }
+            length=(int)strlen(alt_text);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)+12;
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
+                posyr += 13;
+            }
 
-                    length=(int)strlen(callsign_text);
-                    if (length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)+12;
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
-                        posyr += 13;
-                    }
+            length=(int)strlen(callsign_text);
+            if (length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)+12;
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
+                posyr += 13;
+            }
 
-                    length=(int)strlen(speed_text);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)+12;
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
-                        posyr += 13;
-                    }
+            length=(int)strlen(speed_text);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)+12;
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
+                posyr += 13;
+            }
 
-                    length=(int)strlen(course_text);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)+12;
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
-                        posyr += 13;
-                    }
+            length=(int)strlen(course_text);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)+12;
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
+                posyr += 13;
+            }
  
-                    length=(int)strlen(signpost);   // Make it white like callsign?
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)+12;
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,signpost,0x08,0x0f,length);
-                        posyr += 13;
-                    }
+            length=(int)strlen(signpost);   // Make it white like callsign?
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)+12;
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,signpost,0x08,0x0f,length);
+                posyr += 13;
+            }
  
-                    posyl = 10; // distance and direction goes to the left.
+            posyl = 10; // distance and direction goes to the left.
                                 // Also minutes last heard.
-                    if ( (!ghost || Select_.old_data) && strlen(my_distance)>0)
-                        posyl -= 7;
-                    if ( (!ghost || Select_.old_data) && strlen(my_course)>0)
-                        posyl -= 7;
-                    if ( (!ghost || Select_.old_data) && temp_show_last_heard)
-                        posyl -= 7;
+            if ( (!ghost || Select_.old_data) && strlen(my_distance)>0)
+                posyl -= 7;
+            if ( (!ghost || Select_.old_data) && strlen(my_course)>0)
+                posyl -= 7;
+            if ( (!ghost || Select_.old_data) && temp_show_last_heard)
+                posyl -= 7;
 
-                    length=(int)strlen(my_distance);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                        y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
-                        posyl += 13;
-                    }
-                    length=(int)strlen(my_course);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                        y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
-                        posyl += 13;
-                    }
-                    if ( (!ghost || Select_.old_data) && temp_show_last_heard) {
-                        char age[20];
-                        float minutes;
-                        float hours;
-                        int fgcolor;
+            length=(int)strlen(my_distance);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+                y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
+                posyl += 13;
+            }
+            length=(int)strlen(my_course);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+                y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
+                posyl += 13;
+            }
+            if ( (!ghost || Select_.old_data) && temp_show_last_heard) {
+                char age[20];
+                float minutes;
+                float hours;
+                int fgcolor;
 
 
-                        // Color code the time string based on
-                        // time since last heard:
-                        //  Green:  0-29 minutes
-                        // Yellow: 30-59 minutes
-                        //    Red: 60 minutes to 1 day
-                        //  White: 1 day or later
+                // Color code the time string based on
+                // time since last heard:
+                //  Green:  0-29 minutes
+                // Yellow: 30-59 minutes
+                //    Red: 60 minutes to 1 day
+                //  White: 1 day or later
 
-                        minutes = (float)( (sec_now() - sec_heard) / 60.0);
-                        hours = minutes / 60.0;
+                minutes = (float)( (sec_now() - sec_heard) / 60.0);
+                hours = minutes / 60.0;
 
-                        // Heard from this station within the
-                        // last 30 minutes?
-                        if (minutes < 30.0) {
-                            xastir_snprintf(age,
-                                sizeof(age),
-                                "%d%s",
-                                (int)minutes,
-                                langcode("UNIOP00034"));    // min
-                            fgcolor = 0x52; // green
-                        }
-                        // 30 to 59 minutes?
-                        else if (minutes < 60.0) {
-                            xastir_snprintf(age,
-                                sizeof(age),
-                                "%d%s",
-                                (int)minutes,
-                                langcode("UNIOP00034"));    // min
-                            fgcolor = 0x40; // yellow
-                        }
-                        // 1 hour to 1 day old?
-                        else if (hours <= 24.0) {
-                            xastir_snprintf(age,
-                                sizeof(age),
-                                "%.1f%s",
-                                hours,
-                                langcode("UNIOP00035"));    // hr
-                            fgcolor = 0x4a; // red
-                        }
-                        // More than a day old
-                        else {
-                            xastir_snprintf(age,
-                                sizeof(age),
-                                "%.1f%s",
-                                hours / 24.0,
-                                langcode("UNIOP00036"));    // day
-                            fgcolor = 0x0f; // white
-                        }
+                // Heard from this station within the
+                // last 30 minutes?
+                if (minutes < 30.0) {
+                    xastir_snprintf(age,
+                        sizeof(age),
+                        "%d%s",
+                        (int)minutes,
+                        langcode("UNIOP00034"));    // min
+                    fgcolor = 0x52; // green
+                }
+                // 30 to 59 minutes?
+                else if (minutes < 60.0) {
+                    xastir_snprintf(age,
+                        sizeof(age),
+                        "%d%s",
+                        (int)minutes,
+                        langcode("UNIOP00034"));    // min
+                    fgcolor = 0x40; // yellow
+                }
+                // 1 hour to 1 day old?
+                else if (hours <= 24.0) {
+                    xastir_snprintf(age,
+                        sizeof(age),
+                        "%.1f%s",
+                        hours,
+                        langcode("UNIOP00035"));    // hr
+                    fgcolor = 0x4a; // red
+                }
+                // More than a day old
+                else {
+                    xastir_snprintf(age,
+                        sizeof(age),
+                        "%.1f%s",
+                        hours / 24.0,
+                        langcode("UNIOP00036"));    // day
+                    fgcolor = 0x0f; // white
+                }
 
-                        length = strlen(age);
-                        x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                        y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
-                        posyl += 13;
-                    }
+                length = strlen(age);
+                x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+                y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
+                posyl += 13;
+            }
 
-                    if (posyr < posyl)  // weather goes to the bottom, centered horizontally
-                        posyr = posyl;
-                    if (posyr < 18)
-                        posyr = 18;
+            if (posyr < posyl)  // weather goes to the bottom, centered horizontally
+                posyr = posyl;
+            if (posyr < 18)
+                posyr = 18;
 
-                    length=(int)strlen(wx_temp);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
-                        posyr += 13;
-                    }
+            length=(int)strlen(wx_temp);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
+                posyr += 13;
+            }
 
-                    length=(int)strlen(wx_wind);
-                    if ( (!ghost || Select_.old_data) && length>0) {
-                        x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
-                        y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                        draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
-                    }
+            length=(int)strlen(wx_wind);
+            if ( (!ghost || Select_.old_data) && length>0) {
+                x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
+                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
+            }
 
-                    // Draw min proximity circle?
-                    if (pmin[0] != '\0') {
-                        double range = atof(pmin);
-                        // Draw red circle
-                        draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
-                    }
+            // Draw min proximity circle?
+            if (pmin[0] != '\0') {
+                double range = atof(pmin);
+                // Draw red circle
+                draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
+            }
 
-                    // Draw max proximity circle?
-                    if (pmax[0] != '\0') {
-                        double range = atof(pmax);
-                        // Draw red circle
-                        draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
-                    }
+            // Draw max proximity circle?
+            if (pmax[0] != '\0') {
+                double range = atof(pmax);
+                // Draw red circle
+                draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
+            }
 
 // DEBUG STUFF
-//                    draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);
-//                    draw_pod_circle(x_long, y_lat, 3.0, colors[0x44], where);
+//            draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);
+//            draw_pod_circle(x_long, y_lat, 3.0, colors[0x44], where);
 
-                }
-            }
         }
     }
 }
@@ -3077,6 +3117,16 @@ void draw_deadreckoning_features(DataRow *p_station,
     int color = trail_colors[p_station->trail_color];
     int symbol_on_screen = 0;
     int ghosted_symbol_on_screen = 0;
+
+
+// This function takes a bit of CPU if we are zoomed out.  It'd b
+// best to check first whether the zoom level and the speed make it
+// worth computing DR at all for this station.  As a first
+// approximation, we could turn off DR if we're at zoom 8000 or
+// higher:
+//
+//    if (scale_y > 8000)
+//        return;
 
 
     x_long = p_station->coord_lon;
