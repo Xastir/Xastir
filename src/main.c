@@ -25398,7 +25398,7 @@ int main(int argc, char *argv[], char *envp[]) {
     struct passwd *user_info;
     static char lang_to_use_or[30];
     char temp[100];
-    int zz;
+    static char *Geometry = NULL;
  
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
@@ -25635,44 +25635,6 @@ int main(int argc, char *argv[], char *envp[]) {
     gps_valid = 0;
 
 
-    // Look for -geometry string first as it is not parsed by the
-    // getopt() function below.
-    for (zz = 0; zz < argc; zz++) {
-        if (strcmp(argv[zz], "-geometry") == 0) {
-            if ((zz + 1) < argc) {
-                //
-                // Really we should be merging with the RDB database
-                // as well and then parsing the final geometry (Xlib
-                // Programming Manual section 14.4.3 and 14.4.4).
-                //
-                geometry_flags = XParseGeometry(argv[zz+1],
-                    &geometry_x,
-                    &geometry_y,
-                    &geometry_width,
-                    &geometry_height);
-
-/*
-if ((WidthValue|HeightValue) & geometry_flags) {
-    fprintf(stderr,"Found width/height\n");
-}
-if (XValue & geometry_flags) {
-    fprintf(stderr,"Found X-offset\n");
-}
-if (YValue & geometry_flags) {
-    fprintf(stderr,"Found Y-offset\n");
-}
-fprintf(stderr,
-    "appshell:  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
-    (int)geometry_width,
-    (int)geometry_height,
-    (int)geometry_x,
-    (int)geometry_y);
-*/
-            }
-        }
-    }
-
-
     // Here we had to add "g:" in order to allow -geometry to be
     // used, which is actually parsed out by the XtIntrinsics code,
     // not directly in Xastir code.
@@ -25741,7 +25703,7 @@ fprintf(stderr,
                 break;
 
             case 'g':   // -geometry
-                        // Supported by XtIntrinsics
+                    Geometry = argv[optind++];
                 break;
 
             default:
@@ -25770,6 +25732,37 @@ fprintf(stderr,
         exit(0);    // Exiting after dumping out command-line options
     }
 
+
+    if (Geometry) {
+        //
+        // Really we should be merging with the RDB database as well
+        // and then parsing the final geometry (Xlib Programming
+        // Manual section 14.4.3 and 14.4.4).
+        //
+        geometry_flags = XParseGeometry(Geometry,
+            &geometry_x,
+            &geometry_y,
+            &geometry_width,
+            &geometry_height);
+
+/*
+        if ((WidthValue|HeightValue) & geometry_flags) {
+            fprintf(stderr,"Found width/height\n");
+        }
+        if (XValue & geometry_flags) {
+            fprintf(stderr,"Found X-offset\n");
+        }
+        if (YValue & geometry_flags) {
+            fprintf(stderr,"Found Y-offset\n");
+        }
+        fprintf(stderr,
+            "appshell:  Width:%4d  Height:%4d  X-offset:%4d  Y-offset:%4d\n",
+            (int)geometry_width,
+            (int)geometry_height,
+            (int)geometry_x,
+            (int)geometry_y);
+*/
+    }
 
 
     /* get User info */
