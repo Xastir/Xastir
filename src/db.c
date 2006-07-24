@@ -2450,7 +2450,8 @@ int ok_to_draw_station(DataRow *p_station) {
 //        || (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
 //            && (   p_station->flag & ST_OBJECT      // And it's an object
 //                || p_station->flag & ST_ITEM) ) ) { // or an item
-    if ( is_my_station(p_station) || is_my_object_item(p_station) ) {
+//    if ( is_my_station(p_station) || is_my_object_item(p_station) ) {
+    if ( is_my_station(p_station) ) {
         if (!Select_.mine)
             return 0;
     }
@@ -2816,20 +2817,22 @@ void display_station(Widget w, DataRow *p_station, int single) {
         orient = ' ';
 
     // Prevents my own call from "ghosting"?
-    temp_sec_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? secs_now: p_station->sec_heard;
-
+//    temp_sec_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? secs_now: p_station->sec_heard;
+    temp_sec_heard = (is_my_station(p_station)) ? secs_now : p_station->sec_heard;
 
     // Check whether it's a locally-owned object/item
 //    if ( (is_my_call(p_station->origin,1))          // If station is owned by me (including SSID)
 //            && ( (p_station->flag & ST_OBJECT)      // And it's an object
 //              || (p_station->flag & ST_ITEM) ) ) {  // or an item
-    if ( is_my_object_item(p_station) ) {
-        temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
-    }
+//    if ( is_my_object_item(p_station) ) {
+//        temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
+//    }
 
     // Show last heard times only for others stations and their
     // objects/items.
-    temp_show_last_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? 0 : Display_.last_heard;
+//    temp_show_last_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? 0 : Display_.last_heard;
+    temp_show_last_heard = (is_my_station(p_station)) ? 0 : Display_.last_heard;
+
 
 
 //------------------------------------------------------------------------------------------
@@ -2842,16 +2845,17 @@ void display_station(Widget w, DataRow *p_station, int single) {
     else
         drawing_target = pixmap_final;
 
-_do_the_drawing:
+//_do_the_drawing:
+
     // Check whether it's a locally-owned object/item
 //    if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
 //            && ( (p_station->flag & ST_OBJECT)       // And it's an object
 //              || (p_station->flag & ST_ITEM  ) ) ) { // or an item
-    if ( is_my_object_item(p_station) ) {
-        temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
+//    if ( is_my_object_item(p_station) ) {
+//        temp_sec_heard = secs_now; // We don't want our own objects/items to "ghost"
         // This isn't quite right since if it's a moving object, passing an incorrect
         // sec_heard should give the wrong results.
-    }
+//    }
 
     if (Display_.ambiguity && p_station->pos_amb)
         ambiguity_flag = 1;
@@ -3212,10 +3216,10 @@ _do_the_drawing:
     // Now if we just did the single drawing, we want to go back and draw
     // the same things onto pixmap_final so that when we do update from it
     // to the screen all of the stuff will be there.
-    if (drawing_target == XtWindow(da)) {
-        drawing_target = pixmap_final;
-        goto _do_the_drawing;
-    }
+//    if (drawing_target == XtWindow(da)) {
+//        drawing_target = pixmap_final;
+//        goto _do_the_drawing;
+//    }
 }
 
 
@@ -3565,86 +3569,125 @@ void display_file(Widget w) {
     t_clr = now - sec_clear;
     temp_sec_heard = 0l;
     p_station = t_oldest;                // start with oldest station, have newest on top at t_newest
+
     while (p_station != NULL) {
+
         if (debug_level & 64) {
             fprintf(stderr,"display_file: Examining %s\n", p_station->call_sign);
         }
-        if (p_station->flag & ST_ACTIVE) {       // ignore deleted objects
 
-            // Check for my objects/items
-//            if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
-//                    && (   p_station->flag & ST_OBJECT    // And it's an object
-//                        || p_station->flag & ST_ITEM) ) ) { // or an item
-            if (is_my_object_item(p_station) ) {
-                temp_sec_heard = now;
+        // Skip deleted stations
+        if ( !(p_station->flag & ST_ACTIVE) ) {
+
+            if (debug_level & 64) {
+                fprintf(stderr,"display_file: ignored deleted %s\n", p_station->call_sign);
+            }
+
+            // Skip to the next station in the list
+            p_station = p_station->t_newer;  // next station
+            continue;
+        }
+ 
+        // Check for my objects/items
+//        if ( (is_my_call(p_station->origin, 1)        // If station is owned by me (including SSID)
+//                && (   p_station->flag & ST_OBJECT    // And it's an object
+//                    || p_station->flag & ST_ITEM) ) ) { // or an item
+//
+        // This case is covered by the is_my_station() call, so we
+        // don't need it here.
+//        if (is_my_object_item(p_station) ) {
+//            temp_sec_heard = now;
+//        }
+//        else {
+            // Callsign match here includes checking SSID
+//            temp_sec_heard = (is_my_call(p_station->call_sign,1))?  now: p_station->sec_heard;
+            temp_sec_heard = (is_my_station(p_station)) ? now : p_station->sec_heard;
+//        }
+
+        // Skip far away station
+        if ((p_station->flag & ST_INVIEW) == 0) {
+            // we make better use of the In View flag in the future
+
+            if (debug_level & 256) {
+                fprintf(stderr,"display_file: Station outside viewport\n");
+            }
+
+            // Skip to the next station in the list
+            p_station = p_station->t_newer;  // next station
+            continue;
+        }
+
+        // Skip if we're running an altnet and this station's not in
+        // it
+        if ( altnet && is_altnet(p_station) ) {
+
+            if (debug_level & 64) {
+                fprintf(stderr,"display_file: Station %s skipped altnet\n",
+                    p_station->call_sign);
+            }
+ 
+            // Skip to the next station in the list
+            p_station = p_station->t_newer;  // next station
+            continue;
+        }
+
+        if (debug_level & 256) {
+            fprintf(stderr,"display_file:  Inview, check for trail\n");
+        }
+
+        // Display trail if we should
+        if (Display_.trail && p_station->newest_trackpoint != NULL) {
+            // ????????????   what is the difference? :
+
+            if (debug_level & 256) {
+                fprintf(stderr,"%s:    Trails on and have track data\n",
+                    "display_file");
+            }
+
+            if (temp_sec_heard > t_clr) {
+                // Not too old, so draw trail
+
+                if (temp_sec_heard > t_old) {
+                    // New trail, so draw solid trail
+
+                    if (debug_level & 256) {
+                        fprintf(stderr,"Drawing Solid trail for %s, secs old: %ld\n",
+                            p_station->call_sign,
+                            (long)(now - temp_sec_heard) );
+                    }
+                    draw_trail(w,p_station,1);
+                }
+                else {
+
+                    if (debug_level & 256) {
+                        fprintf(stderr,"Drawing trail for %s, secs old: %ld\n",
+                            p_station->call_sign,
+                            (long)(now - temp_sec_heard) );
+                    }
+                    draw_trail(w,p_station,0);
+                }
             }
             else {
-                // Callsign match here includes checking SSID
-//                temp_sec_heard = (is_my_call(p_station->call_sign,1))?  now: p_station->sec_heard;
-                temp_sec_heard = (is_my_station(p_station)) ? now : p_station->sec_heard;
-            }
-
-            if ((p_station->flag & ST_INVIEW) != 0) {  // skip far away stations...
-                // we make better use of the In View flag in the future
-                if ( !altnet || is_altnet(p_station) ) {
-                    if (debug_level & 256) {
-                        fprintf(stderr,"display_file:  Inview, check for trail\n");
-                    }
-                    if (Display_.trail && p_station->newest_trackpoint != NULL) {
-                        // ????????????   what is the difference? :
-                        if (debug_level & 256) {
-                            fprintf(stderr,"%s:    Trails on and have track data\n",
-                                    "display_file");
-                        }
-                        if (temp_sec_heard > t_clr) {
-                            // Not too old, so draw trail
-                            if (temp_sec_heard > t_old) {
-                                // New trail, so draw solid trail
-                                if (debug_level & 256) {
-                                    fprintf(stderr,"Drawing Solid trail for %s, secs old: %ld\n",
-                                        p_station->call_sign,
-                                        (long)(now - temp_sec_heard) );
-                                }
-                                draw_trail(w,p_station,1);
-                            }
-                            else {
-                                if (debug_level & 256) {
-                                    fprintf(stderr,"Drawing trail for %s, secs old: %ld\n",
-                                        p_station->call_sign,
-                                        (long)(now - temp_sec_heard) );
-                                }
-                                draw_trail(w,p_station,0);
-                            }
-                        }
-                        else if (debug_level & 256) {
-                            fprintf(stderr,"Station too old\n");
-                        }
-                    }
-                    else if (debug_level & 256) {
-                        fprintf(stderr,"Station trails %d, track data %x\n",
-                            Display_.trail, (int)p_station->newest_trackpoint);
-                    }
-                    if (debug_level & 256)
-                        fprintf(stderr,"calling display_station()\n");
-
-                    // This routine will also update the
-                    // currently_selected_stations variable, if
-                    // we're updating all of the stations at once.
-                    display_station(w,p_station,0);
-
-                }
-                else if (debug_level & 64) {
-                    fprintf(stderr,"display_file: Station %s skipped altnet\n",
-                        p_station->call_sign);
+                if (debug_level & 256) {
+                    fprintf(stderr,"Station too old\n");
                 }
             }
-            else if (debug_level & 256) {
-                    fprintf(stderr,"display_file: Station outside viewport\n");
+        }
+        else {
+            if (debug_level & 256) {
+                fprintf(stderr,"Station trails %d, track data %x\n",
+                    Display_.trail, (int)p_station->newest_trackpoint);
             }
         }
-        else if (debug_level & 64) {
-            fprintf(stderr,"display_file: ignored deleted %s\n", p_station->call_sign);
-        }
+
+        if (debug_level & 256)
+            fprintf(stderr,"calling display_station()\n");
+
+        // This routine will also update the
+        // currently_selected_stations variable, if we're
+        // updating all of the stations at once.
+        display_station(w,p_station,0);
+
         p_station = p_station->t_newer;  // next station
     }
 
@@ -9133,7 +9176,7 @@ void check_station_remove(int curr_sec) {
 //                        || ( (is_my_call(p_station->origin,1)) // Station is owned by me (including SSID)
 //                          && ( ((p_station->flag & ST_OBJECT) != 0) // and it's an object
 //                            || ((p_station->flag & ST_ITEM  ) != 0) ) ) ) { // or an item
-                if ( is_my_station(p_station) || is_my_object_item(p_station) ) {
+                if ( is_my_station(p_station) ) {
 
                     // It's one of mine, leave it alone!
 
@@ -12001,8 +12044,9 @@ int data_add(int type,
         if (station_is_mine) {
             // This station/object/item is owned by me.  Set the
             // flag which shows that we own/control this
-            // object/item.  We use this flag later in lieu of the
-            // is_my_call() function in order to speed things up.
+            // station/object/item.  We use this flag later in lieu
+            // of the is_my_call() function in order to speed things
+            // up.
             //
             p_station->flag |= ST_MYSTATION;
         }
