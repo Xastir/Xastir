@@ -3233,17 +3233,65 @@ void compute_DR_position(long x_long,   // input
 //    will be at the proper positions when we start back up.
 // 
 void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) {
-    int my_course = atoi(p_station->course); // In ° true
-    double range;
+    int my_course = 0;  // In ° true
+    double range = 0.0;
     double bearing_radians, lat_M_radians;
     float lat_A, lat_B, lon_A, lon_B, lat_M;
     int ret;
     unsigned long x_u_long, y_u_lat;
+    time_t secs_now;
 
 
-    // Get distance in nautical miles
-    range = (double)( (sec_now() - p_station->sec_heard)
+    secs_now=sec_now();
+
+
+    // Check whether we have course in the current data
+    //
+    if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
+
+        my_course = atoi(p_station->course);    // In ° true
+    }
+    //
+    // Else check whether the previous position had a course.  Note
+    // that newest_trackpoint if it exists should be the same as the
+    // current data, so we have to go back one further trackpoint.
+    // Make sure in this case that this trackpoint has occurred
+    // within the dead-reckoning timeout period though, else ignore
+    // it.
+    //
+    else if ( (p_station->newest_trackpoint != NULL)
+            && (p_station->newest_trackpoint->prev != NULL)
+            && (p_station->newest_trackpoint->prev->course != -1)   // Undefined
+            && ( (secs_now-p_station->newest_trackpoint->prev->sec) < dead_reckoning_timeout) ) {
+
+        // In ° true
+        my_course = p_station->newest_trackpoint->prev->course;
+    }
+
+
+    // Get distance in nautical miles from the current data
+    //
+    if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) >= 0) ) {
+
+        // Speed is in knots (same as nautical miles/hour)
+        range = (double)( (sec_now() - p_station->sec_heard)
             * ( atof(p_station->speed) / 3600.0 ) );
+    }
+    //
+    // Else check whether the previous position had speed.  Note
+    // that newest_trackpoint if it exists should be the same as the
+    // current data, so we have to go back one further trackpoint.
+    //
+    else if ( (p_station->newest_trackpoint != NULL)
+            && (p_station->newest_trackpoint->prev != NULL)
+            && (p_station->newest_trackpoint->prev->speed != -1) // Undefined
+            && ( (secs_now-p_station->newest_trackpoint->prev->sec) < dead_reckoning_timeout) ) {
+
+        // Speed is in units of 0.1km/hour.  Different than above!
+        range = (double)( (sec_now() - p_station->sec_heard)
+            * ( p_station->newest_trackpoint->prev->speed / 10 * 0.5399568 / 3600.0 ) );
+    }
+
 
 //fprintf(stderr,"Distance:%fnm, Course:%d,  Time:%d\n",
 //    range,
