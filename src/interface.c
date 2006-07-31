@@ -8006,10 +8006,22 @@ void output_my_aprs_data(void) {
     int ok;
     int port;
     char my_comment_tx[MAX_COMMENT+1];
+    int interfaces_ok_for_transmit = 0;
 
 
     // Check whether transmits are disabled globally
     if (transmit_disable) {
+
+        if (emergency_beacon) {
+
+            // Notify the operator because emergency_beacon mode is on but
+            // nobody will know it 'cuz global transmit is disabled.
+            //
+            // "Warning"
+            // "Global transmit is DISABLED.  Emergency beacons are NOT going out!"
+            popup_message_always( langcode("POPEM00035"),
+                langcode("POPEM00047") );
+	}
         return;
     }
 
@@ -8671,6 +8683,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     && !transmit_disable
                     && !posit_tx_disable) {
 
+                interfaces_ok_for_transmit++;
+
 // WE7U:  Change so that path is passed as well for KISS TNC
 // interfaces:  header_txt_save would probably be the one to pass,
 // or create a new string just for KISS TNC's.
@@ -8757,6 +8771,39 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     } // End of big loop
 
 end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
+
+
+    // Check the interfaces_ok_for_transmit variable if we're in
+    // emergency_beacon mode.  If we didn't transmit out any interfaces, alert
+    // the operator so that they can either enable interfaces or get emergency
+    // help in some other manner.
+    //
+    if (emergency_beacon) {
+
+        if (interfaces_ok_for_transmit) {
+
+	    // Beacons are going out in emergency beacon mode.  Alert the
+            // operator so that he/she knows they've enabled that mode.
+            //
+            // "Emergency Beacon Mode"
+            // "EMERGENCY BEACON MODE, transmitting every 60 seconds!"
+            popup_message_always( langcode("POPEM00048"),
+                langcode("POPEM00049") );
+        }
+
+        else {  // Emergency beacons are not going out for some reason
+
+            // Notify the operator because emergency_beacon mode is on but
+            // nobody will know it 'cuz there are no interfaces enabled for
+            // transmit.
+            //
+	    // "Warning"
+            // "Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!"
+            popup_message_always( langcode("POPEM00035"),
+                langcode("POPEM00050") );
+        }
+    }
+
 
     // This will log a posit in the general format for a network interface
     // whether or not any network interfaces are currently up.
