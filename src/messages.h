@@ -54,7 +54,7 @@ typedef struct {
     int wait_on_first_ack;
 } Message_transmit;
 
-#define MAX_MESSAGE_WINDOWS 10
+#define MAX_MESSAGE_WINDOWS 25
 
 typedef struct {
     char win[10];
