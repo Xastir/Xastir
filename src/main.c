@@ -10786,9 +10786,15 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 }
             }
 
-            // Time to spit out a posit?
-            if ( (transmit_now || (current_time > posit_next_time) )
-                && ( my_position_valid ) ) {
+            // Time to spit out a posit?   If emergency_beacon is enabled
+            // change to a relatively fast fixed beacon rate.  Should be
+            // more than a 30-second interval though to avoid digipeater
+            // dupe intervals of 30 seconds.
+            //
+            if ( my_position_valid
+                    && (   transmit_now
+                        || (emergency_beacon && (current_time > (posit_last_time + 60) ) )
+                        || (current_time > posit_next_time) ) ) {
 
                 //fprintf(stderr,"Transmitting posit\n");
 
@@ -21202,10 +21208,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, zero_bulletin_popup_enable,
+		XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, load_predefined_objects_menu_from_file_enable,
-                XmNleftOffset,10,
+                XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNcomboBoxType, XmDROP_DOWN_LIST,
@@ -26141,6 +26148,19 @@ int main(int argc, char *argv[], char *envp[]) {
             // Mark the "selected" field in the in-memory map index
             // to correspond to the selected_maps.sys file.
             map_chooser_init();
+
+
+            // Warn the user if altnet is enabled on startup.  This
+            // is so that the people who are button pushers/knob turners
+            // will know what's wrong when they don't see stations on their
+            // screen anymore.
+            //
+            if (altnet) {
+                // "Warning"
+                // "Altnet is enabled (File->Configure->Defaults dialog)");
+                popup_message_always( langcode("POPEM00035"),
+                    langcode("POPEM00051") );
+            }
 
  
             // Start UpdateTime.  It schedules itself to be run
