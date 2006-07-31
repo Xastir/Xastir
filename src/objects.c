@@ -247,6 +247,9 @@ int CAD_show_label = TRUE;
 int CAD_show_raw_probability = TRUE;
 int CAD_show_comment = TRUE;
 int CAD_show_area = TRUE; 
+void Draw_CAD_Objects_erase_dialog_close(Widget w, XtPointer clientData, XtPointer callData);
+void Draw_CAD_Objects_list_dialog_close(Widget w, XtPointer clientData, XtPointer callData);
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1707,7 +1710,7 @@ void CAD_object_allocate(long latitude, long longitude) {
     p_new->creation_time = sec_now();
     p_new->start = NULL;
     p_new->line_color = colors[0x27];
-    p_new->line_type = LineOnOffDash;
+    p_new->line_type = 2;  // LineOnOffDash;
     p_new->line_width = 4;
     p_new->computed_area = 0;
     CAD_object_set_raw_probability(p_new,0.0,FALSE);
@@ -2268,6 +2271,7 @@ void CAD_object_set_label_at_centroid(CADRow *CAD_object) {
 void Set_CAD_object_parameters (Widget widget,
                      XtPointer clientData,
                      XtPointer calldata) {
+
     float probability = 0.0;
     CADRow *target_object = NULL;
     int cb_selected;
@@ -2293,20 +2297,17 @@ void Set_CAD_object_parameters (Widget widget,
 
     // Use the selected line type, default is dashed
     cb_selected = FALSE;
+
     XtVaGetValues(cad_line_style_data, 
         XmNselectedPosition,
         &cb_selected,
         NULL);
+
     if (cb_selected) {
-        if (cb_selected==1) 
-           target_object->line_type=LineSolid;
-        if (cb_selected==2) 
-           target_object->line_type=LineOnOffDash;
-        if (cb_selected==3) 
-           target_object->line_type=LineDoubleDash;
+        target_object->line_type = cb_selected;
     } 
     else {
-        target_object->line_type=LineOnOffDash;
+        target_object->line_type = 2; // LineOnOffDash
     }
 
     if (cad_list_dialog) {
@@ -2321,6 +2322,15 @@ void Set_CAD_object_parameters (Widget widget,
     Save_CAD_Objects_to_file();
     // Reload symbols/tracks/CAD objects so that object name will show on map.
     redraw_symbols(da);
+
+    // Here we update the erase cad objects dialog if it is up on the screen.
+    // We get rid of it and re-establish it, which will usually make the dialog
+    // move, but this is better than having it be out-of-date.
+    //
+    if (cad_erase_dialog != NULL) {
+        Draw_CAD_Objects_erase_dialog_close(widget,clientData,calldata);
+        Draw_CAD_Objects_erase_dialog(widget,clientData,calldata);
+    }
 }
 
 
@@ -2340,7 +2350,13 @@ void Update_CAD_objects_list_dialog() {
 
          // iterate through list of objects to populate scrolled list
          while (object_ptr != NULL) {
-             cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+
+            //  If no label, use the string "<Empty Label>" instead
+            if (object_ptr->label == NULL || object_ptr->label[0] == '\0')
+                cb_item = XmStringCreateLtoR("<Empty Label>", XmFONTLIST_DEFAULT_TAG);
+            else
+                cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+
              XmListAddItem(list_of_existing_CAD_objects_edit,
                            cb_item,
                            counter);  
@@ -2554,15 +2570,18 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        cb_item = XmStringCreateLtoR("Solid", XmFONTLIST_DEFAULT_TAG);
+        // Solid
+        cb_item = XmStringCreateLtoR( langcode("CADPUD012"), XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(cad_line_style_data,cb_item,1,1);  
         XmStringFree(cb_item);
 
-        cb_item = XmStringCreateLtoR("Dashed", XmFONTLIST_DEFAULT_TAG);
+        // Dashed
+        cb_item = XmStringCreateLtoR( langcode("CADPUD013"), XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(cad_line_style_data,cb_item,2,1);  
         XmStringFree(cb_item);
 
-        cb_item = XmStringCreateLtoR("Double Dash", XmFONTLIST_DEFAULT_TAG);
+        // Double Dash
+        cb_item = XmStringCreateLtoR( langcode("CADPUD014"), XmFONTLIST_DEFAULT_TAG);
         XmComboBoxAddItem(cad_line_style_data,cb_item,3,1);  
         XmStringFree(cb_item);
 
@@ -2608,14 +2627,6 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
 
         if (CAD_object!=NULL) {
             XtAddCallback(button_done, XmNactivateCallback, Set_CAD_object_parameters, (XtPointer *)CAD_object);
-            // given an existing object, fill form with its information
-            XmTextFieldSetString(cad_label_data,CAD_object->label);
-            XmTextFieldSetString(cad_comment_data,CAD_object->comment);
-            xastir_snprintf(probability_string,
-                sizeof(probability_string),
-                "%01.2f",
-                CAD_object_get_raw_probability(CAD_object,1));
-            XmTextFieldSetString(cad_probability_data,probability_string);
         } 
         else {
             // called to get information for a newly created cad object
@@ -2634,6 +2645,44 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                                                                                                                         
         XtPopup(cad_dialog,XtGrabNone);
     } // end if ! caddialog
+
+    if (CAD_object!=NULL) {
+        XmString tempSelection;
+
+        // given an existing object, fill form with its information
+        XmTextFieldSetString(cad_label_data,CAD_object->label);
+        XmTextFieldSetString(cad_comment_data,CAD_object->comment);
+        xastir_snprintf(probability_string,
+            sizeof(probability_string),
+            "%01.2f",
+            CAD_object_get_raw_probability(CAD_object,1));
+        XmTextFieldSetString(cad_probability_data,probability_string);
+
+        switch(CAD_object->line_type) {
+
+            case 1: // Solid
+                tempSelection = XmStringCreateLtoR( langcode("CADPUD012"),
+                    XmFONTLIST_DEFAULT_TAG);
+                break;
+
+            case 2: // Dashed
+                tempSelection = XmStringCreateLtoR( langcode("CADPUD013"),
+                    XmFONTLIST_DEFAULT_TAG);
+                break;
+
+            case 3: // Double Dash
+                tempSelection = XmStringCreateLtoR( langcode("CADPUD014"),
+                    XmFONTLIST_DEFAULT_TAG);
+                break;
+
+            default:
+                tempSelection = XmStringCreateLtoR( langcode("CADPUD013"),
+                    XmFONTLIST_DEFAULT_TAG);
+                break;
+        }
+        XmComboBoxSelectItem(cad_line_style_data, tempSelection);
+        XmStringFree(tempSelection);
+    } 
 }
 
 
@@ -2945,16 +2994,32 @@ void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
     // those that are selected on the list.
     //
     // *** Note: If names are not unique the results may not be what the user expects.
-    // The first match to a selection will be deleted, not necessaraly the selection.
+    // The first match to a selection will be deleted, not necessarily the selection.
+    //
     for (x=1; x<=itemCount;x++) {
+
+        if (done)
+            break;
+
         if (XmListPosSelected(list_of_existing_CAD_objects,x)) {
+            int no_label = 0;
+
             XmStringGetLtoR(listItems[(x-1)],XmFONTLIST_DEFAULT_TAG,&selectedName);
+
+            // Check for our own definition of no label for the CAD
+            // objects, which is "<Empty Label>"
+            if (strcmp(selectedName,"<Empty Label>") == 0)
+                no_label++;
 
             object_ptr = CAD_list_head;
             done = 0;
+
             while (object_ptr != NULL && done == 0) {
+
                 cadName = object_ptr->label;
-                if (strcmp(cadName,selectedName)==0) {
+
+                if (strcmp(cadName,selectedName)==0
+                        || ( (cadName == NULL || cadName[0] == '\0') && no_label) ) {
                     // delete CAD object matching the selected name
                     CAD_object_delete(object_ptr);
                     done = 1;
@@ -2972,6 +3037,17 @@ void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
     Save_CAD_Objects_to_file();
     // Reload symbols/tracks/CAD objects
     redraw_symbols(da);
+
+    // Here we update the edit cad objects dialog by getting rid of it and
+    // then re-establishing it if it is active when we start.  This will
+    // usually make the dialog move, but it's better than having it be
+    // out-of-date.
+    //
+    if (cad_list_dialog!=NULL) {
+        // Update the Edit CAD Objects list
+        Draw_CAD_Objects_list_dialog_close(w, clientData, callData);
+        Draw_CAD_Objects_list_dialog(w, clientData, callData);
+    }
 }
 
 
@@ -3068,7 +3144,14 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
 
         // iterate through list of objects to populate scrolled list
         while (object_ptr != NULL) {
-            cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+
+            //  If no label, use the string "<Empty Label>" instead
+            if (object_ptr->label == NULL || object_ptr->label[0] == '\0')
+                cb_item = XmStringCreateLtoR("<Empty Label>", XmFONTLIST_DEFAULT_TAG);
+            else
+                cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+
+
             XmListAddItem(list_of_existing_CAD_objects,
                           cb_item,
                           counter);  
@@ -3193,15 +3276,28 @@ void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
         //
         // *** Note: If names are not unique the results may not be what the user expects.
         // The first match to a selection will be used, not necessarily the selection.
+        //
         for (x=1; x<=itemCount;x++) {
             if (XmListPosSelected(list_of_existing_CAD_objects_edit,x)) {
+                int no_label = 0;
+
                 XmStringGetLtoR(listItems[(x-1)],XmFONTLIST_DEFAULT_TAG,&selectedName);
+
+                // Check for our own definition of no label for the CAD
+                // objects, which is "<Empty Label>"
+                if (strcmp(selectedName,"<Empty Label>") == 0)
+                    no_label++;
     
                 object_ptr = CAD_list_head;
                 done = 0;
+
                 while (object_ptr != NULL && done == 0) {
+
                     cadName = object_ptr->label;
-                    if (strcmp(cadName,selectedName)==0) {
+
+                    if (strcmp(cadName,selectedName)==0
+                            || ( (cadName == NULL || cadName[0] == '\0') && no_label) ) {
+
                         // get the area for the CAD object matching the selected name
                         // and format it as a localized string.
                         area = object_ptr->computed_area;
@@ -3314,7 +3410,13 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
 
         // iterate through list of objects to populate scrolled list
         while (object_ptr != NULL) {
-            cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+
+            //  If no label, use the string "<Empty Label>" instead
+            if (object_ptr->label == NULL || object_ptr->label[0] == '\0')
+                cb_item = XmStringCreateLtoR("<Empty Label>", XmFONTLIST_DEFAULT_TAG);
+            else
+                cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
+
             XmListAddItem(list_of_existing_CAD_objects_edit,
                           cb_item,
                           counter);  
@@ -3571,9 +3673,11 @@ void Draw_All_CAD_Objects(Widget w) {
     char probability_string[8];
     VerticeRow *vertice;
     double area;
+    int actual_line_type = LineOnOffDash;
     static int sizeof_area_description = 50; // define here as local static to limit size of display on map 
                                               // independent of size as shown on form
     char area_description[sizeof_area_description];
+    char dash[2];
 
     // Start at CAD_list_head, iterate through entire linked list,
     // drawing as we go.  Respect the line
@@ -3648,17 +3752,45 @@ void Draw_All_CAD_Objects(Widget w) {
     
             // Iterate through the vertices and draw the lines
             vertice = object_ptr->start;
-     
+ 
+            switch (object_ptr->line_type) {
+
+                case 1:
+                    actual_line_type = LineSolid;
+                    break;
+
+                case 2:
+                    actual_line_type = LineOnOffDash;
+                    dash[0] = dash[1]  = 8;
+                    break;
+
+                case 3:
+                    actual_line_type = LineDoubleDash;
+                    dash[0] = dash[1]  = 16;
+                    break;
+
+                default:
+                    actual_line_type = LineOnOffDash;
+                    dash[0] = dash[1]  = 8;
+                    break;
+            } 
+
             // Set up line color/width/type here
             (void)XSetLineAttributes (XtDisplay (da),
                 gc_tint,
                 object_ptr->line_width,
-    //            LineOnOffDash,
-    //            LineSolid,
-                object_ptr->line_type,
+                actual_line_type,
                 CapButt,
                 JoinMiter);
-    
+
+            if (object_ptr->line_type  != 1) { 
+                (void)XSetDashes (XtDisplay (da),
+                    gc_tint,
+                    0,       // dash offset
+                    dash,    // dash list[]
+                    2);      // elements in dash lista
+            }
+ 
             (void)XSetForeground (XtDisplay (da),
                 gc_tint,
                 object_ptr->line_color);
@@ -6378,7 +6510,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
         // Check to see if a file containing predefined object definitions 
         // exists, if it does, open it and try to read the definitions
         // if this fails, use the hardcoded SAR default instead.
-        fprintf(stderr,"Checking for predefined objects menu file\n");
+//        fprintf(stderr,"Checking for predefined objects menu file\n");
 #ifdef OBJECT_DEF_FILE_USER_BASE
         if (filethere(get_user_base_dir(predefined_object_definition_file))) {
             fp_file = fopen(get_user_base_dir(predefined_object_definition_file),"r");
@@ -6471,15 +6603,21 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
             if (read_file_ok==0) {
                 fprintf(stderr,"Error in reading predefined objects menu file:\nNo valid objects found.\n");
             }
-        } else {
-             char error_correct_location[256];
-             fprintf(stderr,"Error: Predefined objects menu file not found.\n");
-             xastir_snprintf(error_correct_location,
-                        sizeof(error_correct_location),
-                        "File should be in %s\n",
-//                        get_user_base_dir("config"));
-                        get_data_base_dir("config"));
-             fprintf(stderr,error_correct_location);
+        }
+        else {
+            char error_correct_location[256];
+ 
+            fprintf(stderr,"Error: Predefined objects menu file not found.\n");
+
+            xastir_snprintf(error_correct_location,
+                sizeof(error_correct_location),
+                "File should be in %s\n",
+#ifdef OBJECT_DEF_FILE_USER_BASE
+                get_user_base_dir("config"));
+#else   // OBJECT_DEF_FILE_USER_BASE
+                get_data_base_dir("config"));
+#endif  // OBJECT_DEF_FILE_USER_BASE
+            fprintf(stderr,error_correct_location);
         }
     }
 
