@@ -1077,6 +1077,11 @@ POPEM00043|Kein Objekt/Item!||
 POPEM00044|Findu-Wegdaten: fehlgeschlagen||
 POPEM00045|Findu-Wegdaten: fertig||
 POPEM00046|Berkeley DB header/shared library passen nicht! Map-Cache aus.||
+POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
+POPEM00048|Emergency Beacon Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
+POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
+POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -1282,6 +1287,9 @@ CADPUD008|Abbrechen||
 CADPUD009|CAD-Objekte löschen?||
 CADPUD010|Alle löschen||
 CADPUD011|Ausgewählte löschen||
+CADPUD012|Solid||
+CADPUD013|Dashed||
+CADPUD014|Double Dash||
 #
 #
 # Format strings for map metadata in top border

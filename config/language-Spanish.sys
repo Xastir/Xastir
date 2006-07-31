@@ -1072,6 +1072,11 @@ POPEM00043|Not an Object/Item!||
 POPEM00044|Fetch Findu Trail: Failed||
 POPEM00045|Fetch Findu Trail: Complete||
 POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
+POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
+POPEM00048|Emergency Beacon Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
+POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
+POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||
@@ -1270,6 +1275,9 @@ CADPUD008|Cancel||
 CADPUD009|Delete CAD objects?||
 CADPUD010|Delete All||
 CADPUD011|Delete Selected||
+CADPUD012|Solid||
+CADPUD013|Dashed||
+CADPUD014|Double Dash||
 #
 #
 # Format strings for map metadata in top border

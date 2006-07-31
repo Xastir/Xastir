@@ -1082,6 +1082,11 @@ POPEM00043|Geen Object/Item!||
 POPEM00044|Opzoeken in Findu database: Mislukt||
 POPEM00045|Opzoeken in Findu database: Gereed||
 POPEM00046|Berkeley DB headers en gedeelde bibliotheek komen niet overeen! Kaart cache uitgeschakeld.||
+POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
+POPEM00048|Emergency Beacon Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
+POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
+POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||
@@ -1291,6 +1296,9 @@ CADPUD008|Afbreken||
 CADPUD009|Wis CAD objecten?||
 CADPUD010|Wis alles||
 CADPUD011|Wis selectie||
+CADPUD012|Solid||
+CADPUD013|Dashed||
+CADPUD014|Double Dash||
 #
 #
 # Format strings for map metadata in top border

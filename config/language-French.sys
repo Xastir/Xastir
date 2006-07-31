@@ -1076,6 +1076,11 @@ POPEM00043|Ce n'est pas un objet ou article !||
 POPEM00044|Récupération de piste Findu : Échec||
 POPEM00045|Récupération de piste Findu : Terminé||
 POPEM00046|La bibliothèque Berkeley DB ne correspond pas ! Désactivation du cache des cartes.||
+POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
+POPEM00048|Emergency Beacon Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
+POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
+POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||
@@ -1285,6 +1290,9 @@ CADPUD008|Annulerl||
 CADPUD009|Effacer les objets CAD ?||
 CADPUD010|Tout effacer||
 CADPUD011|Effacer la sélection||
+CADPUD012|Solid||
+CADPUD013|Dashed||
+CADPUD014|Double Dash||
 #
 #
 # Format strings for map metadata in top border
