@@ -4001,7 +4001,14 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2) + 0.001,
+// An attempt was made to round here, adding 0.001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//            atof(temp_ptr2) + 0.001,
+            atof(temp_ptr2),
             line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4010,7 +4017,14 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2) + 0.0001,
+// An attempt was made to round here, adding 0.0001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//            atof(temp_ptr2) + 0.0001,
+            atof(temp_ptr2),
             line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4049,7 +4063,14 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2) + 0.001,
+// An attempt was made to round here, adding 0.001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//            atof(temp_ptr2) + 0.001,
+            atof(temp_ptr2),
             line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4058,7 +4079,14 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
             atoi(temp_ptr),
-            atof(temp_ptr2) + 0.0001,
+// An attempt was made to round here, adding 0.0001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//            atof(temp_ptr2) + 0.0001,
+            atof(temp_ptr2),
             line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4785,7 +4813,14 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2) + 0.001,
+// An attempt was made to round here, adding 0.001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//                atof(temp_ptr2) + 0.001,
+                atof(temp_ptr2),
                 line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4794,7 +4829,14 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
         xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2) + 0.0001,
+// An attempt was made to round here, adding 0.0001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//                atof(temp_ptr2) + 0.0001,
+                atof(temp_ptr2),
                 line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4828,7 +4870,14 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2) + 0.001,
+// An attempt was made to round here, adding 0.001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//                atof(temp_ptr2) + 0.001,
+                atof(temp_ptr2),
                 line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
@@ -4837,7 +4886,14 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
         xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
                 atoi(temp_ptr),
-                atof(temp_ptr2) + 0.0001,
+// An attempt was made to round here, adding 0.0001 to the minutes
+// value.  Problems arise if it goes above 59 minutes as the degrees
+// value would need to bump up also.  This then gets into problems
+// at 90.0 degrees.  The correct method would be to convert it to
+// decimal at a higher precision and then convert it back to DD
+// MM.MM format.
+//                atof(temp_ptr2) + 0.0001,
+                atof(temp_ptr2),
                 line[0]);
         XtFree(temp_ptr);
         XtFree(temp_ptr2);
