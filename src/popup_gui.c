@@ -165,8 +165,8 @@ begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" )
                 XmNtitleString,banner,
 // An half-hearted attempt at fixing the problem where a popup
 // comes up extremely small.  Setting a minimum size for the popup.
-XmNminWidth, 200,
-XmNminHeight, 70,
+XmNminWidth, 220,
+XmNminHeight, 80,
                 NULL);
 
             pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
