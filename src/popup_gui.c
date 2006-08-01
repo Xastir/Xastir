@@ -163,6 +163,10 @@ begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" )
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNtitleString,banner,
+// An half-hearted attempt at fixing the problem where a popup
+// comes up extremely small.  Setting a minimum size for the popup.
+XmNminWidth, 200,
+XmNminHeight, 70,
                 NULL);
 
             pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
@@ -202,17 +206,17 @@ begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" )
 
             sprintf(pw[i].name,"%d",i);
 
-            XtAddCallback(pw[i].button_close, XmNactivateCallback, popup_message_destroy_shell,(XtPointer)pw[i].name);
+            msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
+            XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
+            XmStringFree(msg_str);
 
-            pos_dialog(pw[i].popup_message_dialog);
+            XtAddCallback(pw[i].button_close, XmNactivateCallback, popup_message_destroy_shell,(XtPointer)pw[i].name);
 
             delw = XmInternAtom(XtDisplay(pw[i].popup_message_dialog),"WM_DELETE_WINDOW", FALSE);
 
             XmAddWMProtocolCallback(pw[i].popup_message_dialog, delw, popup_message_destroy_shell, (XtPointer)pw[i].name);
 
-            msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
-            XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
-            XmStringFree(msg_str);
+            pos_dialog(pw[i].popup_message_dialog);
 
             XtManageChild(pw[i].form);
             XtManageChild(pw[i].pane);
@@ -220,7 +224,12 @@ begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" )
 end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 
             XtPopup(pw[i].popup_message_dialog,XtGrabNone);
-            fix_dialog_size(pw[i].popup_message_dialog);
+
+// An half-hearted attempt at fixing the problem where a popup
+// comes up extremely small.  Commenting out the below so we can
+// change the size if necessary to read the message.
+//            fix_dialog_size(pw[i].popup_message_dialog);
+
             pw[i].sec_opened=sec_now();
         }
     }
