@@ -5826,12 +5826,15 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
  
 begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
-        if (restore_position) {
-            XtVaSetValues(db_station_info,XmNx,x - decoration_offset_x,XmNy,y - decoration_offset_y,NULL);
-        }
-        else {
+// restore_position doesn't appear to work.  I get the dialog
+// positioned all over my virtual consoles if I try.  Reverting to
+// pos_dialog() for now.
+//        if (restore_position) {
+//            XtVaSetValues(db_station_info,XmNx,x - decoration_offset_x,XmNy,y - decoration_offset_y,NULL);
+//        }
+//        else {
             pos_dialog(db_station_info);
-        }
+//        }
 
         delw = XmInternAtom(XtDisplay(db_station_info),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(db_station_info, delw, Station_data_destroy_shell, (XtPointer)db_station_info);
@@ -5918,8 +5921,12 @@ end_critical_section(&db_station_info_lock, "db.c:update_station_info" );
 void Station_info_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
 
-    if (db_station_info!=NULL)
-        Station_data_destroy_shell(db_station_info, db_station_info, NULL);
+// We used to close the detailed Station Info dialog here too, which
+// makes no sense.  Commenting this out so that we can close the
+// Station Chooser but leave the Station Info dialog open.
+//
+//    if (db_station_info!=NULL)
+//        Station_data_destroy_shell(db_station_info, db_station_info, NULL);
 
     XtPopdown(shell);
     (void)XFreePixmap(XtDisplay(appshell),SiS_icon0);  
