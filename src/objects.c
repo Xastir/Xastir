@@ -1740,6 +1740,7 @@ void CAD_object_allocate(long latitude, long longitude) {
     p_new->next = CAD_list_head;
     CAD_list_head = p_new;
 
+/*
     // Here we update the erase cad objects dialog if it is up on
     // the screen.  We get rid of it and re-establish it, which will
     // usually make the dialog move, but this is better than having
@@ -1760,6 +1761,7 @@ void CAD_object_allocate(long latitude, long longitude) {
         Draw_CAD_Objects_list_dialog_close(da, NULL, NULL);
         Draw_CAD_Objects_list_dialog(da, NULL, NULL);
     }
+*/
 }
 
 
