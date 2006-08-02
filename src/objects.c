@@ -1741,6 +1741,14 @@ void CAD_object_allocate(long latitude, long longitude) {
     CAD_list_head = p_new;
 
 /*
+//
+// Note:  It was too confusing to have these two dialogs close and
+// get redrawn when we click on the first vertice.  The net result
+// is that we may have two dialogs move on top of the drawing area
+// to the spot we're trying to draw.  Commented out this section due
+// to that.  We'll get the two dialogs updated when we click on
+// either the DONE or CANCEL button on the Close Polygon dialog.
+//
     // Here we update the erase cad objects dialog if it is up on
     // the screen.  We get rid of it and re-establish it, which will
     // usually make the dialog move, but this is better than having
@@ -2298,8 +2306,8 @@ void Set_CAD_object_parameters (Widget widget,
     float probability = 0.0;
     CADRow *target_object = NULL;
     int cb_selected;
-    // need to find out object to edit from call data rather than
-    // using the first object in list as the one to edit
+    // need to find out object to edit from clientData rather than
+    // using the first object in list as the one to edit.
     //target_object = CAD_list_head;
     target_object = (CADRow *)clientData;
 
