@@ -3502,6 +3502,7 @@ void log_data(char *file, char *line) {
     struct stat file_status; 
     int reset_setuid = 0 ; 
 
+
     // Check for "# Tickle" first, don't log it if found.
     // It's an idle string designed to keep the socket active.
     if ( (strncasecmp(line, "#Tickle", 7)==0)
@@ -3517,8 +3518,11 @@ void log_data(char *file, char *line) {
         // Fetch the current date/time string
 //        get_timestamp(timestring);
         secs_now=sec_now();
+
         time_now = localtime(&secs_now);
+
         (void)strftime(timestring,100,"%a %b %d %H:%M:%S %Z %Y",time_now);
+
         xastir_snprintf(temp,
             sizeof(temp),
             "# %ld  %s",
@@ -3527,7 +3531,11 @@ void log_data(char *file, char *line) {
 
         // Change back to the base directory
 
-        chdir(get_user_base_dir(""));
+// This call corrupts the "file" variable.  Commented it out as we
+// don't appear to need it anyway.  The complete root-anchored
+// path/filename are passed to us in the "file" parameter.
+//
+//        chdir(get_user_base_dir(""));
 
         // check size and rotate if too big
 
@@ -3545,7 +3553,8 @@ void log_data(char *file, char *line) {
                 rotate_file(file,3);        
             }
 
-        } else {
+        }
+        else {
             // ENOENT is ok -- we make the file below
             if (errno != ENOENT ) {
                 fprintf(stderr,"Couldn't stat log file '%s': %s\n",
@@ -3555,7 +3564,7 @@ void log_data(char *file, char *line) {
 
         }        
 
-        if (getuid() != geteuid()){
+       if (getuid() != geteuid()){
             reset_setuid=1; 
             DISABLE_SETUID_PRIVILEGE;
         }
