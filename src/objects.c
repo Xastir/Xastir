@@ -1739,6 +1739,27 @@ void CAD_object_allocate(long latitude, long longitude) {
     // Hook it into the linked list of objects
     p_new->next = CAD_list_head;
     CAD_list_head = p_new;
+
+    // Here we update the erase cad objects dialog if it is up on
+    // the screen.  We get rid of it and re-establish it, which will
+    // usually make the dialog move, but this is better than having
+    // it be out-of-date.
+    //
+    if (cad_erase_dialog != NULL) {
+        Draw_CAD_Objects_erase_dialog_close(da, NULL, NULL);
+        Draw_CAD_Objects_erase_dialog(da, NULL, NULL);
+    }
+
+    // Here we update the edit cad objects dialog by getting rid of
+    // it and then re-establishing it if it is active when we start.
+    // This will usually make the dialog move, but it's better than
+    // having it be out-of-date.
+    //
+    if (cad_list_dialog!=NULL) {
+        // Update the Edit CAD Objects list
+        Draw_CAD_Objects_list_dialog_close(da, NULL, NULL);
+        Draw_CAD_Objects_list_dialog(da, NULL, NULL);
+    }
 }
 
 
@@ -2323,13 +2344,25 @@ void Set_CAD_object_parameters (Widget widget,
     // Reload symbols/tracks/CAD objects so that object name will show on map.
     redraw_symbols(da);
 
-    // Here we update the erase cad objects dialog if it is up on the screen.
-    // We get rid of it and re-establish it, which will usually make the dialog
-    // move, but this is better than having it be out-of-date.
+    // Here we update the erase cad objects dialog if it is up on
+    // the screen.  We get rid of it and re-establish it, which will
+    // usually make the dialog move, but this is better than having
+    // it be out-of-date.
     //
     if (cad_erase_dialog != NULL) {
         Draw_CAD_Objects_erase_dialog_close(widget,clientData,calldata);
         Draw_CAD_Objects_erase_dialog(widget,clientData,calldata);
+    }
+
+    // Here we update the edit cad objects dialog by getting rid of
+    // it and then re-establishing it if it is active when we start.
+    // This will usually make the dialog move, but it's better than
+    // having it be out-of-date.
+    //
+    if (cad_list_dialog!=NULL) {
+        // Update the Edit CAD Objects list
+        Draw_CAD_Objects_list_dialog_close(widget, clientData, calldata);
+        Draw_CAD_Objects_list_dialog(widget, clientData, calldata);
     }
 }
 
@@ -2375,6 +2408,27 @@ void close_object_params_dialog(Widget widget, XtPointer clientData, XtPointer c
     XtPopdown(cad_dialog);
     XtDestroyWidget(cad_dialog);
     cad_dialog = (Widget)NULL;
+
+    // Here we update the erase cad objects dialog if it is up on
+    // the screen.  We get rid of it and re-establish it, which will
+    // usually make the dialog move, but this is better than having
+    // it be out-of-date.
+    //
+    if (cad_erase_dialog != NULL) {
+        Draw_CAD_Objects_erase_dialog_close(widget,clientData,calldata);
+        Draw_CAD_Objects_erase_dialog(widget,clientData,calldata);
+    }
+
+    // Here we update the edit cad objects dialog by getting rid of
+    // it and then re-establishing it if it is active when we start.
+    // This will usually make the dialog move, but it's better than
+    // having it be out-of-date.
+    //
+    if (cad_list_dialog!=NULL) {
+        // Update the Edit CAD Objects list
+        Draw_CAD_Objects_list_dialog_close(widget, clientData, calldata);
+        Draw_CAD_Objects_list_dialog(widget, clientData, calldata);
+    }
 }
 
 
