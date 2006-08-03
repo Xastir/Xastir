@@ -421,6 +421,87 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
 
 
 
+// range is in centimeters (0 to 65535 representing 0 to 655.35 meters)
+// x_long/y_lat are in Xastir lat/lon units
+//
+void draw_precision_rectangle(long x_long, long y_lat, double range, int color, Pixmap where) {
+
+// Prevents it from being drawn when the symbol is off-screen.
+// It'd be better to check for lat/long +/- range to see if it's on the screen.
+
+    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+
+        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+            long x_long2, y_lat2;
+            long x_offset, y_offset;
+            long x2, y2;
+
+
+//            if ((x_long < 0) || (x_long > 129600000l))
+//                return;
+
+//            if ((y_lat < 0) || (y_lat > 64800000l))
+//                return;
+
+            range /= 100.0;     // meters
+            range *= 0.0006214; // miles
+            range *= 0.868;     // nautical miles
+
+            // Compute X-offset
+            compute_DR_position(x_long, // beginning longitude
+                y_lat,      // beginning latitude
+                range,      // range in nautical miles
+                90.0,       // course in ° true
+                &x_long2,   // New longitude
+                &y_lat2);   // New latitude
+
+            x_offset = x_long2 - x_long;
+
+            // Compute Y-offset
+            compute_DR_position(x_long, // beginning longitude
+                y_lat,      // beginning latitude
+                range,      // range in nautical miles
+                180.0,      // course in ° true
+                &x_long2,   // New longitude
+                &y_lat2);   // New latitude
+
+            y_offset = y_lat2 - y_lat;
+
+            (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+            //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+            //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+            (void)XSetForeground(XtDisplay(da),gc,color);
+
+            if (x_long > 64800000L) {
+                // Eastern hemisphere, add X's (go further east)
+                x2 = x_long + x_offset;
+            }
+            else {
+                // Western hemisphere, subtract X's (go further west)
+                x2 = x_long - x_offset;
+            }
+
+            if (y_lat > 32400000L) {
+                // Southern hemisphere, add Y's (go further north)
+                y2 = y_lat + y_offset;
+            }
+            else {
+                // Northern hemisphere, subtract Y's (go further south)
+                y2 = y_lat - y_offset;
+            }
+
+            draw_vector(da, x_long, y_lat, x_long, y2, gc, where); // x_long constant
+            draw_vector(da, x_long, y2, x2, y2, gc, where); // y2 constant
+            draw_vector(da, x2, y2, x2, y_lat, gc, where); // x2 constant
+            draw_vector(da, x2, y_lat, x_long, y_lat, gc, where); // y_lat constant
+        }
+    }
+}
+
+
+
+
+
 void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap where) {
     double range, diameter;
     int offx,offy;

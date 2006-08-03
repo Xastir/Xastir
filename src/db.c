@@ -3037,7 +3037,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         // efficiency.
         //
 //fprintf(stderr,"scale_y: %ld\t", scale_y);
-        if (scale_y < 17) { // 60' circles are good out to about zoom 16
+        if (scale_y < 17) { // 60' figures are good out to about zoom 16
 
 // Here we may have to check what type of device is being used (if
 // possible to determine) to decide whether to draw a truncation/
@@ -3056,15 +3056,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
 // GPGGA:             Truncation, ellipse/rectangle based on precision/HDOP/Augmentation
 // GPRMC:             Truncation, ellipse/rectangle based on precision
 // GPGLL:             Truncation, ellipse/rectangle based on precision
-// Xastir APRS:       Rounding, rectangle
-// Xastir Base91:     Rounding, ellipse
+// Xastir APRS:       Truncation, rectangle
+// Xastir Base91:     Truncation, ellipse
 // UI-View APRS:      ??, rectangle
 // UI-View Base91:    ??, ellipse
 // APRS+SA APRS:      ??, rectangle
 // APRS+SA Base91:    ??, ellipse
 // PocketAPRS:        ??, rectangle
 // SmartAPRS:         ??, rectangle
-// HamHUD:            ??, ??
+// HamHUD:            Truncation, ??
 // HamHUD GPRMC:      Truncation, ellipse/rectangle based on precision
 // Linksys NSLU2:     ??, rectangle
 // AGW Tracker:       ??, ??
@@ -3109,11 +3109,19 @@ void display_station(Widget w, DataRow *p_station, int single) {
             // centimeters.  Convert from cm to miles for
             // draw_pod_circle().
             //
+/*
             draw_pod_circle( p_station->coord_lon,
                              p_station->coord_lat,
                              p_station->error_ellipse_radius / 100000.0 * 0.62137, // cm to mi
                              colors[0x0f],  // White
                              drawing_target);
+*/
+            draw_precision_rectangle( p_station->coord_lon,
+                             p_station->coord_lat,
+                             p_station->error_ellipse_radius, // centimeters
+                             colors[0x0f],  // White
+                             drawing_target);
+
 
 // Perhaps draw vectors from the symbol out to the borders of these
 // odd figures?  Draw an outline without vectors to the symbol?
