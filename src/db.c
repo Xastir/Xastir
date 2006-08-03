@@ -3151,7 +3151,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 temp_my_course,
 // Display only if wx temp is current
                 (wx_ghost) ? "" : temp_wx_temp,
-// Display only if if wind speed is current
+// Display only if wind speed is current
                 (wx_ghost) ? "" : temp_wx_wind,
                 temp_sec_heard,
                 temp_show_last_heard,
@@ -10453,7 +10453,7 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 // $GPRMC,104748.821,A,4301.1492,N,08803.0374,W,0.085048,102.36,010605,,*1A
 // $GPRMC,104749.821,A,4301.1492,N,08803.0377,W,0.054215,74.60,010605,,*2D
 //
-int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
+int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path, int *num_digits) {
     char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
     char long_s[20];
@@ -10523,6 +10523,14 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234) or leave one out (4801.12).  Next character after digits should be a ','
+
+    // Count digits after the decimal point for latitude
+    if (strchr(Substring[3],'.')) {
+        *num_digits = strlen(Substring[3]) - (int)(strchr(Substring[3],'.') - Substring[3]) - 1;
+    }
+    else {
+        *num_digits = 0;
+    }
 
     temp_char = toupper((int)Substring[4][0]);
 
@@ -10631,7 +10639,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 // nsat=Number of Satellites being tracked
 //
 //
-int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
+int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path, int *num_digits) {
     char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
     char long_s[20];
@@ -10692,6 +10700,14 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234).  Next character after digits should be a ','
+
+    // Count digits after the decimal point for latitude
+    if (strchr(Substring[2],'.')) {
+        *num_digits = strlen(Substring[2]) - (int)(strchr(Substring[2],'.') - Substring[2]) - 1;
+    }
+    else {
+        *num_digits = 0;
+    }
 
     temp_char = toupper((int)Substring[3][0]);
 
@@ -10805,7 +10821,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 // GPGLL,4748.811,N,12219.564,W,033850,A*3C
 //   0       1    2      3    4    5   6
 //
-int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
+int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path, int *num_digits) {
     char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
     char long_s[20];
@@ -10872,6 +10888,14 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
         temp_char);
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234).  Next character after digits should be a ','
+
+    // Count digits after the decimal point for latitude
+    if (strchr(Substring[1],'.')) {
+        *num_digits = strlen(Substring[1]) - (int)(strchr(Substring[1],'.') - Substring[1]) - 1;
+    }
+    else {
+        *num_digits = 0;
+    }
 
     temp_char = toupper((int)Substring[4][0]);
     if (temp_char != 'E' && temp_char != 'W')
@@ -11284,6 +11308,7 @@ int data_add(int type,
     int direct = 0;
     int object_is_mine_previous = 0;
     int new_origin_is_mine = 0;
+    int num_digits = 0; // Number of digits after decimal point in NMEA string
 
 
     // call and path had been validated before
@@ -11572,6 +11597,9 @@ int data_add(int type,
                     // Assign a non-default value for the error
                     // ellipse?
 //                    p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+
+// WE7U
+// This needs to change based on the number of grid letters/digits specified
 //                    p_station->lat_precision = 60;
 //                    p_station->lon_precision = 60;
                 }
@@ -11920,7 +11948,7 @@ int data_add(int type,
 // WE7U
 // Change this function to return HDOP and the number of characters
 // after the decimal point.
-                ok = extract_RMC(p_station,data,call_sign,path);
+                ok = extract_RMC(p_station,data,call_sign,path,&num_digits);
 
                 if (ok) {
                     // Assign a non-default value for the error
@@ -11932,15 +11960,46 @@ int data_add(int type,
 // Best (smallest) circle should be 600 as we have no augmentation
 // flag to check here for anything better.
 //
-                    if (1) {
-//                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
-                        p_station->lat_precision = 60;
-                        p_station->lon_precision = 60;
-                    }
-                    else {
-                        p_station->error_ellipse_radius = 600; // Default of 6m
-                        p_station->lat_precision = 6;
-                        p_station->lon_precision = 6;
+                    switch (num_digits) {
+
+                        case 0:
+                            p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                            p_station->lat_precision = 6000;
+                            p_station->lon_precision = 6000;
+                            break;
+
+                        case 1:
+                            p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                            p_station->lat_precision = 600;
+                            p_station->lon_precision = 600;
+                            break;
+
+                        case 2:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 60;
+                            p_station->lon_precision = 60;
+                            break;
+
+                        case 3:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 6;
+                            p_station->lon_precision = 6;
+                            break;
+
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 0;
+                            p_station->lon_precision = 0;
+                            break;
+
+                        default:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 60;
+                            p_station->lon_precision = 60;
+                            break;
                     }
                 }
                 break;
@@ -11965,7 +12024,7 @@ int data_add(int type,
 // WE7U
 // Change this function to return HDOP and the number of characters
 // after the decimal point.
-                ok = extract_GGA(p_station,data,call_sign,path);
+                ok = extract_GGA(p_station,data,call_sign,path,&num_digits);
 
                 if (ok) {
                     // Assign a non-default value for the error
@@ -11977,15 +12036,46 @@ int data_add(int type,
 // 3 digits: 6m w/o augmentation unless HDOP >4 = 10m, 2.5m w/augmentation.
 // 4+ digits: 6m w/o augmentation unless HDOP >4 = 10m, 0.6m w/augmentation.
 //
-                    if (1) {
-//                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
-                        p_station->lat_precision = 60;
-                        p_station->lon_precision = 60;
-                    }
-                    else {
-                        p_station->error_ellipse_radius = 600; // Default of 6m
-                        p_station->lat_precision = 6;
-                        p_station->lon_precision = 6;
+                     switch (num_digits) {
+
+                        case 0:
+                            p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                            p_station->lat_precision = 6000;
+                            p_station->lon_precision = 6000;
+                            break;
+
+                        case 1:
+                            p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                            p_station->lat_precision = 600;
+                            p_station->lon_precision = 600;
+                            break;
+
+                        case 2:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 60;
+                            p_station->lon_precision = 60;
+                            break;
+
+                        case 3:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 6;
+                            p_station->lon_precision = 6;
+                            break;
+
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 0;
+                            p_station->lon_precision = 0;
+                            break;
+
+                        default:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 60;
+                            p_station->lon_precision = 60;
+                            break;
                     }
                 }
                 break;
@@ -11999,7 +12089,7 @@ int data_add(int type,
 
 
             case (GPS_GLL):             // $GPGLL
-                ok = extract_GLL(p_station,data,call_sign,path);
+                ok = extract_GLL(p_station,data,call_sign,path,&num_digits);
 
                 if (ok) {
                     // Assign a non-default value for the error
@@ -12010,9 +12100,48 @@ int data_add(int type,
 // 2 digits after decimal point, give it 2550 as a radius, otherwise
 // give it 600.
 //
-                    p_station->error_ellipse_radius = 600; // Default of 6m
-                    p_station->lat_precision = 6;
-                    p_station->lon_precision = 6;
+                     switch (num_digits) {
+
+                        case 0:
+                            p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                            p_station->lat_precision = 6000;
+                            p_station->lon_precision = 6000;
+                            break;
+ 
+                        case 1:
+                            p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                            p_station->lat_precision = 600;
+                            p_station->lon_precision = 600;
+                            break;
+
+                        case 2:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 60;
+                            p_station->lon_precision = 60;
+                            break;
+
+                        case 3:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 6;
+                            p_station->lon_precision = 6;
+                            break;
+
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 0;
+                            p_station->lon_precision = 0;
+                            break;
+
+                        default:
+                            p_station->error_ellipse_radius = 600; // Default of 6m
+                            p_station->lat_precision = 60;
+                            p_station->lon_precision = 60;
+                            break;
+                    }
+ 
                 }
                 break;
 
