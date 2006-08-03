@@ -12116,7 +12116,11 @@ int data_add(int type,
 
             // Do nothing else.  We don't want to update the
             // last-heard time so that it'll expire from the queue
-            // normally.
+            // normally, unless it is a new object/item.
+            //
+            if (new_station) {
+                p_station->sec_heard = curr_sec;
+            }
 
             // We need an exception later in this function for the
             // case where we've moved an object/item (by how much?).

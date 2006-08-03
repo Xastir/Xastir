@@ -1454,6 +1454,16 @@ void check_and_transmit_objects_items(time_t time) {
 
             // and it's an object or item
             if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
+                long x_long_save, y_lat_save;
+
+                // If dead-reckoning, we need to send out a new
+                // position for this object instead of just
+                // overwriting the old position, which will cause
+                // the track to skip.  Here we save the old position
+                // away so we can save it back to the record later.
+                //
+                x_long_save = p_station->coord_lon;
+                y_lat_save = p_station->coord_lat;
 
                 if (debug_level & 1) {
                     fprintf(stderr,
@@ -1461,6 +1471,29 @@ void check_and_transmit_objects_items(time_t time) {
                         p_station->call_sign);
                 }
 
+                // Call the DR function to compute a new lat/long
+                // and change the object's lat/long to match so that
+                // we move the object along each time we transmit
+                // it.
+                //
+// WE7U
+// Here we should log the new position to file if it's not done
+// automatically.
+                //
+                if (p_station->speed[0] != '\0') {
+                    long x_long, y_lat;
+
+                    compute_current_DR_position(p_station, &x_long, &y_lat);
+
+                    // Put the new position into the record
+                    // temporarily so that we can 
+                    p_station->coord_lon = x_long;
+                    p_station->coord_lat = y_lat;
+                }
+
+                // Keep the timestamp current on my own
+                // objects/items so they don't expire.
+                p_station->sec_heard = sec_now();
 
 // Implementing sped-up transmission of new objects, regular
 // transmission of old objects (decaying algorithm).  We'll do this
@@ -1591,6 +1624,13 @@ void check_and_transmit_objects_items(time_t time) {
                     // station_time, station_time_type,
                     // comments, df_color
                     if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
+
+                        // Restore the original lat/long before we
+                        // transmit the (possibly) new position.
+                        //
+                        p_station->coord_lon = x_long_save;
+                        p_station->coord_lat = y_lat_save;
+
 //fprintf(stderr,"Transmitting: %s\n",line);
                         // Attempt to transmit the object/item again
                         if (object_tx_disable) {    // Send to loopback only
@@ -4014,6 +4054,9 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
                 ext_lon_str);
             DR++;   // Set the dead-reckoning flag
         }
+
+        // Keep the time current for our own objects.
+        p_station->sec_heard = sec_now();
     }
 
     temp_ptr = XmTextFieldGetString(object_name_data);
@@ -4817,6 +4860,9 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
                 ext_lon_str);
             DR++;   // Set the dead-reckoning flag
         }
+
+        // Keep the time current for our own items.
+        p_station->sec_heard = sec_now();
     }
 
     temp_ptr = XmTextFieldGetString(object_name_data);
@@ -5548,6 +5594,10 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
         if (p_station != NULL) {
             p_station->transmit_time_increment = OBJECT_CHECK_RATE;
             p_station->last_transmit_time = sec_now();
+
+            // Keep the time current for our own objects.
+            p_station->sec_heard = sec_now();
+ 
 //            p_station->last_modified_time = sec_now(); // For dead-reckoning
 //fprintf(stderr,"Object_change_data_set(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
         }
@@ -5599,6 +5649,10 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
         if (p_station != NULL) {
             p_station->transmit_time_increment = OBJECT_CHECK_RATE;
             p_station->last_transmit_time = sec_now();
+
+            // Keep the time current for our own items.
+            p_station->sec_heard = sec_now();
+ 
 //            p_station->last_modified_time = sec_now(); // For dead-reckoning
 //fprintf(stderr,"Item_change_data_set(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
         }
