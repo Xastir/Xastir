@@ -423,8 +423,15 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
 
 // range is in centimeters (0 to 65535 representing 0 to 655.35 meters)
 // x_long/y_lat are in Xastir lat/lon units
+// lat_precision/lon-precision are in 100ths of seconds of lat/lon
 //
-void draw_precision_rectangle(long x_long, long y_lat, double range, int color, Pixmap where) {
+void draw_precision_rectangle(long x_long,
+                              long y_lat,
+                              double range, // Not implemented yet
+                              unsigned int lat_precision,
+                              unsigned int lon_precision,
+                              int color,
+                              Pixmap where) {
 
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
@@ -432,8 +439,6 @@ void draw_precision_rectangle(long x_long, long y_lat, double range, int color, 
     if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
 
         if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
-            long x_long2, y_lat2;
-            long x_offset, y_offset;
             long x2, y2;
 
 
@@ -443,30 +448,6 @@ void draw_precision_rectangle(long x_long, long y_lat, double range, int color, 
 //            if ((y_lat < 0) || (y_lat > 64800000l))
 //                return;
 
-            range /= 100.0;     // meters
-            range *= 0.0006214; // miles
-            range *= 0.868;     // nautical miles
-
-            // Compute X-offset
-            compute_DR_position(x_long, // beginning longitude
-                y_lat,      // beginning latitude
-                range,      // range in nautical miles
-                90.0,       // course in ° true
-                &x_long2,   // New longitude
-                &y_lat2);   // New latitude
-
-            x_offset = x_long2 - x_long;
-
-            // Compute Y-offset
-            compute_DR_position(x_long, // beginning longitude
-                y_lat,      // beginning latitude
-                range,      // range in nautical miles
-                180.0,      // course in ° true
-                &x_long2,   // New longitude
-                &y_lat2);   // New latitude
-
-            y_offset = y_lat2 - y_lat;
-
             (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
             //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
             //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
@@ -474,20 +455,20 @@ void draw_precision_rectangle(long x_long, long y_lat, double range, int color, 
 
             if (x_long > 64800000L) {
                 // Eastern hemisphere, add X's (go further east)
-                x2 = x_long + x_offset;
+                x2 = x_long + lon_precision;
             }
             else {
                 // Western hemisphere, subtract X's (go further west)
-                x2 = x_long - x_offset;
+                x2 = x_long - lon_precision;
             }
 
             if (y_lat > 32400000L) {
                 // Southern hemisphere, add Y's (go further north)
-                y2 = y_lat + y_offset;
+                y2 = y_lat + lat_precision;
             }
             else {
                 // Northern hemisphere, subtract Y's (go further south)
-                y2 = y_lat - y_offset;
+                y2 = y_lat - lat_precision;
             }
 
             draw_vector(da, x_long, y_lat, x_long, y2, gc, where); // x_long constant

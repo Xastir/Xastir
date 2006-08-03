@@ -3118,7 +3118,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
 */
             draw_precision_rectangle( p_station->coord_lon,
                              p_station->coord_lat,
-                             p_station->error_ellipse_radius, // centimeters
+                             p_station->error_ellipse_radius, // centimeters (not implemented yet)
+                             p_station->lat_precision, // 100ths of seconds latitude
+                             p_station->lon_precision, // 100ths of seconds longitude
                              colors[0x0f],  // White
                              drawing_target);
 
@@ -8084,6 +8086,8 @@ void init_station(DataRow *p_station) {
     p_station->coord_lon          = 0l;           // 180°W  / position
     p_station->pos_amb            = 0;            // No ambiguity
     p_station->error_ellipse_radius = 600;        // In cm, default 6 meters
+    p_station->lat_precision      = 60;           // In 100ths of seconds latitude (60 = 0.01 minutes)
+    p_station->lon_precision      = 60;           // In 100ths of seconds longitude (60 = 0.01 minutes)
     p_station->call_sign[0]       = '\0';         // ?????
     p_station->tactical_call_sign = NULL;
     p_station->sec_heard          = 0;
@@ -11446,9 +11450,13 @@ int data_add(int type,
                     // ellipse?
                     if (type == APRS_MICE || !compr_pos) {
                         p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
 
                 }
@@ -11489,9 +11497,13 @@ int data_add(int type,
                     // ellipse?
                     if (!compr_pos) {
                         p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11531,9 +11543,13 @@ int data_add(int type,
                     // ellipse?
                     if (!compr_pos) {
                         p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11556,6 +11572,8 @@ int data_add(int type,
                     // Assign a non-default value for the error
                     // ellipse?
 //                    p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+//                    p_station->lat_precision = 60;
+//                    p_station->lon_precision = 60;
                 }
                 else {
                     if (debug_level & 1)
@@ -11695,9 +11713,13 @@ int data_add(int type,
                     // ellipse?
                     if (!compr_pos) {
                         p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11794,9 +11816,13 @@ int data_add(int type,
                     // ellipse?
                     if (!compr_pos) {
                         p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11830,9 +11856,13 @@ int data_add(int type,
                     // ellipse?
                     if (!compr_pos) {
                         p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11904,9 +11934,13 @@ int data_add(int type,
 //
                     if (1) {
 //                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11945,9 +11979,13 @@ int data_add(int type,
 //
                     if (1) {
 //                        p_station->error_ellipse_radius = 2550; // 25.5m, or about 60ft resolution
+                        p_station->lat_precision = 60;
+                        p_station->lon_precision = 60;
                     }
                     else {
                         p_station->error_ellipse_radius = 600; // Default of 6m
+                        p_station->lat_precision = 6;
+                        p_station->lon_precision = 6;
                     }
                 }
                 break;
@@ -11973,6 +12011,8 @@ int data_add(int type,
 // give it 600.
 //
                     p_station->error_ellipse_radius = 600; // Default of 6m
+                    p_station->lat_precision = 6;
+                    p_station->lon_precision = 6;
                 }
                 break;
 
