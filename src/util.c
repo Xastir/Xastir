@@ -2562,8 +2562,8 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
 //
 long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     long centi_sec;
-    char copy[11];
-    char n[11];
+    char copy[15];
+    char n[15];
     char *p;
     char offset;
 
@@ -2601,15 +2601,23 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
             break;
     }
 
-    copy[10] = '\0';
+    copy[14] = '\0';
     centi_sec=0l;
     if (copy[4]=='.'
-            && (   (char)toupper((int)copy[7])=='N'
-                || (char)toupper((int)copy[8])=='N'
-                || (char)toupper((int)copy[9])=='N'
-                || (char)toupper((int)copy[7])=='S'
-                || (char)toupper((int)copy[8])=='S'
-                || (char)toupper((int)copy[9])=='S')) {
+            && (   (char)toupper((int)copy[ 5])=='N'
+                || (char)toupper((int)copy[ 6])=='N'
+                || (char)toupper((int)copy[ 7])=='N'
+                || (char)toupper((int)copy[ 8])=='N'
+                || (char)toupper((int)copy[ 9])=='N'
+                || (char)toupper((int)copy[10])=='N'
+                || (char)toupper((int)copy[11])=='N'
+                || (char)toupper((int)copy[ 5])=='S'
+                || (char)toupper((int)copy[ 6])=='S'
+                || (char)toupper((int)copy[ 7])=='S'
+                || (char)toupper((int)copy[ 8])=='S'
+                || (char)toupper((int)copy[ 9])=='S'
+                || (char)toupper((int)copy[10])=='S'
+                || (char)toupper((int)copy[11])=='S')) {
 
         substr(n, copy, 2);       // degrees
         centi_sec=atoi(n)*60*60*100;
@@ -2639,9 +2647,13 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
         // Add 0.5 (Poor man's rounding)
         centi_sec += (long)((atoi(n) * 0.6) + 0.5);
 
-        if (       (char)toupper((int)copy[7])=='N'
-                || (char)toupper((int)copy[8])=='N'
-                || (char)toupper((int)copy[9])=='N') {
+        if (       (char)toupper((int)copy[ 5])=='N'
+                || (char)toupper((int)copy[ 6])=='N'
+                || (char)toupper((int)copy[ 7])=='N'
+                || (char)toupper((int)copy[ 8])=='N'
+                || (char)toupper((int)copy[ 9])=='N'
+                || (char)toupper((int)copy[10])=='N'
+                || (char)toupper((int)copy[11])=='N') {
             centi_sec = -centi_sec;
         }
 
@@ -2661,8 +2673,8 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
 //
 long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     long centi_sec;
-    char copy[12];
-    char n[12];
+    char copy[16];
+    char n[16];
     char *p;
     char offset;
 
@@ -2706,15 +2718,23 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
             break;
     }
 
-    copy[11] = '\0';
+    copy[15] = '\0';
     centi_sec=0l;
     if (copy[5]=='.'
-            && (   (char)toupper((int)copy[ 8])=='W'
+            && (   (char)toupper((int)copy[ 6])=='W'
+                || (char)toupper((int)copy[ 7])=='W'
+                || (char)toupper((int)copy[ 8])=='W'
                 || (char)toupper((int)copy[ 9])=='W'
                 || (char)toupper((int)copy[10])=='W'
+                || (char)toupper((int)copy[11])=='W'
+                || (char)toupper((int)copy[12])=='W'
+                || (char)toupper((int)copy[ 6])=='E'
+                || (char)toupper((int)copy[ 7])=='E'
                 || (char)toupper((int)copy[ 8])=='E'
                 || (char)toupper((int)copy[ 9])=='E'
-                || (char)toupper((int)copy[10])=='E')) {
+                || (char)toupper((int)copy[10])=='E'
+                || (char)toupper((int)copy[11])=='E'
+                || (char)toupper((int)copy[12])=='E')) {
 
         substr(n,copy,3);    // degrees 013
         centi_sec=atoi(n)*60*60*100;
@@ -2744,9 +2764,13 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
         // Add 0.5 (Poor man's rounding)
         centi_sec += (long)((atoi(n) * 0.6) + 0.5);
 
-        if (       (char)toupper((int)copy[ 8])=='W'
+        if (       (char)toupper((int)copy[ 6])=='W'
+                || (char)toupper((int)copy[ 7])=='W'
+                || (char)toupper((int)copy[ 8])=='W'
                 || (char)toupper((int)copy[ 9])=='W'
-                || (char)toupper((int)copy[10])=='W') {
+                || (char)toupper((int)copy[10])=='W'
+                || (char)toupper((int)copy[11])=='W'
+                || (char)toupper((int)copy[12])=='W') {
             centi_sec = -centi_sec;
         }
 
