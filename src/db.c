@@ -3629,7 +3629,7 @@ void display_file(Widget w) {
 
         // Skip if we're running an altnet and this station's not in
         // it
-        if ( altnet && is_altnet(p_station) ) {
+        if ( altnet && !is_altnet(p_station) ) {
 
             if (debug_level & 64) {
                 fprintf(stderr,"display_file: Station %s skipped altnet\n",
