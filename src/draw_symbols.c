@@ -3177,7 +3177,7 @@ void draw_deadreckoning_features(DataRow *p_station,
     long x2, y2;
     double diameter;
     int color = trail_colors[p_station->trail_color];
-    int symbol_on_screen = 0;
+//    int symbol_on_screen = 0;
     int ghosted_symbol_on_screen = 0;
 
 
@@ -3325,6 +3325,7 @@ void draw_deadreckoning_features(DataRow *p_station,
     //
     if (Display_.dr_course) {
 
+/*
         // Check symbol position
         if (    (x_long>x_long_offset) &&
                 (x_long<(x_long_offset+(long)(screen_width *scale_x))) &&
@@ -3340,12 +3341,34 @@ void draw_deadreckoning_features(DataRow *p_station,
 
             (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
             (void)XSetForeground(XtDisplay(da),gc,color); // red3
+
+            // This one messes up (completely wrong angle) once the
+            // vector gets too long for X11
+            //
             (void)XDrawLine(XtDisplay(da),where,gc,
                 x,
                 y,
                 x2,
                 y2);
         }
+*/
+
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,color); // red3
+
+        // This one changes the angle as the vector gets longer, by
+        // about 10 degrees (A test at 133 degrees -> 143 degrees).
+        // draw_vector() needs to truncate the line in this case,
+        // maintaining the same slope.  This behavior is _much_
+        // better than the XDrawLine above though!
+        //
+        draw_vector(w,
+            x_long,
+                y_lat,
+            x_long2,
+            y_lat2,
+            gc,
+            where);
     }
 
 
