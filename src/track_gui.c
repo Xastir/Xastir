@@ -568,9 +568,19 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 // Setting the read_file_ptr to the downloaded file won't do it.
 
 
+
+//        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1", // New, with timestamp
     xastir_snprintf(fileimg, sizeof(fileimg),
-        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",         // Old
-//        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1",// New
+        //
+        // Posits only:
+        // "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",
+        //
+        // Posits plus timestamps (we can't handle timestamps yet):
+        // "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1", // New, with timestamp
+        // 
+        // Download all packets, not just posits:
+        "http://www.findu.com/cgi-bin/raw.cgi?call=%s&start=%d&length=%d",
+        //
         download_trail_station_call,posit_start,posit_length);
 
     if (debug_level & 1024) {
