@@ -576,16 +576,10 @@ void draw_point(Widget w,
     // XDrawLines uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
 
-// We should truncate the line along the line, instead of changing
-// the endpoint.  The way we're doing it here is easier/faster, but
-// it changes the slope of the line.  Not accurate.
-// This method does keep us from exercising an X11 bug though.
-
-    if (x1i >  16000) x1i =  10000;
-    if (x1i < -16000) x1i = -10000;
-
-    if (y1i >  16000) y1i =  10000;
-    if (y1i < -16000) y1i = -10000;
+    if (x1i >  16000) return;
+    if (x1i < -16000) return;
+    if (y1i >  16000) return;
+    if (y1i < -16000) return;
 
     (void)XDrawPoint(XtDisplay(w),
         which_pixmap,
@@ -673,6 +667,12 @@ void draw_vector(Widget w,
 // the endpoint.  The way we're doing it here is easier/faster, but
 // it changes the slope of the line.  Not accurate.
 // This method does keep us from exercising an X11 bug though.
+//
+// TODO:  Better method:  Compute the slope of the line.  Pick new
+// points that are outside the screen border but not too far
+// outside, with the same slope as the original line.
+// See:  Cohen-Sutherland and/or Liang-Barsky line-clipping
+// algorithms.
 
     if (x1i >  16000) x1i =  10000;
     if (x1i < -16000) x1i = -10000;
