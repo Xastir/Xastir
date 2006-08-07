@@ -573,7 +573,7 @@ void draw_point(Widget w,
     y1i = y1 - y_lat_offset;
     y1i = y1i / scale_y;
 
-    // XDrawLines uses 16-bit unsigned integers
+    // XDrawPoint uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
 
     if (x1i >  16000) return;
@@ -586,6 +586,336 @@ void draw_point(Widget w,
         gc,
         x1i,
         y1i);
+}
+
+
+
+
+
+// Function to perform 2D line-clipping Using the improved parametric
+// line-clipping algorithm by Liang, Barsky, and Slater published in
+// the paper: "Some Improvements to a Parametric Line Clipping
+// Algorithm", 1992.  Called by clip2d() function below.  This
+// function is set up for float values.  See the clipt_long()
+// function for use with Xastir coordinates (unsigned longs).
+//
+// Returns False if the line is rejected, True otherwise.  May modify
+// t0 and t1.
+//
+int clipt(float p, float q, float *t0, float *t1) {
+    float r;
+    int accept = True;
+
+
+    if (p < 0) {  // Entering visible region, so compute t0
+
+        if (q < 0) {  // t0 will be non-negative, so continue
+
+            r = q / p;
+
+            if (r > *t1) {  // t0 will exceed t1, so reject
+                accept = False;
+            }
+            else if (r > *t0) {  // t0 is max of r's
+                *t0 = r;
+            }
+        }
+    }
+    else {
+
+        if (p > 0) {  // Exiting visible region, so compute t1
+
+            if (q < p) {  // t1 will be <= 1, so continue
+
+                r = q / p;
+
+                if (r < *t0) {  // t1 will be <= t0, so reject
+                    accept = False;
+                }
+                else if (r < *t1) {  // t1 is min of r's
+                    *t1 = r;
+                }
+            }
+        }
+        else {  // p == 0
+
+            if (q < 0) {  // Line parallel and outside, so reject
+                accept = False;
+            }
+        }
+    }
+    return(accept);
+}
+
+
+
+
+
+// Function to perform 2D line-clipping using the improved parametric
+// line-clipping algorithm by Liang, Barsky, and Slater published in
+// the paper: "Some Improvements to a Parametric Line Clipping
+// Algorithm", 1992.  Uses the clipt() function above.
+//
+// Returns False if the line is rejected, True otherwise.  x0, y0,
+// x1, y1 may get modified by this function.  These will be the new
+// clipped line ends that fit inside the window.
+//
+// Clip 2D line segment with endpoints (x0,y0) and (x1,y1).  The clip
+// window is x_left <= x <= x_right and y_bottom <= y <= y_top.
+//
+// This function is set up for float values.  See the function
+// clip2d_long() for use with Xastir coordinates (unsigned longs).
+//
+int clip2d(float *x0, float *y0, float *x1, float *y1) {
+    float t0, t1;
+    float delta_x, delta_y;
+    int visible = False;
+    float x_left, y_top;        // NW corner of screen
+    float x_right, y_bottom;    // SE corner of screen
+
+// Move the last two sets of variables into a global struct that gets
+// updated when we do a zoom/pan/resize/startup.  That way we won't
+// lose time computing/assigned them for each line.
+
+// NOTE:  We have _some_ useful global variables defined which are
+// updated at the proper points:
+//
+//   f_center_longitude = Floating point map center longitude
+//   f_center_latitude = Floating point map center latitude
+//   x_long_offset = Longitude at top NW corner of map screen
+//   y_lat_offset = Latitude  at top NW corner of map screen
+//   scale_y = y scaling in 1/100 sec per pixel
+//   scale_x = x scaling in 1/100 sec per pixel
+//   mid_x_long_offset = Longitude at center of map
+//   mid_y_lat_offset = Latitude  at center of map
+//
+// NEED:
+//   floating point NW/SE corners of display
+//   unsigned long SE corner of display
+
+
+    // Compute the floating point lat/long for the display corners.
+    //
+    convert_from_xastir_coordinates(&x_left,    // NW corner
+        &y_top,
+        x_long_offset,
+        y_lat_offset);
+
+    convert_from_xastir_coordinates(&x_right,   // SE corner
+        &y_bottom,
+        x_long_offset + (screen_width * scale_x),
+        y_lat_offset + (screen_height * scale_y));
+
+    if (       ((*x0 < x_left)   && (*x1 < x_left))
+            || ((*x0 > x_right)  && (*x1 > x_right))
+            || ((*y0 < y_bottom) && (*y1 < y_bottom))
+            || ((*y0 > y_top)    && (*y1 > y_top)) ) {
+
+        // Both endpoints are on outside and same side of visible
+        // region, so reject.
+        return(visible);
+    }
+
+    t0 = 0;
+    t1 = 1;
+    delta_x = *x1 - *x0;
+
+    if ( clipt(-delta_x, *x0 - x_left, &t0, &t1) ) {           // left
+
+        if ( clipt(delta_x, x_right - *x0, &t0, &t1) ) {       // right
+
+            delta_y = *y1 - *y0;
+
+            if ( clipt(-delta_y, *y0 - y_bottom, &t0, &t1) ) { // bottom
+
+                if ( clipt(delta_y, y_top - *y0, &t0, &t1) ) { // top
+                    // Compute coordinates
+
+                    if (t1 < 1) {   // Compute V1' (new x1,y1)
+                        *x1 = *x0 + t1 * delta_x;
+                        *y1 = *y0 + t1 * delta_y;
+                    }
+
+                    if (t0 > 0) {   // Compute V0' (new x0,y0)
+                        *x0 = *x0 + t0 * delta_x;
+                        *y0 = *y0 + t0 * delta_y;
+                    }
+                    visible = True;
+                }
+            }
+        }
+    }
+    return(visible);
+}
+
+
+
+
+
+// Function to perform 2D line-clipping Using the improved parametric
+// line-clipping algorithm by Liang, Barsky, and Slater published in
+// the paper: "Some Improvements to a Parametric Line Clipping
+// Algorithm", 1992.  Called by clip2d_long() function below.  This
+// function is set up for Xastir coordinate values (unsigned longs).
+// See the clipt() function for use with float values.
+//
+// Returns False if the line is rejected, True otherwise.  May modify
+// t0 and t1.
+//
+int clipt_long(long p, long q, float *t0, float *t1) {
+    float r;
+    int accept = True;
+
+
+    if (p < 0) {  // Entering visible region, so compute t0
+
+        if (q < 0) {  // t0 will be non-negative, so continue
+
+            r = q / (p * 1.0);
+
+            if (r > *t1) {  // t0 will exceed t1, so reject
+                accept = False;
+            }
+            else if (r > *t0) {  // t0 is max of r's
+                *t0 = r;
+            }
+        }
+    }
+    else {
+
+        if (p > 0) {  // Exiting visible region, so compute t1
+
+            if (q < p) {  // t1 will be <= 1, so continue
+
+                r = q / (p * 1.0);
+
+                if (r < *t0) {  // t1 will be <= t0, so reject
+                    accept = False;
+                }
+                else if (r < *t1) {  // t1 is min of r's
+                    *t1 = r;
+                }
+            }
+        }
+        else {  // p == 0
+
+            if (q < 0) {  // Line parallel and outside, so reject
+                accept = False;
+            }
+        }
+    }
+    //fprintf(stderr,"clipt_long: %d\n",accept);
+    return(accept);
+}
+
+
+
+
+
+// Function to perform 2D line-clipping using the improved parametric
+// line-clipping algorithm by Liang, Barsky, and Slater published in
+// the paper: "Some Improvements to a Parametric Line Clipping
+// Algorithm", 1992.  Uses the clipt_long() function above.
+//
+// Returns False if the line is rejected, True otherwise.  x0, y0,
+// x1, y1 may get modified by this function.  These will be the new
+// clipped line ends that fit inside the window.
+//
+// Clip 2D line segment with endpoints (x0,y0) and (x1,y1).  The clip
+// window is x_left <= x <= x_right and y_bottom <= y <= y_top.
+//
+// This function uses the Xastir coordinate system.  We had to flip
+// y_bottom/y_top due to the coordinate system being upside-down.
+//
+// This function is set up for Xastir coordinate values (unsigned
+// longs).  See the function clip2d() for use with float values.
+//
+int clip2d_long(unsigned long *x0, unsigned long *y0, unsigned long *x1, unsigned long *y1) {
+    float t0, t1;
+    long delta_x, delta_y;
+    int visible = False;
+    unsigned long x_left   = x_long_offset;
+    unsigned long x_right  = x_long_offset + (screen_width * scale_x);
+// Reverse these two as our Xastir coordinate system is upside down
+//    unsigned long y_top    = y_lat_offset;
+//    unsigned long y_bottom = y_lat_offset + (screen_height * scale_y);
+    unsigned long y_top    = y_lat_offset + (screen_height * scale_y);
+    unsigned long y_bottom = y_lat_offset;
+
+// Move some of the above variables into a global struct that gets
+// updated when we do a zoom/pan/resize/startup.  That way we won't
+// lose time computing/assigned them for each line.
+//
+// NOTE:  We have _some_ useful global variables defined which are
+// updated at the proper points:
+//
+//   f_center_longitude = Floating point map center longitude
+//   f_center_latitude = Floating point map center latitude
+//   x_long_offset = Longitude at top NW corner of map screen
+//   y_lat_offset = Latitude  at top NW corner of map screen
+//   scale_y = y scaling in 1/100 sec per pixel
+//   scale_x = x scaling in 1/100 sec per pixel
+//   mid_x_long_offset = Longitude at center of map
+//   mid_y_lat_offset = Latitude  at center of map
+//
+// NEED:
+//   floating point NW/SE corners of display
+//   unsigned long SE corner of display
+
+
+    if (       ( (*x0 < x_left  ) && (*x1 < x_left  ) )
+            || ( (*x0 > x_right ) && (*x1 > x_right ) )
+            || ( (*y0 < y_bottom) && (*y1 < y_bottom) )
+            || ( (*y0 > y_top   ) && (*y1 > y_top   ) ) ) {
+
+        // Both endpoints are on same side of visible region and
+        // outside of it, so reject.
+        //fprintf(stderr,"reject 1\n");
+        return(visible);
+    }
+
+    t0 = 0;
+    t1 = 1;
+    delta_x = *x1 - *x0;
+
+    if ( clipt_long(-delta_x, *x0 - x_left, &t0, &t1) ) {           // left
+
+        if ( clipt_long(delta_x, x_right - *x0, &t0, &t1) ) {       // right
+
+            delta_y = *y1 - *y0;
+
+            if ( clipt_long(-delta_y, *y0 - y_bottom, &t0, &t1) ) { // bottom
+
+                if ( clipt_long(delta_y, y_top - *y0, &t0, &t1) ) { // top
+                    // Compute coordinates
+
+                    if (t1 < 1) {   // Compute V1' (new x1,y1)
+                        *x1 = *x0 + t1 * delta_x;
+                        *y1 = *y0 + t1 * delta_y;
+                    }
+
+                    if (t0 > 0) {   // Compute V0' (new x0,y0)
+                        *x0 = *x0 + t0 * delta_x;
+                        *y0 = *y0 + t0 * delta_y;
+                    }
+                    visible = True;
+                }
+                else {
+                    //fprintf(stderr,"reject top\n");
+                }
+            }
+            else {
+                //fprintf(stderr,"reject bottom\n");
+            }
+        }
+        else {
+            //fprintf(stderr,"reject right\n");
+        }
+    }
+    else {
+        //fprintf(stderr,"reject left\n");
+    }
+    return(visible);
 }
 
 
@@ -608,42 +938,17 @@ void draw_vector(Widget w,
                  Pixmap which_pixmap) {
 
     int x1i, x2i, y1i, y2i;
-    unsigned long B, T, L, R;
 
 
-    // Check whether the two bounding boxes intersect.  If not, skip
-    // the rest of this function.  Do we need to worry about
-    // special-case code here to handle vertical/horizontal lines
-    // (width or length of zero)?
-    //
-    // Here the order of the parameters is extremely important due
-    // to the way that map_visible() has been coded.  We need the
-    // parameters in this order: bottom/top/left/right.
-    //
-    if (y1 > y2) {
-        B = y1;
-        T = y2;
-    }
-    else {
-        B = y2;
-        T = y1;
-    }
-
-    if (x1 < x2) {
-        L = x1;
-        R = x2;
-    }
-    else {
-        L = x2;
-        R = x1;
-    }
-
-    if (!map_visible(B, T, L, R)) {
+    //fprintf(stderr,"%ld,%ld  %ld,%ld\t",x1,y1,x2,y2);
+    if ( !clip2d_long(&x1, &y1, &x2, &y2) ) {
         // Skip this vector
         //fprintf(stderr,"Line not visible\n");
+        //fprintf(stderr,"%ld,%ld  %ld,%ld\n",x1,y1,x2,y2);
         return;
     }
-
+    //fprintf(stderr,"%ld,%ld  %ld,%ld\n",x1,y1,x2,y2);
+ 
     // Convert to screen coordinates.  Careful here!
     // The format conversions you'll need if you try to
     // compress this into two lines will get you into
@@ -660,31 +965,20 @@ void draw_vector(Widget w,
     y2i = y2 - y_lat_offset;
     y2i = y2i / scale_y;
 
-    // XDrawLines uses 16-bit unsigned integers
+    // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
+    //
+    if (x1i >  16000) x1i =  16000;
+    if (x1i < -16000) x1i = -16000;
 
-// We should truncate the line along the line, instead of changing
-// the endpoint.  The way we're doing it here is easier/faster, but
-// it changes the slope of the line.  Not accurate.
-// This method does keep us from exercising an X11 bug though.
-//
-// TODO:  Better method:  Compute the slope of the line.  Pick new
-// points that are outside the screen border but not too far
-// outside, with the same slope as the original line.
-// See:  Cohen-Sutherland and/or Liang-Barsky line-clipping
-// algorithms.
+    if (y1i >  16000) y1i =  16000;
+    if (y1i < -16000) y1i = -16000;
 
-    if (x1i >  16000) x1i =  10000;
-    if (x1i < -16000) x1i = -10000;
+    if (x2i >  16000) x2i =  16000;
+    if (x2i < -16000) x2i = -16000;
 
-    if (y1i >  16000) y1i =  10000;
-    if (y1i < -16000) y1i = -10000;
-
-    if (x2i >  16000) x2i =  10000;
-    if (x2i < -16000) x2i = -10000;
-
-    if (y2i >  16000) y2i =  10000;
-    if (y2i < -16000) y2i = -10000;
+    if (y2i >  16000) y2i =  16000;
+    if (y2i < -16000) y2i = -16000;
 
     (void)XDrawLine(XtDisplay(w),
         which_pixmap,
@@ -742,7 +1036,18 @@ void draw_vector_ll(Widget w,
                     Pixmap which_pixmap) {
 
     unsigned long x1L, x2L, y1L, y2L;
+    int x1i, x2i, y1i, y2i;
 
+
+    //fprintf(stderr,"%lf,%lf  %lf,%lf\t",x1,y1,x2,y2);
+    if ( !clip2d(&x1, &y1, &x2, &y2) ) {
+        // Skip this vector
+        //fprintf(stderr,"Line not visible\n");
+        //fprintf(stderr,"%lf,%lf  %lf,%lf\n",x1,y1,x2,y2);
+        return;
+    }
+    //fprintf(stderr,"%lf,%lf  %lf,%lf\n",x1,y1,x2,y2);
+ 
     // Convert the points to the Xastir coordinate system.
     convert_to_xastir_coordinates(&x1L,
         &y1L,
@@ -754,8 +1059,44 @@ void draw_vector_ll(Widget w,
         x2,
         y2);
 
-    // Call the draw routine.
-    draw_vector(w, x1L, y1L, x2L, y2L, gc, which_pixmap);
+    // Convert to screen coordinates.  Careful here!
+    // The format conversions you'll need if you try to
+    // compress this into two lines will get you into
+    // trouble.
+    x1i = x1 - x_long_offset;
+    x1i = x1i / scale_x;
+ 
+    y1i = y1 - y_lat_offset;
+    y1i = y1i / scale_y;
+
+    x2i = x2 - x_long_offset;
+    x2i = x2i / scale_x;
+ 
+    y2i = y2 - y_lat_offset;
+    y2i = y2i / scale_y;
+
+    // XDrawLine uses 16-bit unsigned integers
+    // (shorts).  Make sure we stay within the limits.
+    //
+    if (x1i >  16000) x1i =  16000;
+    if (x1i < -16000) x1i = -16000;
+
+    if (y1i >  16000) y1i =  16000;
+    if (y1i < -16000) y1i = -16000;
+
+    if (x2i >  16000) x2i =  16000;
+    if (x2i < -16000) x2i = -16000;
+
+    if (y2i >  16000) y2i =  16000;
+    if (y2i < -16000) y2i = -16000;
+
+    (void)XDrawLine(XtDisplay(w),
+        which_pixmap,
+        gc,
+        x1i,
+        y1i,
+        x2i,
+        y2i);
 }
 
 
@@ -2377,18 +2718,18 @@ int draw_minor_utm_mgrs_grid(Widget w) {
         }
 
         // Here we check to see whether we are inserting points
-        // that are greater than about +/- 15000.  If so,
+        // that are greater than about +/- 16000.  If so,
         // truncate at that.  This prevents XDrawLines() from
         // going nuts and drawing hundreds of extra lines.
         //
-        if (xx < -15000)
-            xx = -15000;
-        if (xx >  15000)
-            xx =  15000;
-        if (yy < -15000)
-            yy = -15000;
-        if (yy >  15000)
-            yy = 15000;
+        if (xx < -16000)
+            xx = -16000;
+        if (xx >  16000)
+            xx =  16000;
+        if (yy < -16000)
+            yy = -16000;
+        if (yy >  16000)
+            yy =  16000;
 
         utm_grid.zone[Zone].col[col].points[col_point].x = xx;
         utm_grid.zone[Zone].col[col].points[col_point].y = yy;
