@@ -3325,34 +3325,6 @@ void draw_deadreckoning_features(DataRow *p_station,
     //
     if (Display_.dr_course) {
 
-/*
-        // Check symbol position
-        if (    (x_long>x_long_offset) &&
-                (x_long<(x_long_offset+(long)(screen_width *scale_x))) &&
-                ((y_lat>y_lat_offset) &&
-                (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) &&
-                ((x_long>=0) && (x_long<=129600000l)) &&
-                ((y_lat>=0) && (y_lat<=64800000l))) {
-
-            symbol_on_screen++;
-        }
-
-        if (symbol_on_screen || ghosted_symbol_on_screen) {
-
-            (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-            (void)XSetForeground(XtDisplay(da),gc,color); // red3
-
-            // This one messes up (completely wrong angle) once the
-            // vector gets too long for X11
-            //
-            (void)XDrawLine(XtDisplay(da),where,gc,
-                x,
-                y,
-                x2,
-                y2);
-        }
-*/
-
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,color); // red3
 
