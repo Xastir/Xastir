@@ -272,8 +272,8 @@ void draw_WMS_map (Widget w,
     //
     tp[0].img_x = 0;                // Pixel Coordinates
     tp[0].img_y = 0;                // Pixel Coordinates
-    tp[0].x_long = x_long_offset;   // Xastir Coordinates
-    tp[0].y_lat  = y_lat_offset;    // Xastir Coordinates
+    tp[0].x_long = NW_corner_longitude;   // Xastir Coordinates
+    tp[0].y_lat  = NW_corner_latitude;    // Xastir Coordinates
 
 
     // Tiepoint for lower right screen corner
@@ -302,25 +302,25 @@ void draw_WMS_map (Widget w,
     //
     tp[1].img_x =  screen_width - 1; // Pixel Coordinates
     tp[1].img_y = screen_height - 1; // Pixel Coordinates 
-    tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
+    tp[1].x_long = SE_corner_longitude; // Xastir Coordinates
 
 // Modified to use same scale (scale_x) for both dimensions, square
-// pixels.
-//    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
-    tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_x); // Xastir Coordinates
+// pixels.  Don't use SE_corner_latitude here as it uses scale_y!
+//    tp[1].y_lat  =  NW_corner_latitude + ((screen_height) * scale_y); // Xastir Coordinates
+    tp[1].y_lat  =  NW_corner_latitude + ((screen_height) * scale_x); // Xastir Coordinates
 
 
     // Again, use scale_x for both directions due to the square
     // pixels returned from the WMS server.
     //
-    left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
-    top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
-    right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
+    left = (double)((NW_corner_longitude - 64800000l )/360000.0);   // Lat/long Coordinates
+    top = (double)(-((NW_corner_latitude - 32400000l )/360000.0));  // Lat/long Coordinates
+    right = (double)((SE_corner_longitude - 64800000l)/360000.0);//Lat/long Coordinates
 
 // Modified to use same scale (scale_x) for both dimensions, square
-// pixels.
-//    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
-    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_x) ) - 32400000l)/360000.0));//Lat/long Coordinates
+// pixels.  Don't use SE_corner_latitude here as it uses scale_y!
+//    bottom = (double)(-(((NW_corner_latitude + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
+    bottom = (double)(-(((NW_corner_latitude + ((screen_height) * scale_x) ) - 32400000l)/360000.0));//Lat/long Coordinates
 
 
     map_width = right - left;   // Lat/long Coordinates
@@ -773,10 +773,10 @@ void draw_WMS_map (Widget w,
     * Here are the corners of our viewport, using the Xastir
     * coordinate system.  Notice that Y is upside down:
     *
-    *   left edge of view = x_long_offset
-    *  right edge of view = x_long_offset + (screen_width  * scale_x)
-    *    top edge of view =  y_lat_offset
-    * bottom edge of view =  y_lat_offset + (screen_height * scale_y)
+    *   left edge of view = NW_corner_longitude
+    *  right edge of view = SE_corner_longitude
+    *    top edge of view =  NW_corner_latitude
+    * bottom edge of view =  SE_corner_latitude
     *
     * The corners of our map will soon be (after translating the
     * tiepoints to the corners if they're not already there):
@@ -787,8 +787,8 @@ void draw_WMS_map (Widget w,
     * bottom edge of map = tp[1].y_lat
     *
     */
-    map_c_L = tp[0].x_long - x_long_offset;     // map left coordinate
-    map_c_T = tp[0].y_lat  - y_lat_offset;      // map top  coordinate
+    map_c_L = tp[0].x_long - NW_corner_longitude;     // map left coordinate
+    map_c_T = tp[0].y_lat  - NW_corner_latitude;      // map top  coordinate
 
     tp_c_dx = (long)(tp[1].x_long - tp[0].x_long);//  Width between tiepoints
     tp_c_dy = (long)(tp[1].y_lat  - tp[0].y_lat); // Height between tiepoints
@@ -811,14 +811,14 @@ void draw_WMS_map (Widget w,
     // calculate top left map corner from tiepoints
     if (tp[0].img_x != 0) {
         tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
-        map_c_L = tp[0].x_long - x_long_offset;     // delta ??
+        map_c_L = tp[0].x_long - NW_corner_longitude;     // delta ??
         tp[0].img_x = 0;
         if (debug_level & 512)
             fprintf(stderr,"Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
     }
     if (tp[0].img_y != 0) {
         tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
-        map_c_T = tp[0].y_lat - y_lat_offset;
+        map_c_T = tp[0].y_lat - NW_corner_latitude;
         tp[0].img_y = 0;
         if (debug_level & 512)
             fprintf(stderr,"Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
@@ -869,13 +869,13 @@ void draw_WMS_map (Widget w,
 
     map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
     map_x_ctr = (long)(width  / 2 +0.499);
-    scr_x_mc  = (map_c_xc - x_long_offset) / scale_x; // screen coordinates of map center
+    scr_x_mc  = (map_c_xc - NW_corner_longitude) / scale_x; // screen coordinates of map center
 
     // calculate map pixel range in y direction that falls into screen area
     c_y_max = 0ul;
     map_y_min = map_y_max = 0l;
     for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
-        scr_y = (c_y - y_lat_offset) / scale_y;   // current screen position
+        scr_y = (c_y - NW_corner_latitude) / scale_y;   // current screen position
         if (scr_y > 0) {
             if (scr_y < screen_height) {
                 map_y_max = map_y_0;          // update last map pixel in y
@@ -890,7 +890,7 @@ void draw_WMS_map (Widget w,
 
         map_x_min = map_x_max = 0l;
         for (map_x = 0, c_x = tp[0].x_long; map_x < (long)width; map_x++, c_x += map_c_dx) {
-            scr_x = (c_x - x_long_offset)/ scale_x;  // current screen position
+            scr_x = (c_x - NW_corner_longitude)/ scale_x;  // current screen position
             if (scr_x > 0) {
                 if (scr_x < screen_width)
                     map_x_max = map_x;          // update last map pixel in x
@@ -903,7 +903,7 @@ void draw_WMS_map (Widget w,
         c_x_min = (unsigned long)(tp[0].x_long + map_x_min * map_c_dx);   // left map inside screen coordinate
 
     scr_yp = -1;
-    scr_c_xr = x_long_offset + screen_width * scale_x;
+    scr_c_xr = SE_corner_longitude;
     c_dx = map_c_dx;                            // map pixel width
     scale_xa = scale_x0;                        // the compiler likes it ;-)
 
@@ -937,7 +937,7 @@ void draw_WMS_map (Widget w,
             return;
         }
 
-        scr_y = (c_y - y_lat_offset) / scale_y;
+        scr_y = (c_y - NW_corner_latitude) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice
             scr_yp = scr_y;                     // remember as previous y
             scr_xp = -1;
@@ -945,7 +945,7 @@ void draw_WMS_map (Widget w,
             map_act = 0;
             scale_x_nm = calc_dscale_x(0,(long)c_y) / 1852.0;  // nm per Xastir coordinate
             for (map_x = map_x_min, c_x = (double)c_x_min; map_x <= map_x_max; map_x++, c_x += c_dx) {
-                scr_x = (c_x - x_long_offset) / scale_x;
+                scr_x = (c_x - NW_corner_longitude) / scale_x;
                 if (scr_x != scr_xp) {      // don't do a pixel twice
                     scr_xp = scr_x;         // remember as previous x
                     map_y = map_y_0;

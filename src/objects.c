@@ -3808,16 +3808,16 @@ void Draw_All_CAD_Objects(Widget w) {
     
                 if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
     
-                    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+                    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
     
-                        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+                        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
     
                             // ok to draw label and assocated data, point is on screen
-                            x_offset=((x_long-x_long_offset)/scale_x)-(10);
-                            y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
+                            x_offset=((x_long-NW_corner_longitude)/scale_x)-(10);
+                            y_offset=((y_lat -NW_corner_latitude) /scale_y)-(10);
                             // ****** ?? use -10 or point ??
-                            x_offset=((x_long-x_long_offset)/scale_x);
-                            y_offset=((y_lat -y_lat_offset) /scale_y);
+                            x_offset=((x_long-NW_corner_longitude)/scale_x);
+                            y_offset=((y_lat -NW_corner_latitude) /scale_y);
     
                             if ((object_ptr->label!=NULL) & ((int)strlen(object_ptr->label)>0) & (CAD_show_label==TRUE)) {
                                 // Draw Label   
@@ -6979,8 +6979,8 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
     // Get mouse position.
     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-    x_lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-    x_lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+    x_lon = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+    x_lat = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
     if(debug_level & 1)
         fprintf(stderr, "Creating symbol %s %s at: %lu %lu with calldata: [%i]\n",
              page,
@@ -7286,14 +7286,14 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         //
         if (Map_View_object_enabled) {
             // Get center of screen
-            lon = mid_x_long_offset;
-            lat = mid_y_lat_offset;
+            lon = center_longitude;
+            lat = center_latitude;
         }
         else {
             // Get mouse position
             XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-            lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-            lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+            lon = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+            lat = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
         }
     }
 
@@ -10264,23 +10264,23 @@ if (Area_object_enabled) {
                 XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
 
                 // Find distance from center to top of screen.
-                // top_range = distance from mid_x_long_offset,
-                // mid_y_lat_offset to mid_x_long_offset,
-                // mid_y_lat_offset-((height*scale_y)/2).
-                top_range = calc_distance(mid_y_lat_offset,
-                    mid_x_long_offset,
-                    y_lat_offset,
-                    mid_x_long_offset);
+                // top_range = distance from center_longitude,
+                // center_latitude to center_longitude,
+                // center_latitude-((height*scale_y)/2).
+                top_range = calc_distance(center_latitude,
+                    center_longitude,
+                    NW_corner_latitude,
+                    center_longitude);
 //fprintf(stderr," top_range:%1.0f meters\n", top_range);
                 // Find distance from center to left of screen.
-                // left_range = distance from mid_x_long_offset,
-                // mid_y_lat_offset to
-                // mid_x_long_offset-((width*scale_x)/2),
-                // mid_y_lat_offset.
-                left_range = calc_distance(mid_y_lat_offset,
-                    mid_x_long_offset,
-                    mid_y_lat_offset,
-                    x_long_offset);
+                // left_range = distance from center_longitude,
+                // center_latitude to
+                // center_longitude-((width*scale_x)/2),
+                // center_latitude.
+                left_range = calc_distance(center_latitude,
+                    center_longitude,
+                    center_latitude,
+                    NW_corner_longitude);
 //fprintf(stderr,"left_range:%1.0f meters\n", left_range);
 
                 // Compute greater of the two.  This is our range in
@@ -10336,8 +10336,8 @@ if (Area_object_enabled) {
         else  { // We're in the middle of moving an object, calldata was "2"
             // Fill in new lat/long values
             //fprintf(stderr,"Here we will fill in the new lat/long values\n");
-            x = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (input_x * scale_x));
-            y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (input_y * scale_y));
+            x = (center_longitude - ((screen_width  * scale_x)/2) + (input_x * scale_x));
+            y = (center_latitude  - ((screen_height * scale_y)/2) + (input_y * scale_y));
             if (x < 0)
                 x = 0l;                 // 180°W
 

@@ -161,8 +161,8 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
     }
 
     if (draw_ok) {
-        x = ((x_long_cord - x_long_offset) / scale_x);
-        y = ((y_lat_cord  - y_lat_offset)  / scale_y);
+        x = ((x_long_cord - NW_corner_longitude) / scale_x);
+        y = ((y_lat_cord  - NW_corner_latitude)  / scale_y);
         if (x < -MAX_OUTBOUND)
             x = -MAX_OUTBOUND;
 
@@ -1129,11 +1129,11 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                         label_mag = (int)strtol (trailer, &trailer, 0) * 20;
 
                         if ((label_type[0] & 0x80) == '\0') /* left of coords */
-                            x = ((label_x_cord - x_long_offset) / scale_x) - (label_length * 6);
+                            x = ((label_x_cord - NW_corner_longitude) / scale_x) - (label_length * 6);
                         else  /* right of coords */
-                            x = ((label_x_cord - x_long_offset) / scale_x);
+                            x = ((label_x_cord - NW_corner_longitude) / scale_x);
                 
-                        y = ((label_y_cord - y_lat_offset) / scale_y);
+                        y = ((label_y_cord - NW_corner_latitude) / scale_y);
                         if (x > (0) && (x < (int)screen_width)) {
                             if (y > (0) && (y < (int)screen_height)) {
                                 /*fprintf(stderr,"Label mag %d mag %d\n",label_mag,(scale_x*2)-1); */
@@ -1240,15 +1240,15 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
               
                     if ((label_type_1[0] & 0x80) == '\0') {
                         /* left of coords */
-                        x = ((label_x_cord - x_long_offset) / scale_x) - (label_length * 6);
+                        x = ((label_x_cord - NW_corner_longitude) / scale_x) - (label_length * 6);
                         x = 0;  // ??????
                     }
                     else {
                         /* right of coords */
-                        x = ((label_x_cord - x_long_offset) / scale_x);
+                        x = ((label_x_cord - NW_corner_longitude) / scale_x);
                     }
               
-                    y = ((label_y_cord - y_lat_offset) / scale_y);
+                    y = ((label_y_cord - NW_corner_latitude) / scale_y);
               
                     if (x > (0) && (x < (int)screen_width)) {
 
@@ -1314,8 +1314,8 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                     if (label_text_color < '1' && label_text_color > '9')
                         label_text_color = '0'; // Default to black
               
-                    x = ((label_x_cord - x_long_offset) / scale_x);
-                    y = ((label_y_cord - y_lat_offset) / scale_y);
+                    x = ((label_x_cord - NW_corner_longitude) / scale_x);
+                    y = ((label_y_cord - NW_corner_latitude) / scale_y);
               
                     // Read the label text portion
                     if (strcmp (map_type, "COMP") == 0) {

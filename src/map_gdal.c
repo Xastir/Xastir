@@ -355,10 +355,10 @@ void draw_gdal_map(Widget w,
      * Here are the corners of our viewport, using the Xastir
      * coordinate system.  Notice that Y is upside down:
      *
-     *   left edge of view = x_long_offset
-     *  right edge of view = x_long_offset + (screen_width  * scale_x)
-     *    top edge of view =  y_lat_offset
-     * bottom edge of view =  y_lat_offset + (screen_height * scale_y)
+     *   left edge of view = NW_corner_longitude
+     *  right edge of view = SE_corner_longitude
+     *    top edge of view =  NW_corner_latitude
+     * bottom edge of view =  SE_corner_latitude
      *
      * The corners of our map:
      *
@@ -393,7 +393,7 @@ scr_s_x_min = 0;
     // calculate map range on screen
     scr_s_x_max = map_s_x_max = 0ul;
     for ( map_s_x = 0, scr_s_x = 0; map_s_x_min < width; map_s_x_min++, scr_s_x_min += scr_m_dx) {
-        if ((x_long_offset + (scr_s_x_min * scale_x)) > (map_x_min + (map_s_x_min * map_dx))) 
+        if ((NW_corner_longitude + (scr_s_x_min * scale_x)) > (map_x_min + (map_s_x_min * map_dx))) 
             map_s_x_min = map_s_x;
         
         
@@ -1534,10 +1534,10 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
         // We also clip to screen size and compute min/max
         // values here.
         for (ii = 0; ii < num_points; ii++) {
-            XI[ii] = XL[ii] - x_long_offset;
+            XI[ii] = XL[ii] - NW_corner_longitude;
             XI[ii] = XI[ii] / scale_x;
 
-            YI[ii] = YL[ii] - y_lat_offset;
+            YI[ii] = YL[ii] - NW_corner_latitude;
             YI[ii] = YI[ii] / scale_y;
 
 // Here we truncate:  We should polygon clip instead, so that the
@@ -2079,10 +2079,10 @@ void Draw_OGR_Polygons( Widget w,
                     // We also clip to screen size and compute
                     // min/max values here.
                     for (nn = 0; nn < polygon_points; nn++) {
-                        XI[nn] = XL[nn] - x_long_offset;
+                        XI[nn] = XL[nn] - NW_corner_longitude;
                         XI[nn] = XI[nn] / scale_x;
 
-                        YI[nn] = YL[nn] - y_lat_offset;
+                        YI[nn] = YL[nn] - NW_corner_latitude;
                         YI[nn] = YI[nn] / scale_y;
  
 // Here we truncate:  We should polygon clip instead, so that the
@@ -3376,17 +3376,17 @@ clear_dangerous();
     ViewY[1] =   35.0;
     ViewZ[1] =    0.0;
 */
-    //long  mid_x_long_offset;    // Longitude at center of map
-    //long  mid_y_lat_offset;     // Latitude  at center of map
+    //long  center_longitude;    // Longitude at center of map
+    //long  center_latitude;     // Latitude  at center of map
 
     // Longitude, NW corner of map screen
-    ViewLX[0] = x_long_offset;
+    ViewLX[0] = NW_corner_longitude;
     // Latitude, NW corner of map screen
-    ViewLY[0] = y_lat_offset;
+    ViewLY[0] = NW_corner_latitude;
     // Longitude, SE corner of map screen
-    ViewLX[1] = mid_x_long_offset + (mid_x_long_offset - x_long_offset);
+    ViewLX[1] = center_longitude + (center_longitude - NW_corner_longitude);
     // Latitude, SE corner of map screen
-    ViewLY[1] = mid_y_lat_offset + (mid_y_lat_offset - y_lat_offset);
+    ViewLY[1] = center_latitude + (center_latitude - NW_corner_latitude);
 
     // Check for out-of bounds values
     if (ViewLX[0] < 0) ViewLX[0] = 0;

@@ -43,8 +43,8 @@
 
 
 
-static long last_mid_x_long_offset;     // remember last screen settings
-static long last_mid_y_lat_offset;
+static long last_center_longitude;     // remember last screen settings
+static long last_center_latitude;
 static long last_scale_x;
 static long last_scale_y;
 
@@ -54,8 +54,8 @@ static long last_scale_y;
 /* store lat long and zoom                                 */
 /***********************************************************/
 void set_last_position(void) {
-    last_mid_x_long_offset=mid_x_long_offset;
-    last_mid_y_lat_offset=mid_y_lat_offset;
+    last_center_longitude=center_longitude;
+    last_center_latitude=center_latitude;
     last_scale_x = scale_x;     // we don't restore this...
     last_scale_y = scale_y;
 }
@@ -68,7 +68,7 @@ void set_last_position(void) {
 /***********************************************************/
 void map_pos_last_position(void) {
 
-    map_pos(last_mid_y_lat_offset,last_mid_x_long_offset,last_scale_y);
+    map_pos(last_center_latitude,last_center_longitude,last_scale_y);
 }
 
 
@@ -85,8 +85,8 @@ void map_pos(long mid_y, long mid_x, long sz) {
     interrupt_drawing_now++;
 
     set_last_position();
-    mid_x_long_offset = mid_x;
-    mid_y_lat_offset  = mid_y;
+    center_longitude = mid_x;
+    center_latitude  = mid_y;
     scale_y = sz;
     scale_x = get_x_scale(mid_x,mid_y,scale_y);
     setup_in_view();  // flag all stations in screen view

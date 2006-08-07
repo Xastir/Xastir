@@ -335,8 +335,8 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
         if (len>0 && len<100){
             fout = fopen(get_user_base_dir("config/locations.sys"),"a");
             if (fout!=NULL) {
-                convert_lat_l2s(mid_y_lat_offset, s_lat, sizeof(s_lat), CONVERT_HP_NOSP);
-                convert_lon_l2s(mid_x_long_offset, s_long, sizeof(s_long), CONVERT_HP_NOSP);
+                convert_lat_l2s(center_latitude, s_lat, sizeof(s_lat), CONVERT_HP_NOSP);
+                convert_lon_l2s(center_longitude, s_long, sizeof(s_long), CONVERT_HP_NOSP);
                 fprintf(fout,"%s|%s %s %ld\n",name,s_lat,s_long,scale_y);
                 (void)fclose(fout);
             }

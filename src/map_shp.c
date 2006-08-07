@@ -2072,8 +2072,8 @@ void draw_shapefile_map (Widget w,
                             // here!  The format conversions you'll need
                             // if you try to compress this into two
                             // lines will get you into trouble.
-                            x = my_long - x_long_offset;
-                            y = my_lat - y_lat_offset;
+                            x = my_long - NW_corner_longitude;
+                            y = my_lat - NW_corner_latitude;
                             x = x / scale_x;
                             y = y / scale_y;
 
@@ -2587,8 +2587,8 @@ void draw_shapefile_map (Widget w,
                                 // here!  The format conversions you'll need
                                 // if you try to compress this into two
                                 // lines will get you into trouble.
-                                x = my_long - x_long_offset;
-                                y = my_lat - y_lat_offset;
+                                x = my_long - NW_corner_longitude;
+                                y = my_lat - NW_corner_latitude;
                                 x = x / scale_x;
                                 y = y / scale_y;
 
@@ -2834,8 +2834,8 @@ void draw_shapefile_map (Widget w,
                             // here!  The format conversions you'll need
                             // if you try to compress this into two
                             // lines will get you into trouble.
-                            x = my_long - x_long_offset;
-                            y = my_lat - y_lat_offset;
+                            x = my_long - NW_corner_longitude;
+                            y = my_lat - NW_corner_latitude;
                             x = x / scale_x;
                             y = y / scale_y;
 
@@ -3268,8 +3268,8 @@ void draw_shapefile_map (Widget w,
                             // here!  The format conversions you'll need
                             // if you try to compress this into two
                             // lines will get you into trouble.
-                            x = my_long - x_long_offset;
-                            y = my_lat - y_lat_offset;
+                            x = my_long - NW_corner_longitude;
+                            y = my_lat - NW_corner_latitude;
                             x = x / scale_x;
                             y = y / scale_y;
 
@@ -3300,8 +3300,8 @@ void draw_shapefile_map (Widget w,
                             // here!  The format conversions you'll need
                             // if you try to compress this into two
                             // lines will get you into trouble.
-                            width = my_long - x_long_offset;
-                            height = my_lat - y_lat_offset;
+                            width = my_long - NW_corner_longitude;
+                            height = my_lat - NW_corner_latitude;
                             width = width / scale_x;
                             height = height / scale_y;
 
@@ -3404,8 +3404,8 @@ void draw_shapefile_map (Widget w,
                                         // here!  The format conversions you'll need
                                         // if you try to compress this into two
                                         // lines will get you into trouble.
-                                        x = my_long - x_long_offset;
-                                        y = my_lat - y_lat_offset;
+                                        x = my_long - NW_corner_longitude;
+                                        y = my_lat - NW_corner_latitude;
                                         x = x / scale_x;
                                         y = y / scale_y;
 
@@ -3598,8 +3598,8 @@ if (on_screen) {
                                 // here!  The format conversions you'll need
                                 // if you try to compress this into two
                                 // lines will get you into trouble.
-                                x = my_long - x_long_offset;
-                                y = my_lat - y_lat_offset;
+                                x = my_long - NW_corner_longitude;
+                                y = my_lat - NW_corner_latitude;
                                 x = x / scale_x;
                                 y = y / scale_y;
 
@@ -3979,8 +3979,8 @@ if (on_screen) {
                             // here!  The format conversions you'll need
                             // if you try to compress this into two
                             // lines will get you into trouble.
-                            x = my_long - x_long_offset;
-                            y = my_lat - y_lat_offset;
+                            x = my_long - NW_corner_longitude;
+                            y = my_lat - NW_corner_latitude;
                             x = x / scale_x;
                             y = y / scale_y;
 

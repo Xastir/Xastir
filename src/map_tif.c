@@ -2379,19 +2379,19 @@ right_crop = width - 1;
 
     // Find edges of current viewport in Xastir coordinates
     //
-    view_min_x = x_long_offset;                         /*   left edge of view */
+    view_min_x = NW_corner_longitude;  // left edge of view
     if (view_min_x > 129600000l)
         view_min_x = 0;
 
-    view_max_x = x_long_offset + (screen_width * scale_x); /*  right edge of view */
+    view_max_x = SE_corner_longitude; // right edge of view 
     if (view_max_x > 129600000l)
         view_max_x = 129600000l;
 
-    view_min_y = y_lat_offset;                          /*    top edge of view */
+    view_min_y = NW_corner_latitude;   // top edge of view
     if (view_min_y > 64800000l)
         view_min_y = 0;
 
-    view_max_y = y_lat_offset + (screen_height * scale_y); /* bottom edge of view */
+    view_max_y = SE_corner_latitude;  // bottom edge of view
     if (view_max_y > 64800000l)
         view_max_y = 64800000l;
 
@@ -2727,15 +2727,15 @@ if (current_right >= width)
                     // Here are the corners of our viewport, using the Xastir
                     // coordinate system.  Notice that Y is upside down:
                     // 
-                    // left edge of view = x_long_offset
-                    // right edge of view = x_long_offset + (screen_width  * scale_x)
-                    // top edge of view =  y_lat_offset
-                    // bottom edge of view =  y_lat_offset + (screen_height * scale_y)
+                    // left edge of view = NW_corner_longitude
+                    // right edge of view = SE_corner_longitude
+                    // top edge of view =  NW_corner_latitude
+                    // bottom edge of view =  SE_corner_latitude
 
 
                     // Compute the screen position of the pixel and scale it
-                    sxx = (xastir_current_x - x_long_offset) / scale_x;
-                    syy = (xastir_total_y   - y_lat_offset ) / scale_y;
+                    sxx = (xastir_current_x - NW_corner_longitude) / scale_x;
+                    syy = (xastir_total_y   - NW_corner_latitude ) / scale_y;
 
 
 

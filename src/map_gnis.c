@@ -166,10 +166,10 @@ void draw_gnis_map (Widget w,
     }
 
     // Screen view
-    min_lat = y_lat_offset + (long)(screen_height * scale_y);
-    max_lat = y_lat_offset;
-    min_lon = x_long_offset;
-    max_lon = x_long_offset + (long)(screen_width  * scale_x);
+    min_lat = SE_corner_latitude;
+    max_lat = NW_corner_latitude;
+    min_lon = NW_corner_longitude;
+    max_lon = SE_corner_longitude;
 
 
     // The map extents in the map index are checked in draw_map to
@@ -567,8 +567,8 @@ FINISH:
                         // here!  The format conversions you'll need
                         // if you try to compress this into two
                         // lines will get you into trouble.
-                        x = coord_lon - x_long_offset;
-                        y = coord_lat - y_lat_offset;
+                        x = coord_lon - NW_corner_longitude;
+                        y = coord_lat - NW_corner_latitude;
                         x /= scale_x;
                         y /= scale_y;
 

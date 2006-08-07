@@ -1861,8 +1861,8 @@ void convert_screen_to_xastir_coordinates(int x,
         long *lat,
         long *lon) {
 
-    *lon = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (x * scale_x));
-    *lat = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (y * scale_y));
+    *lon = (center_longitude - ((screen_width  * scale_x)/2) + (x * scale_x));
+    *lat = (center_latitude  - ((screen_height * scale_y)/2) + (y * scale_y));
 
     if (*lon < 0)
     *lon = 0l;                 // 180°W

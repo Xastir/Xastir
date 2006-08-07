@@ -567,10 +567,10 @@ void draw_point(Widget w,
     // The format conversions you'll need if you try to
     // compress this into two lines will get you into
     // trouble.
-    x1i = x1 - x_long_offset;
+    x1i = x1 - NW_corner_longitude;
     x1i = x1i / scale_x;
  
-    y1i = y1 - y_lat_offset;
+    y1i = y1 - NW_corner_latitude;
     y1i = y1i / scale_y;
 
     // XDrawPoint uses 16-bit unsigned integers
@@ -673,38 +673,12 @@ int clip2d(float *x0, float *y0, float *x1, float *y1) {
     float x_left, y_top;        // NW corner of screen
     float x_right, y_bottom;    // SE corner of screen
 
-// Move the last two sets of variables into a global struct that gets
-// updated when we do a zoom/pan/resize/startup.  That way we won't
-// lose time computing/assigned them for each line.
 
-// NOTE:  We have _some_ useful global variables defined which are
-// updated at the proper points:
-//
-//   f_center_longitude = Floating point map center longitude
-//   f_center_latitude = Floating point map center latitude
-//   x_long_offset = Longitude at top NW corner of map screen
-//   y_lat_offset = Latitude  at top NW corner of map screen
-//   scale_y = y scaling in 1/100 sec per pixel
-//   scale_x = x scaling in 1/100 sec per pixel
-//   mid_x_long_offset = Longitude at center of map
-//   mid_y_lat_offset = Latitude  at center of map
-//
-// NEED:
-//   floating point NW/SE corners of display
-//   unsigned long SE corner of display
-
-
-    // Compute the floating point lat/long for the display corners.
-    //
-    convert_from_xastir_coordinates(&x_left,    // NW corner
-        &y_top,
-        x_long_offset,
-        y_lat_offset);
-
-    convert_from_xastir_coordinates(&x_right,   // SE corner
-        &y_bottom,
-        x_long_offset + (screen_width * scale_x),
-        y_lat_offset + (screen_height * scale_y));
+    // Assign floating point values for screen corners
+    y_top = f_NW_corner_latitude;
+    y_bottom = f_SE_corner_latitude;
+    x_left = f_NW_corner_longitude;
+    x_right =  f_SE_corner_longitude;
 
     if (       ((*x0 < x_left)   && (*x1 < x_left))
             || ((*x0 > x_right)  && (*x1 > x_right))
@@ -834,33 +808,12 @@ int clip2d_long(unsigned long *x0, unsigned long *y0, unsigned long *x1, unsigne
     float t0, t1;
     long delta_x, delta_y;
     int visible = False;
-    unsigned long x_left   = x_long_offset;
-    unsigned long x_right  = x_long_offset + (screen_width * scale_x);
-// Reverse these two as our Xastir coordinate system is upside down
-//    unsigned long y_top    = y_lat_offset;
-//    unsigned long y_bottom = y_lat_offset + (screen_height * scale_y);
-    unsigned long y_top    = y_lat_offset + (screen_height * scale_y);
-    unsigned long y_bottom = y_lat_offset;
-
-// Move some of the above variables into a global struct that gets
-// updated when we do a zoom/pan/resize/startup.  That way we won't
-// lose time computing/assigned them for each line.
-//
-// NOTE:  We have _some_ useful global variables defined which are
-// updated at the proper points:
-//
-//   f_center_longitude = Floating point map center longitude
-//   f_center_latitude = Floating point map center latitude
-//   x_long_offset = Longitude at top NW corner of map screen
-//   y_lat_offset = Latitude  at top NW corner of map screen
-//   scale_y = y scaling in 1/100 sec per pixel
-//   scale_x = x scaling in 1/100 sec per pixel
-//   mid_x_long_offset = Longitude at center of map
-//   mid_y_lat_offset = Latitude  at center of map
-//
-// NEED:
-//   floating point NW/SE corners of display
-//   unsigned long SE corner of display
+    unsigned long x_left   = NW_corner_longitude;
+    unsigned long x_right = SE_corner_longitude;
+    // Reverse the following two as our Xastir coordinate system is
+    // upside down.
+    unsigned long y_top = SE_corner_latitude;
+    unsigned long y_bottom = NW_corner_latitude;
 
 
     if (       ( (*x0 < x_left  ) && (*x1 < x_left  ) )
@@ -953,16 +906,16 @@ void draw_vector(Widget w,
     // The format conversions you'll need if you try to
     // compress this into two lines will get you into
     // trouble.
-    x1i = x1 - x_long_offset;
+    x1i = x1 - NW_corner_longitude;
     x1i = x1i / scale_x;
  
-    y1i = y1 - y_lat_offset;
+    y1i = y1 - NW_corner_latitude;
     y1i = y1i / scale_y;
 
-    x2i = x2 - x_long_offset;
+    x2i = x2 - NW_corner_longitude;
     x2i = x2i / scale_x;
  
-    y2i = y2 - y_lat_offset;
+    y2i = y2 - NW_corner_latitude;
     y2i = y2i / scale_y;
 
     // XDrawLine uses 16-bit unsigned integers
@@ -1063,16 +1016,16 @@ void draw_vector_ll(Widget w,
     // The format conversions you'll need if you try to
     // compress this into two lines will get you into
     // trouble.
-    x1i = x1 - x_long_offset;
+    x1i = x1 - NW_corner_longitude;
     x1i = x1i / scale_x;
  
-    y1i = y1 - y_lat_offset;
+    y1i = y1 - NW_corner_latitude;
     y1i = y1i / scale_y;
 
-    x2i = x2 - x_long_offset;
+    x2i = x2 - NW_corner_longitude;
     x2i = x2i / scale_x;
  
-    y2i = y2 - y_lat_offset;
+    y2i = y2 - NW_corner_latitude;
     y2i = y2i / scale_y;
 
     // XDrawLine uses 16-bit unsigned integers
@@ -1227,10 +1180,10 @@ void draw_complete_lat_lon_grid(Widget w) {
     }
     border_width = get_border_width(w);
     // Find xastir coordinates of upper left and lower right corners.
-    xx = x_long_offset  + (border_width * scale_x);
-    yy = y_lat_offset   + (border_width * scale_y);
-    xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-    yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+    xx = NW_corner_longitude  + (border_width * scale_x);
+    yy = NW_corner_latitude   + (border_width * scale_y);
+    xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
+    yy2 = NW_corner_latitude   + ((screen_height - border_width) * scale_y);
     screen_width_xastir = xx2 - xx;
     screen_height_xastir = yy2 - yy;
     // Determine some parameters used in drawing the border.
@@ -1338,24 +1291,24 @@ void draw_complete_lat_lon_grid(Widget w) {
 
     // Now draw and label the grid.
     // Draw vertical longitude lines
-    if (y_lat_offset >= 0)
+    if (NW_corner_latitude >= 0)
         y1 = 0;
     else
-        y1 = -y_lat_offset/scale_y;
+        y1 = -NW_corner_latitude/scale_y;
 
-    y2 = (180*60*60*100-y_lat_offset)/scale_y;
+    y2 = (180*60*60*100-NW_corner_latitude)/scale_y;
 
     if (y2 > (unsigned int)screen_height)
         y2 = screen_height-1;
 
-    coord = x_long_offset+stepsx-(x_long_offset%stepsx);
+    coord = NW_corner_longitude+stepsx-(NW_corner_longitude%stepsx);
     if (coord < 0)
         coord = 0;
 
     last_label_end = 0;
-    for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx) {
+    for (; coord < SE_corner_longitude && coord <= 360*60*60*100; coord += stepsx) {
 
-        x = (coord-x_long_offset)/scale_x;
+        x = (coord-NW_corner_longitude)/scale_x;
 
         if ((coord%(648000*100)) == 0) {
             (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
@@ -1410,22 +1363,22 @@ void draw_complete_lat_lon_grid(Widget w) {
 
     // Draw horizontal latitude lines.
     last_label_end = 0;
-    if (x_long_offset >= 0)
+    if (NW_corner_longitude >= 0)
         x1 = 0;
     else
-        x1 = -x_long_offset/scale_x;
+        x1 = -NW_corner_longitude/scale_x;
 
-    x2 = (360*60*60*100-x_long_offset)/scale_x;
+    x2 = (360*60*60*100-NW_corner_longitude)/scale_x;
     if (x2 > (unsigned int)screen_width)
         x2 = screen_width-1;
 
-    coord = y_lat_offset+stepsy-(y_lat_offset%stepsy);
+    coord = NW_corner_latitude+stepsy-(NW_corner_latitude%stepsy);
     if (coord < 0)
         coord = 0;
 
-    for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy) {
+    for (; coord < SE_corner_latitude && coord <= 180*60*60*100; coord += stepsy) {
 
-        y = (coord-y_lat_offset)/scale_y;
+        y = (coord-NW_corner_latitude)/scale_y;
 
         if ((coord%(324000*100)) == 0) {
             (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
@@ -1708,8 +1661,8 @@ void draw_major_utm_mgrs_grid(Widget w) {
 
         // Put metadata in top border.
         // find location of upper left corner of map, convert to UTM
-        xx2 = x_long_offset  + (border_width * scale_x);
-        yy2 = y_lat_offset   + (border_width * scale_y);
+        xx2 = NW_corner_longitude  + (border_width * scale_x);
+        yy2 = NW_corner_latitude   + (border_width * scale_y);
         convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
             xx2, yy2);
         if (coordinate_system == USE_MGRS) {
@@ -1733,8 +1686,8 @@ void draw_major_utm_mgrs_grid(Widget w) {
                 zone_str,easting,northing);
         }
         // find location of lower right corner of map, convert to UTM
-        xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-        yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+        xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
+        yy2 = NW_corner_latitude   + ((screen_height - border_width) * scale_y);
         convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
             xx2, yy2);
         if (coordinate_system == USE_MGRS) {
@@ -1781,8 +1734,8 @@ void draw_major_utm_mgrs_grid(Widget w) {
             sizeof(zone_str2),
             "%s"," ");
         for (x=1; x<(screen_width - border_width); x++) {
-            xx2 = x_long_offset  + (x * scale_x);
-            yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+            xx2 = NW_corner_longitude  + (x * scale_x);
+            yy2 = NW_corner_latitude   + ((screen_height - border_width) * scale_y);
             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                xx2, yy2);
             zone_str[strlen(zone_str)-1] = '\0';
@@ -1800,8 +1753,8 @@ void draw_major_utm_mgrs_grid(Widget w) {
         } 
         // Crudely identify zone letters by iterating down left border
         for (y=(border_width*2); y<(screen_height - border_width); y++) {
-            xx2 = x_long_offset   + (border_width * scale_x);
-            yy2 = y_lat_offset   + (y * scale_y);
+            xx2 = NW_corner_longitude   + (border_width * scale_x);
+            yy2 = NW_corner_latitude   + (y * scale_y);
             convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                xx2, yy2);
             zone_str[0] = zone_str[strlen(zone_str)-1];
@@ -1975,10 +1928,10 @@ void actually_draw_utm_minor_grid(Widget w) {
                 if (numberofzones>1) {
                     // check to see if the upper left and lower left corners are in the same zone
                     // if not, label the upper left corner
-                    xx = (border_width * scale_x) +  x_long_offset;
-                    yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                    xx = (border_width * scale_x) + NW_corner_longitude;
+                    yy = ((screen_height - border_width) * scale_y) + NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                    yy = (border_width * scale_y) +  y_lat_offset;
+                    yy = (border_width * scale_y) + NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
                     if (strcmp(zone_str,zone_str2)!=0) {
                         xastir_snprintf(grid_label,
@@ -2011,10 +1964,10 @@ void actually_draw_utm_minor_grid(Widget w) {
                     }
                     zone_color = 0x09;
                     // likewise for upper and lower right corners
-                    xx = ((screen_width - border_width) * scale_x) +  x_long_offset;
-                    yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                    xx = ((screen_width - border_width) * scale_x) + NW_corner_longitude;
+                    yy = ((screen_height - border_width) * scale_y) + NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                    yy = (border_width * scale_y) +  y_lat_offset;
+                    yy = (border_width * scale_y) + NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), xx, yy);
                     if (strcmp(zone_str,zone_str2)!=0) {
                         xastir_snprintf(grid_label,
@@ -2048,10 +2001,10 @@ void actually_draw_utm_minor_grid(Widget w) {
                         
                     // are we currently the same zone as the upper left corner
                     // if so, we need to place the northing labels on the left side
-                    xx = (utm_grid.zone[Zone].col[0].points[0].x * scale_x) +  x_long_offset;
-                    yy = (utm_grid.zone[Zone].col[0].points[0].y * scale_y) +  y_lat_offset;
+                    xx = (utm_grid.zone[Zone].col[0].points[0].x * scale_x) + NW_corner_longitude;
+                    yy = (utm_grid.zone[Zone].col[0].points[0].y * scale_y) + NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
-                    convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), x_long_offset, y_lat_offset);
+                    convert_xastir_to_UTM(&easting, &northing, zone_str2, sizeof(zone_str2), NW_corner_longitude, NW_corner_latitude);
                     if (strcmp(zone_str,zone_str2)==0) {
                         northing_color = 0x08;  // 0x08 = black, same as lower left easting
                         label_on_left = TRUE;
@@ -2060,7 +2013,7 @@ void actually_draw_utm_minor_grid(Widget w) {
                 }    
                 // check to see if there is a horizontal boundary 
                 // compare xone of upper left and lower left corners
-                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), x_long_offset, y_lat_offset);
+                convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), NW_corner_longitude, NW_corner_latitude);
 
                 // Overwrite defaults as appropriate and 
                 // label zones differently if more than one appears on the screen.
@@ -2071,9 +2024,9 @@ void actually_draw_utm_minor_grid(Widget w) {
                     easting_color = 0x09;  // blue
                     northing_color = 0x09; // blue
                     xx2 = utm_grid.zone[Zone].col[0].points[0].x;
-                    xx = (xx2 * scale_x) + x_long_offset;
+                    xx = (xx2 * scale_x) + NW_corner_longitude;
                     yy2 = utm_grid.zone[Zone].col[0].points[utm_grid.zone[Zone].col[0].npoints-1].y;
-                    yy = (yy2 * scale_y) +  y_lat_offset;
+                    yy = (yy2 * scale_y) +  NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx,yy);
                     xastir_snprintf(grid_label,
                         sizeof(grid_label),
@@ -2094,8 +2047,8 @@ void actually_draw_utm_minor_grid(Widget w) {
 
                 if (Zone==0) {
                     // write the zone of the lower left corner of the map
-                    xx = (border_width * scale_x) +  x_long_offset;
-                    yy = ((screen_height - border_width) * scale_y) +  y_lat_offset;
+                    xx = (border_width * scale_x) + NW_corner_longitude;
+                    yy = ((screen_height - border_width) * scale_y) +  NW_corner_latitude;
                     convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
                     xastir_snprintf(grid_label,
                         sizeof(grid_label),
@@ -2115,8 +2068,8 @@ void actually_draw_utm_minor_grid(Widget w) {
                 }
                 // Put metadata in top border.
                 // find location of upper left corner of map, convert to UTM
-                xx2 = x_long_offset  + (border_width * scale_x);
-                yy2 = y_lat_offset   + (border_width * scale_y);
+                xx2 = NW_corner_longitude  + (border_width * scale_x);
+                yy2 = NW_corner_latitude   + (border_width * scale_y);
                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                     xx2, yy2);
                 if (coordinate_system == USE_MGRS) {
@@ -2140,8 +2093,8 @@ void actually_draw_utm_minor_grid(Widget w) {
                         zone_str,easting,northing);
                 }
                 // find location of lower right corner of map, convert to UTM
-                xx2 = x_long_offset  + ((screen_width - border_width) * scale_x);
-                yy2 = y_lat_offset   + ((screen_height - border_width) * scale_y);
+                xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
+                yy2 = NW_corner_latitude   + ((screen_height - border_width) * scale_y);
                 convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), 
                     xx2, yy2);
                 if (coordinate_system == USE_MGRS) {
@@ -2236,8 +2189,8 @@ void actually_draw_utm_minor_grid(Widget w) {
                             last_line_labeled = FALSE; 
                         }
                         else {
-                             xx = (utm_grid.zone[Zone].col[ii].points[bottom_point].x * scale_x) + x_long_offset;
-                             yy = (utm_grid.zone[Zone].col[ii].points[bottom_point].y * scale_y) +  y_lat_offset;
+                             xx = (utm_grid.zone[Zone].col[ii].points[bottom_point].x * scale_x) + NW_corner_longitude;
+                             yy = (utm_grid.zone[Zone].col[ii].points[bottom_point].y * scale_y) + NW_corner_latitude;
                              convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
                              // To display full precision to one meter, use:
                              //xastir_snprintf(grid_label,
@@ -2310,12 +2263,12 @@ void actually_draw_utm_minor_grid(Widget w) {
                          } 
                          else {
                              if (label_on_left==TRUE) { 
-                                 xx = (utm_grid.zone[Zone].row[ii].points[0].x * scale_x) + x_long_offset;
+                                 xx = (utm_grid.zone[Zone].row[ii].points[0].x * scale_x) + NW_corner_longitude;
                              } 
                              else {
-                                 xx = (utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].x * scale_x) + x_long_offset;
+                                 xx = (utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].x * scale_x) + NW_corner_longitude;
                              }
-                             yy = (utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].y * scale_y) +  y_lat_offset;
+                             yy = (utm_grid.zone[Zone].row[ii].points[utm_grid.zone[Zone].row[ii].npoints-1].y * scale_y) +  NW_corner_latitude;
                              convert_xastir_to_UTM(&easting, &northing, zone_str, sizeof(zone_str), xx, yy);
                              // To display to full 1 meter precision use:
                              //xastir_snprintf(grid_label,
@@ -2471,10 +2424,10 @@ int draw_minor_utm_mgrs_grid(Widget w) {
     }
 
     // Check hash to see if utm_grid is already set up
-    if (utm_grid.hash.ul_x == x_long_offset &&
-        utm_grid.hash.ul_y == y_lat_offset &&
-        utm_grid.hash.lr_x == x_long_offset + (screen_width  * scale_x) &&
-        utm_grid.hash.lr_y == y_lat_offset  + (screen_height * scale_y)) {
+    if (utm_grid.hash.ul_x == NW_corner_longitude &&
+        utm_grid.hash.ul_y == NW_corner_latitude &&
+        utm_grid.hash.lr_x == SE_corner_longitude &&
+        utm_grid.hash.lr_y == SE_corner_latitude) {
 
         // XPoint arrays are already set up.  Go draw the grid.
         actually_draw_utm_minor_grid(w);
@@ -2496,8 +2449,8 @@ int draw_minor_utm_mgrs_grid(Widget w) {
     }
 
     // Find top left point of current view
-    xx = x_long_offset;
-    yy = y_lat_offset;
+    xx = NW_corner_longitude;
+    yy = NW_corner_latitude;
 
     // Note that the minor grid depends on the STANDARD six degree
     // UTM zones, not the UTM-Special/MGRS zones.  Force our
@@ -2573,9 +2526,9 @@ int draw_minor_utm_mgrs_grid(Widget w) {
         if (finished_with_current_zone) {
             // Set up to compute the next zone
 
-            xx = x_long_offset + ((utm_grid.zone[Zone].boundary_x + 1) * scale_x);
+            xx = NW_corner_longitude + ((utm_grid.zone[Zone].boundary_x + 1) * scale_x);
 
-            yy = y_lat_offset;
+            yy = NW_corner_latitude;
 
             // Note that the minor grid depends on the STANDARD six
             // degree UTM zones, not the UTM-Special/MGRS zones.
@@ -2643,8 +2596,8 @@ int draw_minor_utm_mgrs_grid(Widget w) {
         coordinate_system = coordinate_system_backup;
  
         n[2] += UTM_GRID_EQUATOR;
-        xx = (xx - x_long_offset) / scale_x;
-        yy = (yy - y_lat_offset)  / scale_y;
+        xx = (xx - NW_corner_longitude) / scale_x;
+        yy = (yy - NW_corner_latitude)  / scale_y;
 
         // Not all columns (and maybe rows) will start at point
         // 0
@@ -2778,7 +2731,7 @@ int draw_minor_utm_mgrs_grid(Widget w) {
                 // code appears to be adjusting xx1 to a major
                 // zone edge.
                 xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
-                xx1 = (xx1 - x_long_offset) / scale_x;
+                xx1 = (xx1 - NW_corner_longitude) / scale_x;
             }
 
             utm_grid.zone[Zone].boundary_x = xx1;
@@ -3012,10 +2965,10 @@ int draw_minor_utm_mgrs_grid(Widget w) {
     }
 
     // Rows and columns ready to go so setup hash
-    utm_grid.hash.ul_x = x_long_offset;
-    utm_grid.hash.ul_y = y_lat_offset;
-    utm_grid.hash.lr_x = x_long_offset + (screen_width  * scale_x);
-    utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
+    utm_grid.hash.ul_x = NW_corner_longitude;
+    utm_grid.hash.ul_y = NW_corner_latitude;
+    utm_grid.hash.lr_x = SE_corner_longitude;
+    utm_grid.hash.lr_y = SE_corner_latitude;
 
     // XPoint arrays are set up.  Go draw the grid.
     actually_draw_utm_minor_grid(w);
@@ -3188,19 +3141,19 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
 
     //fprintf(stderr,"map_visible\n");
 
-    view_min_x = (unsigned long)x_long_offset;                         /*   left edge of view */
+    view_min_x = (unsigned long)NW_corner_longitude;  // left edge of view
     if (view_min_x > 129600000ul)
         view_min_x = 0;
 
-    view_max_x = (unsigned long)(x_long_offset + (screen_width * scale_x)); // right edge of view
+    view_max_x = (unsigned long)SE_corner_longitude; // right edge of view
     if (view_max_x > 129600000ul)
         view_max_x = 129600000ul;
 
-    view_min_y = (unsigned long)y_lat_offset;                          /*    top edge of view */
+    view_min_y = (unsigned long)NW_corner_latitude;   // top edge of view
     if (view_min_y > 64800000ul)
         view_min_y = 0;
 
-    view_max_y = (unsigned long)(y_lat_offset + (screen_height * scale_y)); // bottom edge of view
+    view_max_y = (unsigned long)SE_corner_latitude;  // bottom edge of view
     if (view_max_y > 64800000ul)
         view_max_y = 64800000ul;
 
@@ -4499,28 +4452,13 @@ static void* snapshot_thread(void *arg) {
         fprintf(stderr,"Couldn't open %s\n",geo_filename);
     }
     else {
-        long nw_lat, se_lat;
-        long nw_lon, se_lon;
         float lat1, long1, lat2, long2;
 
 
-        // Compute NW corner
-        nw_lon = mid_x_long_offset - (screen_width  * scale_x / 2);
-        nw_lat = mid_y_lat_offset  - (screen_height * scale_y / 2);
-
-        convert_from_xastir_coordinates(&long1,
-            &lat1,
-            nw_lon,
-            nw_lat);
-
-        // Compute SE corner
-        se_lon = mid_x_long_offset + (screen_width  * scale_x / 2);
-        se_lat = mid_y_lat_offset  + (screen_height * scale_y / 2);
-
-        convert_from_xastir_coordinates(&long2,
-            &lat2,
-            se_lon,
-            se_lat);
+        long1 = f_NW_corner_longitude;
+        lat1 = f_NW_corner_latitude;
+        long2 = f_SE_corner_longitude;
+        lat2 = f_SE_corner_latitude;
 
         // FILENAME   world1.xpm
         // #          x          y        lon         lat
@@ -4776,11 +4714,11 @@ enum map_onscreen_enum map_onscreen(long left,
         if (map_y < 0)
             map_y = 0;
 
-        view_x = max_x_long_offset - x_long_offset;
+        view_x = max_NW_corner_longitude - NW_corner_longitude;
         if (view_x < 0)
             view_x = 0;
 
-        view_y = max_y_lat_offset - y_lat_offset;
+        view_y = max_NW_corner_latitude - NW_corner_latitude;
         if (view_y < 0)
             view_y = 0;
 

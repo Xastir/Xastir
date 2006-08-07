@@ -517,7 +517,7 @@ void draw_palm_image_map(Widget w,
                         //
                         // For now KISS, just put it on the map.
  
-                        x = ((label_x_cord - x_long_offset) / scale_x);
+                        x = ((label_x_cord - NW_corner_longitude) / scale_x);
  
                         /* examine bits 4 and 5 of treatment */
                         if((label_record.treatment & 0x30) == 0x00) {
@@ -530,10 +530,10 @@ void draw_palm_image_map(Widget w,
                         }
                         else {
                             /* right of coords */
-                            x = ((label_x_cord - x_long_offset) / scale_x);
+                            x = ((label_x_cord - NW_corner_longitude) / scale_x);
                         }
  
-                        y = ((label_y_cord - y_lat_offset) / scale_y);
+                        y = ((label_y_cord - NW_corner_latitude) / scale_y);
  
                         // Color selection
                         switch (label_record.color) {

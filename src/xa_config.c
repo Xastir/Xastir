@@ -511,8 +511,8 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
 */
 
 
-        store_long (fout, "SCREEN_LAT", mid_y_lat_offset);
-        store_long (fout, "SCREEN_LONG", mid_x_long_offset);
+        store_long (fout, "SCREEN_LAT", center_latitude);
+        store_long (fout, "SCREEN_LONG", center_longitude);
 
         store_string(fout, "RELAY_DIGIPEAT_CALLS", relay_digipeater_calls);
 
@@ -1128,8 +1128,8 @@ void load_data_or_default(void) {
 //    screen_y_offset = (Position)get_int ("SCREEN_Y_OFFSET", 0, 10000, 0);
 
 
-    mid_y_lat_offset = get_long ("SCREEN_LAT", 0l, 64800000l, 32400000l);
-    mid_x_long_offset = get_long ("SCREEN_LONG", 0l, 129600000l, 64800000l);
+    center_latitude = get_long ("SCREEN_LAT", 0l, 64800000l, 32400000l);
+    center_longitude = get_long ("SCREEN_LONG", 0l, 129600000l, 64800000l);
 
     if (!get_string("RELAY_DIGIPEAT_CALLS", relay_digipeater_calls, sizeof(relay_digipeater_calls)))
         sprintf (relay_digipeater_calls, "WIDE1-1");
@@ -1142,7 +1142,7 @@ void load_data_or_default(void) {
 
     scale_y = get_long ("SCREEN_ZOOM", 1l, 500000l, 327680l);
 
-    scale_x = get_x_scale(mid_x_long_offset,mid_y_lat_offset,scale_y);
+    scale_x = get_x_scale(center_longitude,center_latitude,scale_y);
 
     map_background_color = get_int ("MAP_BGCOLOR", 0, 11, 0);
 
