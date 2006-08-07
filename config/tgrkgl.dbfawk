@@ -28,7 +28,8 @@ BEGIN {
 # dbfinfo should match the dbf file that we say this dbfawk file goes with.
 dbfinfo="ID:POLYID:COUNTY:CFCC:KGLNAME";
 # dbffields is which of the above fields we actually want to look at.
-dbffields="KGLNAME:CFCC"}
+dbffields="KGLNAME:CFCC";
+}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.

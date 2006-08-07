@@ -30,7 +30,8 @@ dbfinfo="ID:WFO:NAME:WFO_AREA:LON:LAT";
 # dbffields is which of the above fields we actually want to look at.
 # Note that the order we list these is important since we are appending the
 # word County or Parish depending on what state the county is in.
-dbffields="ID:NAME"}
+dbffields="ID:NAME";
+}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.

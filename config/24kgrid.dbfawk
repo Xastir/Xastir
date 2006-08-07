@@ -29,7 +29,8 @@ BEGIN {
 dbfinfo="NAME:STATE:LAT:LONG:MRC";
 # dbffields is which of the above fields we actually want to look at.
 # No point reading dbffields that are not looked at further.
-dbffields="NAME:STATE"}
+dbffields="NAME:STATE";
+}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.

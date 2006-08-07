@@ -27,7 +27,8 @@ BEGIN {
 dbfinfo="ID:POLYID:CENID:COUNTY:CFCC:LANDNAME:LANDPOLY";
 # dbffields is which of the above fields we actually want to look at.
 # No point reading dbffields that are not looked at further.
-dbffields="CFCC:LANDNAME"}
+dbffields="CFCC:LANDNAME";
+}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
