@@ -3300,12 +3300,12 @@ void draw_range_scale(Widget w) {
     // Convert points to Xastir coordinate system
 
     // X
-    x = mid_x_long_offset  - ((width *scale_x)/2);
-    x0 = mid_x_long_offset; // Center of screen
+    x = center_longitude  - ((width *scale_x)/2);
+    x0 = center_longitude; // Center of screen
 
     // Y
-    y = mid_y_lat_offset   - ((height*scale_y)/2);
-    y0 = mid_y_lat_offset;  // Center of screen
+    y = center_latitude   - ((height*scale_y)/2);
+    y0 = center_latitude;  // Center of screen
 
     // Compute distance from center to each edge
 
@@ -3464,7 +3464,7 @@ void draw_ruler(Widget w) {
     int border_offset = 0;  // number of pixels to offset the scale if a labeled map border is drawn
 
     ruler_pix = (int)(screen_width / 9);        // ruler size (in pixels)
-    ruler_siz = ruler_pix * scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset); // size in meter
+    ruler_siz = ruler_pix * scale_x * calc_dscale_x(center_longitude,center_latitude); // size in meter
 
     if(english_units) {
         if (ruler_siz > 1609.3/2) {
@@ -6073,10 +6073,10 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
                 // and (10 * scale_x) if we want to make a very
                 // accurate square.
 
-                diff_y = (unsigned long)( labs((y_lat_offset+(menu_y*scale_y))
+                diff_y = (unsigned long)( labs((NW_corner_latitude+(menu_y*scale_y))
                                           - p_station->coord_lat));
 
-                diff_x = (unsigned long)( labs((x_long_offset+(menu_x*scale_x))
+                diff_x = (unsigned long)( labs((NW_corner_longitude+(menu_x*scale_x))
                                           - p_station->coord_lon));
 
                 // If the station fits within our bounding box,
@@ -6209,10 +6209,10 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
 
                         if (!altnet || is_altnet(p_station)) {
 
-                            diff_y = (unsigned long)( labs((y_lat_offset+(menu_y*scale_y))
+                            diff_y = (unsigned long)( labs((NW_corner_latitude+(menu_y*scale_y))
                                                       - p_station->coord_lat));
 
-                            diff_x = (unsigned long)( labs((x_long_offset+(menu_x*scale_x))
+                            diff_x = (unsigned long)( labs((NW_corner_longitude+(menu_x*scale_x))
                                                       - p_station->coord_lon));
 
                             // If the station fits within our
@@ -7719,8 +7719,8 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                 draw_vector(da, lon0, lat0, lon1, lat1, gc, pixmap_final);
 
                 // Convert to screen coordinates.
-                lon0_screen = (lon0 - x_long_offset) / scale_x;
-                lat0_screen = (lat0 - y_lat_offset)  / scale_y;
+                lon0_screen = (lon0 - NW_corner_longitude) / scale_x;
+                lat0_screen = (lat0 - NW_corner_latitude)  / scale_y;
 
                 // draw position point itself
                 // Check that screen coordinates are within limits.
@@ -7742,8 +7742,8 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                 if (Display_.callsign && Display_.label_all_trackpoints) {
 
                     // Convert to screen coordinates.
-                    lon1_screen = (lon1 - x_long_offset) / scale_x;
-                    lat1_screen = (lat1 - y_lat_offset)  / scale_y;
+                    lon1_screen = (lon1 - NW_corner_longitude) / scale_x;
+                    lat1_screen = (lat1 - NW_corner_latitude)  / scale_y;
 
                     // The last position already gets its callsign
                     // string drawn, plus that gets shifted based on
@@ -8926,7 +8926,7 @@ int prev_station_time(DataRow **p_curr) {
 
 /*
  *  Set flag for all stations in current view area or a margin area around it
- *  That are the stations we look at, if we want to draw symbols or trails
+ *  That are the stations we look at if we want to draw symbols or trails
  */
 void setup_in_view(void) {
     DataRow *p_station;
@@ -8942,18 +8942,18 @@ void setup_in_view(void) {
         marg_lon = IN_VIEW_MIN*60*100;
 
     // Only screen view
-    // min_lat = y_lat_offset  + (long)(screen_height * scale_y);
-    // max_lat = y_lat_offset;
-    // min_lon = x_long_offset;
-    // max_lon = x_long_offset + (long)(screen_width  * scale_x);
+    // min_lat = SE_corner_latitude
+    // max_lat = NW_corner_latitude;
+    // min_lon = NW_corner_longitude;
+    // max_lon = SE_corner_longitude;
 
     // Screen view plus one screen wide margin
     // There could be stations off screen with on screen trails
     // See also the use of position_on_extd_screen()
-    min_lat = mid_y_lat_offset  - marg_lat;
-    max_lat = mid_y_lat_offset  + marg_lat;
-    min_lon = mid_x_long_offset - marg_lon;
-    max_lon = mid_x_long_offset + marg_lon;
+    min_lat = center_latitude  - marg_lat;
+    max_lat = center_latitude  + marg_lat;
+    min_lon = center_longitude - marg_lon;
+    max_lon = center_longitude + marg_lon;
 
     p_station = n_first;
     while (p_station != NULL) {
@@ -8979,9 +8979,9 @@ void setup_in_view(void) {
  */
 int position_on_screen(long lat, long lon) {
 
-    if (   lon > x_long_offset && lon < (x_long_offset+(long)(screen_width *scale_x))
-        && lat > y_lat_offset  && lat < (y_lat_offset +(long)(screen_height*scale_y)) 
-        && !(lat == 0 && lon == 0))     // discard undef positions from screen
+    if (   lon > NW_corner_longitude && lon < SE_corner_longitude
+            && lat > NW_corner_latitude && lat < SE_corner_latitude 
+            && !(lat == 0 && lon == 0))     // discard undef positions from screen
         return(1);                      // position is inside the screen
     else
         return(0);
@@ -9006,8 +9006,8 @@ int position_on_extd_screen(long lat, long lon) {
     if (marg_lon < IN_VIEW_MIN*60*100)          // with trail parts on screen
         marg_lon = IN_VIEW_MIN*60*100;
 
-    if (    abs(lon - mid_x_long_offset) < marg_lon
-         && abs(lat - mid_y_lat_offset)  < marg_lat
+    if (    abs(lon - center_longitude) < marg_lon
+         && abs(lat - center_latitude)  < marg_lat
          && !(lat == 0 && lon == 0))    // discard undef positions from screen
         return(1);                      // position is inside the area
     else
@@ -9025,10 +9025,10 @@ int position_on_extd_screen(long lat, long lon) {
  */
 int position_on_inner_screen(long lat, long lon) {
 
-    if (    lon > mid_x_long_offset-(long)(screen_width *scale_x/3)
-         && lon < mid_x_long_offset+(long)(screen_width *scale_x/3)
-         && lat > mid_y_lat_offset -(long)(screen_height*scale_y/3)
-         && lat < mid_y_lat_offset +(long)(screen_height*scale_y/3)
+    if (    lon > center_longitude-(long)(screen_width *scale_x/3)
+         && lon < center_longitude+(long)(screen_width *scale_x/3)
+         && lat > center_latitude -(long)(screen_height*scale_y/3)
+         && lat < center_latitude +(long)(screen_height*scale_y/3)
          && !(lat == 0 && lon == 0))    // discard undef positions from screen
         return(1);                      // position is inside the area
     else
@@ -13230,8 +13230,8 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
 
     if ((p_station->coord_lon != pos_long_temp) || (p_station->coord_lat != pos_lat_temp)) {
         /* check to see if enough to change pos on screen */
-        if ((pos_long_temp>x_long_offset) && (pos_long_temp<(x_long_offset+(long)(screen_width *scale_x)))) {
-            if ((pos_lat_temp>y_lat_offset) && (pos_lat_temp<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((pos_long_temp>NW_corner_longitude) && (pos_long_temp<SE_corner_longitude)) {
+            if ((pos_lat_temp>NW_corner_latitude) && (pos_lat_temp<SE_corner_latitude)) {
                 if((labs((p_station->coord_lon+(scale_x/2))-pos_long_temp)/scale_x)>0
                         || (labs((p_station->coord_lat+(scale_y/2))-pos_lat_temp)/scale_y)>0) {
                     //redraw_on_new_data = 1;   // redraw next chance
@@ -17258,8 +17258,8 @@ void set_map_position(Widget w, long lat, long lon) {
     interrupt_drawing_now++;
 
     set_last_position();
-    mid_y_lat_offset  = lat;
-    mid_x_long_offset = lon;
+    center_latitude  = lat;
+    center_longitude = lon;
     setup_in_view();  // flag all stations in new screen view
 
     // Request that a new image be created.  Calls create_image,
@@ -17436,8 +17436,8 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
     if ( is_tracked_station(p_station->call_sign) ) {   // We want to track this station
         new_lat = p_station->coord_lat;                 // center map to station position as default
         new_lon = p_station->coord_lon;
-        x_ofs = new_lon - mid_x_long_offset;            // current offset from screen center
-        y_ofs = new_lat - mid_y_lat_offset;
+        x_ofs = new_lon - center_longitude;            // current offset from screen center
+        y_ofs = new_lat - center_latitude;
         if ((labs(x_ofs) > (screen_width*scale_x/3)) || (labs(y_ofs) > (screen_height*scale_y/3))) {
             // only redraw map if near border (margin 1/6 of screen at each side)
             if (labs(y_ofs) < (screen_height*scale_y/2))

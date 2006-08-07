@@ -112,14 +112,26 @@ extern void fix_dialog_vsize(Widget w);
 extern int debug_level;
 extern GC gc;
 extern int colors[];
-extern long mid_x_long_offset;
-extern long mid_y_lat_offset;
-extern long x_long_offset;
-extern long y_lat_offset;
-extern long scale_x;            // x scaling in 1/100 sec per pixel
-extern long scale_y;            // y scaling in 1/100 sec per pixel
-extern float f_center_latitude;
-extern float f_center_longitude;
+
+
+extern float f_center_longitude;   // Floating point map center longitude
+extern float f_center_latitude;    // Floating point map center latitude
+extern float f_NW_corner_longitude;// longitude of NW corner
+extern float f_NW_corner_latitude; // latitude of NW corner
+extern float f_SE_corner_longitude;// longitude of SE corner
+extern float f_SE_corner_latitude; // latitude of SE corner
+
+extern long center_longitude;      // Longitude at center of map
+extern long center_latitude;       // Latitude at center of map
+extern long NW_corner_longitude;   // longitude of NW corner
+extern long NW_corner_latitude;    // latitude of NW corner
+extern long SE_corner_longitude;   // longitude of SE corner
+extern long SE_corner_latitude;    // latitude of SE corner
+
+extern long scale_x;               // x scaling in 1/100 sec per pixel
+extern long scale_y;               // y scaling in 1/100 sec per pixel
+
+
 extern long screen_width;
 extern long screen_height;
 extern Position screen_x_offset;

@@ -252,8 +252,8 @@ void draw_WP_line(DataRow *p_station,
     }
 
     // x & y are screen location of waypoint symbol
-    x = (x_long - x_long_offset)/scale_x;
-    y = (y_lat - y_lat_offset)/scale_y;
+    x = (x_long - NW_corner_longitude)/scale_x;
+    y = (y_lat - NW_corner_latitude)/scale_y;
  
     // Find transmitting station, get it's position.
     // p_station->origin contains the callsign for the transmitting
@@ -269,8 +269,8 @@ void draw_WP_line(DataRow *p_station,
     y_lat2 = transmitting_station->coord_lat;
 
     // x2 & y2 are screen location of transmitting station
-    x2 = (x_long2 - x_long_offset)/scale_x;
-    y2 = (y_lat2 - y_lat_offset)/scale_y;
+    x2 = (x_long2 - NW_corner_longitude)/scale_x;
+    y2 = (y_lat2 - NW_corner_latitude)/scale_y;
 
 
 /*
@@ -379,9 +379,9 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
 //            if ((x_long < 0) || (x_long > 129600000l))
 //                return;
@@ -393,7 +393,7 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
             // multiplication factor which converts it to miles.
             // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
             diameter = 2.0 * ( range/
-                (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+                (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
 
             // If less than 4 pixels across, skip drawing it.
             if (diameter <= 4.0)
@@ -410,8 +410,8 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
             (void)XSetForeground(XtDisplay(da),gc,color);
 
             (void)XDrawArc(XtDisplay(da),where,gc,
-                (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
-                (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)),
+                (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),
                 (unsigned int)diameter,(unsigned int)diameter,0,64*360);
         }
     }
@@ -436,9 +436,9 @@ void draw_precision_rectangle(long x_long,
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
             long x2, y2;
 
 
@@ -498,9 +498,9 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-        if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-            if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
                 xx=0l;
                 yy=0l;
@@ -534,7 +534,7 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                 // multiplication factor which converts it to miles.
                 // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
                 diameter = 2.0 * ( range/
-                    (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+                    (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
 
                 // If less than 4 pixels across, skip drawing it.
                 if (diameter <= 4.0)
@@ -620,8 +620,8 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
 
                 if (is_rng || phg[6]=='0') {    // Draw circle
                     (void)XDrawArc(XtDisplay(da),where,gc,
-                        (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
-                        (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                        (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)),
+                        (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),
                         (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                 }
                 else {    // Draw oval to depict beam heading
@@ -631,8 +631,8 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                                 
                     // Draw Circle
                     (void)XDrawArc(XtDisplay(da),where,gc,
-                        (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
-                        (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
+                        (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),
+                        (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
                         (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                 }
             }
@@ -662,9 +662,9 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-        if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-            if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
 //                if ((x_long < 0) || (x_long > 129600000l))
 //                    return;
@@ -689,7 +689,7 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                 // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
                 //
                 diameter = 2.0 * ( range/
-                    (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+                    (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
 
                 // If less than 4 pixels across, skip drawing it.
                 if (diameter <= 4.0)
@@ -857,8 +857,8 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                                 
                 // Draw Circle
                 (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                    (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
-                    (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
+                    (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),
+                    (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
                     (unsigned int)diameter,(unsigned int)diameter,0,64*360);
 
                 if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
@@ -866,8 +866,8 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                     while (diameter > 1.0) {
                         diameter = diameter - 1.0;
                         (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                            (int)(((x_long-x_long_offset)/scale_x)-(diameter/2) - offx),
-                            (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2) - offy),
+                            (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),
+                            (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
                             (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                     }
                 }
@@ -888,13 +888,14 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap where) {
     double diameter;
     double a,b;
+    long width, height;
 
 
     // Range is in miles.  Bottom term is in meters before the
     // 0.0006214 multiplication factor which converts it to miles.
     // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
     diameter = 2.0 * ( range/
-        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+        (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
 
     // If less than 4 pixels across, skip drawing it.
     if (diameter <= 4.0)
@@ -904,45 +905,33 @@ void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap 
     b = diameter / 2;
 
 
-// TODO:  Since there's only one aloha circle, it's not a big deal
-// to do the math each time and then decide whether we should draw
-// it.  Suggest we do a windowing-function check between the current
-// view and the bounding rectangle for the circle to see if any part
-// of the circle is in view, like we do for map files.  To do this
-// we need to know all four edges of the aloha circle's bounding
-// rectangle.
-//
+    // Check for the center of the circle being off the edge of the
+    // earth (that's _our_ station position by the way!).
+    //
+//    if ((x_long < 0) || (x_long > 129600000l))
+//        return;
 
-// The "if's" below prevent it from being drawn when my station is
-// off-screen.
-//
-    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+//        if ((y_lat < 0) || (y_lat > 64800000l))
+//            return;
 
-        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+    //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
 
+    width = (((x_long-NW_corner_longitude)/scale_x)-(diameter/2));
+    height = (((y_lat-NW_corner_latitude)/scale_y)-(diameter/2));
 
-            // Check for the center of the circle being off the edge of the
-            // earth (that's _our_ station position by the way!).
-            //
-//            if ((x_long < 0) || (x_long > 129600000l))
-//                return;
-
-//            if ((y_lat < 0) || (y_lat > 64800000l))
-//                return;
-
-            //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
-
-            (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
-            //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-            //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-            (void)XSetForeground(XtDisplay(da),gc,color);
-
-            (void)XDrawArc(XtDisplay(da),where,gc,
-                (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
-                (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
-                (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-        }
+    if (width < 0 || width > 16000 || height < 0 || height > 16000) {
+        return;
     }
+
+    (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+    //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+    //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+    (void)XSetForeground(XtDisplay(da),gc,color);
+
+    (void)XDrawArc(XtDisplay(da),where,gc,
+        (unsigned int)width,
+        (unsigned int)height,
+        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
 }
 
 
@@ -1169,9 +1158,9 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     // It'd be better to check for lat/long +/- range to see if it's
     // on the screen.
 
-    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
 //            if ((x_long < 0) || (x_long > 129600000l))
 //                return;
@@ -1236,8 +1225,8 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     off_y = (long)( shaft_length * sin(bearing_radians) );
     off_x = (long)( shaft_length * cos(bearing_radians) );
 
-    x = (x_long - x_long_offset)/scale_x;
-    y = (y_lat - y_lat_offset)/scale_y;
+    x = (x_long - NW_corner_longitude)/scale_x;
+    y = (y_lat - NW_corner_latitude)/scale_y;
 
     (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
     (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
@@ -1421,7 +1410,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
             real_bearing_max -= 360.0;
 
         // want this in nautical miles
-        screen_miles = scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) 
+        screen_miles = scale_x * calc_dscale_x(center_longitude,center_latitude) 
           * .5400;
 
         // Shorten range to more closely fit the screen
@@ -1450,23 +1439,23 @@ void draw_bearing(long x_long, long y_lat, char *course,
 
 
         // Compute the screen locations
-        x1 = (x_long - x_long_offset)/scale_x;
-        y1 = (y_lat - y_lat_offset)/scale_y;
+        x1 = (x_long - NW_corner_longitude)/scale_x;
+        y1 = (y_lat - NW_corner_latitude)/scale_y;
 
-        x2 = (x_long2 - x_long_offset)/scale_x;
-        y2 = (y_lat2 - y_lat_offset)/scale_y;
+        x2 = (x_long2 - NW_corner_longitude)/scale_x;
+        y2 = (y_lat2 - NW_corner_latitude)/scale_y;
 
-        x3 = (x_long3 - x_long_offset)/scale_x;
-        y3 = (y_lat3 - y_lat_offset)/scale_y;
+        x3 = (x_long3 - NW_corner_longitude)/scale_x;
+        y3 = (y_lat3 - NW_corner_latitude)/scale_y;
 
 
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
 /*
-        if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-            if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 */
 
 //                if ((x_long < 0) || (x_long > 129600000l))
@@ -1749,8 +1738,8 @@ void draw_area(long x_long, long y_lat, char type, char color,
     xoff = 360000.0 / 1500.0 * (sqrt_lon_off * sqrt_lon_off) / scale_x;
     yoff = 360000.0 / 1500.0 * (sqrt_lat_off * sqrt_lat_off) / scale_y;
 
-    right  = (x_long - x_long_offset) / scale_x;
-    bottom = (y_lat  - y_lat_offset)  / scale_y;
+    right  = (x_long - NW_corner_longitude) / scale_x;
+    bottom = (y_lat  - NW_corner_latitude)  / scale_y;
     left   = right  - xoff;
     top    = bottom - yoff;
 
@@ -1806,7 +1795,7 @@ void draw_area(long x_long, long y_lat, char type, char color,
             double angle = atan((float)xoff/(float)yoff);
 // Check for divide-by-zero here???
 
-            int conv_width = width/(scale_x*calc_dscale_x(mid_x_long_offset,mid_y_lat_offset)*0.0006214);
+            int conv_width = width/(scale_x*calc_dscale_x(center_longitude,center_latitude)*0.0006214);
             points[0].x = l16(left-(conv_width * cos(angle))+xoff);
             points[0].y = l16(top -(conv_width * sin(angle)));
             points[1].x = l16(left-(conv_width * cos(angle)));
@@ -1834,7 +1823,7 @@ void draw_area(long x_long, long y_lat, char type, char color,
             double angle = atan((float)xoff/(float)yoff);
 // Check for divide-by-zero here???
 
-            int conv_width = width/(scale_x*calc_dscale_x(mid_x_long_offset,mid_y_lat_offset)*0.0006214);
+            int conv_width = width/(scale_x*calc_dscale_x(center_longitude,center_latitude)*0.0006214);
             points[0].x = l16(left+(conv_width * cos(angle)));
             points[0].y = l16(top -(conv_width * sin(angle)));
             points[1].x = l16(left+(conv_width * cos(angle))+xoff);
@@ -2467,9 +2456,9 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
     int posyr;
 
 
-    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-        if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
 //            if ((x_long+10 < 0) || (x_long-10 > 129600000l))  // 360 deg
 //                return;
@@ -2477,8 +2466,8 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 //            if ((y_lat+10 < 0) || (y_lat-10 > 64800000l))     // 180 deg
 //                return;
 
-            x_offset=((x_long-x_long_offset)/scale_x)-(10);
-            y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
+            x_offset=((x_long-NW_corner_longitude)/scale_x)-(10);
+            y_offset=((y_lat -NW_corner_latitude) /scale_y)-(10);
             ghost = (int)(((sec_old+sec_heard)) < sec_now());
 
             if (bump_count)
@@ -2504,40 +2493,40 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 
             length=(int)strlen(alt_text);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)+12;
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
                 posyr += 13;
             }
 
             length=(int)strlen(callsign_text);
             if (length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)+12;
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
                 posyr += 13;
             }
 
             length=(int)strlen(speed_text);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)+12;
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
                 posyr += 13;
             }
 
             length=(int)strlen(course_text);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)+12;
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
                 posyr += 13;
             }
  
             length=(int)strlen(signpost);   // Make it white like callsign?
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)+12;
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,signpost,0x08,0x0f,length);
                 posyr += 13;
             }
@@ -2553,15 +2542,15 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 
             length=(int)strlen(my_distance);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*6))-12;
+                y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
                 posyl += 13;
             }
             length=(int)strlen(my_course);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*6))-12;
+                y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
                 posyl += 13;
             }
@@ -2621,8 +2610,8 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 }
 
                 length = strlen(age);
-                x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*6))-12;
+                y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
                 posyl += 13;
             }
@@ -2634,16 +2623,16 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 
             length=(int)strlen(wx_temp);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
                 posyr += 13;
             }
 
             length=(int)strlen(wx_wind);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
-                y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+                x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
+                y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
             }
 
@@ -2765,11 +2754,9 @@ static int getLineStyle(char styleChar) {
 void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2], char type, char style, time_t sec_heard, Pixmap where) {
     int ghost;
 
-
     // See if we should draw multipoints for this station. This only happens
-    // if there are points to draw, and the object has not been cleared (or 
+    // if there are points to draw and the object has not been cleared (or 
     // we're supposed to show old data).
-
 
     // Per Dale Huguley in e-mail 07/10/2003, a good interval for
     // the severe weather polygons to disappear is 10 minutes.  We
@@ -2778,7 +2765,6 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
 //    ghost = (int)(((sec_old+sec_heard)) < sec_now());
     ghost = (int)( ( sec_heard + (10 * 60) ) < sec_now() );
 
-
     // We don't want to draw them if the ghost interval is up, no
     // matter whether Include Expired Data is checked.
     //if ( (!ghost || Select_.old_data) && (numpoints > 0) ) {
@@ -2786,7 +2772,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
 
         //long x_offset, y_offset;
         int  i;
-        XPoint xpoints[MAX_MULTIPOINTS + 1];
+//        XPoint xpoints[MAX_MULTIPOINTS + 1];
 
 #if 0
         long mostNorth, mostSouth, mostWest, mostEast;
@@ -2819,53 +2805,96 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
         // scrolled off the edge of the display the points aren't drawn even if
         // one or more of them is on the display.
 
-        if((x_long > x_long_offset) && (x_long < (x_long_offset + (long)(screen_width * scale_x)))
-            && (y_lat > y_lat_offset) && (y_lat < (y_lat_offset + (long)(screen_height * scale_y))))
+//        if( (x_long > NW_corner_longitude) && (x_long < SE_corner_longitude)
+//            && (y_lat > NW_corner_latitude) && (y_lat < SE_corner_latitude) )
 #endif  // 0
         {
-            //x_offset = (x_long - x_long_offset) / scale_x;
-            //y_offset = (y_lat - y_lat_offset) / scale_y;
+            //x_offset = (x_long - NW_corner_longitude) / scale_x;
+            //y_offset = (y_lat - NW_corner_latitude) / scale_y;
 
             // Convert each of the points from Xastir coordinates to
             // screen coordinates and fill in the xpoints array.
 
-            for (i = 0; i < numpoints; ++i) {
-                xpoints[i].x = (mypoints[i][0] - x_long_offset) / scale_x;
-                xpoints[i].y = (mypoints[i][1] - y_lat_offset) / scale_y;
-                // fprintf(stderr,"   %d: %d,%d\n", i, xpoints[i].x, xpoints[i].y);
-            }
+//            for (i = 0; i < numpoints; ++i) {
+//                xpoints[i].x = (mypoints[i][0] - NW_corner_longitude) / scale_x;
+//                xpoints[i].y = (mypoints[i][1] - NW_corner_latitude) / scale_y;
+//                // fprintf(stderr,"   %d: %d,%d\n", i, xpoints[i].x, xpoints[i].y);
+//            }
 
             // The type parameter determines how the points will be used.
             // After determining the type, use the style parameter to
             // get the color and line style.
 
             switch (type) {
+
                 case '0':           // closed polygon
                 default:
                     // Repeat the first point so the polygon will be closed.
 
-                    xpoints[numpoints].x = xpoints[0].x;
-                    xpoints[numpoints].y = xpoints[0].y;
+//                    xpoints[numpoints].x = xpoints[0].x;
+//                    xpoints[numpoints].y = xpoints[0].y;
 
                     // First draw a wider black line.
-
                     (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);  // black
                     (void)XSetLineAttributes(XtDisplay(da), gc, 4, LineSolid, CapButt, JoinMiter);
-                    (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
+
+                    for (i = 0; i < numpoints-1; i++) {
+//                        (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
+                        draw_vector(da, mypoints[i][0],
+                            mypoints[i][1],
+                            mypoints[i+1][0],
+                            mypoints[i+1][1],
+                            gc,
+                            where);
+                    }
+                    // Close the polygon
+                    draw_vector(da,
+                        mypoints[i][0],
+                        mypoints[i][1],
+                        mypoints[0][0],
+                        mypoints[0][1],
+                        gc,
+                        where);
 
                     // Then draw the appropriate colored line on top of it.
-
                     (void)XSetForeground(XtDisplay(da), gc, getLineColor(style));
                     (void)XSetLineAttributes(XtDisplay(da), gc, 2, getLineStyle(style), CapButt, JoinMiter);
-                    (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
-                    
+
+                    for (i = 0; i < numpoints-1; i++) {
+//                        (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
+                        draw_vector(da, mypoints[i][0],
+                            mypoints[i][1],
+                            mypoints[i+1][0],
+                            mypoints[i+1][1],
+                            gc,
+                            where);
+                    }
+                    // Close the polygon
+                    draw_vector(da,
+                        mypoints[i][0],
+                        mypoints[i][1],
+                        mypoints[0][0],
+                        mypoints[0][1],
+                        gc,
+                        where);
+
                     break;
 
                 case '1':           // line segments
+
                     (void)XSetForeground(XtDisplay(da), gc, getLineColor(style));
                     (void)XSetLineAttributes(XtDisplay(da), gc, 2, getLineStyle(style), CapButt, JoinMiter);
-                    (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints, CoordModeOrigin);
-                    
+
+                    for (i = 0; i < numpoints-1; i++) {
+//                        (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints, CoordModeOrigin);
+                        draw_vector(da, mypoints[i][0],
+                            mypoints[i][1],
+                            mypoints[i+1][0],
+                            mypoints[i+1][1],
+                            gc,
+                            where);
+                    }
+
                     break;
 
                 // Other types have yet to be implemented.
@@ -3195,8 +3224,8 @@ void draw_deadreckoning_features(DataRow *p_station,
     y_lat = p_station->coord_lat;
 
     // x/y are screen locations for start position
-    x = (x_long - x_long_offset)/scale_x;
-    y = (y_lat - y_lat_offset)/scale_y;
+    x = (x_long - NW_corner_longitude)/scale_x;
+    y = (y_lat - NW_corner_latitude)/scale_y;
 
     y_lat2 = y_lat;
     x_long2 = x_long;
@@ -3207,15 +3236,15 @@ void draw_deadreckoning_features(DataRow *p_station,
         &y_lat2);
 
     // x2/y2 are screen location for ghost symbol (DR'ed position)
-    x2 = (x_long2 - x_long_offset)/scale_x;
-    y2 = (y_lat2 - y_lat_offset)/scale_y;
+    x2 = (x_long2 - NW_corner_longitude)/scale_x;
+    y2 = (y_lat2 - NW_corner_latitude)/scale_y;
 
 
     // Check DR'ed symbol position
-    if (    (x_long2>x_long_offset) &&
-            (x_long2<(x_long_offset+(long)(screen_width *scale_x))) &&
-            ((y_lat2>y_lat_offset) &&
-            (y_lat2<(y_lat_offset+(long)(screen_height*scale_y)))) &&
+    if (    (x_long2>NW_corner_longitude) &&
+            (x_long2<SE_corner_longitude) &&
+            (y_lat2>NW_corner_latitude) &&
+            (y_lat2<SE_corner_latitude) &&
             ((x_long>=0) && (x_long<=129600000l)) &&
             ((y_lat>=0) && (y_lat<=64800000l))) {
 
