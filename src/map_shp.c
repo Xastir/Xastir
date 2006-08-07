@@ -3608,10 +3608,10 @@ if (on_screen) {
 
                                 // Here we check for really wacko points that will cause problems
                                 // with the X drawing routines, and fix them.
-                                if (x >  15000l) x =  15000l;
-                                if (x < -15000l) x = -15000l;
-                                if (y >  15000l) y =  15000l;
-                                if (y < -15000l) y = -15000l;
+                                if (x >  16000l) x =  16000l;
+                                if (x < -16000l) x = -16000l;
+                                if (y >  16000l) y =  16000l;
+                                if (y < -16000l) y = -16000l;
 
                                 points[i].x = (short)x;
                                 points[i].y = (short)y;

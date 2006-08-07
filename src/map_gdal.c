@@ -1095,10 +1095,10 @@ void Draw_OGR_Labels( Widget w,
         // Check that we're not trying to draw the label out of
         // bounds for the X11 calls.
         //
-        if (       xpoints[0].x+10 <  15000
-                && xpoints[0].x+10 > -15000
-                && xpoints[0].y+5  <  15000
-                && xpoints[0].y+5  > -15000) {
+        if (       xpoints[0].x+10 <  16000
+                && xpoints[0].x+10 > -16000
+                && xpoints[0].y+5  <  16000
+                && xpoints[0].y+5  > -16000) {
 
 /*
             if (angle == 0.0) {   // Non-rotated label
@@ -1543,10 +1543,10 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
 // Here we truncate:  We should polygon clip instead, so that the
 // slopes of the line segments don't change.  Points beyond +/-
 // 16000 can cause problems in X11 when we draw.
-            if      (XI[ii] >  15000l) XI[ii] =  15000l;
-            else if (XI[ii] < -15000l) XI[ii] = -15000l;
-            if      (YI[ii] >  15000l) YI[ii] =  15000l;
-            else if (YI[ii] < -15000l) YI[ii] = -15000l;
+            if      (XI[ii] >  16000l) XI[ii] =  16000l;
+            else if (XI[ii] < -16000l) XI[ii] = -16000l;
+            if      (YI[ii] >  16000l) YI[ii] =  16000l;
+            else if (YI[ii] < -16000l) YI[ii] = -16000l;
         }
 
         // We don't need the Xastir coordinate system arrays
@@ -2064,11 +2064,11 @@ void Draw_OGR_Polygons( Widget w,
                     CHECKMALLOC(XI);
                     CHECKMALLOC(YI);
  
-// Note:  We're limiting screen size to 15000 in this routine.
-                    minX = -15000;
-                    maxX =  15000;
-                    minY = -15000;
-                    maxY =  15000;
+// Note:  We're limiting screen size to 16000 in this routine.
+                    minX = -16000;
+                    maxX =  16000;
+                    minY = -16000;
+                    maxY =  16000;
  
 
                     // Convert arrays to screen coordinates.
@@ -2090,10 +2090,10 @@ void Draw_OGR_Polygons( Widget w,
 // 16000 can cause problems in X11 when we draw.  Here we are more
 // interested in keeping the rectangles small and fast.  Screen-size
 // or smaller basically.
-                        if      (XI[nn] >  15000l) XI[nn] =  15000l;
-                        else if (XI[nn] < -15000l) XI[nn] = -15000l;
-                        if      (YI[nn] >  15000l) YI[nn] =  15000l;
-                        else if (YI[nn] < -15000l) YI[nn] = -15000l;
+                        if      (XI[nn] >  16000l) XI[nn] =  16000l;
+                        else if (XI[nn] < -16000l) XI[nn] = -16000l;
+                        if      (YI[nn] >  16000l) YI[nn] =  16000l;
+                        else if (YI[nn] < -16000l) YI[nn] = -16000l;
 
                         if (!polygon_hole) {
 
@@ -2811,7 +2811,7 @@ int tlid_keys_equal(void *key1, void *key2) {
 //    dropping or concatenating lines.  This can cause missing line
 //    segments that cross the edge of our view, or incorrect slopes
 //    for lines that cross the edge.
-//    NOTE:  Have switched to chopping at +/- 15000 pixels, which
+//    NOTE:  Have switched to chopping at +/- 16000 pixels, which
 //    seems to fix this nicely.  Chopping at much less causes
 //    problems, while X11 has problems at +/- 16384 or higher.
 // *) Speed things up in any way possible.
