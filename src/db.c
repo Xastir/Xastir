@@ -3236,7 +3236,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
 
-// draw line relativ
+// draw line relative
 void draw_test_line(Widget w, long x, long y, long dx, long dy, long ofs) {
 
     x += screen_width  - 10 - ofs;
@@ -7651,17 +7651,12 @@ int delete_trail(DataRow *fill) {
 void draw_trail(Widget w, DataRow *fill, int solid) {
     char short_dashed[2]  = {(char)1,(char)5};
     char medium_dashed[2] = {(char)5,(char)5};
-    long lat0, lon0, lat1, lon1;        // trail segment points
-    long marg_lat, marg_lon;
+    unsigned long lat0, lon0, lat1, lon1;        // trail segment points
     int col_trail, col_dot;
     XColor rgb;
-/*    Colormap cmap;  KD6ZWR - Now set in main() */
     long brightness;
     char flag1;
     TrackRow *ptr;
-    // Caching of last point drawn, a speedup tweak
-    int last_screen_lat = -32767; // Dummy value
-    int last_screen_lon = -32767; // Dummy value
 
 
     if (!ok_to_draw_station(fill))
@@ -7687,7 +7682,6 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
         // define color of position dots in trail
         rgb.pixel = col_trail;
-/*      cmap = DefaultColormap(XtDisplay(w), DefaultScreen(XtDisplay(w)));  KD6ZWR - Now set in main() */
         XQueryColor(XtDisplay(w),cmap,&rgb);
 
         brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
@@ -7707,13 +7701,6 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
             (void)XSetDashes(XtDisplay(w), gc, 0, short_dashed , 2);
         }
 
-        marg_lat = screen_height * scale_y;                 // Set up area for acceptable trail points
-        if (marg_lat < TRAIL_POINT_MARGIN*60*100)           // on-screen plus 50% margin
-            marg_lat = TRAIL_POINT_MARGIN*60*100;           // but at least a minimum margin
-        marg_lon = screen_width  * scale_x;
-        if (marg_lon < TRAIL_POINT_MARGIN*60*100)
-            marg_lon = TRAIL_POINT_MARGIN*60*100;
-
         // Traverse linked list of trail points from newest to
         // oldest
         while ( (ptr != NULL) && (ptr->prev != NULL) ) {
@@ -7723,74 +7710,83 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
             lat1 = ptr->prev->trail_lat_pos;
             flag1 = ptr->flag; // Are we at the start of a new trail?
 
-            if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to
-                (abs(lon1 - mid_x_long_offset) < marg_lon) &&  // be in margin area
-                (abs(lat0 - mid_y_lat_offset)  < marg_lat) &&
-                (abs(lat1 - mid_y_lat_offset)  < marg_lat) ) {
+            if ((flag1 & TR_NEWTRK) == '\0') {
+                int lon0_screen, lat0_screen, lon1_screen, lat1_screen;
 
-                if ((flag1 & TR_NEWTRK) == '\0') {
-                    // Possible drawing problems, if numbers too big ????
-                    lon0 = (lon0 - x_long_offset) / scale_x;    // check arguments for
-                    lat0 = (lat0 - y_lat_offset)  / scale_y;    // XDrawLine()
-                    lon1 = (lon1 - x_long_offset) / scale_x;
-                    lat1 = (lat1 - y_lat_offset)  / scale_y;
+                // draw trail segment
+                (void)XSetForeground(XtDisplay(w),gc,col_trail);
 
-                    if (abs(lon0) < 32700 && abs(lon1) < 32700 &&
-                            abs(lat0) < 32700 && abs(lat1) < 32700 &&
-                            lat1 != last_screen_lat &&  // Not the one we drew last
-                            lon1 != last_screen_lon ) { // Not the one we drew last
-                        // draw trail segment
-                        (void)XSetForeground(XtDisplay(w),gc,col_trail);
-                        (void)XDrawLine(XtDisplay(w),pixmap_final,gc,lon0,lat0,lon1,lat1);
-                        // draw position point itself
+                draw_vector(da, lon0, lat0, lon1, lat1, gc, pixmap_final);
+
+                // Convert to screen coordinates.
+                lon0_screen = (lon0 - x_long_offset) / scale_x;
+                lat0_screen = (lat0 - y_lat_offset)  / scale_y;
+
+                // draw position point itself
+                // Check that screen coordinates are within limits.
+                if (lon0_screen >= 0 && lon0_screen < 16000
+                            && lat0_screen >= 0 && lat0_screen < 16000) {
+
                         (void)XSetForeground(XtDisplay(w),gc,col_dot);
-                        (void)XDrawPoint(XtDisplay(w),pixmap_final,gc,lon0,lat0);
 
-                        // Draw the callsign to go with the point if
-                        // label_all_trackpoints=1.
-                        //
-                        if (Display_.callsign && Display_.label_all_trackpoints) {
+                        (void)XDrawPoint(XtDisplay(w),
+                            pixmap_final,
+                            gc,
+                            lon0_screen,
+                            lat0_screen);
+                }
 
-                            // The last position already gets its
-                            // callsign string drawn, plus that gets
-                            // shifted based on other parameters.
-                            // Draw both points of all line segments
-                            // except that one.  This will result in
-                            // strings getting drawn twice at times,
-                            // but they overlay on top of each other
-                            // so no big deal.
-                            //
-                            if (ptr != fill->newest_trackpoint) {
-                                draw_nice_string(da,
-                                    pixmap_final,
-                                    letter_style,
-                                    lon0+10,
-                                    lat0,
-                                    fill->call_sign,
-                                    0x08,
-                                    0x0f,
-                                    strlen(fill->call_sign));
+                // Draw the callsign to go with the point if
+                // label_all_trackpoints=1
+                //
+                if (Display_.callsign && Display_.label_all_trackpoints) {
 
-                                draw_nice_string(da,
-                                    pixmap_final,
-                                    letter_style,
-                                    lon1+10,
-                                    lat1,
-                                    fill->call_sign,
-                                    0x08,
-                                    0x0f,
-                                    strlen(fill->call_sign));
-                            }
+                    // Convert to screen coordinates.
+                    lon1_screen = (lon1 - x_long_offset) / scale_x;
+                    lat1_screen = (lat1 - y_lat_offset)  / scale_y;
+
+                    // The last position already gets its callsign
+                    // string drawn, plus that gets shifted based on
+                    // other parameters.  Draw both points of all
+                    // line segments except that one.  This will
+                    // result in strings getting drawn twice at
+                    // times, but they overlay on top of each other
+                    // so no big deal.
+                    //
+                    if (ptr != fill->newest_trackpoint) {
+
+                        // Check that screen coordinates are within
+                        // limits.
+                        if (lon0_screen >= 0 && lon0_screen < 16000
+                                && lat0_screen >= 0 && lat0_screen < 16000) {
+
+                            draw_nice_string(da,
+                                pixmap_final,
+                                letter_style,
+                                lon0_screen+10,
+                                lat0_screen,
+                                fill->call_sign,
+                                0x08,
+                                0x0f,
+                                strlen(fill->call_sign));
                         }
 
+                        // Check that screen coordinates are within
+                        // limits.
+                        if (lon1_screen >= 0 && lon1_screen < 16000
+                                && lat1_screen >= 0 && lat1_screen < 16000) {
+
+                            draw_nice_string(da,
+                                pixmap_final,
+                                letter_style,
+                                lon1_screen+10,
+                                lat1_screen,
+                                fill->call_sign,
+                                0x08,
+                                0x0f,
+                                strlen(fill->call_sign));
+                        }
                     }
-/*                  (void)XDrawLine(XtDisplay(w), pixmap_final, gc,         // draw trail segment
-                        (lon0-x_long_offset)/scale_x,(lat0-y_lat_offset)/scale_y,
-                        (lon1-x_long_offset)/scale_x,(lat1-y_lat_offset)/scale_y);
-*/
-                    // Set up point caching for the next go-around
-                    last_screen_lat = lat1;
-                    last_screen_lon = lon1;
                 }
             }
             ptr = ptr->prev;
