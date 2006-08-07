@@ -943,23 +943,40 @@ XastirGlobal Global;
 
 char *database_ptr;             /* database pointers */
 
-long mid_x_long_offset;         // Longitude at center of map
-long mid_y_lat_offset;          // Latitude  at center of map
-long new_mid_x, new_mid_y;      // Check values used before applying real change
-long x_long_offset;             // Longitude at top NW corner of map screen
-long y_lat_offset;              // Latitude  at top NW corner of map screen
-long scale_x;                   // x scaling in 1/100 sec per pixel, calculated from scale_y
-long scale_y;                   // y scaling in 1/100 sec per pixel
+
+//---------------------------------------------------------------------------------------------
+//
+// These describe the current map window.  They must be kept
+// up-to-date when we zoom/pan/resize the window.
+//
+float f_center_longitude;    // Floating point map center longitude, updated by new_image()
+float f_center_latitude;     // Floating point map center latitude , updated by new_image()
+float f_NW_corner_longitude; // longitude of NW corner, updated by create_image(), refresh_image()
+float f_NW_corner_latitude;  // latitude  of NW corner, updated by create_image(), refresh_image()
+float f_SE_corner_longitude; // longitude of SE corner, updated by create_image(), refresh_image()
+float f_SE_corner_latitude;  // latitude  of SE corner, updated by create_image(), refresh_image()
+
+long center_longitude;       // Longitude at center of map, updated by display_zoom_image()
+long center_latitude;        // Latitude  at center of map, updated by display_zoom_image()
+long NW_corner_longitude;    // Longitude at NW corner, updated by create_image(), refresh_image()
+long NW_corner_latitude;     // Latitude  at NW corner, updated by create_image(), refresh_image()
+long SE_corner_longitude;    // Longitude at SE corner, updated by create_image(), refresh_image()
+long SE_corner_latitude;     // Latitude  at SE corner, updated by create_image(), refresh_image()
+
+long scale_x;                // x scaling in 1/100 sec per pixel, calculated from scale_y
+long scale_y;                // y scaling in 1/100 sec per pixel
+
+long new_mid_x, new_mid_y;   // Check values used before applying real change
 long new_scale_x;
 long new_scale_y;
-long screen_width;              // Screen width,  map area without border (in pixel)
-long screen_height;             // Screen height, map area without border (in pixel)
+long screen_width;           // Screen width,  map area without border (in pixels)
+long screen_height;          // Screen height, map area without border (in pixels)
 Position screen_x_offset;
 Position screen_y_offset;
-float d_screen_distance;        /* Diag screen distance */
-float x_screen_distance;        /* x screen distance */
-float f_center_longitude;       // Floating point map center longitude
-float f_center_latitude;        // Floating point map center latitude
+float d_screen_distance;     // Diag screen distance
+float x_screen_distance;     // x screen distance
+//---------------------------------------------------------------------------------------------
+
 
 char user_dir[1000];            /* user directory file */
 int delay_time;                 /* used to delay display data */
@@ -3171,8 +3188,22 @@ int create_image(Widget w) {
 
     screen_width  = (long)width;
     screen_height = (long)height;
-    long_offset_temp = x_long_offset = mid_x_long_offset - (screen_width  * scale_x / 2);  // NW corner
-    lat_offset_temp  = y_lat_offset  = mid_y_lat_offset  - (screen_height * scale_y / 2);
+    long_offset_temp = NW_corner_longitude = center_longitude - (screen_width  * scale_x / 2);  // NW corner
+    lat_offset_temp  = NW_corner_latitude  = center_latitude  - (screen_height * scale_y / 2);
+
+    SE_corner_longitude = center_longitude + (screen_width * scale_x / 2);
+    SE_corner_latitude = center_latitude + (screen_height * scale_y / 2);
+
+    // Set up floating point lat/long values to match Xastir
+    // coordinates.
+    convert_from_xastir_coordinates(&f_NW_corner_longitude,
+        &f_NW_corner_latitude,
+        NW_corner_longitude,
+        NW_corner_latitude);
+    convert_from_xastir_coordinates(&f_SE_corner_longitude,
+        &f_SE_corner_latitude,
+        SE_corner_longitude,
+        SE_corner_latitude);
 
     /* map default background color */
     switch (map_background_color){
@@ -3406,9 +3437,23 @@ void refresh_image(Widget w) {
     screen_width  = (long)width;
     screen_height = (long)height;
 
-    long_offset_temp = x_long_offset = mid_x_long_offset - (screen_width * scale_x / 2);
-    y_lat_offset     = mid_y_lat_offset - (screen_height * scale_y / 2);
-    lat_offset_temp  = mid_y_lat_offset;
+    long_offset_temp = NW_corner_longitude = center_longitude - (screen_width * scale_x / 2);
+    NW_corner_latitude     = center_latitude - (screen_height * scale_y / 2);
+    lat_offset_temp  = center_latitude;
+
+    SE_corner_longitude = center_longitude + (screen_width * scale_x / 2);
+    SE_corner_latitude = center_latitude + (screen_height * scale_y / 2);
+
+    // Set up floating point lat/long values to match Xastir
+    // coordinates.
+    convert_from_xastir_coordinates(&f_NW_corner_longitude,
+        &f_NW_corner_latitude,
+        NW_corner_longitude,
+        NW_corner_latitude);
+    convert_from_xastir_coordinates(&f_SE_corner_longitude,
+        &f_SE_corner_latitude,
+        SE_corner_longitude,
+        SE_corner_latitude);
 
     (void)XSetForeground(XtDisplay(w),gc,colors[0xfd]);
     (void)XSetBackground(XtDisplay(w),gc,colors[0xfd]);
@@ -3552,8 +3597,8 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 
     Widget textarea = (Widget) clientData;
 
-    x = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (event->xmotion.x * scale_x));
-    y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
+    x = (center_longitude - ((screen_width  * scale_x)/2) + (event->xmotion.x * scale_x));
+    y = (center_latitude  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
     if (x < 0)
 //        x = 0l;                 // 180°W
@@ -9406,8 +9451,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     && (abs(menu_y - input_y) < 15) ) {
            /*     if(display_up) {
                     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
-                    new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-                    new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+                    new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+                    new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
                     new_scale_y = scale_y;          // keep size
                     display_zoom_image(1);          // check range and do display, recenter
                 }
@@ -9483,11 +9528,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     //popup_message_always(langcode("POPUPMA020"),temp);
 
                     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
-                    a_x = mid_x_long_offset  - ((width *scale_x)/2) + (menu_x*scale_x);
-                    a_y = mid_y_lat_offset   - ((height*scale_y)/2) + (menu_y*scale_y);
+                    a_x = center_longitude  - ((width *scale_x)/2) + (menu_x*scale_x);
+                    a_y = center_latitude   - ((height*scale_y)/2) + (menu_y*scale_y);
 
-                    b_x = mid_x_long_offset  - ((width *scale_x)/2) + (input_x*scale_x);
-                    b_y = mid_y_lat_offset   - ((height*scale_y)/2) + (input_y*scale_y);
+                    b_x = center_longitude  - ((width *scale_x)/2) + (input_x*scale_x);
+                    b_y = center_latitude   - ((height*scale_y)/2) + (input_y*scale_y);
 
                     // Keep y constant to get x distance.  Convert
                     // to the current measurement units for display.
@@ -9632,8 +9677,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     possible_zoom_function = 0;
                     zoom_box_x1 = -1;
 
-                    x = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (event->xmotion.x * scale_x));
-                    y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
+                    x = (center_longitude - ((screen_width  * scale_x)/2) + (event->xmotion.x * scale_x));
+                    y = (center_latitude  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
                     if (x < 0)
                     x = 0l;                 // 180°W
@@ -9685,8 +9730,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     y_center = (menu_y + input_y) /2;
 
                     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
-                    new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (x_center*scale_x);
-                    new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (y_center*scale_y);
+                    new_mid_x = center_longitude - ((width *scale_x)/2) + (x_center*scale_x);
+                    new_mid_y = center_latitude  - ((height*scale_y)/2) + (y_center*scale_y);
 
                     //
                     // What Rolf had to say:
@@ -9986,7 +10031,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
 
     if (redraw) {
-        /*fprintf(stderr,"Current x %ld y %ld\n",mid_x_long_offset,mid_y_lat_offset);*/
+        /*fprintf(stderr,"Current x %ld y * %ld\n",center_longitude,center_latitude);*/
 
         // Set the interrupt_drawing_now flag
         interrupt_drawing_now++;
@@ -11869,8 +11914,8 @@ void new_image(Widget da) {
     // values later).
     convert_from_xastir_coordinates(&f_center_longitude,
         &f_center_latitude,
-        mid_x_long_offset,
-        mid_y_lat_offset);
+        center_longitude,
+        center_latitude);
 
     if (create_image(da)) {
         HandlePendingEvents(app_context);
@@ -11967,18 +12012,18 @@ void check_range(void) {
 */
 
 
-// long x_long_offset;             // Longitude at top NW corner of map screen
-// long y_lat_offset;              // Latitude  at top NW corner of map screen
+// long NW_corner_longitude;             // Longitude at top NW corner of map screen
+// long NW_corner_latitude;              // Latitude  at top NW corner of map screen
 
 /*
-if (x_long_offset < 0l) {
+if (NW_corner_longitude < 0l) {
 //    fprintf(stderr,"left\n");
-    x_long_offset = 0l;         // New left viewpoint edge
+    NW_corner_longitude = 0l;         // New left viewpoint edge
     new_mid_x = 0l + ((width*new_scale_x) / 2); // New midpoint
 }
-if ( (x_long_offset + (width*new_scale_x) ) > 129600000l) {
+if ( (NW_corner_longitude + (width*new_scale_x) ) > 129600000l) {
 //    fprintf(stderr,"right\n");
-    x_long_offset = 129600000l - (width*new_scale_x);   // New left viewpoint edge
+    NW_corner_longitude = 129600000l - (width*new_scale_x);   // New left viewpoint edge
     new_mid_x = 129600000l - ((width*new_scale_x) / 2); // New midpoint
 }
 */
@@ -11987,7 +12032,7 @@ if ( (x_long_offset + (width*new_scale_x) ) > 129600000l) {
 // sure they are on the display, but not well inside the borders of
 // the display.
 
-// We keep getting mid_x_long_offset out of range when zooming out
+// We keep getting center_longitude out of range when zooming out
 // and having the edge of the world map to the right of the middle
 // of the window.  This shows up in new_image() above during the
 // convert_from_xastir_coordinates() call.  new_mid_x is the data of
@@ -12009,16 +12054,16 @@ void display_zoom_image(int recenter) {
 //fprintf(stderr,"Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
     check_range();              // keep map inside world and calc x scaling
 //fprintf(stderr,"After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
-    if (new_mid_x != mid_x_long_offset
-            || new_mid_y != mid_y_lat_offset
+    if (new_mid_x != center_longitude
+            || new_mid_y != center_latitude
             || new_scale_x != scale_x
             || new_scale_y != scale_y) {    // If there's been a change in zoom or center
 
         set_last_position();
 
         if (recenter) {
-            mid_x_long_offset = new_mid_x;      // new map center
-            mid_y_lat_offset  = new_mid_y;
+            center_longitude = new_mid_x;      // new map center
+            center_latitude  = new_mid_y;
         }
         scale_x = new_scale_x;
         scale_y = new_scale_y;
@@ -12046,8 +12091,8 @@ void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-        new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+        new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+        new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
         new_scale_y = scale_y / 2;
         if (new_scale_y < 1)
             new_scale_y = 1;            // don't go further in
@@ -12064,8 +12109,8 @@ void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset;
-        new_mid_y = mid_y_lat_offset;
+        new_mid_x = center_longitude;
+        new_mid_y = center_latitude;
         new_scale_y = scale_y / 2;
         if (new_scale_y < 1)
             new_scale_y = 1;            // don't go further in, scale_x always bigger than scale_y
@@ -12082,8 +12127,8 @@ void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-        new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+        new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+        new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
         if (width*scale_x < 129600000l || height*scale_y < 64800000l)
             new_scale_y = scale_y * 2;
         else
@@ -12101,8 +12146,8 @@ void Zoom_out_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, 
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset;
-        new_mid_y = mid_y_lat_offset;
+        new_mid_x = center_longitude;
+        new_mid_y = center_latitude;
         if (width*scale_x < 129600000l || height*scale_y < 64800000l)
             new_scale_y = scale_y * 2;
         else
@@ -12301,8 +12346,8 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
     level=atoi((char *)clientData);
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-        new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+        new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+        new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
         switch(level) {
             case(1):
                 new_scale_y = 1;
@@ -12395,8 +12440,8 @@ void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-        new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+        new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
+        new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12411,8 +12456,8 @@ void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset;
-        new_mid_y = mid_y_lat_offset  - (height*scale_y/4);
+        new_mid_x = center_longitude;
+        new_mid_y = center_latitude  - (height*scale_y/4);
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12427,8 +12472,8 @@ void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset;
-        new_mid_y = mid_y_lat_offset  - (height*scale_y/10);
+        new_mid_x = center_longitude;
+        new_mid_y = center_latitude  - (height*scale_y/10);
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12443,8 +12488,8 @@ void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset;
-        new_mid_y = mid_y_lat_offset  + (height*scale_y/4);
+        new_mid_x = center_longitude;
+        new_mid_y = center_latitude  + (height*scale_y/4);
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12459,8 +12504,8 @@ void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset;
-        new_mid_y = mid_y_lat_offset  + (height*scale_y/10);
+        new_mid_x = center_longitude;
+        new_mid_y = center_latitude  + (height*scale_y/10);
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12475,8 +12520,8 @@ void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset - (width*scale_x/4);
-        new_mid_y = mid_y_lat_offset;
+        new_mid_x = center_longitude - (width*scale_x/4);
+        new_mid_y = center_latitude;
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12491,8 +12536,8 @@ void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset - (width*scale_x/10);
-        new_mid_y = mid_y_lat_offset;
+        new_mid_x = center_longitude - (width*scale_x/10);
+        new_mid_y = center_latitude;
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12507,8 +12552,8 @@ void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset + (width*scale_x/4);
-        new_mid_y = mid_y_lat_offset;
+        new_mid_x = center_longitude + (width*scale_x/4);
+        new_mid_y = center_latitude;
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12523,8 +12568,8 @@ void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        new_mid_x = mid_x_long_offset + (width*scale_x/10);
-        new_mid_y = mid_y_lat_offset;
+        new_mid_x = center_longitude + (width*scale_x/10);
+        new_mid_y = center_latitude;
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
     }
@@ -12833,7 +12878,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
             // Convert points to Xastir coordinate system
 
             // X
-            x = mid_x_long_offset  - ((width *scale_x)/2);
+            x = center_longitude  - ((width *scale_x)/2);
 
             // Check for the edge of the earth
             if (x < 0) {
@@ -12841,10 +12886,10 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 fell_off++; // Fell off the edge of the earth
             }
 
-            x0 = mid_x_long_offset; // Center of screen
+            x0 = center_longitude; // Center of screen
 
             // Y
-            y = mid_y_lat_offset   - ((height*scale_y)/2);
+            y = center_latitude   - ((height*scale_y)/2);
 
             // Check for the edge of the earth
             if (y < 0) {
@@ -12852,7 +12897,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 fell_off++; // Fell off the edge of the earth
             }
 
-            y0 = mid_y_lat_offset;  // Center of screen
+            y0 = center_latitude;  // Center of screen
 
             // Compute distance from center to each edge
 
@@ -12982,8 +13027,8 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
-        my_new_lonl = (mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x));
-        my_new_latl = (mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y));
+        my_new_lonl = (center_longitude - ((width *scale_x)/2) + (menu_x*scale_x));
+        my_new_latl = (center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y));
         // Check if we are still on the planet... 
         if ( my_new_latl > 64800000l  ) my_new_latl = 64800000l;
         if ( my_new_latl < 0 ) my_new_latl = 0;
