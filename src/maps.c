@@ -536,62 +536,6 @@ void recompute_lat_long(void) {
 
 
 
-// Draws a point onto a pixmap.  Assumes that the proper GC has
-// already been set up for drawing the correct color/width/linetype,
-// etc.  If the bounding box containing the point doesn't intersect
-// with the current view, the point isn't drawn.
-//
-// Input point is in the Xastir coordinate system.
-//
-void draw_point(Widget w,
-                 unsigned long x1,
-                 unsigned long y1,
-                 GC gc,
-                 Pixmap which_pixmap) {
-
-    int x1i, y1i;
-
-
-    // Check whether the two bounding boxes intersect.  If not, skip
-    // the rest of this function.  Do we need to worry about
-    // special-case code here to handle vertical/horizontal lines
-    // (width or length of zero)?
-    //
-    if (!map_visible(y1, y1, x1, x1)) {
-        // Skip this vector
-        //fprintf(stderr,"Point not visible\n");
-        return;
-    }
-
-    // Convert to screen coordinates.  Careful here!
-    // The format conversions you'll need if you try to
-    // compress this into two lines will get you into
-    // trouble.
-    x1i = x1 - NW_corner_longitude;
-    x1i = x1i / scale_x;
- 
-    y1i = y1 - NW_corner_latitude;
-    y1i = y1i / scale_y;
-
-    // XDrawPoint uses 16-bit unsigned integers
-    // (shorts).  Make sure we stay within the limits.
-
-    if (x1i >  16000) return;
-    if (x1i < -16000) return;
-    if (y1i >  16000) return;
-    if (y1i < -16000) return;
-
-    (void)XDrawPoint(XtDisplay(w),
-        which_pixmap,
-        gc,
-        x1i,
-        y1i);
-}
-
-
-
-
-
 // Function to perform 2D line-clipping Using the improved parametric
 // line-clipping algorithm by Liang, Barsky, and Slater published in
 // the paper: "Some Improvements to a Parametric Line Clipping
@@ -875,6 +819,90 @@ int clip2d_long(unsigned long *x0, unsigned long *y0, unsigned long *x1, unsigne
 
 
 
+// Draws a point onto a pixmap.  Assumes that the proper GC has
+// already been set up for drawing the correct color/width/linetype,
+// etc.  If the bounding box containing the point doesn't intersect
+// with the current view, the point isn't drawn.
+//
+// Input point is in the Xastir coordinate system.
+//
+void draw_point(Widget w,
+                 unsigned long x1,
+                 unsigned long y1,
+                 GC gc,
+                 Pixmap which_pixmap) {
+
+    int x1i, y1i;
+
+
+    // Check whether the two bounding boxes intersect.  If not, skip
+    // the rest of this function.  Do we need to worry about
+    // special-case code here to handle vertical/horizontal lines
+    // (width or length of zero)?
+    //
+    if (!map_visible(y1, y1, x1, x1)) {
+        // Skip this vector
+        //fprintf(stderr,"Point not visible\n");
+        return;
+    }
+
+    // Convert to screen coordinates.  Careful here!
+    // The format conversions you'll need if you try to
+    // compress this into two lines will get you into
+    // trouble.
+    x1i = x1 - NW_corner_longitude;
+    x1i = x1i / scale_x;
+ 
+    y1i = y1 - NW_corner_latitude;
+    y1i = y1i / scale_y;
+
+    // XDrawPoint uses 16-bit unsigned integers
+    // (shorts).  Make sure we stay within the limits.
+
+    if (x1i >  16000) return;
+    if (x1i < -16000) return;
+    if (y1i >  16000) return;
+    if (y1i < -16000) return;
+
+    (void)XDrawPoint(XtDisplay(w),
+        which_pixmap,
+        gc,
+        x1i,
+        y1i);
+}
+
+
+
+
+
+// Draws a vector onto a pixmap.  Assumes that the proper GC has
+// already been set up for drawing the correct color/width/linetype,
+// etc.
+//
+// Input points are in lat/long coordinates.
+//
+void draw_point_ll(Widget w,
+                    float y1,   // lat1
+                    float x1,   // long1
+                    GC gc,
+                    Pixmap which_pixmap) {
+
+    unsigned long x1L, y1L;
+
+    // Convert the point to the Xastir coordinate system.
+    convert_to_xastir_coordinates(&x1L,
+        &y1L,
+        x1,
+        y1);
+
+    // Call the draw routine.
+    draw_point(w, x1L, y1L, gc, which_pixmap);
+}
+
+
+
+
+
 // Draws a vector onto a pixmap.  Assumes that the proper GC has
 // already been set up for drawing the correct color/width/linetype,
 // etc.  If the bounding box containing the vector doesn't intersect
@@ -940,34 +968,6 @@ void draw_vector(Widget w,
         y1i,
         x2i,
         y2i);
-}
-
-
-
-
-
-// Draws a vector onto a pixmap.  Assumes that the proper GC has
-// already been set up for drawing the correct color/width/linetype,
-// etc.
-//
-// Input points are in lat/long coordinates.
-//
-void draw_point_ll(Widget w,
-                    float y1,   // lat1
-                    float x1,   // long1
-                    GC gc,
-                    Pixmap which_pixmap) {
-
-    unsigned long x1L, y1L;
-
-    // Convert the point to the Xastir coordinate system.
-    convert_to_xastir_coordinates(&x1L,
-        &y1L,
-        x1,
-        y1);
-
-    // Call the draw routine.
-    draw_point(w, x1L, y1L, gc, which_pixmap);
 }
 
 
