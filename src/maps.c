@@ -840,6 +840,12 @@ void draw_point(Widget w,
     // special-case code here to handle vertical/horizontal lines
     // (width or length of zero)?
     //
+//
+// WE7U
+// Check to see if we can do this faster than map_visible() can.  A
+// point is a special case that should take only four compares
+// against the map window boundaries.
+//
     if (!map_visible(y1, y1, x1, x1)) {
         // Skip this vector
         //fprintf(stderr,"Point not visible\n");
@@ -889,13 +895,22 @@ void draw_point_ll(Widget w,
 
     unsigned long x1L, y1L;
 
+//
+// WE7U
+// We should probably do four floating point compares against the
+// map boundaries here in order to speed up rejection of points that
+// don't fit our window.  If we change to that, copy the conversion-
+// to-screen-coordinates and drawing stuff from draw_point() down to
+// this routine so that we don't go through the comparisons again
+// there.
+//
     // Convert the point to the Xastir coordinate system.
     convert_to_xastir_coordinates(&x1L,
         &y1L,
         x1,
         y1);
 
-    // Call the draw routine.
+    // Call the draw routine above.
     draw_point(w, x1L, y1L, gc, which_pixmap);
 }
 
@@ -948,7 +963,11 @@ void draw_vector(Widget w,
 
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
+    // clip2d_long() should make sure of this anyway as it clips
+    // lines to fit the window, so commenting these tests out for
+    // now.
     //
+/*
     if (x1i >  16000) x1i =  16000;
     if (x1i < -16000) x1i = -16000;
 
@@ -960,6 +979,7 @@ void draw_vector(Widget w,
 
     if (y2i >  16000) y2i =  16000;
     if (y2i < -16000) y2i = -16000;
+*/
 
     (void)XDrawLine(XtDisplay(w),
         which_pixmap,
@@ -1030,7 +1050,10 @@ void draw_vector_ll(Widget w,
 
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
+    // clip2d() should make sure of this anyway as it clips lines to
+    // fit the window, so commenting these tests out for now.
     //
+/*
     if (x1i >  16000) x1i =  16000;
     if (x1i < -16000) x1i = -16000;
 
@@ -1042,6 +1065,7 @@ void draw_vector_ll(Widget w,
 
     if (y2i >  16000) y2i =  16000;
     if (y2i < -16000) y2i = -16000;
+*/
 
     (void)XDrawLine(XtDisplay(w),
         which_pixmap,
