@@ -2575,7 +2575,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     Pixmap drawing_target;
     WeatherRow *weather = p_station->weather_data;
     time_t secs_now = sec_now();
-    int ambiguity_flag = 0;
+    int ambiguity_flag;
     long ambiguity_coord_lon, ambiguity_coord_lat;
  
 
@@ -2857,7 +2857,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
         // sec_heard should give the wrong results.
 //    }
 
-    if (Display_.ambiguity && p_station->pos_amb)
+    ambiguity_flag = 0; // Default
+
+    if (Display_.ambiguity && p_station->pos_amb) {
         ambiguity_flag = 1;
         draw_ambiguity(p_station->coord_lon,
             p_station->coord_lat,
@@ -2866,6 +2868,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
             &ambiguity_coord_lat, // New latitude may get passed back to us
             temp_sec_heard,
             drawing_target);
+    }
 
     // Check for DF'ing data, draw DF circles if present and enabled
     if (Display_.df_data && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
@@ -2914,7 +2917,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
     }
 
-    if (p_station->aprs_symbol.area_object.type != AREA_NONE)
+    if (p_station->aprs_symbol.area_object.type != AREA_NONE) {
         draw_area( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
                    (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                    p_station->aprs_symbol.area_object.type,
@@ -2924,6 +2927,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                    p_station->aprs_symbol.area_object.corridor_width,
                    temp_sec_heard,
                    drawing_target);
+    }
 
 
     // Draw additional stuff if this is the tracked station
