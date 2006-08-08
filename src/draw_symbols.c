@@ -379,9 +379,9 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
+//    if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
+//        if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
 //            if ((x_long < 0) || (x_long > 129600000l))
 //                return;
@@ -413,8 +413,14 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
                 (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)),
                 (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),
                 (unsigned int)diameter,(unsigned int)diameter,0,64*360);
-        }
-    }
+
+// We may need to check for the lat/long being way too far
+// off-screen, refusing to draw the circles if so, if and only if we
+// get into X11 drawing bugs as-is.
+
+
+//        }
+//    }
 }
 
 
@@ -498,9 +504,9 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
+//        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
+//            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
                 xx=0l;
                 yy=0l;
@@ -635,8 +641,8 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                         (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
                         (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                 }
-            }
-        }
+//            }
+//        }
     }
 }
 
@@ -662,9 +668,9 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 // Prevents it from being drawn when the symbol is off-screen.
 // It'd be better to check for lat/long +/- range to see if it's on the screen.
 
-        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
+//        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
+//            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
 
 //                if ((x_long < 0) || (x_long > 129600000l))
 //                    return;
@@ -871,8 +877,8 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                             (unsigned int)diameter,(unsigned int)diameter,0,64*360);
                     }
                 }
-            }
-        }
+//            }
+//        }
     }
     // Change back to non-stipple for whatever drawing occurs after this
     (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillSolid);
@@ -1333,12 +1339,10 @@ void draw_bearing(long x_long, long y_lat, char *course,
     double real_bearing_max = 0.0;
     int width = 0;
     long x_long2, x_long3, y_lat2, y_lat3;
-    long x1, y1, x2, y2, x3, y3;
     double screen_miles;
 
 
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
-
 
         // Check for a zero value for N.  If found, the NRQ value is meaningless
         // and we need to assume some working default values.
@@ -1437,96 +1441,14 @@ void draw_bearing(long x_long, long y_lat, char *course,
             &x_long3,               // output (*long)
             &y_lat3);               // output (*long)
 
+        (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
+        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
-        // Compute the screen locations
-        x1 = (x_long - NW_corner_longitude)/scale_x;
-        y1 = (y_lat - NW_corner_latitude)/scale_y;
-
-        x2 = (x_long2 - NW_corner_longitude)/scale_x;
-        y2 = (y_lat2 - NW_corner_latitude)/scale_y;
-
-        x3 = (x_long3 - NW_corner_longitude)/scale_x;
-        y3 = (y_lat3 - NW_corner_latitude)/scale_y;
-
-
-// Prevents it from being drawn when the symbol is off-screen.
-// It'd be better to check for lat/long +/- range to see if it's on the screen.
-
-/*
-        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
-
-            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
-*/
-
-//                if ((x_long < 0) || (x_long > 129600000l))
-//                    return;
-
-//                if ((y_lat < 0) || (y_lat > 64800000l))
-//                    return;
-
-                (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
-                //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-
-
-//                (void)XSetLineAttributes(XtDisplay(da), gc_tint, 2, LineSolid, CapRound, JoinRound);
-
-
-//                (void)XSetFunction (XtDisplay (da), gc_tint, GXor);
-                /*
-                    Options are:
-                    GXclear         0                       (Don't use)
-                    GXand           src AND dst             (Darker colors, black can result from overlap)
-                    GXandReverse    src AND (NOT dst)       (Darker colors)
-                    GXcopy          src                     (Don't use)
-                    GXandInverted   (NOT src) AND dst       (Pretty colors)
-                    GXnoop          dst                     (Don't use)
-                    GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-                    GXor            src OR dst              (More pastel colors, too bright?)
-                    GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-                    GXequiv         (NOT src) XOR dst       (Bright, very readable)
-                    GXinvert        (NOT dst)               (Don't use)
-                    GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-                    GXcopyInverted  (NOT src)               (Don't use)
-                    GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-                    GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-                    GXset           1                       (Don't use)
-                */
-
-
-
-                // Stipple the area instead of obscuring the map underneath
-//                (void)XSetStipple(XtDisplay(da), gc_tint, pixmap_2x2_stipple);
-//                (void)XSetFillStyle(XtDisplay(da), gc_tint, FillStippled);
-
-                if ((sec_old+sec_heard)>sec_now()) {  // New
-//                    (void)XSetForeground(XtDisplay(da),gc_tint,color);
-//                    (void)XSetForeground(XtDisplay(da),gc,color);
-                }
-                else {                                // Old
-//                    (void)XSetForeground(XtDisplay(da),gc_tint,color);
-//                    (void)XSetForeground(XtDisplay(da),gc,color);
-                }
-
-
-//                (void)XDrawLine(XtDisplay(da),where,gc_tint,
-                (void)XDrawLine(XtDisplay(da),where,gc,
-                    x1,
-                    y1,
-                    x2,
-                    y2);
-
-//                (void)XDrawLine(XtDisplay(da),where,gc_tint,
-                (void)XDrawLine(XtDisplay(da),where,gc,
-                    x1,
-                    y1,
-                    x3,
-                    y3);
-/*
-            }
-        }
-*/
+        draw_vector(da, x_long, y_lat, x_long2, y_lat2, gc, where);
+        draw_vector(da, x_long, y_lat, x_long3, y_lat3, gc, where);
     }
+
     // Change back to non-stipple for whatever drawing occurs after this
 //    (void)XSetFillStyle(XtDisplay(da), gc_tint, FillSolid);
 }
@@ -1679,6 +1601,9 @@ void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *a
 
 
 
+// Function which specifies whether any part of a bounding box fits
+// on the screen, using screen coordinates as inputs.
+//
 static __inline__ int onscreen(long left, long right, long top, long bottom) {
     // This checks to see if any part of a box is on the screen.
     if (left > screen_width || right < 0 || top > screen_height || bottom < 0)
@@ -2446,8 +2371,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
         long x_long,long y_lat, char *callsign_text, char *alt_text, char *course_text,
         char *speed_text, char *my_distance, char *my_course, char *wx_temp,
         char* wx_wind, time_t sec_heard, int temp_show_last_heard, Pixmap where,
-        char orient, char area_type, char *signpost, char *pmin, char *pmax,
-        int bump_count) {
+        char orient, char area_type, char *signpost, int bump_count) {
 
     long x_offset,y_offset;
     int length;
@@ -2635,25 +2559,6 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
             }
-
-            // Draw min proximity circle?
-            if (pmin[0] != '\0') {
-                double range = atof(pmin);
-                // Draw red circle
-                draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
-            }
-
-            // Draw max proximity circle?
-            if (pmax[0] != '\0') {
-                double range = atof(pmax);
-                // Draw red circle
-                draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
-            }
-
-// DEBUG STUFF
-//            draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);
-//            draw_pod_circle(x_long, y_lat, 3.0, colors[0x44], where);
-
         }
     }
 }
@@ -3398,8 +3303,6 @@ void draw_deadreckoning_features(DataRow *p_station,
             symbol_orient(p_station->course),
             p_station->aprs_symbol.area_object.type,
             p_station->signpost,
-            "",
-            "",
             0); // Don't bump the station count
     }
 }

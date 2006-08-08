@@ -3163,8 +3163,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 orient,
                 p_station->aprs_symbol.area_object.type,
                 p_station->signpost,
-                p_station->probability_min,
-                p_station->probability_max,
                 1); // Increment "currently_selected_stations"
 
     // If it's a Waypoint symbol, draw a line from it to the
@@ -3225,6 +3223,35 @@ void display_station(Widget w, DataRow *p_station, int single) {
                           drawing_target);
         }
     }
+
+
+    // Draw minimum proximity circle?
+    if (p_station->probability_min[0] != '\0') {
+        double range = atof(p_station->probability_min);
+
+        // Draw red circle
+        draw_pod_circle(p_station->coord_lon,
+            p_station->coord_lat,
+            range,
+            colors[0x44],
+            drawing_target);
+    }
+
+    // Draw maximum proximity circle?
+    if (p_station->probability_max[0] != '\0') {
+        double range = atof(p_station->probability_max);
+
+        // Draw red circle
+        draw_pod_circle(p_station->coord_lon,
+            p_station->coord_lat,
+            range,
+            colors[0x44],
+            drawing_target);
+    }
+
+// DEBUG STUFF
+//            draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);
+//            draw_pod_circle(x_long, y_lat, 3.0, colors[0x44], where);
 
 
     // Now if we just did the single drawing, we want to go back and draw
