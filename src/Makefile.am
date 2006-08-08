@@ -82,6 +82,7 @@ testawk_SOURCES = \
     rpl_malloc.c rpl_malloc.h
 
 compiledate.c: $(XASTIR_SRC)
+	rm -f compiledate.c compiledate.o
 	echo 'char compiledate[] = "'"Compiled: `date`"'";' > compiledate.c
 
 remove_compiledate:
