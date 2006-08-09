@@ -80,11 +80,11 @@ static __inline__ short l16(long val) {
 
 
 
-static __inline__ short lu16(long val) {
+static __inline__ unsigned short lu16(long val) {
     // This limits large unsigned integer values to the 16 bit range for X drawing
     if (val < 0) val = 0;
-    if (val >  32767) val =  32767;
-    return (short)val;
+    if (val > 65535) val = 65535;
+    return (unsigned short)val;
 }
 
 
@@ -368,7 +368,10 @@ void draw_WP_line(DataRow *p_station,
     (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground(XtDisplay(da),gc,color); // red3
 
-// Check that our parameters are within spec for XDrawLine
+// Check that our parameters are within spec for XDrawLine.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
     (void)XDrawLine(XtDisplay(da),where,gc,
         l16(x),      // int
@@ -434,7 +437,10 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
             //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
             (void)XSetForeground(XtDisplay(da),gc,color);
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
             (void)XDrawArc(XtDisplay(da),where,gc,
                 l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)), // int
@@ -656,7 +662,10 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
 
                 if (is_rng || phg[6]=='0') {    // Draw circl
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
                     (void)XDrawArc(XtDisplay(da),where,gc,
                         l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)), // int
@@ -673,7 +682,10 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                                 
                     // Draw Circle
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
                     (void)XDrawArc(XtDisplay(da),where,gc,
                         l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
@@ -905,7 +917,10 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                                 
                 // Draw Circle
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
                 (void)XDrawArc(XtDisplay(da),where,gc_stipple,
                     l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
@@ -920,7 +935,10 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                     while (diameter > 1.0) {
                         diameter = diameter - 1.0;
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
                         (void)XDrawArc(XtDisplay(da),where,gc_stipple,
                             l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
@@ -988,7 +1006,10 @@ void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap 
     //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
     (void)XSetForeground(XtDisplay(da),gc,color);
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
     (void)XDrawArc(XtDisplay(da),where,gc,
         l16(width),     // int
@@ -1060,7 +1081,10 @@ void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
-// Check that our parameters are within spec for XDrawLine
+// Check that our parameters are within spec for XDrawLine.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
         (void)XDrawLine(XtDisplay(da),where,gc,
             l16(start_x),           // int
@@ -1096,7 +1120,10 @@ void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
-// Check that our parameters are within spec for XDrawLine
+// Check that our parameters are within spec for XDrawLine.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
         (void)XDrawLine(XtDisplay(da),where,gc,
             l16(start_x),           // int
@@ -1302,7 +1329,10 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
     (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
-// Check that our parameters are within spec for XDrawLine
+// Check that our parameters are within spec for XDrawLine.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
     (void)XDrawLine(XtDisplay(da),where,gc,
             l16(x),             // int
@@ -1741,6 +1771,9 @@ void draw_area(long x_long, long y_lat, char type, char color,
         if (onscreen(left, right, top, bottom)) {
 
 // Check that our parameters are within spec for XDrawRectangle
+// Tricky 'cuz the XRectangle struct has short's and unsigned short's,
+// while XDrawRectangle man-page says int's/unsigned int's.  We'll
+// stick to 16-bit just to make sure.
 
             (void)XDrawRectangle(XtDisplay(da), where, gc,
                  l16(left),     // int
@@ -1768,7 +1801,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
         bottom += yoff;
         if (onscreen(left, right, top, bottom)) {
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
             (void)XDrawArc(XtDisplay(da), where, gc,
                  l16(left),         // int
@@ -1816,7 +1852,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
         if (onscreen(left, right, top, bottom)) {
             (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
 
-// Check that our parameters are within spec for XDrawLine
+// Check that our parameters are within spec for XDrawLine.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
             (void)XDrawLine(XtDisplay(da), where, gc,
                 l16(left),      // int
@@ -1851,7 +1890,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
         if (onscreen(left, right, top, bottom)) {
             (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
 
-// Check that our parameters are within spec for XDrawLine
+// Check that our parameters are within spec for XDrawLine.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
             (void)XDrawLine(XtDisplay(da), where, gc,
                 l16(right),     // int
@@ -1868,7 +1910,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
         points[3].x = l16(right);     points[3].y = l16(bottom);
         if (onscreen(left, right, top, bottom)) {
 
-// Check that our parameters are within spec for XDrawLines
+// Check that our parameters are within spec for XDrawLines.  We'll
+// stick to 16-bit values here due to warnings on the man-page
+// regarding XSegment structs and the protocol only handling
+// short's/unsigned short's, just in case.
 
             (void)XDrawLines(XtDisplay(da), where, gc,
                 points,             // XPoint *
@@ -2241,7 +2286,10 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
                     last_color = color;
                 }
 
-// Check that our parameters are within spec for XDrawPoint
+// Check that our parameters are within spec for XDrawPoint.  Tricky
+// 'cuz the XPoint struct uses short's, while XDrawPoint manpage
+// specifies int's.  We'll stick to 16-bit numbers just to make
+// sure.
 
                 (void)XDrawPoint(XtDisplay(da),
                     symbol_data[symbols_loaded].pix,
@@ -2265,7 +2313,10 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
                     }
                 }
 
-// Check that our parameters are within spec for XDrawPoint
+// Check that our parameters are within spec for XDrawPoint.  Tricky
+// 'cuz the XPoint struct uses short's, while XDrawPoint manpage
+// specifies int's.  We'll stick to 16-bit numbers just to make
+// sure.
 
                 (void)XDrawPoint(XtDisplay(appshell),
                     symbol_data[symbols_loaded].pix_mask,
@@ -2285,7 +2336,10 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
                     }
                 }
 
-// Check that our parameters are within spec for XDrawPoint
+// Check that our parameters are within spec for XDrawPoint.  Tricky
+// 'cuz the XPoint struct uses short's, while XDrawPoint manpage
+// specifies int's.  We'll stick to 16-bit numbers just to make
+// sure.
 
                 (void)XDrawPoint(XtDisplay(appshell),
                     symbol_data[symbols_loaded].pix_mask_old,
@@ -3351,7 +3405,10 @@ void draw_deadreckoning_features(DataRow *p_station,
  
 //fprintf(stderr,"\tmy_course2:%f\n", my_course);
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
         (void)XDrawArc(XtDisplay(da),where,gc,
             l16(x-(diameter/2)),    // int
@@ -3361,7 +3418,10 @@ void draw_deadreckoning_features(DataRow *p_station,
             l16(-64*my_course),     // int
             l16(64/2*arc_degrees)); // int
 
-// Check that our parameters are within spec for XDrawArc
+// Check that our parameters are within spec for XDrawArc.  Tricky
+// 'cuz the XArc struct has short's and unsigned short's, while
+// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+// just to make sure.
 
         (void)XDrawArc(XtDisplay(da),where,gc,
             l16(x-(diameter/2)),        // int
