@@ -69,6 +69,28 @@ void draw_symbols_init(void)
 
 
 
+static __inline__ short l16(long val) {
+    // This limits large integer values to the 16 bit range for X drawing
+    if (val < -32768) val = -32768;
+    if (val >  32767) val =  32767;
+    return (short)val;
+}
+
+
+
+
+
+static __inline__ short lu16(long val) {
+    // This limits large unsigned integer values to the 16 bit range for X drawing
+    if (val < 0) val = 0;
+    if (val >  32767) val =  32767;
+    return (short)val;
+}
+
+
+
+
+
 /*** symbol data ***/
 
 void clear_symbol_data(void) {
@@ -345,11 +367,14 @@ void draw_WP_line(DataRow *p_station,
     // least part of the line between them.
     (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground(XtDisplay(da),gc,color); // red3
+
+// Check that our parameters are within spec for XDrawLine
+
     (void)XDrawLine(XtDisplay(da),where,gc,
-        x,
-        y,
-        x2,
-        y2);
+        l16(x),      // int
+        l16(y),      // int
+        l16(x2),     // int
+        l16(y2));    // int
 }
 
  
@@ -409,10 +434,15 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
             //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
             (void)XSetForeground(XtDisplay(da),gc,color);
 
+// Check that our parameters are within spec for XDrawArc
+
             (void)XDrawArc(XtDisplay(da),where,gc,
-                (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)),
-                (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),
-                (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)), // int
+                l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),   // int
+                lu16(diameter),         // unsigned int
+                lu16(diameter),         // unsigned int
+                l16(0),                 // int
+                l16(64*360));           // int
 
 // We may need to check for the lat/long being way too far
 // off-screen, refusing to draw the circles if so, if and only if we
@@ -624,11 +654,17 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                 else
                     (void)XSetForeground(XtDisplay(da),gc,colors[0x52]);
 
-                if (is_rng || phg[6]=='0') {    // Draw circle
+                if (is_rng || phg[6]=='0') {    // Draw circl
+
+// Check that our parameters are within spec for XDrawArc
+
                     (void)XDrawArc(XtDisplay(da),where,gc,
-                        (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)),
-                        (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),
-                        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                        l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)), // int
+                        l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),   // int
+                        lu16(diameter), // unsigned int
+                        lu16(diameter), // unsigned int
+                        l16(0),         // int
+                        l16(64*360));   // int
                 }
                 else {    // Draw oval to depict beam heading
 
@@ -636,10 +672,16 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
                     // is offset in the indicated direction by 1/3 the radius.
                                 
                     // Draw Circle
+
+// Check that our parameters are within spec for XDrawArc
+
                     (void)XDrawArc(XtDisplay(da),where,gc,
-                        (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),
-                        (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
-                        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                        l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
+                        l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
+                        lu16(diameter), // unsigned int
+                        lu16(diameter), // unsigned int
+                        l16(0),         // int
+                        l16(64*360));   // int
                 }
 //            }
 //        }
@@ -862,19 +904,31 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
                 // is offset in the indicated direction by 1/3 the radius.
                                 
                 // Draw Circle
+
+// Check that our parameters are within spec for XDrawArc
+
                 (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                    (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),
-                    (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
-                    (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                    l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
+                    l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
+                    lu16(diameter), // unsigned int
+                    lu16(diameter), // unsigned int
+                    l16(0),         // int
+                    l16(64*360));   // int
 
                 if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
 
                     while (diameter > 1.0) {
                         diameter = diameter - 1.0;
+
+// Check that our parameters are within spec for XDrawArc
+
                         (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                            (int)(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),
-                            (int)(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),
-                            (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                            l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
+                            l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
+                            lu16(diameter),  // unsigned int
+                            lu16(diameter),  // unsigned int
+                            l16(0),         // int
+                            l16(64*360));   // int
                     }
                 }
 //            }
@@ -934,10 +988,15 @@ void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap 
     //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
     (void)XSetForeground(XtDisplay(da),gc,color);
 
+// Check that our parameters are within spec for XDrawArc
+
     (void)XDrawArc(XtDisplay(da),where,gc,
-        (unsigned int)width,
-        (unsigned int)height,
-        (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+        l16(width),     // int
+        l16(height),    // int
+        lu16(diameter), // unsigned int
+        lu16(diameter), // unsigned int
+        l16(0),         // int
+        l16(64*360));   // int
 }
 
 
@@ -1000,11 +1059,14 @@ void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+// Check that our parameters are within spec for XDrawLine
+
         (void)XDrawLine(XtDisplay(da),where,gc,
-            start_x,
-            start_y,
-            start_x + off_x,
-            start_y + off_y);
+            l16(start_x),           // int
+            l16(start_y),           // int
+            l16(start_x + off_x),   // int
+            l16(start_y + off_y));  // int
     }
 }
 
@@ -1033,11 +1095,14 @@ void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+// Check that our parameters are within spec for XDrawLine
+
         (void)XDrawLine(XtDisplay(da),where,gc,
-            start_x,
-            start_y,
-            start_x + off_x,
-            start_y + off_y);
+            l16(start_x),           // int
+            l16(start_y),           // int
+            l16(start_x + off_x),   // int
+            l16(start_y + off_y));  // int
     }
 }
 
@@ -1236,11 +1301,14 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 
     (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
     (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+// Check that our parameters are within spec for XDrawLine
+
     (void)XDrawLine(XtDisplay(da),where,gc,
-            x,
-            y,
-            x + off_x,
-            y + off_y);
+            l16(x),             // int
+            l16(y),             // int
+            l16(x + off_x),     // int
+            l16(y + off_y));    // int
 
     // Increment along shaft and draw filled polygons at:
     // "(angle + 45) % 360" degrees to create flags.
@@ -1616,17 +1684,6 @@ static __inline__ int onscreen(long left, long right, long top, long bottom) {
 
 
 
-static __inline__ short l16(long val) {
-    // This limits large integer values to the 16 bit range for X drawing
-    if (val < -32768) val = -32768;
-    if (val >  32767) val =  32767;
-    return (short)val;
-}
-
-
-
-
-
 // According to the spec, the lat/long point is the upper left
 // corner of the object, and the offsets are down and to the right
 // (except for one line type where it's down and to the left).  This
@@ -1681,8 +1738,16 @@ void draw_area(long x_long, long y_lat, char type, char color,
 
     switch (type) {
     case AREA_OPEN_BOX:
-        if (onscreen(left, right, top, bottom))
-            (void)XDrawRectangle(XtDisplay(da), where, gc, l16(left), l16(top), l16(xoff), l16(yoff));
+        if (onscreen(left, right, top, bottom)) {
+
+// Check that our parameters are within spec for XDrawRectangle
+
+            (void)XDrawRectangle(XtDisplay(da), where, gc,
+                 l16(left),     // int
+                 l16(top),      // int
+                 lu16(xoff),    // unsigned int
+                 lu16(yoff));   // unsigned int
+        }
         break;
     case AREA_FILLED_BOX:
         if (onscreen(left, right, top, bottom)) {
@@ -1701,8 +1766,18 @@ void draw_area(long x_long, long y_lat, char type, char color,
     case AREA_OPEN_ELLIPSE:
         right  += xoff;
         bottom += yoff;
-        if (onscreen(left, right, top, bottom))
-            (void)XDrawArc(XtDisplay(da), where, gc, l16(left), l16(top), l16(2*xoff), l16(2*yoff), 0, 64 * 360);
+        if (onscreen(left, right, top, bottom)) {
+
+// Check that our parameters are within spec for XDrawArc
+
+            (void)XDrawArc(XtDisplay(da), where, gc,
+                 l16(left),         // int
+                 l16(top),          // int
+                 lu16(2*xoff),      // unsigned int
+                 lu16(2*yoff),      // unsigned int
+                 l16(0),            // int
+                 l16(64 * 360));    // int
+        }
         break;
     case AREA_FILLED_CIRCLE:
     case AREA_FILLED_ELLIPSE:
@@ -1740,7 +1815,14 @@ void draw_area(long x_long, long y_lat, char type, char color,
         }
         if (onscreen(left, right, top, bottom)) {
             (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
-            (void)XDrawLine(XtDisplay(da), where, gc, l16(left), l16(bottom), l16(right), l16(top));
+
+// Check that our parameters are within spec for XDrawLine
+
+            (void)XDrawLine(XtDisplay(da), where, gc,
+                l16(left),      // int
+                l16(bottom),    // int
+                l16(right),     // int
+                l16(top));      // int
         }
         break;
     case AREA_LINE_LEFT:
@@ -1768,7 +1850,14 @@ void draw_area(long x_long, long y_lat, char type, char color,
         }
         if (onscreen(left, right, top, bottom)) {
             (void)XSetFillStyle(XtDisplay(da), gc, FillSolid);
-            (void)XDrawLine(XtDisplay(da), where, gc, l16(right), l16(bottom), l16(left), l16(top));
+
+// Check that our parameters are within spec for XDrawLine
+
+            (void)XDrawLine(XtDisplay(da), where, gc,
+                l16(right),     // int
+                l16(bottom),    // int
+                l16(left),      // int
+                l16(top));      // int
         }
         break;
     case AREA_OPEN_TRIANGLE:
@@ -1777,8 +1866,15 @@ void draw_area(long x_long, long y_lat, char type, char color,
         points[1].x = l16(left+xoff); points[1].y = l16(top);
         points[2].x = l16(left);      points[2].y = l16(bottom);
         points[3].x = l16(right);     points[3].y = l16(bottom);
-        if (onscreen(left, right, top, bottom))
-            (void)XDrawLines(XtDisplay(da), where, gc, points, 4, CoordModeOrigin);
+        if (onscreen(left, right, top, bottom)) {
+
+// Check that our parameters are within spec for XDrawLines
+
+            (void)XDrawLines(XtDisplay(da), where, gc,
+                points,             // XPoint *
+                l16(4),             // int
+                CoordModeOrigin);   // int
+        }
         break;
     case AREA_FILLED_TRIANGLE:
         left -= xoff;
@@ -2144,7 +2240,14 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
                     (void)XSetForeground(XtDisplay(da),gc,colors[color]);
                     last_color = color;
                 }
-                (void)XDrawPoint(XtDisplay(da),symbol_data[symbols_loaded].pix,gc,x,y);
+
+// Check that our parameters are within spec for XDrawPoint
+
+                (void)XDrawPoint(XtDisplay(da),
+                    symbol_data[symbols_loaded].pix,
+                    gc,
+                    l16(x),     // int
+                    l16(y));    // int
                 // DK7IN
 
 
@@ -2161,7 +2264,14 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
                         last_gc2 = 0;
                     }
                 }
-                (void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask,gc2,x,y);
+
+// Check that our parameters are within spec for XDrawPoint
+
+                (void)XDrawPoint(XtDisplay(appshell),
+                    symbol_data[symbols_loaded].pix_mask,
+                    gc2,
+                    l16(x),     // int
+                    l16(y));    // int
 
 
                 // Create ghost symbol mask by setting every 2nd bit
@@ -2174,7 +2284,14 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
                         last_gc2 = 0;
                     }
                 }
-                (void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask_old,gc2,x,y);
+
+// Check that our parameters are within spec for XDrawPoint
+
+                (void)XDrawPoint(XtDisplay(appshell),
+                    symbol_data[symbols_loaded].pix_mask_old,
+                    gc2,
+                    l16(x),     // int
+                    l16(y));    // int
             }
             old_next++;    // shift one bit every scan line for ghost image
             if (old_next>1)
@@ -3234,18 +3351,25 @@ void draw_deadreckoning_features(DataRow *p_station,
  
 //fprintf(stderr,"\tmy_course2:%f\n", my_course);
 
+// Check that our parameters are within spec for XDrawArc
+
         (void)XDrawArc(XtDisplay(da),where,gc,
-            (int)(x-(diameter/2)),
-            (int)(y-(diameter/2)),
-            (unsigned int)diameter, (unsigned int)diameter,
-            (int)(-64*my_course),
-            64/2*arc_degrees);
+            l16(x-(diameter/2)),    // int
+            l16(y-(diameter/2)),    // int
+            lu16(diameter),         // unsigned int
+            lu16(diameter),         // unsigned int
+            l16(-64*my_course),     // int
+            l16(64/2*arc_degrees)); // int
+
+// Check that our parameters are within spec for XDrawArc
+
         (void)XDrawArc(XtDisplay(da),where,gc,
-            (int)(x-(diameter/2)),
-            (int)(y-(diameter/2)),
-            (unsigned int)diameter, (unsigned int)diameter,
-            (int)(-64*my_course),
-            -64/2*arc_degrees);
+            l16(x-(diameter/2)),        // int
+            l16(y-(diameter/2)),        // int
+            lu16(diameter),             // unsigned int
+            lu16(diameter),             // unsigned int
+            l16(-64*my_course),         // int
+            l16(-64/2*arc_degrees));    // int
         }
     }
 
