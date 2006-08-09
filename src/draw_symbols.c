@@ -925,9 +925,9 @@ void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap 
     width = (((x_long-NW_corner_longitude)/scale_x)-(diameter/2));
     height = (((y_lat-NW_corner_latitude)/scale_y)-(diameter/2));
 
-    if (width < 0 || width > 16000 || height < 0 || height > 16000) {
-        return;
-    }
+//    if (width < 0 || width > 16000 || height < 0 || height > 16000) {
+//        return;
+//    }
 
     (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
     //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
