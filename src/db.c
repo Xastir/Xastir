@@ -17696,6 +17696,10 @@ void calc_aloha(int secs_now)    {
         aloha_time = secs_now+ALOHA_CALC_INTERVAL; 
         aloha_status_time = secs_now+ALOHA_STATUS_INTERVAL;
         aloha_radius = -1.0;
+
+// Debug:  Let's us play with/display aloha circles right away:
+//aloha_radius = 40.0;
+
         the_aloha_stats.digis=0;
         the_aloha_stats.wxs = 0;
         the_aloha_stats.other_mobiles = 0;
@@ -17820,3 +17824,5 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
         popup_message_always(langcode("PULDNVI016"),langcode("WPUPALO666"));
     }
 }
+
+
