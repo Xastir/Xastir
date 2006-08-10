@@ -540,8 +540,8 @@ void recompute_lat_long(void) {
 // line-clipping algorithm by Liang, Barsky, and Slater published in
 // the paper: "Some Improvements to a Parametric Line Clipping
 // Algorithm", 1992.  Called by clip2d() function below.  This
-// function is set up for float values.  See the clipt_long()
-// function for use with Xastir coordinates (unsigned longs).
+// function is set up for float values.  See the clipt_long() and
+// clipt_int() functions for use with other types of values.
 //
 // Returns False if the line is rejected, True otherwise.  May modify
 // t0 and t1.
@@ -607,8 +607,8 @@ int clipt(float p, float q, float *t0, float *t1) {
 // Clip 2D line segment with endpoints (x0,y0) and (x1,y1).  The clip
 // window is x_left <= x <= x_right and y_bottom <= y <= y_top.
 //
-// This function is set up for float values.  See the function
-// clip2d_long() for use with Xastir coordinates (unsigned longs).
+// This function is set up for float values.  See the clip2d_long()
+// and clip2d_screen() functions for use with other types of values.
 //
 int clip2d(float *x0, float *y0, float *x1, float *y1) {
     float t0, t1;
@@ -675,7 +675,8 @@ int clip2d(float *x0, float *y0, float *x1, float *y1) {
 // the paper: "Some Improvements to a Parametric Line Clipping
 // Algorithm", 1992.  Called by clip2d_long() function below.  This
 // function is set up for Xastir coordinate values (unsigned longs).
-// See the clipt() function for use with float values.
+// See the clipt() and clipt_int() functions for use with other
+// types of values.
 //
 // Returns False if the line is rejected, True otherwise.  May modify
 // t0 and t1.
@@ -743,10 +744,12 @@ int clipt_long(long p, long q, float *t0, float *t1) {
 // window is x_left <= x <= x_right and y_bottom <= y <= y_top.
 //
 // This function uses the Xastir coordinate system.  We had to flip
-// y_bottom/y_top due to the coordinate system being upside-down.
+// y_bottom/y_top below due to the coordinate system being
+// upside-down.
 //
 // This function is set up for Xastir coordinate values (unsigned
-// longs).  See the function clip2d() for use with float values.
+// longs).  See the clip2d() or clip2d_screen() functions for use
+// with other types of values.
 //
 int clip2d_long(unsigned long *x0, unsigned long *y0, unsigned long *x1, unsigned long *y1) {
     float t0, t1;
@@ -755,7 +758,7 @@ int clip2d_long(unsigned long *x0, unsigned long *y0, unsigned long *x1, unsigne
     unsigned long x_left   = NW_corner_longitude;
     unsigned long x_right = SE_corner_longitude;
     // Reverse the following two as our Xastir coordinate system is
-    // upside down.
+    // upside down.  The algorithm requires this order.
     unsigned long y_top = SE_corner_latitude;
     unsigned long y_bottom = NW_corner_latitude;
 
@@ -784,6 +787,158 @@ int clip2d_long(unsigned long *x0, unsigned long *y0, unsigned long *x1, unsigne
             if ( clipt_long(-delta_y, *y0 - y_bottom, &t0, &t1) ) { // bottom
 
                 if ( clipt_long(delta_y, y_top - *y0, &t0, &t1) ) { // top
+                    // Compute coordinates
+
+                    if (t1 < 1) {   // Compute V1' (new x1,y1)
+                        *x1 = *x0 + t1 * delta_x;
+                        *y1 = *y0 + t1 * delta_y;
+                    }
+
+                    if (t0 > 0) {   // Compute V0' (new x0,y0)
+                        *x0 = *x0 + t0 * delta_x;
+                        *y0 = *y0 + t0 * delta_y;
+                    }
+                    visible = True;
+                }
+                else {
+                    //fprintf(stderr,"reject top\n");
+                }
+            }
+            else {
+                //fprintf(stderr,"reject bottom\n");
+            }
+        }
+        else {
+            //fprintf(stderr,"reject right\n");
+        }
+    }
+    else {
+        //fprintf(stderr,"reject left\n");
+    }
+    return(visible);
+}
+
+
+
+
+
+// Function to perform 2D line-clipping Using the improved parametric
+// line-clipping algorithm by Liang, Barsky, and Slater published in
+// the paper: "Some Improvements to a Parametric Line Clipping
+// Algorithm", 1992.  Called by clip2d_screen() function below.  This
+// function is set up for screen coordinate values (unsigned ints).
+// See the clipt() and clipt_long functions for use with other types
+// of values.
+//
+// Returns False if the line is rejected, True otherwise.  May modify
+// t0 and t1.
+//
+int clipt_int(int p, int q, float *t0, float *t1) {
+    float r;
+    int accept = True;
+
+
+    if (p < 0) {  // Entering visible region, so compute t0
+
+        if (q < 0) {  // t0 will be non-negative, so continue
+
+            r = q / (p * 1.0);
+
+            if (r > *t1) {  // t0 will exceed t1, so reject
+                accept = False;
+            }
+            else if (r > *t0) {  // t0 is max of r's
+                *t0 = r;
+            }
+        }
+    }
+    else {
+
+        if (p > 0) {  // Exiting visible region, so compute t1
+
+            if (q < p) {  // t1 will be <= 1, so continue
+
+                r = q / (p * 1.0);
+
+                if (r < *t0) {  // t1 will be <= t0, so reject
+                    accept = False;
+                }
+                else if (r < *t1) {  // t1 is min of r's
+                    *t1 = r;
+                }
+            }
+        }
+        else {  // p == 0
+
+            if (q < 0) {  // Line parallel and outside, so reject
+                accept = False;
+            }
+        }
+    }
+    //fprintf(stderr,"clipt_int: %d\n",accept);
+    return(accept);
+}
+
+
+
+
+
+// Function to perform 2D line-clipping using the improved parametric
+// line-clipping algorithm by Liang, Barsky, and Slater published in
+// the paper: "Some Improvements to a Parametric Line Clipping
+// Algorithm", 1992.  Uses the clipt_int() function above.
+//
+// Returns False if the line is rejected, True otherwise.  x0, y0,
+// x1, y1 may get modified by this function.  These will be the new
+// clipped line ends that fit inside the window.
+//
+// Clip 2D line segment with endpoints (x0,y0) and (x1,y1).  The clip
+// window is x_left <= x <= x_right and y_bottom <= y <= y_top.
+//
+// This function uses the screen coordinate system.  We had to flip
+// y_bottom/y_top below due to the coordinate system being
+// upside-down.
+//
+// This function is set up for screen coordinate values (unsigned
+// ints).  See the clip2d() and clip2d_long() functions for use
+// with other types of values.
+//
+int clip2d_screen(unsigned int *x0, unsigned int *y0, unsigned int *x1, unsigned int *y1) {
+    float t0, t1;
+    int delta_x, delta_y;
+    int visible = False;
+    unsigned int x_right  = screen_width;
+    unsigned int x_left   = 0;
+    // Reverse the following two as our screen coordinate system is
+    // upside down.  The algorithm requires this order.
+    unsigned int y_top    = screen_height;
+    unsigned int y_bottom = 0;
+
+
+    if (       ( (*x0 < x_left  ) && (*x1 < x_left  ) )
+            || ( (*x0 > x_right ) && (*x1 > x_right ) )
+            || ( (*y0 < y_bottom) && (*y1 < y_bottom) )
+            || ( (*y0 > y_top   ) && (*y1 > y_top   ) ) ) {
+
+        // Both endpoints are on same side of visible region and
+        // outside of it, so reject.
+        //fprintf(stderr,"reject 1\n");
+        return(visible);
+    }
+
+    t0 = 0;
+    t1 = 1;
+    delta_x = *x1 - *x0;
+
+    if ( clipt_int(-delta_x, *x0 - x_left, &t0, &t1) ) {           // left
+
+        if ( clipt_int(delta_x, x_right - *x0, &t0, &t1) ) {       // right
+
+            delta_y = *y1 - *y0;
+
+            if ( clipt_int(-delta_y, *y0 - y_bottom, &t0, &t1) ) { // bottom
+
+                if ( clipt_int(delta_y, y_top - *y0, &t0, &t1) ) { // top
                     // Compute coordinates
 
                     if (t1 < 1) {   // Compute V1' (new x1,y1)
