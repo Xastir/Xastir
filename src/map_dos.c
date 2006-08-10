@@ -261,11 +261,21 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                 switch (destination_pixmap) {
 
                     case DRAW_TO_PIXMAP_FINAL:
-                        (void)XDrawLines (XtDisplay (w), pixmap_final, gc, points, npoints,CoordModeOrigin);
+                        (void)XDrawLines (XtDisplay (w),
+                            pixmap_final,
+                            gc,
+                            points,
+                            l16(npoints),
+                            CoordModeOrigin);
                         break;
 
                     case DRAW_TO_PIXMAP:
-                        (void)XDrawLines (XtDisplay (w), pixmap, gc, points, npoints,CoordModeOrigin);
+                        (void)XDrawLines (XtDisplay (w),
+                            pixmap,
+                            gc,
+                            points,
+                            l16(npoints),
+                            CoordModeOrigin);
                         break;
 
                     case DRAW_TO_PIXMAP_ALERTS:
@@ -287,8 +297,8 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                 npoints = 0;
                 first_behavior = (unsigned char)object_behavior;
             }
-            points[npoints].x = (short)x;
-            points[npoints].y = (short)y;
+            points[npoints].x = l16(x);
+            points[npoints].y = l16(y);
             if (    (points[npoints].x > (-MAX_OUTBOUND))
                  && (points[npoints].x < (short)max_x)
                  && (points[npoints].y > (-MAX_OUTBOUND))
@@ -300,8 +310,8 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
             last_behavior = (unsigned char)object_behavior;
             return;
         }
-        points[npoints].x = (short)x;
-        points[npoints].y = (short)y;
+        points[npoints].x = l16(x);
+        points[npoints].y = l16(y);
         last_behavior = (unsigned char)object_behavior;
 
         if (points[npoints].x != points[npoints - 1].x || points[npoints].y != points[npoints - 1].y) {

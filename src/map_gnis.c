@@ -573,10 +573,10 @@ FINISH:
                         y /= scale_y;
 
                         ok = 1;
-                        if (x >  16000) ok = 0;     // Skip this point
-                        if (x < -16000) ok = 0;     // Skip this point
-                        if (y >  16000) ok = 0;     // Skip this point
-                        if (y < -16000) ok = 0;     // Skip this point
+                        if (x >  32767) ok = 0;     // Skip this point
+                        if (x < -32768) ok = 0;     // Skip this point
+                        if (y >  32767) ok = 0;     // Skip this point
+                        if (y < -32768) ok = 0;     // Skip this point
 
                         /* set default symbol */
                         symbol_table = '/';

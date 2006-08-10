@@ -2077,10 +2077,10 @@ void draw_shapefile_map (Widget w,
                             x = x / scale_x;
                             y = y / scale_y;
 
-                            if (x >  16000) ok = 0;     // Skip this point
-                            if (x < -16000) ok = 0;     // Skip this point
-                            if (y >  16000) ok = 0;     // Skip this point
-                            if (y < -16000) ok = 0;     // Skip this point
+                            if (x > 32767) ok = 0; // Skip this point
+                            if (x < 0) ok = 0;     // Skip this point
+                            if (y > 32767) ok = 0; // Skip this point
+                            if (y < 0) ok = 0;     // Skip this point
                         }
 
                         if (ok == 1) {
@@ -2605,19 +2605,14 @@ void draw_shapefile_map (Widget w,
                                     x1 = (int)x;
                                     y1 = (int)y;
                                 }
-    
-                                // XDrawLines uses 16-bit unsigned integers
-                                // (shorts).  Make sure we stay within the
-                                // limits.
-                                if (x >  16000) ok = 0;     // Skip this point
-                                if (x < -16000) ok = 0;     // Skip this point
-                                if (y >  16000) ok = 0;     // Skip this point
-                                if (y < -16000) ok = 0;     // Skip this point
                             }
  
                             if (ok == 1) {
-                                points[index].x = (short)x;
-                                points[index].y = (short)y;
+                                // XDrawLines uses 16-bit unsigned
+                                // integers (shorts).  Make sure we
+                                // stay within the limits.
+                                points[index].x = l16(x);
+                                points[index].y = l16(y);
                                 //fprintf(stderr,"%d %d\t", points[index].x, points[index].y);
                                 index++;
                             }
@@ -2633,7 +2628,12 @@ void draw_shapefile_map (Widget w,
 
 
                     if (ok_to_draw && !skip_it) {
-                        (void)XDrawLines(XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
+                        (void)XDrawLines(XtDisplay(w),
+                            pixmap,
+                            gc,
+                            points,
+                            l16(index),
+                            CoordModeOrigin);
                     }
 
 
@@ -2836,14 +2836,8 @@ void draw_shapefile_map (Widget w,
                             // lines will get you into trouble.
                             x = my_long - NW_corner_longitude;
                             y = my_lat - NW_corner_latitude;
-                            x = x / scale_x;
-                            y = y / scale_y;
-
-
-                            if (x >  16000) ok = 0;     // Skip this point
-                            if (x < -16000) ok = 0;     // Skip this point
-                            if (y >  16000) ok = 0;     // Skip this point
-                            if (y < -16000) ok = 0;     // Skip this point
+                            x = l16(x / scale_x);
+                            y = l16(y / scale_y);
                         }
 
                         if (ok == 1 && ok_to_draw) {
@@ -3432,8 +3426,8 @@ void draw_shapefile_map (Widget w,
                                             y = 0l;
                                         else on_screen++;
 
-                                        points[i].x = (short)x;
-                                        points[i].y = (short)y;
+                                        points[i].x = l16(x);
+                                        points[i].y = l16(y);
 
 if (on_screen) {
 //    fprintf(stderr,"%d x:%d y:%d\n",
@@ -3608,13 +3602,8 @@ if (on_screen) {
 
                                 // Here we check for really wacko points that will cause problems
                                 // with the X drawing routines, and fix them.
-                                if (x >  16000l) x =  16000l;
-                                if (x < -16000l) x = -16000l;
-                                if (y >  16000l) y =  16000l;
-                                if (y < -16000l) y = -16000l;
-
-                                points[i].x = (short)x;
-                                points[i].y = (short)y;
+                                points[i].x = l16(x);
+                                points[i].y = l16(y);
                                 i++;    // Number of points to draw
 
                                 if (i > high_water_mark_i)
@@ -3653,12 +3642,32 @@ if (on_screen) {
 #else   // WITH_DBFAWK
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
 #endif  // WITH_DBFAWK
-                                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
-                                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                                (void)XSetLineAttributes (XtDisplay (w),
+                                    gc,
+                                    0,
+                                    LineOnOffDash,
+                                    CapButt,
+                                    JoinMiter);
+                                (void)XDrawLines(XtDisplay(w),
+                                    pixmap,
+                                    gc,
+                                    points,
+                                    l16(i),
+                                    CoordModeOrigin);
+                                (void)XSetLineAttributes (XtDisplay (w),
+                                    gc,
+                                    0,
+                                    LineSolid,
+                                    CapButt,
+                                    JoinMiter);
                             }
                             else if (quad_overlay_flag) {
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                (void)XDrawLines(XtDisplay(w),
+                                    pixmap,
+                                    gc,
+                                    points,
+                                    l16(i),
+                                    CoordModeOrigin);
                             }
                             /* old glacier, lake and river code was identical
                                with the exception of what color to use! */
@@ -3725,7 +3734,12 @@ if (on_screen) {
                                 /* draw the polygon border */
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                (void)XDrawLines(XtDisplay(w),
+                                    pixmap,
+                                    gc,
+                                    points,
+                                    l16(i),
+                                    CoordModeOrigin);
                             }
                             else if (weather_alert_flag) {
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
@@ -3747,7 +3761,12 @@ if (on_screen) {
                                 }
 
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
-                                (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
+                                (void)XDrawLines(XtDisplay(w),
+                                    pixmap_alerts,
+                                    gc_tint,
+                                    points,
+                                    l16(i),
+                                    CoordModeOrigin);
                             }
                             else if (map_color_fill && draw_filled) {  // Land masses?
                                 if (polygon_hole_flag) {
@@ -3827,12 +3846,22 @@ if (on_screen) {
                                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
 #endif /* WITH_DBFAWK */
 
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                (void)XDrawLines(XtDisplay(w),
+                                    pixmap,
+                                    gc,
+                                    points,
+                                    l16(i),
+                                    CoordModeOrigin);
                             }
                             else {  // Use whatever color is defined by this point.
                                 (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
                                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                (void)XDrawLines(XtDisplay(w),
+                                    pixmap,
+                                    gc,
+                                    points,
+                                    l16(i),
+                                    CoordModeOrigin);
                             }
                         }
                     }
@@ -3984,11 +4013,10 @@ if (on_screen) {
                             x = x / scale_x;
                             y = y / scale_y;
 
-
-                            if (x >  16000) ok = 0;     // Skip this point
-                            if (x < -16000) ok = 0;     // Skip this point
-                            if (y >  16000) ok = 0;     // Skip this point
-                            if (y < -16000) ok = 0;     // Skip this point
+                            if (x > 32767) ok = 0; // Skip this point
+                            if (x < 0) ok = 0;     // Skip this point
+                            if (y > 32767) ok = 0; // Skip this point
+                            if (y < 0) ok = 0;     // Skip this point
 
                             if (ok == 1 && ok_to_draw) {
                                 if (quad_overlay_flag) {

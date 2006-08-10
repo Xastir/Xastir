@@ -9488,31 +9488,31 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x1,    // Keep x constant
-                            zoom_box_y1,
-                            zoom_box_x1,
-                            zoom_box_y2);
+                            l16(zoom_box_x1),    // Keep x constant
+                            l16(zoom_box_y1),
+                            l16(zoom_box_x1),
+                            l16(zoom_box_y2));
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x1,
-                            zoom_box_y1,    // Keep y constant
-                            zoom_box_x2,
-                            zoom_box_y1);
+                            l16(zoom_box_x1),
+                            l16(zoom_box_y1),    // Keep y constant
+                            l16(zoom_box_x2),
+                            l16(zoom_box_y1));
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x2,    // Keep x constant
-                            zoom_box_y1,
-                            zoom_box_x2,
-                            zoom_box_y2);
+                            l16(zoom_box_x2),    // Keep x constant
+                            l16(zoom_box_y1),
+                            l16(zoom_box_x2),
+                            l16(zoom_box_y2));
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x1,
-                            zoom_box_y2,    // Keep y constant
-                            zoom_box_x2,
-                            zoom_box_y2);
+                            l16(zoom_box_x1),
+                            l16(zoom_box_y2),    // Keep y constant
+                            l16(zoom_box_x2),
+                            l16(zoom_box_y2));
                     }
 
                     // Reset the zoom-box variables
@@ -10177,10 +10177,10 @@ void check_pointer_position(void) {
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
                         gc_tint,
-                        polygon_last_x,
-                        polygon_last_y,
-                        win_x_return,
-                        win_y_return);
+                        l16(polygon_last_x),
+                        l16(polygon_last_y),
+                        l16(win_x_return),
+                        l16(win_y_return));
 */
                     return;
                 }
@@ -10210,62 +10210,62 @@ void check_pointer_position(void) {
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x1,    // Keep x constant
-                            zoom_box_y1,
-                            zoom_box_x1,
-                            zoom_box_y2);
+                            l16(zoom_box_x1),    // Keep x constant
+                            l16(zoom_box_y1),
+                            l16(zoom_box_x1),
+                            l16(zoom_box_y2));
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x1,
-                            zoom_box_y1,    // Keep y constant
-                            zoom_box_x2,
-                            zoom_box_y1);
+                            l16(zoom_box_x1),
+                            l16(zoom_box_y1),    // Keep y constant
+                            l16(zoom_box_x2),
+                            l16(zoom_box_y1));
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x2,    // Keep x constant
-                            zoom_box_y1,
-                            zoom_box_x2,
-                            zoom_box_y2);
+                            l16(zoom_box_x2),    // Keep x constant
+                            l16(zoom_box_y1),
+                            l16(zoom_box_x2),
+                            l16(zoom_box_y2));
                         XDrawLine(XtDisplay(da),
                             XtWindow(da),
                             gc_tint,
-                            zoom_box_x1,
-                            zoom_box_y2,    // Keep y constant
-                            zoom_box_x2,
-                            zoom_box_y2);
+                            l16(zoom_box_x1),
+                            l16(zoom_box_y2),    // Keep y constant
+                            l16(zoom_box_x2),
+                            l16(zoom_box_y2));
                     }
 
                     // Draw a box around the current zoom area.
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
                         gc_tint,
-                        menu_x,         // Keep x constant
-                        menu_y,
-                        menu_x,
-                        win_y_return);
+                        l16(menu_x),         // Keep x constant
+                        l16(menu_y),
+                        l16(menu_x),
+                        l16(win_y_return));
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
                         gc_tint,
-                        menu_x,
-                        menu_y,         // Keep y constant
-                        win_x_return,
-                        menu_y);
+                        l16(menu_x),
+                        l16(menu_y),         // Keep y constant
+                        l16(win_x_return),
+                        l16(menu_y));
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
                         gc_tint,
-                        win_x_return,   // Keep x constant
-                        menu_y,
-                        win_x_return,
-                        win_y_return);
+                        l16(win_x_return),   // Keep x constant
+                        l16(menu_y),
+                        l16(win_x_return),
+                        l16(win_y_return));
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
                         gc_tint,
-                        menu_x,
-                        win_y_return,   // Keep y constant
-                        win_x_return,
-                        win_y_return);
+                        l16(menu_x),
+                        l16(win_y_return),   // Keep y constant
+                        l16(win_x_return),
+                        l16(win_y_return));
 
                     // Save the values away so that we can erase the
                     // box later.

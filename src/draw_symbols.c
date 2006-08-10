@@ -69,28 +69,6 @@ void draw_symbols_init(void)
 
 
 
-static __inline__ short l16(long val) {
-    // This limits large integer values to the 16 bit range for X drawing
-    if (val < -32768) val = -32768;
-    if (val >  32767) val =  32767;
-    return (short)val;
-}
-
-
-
-
-
-static __inline__ unsigned short lu16(long val) {
-    // This limits large unsigned integer values to the 16 bit range for X drawing
-    if (val < 0) val = 0;
-    if (val > 65535) val = 65535;
-    return (unsigned short)val;
-}
-
-
-
-
-
 /*** symbol data ***/
 
 void clear_symbol_data(void) {
@@ -997,7 +975,7 @@ void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap 
     width = (((x_long-NW_corner_longitude)/scale_x)-(diameter/2));
     height = (((y_lat-NW_corner_latitude)/scale_y)-(diameter/2));
 
-//    if (width < 0 || width > 16000 || height < 0 || height > 16000) {
+//    if (width < 0 || width > 32767 || height < 0 || height > 32767) {
 //        return;
 //    }
 

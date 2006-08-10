@@ -864,17 +864,11 @@ void draw_point(Widget w,
 
     // XDrawPoint uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
-
-    if (x1i >  16000) return;
-    if (x1i < -16000) return;
-    if (y1i >  16000) return;
-    if (y1i < -16000) return;
-
     (void)XDrawPoint(XtDisplay(w),
         which_pixmap,
         gc,
-        x1i,
-        y1i);
+        l16(x1i),
+        l16(y1i));
 }
 
 
@@ -964,30 +958,15 @@ void draw_vector(Widget w,
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
     // clip2d_long() should make sure of this anyway as it clips
-    // lines to fit the window, so commenting these tests out for
-    // now.
+    // lines to fit the window.
     //
-/*
-    if (x1i >  16000) x1i =  16000;
-    if (x1i < -16000) x1i = -16000;
-
-    if (y1i >  16000) y1i =  16000;
-    if (y1i < -16000) y1i = -16000;
-
-    if (x2i >  16000) x2i =  16000;
-    if (x2i < -16000) x2i = -16000;
-
-    if (y2i >  16000) y2i =  16000;
-    if (y2i < -16000) y2i = -16000;
-*/
-
     (void)XDrawLine(XtDisplay(w),
         which_pixmap,
         gc,
-        x1i,
-        y1i,
-        x2i,
-        y2i);
+        l16(x1i),
+        l16(y1i),
+        l16(x2i),
+        l16(y2i));
 }
 
 
@@ -1051,29 +1030,15 @@ void draw_vector_ll(Widget w,
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
     // clip2d() should make sure of this anyway as it clips lines to
-    // fit the window, so commenting these tests out for now.
+    // fit the window.
     //
-/*
-    if (x1i >  16000) x1i =  16000;
-    if (x1i < -16000) x1i = -16000;
-
-    if (y1i >  16000) y1i =  16000;
-    if (y1i < -16000) y1i = -16000;
-
-    if (x2i >  16000) x2i =  16000;
-    if (x2i < -16000) x2i = -16000;
-
-    if (y2i >  16000) y2i =  16000;
-    if (y2i < -16000) y2i = -16000;
-*/
-
     (void)XDrawLine(XtDisplay(w),
         which_pixmap,
         gc,
-        x1i,
-        y1i,
-        x2i,
-        y2i);
+        l16(x1i),
+        l16(y1i),
+        l16(x2i),
+        l16(y2i));
 }
 
 
@@ -1335,9 +1300,25 @@ void draw_complete_lat_lon_grid(Widget w) {
         x = (coord-NW_corner_longitude)/scale_x;
 
         if ((coord%(648000*100)) == 0) {
-            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
-            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
-            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+            (void)XSetLineAttributes (XtDisplay (w),
+                gc_tint,
+                1,
+                LineSolid,
+                CapButt,
+                JoinMiter);
+            (void)XDrawLine (XtDisplay (w),
+                pixmap_final,
+                gc_tint,
+                l16(x),
+                l16(y1),
+                l16(x),
+                l16(y2));
+            (void)XSetLineAttributes (XtDisplay (w),
+                gc_tint,
+                1,
+                LineOnOffDash,
+                CapButt,
+                JoinMiter);
             continue;   // Go to next iteration of for loop
         }
         else if ((coord%(72000*100)) == 0) {
@@ -1353,7 +1334,14 @@ void draw_complete_lat_lon_grid(Widget w) {
             (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
         }
 
-        (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
+        (void)XDrawLine (XtDisplay (w),
+            pixmap_final,
+            gc_tint,
+            l16(x),
+            l16(y1),
+            l16(x),
+            l16(y2));
+
         if (draw_labeled_grid_border==TRUE) { 
             // Label the longitudes in lower border.
             convert_lon_l2s(coord, grid_label, sizeof(grid_label), coordinate_format);
@@ -1405,9 +1393,25 @@ void draw_complete_lat_lon_grid(Widget w) {
         y = (coord-NW_corner_latitude)/scale_y;
 
         if ((coord%(324000*100)) == 0) {
-            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
-            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
-            (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+            (void)XSetLineAttributes (XtDisplay (w),
+                gc_tint,
+                1,
+                LineSolid,
+                CapButt,
+                JoinMiter);
+            (void)XDrawLine (XtDisplay (w),
+                pixmap_final,
+                gc_tint,
+                l16(x1),
+                l16(y),
+                l16(x2),
+                l16(y));
+            (void)XSetLineAttributes (XtDisplay (w),
+                gc_tint,
+                1,
+                LineOnOffDash,
+                CapButt,
+                JoinMiter);
             continue;   // Go to next iteration of for loop
         }
         else if ((coord%(36000*100)) == 0) {
@@ -1423,7 +1427,14 @@ void draw_complete_lat_lon_grid(Widget w) {
         (void)XSetDashes (XtDisplay (w), gc_tint, 1, dash, 2);
         }
 
-        (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
+        (void)XDrawLine (XtDisplay (w),
+            pixmap_final,
+            gc_tint,
+            l16(x1),
+            l16(y),
+            l16(x2),
+            l16(y));
+
         if (draw_labeled_grid_border==TRUE) { 
             // label the latitudes on left and right borders
             // (unlike UTM where easting before northing order is important)
@@ -1894,10 +1905,12 @@ void actually_draw_utm_minor_grid(Widget w) {
                 // extra lines, due to bugs in X11.  We do that
                 // checking above with xx and yy.
                 //
-                (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
-                                 utm_grid.zone[Zone].col[ii].points,
-                                 utm_grid.zone[Zone].col[ii].npoints,
-                                 CoordModeOrigin);
+                (void)XDrawLines(XtDisplay(w),
+                    pixmap_final,
+                    gc_tint,
+                    utm_grid.zone[Zone].col[ii].points,
+                    l16(utm_grid.zone[Zone].col[ii].npoints),
+                    CoordModeOrigin);
             }
         }
 
@@ -1910,10 +1923,12 @@ void actually_draw_utm_minor_grid(Widget w) {
                 // extra lines, due to bugs in X11.  We do that
                 // checking above with xx and yy.
                 //
-                (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
-                                 utm_grid.zone[Zone].row[ii].points,
-                                 utm_grid.zone[Zone].row[ii].npoints,
-                                 CoordModeOrigin);
+                (void)XDrawLines(XtDisplay(w),
+                    pixmap_final,
+                    gc_tint,
+                    utm_grid.zone[Zone].row[ii].points,
+                    l16(utm_grid.zone[Zone].row[ii].npoints),
+                    CoordModeOrigin);
             }
         }
 
@@ -2626,13 +2641,13 @@ int draw_minor_utm_mgrs_grid(Widget w) {
         // Not all columns (and maybe rows) will start at point
         // 0
         if (utm_grid.zone[Zone].col[col].firstpoint == UTM_GRID_RC_EMPTY) {
-            utm_grid.zone[Zone].col[col].firstpoint = col_point;
+            utm_grid.zone[Zone].col[col].firstpoint = l16(col_point);
 #ifdef UTM_DEBUG
             fprintf(stderr,"col[%d] started at point %d\n", col, col_point);
 #endif
         }
         if (utm_grid.zone[Zone].row[row].firstpoint == UTM_GRID_RC_EMPTY) {
-            utm_grid.zone[Zone].row[row].firstpoint = row_point;
+            utm_grid.zone[Zone].row[row].firstpoint = l16(row_point);
 #ifdef UTM_DEBUG
             fprintf(stderr,"row[%d] started at point %d\n", row, row_point);
 #endif
@@ -2695,24 +2710,18 @@ int draw_minor_utm_mgrs_grid(Widget w) {
         }
 
         // Here we check to see whether we are inserting points
-        // that are greater than about +/- 16000.  If so,
+        // that are greater than about +/- 32767.  If so,
         // truncate at that.  This prevents XDrawLines() from
         // going nuts and drawing hundreds of extra lines.
         //
-        if (xx < -16000)
-            xx = -16000;
-        if (xx >  16000)
-            xx =  16000;
-        if (yy < -16000)
-            yy = -16000;
-        if (yy >  16000)
-            yy =  16000;
+        xx = l16(xx);
+        yy = l16(yy);
 
-        utm_grid.zone[Zone].col[col].points[col_point].x = xx;
-        utm_grid.zone[Zone].col[col].points[col_point].y = yy;
+        utm_grid.zone[Zone].col[col].points[col_point].x = l16(xx);
+        utm_grid.zone[Zone].col[col].points[col_point].y = l16(yy);
         utm_grid.zone[Zone].col[col].npoints++;
-        utm_grid.zone[Zone].row[row].points[row_point].x = xx;
-        utm_grid.zone[Zone].row[row].points[row_point].y = yy;
+        utm_grid.zone[Zone].row[row].points[row_point].x = l16(xx);
+        utm_grid.zone[Zone].row[row].points[row_point].y = l16(yy);
         utm_grid.zone[Zone].row[row].npoints++;
 
 #ifdef UTM_DEBUG
@@ -2769,10 +2778,10 @@ int draw_minor_utm_mgrs_grid(Widget w) {
 #endif
 
             if (col-1 >= 0 && row_point-1 >= 0) {
-                utm_grid.zone[Zone].col[col-1].points[col_point].x = xx1;
-                utm_grid.zone[Zone].col[col-1].points[col_point].y = yy1;
-                utm_grid.zone[Zone].row[row].points[row_point-1].x = xx1;
-                utm_grid.zone[Zone].row[row].points[row_point-1].y = yy1;
+                utm_grid.zone[Zone].col[col-1].points[col_point].x = l16(xx1);
+                utm_grid.zone[Zone].col[col-1].points[col_point].y = l16(yy1);
+                utm_grid.zone[Zone].row[row].points[row_point-1].x = l16(xx1);
+                utm_grid.zone[Zone].row[row].points[row_point-1].y = l16(yy1);
                 if (z1 != z2 && Zone+1 < UTM_GRID_MAX_ZONES) {
                     // copy over last points to start off new
                     // zone
@@ -2797,10 +2806,10 @@ int draw_minor_utm_mgrs_grid(Widget w) {
 // to work.  We get the same problems there even though we're
 // drawing top to bottom.
 //
-                    utm_grid.zone[Zone+1].row[row].points[0].x = xx1;
-                    utm_grid.zone[Zone+1].row[row].points[0].y = yy1;
-                    utm_grid.zone[Zone+1].row[row].firstpoint = 0;
-                    utm_grid.zone[Zone+1].row[row].npoints    = 1;
+                    utm_grid.zone[Zone+1].row[row].points[0].x = l16(xx1);
+                    utm_grid.zone[Zone+1].row[row].points[0].y = l16(yy1);
+                    utm_grid.zone[Zone+1].row[row].firstpoint =  0;
+                    utm_grid.zone[Zone+1].row[row].npoints    =  1;
                 }
             }
 
@@ -2898,7 +2907,7 @@ int draw_minor_utm_mgrs_grid(Widget w) {
                     utm_grid.zone[Zone].boundary_x)
                     nbp++;
                 else if (nbp > 0) { // We had a boundary point, but not anymore
-                    fp = utm_grid.zone[Zone].col[ii].firstpoint = jj - 1;
+                    fp = utm_grid.zone[Zone].col[ii].firstpoint = l16(jj - 1);
 //fprintf(stderr,"np:%d, jj:%d\n",np,jj);
                     // This can result in negative numbers!
                     np = utm_grid.zone[Zone].col[ii].npoints = np - jj + 1;
@@ -3027,12 +3036,43 @@ void draw_grid(Widget w) {
         border_width = get_border_width(w);
         half = border_width/2; 
         // draw a white border around the map.
-        (void)XSetLineAttributes(XtDisplay(w),gc,border_width,LineSolid,CapRound,JoinRound);
-        (void)XSetForeground(XtDisplay(w),gc,colors[border_foreground_color]);         // white
-        (void)XDrawLine(XtDisplay(w),pixmap_final,gc,0,half,screen_width,half);
-        (void)XDrawLine(XtDisplay(w),pixmap_final,gc,half,0,half,screen_height);
-        (void)XDrawLine(XtDisplay(w),pixmap_final,gc,0,screen_height-half,screen_width,screen_height-half);
-        (void)XDrawLine(XtDisplay(w),pixmap_final,gc,screen_width-half,0,screen_width-half,screen_height);
+        (void)XSetLineAttributes(XtDisplay(w),
+            gc,
+            border_width,
+            LineSolid,
+            CapRound,
+            JoinRound);
+        (void)XSetForeground(XtDisplay(w),
+            gc,
+            colors[border_foreground_color]);         // white
+        (void)XDrawLine(XtDisplay(w),
+            pixmap_final,
+            gc,
+            0,
+            l16(half),
+            l16(screen_width),
+            l16(half));
+        (void)XDrawLine(XtDisplay(w),
+            pixmap_final,
+            gc,
+            l16(half),
+            0,
+            l16(half),
+            l16(screen_height));
+        (void)XDrawLine(XtDisplay(w),
+            pixmap_final,
+            gc,
+            0,
+            l16(screen_height-half),
+            l16(screen_width),
+            l16(screen_height-half));
+        (void)XDrawLine(XtDisplay(w),
+            pixmap_final,
+            gc,
+            l16(screen_width-half),
+            0,
+            l16(screen_width-half),
+            l16(screen_height));
     }
 
     // Set the line width in the GC to 2 pixels wide for the larger

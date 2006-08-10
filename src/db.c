@@ -3272,7 +3272,13 @@ void draw_test_line(Widget w, long x, long y, long dx, long dy, long ofs) {
 
     x += screen_width  - 10 - ofs;
     y += screen_height - 10;
-    (void)XDrawLine(XtDisplay(w),pixmap_final,gc,x,y,x+dx,y+dy);
+    (void)XDrawLine(XtDisplay(w),
+        pixmap_final,
+        gc,
+        l16(x),
+        l16(y),
+        l16(x+dx),
+        l16(y+dy));
 }
 
 
@@ -7755,16 +7761,16 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
                 // draw position point itself
                 // Check that screen coordinates are within limits.
-                if (lon0_screen >= 0 && lon0_screen < 16000
-                            && lat0_screen >= 0 && lat0_screen < 16000) {
+                if (lon0_screen >= 0 && lon0_screen < 32767
+                            && lat0_screen >= 0 && lat0_screen < 32767) {
 
                         (void)XSetForeground(XtDisplay(w),gc,col_dot);
 
                         (void)XDrawPoint(XtDisplay(w),
                             pixmap_final,
                             gc,
-                            lon0_screen,
-                            lat0_screen);
+                            l16(lon0_screen),
+                            l16(lat0_screen));
                 }
 
                 // Draw the callsign to go with the point if
@@ -7788,8 +7794,8 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
                         // Check that screen coordinates are within
                         // limits.
-                        if (lon0_screen >= 0 && lon0_screen < 16000
-                                && lat0_screen >= 0 && lat0_screen < 16000) {
+                        if (lon0_screen >= 0 && lon0_screen < 32767
+                                && lat0_screen >= 0 && lat0_screen < 32767) {
 
                             draw_nice_string(da,
                                 pixmap_final,
@@ -7804,8 +7810,8 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
                         // Check that screen coordinates are within
                         // limits.
-                        if (lon1_screen >= 0 && lon1_screen < 16000
-                                && lat1_screen >= 0 && lat1_screen < 16000) {
+                        if (lon1_screen >= 0 && lon1_screen < 32767
+                                && lat1_screen >= 0 && lat1_screen < 32767) {
 
                             draw_nice_string(da,
                                 pixmap_final,
