@@ -7765,6 +7765,10 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                 //
                 if (Display_.callsign && Display_.label_all_trackpoints) {
 
+                    // Convert to screen coordinates
+                    lon0_screen = (lon0 - NW_corner_longitude) / scale_x;
+                    lat0_screen = (lat0 - NW_corner_latitude) / scale_y;
+
                     // Convert to screen coordinates.
                     lon1_screen = (lon1 - NW_corner_longitude) / scale_x;
                     lat1_screen = (lat1 - NW_corner_latitude)  / scale_y;
