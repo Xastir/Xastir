@@ -1500,6 +1500,32 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
         // object is within our view so at least some drawing
         // should occur.
 
+
+// WE7U
+// This next section should be replaced with calls to draw_vector_ll()
+// instead of converting to Xastir coordinates, then screen
+// coordinates and truncating the lines.  draw_vector_ll() uses
+// proper line-clipping so that the slope of the lines don't
+// change.
+//
+// Draw_OGR_Labels() would need to be changed also so that it
+// doesn't use screen coordinates or perhaps leave the screen
+// coordinate calc's in if it's too difficult or would slow things
+// down too much.
+//
+// Another option is to use maps.c:clip2d_screen() to eliminate
+// and/or clip lines based on screen coordinates.
+//
+// If we clip lines in the arrays then the Draw_OGR_Labels()
+// function will have less work to do as it'll only be working
+// against visible points.  An excellent speedup.
+//
+// Make sure we don't end up drawing a polyline/polygon along the
+// screen edges due to clipping a larger polygon.  Each vector needs
+// to be treated separately:  If one endpoint is the same for two
+// vectors in the array and we do clipping, we'll have problems.
+
+
         XL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
         YL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
         CHECKMALLOC(XL);
