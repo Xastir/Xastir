@@ -3804,9 +3804,9 @@ void Draw_All_CAD_Objects(Widget w) {
     #endif
             //fprintf(stderr,"Lat: %d\n", y_lat);
             //fprintf(stderr,"Long: %d\n", x_long);
-            if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
+//            if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
     
-                if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
+//                if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
     
                     if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
     
@@ -3851,8 +3851,8 @@ void Draw_All_CAD_Objects(Widget w) {
     
                         }
                     }
-                }
-            }
+//                }
+//            }
     
             // Iterate through the vertices and draw the lines
             vertice = object_ptr->start;

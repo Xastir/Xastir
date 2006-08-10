@@ -96,6 +96,11 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
     int font_width, font_height;
 
 
+    if (x > screen_width)  return;
+    if (x < 0)             return;
+    if (y > screen_height) return;
+    if (y < 0)             return;
+
     switch (style) {
 
         case 0:
@@ -2378,6 +2383,11 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
     int found;
     int alphanum_index = -1;
 
+
+    if (x_offset > screen_width)  return;
+    if (x_offset < 0)             return;
+    if (y_offset > screen_height) return;
+    if (y_offset < 0)             return;
 
     /* DK7IN: orient  is ' ','l','r','u','d'  for left/right/up/down symbol orientation */
     // if symbol could be rotated, normal symbol orientation in symbols.dat is to the left

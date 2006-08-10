@@ -7779,37 +7779,25 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                     //
                     if (ptr != fill->newest_trackpoint) {
 
-                        // Check that screen coordinates are within
-                        // limits.
-                        if (lon0_screen >= 0 && lon0_screen < 32767
-                                && lat0_screen >= 0 && lat0_screen < 32767) {
+                        draw_nice_string(da,
+                            pixmap_final,
+                            letter_style,
+                            lon0_screen+10,
+                            lat0_screen,
+                            fill->call_sign,
+                            0x08,
+                            0x0f,
+                            strlen(fill->call_sign));
 
-                            draw_nice_string(da,
-                                pixmap_final,
-                                letter_style,
-                                lon0_screen+10,
-                                lat0_screen,
-                                fill->call_sign,
-                                0x08,
-                                0x0f,
-                                strlen(fill->call_sign));
-                        }
-
-                        // Check that screen coordinates are within
-                        // limits.
-                        if (lon1_screen >= 0 && lon1_screen < 32767
-                                && lat1_screen >= 0 && lat1_screen < 32767) {
-
-                            draw_nice_string(da,
-                                pixmap_final,
-                                letter_style,
-                                lon1_screen+10,
-                                lat1_screen,
-                                fill->call_sign,
-                                0x08,
-                                0x0f,
-                                strlen(fill->call_sign));
-                        }
+                        draw_nice_string(da,
+                            pixmap_final,
+                            letter_style,
+                            lon1_screen+10,
+                            lat1_screen,
+                            fill->call_sign,
+                            0x08,
+                            0x0f,
+                            strlen(fill->call_sign));
                     }
                 }
             }
