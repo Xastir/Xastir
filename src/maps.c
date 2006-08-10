@@ -3397,6 +3397,13 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
     int x_outline;
     int y_outline;
 
+
+    // Do some sanity checking
+    if (fontsize < 0 || fontsize >= FONT_MAX) {
+        fprintf(stderr,"Font size is out of range: %d\n", fontsize);
+        return;
+    }
+
     /* see if fontname has changed */
     if (rotated_label_font[fontsize] && 
         strcmp(rotated_label_fontname[fontsize],current_rotated_label_fontname[fontsize]) != 0) {
