@@ -175,8 +175,6 @@ int convert_from_xastir_coordinates ( float *f_longitude,
 //    *f_latitude,
 //    *f_longitude);
 
-    recompute_lat_long();
-
     return(1);
 }
 

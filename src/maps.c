@@ -480,58 +480,6 @@ long get_x_scale(long x, long y, long ysc) {
 
 
 
-// Here we store cached values that we compute below, so that we
-// don't have to compute them each time.  If longitude/latitude have
-// changed since we last cached, we re-compute our numbers.
-double half_screen_vert = 0.0;
-double half_screen_horiz = 0.0;
-double view_min_x = 0.0;
-double view_max_x = 0.0;
-double view_min_y = 0.0;
-double view_max_y = 0.0;
-
-
-
-void recompute_lat_long(void) {
-
-//    fprintf(stderr,"Updating numbers\n");
-
-    half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
-    half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
-
-//fprintf(stderr,"scale_x: %ld\thalf_screen_h:
-//%f\n",scale_x,half_screen_horiz);
-//fprintf(stderr,"scale_y: %ld\thalf_screen_v:
-//%f\n",scale_y,half_screen_vert);
-
-    view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
-    view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
-    view_min_y = f_center_latitude - half_screen_vert; // bottom edge of view
-    view_max_y = f_center_latitude + half_screen_vert; // top edge of view
-
-    //fprintf(stderr,"\tview_min_x:%f\n", view_min_x);
-    //fprintf(stderr,"\tview_max_x:%f\n", view_max_x);
-    //fprintf(stderr,"\tview_min_y:%f\n", view_min_y);
-    //fprintf(stderr,"\tview_max_y:%f\n", view_max_y);
-
-
-    if (view_min_x >  180.0 || view_min_x < -180.0)
-        view_min_x = -180.0;
-
-    if (view_max_x >  180.0 || view_max_x < -180.0)
-        view_max_x =  180.0;
-
-    if (view_min_y >  90.0 || view_min_y < -90.0)
-        view_min_y = -90.0;
-
-    if (view_max_y >  90.0 || view_max_y < -90.0)
-        view_max_y =  90.0;
-}
-
-
-
-
-
 /** MAP DRAWING ROUTINES **/
 
 
@@ -3399,17 +3347,17 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
 
 /////////////////////////////////////////////////////////////////////
 // get_viewport_lat_lon(double *xmin, double *ymin, double* xmax, double *ymax)
-// Simply returns the viewport variables used by map_visible_lat_lon
+// Simply returns the floating point corners of the map display.
 /////////////////////////////////////////////////////////////////////
 void get_viewport_lat_lon(double *xmin, 
                           double *ymin, 
                           double* xmax, 
                           double *ymax) {
 
-    *xmin=view_min_x;
-    *ymin=view_min_y;
-    *xmax=view_max_x;
-    *ymax=view_max_y;
+    *xmin=(double)f_NW_corner_longitude;
+    *ymin=(double)f_SE_corner_latitude;
+    *xmax=(double)f_SE_corner_longitude;
+    *ymax=(double)f_NW_corner_latitude;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -3423,10 +3371,10 @@ int map_inside_viewport_lat_lon(double map_min_y,
                                 double map_min_x,
                                 double map_max_x) {
     int retval=0;
-    if (map_min_x >= view_min_x &&
-        map_min_y >= view_min_y &&
-        map_max_x <= view_max_x &&
-        map_max_y <= view_max_y) {
+    if (map_min_x >= f_NW_corner_longitude &&
+        map_min_y >= f_SE_corner_latitude &&
+        map_max_x <= f_SE_corner_longitude &&
+        map_max_y <= f_NW_corner_latitude) {
         retval=1;
     }
 
@@ -3474,11 +3422,11 @@ int map_visible_lat_lon (double map_min_y,  // f_bottom_map_boundary
     //
     // The quick rejection algorithm:
     //
-    if (view_min_y > map_max_y) return(0);  // map below view
-    if (map_min_y > view_max_y) return(0);  // view below map
+    if (f_SE_corner_latitude > map_max_y) return(0);  // map below view
+    if (map_min_y > f_NW_corner_latitude) return(0);  // view below map
 
-    if (view_min_x > map_max_x) return(0);  // map left of view
-    if (map_min_x > view_max_x) return(0);  // view left of  map
+    if (f_NW_corner_longitude > map_max_x) return(0);  // map left of view
+    if (map_min_x > f_SE_corner_longitude) return(0);  // view left of  map
 
     return (1); // Draw this map onto the screen
 }
