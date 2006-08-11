@@ -104,13 +104,15 @@ void draw_point(Widget w,
                  unsigned long x1,
                  unsigned long y1,
                  GC gc,
-                 Pixmap which_pixmap);
+                 Pixmap which_pixmap,
+                 int skip_duplicates);
 
 void draw_point_ll(Widget w,
                  float y1,
                  float x1,
                  GC gc,
-                 Pixmap which_pixmap);
+                 Pixmap which_pixmap,
+                 int skip_duplicates);
 
 void draw_vector(Widget w,
                  unsigned long x1,
@@ -118,7 +120,8 @@ void draw_vector(Widget w,
                  unsigned long x2,
                  unsigned long y2,
                  GC gc,
-                 Pixmap which_pixmap);
+                 Pixmap which_pixmap,
+                 int skip_duplicates);
 
 void draw_vector_ll(Widget w,
                  float y1,
@@ -126,7 +129,8 @@ void draw_vector_ll(Widget w,
                  float y2,
                  float x2,
                  GC gc,
-                 Pixmap which_pixmap);
+                 Pixmap which_pixmap,
+                 int skip_duplicates);
 
 char *get_map_ext (char *filename);
 char *get_map_dir (char *fullpath);

@@ -496,10 +496,10 @@ void draw_precision_rectangle(long x_long,
                 y2 = y_lat - lat_precision;
             }
 
-            draw_vector(da, x_long, y_lat, x_long, y2, gc, where); // x_long constant
-            draw_vector(da, x_long, y2, x2, y2, gc, where); // y2 constant
-            draw_vector(da, x2, y2, x2, y_lat, gc, where); // x2 constant
-            draw_vector(da, x2, y_lat, x_long, y_lat, gc, where); // y_lat constant
+            draw_vector(da, x_long, y_lat, x_long, y2, gc, where, 0); // x_long constant
+            draw_vector(da, x_long, y2, x2, y2, gc, where, 0); // y2 constant
+            draw_vector(da, x2, y2, x2, y_lat, gc, where, 0); // x2 constant
+            draw_vector(da, x2, y_lat, x_long, y_lat, gc, where, 0); // y_lat constant
         }
     }
 }
@@ -1526,8 +1526,8 @@ void draw_bearing(long x_long, long y_lat, char *course,
         //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
 
-        draw_vector(da, x_long, y_lat, x_long2, y_lat2, gc, where);
-        draw_vector(da, x_long, y_lat, x_long3, y_lat3, gc, where);
+        draw_vector(da, x_long, y_lat, x_long2, y_lat2, gc, where, 0);
+        draw_vector(da, x_long, y_lat, x_long3, y_lat3, gc, where, 0);
     }
 
     // Change back to non-stipple for whatever drawing occurs after this
@@ -1662,20 +1662,20 @@ void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *a
         2, LineOnOffDash, CapButt,JoinMiter);
 
     // Top line of rectangle
-    draw_vector(da,left,top,right,top,gc,pixmap_final);
+    draw_vector(da,left,top,right,top,gc,pixmap_final, 0);
 
     // Bottom line of rectangle
-    draw_vector(da,left,bottom,right,bottom,gc,pixmap_final);
+    draw_vector(da,left,bottom,right,bottom,gc,pixmap_final, 1);
         
     // Left line of rectangle
-    draw_vector(da,left,top,left,bottom,gc,pixmap_final);
+    draw_vector(da,left,top,left,bottom,gc,pixmap_final, 1);
  
     // Right line of rectangle
-    draw_vector(da,right,top,right,bottom,gc,pixmap_final);
+    draw_vector(da,right,top,right,bottom,gc,pixmap_final, 1);
 
     // Diagonal lines 
-    draw_vector(da,left,top,right,bottom,gc,pixmap_final);
-    draw_vector(da,right,top,left,bottom,gc,pixmap_final);
+    draw_vector(da,left,top,right,bottom,gc,pixmap_final, 1);
+    draw_vector(da,right,top,left,bottom,gc,pixmap_final, 1);
 }
 
 
@@ -2817,6 +2817,8 @@ static int getLineStyle(char styleChar) {
  */
 void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2], char type, char style, time_t sec_heard, Pixmap where) {
     int ghost;
+    int skip_duplicates;
+
 
     // See if we should draw multipoints for this station. This only happens
     // if there are points to draw and the object has not been cleared (or 
@@ -2902,6 +2904,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                     (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);  // black
                     (void)XSetLineAttributes(XtDisplay(da), gc, 4, LineSolid, CapButt, JoinMiter);
 
+                    skip_duplicates = 0;
                     for (i = 0; i < numpoints-1; i++) {
 //                        (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
                         draw_vector(da, mypoints[i][0],
@@ -2909,7 +2912,10 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                             mypoints[i+1][0],
                             mypoints[i+1][1],
                             gc,
-                            where);
+                            where,
+                            skip_duplicates);
+
+                        skip_duplicates = 1;
                     }
                     // Close the polygon
                     draw_vector(da,
@@ -2918,12 +2924,14 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                         mypoints[0][0],
                         mypoints[0][1],
                         gc,
-                        where);
+                        where,
+                        skip_duplicates);
 
                     // Then draw the appropriate colored line on top of it.
                     (void)XSetForeground(XtDisplay(da), gc, getLineColor(style));
                     (void)XSetLineAttributes(XtDisplay(da), gc, 2, getLineStyle(style), CapButt, JoinMiter);
 
+                    skip_duplicates = 0;
                     for (i = 0; i < numpoints-1; i++) {
 //                        (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
                         draw_vector(da, mypoints[i][0],
@@ -2931,7 +2939,10 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                             mypoints[i+1][0],
                             mypoints[i+1][1],
                             gc,
-                            where);
+                            where,
+                            skip_duplicates);
+
+                        skip_duplicates = 1;
                     }
                     // Close the polygon
                     draw_vector(da,
@@ -2940,7 +2951,8 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                         mypoints[0][0],
                         mypoints[0][1],
                         gc,
-                        where);
+                        where,
+                        skip_duplicates);
 
                     break;
 
@@ -2949,6 +2961,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                     (void)XSetForeground(XtDisplay(da), gc, getLineColor(style));
                     (void)XSetLineAttributes(XtDisplay(da), gc, 2, getLineStyle(style), CapButt, JoinMiter);
 
+                    skip_duplicates = 0;
                     for (i = 0; i < numpoints-1; i++) {
 //                        (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints, CoordModeOrigin);
                         draw_vector(da, mypoints[i][0],
@@ -2956,7 +2969,10 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
                             mypoints[i+1][0],
                             mypoints[i+1][1],
                             gc,
-                            where);
+                            where,
+                            skip_duplicates);
+
+                        skip_duplicates = 1;
                     }
 
                     break;
@@ -3446,7 +3462,8 @@ void draw_deadreckoning_features(DataRow *p_station,
             x_long2,
             y_lat2,
             gc,
-            where);
+            where,
+            0);
     }
 
 

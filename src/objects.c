@@ -3912,7 +3912,8 @@ void Draw_All_CAD_Objects(Widget w) {
                         vertice->next->longitude,
                         vertice->next->latitude, 
                         gc_tint,
-                        pixmap_final);
+                        pixmap_final,
+                        0);
                 }
                 vertice = vertice->next;
             }

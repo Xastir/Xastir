@@ -933,9 +933,12 @@ void draw_point(Widget w,
                  unsigned long x1,
                  unsigned long y1,
                  GC gc,
-                 Pixmap which_pixmap) {
+                 Pixmap which_pixmap,
+                 int skip_duplicates) {
 
     int x1i, y1i;
+    static int last_x1i;
+    static int last_y1i;
 
 
     // Check whether the two bounding boxes intersect.  If not, skip
@@ -965,6 +968,12 @@ void draw_point(Widget w,
     y1i = y1 - NW_corner_latitude;
     y1i = y1i / scale_y;
 
+    if (skip_duplicates) {
+        if (x1i == last_x1i && y1i == last_y1i) {
+            return;
+        }
+    }
+
     // XDrawPoint uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
     (void)XDrawPoint(XtDisplay(w),
@@ -972,6 +981,9 @@ void draw_point(Widget w,
         gc,
         l16(x1i),
         l16(y1i));
+
+    last_x1i = x1i;
+    last_y1i = y1i;
 }
 
 
@@ -988,7 +1000,8 @@ void draw_point_ll(Widget w,
                     float y1,   // lat1
                     float x1,   // long1
                     GC gc,
-                    Pixmap which_pixmap) {
+                    Pixmap which_pixmap,
+                 int skip_duplicates) {
 
     unsigned long x1L, y1L;
 
@@ -1008,7 +1021,7 @@ void draw_point_ll(Widget w,
         y1);
 
     // Call the draw routine above.
-    draw_point(w, x1L, y1L, gc, which_pixmap);
+    draw_point(w, x1L, y1L, gc, which_pixmap, skip_duplicates);
 }
 
 
@@ -1028,9 +1041,11 @@ void draw_vector(Widget w,
                  unsigned long x2,
                  unsigned long y2,
                  GC gc,
-                 Pixmap which_pixmap) {
+                 Pixmap which_pixmap,
+                 int skip_duplicates) {
 
     int x1i, x2i, y1i, y2i;
+    static int last_x1i, last_x2i, last_y1i, last_y2i;
 
 
     //fprintf(stderr,"%ld,%ld  %ld,%ld\t",x1,y1,x2,y2);
@@ -1058,6 +1073,15 @@ void draw_vector(Widget w,
     y2i = y2 - NW_corner_latitude;
     y2i = y2i / scale_y;
 
+    if (skip_duplicates) {
+        if (last_x1i == x1i
+                && last_x2i == x2i
+                && last_y1i == y1i
+                && last_y2i == y2i) {
+            return;
+        }
+    }
+
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
     // clip2d_long() should make sure of this anyway as it clips
@@ -1070,6 +1094,11 @@ void draw_vector(Widget w,
         l16(y1i),
         l16(x2i),
         l16(y2i));
+
+    last_x1i = x1i;
+    last_x2i = x2i;
+    last_y1i = y1i;
+    last_y2i = y2i;
 }
 
 
@@ -1088,10 +1117,12 @@ void draw_vector_ll(Widget w,
                     float y2,   // lat2
                     float x2,   // long2
                     GC gc,
-                    Pixmap which_pixmap) {
+                    Pixmap which_pixmap,
+                    int skip_duplicates) {
 
     unsigned long x1L, x2L, y1L, y2L;
     int x1i, x2i, y1i, y2i;
+    static int last_x1i, last_x2i, last_y1i, last_y2i;
 
 
     //fprintf(stderr,"%lf,%lf  %lf,%lf\t",x1,y1,x2,y2);
@@ -1130,6 +1161,15 @@ void draw_vector_ll(Widget w,
     y2i = y2 - NW_corner_latitude;
     y2i = y2i / scale_y;
 
+    if (skip_duplicates) {
+        if (last_x1i == x1i
+                && last_x2i == x2i
+                && last_y1i == y1i
+                && last_y2i == y2i) {
+            return;
+        }
+    }
+
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
     // clip2d() should make sure of this anyway as it clips lines to
@@ -1142,6 +1182,11 @@ void draw_vector_ll(Widget w,
         l16(y1i),
         l16(x2i),
         l16(y2i));
+
+    last_x1i = x1i;
+    last_x2i = x2i;
+    last_y1i = y1i;
+    last_y2i = y2i;
 }
 
 
@@ -1711,17 +1756,17 @@ void draw_major_utm_mgrs_grid(Widget w) {
     // each, so we don't want to draw through those areas.
 
     for (ii = -180; ii < 0; ii += 6) {
-        draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final, 0);
     }
     for (ii = 42; ii <= 180; ii += 6) {
-        draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final, 0);
     }
 
     // Draw the short vertical vectors in the polar regions
-    draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
-    draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
-    draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
-    draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final, 0);
+    draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final, 0);
+    draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final, 0);
+    draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final, 0);
  
     if (coordinate_system == USE_UTM_SPECIAL
             || coordinate_system == USE_MGRS) {
@@ -1729,33 +1774,33 @@ void draw_major_utm_mgrs_grid(Widget w) {
         // areas.
 
         // Draw the partial vectors from 80S to the irregular region
-        draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final, 0);
 
         // Draw the short vertical vectors in the irregular region 
-        draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final, 0);
 
         // Draw the short vertical vectors above the irregular region 
-        draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final, 0);
+        draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final, 0);
     }
     else {
         // Draw normal zone boundaries used for civilian UTM
         // grid.
         for (ii = 6; ii < 42; ii += 6) {
-            draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)ii, 84.0,  (float)ii, gc_tint, pixmap_final, 0);
         }
     }
 
@@ -1764,31 +1809,31 @@ void draw_major_utm_mgrs_grid(Widget w) {
 
     // Draw the 8 degree spaced lines, except for the equator
     for (ii = -80; ii < 0; ii += 8) {
-        draw_vector_ll(w, (float)ii, -180.0, (float)ii, 180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, (float)ii, -180.0, (float)ii, 180.0, gc_tint, pixmap_final, 0);
     }
     // Draw the 8 degree spaced lines 
     for (ii = 8; ii <= 72; ii += 8) {
-        draw_vector_ll(w, (float)ii, -180.0, (float)ii, 180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, (float)ii, -180.0, (float)ii, 180.0, gc_tint, pixmap_final, 0);
     }
 
     // Draw the one 12 degree spaced line
-    draw_vector_ll(w, 84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w, 84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final, 0);
 
     // Draw the pole lines
-    draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc_tint, pixmap_final);
-    draw_vector_ll(w,  90.0, -180.0,  90.0, 180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc_tint, pixmap_final, 0);
+    draw_vector_ll(w,  90.0, -180.0,  90.0, 180.0, gc_tint, pixmap_final, 0);
 
     // Set to solid line for the equator.  Make it extra wide as
     // well.
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 3, LineSolid, CapButt,JoinMiter);
 
     // Draw the equator as a solid line
-    draw_vector_ll(w, 0.0, -180.0, 0.0, 180.0, gc_tint, pixmap_final);
+    draw_vector_ll(w, 0.0, -180.0, 0.0, 180.0, gc_tint, pixmap_final, 0);
 
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
 
     // Draw the prime meridian in the same manner
-    draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final);
+    draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final, 0);
 
     // add metadata and labels
     if (draw_labeled_grid_border==TRUE && scale_x > 3000) { 
@@ -3302,28 +3347,7 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
                  unsigned long map_min_x,   // left_map_boundary
                  unsigned long map_max_x) { // right_map_boundary) {
 
-    unsigned long view_min_x, view_max_x;
-    unsigned long view_min_y, view_max_y;
-
-
     //fprintf(stderr,"map_visible\n");
-
-    view_min_x = (unsigned long)NW_corner_longitude;  // left edge of view
-    if (view_min_x > 129600000ul)
-        view_min_x = 0;
-
-    view_max_x = (unsigned long)SE_corner_longitude; // right edge of view
-    if (view_max_x > 129600000ul)
-        view_max_x = 129600000ul;
-
-    view_min_y = (unsigned long)NW_corner_latitude;   // top edge of view
-    if (view_min_y > 64800000ul)
-        view_min_y = 0;
-
-    view_max_y = (unsigned long)SE_corner_latitude;  // bottom edge of view
-    if (view_max_y > 64800000ul)
-        view_max_y = 64800000ul;
-
 
     // From computation geometry equations, intersection of two line
     // segments, they use the bounding box for two lines.  This is
@@ -3334,11 +3358,11 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
     //
     // The quick rejection algorithm:
     //
-    if (view_min_y > map_max_y) return(0);  // map below view
-    if (map_min_y > view_max_y) return(0);  // view below map
+    if (NW_corner_latitude > (long)map_max_y) return(0);  // map below view
+    if ((long)map_min_y > SE_corner_latitude) return(0);  // view below map
 
-    if (view_min_x > map_max_x) return(0);  // map left of view
-    if (map_min_x > view_max_x) return(0);  // view left of  map
+    if (NW_corner_longitude > (long)map_max_x) return(0);  // map left of view
+    if ((long)map_min_x > SE_corner_longitude) return(0);  // view left of  map
 
     return (1); // Draw this map onto the screen
 }
@@ -5723,11 +5747,13 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
 
                             // Check whether the file is in a subdirectory
                             if (strncmp (fullpath, map_dir, (size_t)map_dir_length) != 0) {
+
                                 if (debug_level & 16) {
                                     fprintf(stderr,"Calling draw_map\n");
                                 }
                                 mdf.draw_filled=1;
                                 mdf.usgs_drg=0;
+
                                 draw_map (w,
                                     dir,
                                     dl->d_name,
@@ -5735,6 +5761,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     '\0',
                                     destination_pixmap,
                                     &mdf );
+
                                 if (debug_level & 16) {
                                     fprintf(stderr,"Returned from draw_map\n");
                                 }
@@ -5750,7 +5777,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
 
                                 if (debug_level & 16)
                                     fprintf(stderr,"Calling draw_map\n");
- 
+
                                 draw_map (w,
                                     map_dir,
                                     ptr,
@@ -5758,6 +5785,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     '\0',
                                     destination_pixmap,
                                     &mdf );
+
                                 if (alert_count && *alert_count)
                                     (*alert_count)--;
                             }
@@ -7763,7 +7791,8 @@ void load_alert_maps (Widget w, char *dir) {
                         temp->top_boundary,
                         temp->left_boundary,
                         temp->right_boundary,
-                        temp->title) ) {    // Error text if failure
+                        NULL) ) {
+//                        temp->title) ) {    // Error text if failure
 
                     if (temp->alert_level != 'C') {     // Alert not cancelled
                         mdf.draw_filled=1;
@@ -8046,12 +8075,13 @@ void load_auto_maps (Widget w, char *dir) {
 
         // Draw the maps in sorted-by-layer order
         if (current->auto_maps) {
+
             mdf.draw_filled = current->draw_filled;
             mdf.usgs_drg = current->usgs_drg;
 
             if (debug_level & 16)
                 fprintf(stderr,"load_auto_maps: Calling draw_map\n");
- 
+
             draw_map (w,
                 SELECTED_MAP_DIR,
                 current->filename,
@@ -8088,6 +8118,8 @@ void load_maps (Widget w) {
     char selected_dir[MAX_FILENAME];
     map_index_record *current;
     map_draw_flags mdf;
+//    int dummy;
+
 
     if (debug_level & 16)
         fprintf(stderr,"Load maps start\n");
@@ -8296,6 +8328,15 @@ void load_maps (Widget w) {
         if (debug_level & 16)
             fprintf(stderr,"load_maps: Calling draw_map\n");
 
+// Map profiling, set up for 800x600 window at "Map Profile Test
+// Site" bookmark.
+//
+// Loading "rd011802.shp" 500 times takes
+// 302->256->264->269->115->116 seconds.
+//
+//start_timer();
+//fprintf(stderr,"Calling draw_map() 500 times...\n");
+//for (dummy = 0; dummy < 500; dummy++) {
         draw_map (w,
             SELECTED_MAP_DIR,
             current->filename,
@@ -8303,7 +8344,8 @@ void load_maps (Widget w) {
             '\0',
             DRAW_TO_PIXMAP,
             &mdf);
- 
+//}
+//stop_timer(); print_timer_results();
 
         current = current->next;
     }

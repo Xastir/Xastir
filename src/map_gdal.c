@@ -1158,6 +1158,7 @@ void Draw_OGR_Points( Widget w,
     int object_num = 0;
     int num_points;
     int ii;
+    int skip_duplicates = 0;
 
 
 //fprintf(stderr, "Draw_OGR_Points\n");
@@ -1241,7 +1242,10 @@ void Draw_OGR_Points( Widget w,
             (float)Y1,
             (float)X1,
             gc,
-            pixmap);
+            pixmap,
+            skip_duplicates);
+
+        skip_duplicates = 1;
 
 // We could use a flag back from draw_point_ll() that tells us
 // whether the point was within the view.  That way we know whether
@@ -2234,6 +2238,7 @@ void Draw_OGR_Polygons( Widget w,
 
                 else {  // We're drawing non-filled polygons.
                         // Draw just the border.
+                    int skip_duplicates = 0;
 
                     if (polygon_hole) {
                         // Inner ring, draw a dashed line
@@ -2262,7 +2267,10 @@ fprintf(stderr,"Vector %d: %7.5f %8.5f  %7.5f %8.5f\n",
                             (float)vectorY[mm],
                             (float)vectorX[mm],
                             gc,
-                            pixmap);
+                            pixmap,
+                            skip_duplicates);
+
+                        skip_duplicates = 1;
                     }
 
 /*

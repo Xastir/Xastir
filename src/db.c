@@ -3762,7 +3762,8 @@ void display_file(Widget w) {
             destination_coord_lon+offset,  // x2
             destination_coord_lat+offset,  // y2
             gc_tint,
-            pixmap_final);
+            pixmap_final,
+            0);
 
         draw_vector(w,
             destination_coord_lon+offset,  // x1
@@ -3770,7 +3771,8 @@ void display_file(Widget w) {
             destination_coord_lon-offset,  // x2
             destination_coord_lat+offset,  // y2
             gc_tint,
-            pixmap_final);
+            pixmap_final,
+            0);
     }
 
     // And last, draw the ALOHA circle
@@ -7709,6 +7711,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
     // Trail should have at least two points
     if ( (ptr != NULL) && (ptr->prev != NULL) ) {
+        int skip_dupes = 0; // Don't skip points first time through
 
         if (debug_level & 256) {
             fprintf(stderr,"draw_trail called for %s with %s.\n",
@@ -7753,12 +7756,24 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                 // draw trail segment
                 //
                 (void)XSetForeground(XtDisplay(w),gc,col_trail);
-                draw_vector(da, lon0, lat0, lon1, lat1, gc, pixmap_final);
+                draw_vector(da,
+                    lon0,
+                    lat0,
+                    lon1,
+                    lat1,
+                    gc,
+                    pixmap_final,
+                    skip_dupes);
 
                 // draw position point itself
                 //
                 (void)XSetForeground(XtDisplay(w),gc,col_dot);
-                draw_point(w, lon0, lat0, gc, pixmap_final);
+                draw_point(w,
+                    lon0,
+                    lat0,
+                    gc,
+                    pixmap_final,
+                    skip_dupes);
 
                 // Draw the callsign to go with the point if
                 // label_all_trackpoints=1
@@ -7793,19 +7808,25 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                             0x0f,
                             strlen(fill->call_sign));
 
-                        draw_nice_string(da,
-                            pixmap_final,
-                            letter_style,
-                            lon1_screen+10,
-                            lat1_screen,
-                            fill->call_sign,
-                            0x08,
-                            0x0f,
-                            strlen(fill->call_sign));
+                        // If not same screen position as last drawn
+                        if (lon0_screen != lon1_screen
+                                && lat0_screen != lat1_screen) {
+
+                            draw_nice_string(da,
+                                pixmap_final,
+                                letter_style,
+                                lon1_screen+10,
+                                lat1_screen,
+                                fill->call_sign,
+                                0x08,
+                                0x0f,
+                                strlen(fill->call_sign));
+                        }
                     }
                 }
             }
             ptr = ptr->prev;
+            skip_dupes = 1;
         }
         (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
     }

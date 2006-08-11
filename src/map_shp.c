@@ -674,7 +674,7 @@ void draw_shapefile_map (Widget w,
     static XPoint   points[MAX_MAP_POINTS];
     char            file[MAX_FILENAME];  /* Complete path/name of image file */
     char            short_filenm[MAX_FILENAME];
-    char            warning_text[MAX_FILENAME*2];
+//    char            warning_text[MAX_FILENAME*2];
     int             i, fieldcount, recordcount, structure, ring;
 #ifndef WITH_DBFAWK
     char            ftype[15];
@@ -1596,7 +1596,8 @@ void draw_shapefile_map (Widget w,
                                 adfBndsMax[1],  // Top
                                 adfBndsMin[0],  // Left
                                 adfBndsMax[0],  // Right
-                                file) ) {       // Error text if failure
+                                NULL) ) {
+//                                file) ) {       // Error text if failure
         if (debug_level & 16)
             fprintf(stderr,"No shapes within viewport.  Skipping file...\n");
 
@@ -1824,28 +1825,33 @@ void draw_shapefile_map (Widget w,
         int skip_label = 0;
 
 
-        HandlePendingEvents(app_context);
-        if (interrupt_drawing_now) {
-            DBFClose( hDBF );   // Clean up open file descriptors
-            SHPClose( hSHP );
-            // Update to screen
-            (void)XCopyArea(XtDisplay(da),
-                pixmap,
-                XtWindow(da),
-                gc,
-                0,
-                0,
-                (unsigned int)screen_width,
-                (unsigned int)screen_height,
-                0,
-                0);
+        // Call HandlePendingEvents() every 20 objects or so so that
+        // we can interrupt map drawing if necessary.
+        //
+        if (structure % 50 == 0) {
+            HandlePendingEvents(app_context);
+            if (interrupt_drawing_now) {
+                DBFClose( hDBF );   // Clean up open file descriptors
+                SHPClose( hSHP );
+                // Update to screen
+                (void)XCopyArea(XtDisplay(da),
+                    pixmap,
+                    XtWindow(da),
+                    gc,
+                    0,
+                    0,
+                    (unsigned int)screen_width,
+                    (unsigned int)screen_height,
+                    0,
+                    0);
 #ifdef WITH_DBFAWK
-            dbfawk_free_info(fld_info);
-            if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-                dbfawk_free_sigs(sig_info);
-            }
+                dbfawk_free_info(fld_info);
+                if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+                    dbfawk_free_sigs(sig_info);
+                }
 #endif  // WITH_DBFAWK
-            return;
+                return;
+            }
         }
 
 
@@ -1884,9 +1890,10 @@ void draw_shapefile_map (Widget w,
         // Here we check the bounding box for this shape against our
         // current viewport.  If we can't see it, don't draw it.
 
-        if (debug_level & 16)
-            fprintf(stderr,"Calling map_visible_lat_lon on a shape\n");
+//        if (debug_level & 16)
+//            fprintf(stderr,"Calling map_visible_lat_lon on a shape\n");
 
+/*
         // Set up some warning text just in case the map has a
         // problem.
         xastir_snprintf(warning_text,
@@ -1894,6 +1901,7 @@ void draw_shapefile_map (Widget w,
             "File:%s, Structure:%d",
             file,
             structure);
+*/
 
         //fprintf(stderr,"%s\n",warning_text);
 
@@ -1901,7 +1909,8 @@ void draw_shapefile_map (Widget w,
                                   object->dfYMax,   // Top
                                   object->dfXMin,   // Left
                                   object->dfXMax,   // Right
-                                  warning_text) ) { // Error text if failure
+                                  NULL) ) {
+//                                  warning_text) ) { // Error text if failure
 
             const char *temp;
 #ifndef WITH_DBFAWK
