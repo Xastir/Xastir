@@ -100,8 +100,6 @@ typedef struct {
     unsigned long y_lat;
 } tiepoint;
 
-extern void recompute_lat_long(void);
-
 void draw_point(Widget w,
                  unsigned long x1,
                  unsigned long y1,
