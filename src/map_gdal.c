@@ -1377,10 +1377,9 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
 */
 
         if (map_visible_lat_lon( envelopeH.MinY,    // bottom
-                envelopeH.MaxY, // top
-                envelopeH.MinX, // left
-                envelopeH.MaxX, // right
-                NULL)) {
+                envelopeH.MaxY,     // top
+                envelopeH.MinX,     // left
+                envelopeH.MaxX) ) { // right
 //fprintf(stderr, "Fast Extents: Line is visible\n");
         }
         else {
@@ -1480,8 +1479,7 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
             if (map_visible_lat_lon( MinY,    // bottom
                     MaxY, // top
                     MinX, // left
-                    MaxX, // right
-                    NULL)) {
+                    MaxX) ) { // right
 //fprintf(stderr, "Line is visible\n");
             }
             else {
@@ -1957,8 +1955,7 @@ void Draw_OGR_Polygons( Widget w,
                 if (map_visible_lat_lon( envelopeH.MinY,    // bottom
                         envelopeH.MaxY, // top
                         envelopeH.MinX, // left
-                        envelopeH.MaxX, // right
-                        NULL)) {
+                        envelopeH.MaxX) ) { // right
                     //fprintf(stderr, "Fast Extents: Polygon is visible\n");
                 }
                 else {
@@ -2038,8 +2035,7 @@ void Draw_OGR_Polygons( Widget w,
                     if (map_visible_lat_lon( MinY,    // bottom
                             MaxY, // top
                             MinX, // left
-                            MaxX, // right
-                            NULL)) {
+                            MaxX) ) { // right
 //fprintf(stderr, "Polygon is visible\n");
                     }
                     else {

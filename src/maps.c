@@ -3428,12 +3428,10 @@ int map_inside_viewport_lat_lon(double map_min_y,
 //          64,800,000 (-90 deg. or 90S)
 //
 /////////////////////////////////////////////////////////////////////
-int map_visible_lat_lon (double map_min_y,  // f_bottom_map_boundary
-                         double map_max_y,  // f_top_map_boundary
-                         double map_min_x,  // f_left_map_boundary
-                         double map_max_x,  // f_right_map_boundary
-                         char *error_message) {
-
+int map_visible_lat_lon (double map_min_y,    // f_bottom_map_boundary
+                         double map_max_y,    // f_top_map_boundary
+                         double map_min_x,    // f_left_map_boundary
+                         double map_max_x) {  // f_right_map_boundary
 
 //fprintf(stderr,"map_visible_lat_lon\n");
 
@@ -3446,11 +3444,10 @@ int map_visible_lat_lon (double map_min_y,  // f_bottom_map_boundary
     //
     // The quick rejection algorithm:
     //
-    if (f_SE_corner_latitude > map_max_y) return(0);  // map below view
-    if (map_min_y > f_NW_corner_latitude) return(0);  // view below map
-
-    if (f_NW_corner_longitude > map_max_x) return(0);  // map left of view
-    if (map_min_x > f_SE_corner_longitude) return(0);  // view left of  map
+    if (map_max_y < f_SE_corner_latitude ) return(0); // map below view
+    if (map_min_x > f_SE_corner_longitude) return(0); // view left of  map
+    if (map_min_y > f_NW_corner_latitude ) return(0); // view below map
+    if (map_min_x > f_SE_corner_longitude) return(0); // view left of  map
 
     return (1); // Draw this map onto the screen
 }
@@ -7790,9 +7787,7 @@ void load_alert_maps (Widget w, char *dir) {
                 if (map_visible_lat_lon(temp->bottom_boundary, // Shape visible
                         temp->top_boundary,
                         temp->left_boundary,
-                        temp->right_boundary,
-                        NULL) ) {
-//                        temp->title) ) {    // Error text if failure
+                        temp->right_boundary) ) {
 
                     if (temp->alert_level != 'C') {     // Alert not cancelled
                         mdf.draw_filled=1;
@@ -8333,6 +8328,8 @@ void load_maps (Widget w) {
 //
 // Loading "rd011802.shp" 500 times takes
 // 302->256->264->269->115->116 seconds.
+//
+// 100 times on PP200 takes 192->183 seconds.
 //
 //start_timer();
 //fprintf(stderr,"Calling draw_map() 500 times...\n");

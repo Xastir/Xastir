@@ -674,7 +674,6 @@ void draw_shapefile_map (Widget w,
     static XPoint   points[MAX_MAP_POINTS];
     char            file[MAX_FILENAME];  /* Complete path/name of image file */
     char            short_filenm[MAX_FILENAME];
-//    char            warning_text[MAX_FILENAME*2];
     int             i, fieldcount, recordcount, structure, ring;
 #ifndef WITH_DBFAWK
     char            ftype[15];
@@ -1595,9 +1594,7 @@ void draw_shapefile_map (Widget w,
     if (! map_visible_lat_lon(  adfBndsMin[1],  // Bottom
                                 adfBndsMax[1],  // Top
                                 adfBndsMin[0],  // Left
-                                adfBndsMax[0],  // Right
-                                NULL) ) {
-//                                file) ) {       // Error text if failure
+                                adfBndsMax[0]) ) {  // Right
         if (debug_level & 16)
             fprintf(stderr,"No shapes within viewport.  Skipping file...\n");
 
@@ -1825,10 +1822,16 @@ void draw_shapefile_map (Widget w,
         int skip_label = 0;
 
 
-        // Call HandlePendingEvents() every 20 objects or so so that
-        // we can interrupt map drawing if necessary.
+        // Call HandlePendingEvents() every XX objects so that we
+        // can interrupt map drawing if necessary.  Keep this at a
+        // power of two for speed.  Bigger numbers speed up map
+        // drawing at the expense of being able to interrupt map
+        // drawing quickly.  HandlePendingEvents() drops to about
+        // 0.5% CPU at 64 (according to gprof).  That appears to be
+        // the break-even point where CPU is minimal.
         //
-        if (structure % 50 == 0) {
+        if (structure % 64 == 0) {
+        
             HandlePendingEvents(app_context);
             if (interrupt_drawing_now) {
                 DBFClose( hDBF );   // Clean up open file descriptors
@@ -1893,24 +1896,10 @@ void draw_shapefile_map (Widget w,
 //        if (debug_level & 16)
 //            fprintf(stderr,"Calling map_visible_lat_lon on a shape\n");
 
-/*
-        // Set up some warning text just in case the map has a
-        // problem.
-        xastir_snprintf(warning_text,
-            sizeof(warning_text),
-            "File:%s, Structure:%d",
-            file,
-            structure);
-*/
-
-        //fprintf(stderr,"%s\n",warning_text);
-
         if ( map_visible_lat_lon( object->dfYMin,   // Bottom
                                   object->dfYMax,   // Top
                                   object->dfXMin,   // Left
-                                  object->dfXMax,   // Right
-                                  NULL) ) {
-//                                  warning_text) ) { // Error text if failure
+                                  object->dfXMax) ) {   // Right
 
             const char *temp;
 #ifndef WITH_DBFAWK

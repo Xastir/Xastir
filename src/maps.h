@@ -161,8 +161,7 @@ extern int map_visible (unsigned long bottom_map_boundary,
 extern int map_visible_lat_lon (double f_bottom_map_boundary,
                                 double f_top_map_boundary,
                                 double f_left_map_boundary,
-                                double f_right_map_boundary,
-                                char *error_message);
+                                double f_right_map_boundary);
 extern int map_inside_viewport_lat_lon(double map_min_y,
                                        double map_max_y,
                                        double map_min_x,
