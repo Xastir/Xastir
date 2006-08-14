@@ -458,7 +458,7 @@ static void* findu_transfer_thread(void *arg) {
     // there due to findu.com filtering them out.
     //
     sprintf(sys_cmd,
-        "sed --in-place -e \"s/<br>/   <br>/\" %s",
+        "sed -i -e \"s/<br>/   <br>/\" %s",
         log_filename);
     system(sys_cmd);
 //fprintf(stderr,"%s\n", sys_cmd);
