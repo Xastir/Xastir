@@ -404,6 +404,7 @@ static void* findu_transfer_thread(void *arg) {
     char *fileimg;
     char *log_filename;
     char **ptrs;
+    char sys_cmd[128];
 
 
     // Get fileimg and log_filename from parameters
@@ -449,6 +450,18 @@ static void* findu_transfer_thread(void *arg) {
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);
+
+    // Add three spaces before the "<br" on each line.  This is so
+    // that Base-91 compressed packets with no comment and no
+    // speed/course/altitude will get decoded ok.  Otherwise the
+    // spaces that are critical to the Base-91 packets won't be
+    // there due to findu.com filtering them out.
+    //
+    sprintf(sys_cmd,
+        "sed --in-place -e \"s/<br>/   <br>/\" %s",
+        log_filename);
+    system(sys_cmd);
+//fprintf(stderr,"%s\n", sys_cmd);
 
     // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
     // We have the log data we're interested in within the log_filename file.
