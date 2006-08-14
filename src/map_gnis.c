@@ -140,6 +140,7 @@ void draw_gnis_map (Widget w,
     unsigned long left_extent = 0l;
     unsigned long right_extent = 0l;
     char status_text[MAX_FILENAME];
+    int count = 0;
 
 
     //fprintf(stderr,"draw_gnis_map starting: %s/%s\n",dir,filenm);
@@ -240,23 +241,30 @@ Cell Name
     f = fopen (file, "r");
     if (f != NULL) {
         while (!feof (f)) {     // Loop through entire file
+            int lat_in_view = 0;
 
-            // Check whether map drawing should be interrupted
-            HandlePendingEvents(app_context);
-            if (interrupt_drawing_now) {
-                (void)fclose (f);
-                // Update to screen
-                (void)XCopyArea(XtDisplay(da),
-                    pixmap,
-                    XtWindow(da),
-                    gc,
-                    0,
-                    0,
-                    (unsigned int)screen_width,
-                    (unsigned int)screen_height,
-                    0,
-                    0);
-                return;
+            count++;
+            if ((count % 16) == 0) {
+
+                // Check whether map drawing should be interrupted.
+                // Check every 16 lines.
+                //
+                HandlePendingEvents(app_context);
+                if (interrupt_drawing_now) {
+                    (void)fclose (f);
+                    // Update to screen
+                    (void)XCopyArea(XtDisplay(da),
+                        pixmap,
+                        XtWindow(da),
+                        gc,
+                        0,
+                        0,
+                        (unsigned int)screen_width,
+                        (unsigned int)screen_height,
+                        0,
+                        0);
+                    return;
+                }
             }
 
             if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
@@ -296,7 +304,6 @@ Cell Name
 
                     i[0] = '\0';
                     xastir_snprintf(state,sizeof(state),"%s",j+1);
-                    clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
@@ -310,7 +317,6 @@ Cell Name
 
                     j[0] = '\0';
                     xastir_snprintf(name,sizeof(name),"%s",i+1);
-                    clean_string(name);
 
                     // Find end of Feature Type field
                     i = index(j+1, '|');
@@ -321,7 +327,6 @@ Cell Name
 
                     i[0] = '\0';
                     xastir_snprintf(type,sizeof(type),"%s",j+1);
-                    clean_string(type);
 
                     // Find end of County Name field
                     j = index(i+1, '|');
@@ -332,7 +337,6 @@ Cell Name
 
                     j[0] = '\0';
                     xastir_snprintf(county,sizeof(county),"%s",i+1);
-                    clean_string(county);
 
                     // Find end of State Number Code field
                     i = index(j+1, '|');
@@ -369,6 +373,7 @@ Cell Name
                         continue;                // numeric! (e.g. "UNKNOWN")
                     }
 
+//WE7U
                     clean_string(latitude);
                     
                     // Find end of Primary Longitude field (DDDMMSSW)
@@ -384,6 +389,7 @@ Cell Name
                         continue;                 // numeric (e.g. UNKNOWN)
                     }
 
+//WE7U
                     clean_string(longitude);
 
                     // Find end of Primary Latitude field (decimal
@@ -472,8 +478,6 @@ Cell Name
                     }
 
 FINISH:
-                    clean_string(population);
-
                     // There are two more fields (old format),
                     // "Federal Status" and "Cell Name".  We ignore
                     // those for now.
@@ -493,6 +497,38 @@ FINISH:
                     lat_dir[0] = latitude[6];
                     lat_dir[1] = '\0';
 
+                    // Now must convert from DD MM SS format to DD MM.MM format so that we
+                    // can run it through our conversion routine to Xastir coordinates.
+                    if (1 != sscanf(lat_ss, "%d", &temp1)) {
+                        fprintf(stderr,"draw_gnis_map:sscanf parsing error\n");
+                    }
+
+                    temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
+                    xastir_snprintf(lat_str, sizeof(lat_str), "%s%s.%02d%s", lat_dd,
+                            lat_mm, temp1, lat_dir);
+                    coord_lat = convert_lat_s2l(lat_str);
+
+                    // Quick test of latitude to see if it's within
+                    // our view.  If not and we're not doing
+                    // indexing, skip this line and go on to the
+                    // next.
+                    if (coord_lat <= min_lat && coord_lat >= max_lat) {
+                        // Latitude is ok
+                        lat_in_view++;
+                    }
+                    else {  // Latitude not in current view
+
+                        // Check whether we're indexing the map
+                        if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                                || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+                            // Process the line 'cuz we're indexing
+                        }
+                        else {  // Not indexing so skip to the next
+                                // line in the file
+                            continue;
+                        }
+                    }
+
                     long_dd[0] = longitude[0];
                     long_dd[1] = longitude[1];
                     long_dd[2] = longitude[2];
@@ -509,17 +545,6 @@ FINISH:
                     long_dir[0] = longitude[7];
                     long_dir[1] = '\0';
 
-                    // Now must convert from DD MM SS format to DD MM.MM format so that we
-                    // can run it through our conversion routine to Xastir coordinates.
-                    if (1 != sscanf(lat_ss, "%d", &temp1)) {
-                        fprintf(stderr,"draw_gnis_map:sscanf parsing error\n");
-                    }
-
-                    temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
-                    xastir_snprintf(lat_str, sizeof(lat_str), "%s%s.%02d%s", lat_dd,
-                            lat_mm, temp1, lat_dir);
-                    coord_lat = convert_lat_s2l(lat_str);
-
                     if (1 != sscanf(long_ss, "%d", &temp1)) {
                         fprintf(stderr,"draw_gnis_map:sscanf parsing error\n");
                     }
@@ -530,30 +555,35 @@ FINISH:
                     coord_lon = convert_lon_s2l(long_str);
 
 
-                    // Save the min/max extents of the file.  We
-                    // should really initially set the extents to
-                    // the min/max for the Xastir coordinate system,
-                    // but in practice zeroes should work just as
-                    // well.
-                    if ((coord_lat > (long)bottom_extent) || (bottom_extent == 0l))
-                        bottom_extent = coord_lat;
-                    if ((coord_lat < (long)top_extent) || (top_extent == 0l))
-                        top_extent = coord_lat;
-                    if ((coord_lon < (long)left_extent) || (left_extent == 0l))
-                        left_extent = coord_lon;
-                    if ((coord_lon > (long)right_extent) || (right_extent == 0l))
-                        right_extent = coord_lon;
-
-
                     // Check whether we're indexing the map
                     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
                             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-                        // Do nothing, we're indexing, not drawing
+
+                        // Save the min/max extents of the file.  We
+                        // should really initially set the extents
+                        // to the min/max for the Xastir coordinate
+                        // system, but in practice zeroes should
+                        // work just as well.
+                        //
+                        if ((coord_lat > (long)bottom_extent) || (bottom_extent == 0l))
+                            bottom_extent = coord_lat;
+                        if ((coord_lat < (long)top_extent) || (top_extent == 0l))
+                            top_extent = coord_lat;
+                        if ((coord_lon < (long)left_extent) || (left_extent == 0l))
+                            left_extent = coord_lon;
+                        if ((coord_lon > (long)right_extent) || (right_extent == 0l))
+                            right_extent = coord_lon;
                     }
                     // Now check whether this lat/lon is within our viewport.  If it
                     // is, draw a text label at that location.
                     else if (coord_lon >= min_lon && coord_lon <= max_lon
-                            && coord_lat <= min_lat && coord_lat >= max_lat) {
+                            && lat_in_view) {
+
+                        clean_string(state);
+                        clean_string(name);
+                        clean_string(type);
+                        clean_string(county);
+                        clean_string(population);
 
                         if (debug_level & 16) {
                             fprintf(stderr,"%s\t%s\t%s\t%s\t%s\t%s\t\t",
