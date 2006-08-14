@@ -1095,10 +1095,10 @@ void Draw_OGR_Labels( Widget w,
         // Check that we're not trying to draw the label out of
         // bounds for the X11 calls.
         //
-        if (       xpoints[0].x+10 <  32767
-                && xpoints[0].x+10 > -32768
-                && xpoints[0].y+5  <  32767
-                && xpoints[0].y+5  > -32768) {
+        if (       xpoints[0].x+10 <  screen_width
+                && xpoints[0].x+10 > 0
+                && xpoints[0].y+5  <  screen_height
+                && xpoints[0].y+5  > 0) {
 
 /*
             if (angle == 0.0) {   // Non-rotated label
@@ -1450,6 +1450,11 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
         // extents and check whether this object is within our
         // view.
         //
+
+// WE7U
+// Replace with draw_vector_ll() and we won't have to compute
+// extents here.
+
         if (!fast_extents) {
             double MinX, MaxX, MinY, MaxY;
 
