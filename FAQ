@@ -954,6 +954,9 @@ The Answers
 
         kill -SIGHUP `cat ~/.xastir/xastir.pid`
 
+    NOTE:  This SIGHUP trick doesn't work if you've configured
+    Xastir with profiling ( "./configure --with-profiling" ).
+
 
 ----------------------------------------------------------------
 
