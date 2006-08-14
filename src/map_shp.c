@@ -2060,7 +2060,7 @@ void draw_shapefile_map (Widget w,
                         //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
                         if (!temp_ok) {
-                            fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                            fprintf(stderr,"draw_shapefile_map1: Problem converting from lat/lon\n");
                             ok = 0;
                             x = 0;
                             y = 0;
@@ -2570,7 +2570,7 @@ void draw_shapefile_map (Widget w,
                             //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
                             if (!temp_ok) {
-                                fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                                fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
                                 ok = 0;
                                 x = 0;
                                 y = 0;
@@ -2817,7 +2817,7 @@ void draw_shapefile_map (Widget w,
                         //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
                         if (!temp_ok) {
-                            fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                            fprintf(stderr,"draw_shapefile_map3: Problem converting from lat/lon\n");
                             ok = 0;
                             x = 0;
                             y = 0;
@@ -3245,7 +3245,7 @@ void draw_shapefile_map (Widget w,
                         //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
                         if (!temp_ok) {
-                            fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                            fprintf(stderr,"draw_shapefile_map4: Problem converting from lat/lon\n");
                             ok = 0;
                             x = 0;
                             y = 0;
@@ -3277,7 +3277,7 @@ void draw_shapefile_map (Widget w,
                          //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
                         if (!temp_ok) {
-                            fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                            fprintf(stderr,"draw_shapefile_map5: Problem converting from lat/lon\n");
                             ok = 0;
                             width = 0;
                             height = 0;
@@ -3381,7 +3381,7 @@ void draw_shapefile_map (Widget w,
                                     //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
 
                                     if (!temp_ok) {
-                                        fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                                        fprintf(stderr,"draw_shapefile_map6: Problem converting from lat/lon\n");
                                         ok = 0;
                                         x = 0;
                                         y = 0;
@@ -3575,10 +3575,11 @@ if (on_screen) {
                             //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
 
                             if (!temp_ok) {
-                                fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                                fprintf(stderr,"draw_shapefile_map7: Problem converting from lat/lon\n");
                                 ok = 0;
                                 x = 0;
                                 y = 0;
+                                index++;
                             }
                             else {
                                 // Convert to screen coordinates.  Careful
@@ -3991,7 +3992,7 @@ if (on_screen) {
                         //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
                         if (!temp_ok) {
-                            fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                            fprintf(stderr,"draw_shapefile_map8: Problem converting from lat/lon\n");
                             ok = 0;
                             x = 0;
                             y = 0;
