@@ -1396,6 +1396,10 @@ then invoke Xastir like this:
     LD_PRELOAD=xastir/src/gprof-helper.so xastir &
 
 
+    mv gmon.out gmon.old; gprof /usr/local/bin/xastir gmon.old \
+    | tee profile.txt; gprof -l /usr/local/bin/xastir gmon.old \
+    | tee profile2.txt
+
 
 Checking for Memory Leaks:
 --------------------------
