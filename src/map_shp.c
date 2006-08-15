@@ -1830,7 +1830,11 @@ void draw_shapefile_map (Widget w,
         // 0.5% CPU at 64 (according to gprof).  That appears to be
         // the break-even point where CPU is minimal.
         //
-        if (structure % 64 == 0) {
+#ifdef USE_RTREE
+        if ( (RTree_hitarray_index % 64) == 0 ) {
+#else
+        if ( (structure % 64) == 0 ) {
+#endif
         
             HandlePendingEvents(app_context);
             if (interrupt_drawing_now) {
