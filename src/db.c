@@ -16334,14 +16334,14 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 // see if we're missing anything important.
 //
 //
-// Inputs:  incoming_data       Raw string (must be MAX_LINE_SIZE or bigger)
+// Inputs:  data_string         Raw string (must be MAX_LINE_SIZE or bigger)
 //          length              Length of raw string (may get changed here)
 //
 // Outputs: int                 0 if it is a bad packet,
 //                              1 if it is good
-//          incoming_data       Processed string
+//          data_string         Processed string
 //
-int decode_ax25_header(unsigned char *incoming_data, int *length) {
+int decode_ax25_header(unsigned char *data_string, int *length) {
     char temp[20];
     char result[MAX_LINE_SIZE+100];
     char dest[15];
@@ -16352,14 +16352,14 @@ int decode_ax25_header(unsigned char *incoming_data, int *length) {
 
 
     // Do we have a string at all?
-    if (incoming_data == NULL)
+    if (data_string == NULL)
         return(0);
 
     // Drop the packet if it is too long.  Note that for KISS packets
     // we can't use strlen() as there can be 0x00 bytes in the
     // data itself.
     if (*length > 1024) {
-        incoming_data[0] = '\0';
+        data_string[0] = '\0';
         *length = 0;
         return(0);
     }
@@ -16371,14 +16371,14 @@ int decode_ax25_header(unsigned char *incoming_data, int *length) {
 
     // Process the destination address
     for (i = 0; i < 7; i++)
-        temp[i] = incoming_data[ptr++];
+        temp[i] = data_string[ptr++];
     temp[7] = '\0';
     more = decode_ax25_address(temp, callsign, 0); // No asterisk
     xastir_snprintf(dest,sizeof(dest),"%s",callsign);
 
     // Process the source address
     for (i = 0; i < 7; i++)
-        temp[i] = incoming_data[ptr++];
+        temp[i] = data_string[ptr++];
     temp[7] = '\0';
     more = decode_ax25_address(temp, callsign, 0); // No asterisk
 
@@ -16390,7 +16390,7 @@ int decode_ax25_header(unsigned char *incoming_data, int *length) {
     num_digis = 0;
     while (more && num_digis < 8) {
         for (i = 0; i < 7; i++)
-            temp[i] = incoming_data[ptr++];
+            temp[i] = data_string[ptr++];
         temp[7] = '\0';
 
         more = decode_ax25_address(temp, callsign, 1); // Add asterisk
@@ -16415,13 +16415,13 @@ int decode_ax25_header(unsigned char *incoming_data, int *length) {
 
     // Control byte should be 0x03 (UI Frame).  Strip the poll-bit
     // from the PID byte before doing the comparison.
-    if ( (incoming_data[ptr++] & (~0x10)) != 0x03) {
+    if ( (data_string[ptr++] & (~0x10)) != 0x03) {
         return(0);
     }
 
 
     // PID byte should be 0xf0 (normal AX.25 text)
-    if (incoming_data[ptr++] != 0xf0)
+    if (data_string[ptr++] != 0xf0)
         return(0);
 
 
@@ -16431,25 +16431,25 @@ int decode_ax25_header(unsigned char *incoming_data, int *length) {
 // current packet so we don't get the extra garbage tacked onto the
 // end.
     for (i = ptr; i < *length; i++) {
-        if (incoming_data[i] == KISS_FEND) {
+        if (data_string[i] == KISS_FEND) {
             fprintf(stderr,"***Found concatenated KISS packets:***\n");
-            incoming_data[i] = '\0';    // Truncate the string
+            data_string[i] = '\0';    // Truncate the string
             break;
         }
     }
 
     // Add the Info field to the decoded header info
     strncat(result,
-        (char *)(&incoming_data[ptr]),
+        (char *)(&data_string[ptr]),
         sizeof(result) - strlen(result));
 
     // Copy the result onto the top of the input data.  Note that
     // the length can sometimes be longer than the input string, so
     // we can't just use the "length" variable here or we'll
-    // truncate our string.  Make sure the incoming_data variable is
+    // truncate our string.  Make sure the data_string variable is
     // MAX_LINE_SIZE or bigger.
     //
-    xastir_snprintf((char *)incoming_data,
+    xastir_snprintf((char *)data_string,
         MAX_LINE_SIZE,
         "%s",
         result);
@@ -16457,7 +16457,7 @@ int decode_ax25_header(unsigned char *incoming_data, int *length) {
     // Write out the new length
     *length = strlen(result); 
 
-//fprintf(stderr,"%s\n",incoming_data);
+//fprintf(stderr,"%s\n",data_string);
 
     return(1);
 }
