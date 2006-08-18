@@ -126,7 +126,7 @@ iface port_data[MAX_IFACE_DEVICES];     // shared port data
 int port_id[MAX_IFACE_DEVICES];         // shared port id data
 
 xastir_mutex port_data_lock;            // Protects the port_data[] array of structs
-xastir_mutex data_lock;                 // Protects global data, data_port, data_avail variables
+xastir_mutex data_lock;                 // Protects incoming_data_queue
 xastir_mutex output_data_lock;          // Protects interface.c:channel_data() function only
 xastir_mutex connect_lock;              // Protects port_data[].thread_status and port_data[].connect_status
 
@@ -134,16 +134,131 @@ void port_write_string(int port, char *data);
 
 int ax25_ports_loaded = 0;
 
-// decode data
-unsigned char *incoming_data;
-int incoming_data_length;               // Used for binary strings such as KISS
+
+// Incoming data queue
+typedef struct _incoming_data_record {
+    int length;   // Used for binary strings such as KISS
+    int port;
+    unsigned char data[MAX_LINE_SIZE];
+} incoming_data_record;
+#define MAX_INPUT_QUEUE 1000
+static incoming_data_record incoming_data_queue[MAX_INPUT_QUEUE];
 unsigned char incoming_data_copy[MAX_LINE_SIZE];            // Used for debug
 unsigned char incoming_data_copy_previous[MAX_LINE_SIZE];   // Used for debug
-int data_avail = 0;
-int data_port;
 
 // interface wait time out
 int NETWORK_WAITTIME;
+
+
+
+
+
+// Read/write pointers for the circular input queue
+static int incoming_read_ptr = 0;
+static int incoming_write_ptr = 0;
+static int queue_depth = 0;
+static int push_count = 0;
+static int pop_count = 0;
+
+
+
+
+
+// Fetch a record from the circular queue.
+// Returns 0 if no records available
+// Else returns length of string, data_string and port
+// data_string variable should be of size MAX_LINE_SIZE
+//
+int pop_incoming_data(unsigned char *data_string, int *port) {
+    int length;
+
+    if (begin_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
+            fprintf(stderr,"data_lock\n");
+
+    // Check for queue empty
+    if (incoming_read_ptr == incoming_write_ptr) {
+        // Yep, it's empty
+        if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
+            fprintf(stderr,"data_lock\n");
+        queue_depth = 0;
+        return(0);
+    }
+
+    *port = incoming_data_queue[incoming_read_ptr].port;
+
+    length = incoming_data_queue[incoming_read_ptr].length;
+
+    xastir_snprintf((char *)data_string,
+        (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
+        "%s",
+        incoming_data_queue[incoming_read_ptr].data);
+
+    // Bump the read pointer
+    incoming_read_ptr = (incoming_read_ptr + 1) % MAX_INPUT_QUEUE;
+
+    queue_depth--;
+    pop_count++;
+
+//if (push_count != pop_count)
+//    fprintf(stderr,"Pushes:%d\tPops:%d\n", push_count, pop_count);
+//else
+//    fprintf(stderr,"Pushes = \tPops\n");
+
+    // For DEBUG, to see if the queue how the queue is getting used
+//    if (queue_depth > 1) {
+//        fprintf(stderr,"%d\t", queue_depth);
+//    }
+
+//fprintf(stderr,"\n<- %s",data_string);
+
+    if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
+        fprintf(stderr,"data_lock\n");
+
+    return(length);
+}
+
+
+
+
+
+// Add one record to the circular queue.  Returns 1 if queue is
+// full, 0 if successful.
+//
+int push_incoming_data(unsigned char *data_string, int length, int port) {
+
+    if (begin_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
+            fprintf(stderr,"data_lock\n");
+
+//fprintf(stderr,"\n-> %s",data_string);
+
+    // Check whether queue is full
+    if (incoming_read_ptr == ((incoming_write_ptr + 1) % MAX_INPUT_QUEUE)) {
+        // Yep, it's full!
+        if (end_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
+            fprintf(stderr,"data_lock\n");
+        return(1);
+    }
+
+    // Advance the write pointer
+    incoming_write_ptr = (incoming_write_ptr + 1) % MAX_INPUT_QUEUE;
+
+    incoming_data_queue[incoming_write_ptr].length = length;
+
+    incoming_data_queue[incoming_write_ptr].port = port;
+
+    xastir_snprintf((char *)incoming_data_queue[incoming_write_ptr].data,
+        (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
+        "%s",
+        data_string);
+
+    queue_depth++;
+    push_count++;
+
+    if (end_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
+        fprintf(stderr,"data_lock\n");
+
+    return(0);
+}
 
 
 
@@ -1197,8 +1312,9 @@ int get_device_status(int port) {
 //***********************************************************
 // channel_data()
 //
-// Takes data read in from a port and makes the incoming_data
-// pointer point to it.  Waits until the string is processed.
+// Takes data read in from a port and adds it to the
+// incoming_data_queue.  If queue is full, waits for queue to have
+// space before continuing.
 //
 // port #                                                    
 // string is the string of data
@@ -1218,6 +1334,7 @@ void channel_data(int port, unsigned char *string, int length) {
     // instead of pthread_mutex_t's.
     pthread_mutex_t *cleanup_mutex1;
     pthread_mutex_t *cleanup_mutex2;
+    int process_it = 0;
 
 
     //fprintf(stderr,"channel_data: %x %d\n",string[0],length);
@@ -1298,18 +1415,9 @@ void channel_data(int port, unsigned char *string, int length) {
 //        pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex2);
 
 
-        if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
-            fprintf(stderr,"data_lock, Port = %d\n", port);
+//        if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
+//            fprintf(stderr,"data_lock, Port = %d\n", port);
 
-
-        // Allocate space for our string plus some expansion
-        incoming_data = (unsigned char*)malloc(MAX_LINE_SIZE);
-
-        // Copy the data across
-        xastir_snprintf((char *)incoming_data,
-            length+1,
-            "%s",
-            string);
 
         // If it's any of three types of GPS ports and is a GPRMC or
         // GPGGA string, just stick it in one of two global
@@ -1334,6 +1442,7 @@ void channel_data(int port, unsigned char *string, int length) {
                         "%s",
                         string);
                     gps_port_save = port;
+                    process_it = 0;
                 }
                 else if ( (length > 7) && (strncmp((char *)string,"$GPGGA,",7) == 0) ) {
                     xastir_snprintf(gpgga_save_string,
@@ -1341,6 +1450,7 @@ void channel_data(int port, unsigned char *string, int length) {
                         "%s",
                         string);
                     gps_port_save = port;
+                    process_it = 0;
                 }
                 else {
                     // It's not one of the GPS strings we're looking
@@ -1351,9 +1461,7 @@ void channel_data(int port, unsigned char *string, int length) {
                     //
                     if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
                         // Decode the string normally.
-                        incoming_data_length = length;
-                        data_port = port;
-                        data_avail = 1;
+                        process_it++;
                         //fprintf(stderr,"data_avail\n");
                     }
                 }
@@ -1365,16 +1473,14 @@ void channel_data(int port, unsigned char *string, int length) {
 
             default:    // Not one of the above three types, decode
                         // the string normally.
-                incoming_data_length = length;
-                data_port = port;
-                data_avail = 1;
+                process_it++;
                 //fprintf(stderr,"data_avail\n");
                 break;
         }
 
 
-        if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
-            fprintf(stderr,"data_lock, Port = %d\n", port);
+//        if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
+//            fprintf(stderr,"data_lock, Port = %d\n", port);
 
         // Remove the cleanup routine for the case where this thread
         // gets killed while the mutex is locked.  The cleanup
@@ -1387,17 +1493,18 @@ void channel_data(int port, unsigned char *string, int length) {
         if (debug_level & 1)
             fprintf(stderr,"Channel data on Port %d [%s]\n",port,(char *)string);
 
-        /* wait until data is processed */
-        while (data_avail && max < 5400) {
-            sched_yield();  // Yield to other threads
-            tmv.tv_sec = 0;
-            tmv.tv_usec = 2;  // 2 usec
-            (void)select(0,NULL,NULL,NULL,&tmv);
-            max++;
-        }
+        if (process_it) {
 
-        // Get rid of our temporary storage
-        free(incoming_data);
+            // Wait for empty space in queue
+//fprintf(stderr,"\n== %s", string);
+            while (push_incoming_data(string, length, port) && max < 5400) {
+                sched_yield();  // Yield to other threads
+                tmv.tv_sec = 0;
+                tmv.tv_usec = 2;  // 2 usec
+                (void)select(0,NULL,NULL,NULL,&tmv);
+                max++;
+            }
+        }
     }
 
 

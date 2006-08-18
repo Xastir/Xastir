@@ -10317,6 +10317,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     int line_offset = 0;
     int n;
     time_t current_time;
+    int data_length;
+    int data_port;
+    unsigned char data_string[MAX_LINE_SIZE];
 
 
     do_time = 0;
@@ -10334,7 +10337,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #else
     // Changed from 2 to 10 to fix high CPU usage problems on
     // FreeBSD.
-    nexttime = 25;
+    nexttime = 10;
 #endif // __CYGWIN__
 
 
@@ -10970,8 +10973,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             max=0;
             // Allow up to 1000 packets to be processed inside this
             // loop.
-            while (max < 1000 && !XtAppPending(app_context)) {
-//                struct timeval tmv;
+
+// CAREFUL HERE:  If we try to send to the Spider pipes faster than
+// it's reading from the pipes we corrupt the data out our server
+// ports.
+
+            while (max < 1 && !XtAppPending(app_context)) {
+                struct timeval tmv;
 
 
 // Check the x_spider server for incoming data
@@ -11173,14 +11181,20 @@ if (!skip_decode) {
 // End of x_spider server check code
 
 
-if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
-    fprintf(stderr,"data_lock\n");
+//if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
+//    fprintf(stderr,"data_lock\n");
 
 
-// Check the rest of the ports for incoming data.
+// Check the rest of the ports for incoming data.  Process up to
+// 1000 packets here in a loop.
 
-                if (data_avail) {
+                data_length = pop_incoming_data(data_string, &data_port);
+ 
+                if (data_length != 0) {
                     int data_type;              // 0=AX25, 1=GPS
+
+                    // Terminate the string
+                    data_string[data_length] = '\0';
 
                     //fprintf(stderr,"device_type: %d\n",port_data[data_port].device_type);
 
@@ -11190,31 +11204,41 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                             if (log_net_data)
                                 log_data( get_user_base_dir(LOGFILE_NET),
-                                    (char *)incoming_data);
+                                    (char *)data_string);
 
                             packet_data_add(langcode("WPUPDPD006"),
-                                (char *)incoming_data,
+                                (char *)data_string,
                                 data_port);
 
+//fprintf(stderr,"\n-1 %s", data_string);
+
                             if (enable_server_port) {
+                                char new_string[MAX_LINE_SIZE+1];
+
+                                // Terminate it with a linefeed
+                                xastir_snprintf(new_string,
+                                    data_length+1,
+                                    "%s\n",
+                                    data_string);
+
+//fprintf(stderr,"\n-2 %s", new_string);
+
                                 // Send data to the x_spider server
                                 if (writen(pipe_xastir_to_tcp_server,
-                                        (char *)incoming_data,
-                                        incoming_data_length) != incoming_data_length) {
-                                    if (errno != EPIPE) fprintf(stderr,
-                                        "UpdateTime: Writen error (Net send x_spider): %d\n",
-                                        errno);
+                                        new_string,
+                                        data_length+1) != data_length+1) {
+                                    if (errno != EPIPE) {
+                                        fprintf(stderr,
+                                            "UpdateTime: Writen error (Net send x_spider): %d\n",
+                                            errno);
+                                    }
                                 }
-                                // Terminate it with a linefeed
-                                if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
-                                    if (errno != EPIPE) fprintf(stderr,
-                                        "UpdateTime: Writen error (Net linefeed): %d\n",
-                                        errno);
-                                }
+//fprintf(stderr,"\n-3 %s", new_string);
+
                             }
                             // End of x_spider server send code
 
-                            decode_ax25_line((char *)incoming_data,
+                            decode_ax25_line((char *)data_string,
                                 'I',
                                 data_port,
                                 1);
@@ -11227,10 +11251,10 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             // Try to decode header and checksum.  If
                             // bad, break, else continue through to
                             // ASCII logging & decode routines.
-                            // Note that the length of incoming_data
+                            // Note that the length of data_string
                             // can increase within decode_ax25_header().
-                            if ( !decode_ax25_header( (unsigned char *)incoming_data,
-                                    &incoming_data_length ) ) {
+                            if ( !decode_ax25_header( (unsigned char *)data_string,
+                                    &data_length ) ) {
                                 // Had a problem decoding it.  Drop
                                 // it on the floor.
                                 break;
@@ -11242,37 +11266,39 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             }
 
                         case DEVICE_SERIAL_TNC:
-                            tnc_data_clean((char *)incoming_data);
+                            tnc_data_clean((char *)data_string);
 
                         case DEVICE_AX25_TNC:
                         case DEVICE_NET_AGWPE:
                             if (log_tnc_data)
                                 log_data( get_user_base_dir(LOGFILE_TNC),
-                                    (char *)incoming_data);
+                                    (char *)data_string);
 
                             packet_data_add(langcode("WPUPDPD005"),
-                                (char *)incoming_data,
+                                (char *)data_string,
                                 data_port);
 
                             if (enable_server_port) {
+                                char new_string[MAX_LINE_SIZE+1];
+
+                                // Terminate it with a linefeed
+                                xastir_snprintf(new_string,
+                                    MAX_LINE_SIZE+1,
+                                    "%s\n",
+                                    data_string);
+
                                 // Send data to the x_spider server
                                 if (writen(pipe_xastir_to_tcp_server,
-                                        (char *)incoming_data,
-                                        incoming_data_length) != incoming_data_length) {
+                                        new_string,
+                                        data_length+1) != data_length+1) {
                                     fprintf(stderr,
                                         "UpdateTime: Writen error (TNC Send x_spider): %d\n",
-                                        errno);
-                                }
-                                // Terminate it with a linefeed
-                                if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
-                                    fprintf(stderr,
-                                        "UpdateTime: Writen error(TNC linefeed): %d\n",
                                         errno);
                                 }
                             }
                             // End of x_spider server send code
 
-                            decode_ax25_line((char *)incoming_data,
+                            decode_ax25_line((char *)data_string,
                                 'T',
                                 data_port,
                                 1);
@@ -11282,7 +11308,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             if (port_data[data_port].dtr==1) { // get GPS data
                                 char temp[200];
 
-                                (void)gps_data_find((char *)incoming_data,
+                                (void)gps_data_find((char *)data_string,
                                     data_port);
 
                                 xastir_snprintf(temp,
@@ -11297,31 +11323,33 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 // get TNC data
                                 if (log_tnc_data)
                                     log_data( get_user_base_dir(LOGFILE_TNC),
-                                        (char *)incoming_data);
+                                        (char *)data_string);
 
                                 packet_data_add(langcode("WPUPDPD005"),
-                                    (char *)incoming_data,
+                                    (char *)data_string,
                                     data_port);
 
                                 if (enable_server_port) {
+                                    char new_string[MAX_LINE_SIZE+1];
+
+                                    // Terminate it with a linefeed
+                                    xastir_snprintf(new_string,
+                                        MAX_LINE_SIZE+1,
+                                        "%s\n",
+                                        data_string);
+
                                     // Send data to the x_spider server
                                     if (writen(pipe_xastir_to_tcp_server,
-                                            (char *)incoming_data,
-                                            incoming_data_length) != incoming_data_length) {
+                                            new_string,
+                                            data_length+1) != data_length+1) {
                                         fprintf(stderr,
                                             "UpdateTime: Writen error(HSP data): %d\n",
-                                            errno);
-                                    }
-                                    // Terminate it with a linefeed
-                                    if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
-                                        fprintf(stderr,
-                                            "UpdateTime: Writen error(HSP linefeed): %d\n",
                                             errno);
                                     }
                                 }
                                 // End of x_spider server send code
 
-                                decode_ax25_line((char *)incoming_data,
+                                decode_ax25_line((char *)data_string,
                                     'T',
                                     data_port,
                                     1);
@@ -11329,13 +11357,13 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             break;
 
                         case DEVICE_SERIAL_TNC_AUX_GPS:
-                            tnc_data_clean((char *)incoming_data);
-                            data_type=tnc_get_data_type((char *)incoming_data,
+                            tnc_data_clean((char *)data_string);
+                            data_type=tnc_get_data_type((char *)data_string,
                                 data_port);
                             if (data_type) {  // GPS Data
                                 char temp[200];
 
-                                (void)gps_data_find((char *)incoming_data,
+                                (void)gps_data_find((char *)data_string,
                                     data_port);
 
                                 xastir_snprintf(temp,
@@ -11349,31 +11377,33 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             else {          // APRS Data
                                 if (log_tnc_data)
                                     log_data( get_user_base_dir(LOGFILE_TNC),
-                                        (char *)incoming_data);
+                                        (char *)data_string);
 
                                 packet_data_add(langcode("WPUPDPD005"),
-                                    (char *)incoming_data,
+                                    (char *)data_string,
                                     data_port);
 
                                 if (enable_server_port) {
+                                    char new_string[MAX_LINE_SIZE+1];
+
+                                    // Terminate it with a linefeed
+                                    xastir_snprintf(new_string,
+                                        MAX_LINE_SIZE+1,
+                                        "%s\n",
+                                        data_string);
+
                                     // Send data to the x_spider server
                                     if (writen(pipe_xastir_to_tcp_server,
-                                            (char *)incoming_data,
-                                            incoming_data_length) != incoming_data_length) {
+                                            new_string,
+                                            data_length+1) != data_length+1) {
                                         fprintf(stderr,
                                             "UpdateTime: Writen error(TNC/GPS data): %d\n",
-                                            errno);
-                                    }
-                                    // Terminate it with a linefeed
-                                    if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
-                                        fprintf(stderr,
-                                            "UpdateTime: Writen error(TNC/GPS linefeed): %d\n",
                                             errno);
                                     }
                                 }
                                 // End of x_spider server send code
 
-                                decode_ax25_line((char *)incoming_data,
+                                decode_ax25_line((char *)data_string,
                                     'T',
                                     data_port,
                                     1);
@@ -11384,8 +11414,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_SERIAL_GPS:
 
                         case DEVICE_NET_GPSD:
-                            //fprintf(stderr,"GPS Data <%s>\n",incoming_data);
-                            (void)gps_data_find((char *)incoming_data,
+                            //fprintf(stderr,"GPS Data <%s>\n",data_string);
+                            (void)gps_data_find((char *)data_string,
                                 data_port);
                             {
                                 char temp[200];
@@ -11406,9 +11436,9 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_NET_WX:
                             if (log_wx)
                                 log_data( get_user_base_dir(LOGFILE_WX),
-                                    (char *)incoming_data);
+                                    (char *)data_string);
 
-                            wx_decode(incoming_data,
+                            wx_decode(data_string,
                                 data_port);
                             break;
 
@@ -11416,24 +11446,23 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             fprintf(stderr,"Data from unknown source\n");
                             break;
                     }
-                    data_avail=0;
                     max++;  // Count the number of packets processed
                 } else {
                     max=1000;   // Go straight to "max": Exit loop
                 }
 
-if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
-    fprintf(stderr,"data_lock\n");
+//if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
+//    fprintf(stderr,"data_lock\n");
 
                 // Do a usleep() here to give the interface threads
-                // time to set data_avail if they still have data to
-                // process.
+                // time to put something in the queue if they still
+                // have data to process.
                 sched_yield();  // Yield to the other threads
-//                tmv.tv_sec = 0;
-//                tmv.tv_usec = 1; // Delay 1ms
-//                (void)select(0,NULL,NULL,NULL,&tmv);
+                tmv.tv_sec = 0;
+                tmv.tv_usec = 1; // Delay 1ms
+                (void)select(0,NULL,NULL,NULL,&tmv);
 
-            }
+            }   // End of packet processing loop
 
             // END- get data from interface
             // READ FILE IF OPENED
@@ -25932,7 +25961,7 @@ int main(int argc, char *argv[], char *envp[]) {
     // initialize interfaces
     init_critical_section(&port_data_lock);   // Protects the port_data[] array of structs
     init_critical_section(&output_data_lock); // Protects interface.c:channel_data() function only
-    init_critical_section(&data_lock);        // Protects global data, data_port, data_avail variables
+    init_critical_section(&data_lock);        // Protects global incoming_data_queue
     init_critical_section(&connect_lock);     // Protects port_data[].thread_status and port_data[].connect_status
 // We should probably protect redraw_on_new_data, alert_redraw_on_update, and
 // redraw_on_new_packet_data variables as well?

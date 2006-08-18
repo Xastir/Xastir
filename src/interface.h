@@ -199,7 +199,7 @@ extern int add_device(int port_avail,int dev_type,
                int reconnect,
                char *filter_string);
 
-extern xastir_mutex data_lock;          // Protects global data, data_port, data_avail variables
+extern xastir_mutex data_lock;          // Protects incoming_data_queue
 extern xastir_mutex output_data_lock;   // Protects interface.c:channel_data() function only
 extern xastir_mutex connect_lock;       // Protects port_data[].thread_status and port_data[].connect_status
 
@@ -214,8 +214,6 @@ extern void interface_gui_init(void);
 extern void Configure_interface_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData);
 extern void Configure_interface(Widget w, XtPointer clientData, XtPointer callData);
 extern void output_my_aprs_data(void);
-extern int data_port;
-extern int data_avail;
 extern void control_interface(Widget w, XtPointer clientData, XtPointer callData);
 extern void dtr_all_set(int dtr);
 extern void interface_status(Widget w);
@@ -227,8 +225,9 @@ extern int is_local_interface(int port);
 extern int is_network_interface(int port);
 extern void send_agwpe_packet(int xastir_interface, int RadioPort, unsigned char type, unsigned char *FromCall, unsigned char *ToCall, unsigned char *Path, unsigned char *Data, int length);
 
-extern unsigned char *incoming_data;
-extern int incoming_data_length;
+extern int pop_incoming_data(unsigned char *data_string, int *port);
+extern int push_incoming_data(unsigned char *data_string, int length, int port);
+
 extern unsigned char incoming_data_copy[MAX_LINE_SIZE];
 extern unsigned char incoming_data_copy_previous[MAX_LINE_SIZE];
 extern int NETWORK_WAITTIME;
