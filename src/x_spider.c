@@ -443,7 +443,12 @@ return;
         }
 
         // Slow the loop down to prevent excessive CPU.
-        usleep(10000); // 10ms
+
+// NOTE:  We must be faster at processing packets than the
+// main.c:UpdateTime() can send them to us through the pipe!  If
+// we're not, we lose or corrupt packets.
+
+        usleep(1000); // 1ms
     }
 }
 
@@ -723,9 +728,11 @@ int pipe_check(char *client_address) {
     // Check the pipe from Xastir's main thread to see if it is
     // sending us any data
     n = readline(pipe_xastir_to_tcp_server, line, MAXLINE);
+
     if (n == 0) {
         exit(0); // Connection terminated
     }
+
     if (n < 0) {
         //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -736,20 +743,27 @@ int pipe_check(char *client_address) {
             fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
         }
     }
+
     else {  // We received some data.  Send it down all of the
             // pipes.
 // Also send it down the socket.
         pipe_object *q = pipe_head;
 
+
+//fprintf(stderr,"n:%d\n",n);
+// Terminate it
+line[n] = '\0';
+//fprintf(stderr,"sp %s\n", line);
+ 
         // The internet protocol for sending lines is "\r\n".  Knock
         // off any line-end characters that might be present, then
         // add a "\r\n" combo on the end.
         //
-        if (n > 0 && (line[n-1] == '\r' || line[n-1] == '\n')) {
+        if (line[n-1] == '\r' || line[n-1] == '\n') {
             line[n-1] = '\0';
             n--;
         }
-        if (n > 0 && (line[n-1] == '\r' || line[n-1] == '\n')) {
+        if (line[n-1] == '\r' || line[n-1] == '\n') {
             line[n-1] = '\0';
             n--;
         }
@@ -1142,7 +1156,12 @@ finis:
         // pipe_check() function once we get to that stage of
         // coding.
         //
-        usleep(10000); // 10ms
+
+// NOTE:  We must be faster at processing packets than the
+// main.c:UpdateTime() can send them to us through the pipe!  If
+// we're not, we lose or corrupt packets.
+
+        usleep(1000); // 1ms
     }
 }
 
