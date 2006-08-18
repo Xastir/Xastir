@@ -2101,6 +2101,7 @@ void draw_shapefile_map (Widget w,
                             // to the right of the 'X' and aligned
                             // nicely.
                             if (map_labels && !skip_label) {
+// Labeling of points done here
                                 draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
                                 //(void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
                                 //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[label_color], (char *)temp);
@@ -2919,8 +2920,10 @@ void draw_shapefile_map (Widget w,
                                         // Draw a number of labels
                                         // appropriate for the zoom
                                         // level.
-                                        if ( ((ptr2->found - 1) % mod_number) != 0 )
+// Labeling: Skip label logic
+                                        if ( ((ptr2->found - 1) % mod_number) != 0) {
                                             skip_label++;
+                                        }
                                         ptr2 = NULL; // End the loop
                                     }
                                     else {
@@ -2956,6 +2959,8 @@ void draw_shapefile_map (Widget w,
                                 if ( angle >= 360.0 ) {angle -= 360.0;}
 
                                 //fprintf(stderr,"%f\t%s\n",angle,temp);
+
+// Labeling of polylines done here
 
 //                              (void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
                                 if (gps_flag) {
@@ -4011,6 +4016,8 @@ if (on_screen) {
                             x = x / scale_x;
                             y = y / scale_y;
 
+// Labeling of polygons done here
+ 
                             if (ok == 1 && ok_to_draw) {
                                 if (quad_overlay_flag) {
                                     draw_nice_string(w,
