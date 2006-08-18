@@ -2917,6 +2917,7 @@ void draw_shapefile_map (Widget w,
 // only count a string as written if the start of it is onscreen and
 // the angle is correct for it to be written on the screen.
 
+//#ifndef WITH_DBFAWK
                                         // Draw a number of labels
                                         // appropriate for the zoom
                                         // level.
@@ -2924,6 +2925,7 @@ void draw_shapefile_map (Widget w,
                                         if ( ((ptr2->found - 1) % mod_number) != 0) {
                                             skip_label++;
                                         }
+//#endif  // WITH_DBFAWK
                                         ptr2 = NULL; // End the loop
                                     }
                                     else {
