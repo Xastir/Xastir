@@ -225,6 +225,8 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
 // full, 0 if successful.
 //
 int push_incoming_data(unsigned char *data_string, int length, int port) {
+    int next_write_ptr = (incoming_write_ptr + 1) % MAX_INPUT_QUEUE;
+
 
     if (begin_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
@@ -232,7 +234,7 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
 //fprintf(stderr,"\n-> %s",data_string);
 
     // Check whether queue is full
-    if (incoming_read_ptr == ((incoming_write_ptr + 1) % MAX_INPUT_QUEUE)) {
+    if (incoming_read_ptr == next_write_ptr) {
         // Yep, it's full!
         if (end_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
@@ -240,7 +242,7 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
     }
 
     // Advance the write pointer
-    incoming_write_ptr = (incoming_write_ptr + 1) % MAX_INPUT_QUEUE;
+    incoming_write_ptr = next_write_ptr;
 
     incoming_data_queue[incoming_write_ptr].length = length;
 
@@ -1497,7 +1499,7 @@ void channel_data(int port, unsigned char *string, int length) {
 
             // Wait for empty space in queue
 //fprintf(stderr,"\n== %s", string);
-            while (push_incoming_data(string, length, port) && max < 5400) {
+            while (push_incoming_data(string, length+1, port) && max < 5400) {
                 sched_yield();  // Yield to other threads
                 tmv.tv_sec = 0;
                 tmv.tv_usec = 2;  // 2 usec
