@@ -178,11 +178,17 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
     // Check for queue empty
     if (incoming_read_ptr == incoming_write_ptr) {
         // Yep, it's empty
+
+//fprintf(stderr,"\n\t<- EMPTY!\n");
+
         if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
         queue_depth = 0;
         return(0);
     }
+
+    // Bump the read pointer
+    incoming_read_ptr = (incoming_read_ptr + 1) % MAX_INPUT_QUEUE;
 
     *port = incoming_data_queue[incoming_read_ptr].port;
 
@@ -192,9 +198,6 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
         (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
         "%s",
         incoming_data_queue[incoming_read_ptr].data);
-
-    // Bump the read pointer
-    incoming_read_ptr = (incoming_read_ptr + 1) % MAX_INPUT_QUEUE;
 
     queue_depth--;
     pop_count++;
@@ -209,7 +212,7 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
 //        fprintf(stderr,"%d\t", queue_depth);
 //    }
 
-//fprintf(stderr,"\n<- %s",data_string);
+//fprintf(stderr,"\n\t<- %s",data_string);
 
     if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
         fprintf(stderr,"data_lock\n");
@@ -231,15 +234,19 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
     if (begin_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
 
-//fprintf(stderr,"\n-> %s",data_string);
-
     // Check whether queue is full
     if (incoming_read_ptr == next_write_ptr) {
         // Yep, it's full!
+
+//fprintf(stderr,"\n-> FULL!");
+
         if (end_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
         return(1);
     }
+
+//fprintf(stderr,"\n-> %s",data_string);
+
 
     // Advance the write pointer
     incoming_write_ptr = next_write_ptr;
