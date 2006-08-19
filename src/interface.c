@@ -199,6 +199,9 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
         "%s",
         incoming_data_queue[incoming_read_ptr].data);
 
+    // Add terminator, just in case
+    data_string[length+1] = '\0';
+
     queue_depth--;
     pop_count++;
 
@@ -1369,8 +1372,10 @@ void channel_data(int port, unsigned char *string, int length) {
     if (string[0] == '\0')
         return;
 
-    if (length == 0)
-        length = strlen((const char *)string);
+    if (length == 0) {
+        // Compute length of string including terminator
+        length = strlen((const char *)string) + 1;
+    }
 
     // Check for excessively long packets.  These might be TCP/IP
     // packets or concatenated APRS packets.  In any case it's some
@@ -1506,7 +1511,7 @@ void channel_data(int port, unsigned char *string, int length) {
 
             // Wait for empty space in queue
 //fprintf(stderr,"\n== %s", string);
-            while (push_incoming_data(string, length+1, port) && max < 5400) {
+            while (push_incoming_data(string, length, port) && max < 5400) {
                 sched_yield();  // Yield to other threads
                 tmv.tv_sec = 0;
                 tmv.tv_usec = 2;  // 2 usec
@@ -5940,7 +5945,7 @@ void port_read(int port) {
                                             &new_length) ) {
                                         channel_data(port,
                                             (unsigned char *)output_string,
-                                            new_length);
+                                            new_length+1); // include terminator
                                     }
 
                                     for (i = 0; i <= port_data[port].read_in_pos; i++)
@@ -6002,6 +6007,8 @@ void port_read(int port) {
                                     length = port_data[port].read_in_pos - port_data[port].read_out_pos;
                                     if (length < 0)
                                         length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+
+length++;
                                 }
                                 else {  // ASCII data
                                     length = 0;
