@@ -181,9 +181,10 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
 
 //fprintf(stderr,"\n\t<- EMPTY!\n");
 
+        queue_depth = 0;
+ 
         if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
-        queue_depth = 0;
         return(0);
     }
 
