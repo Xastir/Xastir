@@ -15160,7 +15160,88 @@ else {
         done = 1;
     }
     if (debug_level & 1)
-        fprintf(stderr,"5\n");
+        fprintf(stderr,"5a\n");
+
+    //--------------------------------------------------------------------------
+    if (!done && strlen(msg_id) == 0 && to_my_call) {   // Message for me (including SSID check)
+                                                        // but without message-ID.
+
+        // These should appear in a Send Message dialog and should
+        // NOT get ack'ed.  Kenwood radios send this message type as
+        // an auto-answer or a buffer-full message.  They look
+        // something like:
+        //
+        //      :WE7U-13 :Not at keyboard.
+        //
+
+        time_t last_ack_sent;
+        long record;
+
+
+        // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
+        last_ack_sent = msg_data_add(addr,
+                            call,
+                            message,
+                            msg_id,
+                            MESSAGE_MESSAGE,
+                            from,
+                            &record); // id_fixed
+
+        // Here we need to know if it is a new message or an old.
+        // If we've already received it, we don't want to kick off
+        // the alerts or pop up the Send Message dialog again.  If
+        // last_ack_sent == (time_t)0, then it is a new message.
+        //
+        if (last_ack_sent == (time_t)0l && record == -1l) { // Msg we've never received before
+
+            new_message_data += 1;
+
+            // Note that the check_popup_window() function will
+            // re-create a Send Message dialog if one doesn't exist
+            // for this QSO.  Only call it for the first message
+            // line or the first ack, not for any repeats.
+            //
+//fprintf(stderr,"***check_popup_window 1\n");
+            (void)check_popup_window(call, 2);  // Calls update_messages()
+
+            //update_messages(1); // Force an update
+
+            if (sound_play_new_message)
+                play_sound(sound_command,sound_new_message);
+
+#ifdef HAVE_FESTIVAL
+/* I re-use ipacket_message as my string buffer */
+            if (festival_speak_new_message_alert) {
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message),
+                    "You have a new message from %s.",
+                    call);
+                SayText(ipacket_message);
+            }
+            if (festival_speak_new_message_body) {
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message),
+                    " %s",
+                    message);
+                SayText(ipacket_message);
+            }
+
+#endif  // HAVE_FESTIVAL
+
+        }
+
+        // Update the last_ack_sent field for the message, even
+        // though we won't be sending an ack in response.
+        msg_update_ack_stamp(record);
+
+
+//fprintf(stderr,"Received msg for me w/o ack\n");
+
+        done = 1;
+    }
+    if (debug_level & 1)
+        fprintf(stderr,"5b\n");
+
     //--------------------------------------------------------------------------
     if (!done
             && ( (strncmp(addr,"NWS-",4) == 0)          // NWS weather alert
