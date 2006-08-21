@@ -715,6 +715,24 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 // The main Send Message dialog.  db.c:update_messages() is the
 // function which fills in the message history information.
 //
+// TODO:  Change the "Path:" box so that clicking on it or
+// double-clicking on it will bring up a "Change Path" dialog.  This
+// new dialog should have the current path (editable), the reverse
+// path (not editable), and these buttons:
+//
+//      "Set EMPTY path"
+//      "Set DEFAULT path"
+//      "Apply" or "Apply New Path"
+//      "Cancel"
+//
+// Of course the underlying code will have to tweaked to be able to
+// pass an EMPTY path all the way down through the layers.  We can't
+// currently do that.  We'll have to define a specific string for
+// that.
+//
+// Adding this new CHANGE PATH dialog will allow us to get rid of
+// three bugs on the active bug-list.
+//
 void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Arg args[50];
     char temp[60];
