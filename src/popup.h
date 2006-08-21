@@ -25,7 +25,7 @@
 #ifndef XASTIR_POPUP_H
 #define XASTIR_POPUP_H
 
-#define MAX_POPUPS 20
+#define MAX_POPUPS 30
 #define MAX_POPUPS_TIME 600 /* Max time popups will display 600=10min*/
 
 typedef struct
