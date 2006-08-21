@@ -10971,12 +10971,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // get data from interfaces
             max=0;
-            // Allow up to 1000 packets to be processed inside this
-            // loop.
+            // Allow multiple packets to be processed inside this
+            // loop.  Well, it was a nice idea anyway.  See the
+            // below note.
 
 // CAREFUL HERE:  If we try to send to the Spider pipes faster than
 // it's reading from the pipes we corrupt the data out our server
-// ports.
+// ports.  Having too high of a number here or putting too small of
+// a delay down lower causes our server port to server up junk!
 
             while (max < 1 && !XtAppPending(app_context)) {
                 struct timeval tmv;
@@ -11456,11 +11458,23 @@ if (!skip_decode) {
 
                 // Do a usleep() here to give the interface threads
                 // time to put something in the queue if they still
-                // have data to process.
+                // have data to process.  We also need a delay here
+                // to allow the x_spider code to process packets
+                // we've sent to it.
+
+// NOTE:  There's a very delicate balance here between x_spider
+// server, sched_yield(), the delay below, and nexttime.  If we feed
+// packets to the x_spider server faster than it gets to process
+// them, we end up with blank lines and corrupted lines going to the
+// connected clients.
+
                 sched_yield();  // Yield to the other threads
-                tmv.tv_sec = 0;
-                tmv.tv_usec = 1; // Delay 1ms
-                (void)select(0,NULL,NULL,NULL,&tmv);
+
+                if (enable_server_port) {
+                    tmv.tv_sec = 0;
+                    tmv.tv_usec = 2000; // Delay 2ms
+                    (void)select(0,NULL,NULL,NULL,&tmv);
+                }
 
             }   // End of packet processing loop
 
