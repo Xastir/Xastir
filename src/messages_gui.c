@@ -412,6 +412,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
         button_cancel;
     char *temp_ptr;
     char temp1[MAX_LINE_SIZE+1];
+    char path[MAX_PATH+1];
  
 
 //begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_change_path" );
@@ -612,6 +613,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
 
     // Fill in the fields 
     if(mw[ii].send_message_dialog != NULL) {
+        char call_sign[MAX_CALLSIGN+1];
+
         temp_ptr = XmTextFieldGetString(mw[ii].send_message_path);
         xastir_snprintf(temp1,
             sizeof(temp1),
@@ -621,15 +624,24 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
         (void)to_upper(temp1);
         XmTextFieldSetString(current_path, temp1);
  
-        temp_ptr = XmTextFieldGetString(mw[ii].send_message_reverse_path);
-        xastir_snprintf(temp1,
-            sizeof(temp1),
+        // Go get the reverse path.  Start with the callsign.
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
+        xastir_snprintf(call_sign,
+            sizeof(call_sign),
             "%s",
             temp_ptr);
         XtFree(temp_ptr);
-        (void)to_upper(temp1);
 
-        XmTextFieldSetString(reverse_path, temp1);
+        (void)remove_trailing_dash_zero(call_sign);
+
+        // Try lowercase
+        get_path_data(call_sign, path, MAX_PATH);
+        if (strlen(path) == 0) {
+            // Try uppercase
+            (void)to_upper(call_sign);
+            get_path_data(call_sign, path, MAX_PATH);
+        }
+        XmTextFieldSetString(reverse_path, path);
     }
  
     pos_dialog(change_path_dialog);
@@ -786,9 +798,6 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_des
 
 void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int i, pos;
-    char call_sign[MAX_CALLSIGN+1];
-    char path[MAX_PATH+1];
-    char *temp_ptr;
 
 
     i=atoi((char *)clientData);
@@ -809,25 +818,6 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
 
         // Set the cursor position to 0
         XtVaSetValues(mw[i].send_message_text,XmNcursorPosition,pos,NULL);
-
-        // Go get the reverse path for the new callsign entered
-        temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
-        xastir_snprintf(call_sign,
-            sizeof(call_sign),
-            "%s",
-            temp_ptr);
-        XtFree(temp_ptr);
-
-        (void)remove_trailing_dash_zero(call_sign);
-
-        // Try lowercase
-        get_path_data(call_sign, path, MAX_PATH);
-        if (strlen(path) == 0) {
-            // Try uppercase
-            (void)to_upper(call_sign);
-            get_path_data(call_sign, path, MAX_PATH);
-        }
-        XmTextFieldSetString(mw[i].send_message_reverse_path, path);
     }
 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_messages" );
@@ -1399,14 +1389,14 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-// Row 4 (3 up from bottom row)
         mw[i].path = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
                 xmLabelWidgetClass, mw[i].form,
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, mw[i].call,
+                XmNbottomWidget, mw[i].message,
                 XmNbottomOffset, 10,
-                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].button_submit_call,
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
@@ -1426,7 +1416,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbackground, colors[0x0f],
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, mw[i].call,
+                XmNbottomWidget, mw[i].message,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, mw[i].path,
@@ -1446,7 +1436,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, mw[i].call,
+                XmNbottomWidget, mw[i].message,
                 XmNbottomOffset, 7,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
@@ -1454,47 +1444,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        mw[i].reverse_path_label = XtVaCreateManagedWidget(langcode("WPUPMSB022"),
-                xmLabelWidgetClass, mw[i].form,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, mw[i].call,
-                XmNbottomOffset, 10,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].send_message_change_path,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        mw[i].send_message_reverse_path = XtVaCreateManagedWidget("Send_message reverse path", 
-                xmTextFieldWidgetClass, 
-                mw[i].form,
-                XmNeditable,   FALSE,
-                XmNcursorPositionVisible, FALSE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 26,
-                XmNwidth, ((26*7)+2),
-                XmNmaxLength, 199,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, mw[i].call,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].reverse_path_label,
-                XmNleftOffset, 5,
-                XmNrightAttachment,XmATTACH_FORM,
-                XmNrightOffset, 5,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, FALSE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-// Row 5 (4 up from bottom row).  Message area.
+// Row 4 (3 up from bottom row).  Message area.
         n=0;
         XtSetArg(args[n], XmNrows, 10); n++;
         XtSetArg(args[n], XmNmaxHeight, 170); n++;
@@ -1509,7 +1459,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNtopOffset, 5); n++;
         XtSetArg(args[n], XmNbottomAttachment,XmATTACH_WIDGET); n++;
-        XtSetArg(args[n], XmNbottomWidget,mw[i].path); n++;
+        XtSetArg(args[n], XmNbottomWidget,mw[i].call); n++;
         XtSetArg(args[n], XmNbottomOffset, 10); n++;
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
@@ -1548,11 +1498,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtAddCallback(mw[i].button_submit_call, XmNactivateCallback, Check_new_call_messages, (XtPointer)mw[i].call);
 
         if (clientData != NULL) {
-            char path[200];
-
             XmTextFieldSetString(mw[i].send_message_call_data, group);
-            get_path_data(group, path, MAX_PATH);
-            XmTextFieldSetString(mw[i].send_message_reverse_path, path);
         }
 
         // Set "DEFAULT PATH" into the path field
