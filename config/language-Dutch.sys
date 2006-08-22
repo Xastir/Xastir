@@ -718,7 +718,7 @@ WPUPMSB001|Stuur bericht, venster %d||
 WPUPMSB002|Stuur groeps bericht, venster %d||
 WPUPMSB003|Stations roepnaam:||
 WPUPMSB004|Groeps roepnaam:||
-WPUPMSB005|Nieuwe roepnaam||
+WPUPMSB005|Nieuwe/Refresh roepnaam||
 WPUPMSB006|Nieuwe groep||
 WPUPMSB007|Wis bericht geschiedenis||
 WPUPMSB008|Bericht:||
@@ -735,7 +735,7 @@ WPUPMSB018|*REJECTED*||
 WPUPMSB019|Change Path||
 WPUPMSB020|Use Default Path(s)||
 WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path:||
+WPUPMSB022|Reverse Path (Hint):||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Automatich antwoord bericht||

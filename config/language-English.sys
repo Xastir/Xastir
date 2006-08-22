@@ -707,9 +707,9 @@ WPUPTSP010|Trail Length (hrs)||
 # PopUp "Messages..."
 WPUPMSB001|Send Message Box %d||
 WPUPMSB002|Send Group Message Box %d||
-WPUPMSB003|Stations Call:||
+WPUPMSB003|Station's Call:||
 WPUPMSB004|Group's Call:||
-WPUPMSB005|New Call||
+WPUPMSB005|New/Refresh Call||
 WPUPMSB006|New Group||
 WPUPMSB007|Clear Msg History||
 WPUPMSB008|Message:||
@@ -726,7 +726,7 @@ WPUPMSB018|*REJECTED*||
 WPUPMSB019|Change Path||
 WPUPMSB020|Use Default Path(s)||
 WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path:||
+WPUPMSB022|Reverse Path (Hint):||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Change Auto Reply||

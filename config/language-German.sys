@@ -714,7 +714,7 @@ WPUPMSB001|Nachricht Fenster %d||
 WPUPMSB002|Gruppennachricht Fenster %d||
 WPUPMSB003|Stationsrufzeichen:||
 WPUPMSB004|Gruppenrufzeichen:||
-WPUPMSB005|Neues Rufzeichen||
+WPUPMSB005|Neues/Refresh Rufzeichen||
 WPUPMSB006|Neue Gruppe||
 WPUPMSB007|Lösche alte Nachrichten||
 WPUPMSB008|Nachricht:||
@@ -731,7 +731,7 @@ WPUPMSB018|*REJECTED*||
 WPUPMSB019|Change Path||
 WPUPMSB020|Use Default Path(s)||
 WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path:||
+WPUPMSB022|Reverse Path (Hint):||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||

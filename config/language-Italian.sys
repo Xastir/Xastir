@@ -706,7 +706,7 @@ WPUPMSB001|Casella messaggi %d||
 WPUPMSB002|Casella messaggi a gruppo %d||
 WPUPMSB003|Nominativi stazioni:||
 WPUPMSB004|Nominativo gruppo:||
-WPUPMSB005|Nuovo nominativo||
+WPUPMSB005|Nuovo/Refresh nominativo||
 WPUPMSB006|Nuovo gruppo||
 WPUPMSB007|Cancella storico Msg||
 WPUPMSB008|Messaggio:||
@@ -723,7 +723,7 @@ WPUPMSB018|*REJECTED*||
 WPUPMSB019|Change Path||
 WPUPMSB020|Use Default Path(s)||
 WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path:||
+WPUPMSB022|Reverse Path (Hint):||
 #
 #Auto Reply
 WPUPARM001|Cambia risposta automatica||

@@ -710,7 +710,7 @@ WPUPMSB001|Enviar mensagem %d||
 WPUPMSB002|Enviar mensagem ao grupo %d||
 WPUPMSB003|Indicativo de estacao:||
 WPUPMSB004|Indicativos de grupos:||
-WPUPMSB005|Novo indicativo||
+WPUPMSB005|Novo/Refresh indicativo||
 WPUPMSB006|Novo grupo||
 WPUPMSB007|Limpar história da mensagem||
 WPUPMSB008|Mensagem:||
@@ -727,7 +727,7 @@ WPUPMSB018|*REJECTED*||
 WPUPMSB019|Change Path||
 WPUPMSB020|Use Default Path(s)||
 WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path:||
+WPUPMSB022|Reverse Path (Hint):||
 #
 # Auto resposta
 WPUPARM001|Mudar resposta automatica||

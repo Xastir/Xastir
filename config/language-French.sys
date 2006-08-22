@@ -711,7 +711,7 @@ WPUPMSB001|Boite d'envoi %d||#'
 WPUPMSB002|Boite d'envoi au groupe %d||#'
 WPUPMSB003|Indicatif de station:||
 WPUPMSB004|Ident. du groupe:||
-WPUPMSB005|Nouvel indicatif||
+WPUPMSB005|Nouvel/Refresh indicatif||
 WPUPMSB006|Nouveau groupe||
 WPUPMSB007|Effacer histoire de messages||
 WPUPMSB008|Message:||
@@ -728,7 +728,7 @@ WPUPMSB018|*REJECTED*||
 WPUPMSB019|Change Path||
 WPUPMSB020|Use Default Path(s)||
 WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path:||
+WPUPMSB022|Reverse Path (Hint):||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
