@@ -286,9 +286,11 @@ static Widget current_path = NULL;
 
 void Send_message_change_path_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData) {
 
-    XtPopdown(change_path_dialog);
+    if (change_path_dialog) {
+        XtPopdown(change_path_dialog);
 
-    XtDestroyWidget(change_path_dialog);
+        XtDestroyWidget(change_path_dialog);
+    }
     change_path_dialog = (Widget)NULL;
 }
 
