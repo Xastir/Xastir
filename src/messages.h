@@ -71,7 +71,7 @@ typedef struct {
     Widget button_clear_old_msgs, button_submit_call;
     Widget button_clear_pending_msgs;
     Widget button_kick_timer;
-    Widget call, message, path;
+    Widget call, message, path, reverse_path_label;
 } Message_Window;
 
 

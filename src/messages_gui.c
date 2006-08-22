@@ -407,8 +407,8 @@ void Send_message_change_path_default(Widget widget, XtPointer clientData, XtPoi
 void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer callData) {
     int ii;
     Atom delw;
-    Widget pane, form, current_path_label, reverse_path;
-    Widget button_default, button_direct, button_apply,
+    Widget pane, form, current_path_label, reverse_path_label,
+        reverse_path, button_default, button_direct, button_apply,
         button_cancel;
     char *temp_ptr;
     char temp1[MAX_LINE_SIZE+1];
@@ -430,7 +430,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
     //
     ii = atoi(clientData);
 
-    change_path_dialog = XtVaCreatePopupShell("Change Path",
+    // "Change Path"
+    change_path_dialog = XtVaCreatePopupShell(langcode("WPUPMSB019"),
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
@@ -454,6 +455,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+    // "Path:"
     current_path_label = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
                 xmLabelWidgetClass,
                 form,
@@ -488,6 +490,21 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtraversalOn, TRUE,
                 NULL);
 
+    // "Reverse Path:"
+    reverse_path_label = XtVaCreateManagedWidget(langcode("WPUPMSB022"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, current_path,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
     reverse_path = XtVaCreateManagedWidget("Send_message_change_path reverse path", 
                 xmTextFieldWidgetClass, 
                 form,
@@ -502,7 +519,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtopAttachment, XmATTACH_FORM,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, current_path,
+                XmNleftWidget, reverse_path_label,
                 XmNleftOffset, 5,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNnavigationType, XmTAB_GROUP,
@@ -511,7 +528,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-    button_default = XtVaCreateManagedWidget("Use Default Path(s)",
+    // "Use Default Path(s)"
+    button_default = XtVaCreateManagedWidget(langcode("WPUPMSB020"),
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -529,7 +547,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-    button_direct = XtVaCreateManagedWidget("Direct (No path)",
+    // "Direct (No path)"
+    button_direct = XtVaCreateManagedWidget(langcode("WPUPMSB021"),
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -547,7 +566,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-    button_apply = XtVaCreateManagedWidget("Apply",
+    // "Apply"
+    button_apply = XtVaCreateManagedWidget(langcode("UNIOP00032"),
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -565,6 +585,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+    // "Close"
     button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                 xmPushButtonGadgetClass, 
                 form,
@@ -1360,7 +1381,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        mw[i].send_message_change_path = XtVaCreateManagedWidget("Change Path",
+        mw[i].send_message_change_path = XtVaCreateManagedWidget(langcode("WPUPMSB019"),
                 xmPushButtonGadgetClass, 
                 mw[i].form,
                 XmNleftAttachment, XmATTACH_WIDGET,
@@ -1372,6 +1393,20 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbottomOffset, 7,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].reverse_path_label = XtVaCreateManagedWidget(langcode("WPUPMSB022"),
+                xmLabelWidgetClass, mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].message,
+                XmNbottomOffset, 10,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].send_message_change_path,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -1392,8 +1427,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbottomWidget, mw[i].message,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].send_message_change_path,
-                XmNleftOffset, 30,
+                XmNleftWidget, mw[i].reverse_path_label,
+                XmNleftOffset, 5,
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, FALSE,

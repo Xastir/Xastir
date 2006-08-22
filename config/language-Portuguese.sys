@@ -724,6 +724,10 @@ WPUPMSB015|Broadcast||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*CANCELLED*||
 WPUPMSB018|*REJECTED*||
+WPUPMSB019|Change Path||
+WPUPMSB020|Use Default Path(s)||
+WPUPMSB021|Direct (No path)||
+WPUPMSB022|Reverse Path:||
 #
 # Auto resposta
 WPUPARM001|Mudar resposta automatica||

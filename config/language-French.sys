@@ -725,6 +725,10 @@ WPUPMSB015|Broadcast||
 WPUPMSB016|*EXPIRATION*||
 WPUPMSB017|*ANNULE*||
 WPUPMSB018|*REJECTED*||
+WPUPMSB019|Change Path||
+WPUPMSB020|Use Default Path(s)||
+WPUPMSB021|Direct (No path)||
+WPUPMSB022|Reverse Path:||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
