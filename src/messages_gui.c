@@ -78,6 +78,11 @@ void messages_gui_init(void)
 // station in order to receive the reply, he/she should have put in
 // a callsign instead of RELAY.  We can't in good conscience use
 // RELAY on the end of the return path.
+//
+// We also chop off anything after comma "q" two letters, and a
+// comma.  This is the injection-ID called the Q-construct, which
+// lets us know how a signal was injected into the NET and by whom.
+//
 void reverse_path(char *input_string) {
     char reverse_path[200];
     int indexes[20];
@@ -116,6 +121,25 @@ void reverse_path(char *input_string) {
     for (i = 0; i < len; i++) {
         if (input_string[i] == '*' || input_string[i] == ',') {
             input_string[i] = '\0';
+        }
+    }
+
+    // Go left to right looking for a 3-letter callsign starting
+    // with 'q'.  If found readjust 'j' to skip that callsign and
+    // everything after it.
+    //
+    for ( i = 0; i < j; i++) {
+        char *c = &input_string[indexes[i] + 1];
+
+//fprintf(stderr,"'%s'\t", c );
+
+        if (c[0] == 'q') {
+            if ( strlen(c) == 3 ) { // "qAR"
+
+//fprintf(stderr,"Found:%s\n", c);
+
+                j = i;
+            }
         }
     }
 
