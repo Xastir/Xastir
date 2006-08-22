@@ -1178,198 +1178,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        n=0;
-        XtSetArg(args[n], XmNrows, 10); n++;
-        XtSetArg(args[n], XmNmaxHeight, 170); n++;
-        XtSetArg(args[n], XmNcolumns, box_len); n++;
-        XtSetArg(args[n], XmNeditable, FALSE); n++;
-        XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
-        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
-        XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-        XtSetArg(args[n], XmNshadowThickness, 3); n++;
-        XtSetArg(args[n], XmNscrollHorizontal, FALSE); n++;
-        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
-        XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNtopOffset, 5); n++;
-        XtSetArg(args[n], XmNbottomAttachment,XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNbottomOffset, 110); n++;
-        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNleftOffset, 5); n++;
-        XtSetArg(args[n], XmNrightAttachment,XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNrightOffset,5); n++;
-        XtSetArg(args[n], XmNautoShowCursorPosition, FALSE); n++;
-        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
-
-// This one causes segfaults, why?  Answer: args[] was set to 20
-// (too small)
-//        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
- 
-        mw[i].send_message_text = XmCreateScrolledText(mw[i].form,
-                "Send_message smt",
-                args,
-                n);
-
-        mw[i].call = XtVaCreateManagedWidget(langcode(groupon == 0  ? "WPUPMSB003": "WPUPMSB004"),
-                xmLabelWidgetClass, mw[i].form,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 85,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        mw[i].send_message_call_data = XtVaCreateManagedWidget("Send_message smcd", 
-                xmTextFieldWidgetClass, 
-                mw[i].form,
-                XmNeditable,   TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 10,
-                XmNwidth, ((10*7)+2),
-                XmNmaxLength, 10,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 80,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].call,
-                XmNleftOffset, 5,
-                XmNrightAttachment,XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                NULL);
-
-        xastir_snprintf(temp, sizeof(temp), langcode(groupon == 0 ? "WPUPMSB005": "WPUPMSB006"));
-
-        mw[i].button_submit_call = XtVaCreateManagedWidget(temp,
-                xmPushButtonGadgetClass, 
-                mw[i].form,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].send_message_call_data,
-                XmNleftOffset, 10,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 80,
-                XmNrightAttachment, XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        mw[i].path = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
-                xmLabelWidgetClass, mw[i].form,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 85,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].button_submit_call,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        mw[i].send_message_path = XtVaCreateManagedWidget("Send_message path", 
-                xmTextFieldWidgetClass, 
-                mw[i].form,
-                XmNeditable,   TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 26,
-                XmNwidth, ((26*7)+2),
-                XmNmaxLength, 199,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 80,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].path,
-                XmNleftOffset, 5,
-                XmNrightAttachment,XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                NULL);
-
-        mw[i].send_message_reverse_path = XtVaCreateManagedWidget("Send_message reverse path", 
-                xmTextFieldWidgetClass, 
-                mw[i].form,
-                XmNeditable,   FALSE,
-                XmNcursorPositionVisible, FALSE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 26,
-                XmNwidth, ((26*7)+2),
-                XmNmaxLength, 199,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 80,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].send_message_path,
-                XmNleftOffset, 5,
-                XmNrightAttachment,XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, FALSE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
-                xmLabelWidgetClass, 
-                mw[i].form,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 45,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        mw[i].send_message_message_data = XtVaCreateManagedWidget("Send_message smmd", 
-                xmTextFieldWidgetClass, 
-                mw[i].form,
-                XmNeditable,   TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 64,
-                XmNwidth, ((64*7)+2),
-                XmNmaxLength, 255,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 40,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].message,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                NULL);
-
-        mw[i].send_message_change_path = XtVaCreateManagedWidget("Change Path",
-                xmPushButtonGadgetClass, 
-                mw[i].form,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].send_message_message_data,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 40,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
+// Row 1 (bottom)
         mw[i].button_clear_old_msgs = XtVaCreateManagedWidget(langcode("WPUPMSB007"),
                 xmPushButtonGadgetClass, 
                 mw[i].form,
@@ -1450,6 +1259,213 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+// Row 2 (1 up from bottom row)
+        mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
+                xmLabelWidgetClass, 
+                mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].button_clear_old_msgs,
+                XmNbottomOffset, 10,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].send_message_message_data = XtVaCreateManagedWidget("Send_message smmd", 
+                xmTextFieldWidgetClass, 
+                mw[i].form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 64,
+                XmNwidth, ((64*7)+2),
+                XmNmaxLength, 255,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].button_clear_old_msgs,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].message,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                NULL);
+
+// Row 3 (2 up from bottom row)
+        mw[i].path = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
+                xmLabelWidgetClass, mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].message,
+                XmNbottomOffset, 10,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].send_message_path = XtVaCreateManagedWidget("Send_message path", 
+                xmTextFieldWidgetClass, 
+                mw[i].form,
+                XmNeditable,   FALSE,
+                XmNcursorPositionVisible, FALSE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 26,
+                XmNwidth, ((26*7)+2),
+                XmNmaxLength, 199,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].message,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].path,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].send_message_change_path = XtVaCreateManagedWidget("Change Path",
+                xmPushButtonGadgetClass, 
+                mw[i].form,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].send_message_path,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].message,
+                XmNbottomOffset, 7,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].send_message_reverse_path = XtVaCreateManagedWidget("Send_message reverse path", 
+                xmTextFieldWidgetClass, 
+                mw[i].form,
+                XmNeditable,   FALSE,
+                XmNcursorPositionVisible, FALSE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 26,
+                XmNwidth, ((26*7)+2),
+                XmNmaxLength, 199,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].message,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].send_message_change_path,
+                XmNleftOffset, 30,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// Row 4 (3 up from bottom row)
+        mw[i].call = XtVaCreateManagedWidget(langcode(groupon == 0  ? "WPUPMSB003": "WPUPMSB004"),
+                xmLabelWidgetClass, mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].path,
+                XmNbottomOffset, 10,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].send_message_call_data = XtVaCreateManagedWidget("Send_message smcd", 
+                xmTextFieldWidgetClass, 
+                mw[i].form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 10,
+                XmNwidth, ((10*7)+2),
+                XmNmaxLength, 10,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].path,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].call,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                NULL);
+
+        xastir_snprintf(temp, sizeof(temp), langcode(groupon == 0 ? "WPUPMSB005": "WPUPMSB006"));
+
+        mw[i].button_submit_call = XtVaCreateManagedWidget(temp,
+                xmPushButtonGadgetClass, 
+                mw[i].form,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].send_message_call_data,
+                XmNleftOffset, 10,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].path,
+                XmNbottomOffset, 7,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// Row 5 (4 up from bottom row).  Message area.
+        n=0;
+        XtSetArg(args[n], XmNrows, 10); n++;
+        XtSetArg(args[n], XmNmaxHeight, 170); n++;
+        XtSetArg(args[n], XmNcolumns, box_len); n++;
+        XtSetArg(args[n], XmNeditable, FALSE); n++;
+        XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
+        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
+        XtSetArg(args[n], XmNwordWrap, TRUE); n++;
+        XtSetArg(args[n], XmNshadowThickness, 3); n++;
+        XtSetArg(args[n], XmNscrollHorizontal, FALSE); n++;
+        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
+        XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNtopOffset, 5); n++;
+        XtSetArg(args[n], XmNbottomAttachment,XmATTACH_WIDGET); n++;
+        XtSetArg(args[n], XmNbottomWidget,mw[i].call); n++;
+        XtSetArg(args[n], XmNbottomOffset, 10); n++;
+        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNleftOffset, 5); n++;
+        XtSetArg(args[n], XmNrightAttachment,XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNrightOffset,5); n++;
+        XtSetArg(args[n], XmNautoShowCursorPosition, FALSE); n++;
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+
+// This one causes segfaults, why?  Answer: args[] was set to 20
+// (too small)
+//        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+ 
+        mw[i].send_message_text = XmCreateScrolledText(mw[i].form,
+                "Send_message smt",
+                args,
+                n);
+
         xastir_snprintf(mw[i].win, sizeof(mw[i].win), "%d", i);
 
         XtAddCallback(mw[i].send_message_change_path, XmNactivateCallback, Send_message_change_path, (XtPointer)mw[i].win);
@@ -1477,6 +1493,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
             get_path_data(group, path, MAX_PATH);
             XmTextFieldSetString(mw[i].send_message_reverse_path, path);
         }
+
+        // Set "DEFAULT PATH" into the path field
+        XmTextFieldSetString(mw[i].send_message_path,"DEFAULT PATH");
 
         pos_dialog(mw[i].send_message_dialog);
 
