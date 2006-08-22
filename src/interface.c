@@ -9149,24 +9149,44 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         done++;
                     }
 
+
                     // Check whether a path was passed to us as a
                     // parameter:
                     if ( (path != NULL) && (strlen(path) != 0) ) {
+ 
+                        if (strncmp(path, "DIRECT PATH", 11) == 0) {
+                            // The user has requested a direct path
 
-                        xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%c%s %s VIA %s\r",
-                            '\3',
-                            "UNPROTO",
-                            VERSIONFRM,
-                            path);
+                            xastir_snprintf(data_txt,
+                                sizeof(data_txt),
+                                "%c%s %s\r",
+                                '\3',
+                                "UNPROTO",
+                                VERSIONFRM);
 
-                        xastir_snprintf(data_txt_save,
-                            sizeof(data_txt_save),
-                            "%s>%s,%s:",
-                            my_callsign,
-                            VERSIONFRM,
-                            path);
+                            xastir_snprintf(data_txt_save,
+                                sizeof(data_txt_save),
+                                "%s>%s:",
+                                my_callsign,
+                                VERSIONFRM);
+                        }
+                        else {
+
+                            xastir_snprintf(data_txt,
+                                sizeof(data_txt),
+                                "%c%s %s VIA %s\r",
+                                '\3',
+                                "UNPROTO",
+                                VERSIONFRM,
+                                path);
+
+                            xastir_snprintf(data_txt_save,
+                                sizeof(data_txt_save),
+                                "%s>%s,%s:",
+                                my_callsign,
+                                VERSIONFRM,
+                                path);
+                        }
 
                         xastir_snprintf(path_txt,
                             sizeof(path_txt),
@@ -9174,6 +9194,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             path);
 
                         done++;
+
+                        // If "DEFAULT PATH" was passed to us, then
+                        // we're not done yet.
+                        //
+                        if (strncmp(path, "DEFAULT PATH", 12) == 0) {
+                            done = 0;
+                        }
                     }
 
                     if (!done) {
@@ -9300,10 +9327,30 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // parameter:
                     else if ( (path != NULL) && (strlen(path) != 0) ) {
 
-                        xastir_snprintf(path_txt,
-                            sizeof(path_txt),
-                            "%s",
-                            path);
+                        if (strncmp(path, "DEFAULT PATH", 12) == 0) {
+                            unproto_path = (char *)select_unproto_path(port);
+
+//fprintf(stderr,"unproto_path: %s\n", unproto_path);
+                            xastir_snprintf(path_txt,
+                                sizeof(path_txt),
+                                "%s",
+                                unproto_path);
+                        }
+
+                        else if (strncmp(path, "DIRECT PATH", 11) == 0) {
+                            // The user has requested a direct path
+                            path_txt[0] = '\0'; // Empty string
+
+// WE7U
+// TEST THIS TO SEE IF IT WORKS ON AGWPE TO HAVE NO PATH
+
+                        }
+                        else {
+                            xastir_snprintf(path_txt,
+                                sizeof(path_txt),
+                                "%s",
+                                path);
+                        }
                     }
                     else {
                         // Set unproto path:  Get next unproto path in
@@ -9362,14 +9409,36 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 //
                 // Check whether a path was passed to us as a
                 // parameter:
+
                 if ( (path != NULL) && (strlen(path) != 0) ) {
-                    xastir_snprintf(temp,
-                        sizeof(temp),
-                        "%s>%s,%s:%s",
-                        my_callsign,
-                        VERSIONFRM,
-                        path,
-                        message);
+
+                    if (strncmp(path, "DEFAULT PATH", 12) == 0) {
+                        xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%s>%s,%s:%s",
+                            my_callsign,
+                            VERSIONFRM,
+                            unproto_path,
+                            message);
+                    }
+                    else if (strncmp(path, "DIRECT PATH", 11) == 0) {
+                        // The user has requested a direct path
+                        xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%s>%s:%s",
+                            my_callsign,
+                            VERSIONFRM,
+                            message);
+                    }
+                    else {
+                        xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%s>%s,%s:%s",
+                            my_callsign,
+                            VERSIONFRM,
+                            path,
+                            message);
+                    }
                 }
                 else {
                     xastir_snprintf(temp,

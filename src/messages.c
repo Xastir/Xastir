@@ -1203,7 +1203,7 @@ void check_and_transmit_messages(time_t time) {
                             //
                             // Change all messages to that callsign
                             // to match the new path.
-                            // 
+                            //
                             change_path_outgoing_messages_to(to_call,new_path);
                         }
 

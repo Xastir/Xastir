@@ -70,8 +70,6 @@ void messages_gui_init(void)
 
 
 
-
-
 // This function chops off the first callsign, then returns a string
 // containing the same string in reversed callsign order.  Note that
 // if RELAY was used by the sending station and that RELAY did _not_
@@ -252,7 +250,365 @@ void get_path_data(char *callsign, char *path, int max_length) {
 }
 
 
+
+
+
+static Widget change_path_dialog = NULL;
+static Widget current_path = NULL;
  
+
+
+
+
+void Send_message_change_path_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    XtPopdown(change_path_dialog);
+
+    XtDestroyWidget(change_path_dialog);
+    change_path_dialog = (Widget)NULL;
+}
+
+
+
+
+
+// Apply button
+// Fetch the text from the "current_path" widget and place it into
+// the mw[ii].send_message_path widget.
+//
+void Send_message_change_path_apply(Widget widget, XtPointer clientData, XtPointer callData) {
+    char path[MAX_PATH+1];
+    char *temp_ptr;
+
+ 
+    if (current_path != NULL && clientData != NULL) {
+
+        temp_ptr = XmTextFieldGetString(current_path);
+        xastir_snprintf(path,
+            sizeof(path),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
+        (void)remove_trailing_spaces(path);
+        (void)to_upper(path);
+
+
+// Check here for "DIRECT PATH" or "DEFAULT PATH".  If one of them,
+// do some special processing if need be so that lower layers will
+// interpret it correctly.
+
+        XmTextFieldSetString(clientData, path);
+
+        Send_message_change_path_destroy_shell(NULL, NULL, NULL);
+    }
+}
+
+
+
+
+
+// "Direct Path" button
+//
+// Put "DIRECT PATH" in the widgets.  Change the lower-level code to
+// recognize a path of "DIRECT PATH" and change to an empty path
+// when the transmit actually goes out.  An alternative would be to
+// keep "DIRECT PATH" in there all the way to the transmit routines,
+// then change it there.
+//
+void Send_message_change_path_direct(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    if (current_path == NULL || clientData == NULL) {
+        Send_message_change_path_destroy_shell(NULL, NULL, NULL);
+    }
+
+    // Change current_path widget
+    XmTextFieldSetString(current_path, "DIRECT PATH");
+
+    Send_message_change_path_apply(NULL, clientData, NULL);
+}
+ 
+
+
+
+
+// "Default Path(s)" button
+//
+// Blank out the path so the default paths get used.  We could
+// perhaps put something like "*Default Path*" in the widgets.  An
+// alternative would be to keep "DEFAULT PATH" in there all the way
+// to the transmit routines, then change it there to be a blank.
+//
+void Send_message_change_path_default(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    if (current_path == NULL || clientData == NULL) {
+        Send_message_change_path_destroy_shell(NULL, NULL, NULL);
+    }
+
+    // Change current_path widget
+    XmTextFieldSetString(current_path, "DEFAULT PATH");
+
+    Send_message_change_path_apply(NULL, clientData, NULL);
+}
+ 
+
+
+
+
+// TODO:  Change the "Path:" box so that clicking or double-clicking
+// on it will bring up a "Change Path" dialog.  Could also use a
+// "Change" or "Change Path" button if easier.  This new dialog
+// should have the current path (editable), the reverse path (not
+// editable), and these buttons:
+//
+//      "DIRECT path"
+//      "DEFAULT path(s)"
+//      "Apply"
+//      "Cancel"
+//
+// Of course the underlying code will have to tweaked to be able to
+// pass an EMPTY path all the way down through the layers.  We can't
+// currently do that.  We'll have to define a specific string for
+// that.  Insert the text "--DEFAULT--", "--BLANK--", or the actual
+// path in the editable box and in the "Path:" box on the Send
+// Message dialog so that the user knows which one is in effect.
+//
+// Remember to close the Change Path dialog if we close the Send
+// Message dialog which corresponds to it.
+//
+// Adding this new CHANGE PATH dialog will allow us to get rid of
+// three bugs on the active bug-list:  #1499820, #1326975, and
+// #1326973.
+//
+void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer callData) {
+    int ii;
+    Atom delw;
+    Widget pane, form, current_path_label, reverse_path;
+    Widget button_default, button_direct, button_apply,
+        button_cancel;
+    char *temp_ptr;
+    char temp1[MAX_LINE_SIZE+1];
+ 
+
+//begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_change_path" );
+
+    if (clientData == NULL) {
+        return;
+    }
+
+    if (change_path_dialog) {
+        // Destroy the old one before creating a new one
+        Send_message_change_path_destroy_shell(NULL, NULL, NULL);
+    }
+
+    // Fetch Send Message dialog number from clientData, store in
+    // "ii".
+    //
+    ii = atoi(clientData);
+
+    change_path_dialog = XtVaCreatePopupShell("Change Path",
+                xmDialogShellWidgetClass, appshell,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                XmNtitleString,"Change Path",
+                NULL);
+
+    pane = XtVaCreateWidget("Send_message_change_path pane",
+                xmPanedWindowWidgetClass, 
+                change_path_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    form =  XtVaCreateWidget("Send_message_change_path form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 4,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    current_path_label = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    current_path = XtVaCreateManagedWidget("Send_message_change_path path", 
+                xmTextFieldWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 26,
+                XmNwidth, ((26*7)+2),
+                XmNmaxLength, 199,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, current_path_label,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                NULL);
+
+    reverse_path = XtVaCreateManagedWidget("Send_message_change_path reverse path", 
+                xmTextFieldWidgetClass, 
+                form,
+                XmNeditable,   FALSE,
+                XmNcursorPositionVisible, FALSE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 26,
+                XmNwidth, ((26*7)+2),
+                XmNmaxLength, 199,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, current_path,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    button_default = XtVaCreateManagedWidget("Use Default Path(s)",
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    button_direct = XtVaCreateManagedWidget("Direct (No path)",
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    button_apply = XtVaCreateManagedWidget("Apply",
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    XtAddCallback(button_default, XmNactivateCallback, Send_message_change_path_default, (XtPointer)mw[ii].send_message_path);
+    XtAddCallback(button_direct, XmNactivateCallback, Send_message_change_path_direct, (XtPointer)mw[ii].send_message_path);
+    XtAddCallback(button_apply, XmNactivateCallback, Send_message_change_path_apply, (XtPointer)mw[ii].send_message_path);
+    XtAddCallback(button_cancel, XmNactivateCallback, Send_message_change_path_destroy_shell,(XtPointer)mw[ii].win);
+
+    // Fill in the fields 
+    if(mw[ii].send_message_dialog != NULL) {
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_path);
+        xastir_snprintf(temp1,
+            sizeof(temp1),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+        (void)to_upper(temp1);
+        XmTextFieldSetString(current_path, temp1);
+ 
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_reverse_path);
+        xastir_snprintf(temp1,
+            sizeof(temp1),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+        (void)to_upper(temp1);
+
+        XmTextFieldSetString(reverse_path, temp1);
+    }
+ 
+    pos_dialog(change_path_dialog);
+
+    delw = XmInternAtom(XtDisplay(change_path_dialog),"WM_DELETE_WINDOW", FALSE);
+//    XmAddWMProtocolCallback(change_path_dialog, delw, Send_message_destroy_shell, (XtPointer)mw[ii].win);
+
+    XtManageChild(form);
+    XtManageChild(pane);
+
+    XtPopup(change_path_dialog,XtGrabNone);
+
+    // Move focus to the Cancel button.  This appears to highlight the
+    // button fine, but we're not able to hit the <Enter> key to
+    // have that default function happen.  Note:  We _can_ hit the
+    // <SPACE> key, and that activates the option.
+//    XmUpdateDisplay(change_path_dialog);
+    XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+//end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_change_path" );
+
+}
+
+
+
 
 
 // Find a custom path set in a Send Message dialog, using the remote
@@ -715,10 +1071,11 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 // The main Send Message dialog.  db.c:update_messages() is the
 // function which fills in the message history information.
 //
-// TODO:  Change the "Path:" box so that clicking on it or
-// double-clicking on it will bring up a "Change Path" dialog.  This
-// new dialog should have the current path (editable), the reverse
-// path (not editable), and these buttons:
+// TODO:  Change the "Path:" box so that clicking or double-clicking
+// on it will bring up a "Change Path" dialog.  Could also use a
+// "Change" or "Change Path" button if easier.  This new dialog
+// should have the current path (editable), the reverse path (not
+// editable), and these buttons:
 //
 //      "Set EMPTY path"
 //      "Set DEFAULT path"
@@ -728,10 +1085,16 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 // Of course the underlying code will have to tweaked to be able to
 // pass an EMPTY path all the way down through the layers.  We can't
 // currently do that.  We'll have to define a specific string for
-// that.
+// that.  Insert the text "--DEFAULT--", "--BLANK--", or the actual
+// path in the editable box and in the "Path:" box on the Send
+// Message dialog so that the user knows which one is in effect.
+//
+// Remember to close the Change Path dialog if we close the Send
+// Message dialog
 //
 // Adding this new CHANGE PATH dialog will allow us to get rid of
-// three bugs on the active bug-list.
+// three bugs on the active bug-list:  #1499820, #1326975, and
+// #1326973.
 //
 void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Arg args[50];
@@ -992,6 +1355,21 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 NULL);
 
+        mw[i].send_message_change_path = XtVaCreateManagedWidget("Change Path",
+                xmPushButtonGadgetClass, 
+                mw[i].form,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].send_message_message_data,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 40,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         mw[i].button_clear_old_msgs = XtVaCreateManagedWidget(langcode("WPUPMSB007"),
                 xmPushButtonGadgetClass, 
                 mw[i].form,
@@ -1073,6 +1451,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 NULL);
 
         xastir_snprintf(mw[i].win, sizeof(mw[i].win), "%d", i);
+
+        XtAddCallback(mw[i].send_message_change_path, XmNactivateCallback, Send_message_change_path, (XtPointer)mw[i].win);
+ 
         XtAddCallback(mw[i].button_ok, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
         XtAddCallback(mw[i].send_message_message_data, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
         XtAddCallback(mw[i].button_cancel, XmNactivateCallback, Send_message_destroy_shell,(XtPointer)mw[i].win);

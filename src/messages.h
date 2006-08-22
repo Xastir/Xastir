@@ -66,6 +66,7 @@ typedef struct {
     Widget send_message_text;
     Widget send_message_path;
     Widget send_message_reverse_path;
+    Widget send_message_change_path;
     Widget pane, form, button_ok, button_cancel;
     Widget button_clear_old_msgs, button_submit_call;
     Widget button_clear_pending_msgs;
