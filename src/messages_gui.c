@@ -788,6 +788,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
     mw[ii].send_message_message_data = (Widget)NULL;
     mw[ii].send_message_text = (Widget)NULL;
 
+    Send_message_change_path_destroy_shell(NULL, NULL, NULL);
+ 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_destroy_shell" );
 
 }
