@@ -3358,11 +3358,45 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
     //
     // The quick rejection algorithm:
     //
-    if (NW_corner_latitude > (long)map_max_y) return(0);  // map below view
-    if ((long)map_min_y > SE_corner_latitude) return(0);  // view below map
+    if (NW_corner_latitude > (long)map_max_y) {
+        if (debug_level & 16) {
+            fprintf(stderr,
+                "map_visible, rejecting: NW_corner_latitude:%ld > map_max_y:%ld\n",
+                NW_corner_latitude,
+                map_max_y);
+        }
+        return(0);  // map below view
+    }
 
-    if (NW_corner_longitude > (long)map_max_x) return(0);  // map left of view
-    if ((long)map_min_x > SE_corner_longitude) return(0);  // view left of  map
+    if ((long)map_min_y > SE_corner_latitude) {
+        if (debug_level & 16) {
+            fprintf(stderr,
+                "map_visible, rejecting: map_min_y:%ld > SE_corner_latitude:%ld\n",
+                map_min_y,
+                SE_corner_latitude);
+        }
+        return(0);  // view below map
+    }
+
+    if (NW_corner_longitude > (long)map_max_x) {
+        if (debug_level & 16) {
+            fprintf(stderr,
+                "map_visible, rejecting: NW_corner_longitude:%ld > map_max_x:%ld\n",
+                NW_corner_longitude,
+                map_max_x);
+        }
+        return(0);  // map left of view
+    }
+
+    if ((long)map_min_x > SE_corner_longitude) {
+        if (debug_level & 16) {
+            fprintf(stderr,
+                "map_visible, rejecting: map_min_x:%ld > SE_corner_longitude:%ld\n",
+                map_min_x,
+                SE_corner_longitude);
+        }
+        return(0);  // view left of  map
+    }
 
     return (1); // Draw this map onto the screen
 }
