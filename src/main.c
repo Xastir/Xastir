@@ -272,6 +272,7 @@ int geometry_x, geometry_y;
 unsigned int geometry_width, geometry_height;
 int geometry_flags;
 
+static int initial_load = 1;
 
 /* JMT - works under FreeBSD */
 uid_t euid;
@@ -10583,6 +10584,21 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 if (alert_display_request())                            // should nor be placed in redraw loop !!???
                     alert_redraw_on_update = redraw_on_new_data = 1;    // ????
 
+            }
+
+
+            if (initial_load) {
+
+                // Reload saved objects and items from previous runs.
+                // This implements persistent objects.
+                reload_object_item();
+
+
+                // Reload any CAD objects from file.  This implements
+                // persistent objects.
+                Restore_CAD_Objects_from_file();
+
+                initial_load = 0;   // All done!
             }
 
 
@@ -26250,21 +26266,11 @@ int main(int argc, char *argv[], char *envp[]) {
                     langcode("POPEM00051") );
             }
 
- 
+
             // Start UpdateTime.  It schedules itself to be run
             // again each time.  This is also the process that
             // starts up the interfaces.
             UpdateTime( (XtPointer) da , (XtIntervalId) NULL );
-
-
-            // Reload saved objects and items from previous runs.
-            // This implements persistent objects.
-            reload_object_item();
-
-
-            // Reload any CAD objects from file.  This implements
-            // persistent objects.
-            Restore_CAD_Objects_from_file();
 
 
             // Update the logging indicator 
