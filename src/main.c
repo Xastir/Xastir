@@ -23,6 +23,15 @@
  */
 
 
+
+// This is for debug.  If defined to 1, Xastir will display
+// coordinates in the Xastir coordinate system inside the text2
+// widget.
+//
+static int DISPLAY_XASTIR_COORDINATES = 0;
+
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif  // HAVE_CONFIG_H
@@ -3617,7 +3626,10 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 //        y = 64800000l;          //  90°S
         return;
 
-    if (coordinate_system == USE_UTM
+    if (DISPLAY_XASTIR_COORDINATES) {
+        xastir_snprintf(my_text, sizeof(my_text), "%ld  %ld", y, x);
+    }
+    else if (coordinate_system == USE_UTM
             || coordinate_system == USE_UTM_SPECIAL) {
         // Create a UTM string from coordinate in Xastir coordinate
         // system.
@@ -8014,7 +8026,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
 #define FONT_WIDTH 9
 
-    /* Create bottom text area */
+    // Create bottom text area
+    //
+    // Message box, on left
     text = XtVaCreateWidget("create_appshell text_output",
             xmTextFieldWidgetClass,
             form,
@@ -8035,6 +8049,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    // Coordinate display box, 2nd from left
     text2 = XtVaCreateWidget("create_appshell text_output2",
             xmTextFieldWidgetClass,
             form,
@@ -8055,6 +8070,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    // Quantity of stations box, 3rd from left
     text3 = XtVaCreateWidget("create_appshell text_output3",
             xmTextFieldWidgetClass,
             form,
@@ -8075,6 +8091,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    // Zoom level box, 3rd from right
     text4 = XtVaCreateWidget("create_appshell text_output4",
             xmTextFieldWidgetClass,
             form,
@@ -8095,7 +8112,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-    // Logging
+    // Log indicator box, 2nd from right
     log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
             xmTextFieldWidgetClass,
             form,
@@ -8116,6 +8133,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    // Interface status indicators, on right
     iface_da = XtVaCreateWidget("create_appshell iface",
             xmDrawingAreaWidgetClass,
             form,
@@ -8147,7 +8165,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-    /* Do drawing map area */
+    // Map drawing area
     da_width = (Dimension)screen_width;
     da_height = (Dimension)screen_height;
     da = XtVaCreateWidget("create_appshell da",
