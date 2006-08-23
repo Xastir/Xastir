@@ -971,6 +971,19 @@ void draw_geo_image_map (Widget w,
             zstr1,
             sizeof(zstr1) );
 
+
+//
+// NOTE:
+// POSSIBLE FUTURE ENHANCEMENT:
+// If zstr0 != zstr1, we have a viewscreen that crosses a UTM zone
+// boundary.  Terraserver/Toposerver will only feed us a map for one
+// side of it or the other.  It'd be VERY nice if some day we could
+// check for this condition and do two map loads instead of the one.
+// We'd need to stop drawing right at the boundary for each map
+// also, so that they'd tile together nicely.
+//
+
+
         map_top_n  = (int)((top_n  / t_scale) + 1) * t_scale;
         map_left_e = (int)((left_e / t_scale) + 0) * t_scale;
         utm_ups_to_ll(gDatum[D_NAD_83_CONUS].ellipsoid,
