@@ -1311,7 +1311,7 @@ fprintf(stderr,"1 ");
             fprintf(stderr,"Image size %d %d\n", geo_image_width, geo_image_height);
             fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
         }
-        return;            /* Skip this map */
+        return;            // Skip this map 
 #ifdef FUZZYRASTER 
    } else if (((float)(map_c_dx/scale_x) > rasterfuzz) ||
                ((float)(scale_x/map_c_dx) > rasterfuzz) ||
