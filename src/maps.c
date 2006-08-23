@@ -3364,8 +3364,10 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
                 "map_visible, rejecting: NW_corner_latitude:%ld > map_max_y:%ld\n",
                 NW_corner_latitude,
                 map_max_y);
+            fprintf(stderr,
+                "\tmap or object is above viewport\n");
         }
-        return(0);  // map below view
+        return(0);
     }
 
     if ((long)map_min_y > SE_corner_latitude) {
@@ -3374,8 +3376,10 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
                 "map_visible, rejecting: map_min_y:%ld > SE_corner_latitude:%ld\n",
                 map_min_y,
                 SE_corner_latitude);
+            fprintf(stderr,
+                "\tmap or object is below viewport\n");
         }
-        return(0);  // view below map
+        return(0);
     }
 
     if (NW_corner_longitude > (long)map_max_x) {
@@ -3384,8 +3388,10 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
                 "map_visible, rejecting: NW_corner_longitude:%ld > map_max_x:%ld\n",
                 NW_corner_longitude,
                 map_max_x);
+            fprintf(stderr,
+                "\tmap or object is left of viewport\n");
         }
-        return(0);  // map left of view
+        return(0);
     }
 
     if ((long)map_min_x > SE_corner_longitude) {
@@ -3394,11 +3400,13 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
                 "map_visible, rejecting: map_min_x:%ld > SE_corner_longitude:%ld\n",
                 map_min_x,
                 SE_corner_longitude);
+            fprintf(stderr,
+                "\tmap or object is right of viewport\n");
         }
-        return(0);  // view left of  map
+        return(0);
     }
 
-    return (1); // Draw this map onto the screen
+    return (1); // At least part of the map is on-screen
 }
 
 
