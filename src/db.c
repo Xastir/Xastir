@@ -14345,21 +14345,43 @@ int process_directed_query(char *call,char *path,char *message,char from) {
  */
 //
 // According to Bob Bruninga we should wait a random time between 0
-// and 120 seconds before responding to a general query.  We don't
-// currently do this.  Perhaps we could use the delayed-ack
-// mechanism to add this randomness?
+// and 120 seconds before responding to a general query.  We use the
+// delayed-ack mechanism to add this randomness.
+//
+// NOTE:  We may end up sending these to RF when the query came in
+// over the internet.  We should check that.
 //
 int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *message,char from,int port, /*@unused@*/ int third_party) {
     char temp[100];
     int ok = 0;
+    float randomize;
 
 
-// NOT IMPLEMENTED YET
-    // Check for proper usage of the APRS? query
+    // Generate a random number between 0.0 and 1.0
+    randomize = rand() / (float)RAND_MAX;
+
+    // Convert to between 0 and 120 seconds
+    randomize = randomize * 120.0;
+//fprintf(stderr,"Randomize:%f\n", randomize);
+
+
+
+    // Check for proper usage of the ?APRS? query
     if (!ok && strncmp(message,"APRS?",5)==0) {
+        //
+        // Initiate a delayed transmit of our own posit.
+        // UpdateTime() uses posit_next_time to decide when to
+        // transmit, so we'll just muck with that.
+        //
+        if ( posit_next_time - sec_now() < randomize ) {
+            // Skip setting it, as we'll transmit soon anyway
+        }
+        else {
+            posit_next_time = (size_t)(sec_now() + randomize);
+        }
         ok = 1;
     }
-    // Check for illegal case for the APRS? query
+    // Check for illegal case for the ?APRS? query
     if (!ok && strncasecmp(message,"APRS?",5)==0) {
         ok = 1;
 //        fprintf(stderr,
@@ -14371,20 +14393,27 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
     }
 
 
-    // Check for proper usage of the IGATE? query
+
+    // Check for proper usage of the ?IGATE? query
     if (!ok
             && strncmp(message,"IGATE?",6)==0
             && port != -1) {    // Not from a log file
+
         if (operate_as_an_igate && from != 'F') {
             xastir_snprintf(temp, sizeof(temp), "<IGATE,MSG_CNT=%d,LOC_CNT=%d",(int)igate_msgs_tx,stations_types(3));
-            output_my_data(temp,port,0,0,0,NULL);    // Not igating
+
+            // OLD:
+            //output_my_data(temp,port,0,0,0,NULL);    // Not igating
+            // NEW:
+            transmit_message_data_delayed("ALL", temp, NULL, (time_t)(sec_now() + randomize) );
         }
         ok = 1;
     }
-    // Check for illegal case for the IGATE? query
+    // Check for illegal case for the ?IGATE? query
     if (!ok
             && strncasecmp(message,"IGATE?",6)==0
             && port != -1) {    // Not from a log file
+
         if (operate_as_an_igate && from != 'F') {
             fprintf(stderr,
                 "%s just queried us with an illegal query: %s\n",
@@ -14397,12 +14426,30 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
     }
 
 
-// NOT IMPLEMENTED YET
-    // Check for proper usage of the WX? query
+
+    // Check for proper usage of the ?WX? query
     if (!ok && strncmp(message,"WX?",3)==0) {
+
+// NOT IMPLEMENTED YET
+
+// Here we should check whether we are a weather station, and if so,
+// send out a delayed posit/weather string.
+//        if (we're a weather_station) {
+//            //
+//            // Initiate a delayed transmit of our own posit.
+//            // UpdateTime() uses posit_next_time to decide when to
+//            // transmit, so we'll just muck with that.
+//            //
+//            if ( posit_next_time - sec_now() < randomize ) {
+//                // Skip setting it, as we'll transmit soon anyway
+//            }
+//            else {
+//                posit_next_time = (size_t)(sec_now() + randomize);
+//            }
+//        }
         ok = 1;
     }
-    // Check for illegal case for the WX? query
+    // Check for illegal case for the ?WX? query
     if (!ok && strncasecmp(message,"WX?",3)==0) {
         ok = 1;
 //        fprintf(stderr,
