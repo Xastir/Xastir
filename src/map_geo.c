@@ -531,7 +531,8 @@ void draw_geo_image_map (Widget w,
     // Terraserver variables
     double top_n=0, left_e=0, bottom_n=0, right_e=0, map_top_n=0, map_left_e=0;
     int z, url_n=0, url_e=0, t_zoom=16, t_scale=12800;
-    char zstr[8];
+    char zstr0[8];
+    char zstr1[8];
 #else   // HAVE_IMAGEMAGICK
     XImage *xi;                 // Temp XImage used for reading in current image
 #endif // HAVE_IMAGEMAGICK
@@ -953,31 +954,31 @@ void draw_geo_image_map (Widget w,
             left,
             &top_n,
             &left_e,
-            zstr,
-            sizeof(zstr) );
-        if (1 != sscanf(zstr, "%d", &z)) {
+            zstr0,
+            sizeof(zstr0) );
+        if (1 != sscanf(zstr0, "%d", &z)) {
             fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
         }
 
         bottom = -((SE_corner_latitude - 32400000l) / 360000.0);
         right  =   (SE_corner_longitude - 64800000l) / 360000.0;
+
         ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid,
             bottom,
             right,
             &bottom_n,
             &right_e,
-            zstr,
-            sizeof(zstr) );
+            zstr1,
+            sizeof(zstr1) );
 
         map_top_n  = (int)((top_n  / t_scale) + 1) * t_scale;
         map_left_e = (int)((left_e / t_scale) + 0) * t_scale;
         utm_ups_to_ll(gDatum[D_NAD_83_CONUS].ellipsoid,
             map_top_n,
             map_left_e,
-            zstr,
+            zstr0,
             &top,
             &left);
-
 
 
 // Below here things can get messed up.  We can end up with very
@@ -1057,7 +1058,6 @@ void draw_geo_image_map (Widget w,
         tp[1].img_y = geo_image_height - 1;
         tp[1].x_long = 64800000l + (360000.0 * right);
         tp[1].y_lat  = 32400000l + (360000.0 * (-bottom));
-
 
         url_n = (int)(top_n  / t_scale); // The request URL does not use the
         url_e = (int)(left_e / t_scale); // N/E of the map corner
@@ -1309,6 +1309,16 @@ fprintf(stderr,"1 ");
             fprintf(stderr,"Map not in current view, skipping: %s\n", file);
             fprintf(stderr,"\nImage: %s\n", file);
             fprintf(stderr,"Image size %d %d\n", geo_image_width, geo_image_height);
+            fprintf(stderr,"   Map:  lat0:%ld\t lon0:%ld\t lat1:%ld\t lon1:%ld\n",
+                tp[0].y_lat,
+                tp[0].x_long,
+                tp[1].y_lat,
+                tp[1].x_long);
+            fprintf(stderr,"Screen: NWlat:%ld\tNWlon:%ld\tSElat:%ld\tSElon:%ld\n",
+                NW_corner_latitude,
+                NW_corner_longitude,
+                SE_corner_latitude,
+                SE_corner_longitude);
             fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
         }
         return;            // Skip this map 
