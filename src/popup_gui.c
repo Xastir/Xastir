@@ -145,6 +145,10 @@ void popup_message_always(char *banner, char *message) {
     int j,i;
     Atom delw;
 
+
+    if (banner == NULL || message == NULL)
+        return;
+
     i=0;
     for (j=0; j<MAX_POPUPS; j++) {
         if (!pw[j].popup_message_dialog) {
@@ -247,6 +251,10 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 //
 void popup_message(char *banner, char *message) {
     char timestring[110];
+
+
+    if (banner == NULL || message == NULL)
+        return;
 
     get_timestamp(timestring);
     fprintf(stderr, "%s:\n\t%s  %s\n\n", timestring, banner, message);
