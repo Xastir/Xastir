@@ -383,6 +383,8 @@ WPUPDPD003|Net Data only|N|
 WPUPDPD004|TNC and Net Data|a|
 WPUPDPD005|TNC||
 WPUPDPD006|NET||
+WPUPDPD007|Station Capabilities||
+WPUPDPD008|Mine Only||
 #
 # PopUp "View - Find Station"
 WPUPLSP001|Locate Station||

@@ -1315,15 +1315,49 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 NULL);
 
         mw[i].send_message_message_data = XtVaCreateManagedWidget("Send_message smmd", 
-                xmTextFieldWidgetClass, 
+//                xmTextFieldWidgetClass, 
+                xmTextWidgetClass, 
                 mw[i].form,
                 XmNeditable,   TRUE,
                 XmNcursorPositionVisible, TRUE,
                 XmNsensitive, TRUE,
                 XmNshadowThickness,    1,
-                XmNcolumns, 64,
-                XmNwidth, ((64*7)+2),
-                XmNmaxLength, 255,
+                XmNwordWrap, FALSE,
+                XmNscrollHorizontal, FALSE,
+                XmNscrollVertical, FALSE,
+//
+// 67 is max length of APRS message.
+// Size of Kenwood screens:
+// TH-D7A/E: Arranged as 12,12,12,9 (45 chars) 
+// TM-D700A: Arranged as 22,22,20   (64 chars)
+//
+// Standard APRS:
+                XmNcolumns, 67,
+                XmNwidth, ((67*7)+2),
+                XmNmaxLength, 67,
+                XmNeditMode, XmSINGLE_LINE_EDIT,
+//
+// Kenwood TH-D7A/E:
+//                XmNcolumns, 12,
+//                XmNrows, 4,
+//                XmNminHeight, 4,
+//                XmNmaxHeight, 4,
+//                XmNwidth, ((12*7)+2),
+//                XmNmaxLength, 45,
+//                XmNeditMode, XmMULTI_LINE_EDIT,
+//
+// Kenwood TM-D700A:
+//                XmNcolumns, 22,
+//                XmNminWidth, 22,
+//                XmNmaxWidth, 22,
+//                XmNwidth, ((22*7)),
+//                XmNrows, 3,
+//                XmNminHeight, 3,
+//                XmNmaxHeight, 3,
+//                XmNmaxLength, 64,
+//                XmNeditMode, XmMULTI_LINE_EDIT,
+//
+//
                 XmNbackground, colors[0x0f],
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
@@ -1337,6 +1371,17 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 NULL);
 
+
+
+// mw[i].send_message_message_data2 = XtVaCreateManagedWidget("Send_message smmd", 
+// mw[i].send_message_message_data3 = XtVaCreateManagedWidget("Send_message smmd", 
+// mw[i].send_message_message_data4 = XtVaCreateManagedWidget("Send_message smmd", 
+// Could perhaps have a Kenwood preview window that shows how it
+// would be formatted for TM-D700A/TH-D7A/TH-D7E, but leave the
+// input field as a single TextFieldWidget.
+
+
+ 
 // Row 3 (2 up from bottom row)
         mw[i].call = XtVaCreateManagedWidget(langcode(groupon == 0  ? "WPUPMSB003": "WPUPMSB004"),
                 xmLabelWidgetClass, mw[i].form,

@@ -385,6 +385,8 @@ WPUPDPD003|Données du réseau seulement||
 WPUPDPD004|Données du TNC et du réseau||
 WPUPDPD005|TNC||
 WPUPDPD006|Réseau||
+WPUPDPD007|Station Capabilities||
+WPUPDPD008|Mine Only||
 #
 # PopUp "View - Find Station"
 WPUPLSP001|Localiser une station||

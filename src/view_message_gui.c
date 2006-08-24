@@ -74,6 +74,8 @@ static xastir_mutex All_messages_dialog_lock;
 
 int vm_range;
 int view_message_limit = 10000;
+int Read_messages_packet_data_type = 0;
+int Read_messages_mine_only = 0;
 
 
 
@@ -102,6 +104,54 @@ void view_message_print_record(Message *m_fill) {
     distance = (int)distance_from_my_station(m_fill->from_call_sign,temp_my_course);
     if ((vm_range == 0) || (distance <= vm_range)) {
  
+        // Check that it's coming from the correct type of interface
+        // Compare Read_messages_packet_data_type against the port
+        // type associated with data_port to determine whether or
+        // not to display it.
+        //
+        // I = Internet
+        // L = Local
+        // T = TNC
+        // F = File
+        //
+        switch (Read_messages_packet_data_type) {
+
+            case 2:     // Display NET data only
+                // if not network_interface, return
+                if (m_fill->data_via != 'I')
+                    return; // Don't display it
+                break;
+
+            case 1:     // Display TNC data only
+                // if not local_tnc_interface, return
+                if (m_fill->data_via != 'T')
+                    return; // Don't display it
+                break;
+
+            case 0:     // Display both TNC and NET data
+            default:
+                break;
+        }
+
+        // Check for my stations only if set
+        if (Read_messages_mine_only) {
+            char short_call[MAX_CALLSIGN];
+            char *p;
+
+            xastir_snprintf(short_call,
+                sizeof(short_call),
+                "%s",
+                my_callsign);
+            if ( (p = index(short_call,'-')) ) {
+                *p = '\0';  // Terminate it
+            }
+
+            if (!strstr(m_fill->call_sign, short_call)
+                    && !strstr(m_fill->from_call_sign, short_call)) {
+                return;
+            }
+        }
+
         if ((temp = malloc((size_t)my_size)) == NULL)
             return;
 
@@ -162,10 +212,59 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
     XmTextPosition drop_ptr;
 
 
-    if ((temp = malloc((size_t)my_size)) == NULL)
-        return;
-
     if ((vm_range == 0) || ((int)distance_from_my_station(call_sign,temp_my_course) <= vm_range)) {
+
+        // Check that it's coming from the correct type of interface
+        // Compare Read_messages_packet_data_type against the port
+        // type associated with data_port to determine whether or
+        // not to display it.
+        //
+        // I = Internet
+        // L = Local
+        // T = TNC
+        // F = File
+        //
+        switch (Read_messages_packet_data_type) {
+
+            case 2:     // Display NET data only
+                // if not network_interface, return
+                if (from != 'I')
+                    return; // Don't display it
+                break;
+
+            case 1:     // Display TNC data only
+                // if not local_tnc_interface, return
+                if (from != 'T')
+                    return; // Don't display it
+                break;
+
+            case 0:     // Display both TNC and NET data
+            default:
+                break;
+        }
+
+        // Check for my stations only if set
+        if (Read_messages_mine_only) {
+            char short_call[MAX_CALLSIGN];
+            char *p;
+
+            xastir_snprintf(short_call,
+                sizeof(short_call),
+                "%s",
+                my_callsign);
+            if ( (p = index(short_call,'-')) ) {
+                *p = '\0';  // Terminate it
+            }
+
+            if (!strstr(call_sign, short_call)
+                    && !strstr(from_call, short_call)) {
+                return;
+            }
+        }
+
+        if ((temp = malloc((size_t)my_size)) == NULL)
+            return;
+
         if (strlen(message)>95) {
             xastir_snprintf(data1,
                 sizeof(data1),
@@ -237,8 +336,8 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messag
 end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages" );
 
         }
+        free(temp);
     }
-    free(temp);
 }
 
 
@@ -283,13 +382,43 @@ void All_messages_change_range( /*@unused@*/ Widget widget, XtPointer clientData
     All_messages_destroy_shell(widget, clientData, callData);
     view_all_messages(widget, clientData, callData); 
 }
+
  
+
+
+
+void  Read_messages_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        Read_messages_packet_data_type = atoi(which);
+    else
+        Read_messages_packet_data_type = 0;
+}
+
+
+
+
+
+void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        Read_messages_mine_only = atoi(which);
+    else
+        Read_messages_mine_only = 0;
+}
+
 
 
 
 
 void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, my_form, button_range, button_close, dist, dist_units;
+    Widget option_box, tnc_data, net_data, tnc_net_data,
+        read_mine_only_button;
     unsigned int n;
 #define NCNT 21
 #define IncN(n) if (n< NCNT) n++; else fprintf(stderr, "Oops, too many arguments for array!\a")
@@ -406,6 +535,73 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 NULL);
 
         XtAddCallback(button_close, XmNactivateCallback, All_messages_destroy_shell, All_messages_dialog);
+
+        n=0;
+        XtSetArg(args[n],XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n],XmNbackground, MY_BG_COLOR); n++;
+        XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+        XtSetArg(args[n], XmNtopWidget, dist); n++;
+        XtSetArg(args[n], XmNtopOffset, 5); n++;
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNleftOffset, 5); n++;
+        XtSetArg(args[n], XmNrightAttachment, XmATTACH_NONE); n++;
+
+        option_box = XmCreateRadioBox(my_form,
+                "Vew Messages option box",
+                args,
+                n);
+
+        XtVaSetValues(option_box,
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                NULL);
+
+        tnc_data = XtVaCreateManagedWidget(langcode("WPUPDPD002"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(tnc_data,XmNvalueChangedCallback,Read_messages_packet_toggle,"1");
+
+        net_data = XtVaCreateManagedWidget(langcode("WPUPDPD003"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(net_data,XmNvalueChangedCallback,Read_messages_packet_toggle,"2");
+
+        tnc_net_data = XtVaCreateManagedWidget(langcode("WPUPDPD004"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(tnc_net_data,XmNvalueChangedCallback,Read_messages_packet_toggle,"0");
+
+        read_mine_only_button = XtVaCreateManagedWidget(langcode("WPUPDPD008"),
+                xmToggleButtonGadgetClass,
+                my_form,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, dist,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, option_box,
+                XmNleftOffset, 20,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+ 
+        XtAddCallback(read_mine_only_button,XmNvalueChangedCallback,Read_messages_mine_only_toggle,"1");
  
         n=0;
         XtSetArg(args[n], XmNrows, 15); IncN(n);
@@ -421,8 +617,8 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNselectionPolicy, XmMULTIPLE_SELECT); IncN(n);
         XtSetArg(args[n], XmNcursorPositionVisible, FALSE); IncN(n);
         XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); IncN(n);
-        XtSetArg(args[n], XmNtopWidget, dist); IncN(n);
-        XtSetArg(args[n], XmNtopOffset, 20); IncN(n);
+        XtSetArg(args[n], XmNtopWidget, option_box); IncN(n);
+        XtSetArg(args[n], XmNtopOffset, 5); IncN(n);
         XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); IncN(n);
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); IncN(n);
         XtSetArg(args[n], XmNleftOffset, 5); IncN(n);
@@ -447,6 +643,30 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         sprintf(temp,"%d",vm_range);
         XmTextFieldSetString(vm_dist_data,temp);
 
+        switch (Read_messages_packet_data_type) {
+            case(0):
+                XmToggleButtonSetState(tnc_net_data,TRUE,FALSE);
+                break;
+
+            case(1):
+                XmToggleButtonSetState(tnc_data,TRUE,FALSE);
+                break;
+
+            case(2):
+                XmToggleButtonSetState(net_data,TRUE,FALSE);
+                break;
+
+            default:
+                XmToggleButtonSetState(tnc_net_data,TRUE,FALSE);
+                break;
+        }
+
+        if (Read_messages_mine_only)
+            XmToggleButtonSetState(read_mine_only_button,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(read_mine_only_button,FALSE,FALSE);
+
+        XtManageChild(option_box);
         XtManageChild(view_messages_text);
         XtVaSetValues(view_messages_text, XmNbackground, colors[0x0f], NULL);
         XtManageChild(my_form);

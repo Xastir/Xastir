@@ -389,6 +389,8 @@ WPUPDPD003|Nur Internet Daten||
 WPUPDPD004|TNC und Internet Daten||
 WPUPDPD005|TNC||
 WPUPDPD006|NET||
+WPUPDPD007|Station Capabilities||
+WPUPDPD008|Mine Only||
 #
 # PopUp "Station - Station finden"
 WPUPLSP001|Finde Station||

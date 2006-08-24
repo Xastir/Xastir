@@ -381,6 +381,8 @@ WPUPDPD003|Solo dati dalla Rete||
 WPUPDPD004|Dati da TNC e Rete||
 WPUPDPD005|TNC||
 WPUPDPD006|RETE||
+WPUPDPD007|Station Capabilities||
+WPUPDPD008|Mine Only||
 #
 #Menu' localizza stazione
 WPUPLSP001|Localizza Stazione||

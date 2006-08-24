@@ -23,9 +23,13 @@
  */
 
 
+// NOTE:  decode_info_field() is a good place to start for decoding.
+
+
 // Used only for special debugging of message/station expiration.
 // Leave commented out for normal operation.
 //#define EXPIRE_DEBUG
+
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -13645,6 +13649,31 @@ void packet_data_add(char *from, char *line, int data_port) {
 //        Display_packet_data_type,
 //        data_port);
 
+    // Check the Capabilities toggle to see if we only want to show
+    // Station Capability packets
+    if (show_only_station_capabilities) {
+        if (!strstr(line, ":<"))
+            return;
+    }
+
+    // Check the "Mine Only" toggle to see if we only want to show
+    // our own packets
+    if (Display_packet_data_mine_only) {
+        char short_call[MAX_CALLSIGN];
+        char *p;
+
+        xastir_snprintf(short_call,
+            sizeof(short_call),
+            "%s",
+            my_callsign);
+        if ( (p = index(short_call,'-')) ) {
+            *p = '\0';  // Terminate it
+        }
+ 
+        if (!strstr(line, short_call))
+            return;
+    }
+
     redraw_on_new_packet_data++;
 
    // Now save the packet in the history:
@@ -14367,6 +14396,24 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
 
 
     // Check for proper usage of the ?APRS? query
+//
+// NOTE:  We need to add support in here for the radius circle as
+// listed in the spec for general queries.  Right now we respond to
+// all queries, whether we're inside the circle or not.  Spec says
+// this:
+//
+// ?Query?Lat,Long,Radius
+// 1  n  1 n 1 n  1  4 Bytes
+//
+// i.e. ?APRS? 34.02,-117.15,0200
+//
+// Note leading space in latitude as its value is positive.
+// Lat/long are floating point degrees.  N/E are positive, indicated
+// by a leading space.  S/W are negative.  Radius is in miles
+// expressed as a fixed 4-digit number in whole miles.  All stations
+// inside the specified circle should respond with a position report
+// and a status report.
+//
     if (!ok && strncmp(message,"APRS?",5)==0) {
         //
         // Initiate a delayed transmit of our own posit.
@@ -16036,14 +16083,48 @@ void decode_info_field(char *call,
                 ok_igate_rf = 1;
                 break;
  
+            case '<':   // Station capabilities                     [APRS Reference, chapter 15]
+                if (debug_level & 1)
+                    fprintf(stderr,"decode_info_field: ~,<\n");
+                //
+                // We could tweak the Incoming Data dialog to add
+                // filter togglebuttons.  One such toggle could be
+                // "Station Capabilities".  We'd then have a usable
+                // dialog for displaying things like ?IGATE?
+                // responses.  In this case we wouldn't have to do
+                // anything special with the packet for decoding,
+                // just let it hit the default block below for
+                // putting them into the status field of the record.
+                // One downside is that we'd only be able to catch
+                // new station capability records in that dialog.
+                // The only way to look at past capability records
+                // would be the Station Info dialog for each
+                // station.
+                //
+                //fprintf(stderr,"%10s:  %s\n", call, message);
+
+                // Don't set "done" as we want these to appear in
+                // the status text for the record.
+                break;
+
+            case '%':   // Agrelo DFJr / MicroFinder Radio Direction Finding
+                 if (debug_level & 1)
+                    fprintf(stderr,"decode_info_field: %%\n");
+fprintf(stderr,"RDF:  %10s:  %s\n", call, message);
+
+// Here is where we'd add a call to an RDF decode function so that
+// we could display vectors on the map for each RDF position.
+
+                // Don't set "done" as we want these to appear in
+                // the status text for the record.
+                break;
+ 
             case '~':   // UI-format messages, not relevant for APRS ("Do not use" in Reference)
             case ',':   // Invalid data or test packets             [APRS Reference, chapter 19]
-            case '<':   // Station capabilities                     [APRS Reference, chapter 15]
-            case '%':   // Agrelo DFJr / MicroFinder
             case '&':   // Reserved -- Map Feature
                 if (debug_level & 1)
-                    fprintf(stderr,"decode_info_field: ~,<%%&\n");
-                ignore = 1;     // don't treat undecoded packets as status text
+                    fprintf(stderr,"decode_info_field: ~,&\n");
+                ignore = 1;     // Don't treat undecoded packets as status text
                 break;
         }
 
@@ -16059,6 +16140,9 @@ void decode_info_field(char *call,
         if (debug_level & 1)
             fprintf(stderr,"decode_info_field: done with big switch\n");
 
+        // Add most remaining data to the station record as status
+        // info
+        //
         if (!done && !ignore) {         // Other Packets        [APRS Reference, chapter 19]
             done = data_add(OTHER_DATA,call,path,message-1,from,port,origin,third_party, station_is_mine, 0);
             ok_igate_net = 0;           // don't put data on internet       ????

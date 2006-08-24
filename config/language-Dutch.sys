@@ -393,6 +393,8 @@ WPUPDPD003|Alleen Net gegevens||
 WPUPDPD004|TNC en Net gegevens||
 WPUPDPD005|TNC||
 WPUPDPD006|NET||
+WPUPDPD007|Station Capabilities||
+WPUPDPD008|Mine Only||
 #
 # PopUp "View - Find Station"
 WPUPLSP001|Lokaliseer station||

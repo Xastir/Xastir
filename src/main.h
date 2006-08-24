@@ -311,6 +311,8 @@ extern int dead_reckoning_timeout;
 extern char bando_min[30];
 extern char bando_max[30];
 extern int Display_packet_data_type;
+extern int show_only_station_capabilities;
+extern int Display_packet_data_mine_only;
 extern int menu_x;
 extern int menu_y;
 extern long my_last_altitude;

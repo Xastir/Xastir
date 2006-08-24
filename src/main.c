@@ -362,6 +362,8 @@ int Igate_type;
 Widget Display_data_dialog  = (Widget)NULL;
 Widget Display_data_text;
 int Display_packet_data_type;
+int show_only_station_capabilities = 0;
+int Display_packet_data_mine_only = 0;
 
 Widget configure_defaults_dialog = (Widget)NULL;
 Widget configure_timing_dialog = (Widget)NULL;
@@ -16338,8 +16340,41 @@ void  Display_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
 
 
+// Turn on or off "Station Capabilities", callback for capabilities
+// button.
+//
+void Capabilities_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        show_only_station_capabilities = TRUE;
+    else
+        show_only_station_capabilities = FALSE;
+}
+
+
+
+
+
+// Turn on or off "Mine Only"
+//
+void Display_packet_mine_only_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        Display_packet_data_mine_only = TRUE;
+    else
+        Display_packet_data_mine_only = FALSE;
+}
+
+
+
+
+
 void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    Widget pane, my_form, button_close, option_box, tnc_data, net_data, tnc_net_data;
+    Widget pane, my_form, button_close, option_box, tnc_data,
+        net_data, tnc_net_data, capabilities_button,
+        mine_only_button;
     unsigned int n;
     Arg args[50];
     Atom delw;
@@ -16378,8 +16413,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         XtSetArg(args[n], XmNbottomAttachment, XmATTACH_NONE); n++;
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
-        XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNrightOffset, 5); n++;
+        XtSetArg(args[n], XmNrightAttachment, XmATTACH_NONE); n++;
  
         option_box = XmCreateRadioBox(my_form,
                 "Display_data option box",
@@ -16418,6 +16452,41 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
         XtAddCallback(tnc_net_data,XmNvalueChangedCallback,Display_packet_toggle,"0");
 
+        capabilities_button = XtVaCreateManagedWidget(langcode("WPUPDPD007"),
+                xmToggleButtonGadgetClass,
+                my_form,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, option_box,
+                XmNleftOffset, 20,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(capabilities_button, XmNvalueChangedCallback,Capabilities_toggle,"1");
+ 
+        mine_only_button = XtVaCreateManagedWidget(langcode("WPUPDPD008"),
+                xmToggleButtonGadgetClass,
+                my_form,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, capabilities_button,
+                XmNleftOffset, 20,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(mine_only_button, XmNvalueChangedCallback,Display_packet_mine_only_toggle,"1");
 
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
@@ -16503,6 +16572,16 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmToggleButtonSetState(tnc_net_data,TRUE,FALSE);
                 break;
         }
+
+        if (show_only_station_capabilities)
+            XmToggleButtonSetState(capabilities_button,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(capabilities_button,FALSE,FALSE);
+
+        if (Display_packet_data_mine_only)
+            XmToggleButtonSetState(mine_only_button,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(mine_only_button,FALSE,FALSE);
 
         XtManageChild(option_box);
         XtManageChild(Display_data_text);

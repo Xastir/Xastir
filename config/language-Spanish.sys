@@ -384,6 +384,8 @@ WPUPDPD003|sólo datos de la Red||
 WPUPDPD004|Datos del TNC y la Red||
 WPUPDPD005|TNC||
 WPUPDPD006|RED||
+WPUPDPD007|Station Capabilities||
+WPUPDPD008|Mine Only||
 #
 # Localizar Estación
 WPUPLSP001|Localizar estación||
