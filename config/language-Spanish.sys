@@ -1083,6 +1083,9 @@ POPEM00048|Emergency Beacon Mode!||
 POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
 POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
 POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
+POPEM00052|Callsign is EMPTY!||
+POPEM00053|Message is EMPTY!||
+POPEM00054|We're trying to talk to ourselves!||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||
