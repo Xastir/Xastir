@@ -336,11 +336,9 @@ void Send_message_change_path_apply(Widget widget, XtPointer clientData, XtPoint
 
 // "Direct Path" button
 //
-// Put "DIRECT PATH" in the widgets.  Change the lower-level code to
-// recognize a path of "DIRECT PATH" and change to an empty path
-// when the transmit actually goes out.  An alternative would be to
-// keep "DIRECT PATH" in there all the way to the transmit routines,
-// then change it there.
+// Put "DIRECT PATH" in the widgets.  We pass "DIRECT PATH" all the
+// way to the transmit routines, then change it to an empty path
+// when the transmit actually goes out.
 //
 void Send_message_change_path_direct(Widget widget, XtPointer clientData, XtPointer callData) {
 
@@ -360,10 +358,9 @@ void Send_message_change_path_direct(Widget widget, XtPointer clientData, XtPoin
 
 // "Default Path(s)" button
 //
-// Blank out the path so the default paths get used.  We could
-// perhaps put something like "*Default Path*" in the widgets.  An
-// alternative would be to keep "DEFAULT PATH" in there all the way
-// to the transmit routines, then change it there to be a blank.
+// Blank out the path so the default paths get used.  We pass
+// "DEFAULT PATH" all the way to the transmit routines, then change
+// it there to be a blank.
 //
 void Send_message_change_path_default(Widget widget, XtPointer clientData, XtPointer callData) {
 
@@ -1111,30 +1108,14 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 // The main Send Message dialog.  db.c:update_messages() is the
 // function which fills in the message history information.
 //
-// TODO:  Change the "Path:" box so that clicking or double-clicking
-// on it will bring up a "Change Path" dialog.  Could also use a
-// "Change" or "Change Path" button if easier.  This new dialog
-// should have the current path (editable), the reverse path (not
-// editable), and these buttons:
+// The underlying code has been tweaked so that we can pass an EMPTY
+// path all the way down through the layers.  We defined special
+// strings for that and for setting default paths, and display these
+// to the user in this and the Change Path dialogs:
 //
-//      "Set EMPTY path"
-//      "Set DEFAULT path"
-//      "Apply" or "Apply New Path"
-//      "Cancel"
+//  "DEFAULT PATH"
+//  "DIRECT PATH"
 //
-// Of course the underlying code will have to tweaked to be able to
-// pass an EMPTY path all the way down through the layers.  We can't
-// currently do that.  We'll have to define a specific string for
-// that.  Insert the text "--DEFAULT--", "--BLANK--", or the actual
-// path in the editable box and in the "Path:" box on the Send
-// Message dialog so that the user knows which one is in effect.
-//
-// Remember to close the Change Path dialog if we close the Send
-// Message dialog
-//
-// Adding this new CHANGE PATH dialog will allow us to get rid of
-// three bugs on the active bug-list:  #1499820, #1326975, and
-// #1326973.
 //
 void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Arg args[50];
