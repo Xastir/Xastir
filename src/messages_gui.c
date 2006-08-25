@@ -784,7 +784,12 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
     mw[ii].send_message_dialog = (Widget)NULL;
     mw[ii].to_call_sign[0] = '\0';
     mw[ii].send_message_call_data = (Widget)NULL;
-    mw[ii].send_message_message_data = (Widget)NULL;
+    mw[ii].D700_mode = (Widget)NULL;
+    mw[ii].D7_mode = (Widget)NULL;
+    mw[ii].message_data_line1 = (Widget)NULL;
+    mw[ii].message_data_line2 = (Widget)NULL;
+    mw[ii].message_data_line3 = (Widget)NULL;
+    mw[ii].message_data_line4 = (Widget)NULL;
     mw[ii].send_message_text = (Widget)NULL;
 
     Send_message_change_path_destroy_shell(NULL, NULL, NULL);
@@ -840,11 +845,17 @@ void Clear_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char temp1[MAX_CALLSIGN+1];
-    char temp2[302];
+    char temp2[68];
+    char temp_line1[68] = "";
+    char temp_line2[23] = "";
+    char temp_line3[23] = "";
+    char temp_line4[10] = "";
     char path[200];
     int ii, jj;
     char *temp_ptr;
     int substitution_made = 0;
+    int d700;
+    int d7;
 
 
     ii=atoi((char *)clientData);
@@ -852,6 +863,9 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now" );
 
     if (mw[ii].send_message_dialog) {
+
+        d700 = XmToggleButtonGetState(mw[ii].D700_mode);
+        d7 = XmToggleButtonGetState(mw[ii].D7_mode);
 
         temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
         xastir_snprintf(temp1,
@@ -864,15 +878,71 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         (void)to_upper(temp1);
         (void)remove_trailing_dash_zero(temp1);
 
-        temp_ptr = XmTextFieldGetString(mw[ii].send_message_message_data);
-        xastir_snprintf(temp2,
-            sizeof(temp2),
+        // Fetch message_data_line1 in all cases
+        temp_ptr = XmTextFieldGetString(mw[ii].message_data_line1);
+        xastir_snprintf(temp_line1,
+            sizeof(temp_line1),
             "%s",
             temp_ptr);
         XtFree(temp_ptr);
 
+        // If D700/D7 mode, fetch message_data_line2
+        if (d700 || d7) {
+            temp_ptr = XmTextFieldGetString(mw[ii].message_data_line2);
+            xastir_snprintf(temp_line2,
+                sizeof(temp_line2),
+                "%s",
+                temp_ptr);
+            XtFree(temp_ptr);
+        }
+
+        // If D700/D7 mode, fetch message_data_line3
+        if (d700 || d7) {
+            temp_ptr = XmTextFieldGetString(mw[ii].message_data_line3);
+            xastir_snprintf(temp_line3,
+                sizeof(temp_line3),
+                "%s",
+                temp_ptr);
+            XtFree(temp_ptr);
+        }
+
+        // If D7 mode, fetch message_data_line4
+        if (d7) {
+            temp_ptr = XmTextFieldGetString(mw[ii].message_data_line4);
+            xastir_snprintf(temp_line4,
+                sizeof(temp_line4),
+                "%s",
+                temp_ptr);
+            XtFree(temp_ptr);
+        }
+
+        // Construct the entire message now
+        if (d700) { // Combine three lines together
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%-22s%-22s%-20s",
+                temp_line1,
+                temp_line2,
+                temp_line3);
+        }
+        else if (d7) {  // Combine four lines together
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%-12s%-12s%-12s%-9s",
+                temp_line1,
+                temp_line2,
+                temp_line3,
+                temp_line4);
+        }
+        else {  // Use line1 only
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%s",
+                temp_line1);
+        }
+
         // We have the message text now.  Check it for illegal
-        // characters, remove them and substitute spaces if found.
+        // characters, remove them and substitute '.' if found.
         // Illegal characters are '|', '{', and '~' for messaging.
         for (jj = 0; jj < (int)strlen(temp2); jj++) {
             if (       temp2[jj] == '|'
@@ -914,14 +984,38 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             XmToggleButtonSetState(auto_msg_toggle,FALSE,FALSE);
             statusline(langcode("BBARSTA011"),0);       // Auto Reply Messages OFF
             output_message(mw[ii].to_call_sign,temp1,temp2,path);
-            XmTextFieldSetString(mw[ii].send_message_message_data,"");
+
+//fprintf(stderr,"         1111111111222222222233333333334444444444555555555566666666\n");
+//fprintf(stderr,"1234567890123456789012345678901234567890123456789012345678901234567\n");
+//fprintf(stderr,"%s\n",temp2);
+
+            XmTextFieldSetString(mw[ii].message_data_line1,"");
+
+            if (mw[ii].message_data_line2) // If exists, blank it
+                XmTextFieldSetString(mw[ii].message_data_line2,"");
+
+            if (mw[ii].message_data_line3) // If exists, blank it
+                XmTextFieldSetString(mw[ii].message_data_line3,"");
+
+            if (mw[ii].message_data_line4) // If exists, blank it
+                XmTextFieldSetString(mw[ii].message_data_line4,"");
+
 //            if (mw[ii].message_group!=1)
 //                XtSetSensitive(mw[ii].button_ok,FALSE);
         }
         else {
-            // Could add a popup here someday that says something about
-            // either the callsign or the message were blank, or we're
-            // trying to talk to ourselves.
+            if ( strcmp(temp1,my_callsign) == 0 ) { // It's my own callsign
+                popup_message_always(langcode("POPEM00022"),
+                    langcode("POPEM00054"));   // We're trying to talk to ourselves!
+            }
+            else if ( strlen(temp1) == 0 ) { // Callsign field is blank
+                popup_message_always(langcode("POPEM00022"),
+                    langcode("POPEM00052"));   // Callsign is EMPTY!
+            }
+            else if ( strlen(temp2) == 0 ) { // Message field is blank
+                popup_message_always(langcode("POPEM00022"),
+                    langcode("POPEM00053"));   // Message is EMPTY!
+            }
         }
     }
 
@@ -1105,6 +1199,311 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 
 
 
+void build_send_message_input_boxes(int i, int d700, int d7) {
+
+    // D700A mode
+    if (d700) {
+        mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 22,
+            XmNwidth, ((22*7)),
+            XmNmaxLength, 22,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message,
+            XmNleftOffset, 5,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+
+        // Draw another textfield widget of size 22 and another of size 20
+
+        mw[i].message_data_line2 = XtVaCreateManagedWidget("Send_message line2", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 22,
+            XmNwidth, ((22*7)),
+            XmNmaxLength, 22,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message_data_line1,
+            XmNleftOffset, 2,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+
+        mw[i].message_data_line3 = XtVaCreateManagedWidget("Send_message line3", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 20,
+            XmNwidth, ((20*7)),
+            XmNmaxLength, 20,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message_data_line2,
+            XmNleftOffset, 2,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+    }
+
+    // D7A/D7E Mode
+    else if (d7) {
+
+        mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 12,
+            XmNwidth, ((12*7)+4),
+            XmNmaxLength, 12,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message,
+            XmNleftOffset, 5,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+
+        // Draw two more textfield widgets of size 12 and one more of size 9
+
+        mw[i].message_data_line2 = XtVaCreateManagedWidget("Send_message line2", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 12,
+            XmNwidth, ((12*7)+4),
+            XmNmaxLength, 12,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message_data_line1,
+            XmNleftOffset, 2,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+
+// Separate the next two from the previous two for a bit, to help
+// indicate that the first two are one screen on a TH-D7, the next
+// two are another screen.
+
+        mw[i].message_data_line3 = XtVaCreateManagedWidget("Send_message line3", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 12,
+            XmNwidth, ((12*7)+4),
+            XmNmaxLength, 12,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message_data_line2,
+            XmNleftOffset, 15,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+
+        mw[i].message_data_line4 = XtVaCreateManagedWidget("Send_message line4", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 9,
+            XmNwidth, ((10*7)+0),
+            XmNmaxLength, 9,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message_data_line3,
+            XmNleftOffset, 2,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+   }
+
+    // Standard APRS Mode
+   else {  // Standard APRS message box size (67)
+       mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 67,
+            XmNwidth, ((65*7)+2),
+            XmNmaxLength, 67,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message,
+            XmNleftOffset, 5,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+    }
+
+    if (mw[i].message_data_line1) // If exists, add another callback
+        XtAddCallback(mw[i].message_data_line1, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+
+    if (mw[i].message_data_line2) // If exists, add another callback
+        XtAddCallback(mw[i].message_data_line2, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+
+    if (mw[i].message_data_line3) // If exists, add another callback
+        XtAddCallback(mw[i].message_data_line3, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+
+    if (mw[i].message_data_line4) // If exists, add another callback
+        XtAddCallback(mw[i].message_data_line4, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+}
+
+
+
+
+
+void rebuild_send_message_input_boxes(int ii, int d700, int d7) {
+
+    // Take down the dialog
+//    XtPopdown(mw[ii].send_message_dialog);
+
+
+    // Remove callbacks 
+    if (mw[ii].message_data_line1) // If exists, remove callback callback
+        XtRemoveCallback(mw[ii].message_data_line1, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
+
+    if (mw[ii].message_data_line2) // If exists, remove callback
+        XtRemoveCallback(mw[ii].message_data_line2, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
+
+    if (mw[ii].message_data_line3) // If exists, remove callback
+        XtRemoveCallback(mw[ii].message_data_line3, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
+
+    if (mw[ii].message_data_line4) // If exists, remove callback
+        XtRemoveCallback(mw[ii].message_data_line4, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
+
+
+    // Remove the current message widgets
+    if (mw[ii].message_data_line4)
+        XtDestroyWidget(mw[ii].message_data_line4);
+
+    if (mw[ii].message_data_line3)
+        XtDestroyWidget(mw[ii].message_data_line3);
+
+    if (mw[ii].message_data_line3)
+        XtDestroyWidget(mw[ii].message_data_line2);
+
+    if (mw[ii].message_data_line1)
+        XtDestroyWidget(mw[ii].message_data_line1);
+
+
+    mw[ii].message_data_line1 = NULL;
+    mw[ii].message_data_line2 = NULL;
+    mw[ii].message_data_line3 = NULL;
+    mw[ii].message_data_line4 = NULL;
+
+
+    // Build the new boxes
+    build_send_message_input_boxes(ii, d700, d7);
+
+
+    // Bring up the reconstructed dialog
+//    XtPopup(mw[ii].send_message_dialog, XtGrabNone);
+}
+
+
+
+
+
+void D700_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    int ii = (int)clientData;
+    int d700;
+
+    d700 = XmToggleButtonGetState(mw[ii].D700_mode);
+
+    if (d700) {
+        XmToggleButtonSetState(mw[ii].D7_mode,FALSE,FALSE);
+    }
+    rebuild_send_message_input_boxes(ii, d700, 0);
+}
+
+
+
+
+
+void D7_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    int ii = (int)clientData;
+    int d7;
+
+    d7 = XmToggleButtonGetState(mw[ii].D7_mode);
+
+    if (d7) {
+        XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
+    }
+    rebuild_send_message_input_boxes(ii, 0, d7);
+}
+
+
+
+
+
 // The main Send Message dialog.  db.c:update_messages() is the
 // function which fills in the message history information.
 //
@@ -1115,6 +1514,21 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 //
 //  "DEFAULT PATH"
 //  "DIRECT PATH"
+//
+// A note from Jim Fuller, N7VR:
+//
+//   "I just set a test setup to my TH-D7GA.  First Display shows
+//   two lines 12 characters each, with the a third line of 12
+//   character and fourth line of 9 characters on the second display
+//   by pressing ok.  This means 45 characters for max message.
+//
+//   On my D-700, main first display is like the TH-D7GA.  But when
+//   I go to the message display it displays three lines.  The first
+//   two are 22 characters and the last is 20 characters.  This
+//   means 64 characters total.
+//
+//   I would only send a 24 character message to field troops, based
+//   on first read capability."
 //
 //
 void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
@@ -1127,12 +1541,12 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     int box_len;
     Atom delw;
 //    DataRow *p_station;
-
+ 
 
 //fprintf(stderr,"Send_message\n");
 
     groupon=0;
-    box_len=90;
+    box_len=105;
     i=0;
 
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
@@ -1281,6 +1695,58 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 NULL);
 
 // Row 2 (1 up from bottom row)
+
+        // If D700 or D7 mode is enabled we break up the message
+        // box into 3 or 4 boxes with the lengths appropriate for
+        // those devices, else we use a single box which is 67 chars
+        // long, the maximum for an APRS message.
+        //
+        // Size of Kenwood screens:
+        // TH-D7A/E: Arranged as 12,12,12,9 (45 chars) 
+        // TM-D700A: Arranged as 22,22,20   (64 chars)
+        //
+
+// First have radio buttons to change how we'll draw the message
+// input widgets:
+
+        mw[i].D7_mode =XtVaCreateManagedWidget("D7",
+                xmToggleButtonGadgetClass,
+                mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].button_clear_old_msgs,
+                XmNbottomOffset, 0,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(mw[i].D7_mode,XmNvalueChangedCallback,D7_Msg,(XtPointer)i);
+
+        mw[i].D700_mode =XtVaCreateManagedWidget("D700",
+                xmToggleButtonGadgetClass,
+                mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].D7_mode,
+                XmNbottomOffset, -5,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+            NULL);
+        XtAddCallback(mw[i].D700_mode,XmNvalueChangedCallback,D700_Msg,(XtPointer)i);
+
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
                 xmLabelWidgetClass, 
                 mw[i].form,
@@ -1288,90 +1754,31 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].button_clear_old_msgs,
                 XmNbottomOffset, 10,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].D700_mode,
+                XmNleftOffset, 3,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        mw[i].send_message_message_data = XtVaCreateManagedWidget("Send_message smmd", 
-//                xmTextFieldWidgetClass, 
-                xmTextWidgetClass, 
-                mw[i].form,
-                XmNeditable,   TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNwordWrap, FALSE,
-                XmNscrollHorizontal, FALSE,
-                XmNscrollVertical, FALSE,
+
+// Default:  No D700 or D7 mode selected.  Standard APRS mode.
+// Go build the proper input box for standard APRS mode, 67
+// chars long.
 //
-// 67 is max length of APRS message.
-// Size of Kenwood screens:
-// TH-D7A/E: Arranged as 12,12,12,9 (45 chars) 
-// TM-D700A: Arranged as 22,22,20   (64 chars)
-//
-// Standard APRS:
-                XmNcolumns, 67,
-                XmNwidth, ((67*7)+2),
-                XmNmaxLength, 67,
-                XmNeditMode, XmSINGLE_LINE_EDIT,
-//
-// Kenwood TH-D7A/E:
-//                XmNcolumns, 12,
-//                XmNrows, 4,
-//                XmNminHeight, 4,
-//                XmNmaxHeight, 4,
-//                XmNwidth, ((12*7)+2),
-//                XmNmaxLength, 45,
-//                XmNeditMode, XmMULTI_LINE_EDIT,
-//
-// Kenwood TM-D700A:
-//                XmNcolumns, 22,
-//                XmNminWidth, 22,
-//                XmNmaxWidth, 22,
-//                XmNwidth, ((22*7)),
-//                XmNrows, 3,
-//                XmNminHeight, 3,
-//                XmNmaxHeight, 3,
-//                XmNmaxLength, 64,
-//                XmNeditMode, XmMULTI_LINE_EDIT,
-//
-//
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_WIDGET,
-                XmNbottomWidget, mw[i].button_clear_old_msgs,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].message,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                NULL);
+        build_send_message_input_boxes(i, 0, 0);
 
 
-
-// mw[i].send_message_message_data2 = XtVaCreateManagedWidget("Send_message smmd", 
-// mw[i].send_message_message_data3 = XtVaCreateManagedWidget("Send_message smmd", 
-// mw[i].send_message_message_data4 = XtVaCreateManagedWidget("Send_message smmd", 
-// Could perhaps have a Kenwood preview window that shows how it
-// would be formatted for TM-D700A/TH-D7A/TH-D7E, but leave the
-// input field as a single TextFieldWidget.
-
-
- 
 // Row 3 (2 up from bottom row)
         mw[i].call = XtVaCreateManagedWidget(langcode(groupon == 0  ? "WPUPMSB003": "WPUPMSB004"),
                 xmLabelWidgetClass, mw[i].form,
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
-                XmNbottomOffset, 10,
+                XmNbottomOffset, 15,
                 XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
+                XmNleftOffset, 14,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -1391,7 +1798,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
-                XmNbottomOffset, 5,
+                XmNbottomOffset, 10,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, mw[i].call,
                 XmNleftOffset, 5,
@@ -1411,7 +1818,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
-                XmNbottomOffset, 7,
+                XmNbottomOffset, 12,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
@@ -1424,7 +1831,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
-                XmNbottomOffset, 10,
+                XmNbottomOffset, 15,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, mw[i].button_submit_call,
                 XmNleftOffset, 10,
@@ -1442,7 +1849,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
-                XmNbottomOffset, 7,
+                XmNbottomOffset, 12,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -1463,7 +1870,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
-                XmNbottomOffset, 5,
+                XmNbottomOffset, 10,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, mw[i].path,
                 XmNleftOffset, 10,
@@ -1514,7 +1921,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtAddCallback(mw[i].send_message_change_path, XmNactivateCallback, Send_message_change_path, (XtPointer)mw[i].win);
  
         XtAddCallback(mw[i].button_ok, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
-        XtAddCallback(mw[i].send_message_message_data, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+
         XtAddCallback(mw[i].button_cancel, XmNactivateCallback, Send_message_destroy_shell,(XtPointer)mw[i].win);
  
 // Note group messages isn't implemented fully yet.  When it is, the following might have

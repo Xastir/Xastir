@@ -35,7 +35,7 @@
 #define MESSAGE_CLEAR 'C'
 
 #define MAX_OUTGOING_MESSAGES 100
-#define MAX_MESSAGE_OUTPUT_LENGTH 64
+#define MAX_MESSAGE_OUTPUT_LENGTH 67
 #define MAX_MESSAGE_ORDER 10
 
 // Max tries to get a message through
@@ -62,7 +62,12 @@ typedef struct {
     int message_group;
     Widget send_message_dialog;
     Widget send_message_call_data;
-    Widget send_message_message_data;
+    Widget D700_mode;
+    Widget D7_mode;
+    Widget message_data_line1;
+    Widget message_data_line2;
+    Widget message_data_line3;
+    Widget message_data_line4;
     Widget send_message_text;
     Widget send_message_path;
     Widget send_message_reverse_path;

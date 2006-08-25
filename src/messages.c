@@ -101,7 +101,12 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_message_wind
         mw[i].send_message_dialog = (Widget)NULL;
         mw[i].to_call_sign[0] = '\0';
         mw[i].send_message_call_data = (Widget)NULL;
-        mw[i].send_message_message_data = (Widget)NULL;
+        mw[i].D700_mode = (Widget)NULL;
+        mw[i].D7_mode = (Widget)NULL;
+        mw[i].message_data_line1 = (Widget)NULL;
+        mw[i].message_data_line2 = (Widget)NULL;
+        mw[i].message_data_line3 = (Widget)NULL;
+        mw[i].message_data_line4 = (Widget)NULL;
         mw[i].send_message_text = (Widget)NULL;
     }
 
@@ -610,12 +615,14 @@ void bump_message_counter(void) {
 //
 void output_message(char *from, char *to, char *message, char *path) {
     int ok,i,j;
-    char message_out[MAX_MESSAGE_OUTPUT_LENGTH+1];
+    char message_out[MAX_MESSAGE_OUTPUT_LENGTH+1+5+1]; // +'{' +msg_id +terminator
     int last_space, message_ptr, space_loc;
     int wait_on_first_ack;
     int error;
     long record;
 
+
+//fprintf(stderr,"output_message:%s\n", message);
 
     message_ptr=0;
     last_space=0;
@@ -637,22 +644,28 @@ void output_message(char *from, char *to, char *message, char *path) {
         // processed into APRS messages.  Break at a space character
         // if possible.
         //
-        for (j=0;j<MAX_MESSAGE_OUTPUT_LENGTH;j++) {
+        for (j=0; j<MAX_MESSAGE_OUTPUT_LENGTH; j++) {
+
             if(message[j+message_ptr] != '\0') {
+
                 if(message[j+message_ptr]==' ') {
                     last_space=j+message_ptr+1;
                     space_loc=j;
                 }
-                if ((j+1)!=MAX_MESSAGE_OUTPUT_LENGTH) {
+
+                if (j!=MAX_MESSAGE_OUTPUT_LENGTH) {
                     message_out[j]=message[j+message_ptr];
                     message_out[j+1] = '\0';
-                } else {
+                }
+                else {
+
                     if(space_loc!=0)
                         message_out[space_loc] = '\0';
                     else
                         last_space=j+message_ptr;
                 }
-            } else {
+            }
+            else {
                 j=MAX_MESSAGE_OUTPUT_LENGTH+1;
                 last_space=strlen(message)+1;
             }
@@ -663,7 +676,12 @@ void output_message(char *from, char *to, char *message, char *path) {
         if (debug_level & 2)
             fprintf(stderr,"MESSAGE <%s> %d %d\n",message_out,message_ptr,last_space);
 
-        message_ptr=last_space;
+        if (j >= MAX_MESSAGE_OUTPUT_LENGTH) {
+            message_ptr = MAX_MESSAGE_OUTPUT_LENGTH;
+        }
+        else {
+            message_ptr=last_space;
+        }
 
         /* check for others in the queue */
         wait_on_first_ack=0;
@@ -934,7 +952,7 @@ void transmit_message_data(char *to, char *message, char *path) {
 // Create a struct to hold the delayed ack's.
 typedef struct _delayed_ack_record {
     char to_call_sign[MAX_CALLSIGN+1];
-    char message_line[MAX_MESSAGE_OUTPUT_LENGTH+1];
+    char message_line[MAX_MESSAGE_OUTPUT_LENGTH+1+5+1];
     char path[200];
     time_t active_time;
     struct _delayed_ack_record *next;

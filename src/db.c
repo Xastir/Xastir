@@ -1607,7 +1607,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 int j = p_prev->index;  // Snag the index out of the record
                                 char prefix[50];
                                 char interval_str[50];
-                                int offset = 23;    // Offset for highlighting
+                                int offset = 22;    // Offset for highlighting
 
 
                                 //fprintf(stderr,"\nLooping through, reading messages\n");
@@ -1658,7 +1658,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 if (msg_data[msg_index[j]].interval) {
                                     xastir_snprintf(interval_str,
                                         sizeof(interval_str),
-                                        ">%d @ %ldsecs",
+                                        ">%d/%lds",
                                         msg_data[msg_index[j]].tries + 1,
                                         (long)msg_data[msg_index[j]].interval);
 
@@ -1671,7 +1671,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 }
 
                                 xastir_snprintf(temp2, sizeof(temp2),
-                                    "%s  %-9s%s>%s%s\n",
+                                    "%s %-9s%s>%s%s\n",
                                     // Debug code.  Trying to find sorting error
                                     //"%ld  %s  %-9s>%s\n",
                                     //msg_data[msg_index[j]].sec_heard,
@@ -1681,6 +1681,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     prefix,
                                     msg_data[msg_index[j]].message_line);
 
+//fprintf(stderr,"message: %s\n", msg_data[msg_index[j]].message_line);
 //fprintf(stderr,"update_messages: %s|%s", temp1, temp2);
  
                                 if (debug_level & 2) fprintf(stderr,"update_messages: %s|%s\n", temp1, temp2);
@@ -15263,7 +15264,6 @@ else {
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) == 0 && to_my_call) {   // Message for me (including SSID check)
                                                         // but without message-ID.
-
         // These should appear in a Send Message dialog and should
         // NOT get ack'ed.  Kenwood radios send this message type as
         // an auto-answer or a buffer-full message.  They look
@@ -15275,6 +15275,16 @@ else {
         time_t last_ack_sent;
         long record;
 
+
+        if (len > 2
+                && message[0] == '?'
+                && port != -1   // Not from a log file
+                && to_my_call) { // directed query (check SSID also)
+            // Smallest query known is "?WX".
+            if (debug_level & 1)
+                fprintf(stderr,"Received a directed query\n");
+            done = process_directed_query(call,path,message+1,from);
+        }
 
         // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
         last_ack_sent = msg_data_add(addr,
@@ -15518,22 +15528,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
     if (debug_level & 1)
         fprintf(stderr,"7\n");
     //--------------------------------------------------------------------------
-    if (!done && len > 2
-            && message[0] == '?'
-            && port != -1   // Not from a log file
-//            && is_my_call(addr,1)) { // directed query (check SSID also)
-            && to_my_call) { // directed query (check SSID also)
-        // Smallest query known is "?WX".
-        if (debug_level & 1)
-            fprintf(stderr,"Received a directed query\n");
-        done = process_directed_query(call,path,message+1,from);
-    }
-    if (debug_level & 1)
-        fprintf(stderr,"8\n");
-    //--------------------------------------------------------------------------
-    // special treatment required?: Msg w/o line for me ?  Can also
-    // be messages between other people (much more common).
-    //--------------------------------------------------------------------------
+
     if (!done) {                                   // message without line number
         long record_out;
         time_t last_ack_sent;
