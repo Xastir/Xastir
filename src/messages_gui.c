@@ -1594,6 +1594,96 @@ void D7_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callDat
 
 
 
+// Select HamHUD/D7/D700/Normal APRS messaging based on info
+// available in the station record.  Change the Send Message dialog
+// to match.
+//
+// Only call this when the Send Message dialog is first constructed
+// or when we hit the New/Refresh Call button.  We don't want to
+// have the user fighting against this function every sent or
+// received packet if this function happens to guess wrong.
+//
+void select_station_type(int ii) {
+    DataRow *p_station;
+    char call_sign[MAX_CALLSIGN+1];
+    char *temp_ptr;
+
+
+//WE7U
+    temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
+    xastir_snprintf(call_sign,
+        sizeof(call_sign),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    // We have the callsign.  See if we have the station name in our
+    // database.
+    if (call_sign[0] != '\0'
+            && search_station_name(&p_station, call_sign, 1) ) { // Exact match
+
+        int hamhud = 0;
+        int d700 = 0;
+        int d7 = 0;
+
+
+//fprintf(stderr,"Found callsign: %s\n", call_sign);
+
+        // Check first two comment records, if they exist
+        if (p_station->comment_data != NULL) {
+
+            // Check first comment record
+            if (strstr(p_station->comment_data->text_ptr,"TM-D700")) {
+                d700++;
+            }
+            else if (strstr(p_station->comment_data->text_ptr,"TH-D7")) {
+                d7++;
+            }
+            else if (p_station->comment_data->next) {
+                // Check second comment record
+                if (strstr(p_station->comment_data->next->text_ptr,"TM-D700")) {
+                    d700++;
+                }
+                else if (strstr(p_station->comment_data->next->text_ptr,"TH-D7")) {
+                    d7++;
+                }
+            }
+        }
+
+        // If not D700 or D7, check for HamHUD in the TOCALL.
+        if (!d700 && !d7) {
+            if (strncmp(p_station->node_path_ptr,"APRHH2",6) == 0) {
+            }
+        }
+
+        if (hamhud) {
+//            fprintf(stderr,"HamHUD found\n");
+            XmToggleButtonSetState(mw[ii].HamHUD_mode,TRUE,FALSE);
+            XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
+            XmToggleButtonSetState(mw[ii].D7_mode,FALSE,FALSE);
+            rebuild_send_message_input_boxes(ii, hamhud, 0, 0);
+        }
+        else if (d700) { 
+//            fprintf(stderr,"D700 found\n");
+            XmToggleButtonSetState(mw[ii].HamHUD_mode,FALSE,FALSE);
+            XmToggleButtonSetState(mw[ii].D700_mode,TRUE,FALSE);
+            XmToggleButtonSetState(mw[ii].D7_mode,FALSE,FALSE);
+            rebuild_send_message_input_boxes(ii, 0, d700, 0);
+        }
+        else if (d7) {
+//            fprintf(stderr,"D7 found\n");
+            XmToggleButtonSetState(mw[ii].HamHUD_mode,FALSE,FALSE);
+            XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
+            XmToggleButtonSetState(mw[ii].D7_mode,TRUE,FALSE);
+            rebuild_send_message_input_boxes(ii, 0, 0, d7);
+        }
+    }
+}
+
+
+
+
+
 // The main Send Message dialog.  db.c:update_messages() is the
 // function which fills in the message history information.
 //
@@ -2077,6 +2167,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
     }
 
+select_station_type(i);
+ 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 
 }
