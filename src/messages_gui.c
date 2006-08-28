@@ -786,6 +786,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
     mw[ii].send_message_call_data = (Widget)NULL;
     mw[ii].D700_mode = (Widget)NULL;
     mw[ii].D7_mode = (Widget)NULL;
+    mw[ii].HamHUD_mode = (Widget)NULL;
     mw[ii].message_data_line1 = (Widget)NULL;
     mw[ii].message_data_line2 = (Widget)NULL;
     mw[ii].message_data_line3 = (Widget)NULL;
@@ -856,6 +857,7 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
     int substitution_made = 0;
     int d700;
     int d7;
+    int hamhud;
 
 
     ii=atoi((char *)clientData);
@@ -866,6 +868,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
 
         d700 = XmToggleButtonGetState(mw[ii].D700_mode);
         d7 = XmToggleButtonGetState(mw[ii].D7_mode);
+        hamhud = XmToggleButtonGetState(mw[ii].HamHUD_mode);
 
         temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
         xastir_snprintf(temp1,
@@ -886,8 +889,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             temp_ptr);
         XtFree(temp_ptr);
 
-        // If D700/D7 mode, fetch message_data_line2
-        if (d700 || d7) {
+        // If D700/D7/HamHUD mode, fetch message_data_line2
+        if (d700 || d7 || hamhud) {
             temp_ptr = XmTextFieldGetString(mw[ii].message_data_line2);
             xastir_snprintf(temp_line2,
                 sizeof(temp_line2),
@@ -917,7 +920,14 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         }
 
         // Construct the entire message now
-        if (d700) { // Combine three lines together
+        if (hamhud) { // Combine two lines together
+            xastir_snprintf(temp2,
+                sizeof(temp2),
+                "%-20s%-47s",
+                temp_line1,
+                temp_line2);
+        }
+        else if (d700) { // Combine three lines together
             xastir_snprintf(temp2,
                 sizeof(temp2),
                 "%-22s%-22s%-20s",
@@ -1199,10 +1209,66 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 
 
 
-void build_send_message_input_boxes(int i, int d700, int d7) {
+void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
+
+//fprintf(stderr, "  build:   i:%d  hamhud:%d  d700:%d  d7:%d\n", i, hamhud, d700, d7);
+
+    // HamHUD mode (Here we're assuming the 4x20 LCD in the HamHUD-II)
+    if (hamhud) {
+
+        // Draw a textfield widget of size 20
+        mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 22,
+            XmNwidth, ((22*7)),
+            XmNmaxLength, 20,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message,
+            XmNleftOffset, 5,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+
+        // Draw another textfield widget of size 47
+        mw[i].message_data_line2 = XtVaCreateManagedWidget("Send_message line2", 
+            xmTextFieldWidgetClass, 
+            mw[i].form,
+            XmNeditable,   TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive, TRUE,
+            XmNshadowThickness,    1,
+            XmNcolumns, 43,
+            XmNwidth, ((43*7)),
+            XmNmaxLength, 47,
+            XmNbackground, colors[0x0f],
+            XmNtopAttachment, XmATTACH_NONE,
+            XmNbottomAttachment, XmATTACH_WIDGET,
+            XmNbottomWidget, mw[i].button_clear_old_msgs,
+            XmNbottomOffset, 5,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, mw[i].message_data_line1,
+            XmNleftOffset, 2,
+            XmNrightAttachment,XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, TRUE,
+            NULL);
+    }
 
     // D700A mode
-    if (d700) {
+    else if (d700) {
+
+        // Draw a textfield widget of size 22
         mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1226,8 +1292,7 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
             XmNtraversalOn, TRUE,
             NULL);
 
-        // Draw another textfield widget of size 22 and another of size 20
-
+        // Draw another textfield widget of size 22
         mw[i].message_data_line2 = XtVaCreateManagedWidget("Send_message line2", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1251,6 +1316,7 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
             XmNtraversalOn, TRUE,
             NULL);
 
+        // Draw another textfield widget of size 20
         mw[i].message_data_line3 = XtVaCreateManagedWidget("Send_message line3", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1258,8 +1324,8 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
             XmNcursorPositionVisible, TRUE,
             XmNsensitive, TRUE,
             XmNshadowThickness,    1,
-            XmNcolumns, 20,
-            XmNwidth, ((20*7)),
+            XmNcolumns, 21,
+            XmNwidth, ((21*7)),
             XmNmaxLength, 20,
             XmNbackground, colors[0x0f],
             XmNtopAttachment, XmATTACH_NONE,
@@ -1278,6 +1344,7 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
     // D7A/D7E Mode
     else if (d7) {
 
+        // Draw a textfield widget of size 12
         mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1301,8 +1368,7 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
             XmNtraversalOn, TRUE,
             NULL);
 
-        // Draw two more textfield widgets of size 12 and one more of size 9
-
+        // Draw a textfield widget of size 12
         mw[i].message_data_line2 = XtVaCreateManagedWidget("Send_message line2", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1330,6 +1396,7 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
 // indicate that the first two are one screen on a TH-D7, the next
 // two are another screen.
 
+        // Draw a textfield widget of size 12
         mw[i].message_data_line3 = XtVaCreateManagedWidget("Send_message line3", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1353,6 +1420,7 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
             XmNtraversalOn, TRUE,
             NULL);
 
+        // Draw a textfield widget of size 9
         mw[i].message_data_line4 = XtVaCreateManagedWidget("Send_message line4", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -1420,7 +1488,10 @@ void build_send_message_input_boxes(int i, int d700, int d7) {
 
 
 
-void rebuild_send_message_input_boxes(int ii, int d700, int d7) {
+void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
+
+//fprintf(stderr, "\nrebuild:  ii:%d  hamhud:%d  d700:%d  d7:%d\n", ii, hamhud, d700, d7);
+
 
     // Take down the dialog
 //    XtPopdown(mw[ii].send_message_dialog);
@@ -1447,7 +1518,7 @@ void rebuild_send_message_input_boxes(int ii, int d700, int d7) {
     if (mw[ii].message_data_line3)
         XtDestroyWidget(mw[ii].message_data_line3);
 
-    if (mw[ii].message_data_line3)
+    if (mw[ii].message_data_line2)
         XtDestroyWidget(mw[ii].message_data_line2);
 
     if (mw[ii].message_data_line1)
@@ -1461,11 +1532,28 @@ void rebuild_send_message_input_boxes(int ii, int d700, int d7) {
 
 
     // Build the new boxes
-    build_send_message_input_boxes(ii, d700, d7);
+    build_send_message_input_boxes(ii, hamhud, d700, d7);
 
 
     // Bring up the reconstructed dialog
 //    XtPopup(mw[ii].send_message_dialog, XtGrabNone);
+}
+
+
+
+
+
+void HamHUD_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    int ii = (int)clientData;
+    int hamhud;
+
+    hamhud = XmToggleButtonGetState(mw[ii].HamHUD_mode);
+
+    if (hamhud) {
+        XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
+        XmToggleButtonSetState(mw[ii].D7_mode,FALSE,FALSE);
+    }
+    rebuild_send_message_input_boxes(ii, hamhud, 0, 0);
 }
 
 
@@ -1479,9 +1567,10 @@ void D700_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callD
     d700 = XmToggleButtonGetState(mw[ii].D700_mode);
 
     if (d700) {
+        XmToggleButtonSetState(mw[ii].HamHUD_mode,FALSE,FALSE);
         XmToggleButtonSetState(mw[ii].D7_mode,FALSE,FALSE);
     }
-    rebuild_send_message_input_boxes(ii, d700, 0);
+    rebuild_send_message_input_boxes(ii, 0, d700, 0);
 }
 
 
@@ -1495,9 +1584,10 @@ void D7_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callDat
     d7 = XmToggleButtonGetState(mw[ii].D7_mode);
 
     if (d7) {
+        XmToggleButtonSetState(mw[ii].HamHUD_mode,FALSE,FALSE);
         XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
     }
-    rebuild_send_message_input_boxes(ii, 0, d7);
+    rebuild_send_message_input_boxes(ii, 0, 0, d7);
 }
 
 
@@ -1705,6 +1795,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         // TH-D7A/E: Arranged as 12,12,12,9 (45 chars) 
         // TM-D700A: Arranged as 22,22,20   (64 chars)
         //
+        // Size of HamHUD screen:
+        // 20 char fits on one screen, any more gets scrolled.
+        //
 
 // First have radio buttons to change how we'll draw the message
 // input widgets:
@@ -1734,7 +1827,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].D7_mode,
-                XmNbottomOffset, -5,
+                XmNbottomOffset, 0,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 5,
                 XmNrightAttachment, XmATTACH_NONE,
@@ -1747,6 +1840,25 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
             NULL);
         XtAddCallback(mw[i].D700_mode,XmNvalueChangedCallback,D700_Msg,(XtPointer)i);
 
+        mw[i].HamHUD_mode =XtVaCreateManagedWidget("HamHUD",
+                xmToggleButtonGadgetClass,
+                mw[i].form,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+                XmNbottomWidget, mw[i].D700_mode,
+                XmNbottomOffset, 0,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNvisibleWhenOff, TRUE,
+                XmNindicatorSize, 12,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+            NULL);
+        XtAddCallback(mw[i].HamHUD_mode,XmNvalueChangedCallback,HamHUD_Msg,(XtPointer)i);
+
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
                 xmLabelWidgetClass, 
                 mw[i].form,
@@ -1755,7 +1867,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbottomWidget, mw[i].button_clear_old_msgs,
                 XmNbottomOffset, 10,
                 XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].D700_mode,
+                XmNleftWidget, mw[i].HamHUD_mode,
                 XmNleftOffset, 3,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
@@ -1767,7 +1879,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 // Go build the proper input box for standard APRS mode, 67
 // chars long.
 //
-        build_send_message_input_boxes(i, 0, 0);
+        build_send_message_input_boxes(i, 0, 0, 0);
 
 
 // Row 3 (2 up from bottom row)
@@ -1777,8 +1889,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbottomAttachment, XmATTACH_WIDGET,
                 XmNbottomWidget, mw[i].message,
                 XmNbottomOffset, 15,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 14,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, mw[i].HamHUD_mode,
+                XmNleftOffset, 5,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,

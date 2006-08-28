@@ -64,6 +64,7 @@ typedef struct {
     Widget send_message_call_data;
     Widget D700_mode;
     Widget D7_mode;
+    Widget HamHUD_mode;
     Widget message_data_line1;
     Widget message_data_line2;
     Widget message_data_line3;

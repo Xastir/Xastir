@@ -103,6 +103,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_message_wind
         mw[i].send_message_call_data = (Widget)NULL;
         mw[i].D700_mode = (Widget)NULL;
         mw[i].D7_mode = (Widget)NULL;
+        mw[i].HamHUD_mode = (Widget)NULL;
         mw[i].message_data_line1 = (Widget)NULL;
         mw[i].message_data_line2 = (Widget)NULL;
         mw[i].message_data_line3 = (Widget)NULL;
