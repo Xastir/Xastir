@@ -52,7 +52,8 @@ Widget auto_msg_set_data = (Widget)NULL;
 static xastir_mutex auto_msg_dialog_lock;
 xastir_mutex send_message_dialog_lock;
 
-
+void select_station_type(int ii);
+ 
 
 
 
@@ -807,7 +808,8 @@ void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@un
     int i, pos;
 
 
-    i=atoi((char *)clientData);
+    i=(int)clientData;
+ 
     /* clear window*/
     pos=0;
 
@@ -830,6 +832,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_messages" );
 
     update_messages(1); // Force an immediate update
+
+    if (mw[i].send_message_dialog) {
+        // Re-arrange the outgoing message boxes based on the type of device we're talking to.
+        select_station_type(i);
+    }
 }
 
 
@@ -1162,6 +1169,8 @@ void Kick_timer( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
         temp_ptr);
     XtFree(temp_ptr);
 
+    (void)remove_trailing_spaces(temp1);
+    (void)to_upper(temp1);
     (void)remove_trailing_dash_zero(temp1);
 
     kick_outgoing_timer(temp1);
@@ -1183,6 +1192,8 @@ void Clear_messages_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
             temp_ptr);
     XtFree(temp_ptr);
 
+    (void)remove_trailing_spaces(temp1);
+    (void)to_upper(temp1);
     (void)remove_trailing_dash_zero(temp1);
 
     clear_outgoing_messages_to(temp1);
@@ -1614,13 +1625,15 @@ void select_station_type(int ii) {
     char *temp_ptr;
 
 
-//WE7U
     temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
     xastir_snprintf(call_sign,
         sizeof(call_sign),
         "%s",
         temp_ptr);
     XtFree(temp_ptr);
+
+    (void)remove_trailing_spaces(call_sign);
+    (void)to_upper(call_sign);
 
     // We have the callsign.  See if we have the station name in our
     // database.
@@ -1681,6 +1694,13 @@ void select_station_type(int ii) {
             XmToggleButtonSetState(mw[ii].HamHUD_mode,FALSE,FALSE);
             XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
             XmToggleButtonSetState(mw[ii].D7_mode,TRUE,FALSE);
+            rebuild_send_message_input_boxes(ii, 0, 0, d7);
+        }
+        else {
+//            fprintf(stderr,"Standard APRS found\n");
+            XmToggleButtonSetState(mw[ii].HamHUD_mode,FALSE,FALSE);
+            XmToggleButtonSetState(mw[ii].D700_mode,FALSE,FALSE);
+            XmToggleButtonSetState(mw[ii].D7_mode,FALSE,FALSE);
             rebuild_send_message_input_boxes(ii, 0, 0, d7);
         }
     }
@@ -2143,7 +2163,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         XtAddCallback(mw[i].button_kick_timer, XmNactivateCallback, Kick_timer, (XtPointer)mw[i].win);
 
-        XtAddCallback(mw[i].button_submit_call, XmNactivateCallback, Check_new_call_messages, (XtPointer)mw[i].call);
+        XtAddCallback(mw[i].button_submit_call, XmNactivateCallback, Check_new_call_messages, (XtPointer)i);
 
         if (clientData != NULL) {
             XmTextFieldSetString(mw[i].send_message_call_data, group);
@@ -2173,7 +2193,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
     }
 
-select_station_type(i);
+    // Re-arrange the outgoing message boxes based on the type of
+    // device we're talking to.
+    select_station_type(i);
  
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 
