@@ -102,7 +102,10 @@ void view_message_print_record(Message *m_fill) {
 
     // Make sure it's within our distance range we have set
     distance = (int)distance_from_my_station(m_fill->from_call_sign,temp_my_course);
-    if ((vm_range == 0) || (distance <= vm_range)) {
+
+    if (Read_messages_mine_only
+            || (!Read_messages_mine_only
+                && ( (vm_range == 0) || (distance <= vm_range) ) ) ) {
  
         // Check that it's coming from the correct type of interface
         // Compare Read_messages_packet_data_type against the port
@@ -212,7 +215,10 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
     XmTextPosition drop_ptr;
 
 
-    if ((vm_range == 0) || ((int)distance_from_my_station(call_sign,temp_my_course) <= vm_range)) {
+    if (Read_messages_mine_only
+            || (!Read_messages_mine_only
+                && ((vm_range == 0)
+                    || ((int)distance_from_my_station(call_sign,temp_my_course) <= vm_range)) ) ) {
 
         // Check that it's coming from the correct type of interface
         // Compare Read_messages_packet_data_type against the port
@@ -401,14 +407,24 @@ void  Read_messages_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientD
 
 
 
+Widget button_range;
+
+
+
+
+
 void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if(state->set)
+    if(state->set) {
         Read_messages_mine_only = atoi(which);
-    else
+        XtSetSensitive(vm_dist_data, FALSE);
+    }
+    else {
         Read_messages_mine_only = 0;
+        XtSetSensitive(vm_dist_data, TRUE);
+    }
 }
 
 
@@ -416,7 +432,7 @@ void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clie
 
 
 void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    Widget pane, my_form, button_range, button_close, dist, dist_units;
+    Widget pane, my_form, button_close, dist, dist_units;
     Widget option_box, tnc_data, net_data, tnc_net_data,
         read_mine_only_button;
     unsigned int n;
@@ -661,10 +677,14 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 break;
         }
 
-        if (Read_messages_mine_only)
+        if (Read_messages_mine_only) {
             XmToggleButtonSetState(read_mine_only_button,TRUE,FALSE);
-        else
+            XtSetSensitive(vm_dist_data, FALSE);
+        }
+        else {
             XmToggleButtonSetState(read_mine_only_button,FALSE,FALSE);
+            XtSetSensitive(vm_dist_data, TRUE);
+        }
 
         XtManageChild(option_box);
         XtManageChild(view_messages_text);
