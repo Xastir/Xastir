@@ -5007,7 +5007,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
-    Widget pan_ctr, last_loc, station_info, set_object, modify_object;
+    Widget pan_ctr, last_loc, station_info, send_message_to;
+    Widget set_object, modify_object;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
@@ -8274,6 +8275,20 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
     XtAddCallback(station_info,XmNactivateCallback,Station_info,NULL);
+
+    // Send Message To
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("PULDNMG001")); ac++;
+    send_message_to=XtCreateManagedWidget(langcode("PULDNMG001"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(send_message_to,XmNactivateCallback,Station_info,"4");
 
     // Map Bookmarks
     ac = 0;

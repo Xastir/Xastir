@@ -5351,6 +5351,13 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
  *  List station info and trail
  *  If calldata is non-NULL, then we drop straight through to the
  *  Modify->Object or Assign_Tactical_Call dialogs.
+ *
+ * clientData: NULL = Station Info
+ *             "1"  = Object -> Modify
+ *             "2"  = Move Object
+ *             "3"  = Assign Tactical Call
+ *             "4"  = Send Message To
+ *
  */
 void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
@@ -5931,6 +5938,11 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         else if (strncmp(calldata,"3",1) == 0) {
             Assign_Tactical_Call(w, (XtPointer)p_station, calldata);
         }
+        else if (strncmp(calldata,"4",1) == 0) {
+//fprintf(stderr,"Send Message To: %s\n", p_station->call_sign);
+            Send_message_call(NULL, (XtPointer) p_station->call_sign, NULL);
+        }
+
         // We just drew all of the above, but now we wish to destroy it and
         // just leave the modify dialog in place.
         Station_data_destroy_shell(w, (XtPointer)db_station_info, NULL);
@@ -6077,6 +6089,12 @@ end_critical_section(&db_station_popup_lock, "db.c:Station_info_select_destroy_s
  *  otherwise we get a selection box
  *  clientData will be non-null if we wish to drop through to the object->modify
  *  or Assign Tactical Call dialogs.
+ *
+ * clientData: NULL = Station Info
+ *             "1"  = Object -> Modify
+ *             "2"  = Move Object
+ *             "3"  = Assign Tactical Call
+ *             "4"  = Send Message To
  */
 void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
@@ -15079,6 +15097,7 @@ if (reply_ack) { // For debugging, so we only have reply-ack
         time_t last_ack_sent;
         long record;
 
+
 // Remember to put this code into the UI message area as well (if
 // applicable).
 
@@ -15436,9 +15455,17 @@ else {
         fprintf(stderr,"6b\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {  // Other message with linenumber. This is
-                                        // probably a message for someone else.
+                                        // probably a message for
+                                        // someone else but could be
+                                        // a message for another one
+                                        // of my SSID's.
         long record_out;
         time_t last_ack_sent;
+
+
+// WE7U
+// Set this section up to do check_popup_window() for my other
+// SSID's.
 
  
         if (debug_level & 2)
