@@ -1669,8 +1669,12 @@ void select_station_type(int ii) {
         }
 
         // If not D700 or D7, check for HamHUD in the TOCALL.
+        // APHH2/APRHH2.  We'll skip the version number soas to
+        // catch future versions as well.
+        //
         if (!d700 && !d7) {
-            if (strncmp(p_station->node_path_ptr,"APRHH2",6) == 0) {
+            if (strncmp(p_station->node_path_ptr,"APRHH",5) == 0
+                    || strncmp(p_station->node_path_ptr,"APHH",4) == 0) {
                 hamhud++;
             }
         }
