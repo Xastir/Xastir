@@ -889,8 +889,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             temp_ptr);
         XtFree(temp_ptr);
 
-        // If D700/D7/HamHUD mode, fetch message_data_line2
-        if (d700 || d7 || hamhud) {
+        // If D700/D7 mode, fetch message_data_line2
+        if (d700 || d7) {
             temp_ptr = XmTextFieldGetString(mw[ii].message_data_line2);
             xastir_snprintf(temp_line2,
                 sizeof(temp_line2),
@@ -1240,6 +1240,10 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNtraversalOn, TRUE,
             NULL);
 
+// HamHUD will display all 67 chars, but only stores the first 20,
+// therefore if you want the recipient to be able to look at it
+// later, only send them 20 chars per message.
+/*
         // Draw another textfield widget of size 47
         mw[i].message_data_line2 = XtVaCreateManagedWidget("Send_message line2", 
             xmTextFieldWidgetClass, 
@@ -1263,6 +1267,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
             NULL);
+*/
     }
 
     // D700A mode
@@ -1653,6 +1658,7 @@ void select_station_type(int ii) {
         // If not D700 or D7, check for HamHUD in the TOCALL.
         if (!d700 && !d7) {
             if (strncmp(p_station->node_path_ptr,"APRHH2",6) == 0) {
+                hamhud++;
             }
         }
 
