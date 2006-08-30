@@ -5358,8 +5358,8 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     int erd;
     int write_in_pos_hold;
 
-//fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
+//fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
     // Check whether transmits are disabled globally
     if (transmit_disable) {
@@ -5396,8 +5396,11 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
         sizeof(transmit_txt) - strlen((char *)transmit_txt));
 
     // Break up the path into individual callsigns and send them one
-    // by one to fix_up_callsign()
+    // by one to fix_up_callsign().  If we get passed an empty path,
+    // we merely skip this section and no path gets added to
+    // "transmit_txt".
     j = 0;
+    temp[0] = '\0'; // Start with empty path
     if ( (path != NULL) && (strlen(path) != 0) ) {
         while (path[j] != '\0') {
             i = 0;
@@ -5410,7 +5413,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
                 j++;
             }
 
-            //fprintf(stderr,"%s\n",temp);
+//fprintf(stderr,"%s\n",temp);
 
             fix_up_callsign(temp, sizeof(temp));
             strncat((char *)transmit_txt,
@@ -9188,10 +9191,16 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                 path);
                         }
 
-                        xastir_snprintf(path_txt,
-                            sizeof(path_txt),
-                            "%s",
-                            path);
+                        if (strncmp(path, "DIRECT PATH", 11) == 0) {
+                            // The user has requested a direct path
+                            path_txt[0] = '\0'; // Empty path
+                        }
+                        else {
+                            xastir_snprintf(path_txt,
+                                sizeof(path_txt),
+                                "%s",
+                                path);
+                        }
 
                         done++;
 
