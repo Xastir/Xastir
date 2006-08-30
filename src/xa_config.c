@@ -878,9 +878,13 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         // LOGGING
         store_int (fout, "LOG_IGATE", log_igate);
         store_int (fout, "LOG_WX", log_wx);
+        store_int (fout, "LOG_MESSAGE", log_message_data);
+        store_int (fout, "LOG_WX_ALERT", log_wx_alert_data);
         store_string (fout, "LOGFILE_IGATE", LOGFILE_IGATE);
         store_string (fout, "LOGFILE_NET", LOGFILE_NET);
         store_string (fout, "LOGFILE_WX", LOGFILE_WX);
+        store_string (fout, "LOGFILE_MESSAGE", LOGFILE_MESSAGE);
+        store_string (fout, "LOGFILE_WX_ALERT", LOGFILE_WX_ALERT);
 
         // SNAPSHOTS
         store_int (fout, "SNAPSHOTS_ENABLED", snapshots_enabled);
@@ -1730,6 +1734,8 @@ void load_data_or_default(void) {
 
     // LOGGING
     log_wx = get_int ("LOG_WX", 0,1,0);
+    log_message_data = get_int ("LOG_MESSAGE", 0, 1, 0);
+    log_wx_alert_data = get_int ("LOG_WX_ALERT", 0, 1, 0);
 
     if (!get_string ("LOGFILE_IGATE", LOGFILE_IGATE, sizeof(LOGFILE_IGATE))
             || LOGFILE_IGATE[0] == '\0') {
@@ -1775,6 +1781,36 @@ void load_data_or_default(void) {
             sizeof(LOGFILE_WX),
             "%s",
             "logs/wx.log");
+
+    if (!get_string ("LOGFILE_MESSAGE", LOGFILE_MESSAGE, sizeof(LOGFILE_MESSAGE))
+            || LOGFILE_MESSAGE[0] == '\0') {
+        xastir_snprintf(LOGFILE_MESSAGE,
+            sizeof(LOGFILE_MESSAGE),
+            "%s",
+            "logs/message.log");
+    }
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), LOGFILE_MESSAGE, strlen(get_user_base_dir(""))) == 0)
+        xastir_snprintf(LOGFILE_MESSAGE,
+            sizeof(LOGFILE_MESSAGE),
+            "%s",
+            "logs/message.log");
+ 
+    if (!get_string ("LOGFILE_WX_ALERT", LOGFILE_WX_ALERT, sizeof(LOGFILE_WX_ALERT))
+            || LOGFILE_WX_ALERT[0] == '\0') {
+        xastir_snprintf(LOGFILE_WX_ALERT,
+            sizeof(LOGFILE_WX_ALERT),
+            "%s",
+            "logs/wx_alert.log");
+    }
+    // Check for old complete path, change to new short path if a
+    // match
+    if (strncmp( get_user_base_dir(""), LOGFILE_WX_ALERT, strlen(get_user_base_dir(""))) == 0)
+        xastir_snprintf(LOGFILE_WX_ALERT,
+            sizeof(LOGFILE_WX_ALERT),
+            "%s",
+            "logs/wx_alert.log");
   
     // SNAPSHOTS
     snapshots_enabled = get_int ("SNAPSHOTS_ENABLED", 0,1,0);
@@ -2025,3 +2061,5 @@ void load_data_or_default(void) {
 
     input_close();
 }
+
+

@@ -805,11 +805,6 @@ int DRG_show_colors[13];
 // -------------------------------------------------------------------
 
 
-Widget tnc_logging_on, tnc_logging_off;
-Widget net_logging_on, net_logging_off;
-Widget igate_logging_on, igate_logging_off;
-Widget wx_logging_on, wx_logging_off;
-
 Widget read_selection_dialog = (Widget)NULL;
 
 // config station values
@@ -889,7 +884,11 @@ static void Net_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldat
 
 static void IGate_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
+static void Message_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+
 static void WX_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+
+static void WX_Alert_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
 void on_off_switch(int switchpos, Widget first, Widget second);
 void sel3_switch(int switchpos, Widget first, Widget second, Widget third);
@@ -1121,6 +1120,9 @@ int log_tnc_data;               /* log data */
 int log_net_data;               /* log data */
 int log_igate;                  /* toggle to allow igate logging */
 int log_wx;                     /* toggle to allow wx logging */
+int log_message_data;           /* toggle to allow message logging */
+int log_wx_alert_data;          /* toggle to allow wx alert logging */
+
 
 int snapshots_enabled = 0;      // toggle to allow creating .png snapshots on a regular basis
 
@@ -1174,7 +1176,9 @@ char SOUND_DIR[400];
 char LOGFILE_TNC[400];
 char LOGFILE_NET[400];
 char LOGFILE_IGATE[400];
+char LOGFILE_MESSAGE[400];
 char LOGFILE_WX[400];
+char LOGFILE_WX_ALERT[400];
 
 /* sound data */
 char sound_command[90];
@@ -5060,7 +5064,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         units_choice_button, dbstatus_choice_button,
         iface_button, iface_connect_button,
         tnc_logging, transmit_disable_toggle, net_logging,
-        igate_logging, wx_logging, enable_snapshots, print_button,
+        igate_logging, wx_logging, message_logging,
+        wx_alert_logging, enable_snapshots, print_button,
         test_button, debug_level_button, aa_button, speech_button,
         smart_beacon_button, map_indexer_button,
         map_all_indexer_button, auto_msg_set_button,
@@ -5446,6 +5451,18 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     if (log_igate)
         XmToggleButtonSetState(igate_logging,TRUE,FALSE);
 
+//    message_logging = XtVaCreateManagedWidget(langcode("PULDNFI012"),
+    message_logging = XtVaCreateManagedWidget("Message Logging",
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(message_logging,XmNvalueChangedCallback,Message_Logging_toggle,"1");
+    if (log_message_data)
+        XmToggleButtonSetState(message_logging,TRUE,FALSE);
 
     wx_logging = XtVaCreateManagedWidget(langcode("PULDNFI013"),
             xmToggleButtonGadgetClass,
@@ -5459,6 +5476,18 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     if (log_wx)
         XmToggleButtonSetState(wx_logging,TRUE,FALSE);
 
+//    wx_alert_logging = XtVaCreateManagedWidget(langcode("PULDNFI013"),
+    wx_alert_logging = XtVaCreateManagedWidget("WX Alert Logging",
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(wx_alert_logging,XmNvalueChangedCallback,WX_Alert_Logging_toggle,"1");
+    if (log_wx_alert_data)
+        XmToggleButtonSetState(wx_alert_logging,TRUE,FALSE);
 
     enable_snapshots = XtVaCreateManagedWidget(langcode("PULDNFI014"),
             xmToggleButtonGadgetClass,
@@ -14967,7 +14996,12 @@ void GPS_operations( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 
 
 void Set_Log_Indicator(void) {
-    if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
+    if (       (1==log_tnc_data)
+            || (1==log_net_data)
+            || (1==log_wx)
+            || (1==log_igate)
+            || (1==log_wx_alert_data)
+            || (1==log_message_data) ) {
         XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
         XtVaSetValues(log_indicator,
             XmNbackground,
@@ -15027,6 +15061,21 @@ void IGate_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointe
 
 
 
+void Message_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        log_message_data = atoi(which);
+    else
+        log_message_data = 0;
+    Set_Log_Indicator();
+}
+
+
+
+
+
 void WX_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -15035,6 +15084,21 @@ void WX_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
         log_wx = atoi(which);
     else
         log_wx = 0;
+    Set_Log_Indicator();
+}
+
+
+
+
+
+void WX_Alert_Logging_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        log_wx_alert_data = atoi(which);
+    else
+        log_wx_alert_data = 0;
     Set_Log_Indicator();
 }
 

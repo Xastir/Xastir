@@ -1379,6 +1379,22 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
     if (debug_level & 2)
         fprintf(stderr,"alert_data_add start\n");
 
+
+    if (log_wx_alert_data && from != DATA_VIA_FILE) {
+        char temp_msg[MAX_MESSAGE_LENGTH+1];
+
+        xastir_snprintf(temp_msg,
+            sizeof(temp_msg),
+            "%s>APRS::%-9s:%s%s",
+            from_call,
+            call_sign,
+            data,
+            seq);
+        log_data( get_user_base_dir(LOGFILE_WX_ALERT), temp_msg);
+//        fprintf(stderr, "%s\n", temp_msg);
+    }
+
+
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 2)
             fprintf(stderr,"alert_data_add:  Message length too long\n");
@@ -16112,6 +16128,20 @@ void decode_info_field(char *call,
             case ':':   // Message
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: : (message)\n");
+
+                // Do message logging if that feature is enabled.
+                if (log_message_data && from != DATA_VIA_FILE) {
+                    char temp_msg[MAX_MESSAGE_LENGTH+1];
+
+                    xastir_snprintf(temp_msg,
+                        sizeof(temp_msg),
+                        "%s>%s:%s",
+                        call,
+                        path,
+                        orig_message);
+                    log_data( get_user_base_dir(LOGFILE_MESSAGE), temp_msg );
+                }
+
 //fprintf(stderr,"Calling decode_message\n");
                 done = decode_message(call,path,message,from,port,third_party);
 //fprintf(stderr,"Back from decode_message\n");

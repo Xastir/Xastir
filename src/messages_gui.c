@@ -36,6 +36,7 @@
 #include "xastir.h"
 #include "main.h"
 #include "lang.h"
+#include "xa_config.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -410,6 +411,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
     Widget pane, form, current_path_label, reverse_path_label,
         reverse_path, button_default, button_direct, button_apply,
         button_cancel;
+    Widget button_wide11, button_wide21, button_wide22, button_nogate;
     char *temp_ptr;
     char temp1[MAX_LINE_SIZE+1];
     char path[MAX_PATH+1];
@@ -530,13 +532,86 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-    // "Use Default Path(s)"
-    button_default = XtVaCreateManagedWidget(langcode("WPUPMSB020"),
+    button_wide11 = XtVaCreateManagedWidget("WIDE1-1",
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, current_path_label,
                 XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    button_wide21 = XtVaCreateManagedWidget("WIDE2-1",
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+    button_wide22 = XtVaCreateManagedWidget("WIDE2-2",
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+     button_nogate = XtVaCreateManagedWidget("NOGATE",
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, current_path_label,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+XtSetSensitive(button_wide11, FALSE);
+XtSetSensitive(button_wide21, FALSE);
+XtSetSensitive(button_wide22, FALSE);
+XtSetSensitive(button_nogate, FALSE);
+ 
+    // "Use Default Path(s)"
+    button_default = XtVaCreateManagedWidget(langcode("WPUPMSB020"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, button_wide11,
+                XmNtopOffset, 0,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -554,8 +629,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, current_path_label,
-                XmNtopOffset, 10,
+                XmNtopWidget, button_wide11,
+                XmNtopOffset, 0,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -573,8 +648,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, current_path_label,
-                XmNtopOffset, 10,
+                XmNtopWidget, button_wide11,
+                XmNtopOffset, 0,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -592,8 +667,8 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 xmPushButtonGadgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, current_path_label,
-                XmNtopOffset, 10,
+                XmNtopWidget, button_wide11,
+                XmNtopOffset, 0,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -1019,6 +1094,20 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
 
 //            if (mw[ii].message_group!=1)
 //                XtSetSensitive(mw[ii].button_ok,FALSE);
+
+            // Do message logging if that feature is enabled.
+            if (log_message_data) {
+                char temp_msg[MAX_MESSAGE_LENGTH+1];
+
+                xastir_snprintf(temp_msg,
+                    sizeof(temp_msg),
+                    "%s>%s,%s:%s",
+                    mw[ii].to_call_sign,    // To
+                    temp1,                  // From
+                    path,                   // Path
+                    temp2);                 // Message
+                log_data( get_user_base_dir(LOGFILE_MESSAGE), temp_msg );
+            }
         }
         else {
             if ( strcmp(temp1,my_callsign) == 0 ) { // It's my own callsign
