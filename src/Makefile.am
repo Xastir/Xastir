@@ -42,8 +42,8 @@ XASTIR_SRC = \
     maps.c maps.h \
     map_cache.c map_cache.h \
     map_dos.c \
-    map_geo.c \
     map_gdal.c \
+    map_geo.c \
     map_gnis.c \
     map_pdb.c \
     map_shp.c \
@@ -57,18 +57,18 @@ XASTIR_SRC = \
     popup_gui.c \
     rac_data.c rac_data.h \
     rotated.c rotated.h \
+    rpl_malloc.c rpl_malloc.h \
+    shp_hash.c shp_hash.h \
     snprintf.c snprintf.h \
     sound.c symbols.h \
-    shp_hash.c shp_hash.h \
     track_gui.c track_gui.h \
     util.c util.h \
     view_message_gui.c \
     wx.c wx.h \
     wx_gui.c \
-    xa_config.c xa_config.h \
-    xastir.h \
     x_spider.c x_spider.h \
-    rpl_malloc.c rpl_malloc.h
+    xa_config.c xa_config.h \
+    xastir.h
 
 xastir_SOURCES = $(XASTIR_SRC) compiledate.c
 
