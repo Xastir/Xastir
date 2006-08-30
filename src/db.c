@@ -14754,6 +14754,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     int done;
     int reply_ack = 0;
     int to_my_call = 0;
+    int to_my_base_call = 0;
     int from_my_call = 0;
 
 
@@ -14787,13 +14788,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     if (is_my_call(call, 1) ) { // Check SSID also
         from_my_call++;
     }
- 
+
     ack_string[0] = '\0';   // Clear out the Reply/Ack result string
 
     len = (int)strlen(message);
     ok = (int)(len > 9 && message[9] == ':');
 
     if (ok) {
+
         substr(addr9,message,9); // extract addressee
         xastir_snprintf(addr,
             sizeof(addr),
@@ -14801,8 +14803,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             addr9);
         (void)remove_trailing_spaces(addr);
 
-        if (is_my_call(addr,1)) {
+        if (is_my_call(addr,1)) { // Check includes SSID
             to_my_call++;
+        }
+
+        if (is_my_call(addr,0)) { // Check ignores SSID.  We use
+                                  // this to catch messages to some
+                                  // of our other SSID's
+            to_my_base_call++;
         }
 
         message = message + 10; // pointer to message text
@@ -15454,33 +15462,56 @@ else {
     if (debug_level & 1)
         fprintf(stderr,"6b\n");
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0) {  // Other message with linenumber. This is
-                                        // probably a message for
-                                        // someone else but could be
-                                        // a message for another one
-                                        // of my SSID's.
+    if (!done && strlen(msg_id) > 0) {  // Other message with linenumber.  This
+                                        // is either a message for someone else
+                                        // or a message for another one of my
+                                        // SSID's.
         long record_out;
         time_t last_ack_sent;
-
-
-// WE7U
-// Set this section up to do check_popup_window() for my other
-// SSID's.
-
+        char message_plus_note[MAX_MESSAGE_LENGTH + 30];
+ 
  
         if (debug_level & 2)
-            fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",
+            fprintf(stderr,"found Msg w/line: |%s| |%s| |%s|\n",
                 addr,
                 message,
                 orig_msg_id);
 
-        last_ack_sent = msg_data_add(addr,
-            call,
-            message,
-            msg_id,
-            MESSAGE_MESSAGE,
-            from,
-            &record_out);
+        if (to_my_base_call && !from_my_call) {
+            // Special case:  We saw a message w/msg_id that was to
+            // one of our other SSID's, but it was not from
+            // ourselves.  That last bit (!from_my_call) is
+            // important in the case where we're working an event
+            // with several stations using the same callsign.
+            //
+            // Store as if it came to my callsign, with a zeroed-out
+            // msg_id so we can't try to ack it.  We also need some
+            // other indication in the "Send Message" dialog as to
+            // what's happening.  Perhaps add the original callsign
+            // to the message itself in a note at the start?
+            //
+            xastir_snprintf(message_plus_note,
+                sizeof(message_plus_note),
+                "(Sent to:%s) %s",
+                addr,
+                message);
+            last_ack_sent = msg_data_add(my_callsign,
+                call,
+                message_plus_note,
+                "",
+                MESSAGE_MESSAGE,
+                from,
+                &record_out);
+        }
+        else {  // Normal case, messaging between other people
+            last_ack_sent = msg_data_add(addr,
+                call,
+                message,
+                msg_id,
+                MESSAGE_MESSAGE,
+                from,
+                &record_out);
+        }
  
         new_message_data += look_for_open_group_data(addr);
  
@@ -15494,10 +15525,15 @@ else {
 
             // Callsign check here also checks SSID for exact match
 //            if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
-            if ((from_my_call && check_popup_window(addr, 2) != -1)
+//            if ((from_my_call && check_popup_window(addr, 2) != -1)
+// We need to do an SSID-non-specific check here so that we can pick
+// up messages intended for other stations of ours.
+//            if ((to_my_base_call && check_popup_window(addr, 2) != -1)
+            if ((to_my_base_call && check_popup_window(call, 2) != -1)
                     || check_popup_window(call, 0) != -1
                     || check_popup_window(addr, 1) != -1) {
-                //update_messages(1); // Force an update
+//fprintf(stderr,"Matches my base call\n");
+                update_messages(1); // Force an update
             }
         }
 
