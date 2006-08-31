@@ -7651,15 +7651,21 @@ static int alert_count;
  * map_search() fills in the filename field of the alert struct.
  * draw_shapefile_map() fills in the index field.
  *******************************************************************/
-void fill_in_new_alert_entries(Widget w, char *dir) {
+void fill_in_new_alert_entries() {
 //    int ii;
     char alert_scan[MAX_FILENAME], *dir_ptr;
     struct hashtable_itr *iterator = NULL;
     alert_entry *temp;
+    char dir[MAX_FILENAME];
 
 
     if (debug_level & 2)
         fprintf(stderr,"fill_in_new_alert_entries start\n");
+
+    xastir_snprintf(dir,
+        sizeof(dir),
+        "%s",
+        ALERT_MAP_DIR);
 
     alert_count = MAX_ALERT - 1;
 
@@ -7701,7 +7707,7 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
             // to dump warnings out to the console as well.  If the
             // warning was received on local RF or locally, warn the
             // operator (the weather must be near).
-            map_search (w,
+            map_search (da,
                 alert_scan,
                 temp,
                 &alert_count,
@@ -7751,6 +7757,8 @@ void load_alert_maps (Widget w, char *dir) {
     alert_entry *temp;
     map_draw_flags mdf;
 
+
+//fprintf(stderr,"load_alert_maps\n");
 
 // TODO:
 // Figure out how to pass a quantity of zones off to the map drawing
@@ -7826,6 +7834,21 @@ void load_alert_maps (Widget w, char *dir) {
             // Attempt to draw alert
             if ( temp->index != -1 ) {          // Shape found in shapefile
 
+                // Check whether we've ever tried to draw this alert
+                // before.  If not, attempt it and get the boundary
+                // limits filled in.
+                //
+                if (       temp->bottom_boundary == 0.0
+                        && temp->top_boundary == 0.0
+                        && temp->left_boundary == 0.0
+                        && temp->right_boundary == 0.0) {
+
+                    if (temp->alert_level != 'C') {
+                        draw_map (w, dir, temp->filename, temp,
+                            fill_color[level], DRAW_TO_PIXMAP_ALERTS, &mdf);  // draw filled
+                    }
+                }
+
                 if (map_visible_lat_lon(temp->bottom_boundary, // Shape visible
                         temp->top_boundary,
                         temp->left_boundary,
@@ -7846,6 +7869,7 @@ void load_alert_maps (Widget w, char *dir) {
                 else {
                     // Not in our viewport, don't draw it!
                     if (debug_level & 16) fprintf(stderr,"load_alert_maps() Alert not visible\n");
+//fprintf(stderr,"B:%f  T:%f  L:%f  R:%f\n", temp->bottom_boundary, temp->top_boundary, temp->left_boundary, temp->right_boundary);
                     if (temp) temp->flags[on_screen] = 'N';
                 }
             }

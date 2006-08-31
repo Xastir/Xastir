@@ -3515,7 +3515,201 @@ void rotate_file(char *file, int max_keep ){
 
 
 
+
+
+char *fetch_file_line(FILE *f, char *line) {
+    char cin;
+    int pos;
+
+
+    pos = 0;
+    line[0] = '\0';
+
+    while (!feof(f)) {
+
+        // Read one character at a time
+        if (fread(&cin,1,1,f) == 1) {
+
+            if (pos < MAX_LINE_SIZE) {
+                if (cin != (char)13)    // CR
+                    line[pos++] = cin;
+            }
+
+            if (cin == (char)10) { // Found LF as EOL char
+                line[pos++] = '\0'; // Always add a terminating zero after last char
+                pos = 0;          // start next line
+                return(line);
+            }
+        }
+    }
+
+    // Must be end of file
+    line[pos] = '\0';
+    return(line);
+}
+ 
+
+
+
+
+// Restore weather alerts so that we have a clear picture of the
+// current state.  Check timestamps on the file.  If relatively
+// current, read the file in.
 //
+void load_wx_alerts_from_log_working_sub(time_t time_now, char *filename) {
+    time_t file_timestamp;
+    int file_age;
+    int expire_limit;   // In seconds
+    char line[MAX_LINE_SIZE+1];
+    FILE *f;
+
+
+    expire_limit = 60 * 60 * 24 * 15;   // 15 days
+//    expire_limit = 60 * 60 * 24 * 1;   // 1 day
+ 
+    file_timestamp = file_time(filename);
+
+    if (file_timestamp == -1) {
+//        fprintf(stderr,"File %s doesn't exist\n", filename);
+        return;
+    }
+
+    file_age = time_now - file_timestamp;
+
+    if ( file_age > expire_limit) {
+//        fprintf(stderr,"Old file: %s, skipping...\n", filename);
+        return;
+    }
+ 
+//    fprintf(stderr,"File is current: %s\n", filename);
+
+    // Read the file in, as it exists and is relatively new.
+
+    // Check timestamps before each log line and skip those that are
+    // old.  Lines in the file should look about like this:
+    //
+    // # 1157027319  Thu Aug 31 05:28:39 PDT 2006
+    // OUNSWO>APRS::SKYOUN   :OUN Check For Activation VCEAB
+    // # 1157027319  Thu Aug 31 05:28:39 PDT 2006
+    // LZKFFS>APRS::NWS_ADVIS:311324z,FLOOD,ARC67-147 V1PAA
+    //
+    // We could try to use the regular read_file and read_file_ptr
+    // scheme for reading in the log file, but we'd have to modify
+    // it in two ways:  We need to keep from bringing up the
+    // interfaces so we'd need to set a flag when done reading and
+    // then start them, plus we'd need to have it check the
+    // timestamps and skip old ones.  Instead we'll do it all on our
+    // own here so that we can control everything ourselves.
+
+    f = fopen(filename, "r");
+    if (!f) {
+        fprintf(stderr,"Wx Alert log file could not be opened for reading\n");
+        return;
+    }
+
+    while (!feof(f)) {  // Read until end of file
+
+        (void)fetch_file_line(f, line);
+ 
+restart_sync:
+
+        if (line[0] == '\0') {
+            // Empty line found, skip
+        }
+
+        else if (line[0] == '#') { // Timestamp line, check the date
+            time_t line_stamp;
+            int line_age;
+
+            if (strlen(line) < 3) { // Line is too short, skip
+                goto restart_sync;
+            }
+
+            line_stamp = atoi(&line[2]);
+            line_age = time_now - line_stamp;
+//fprintf(stderr, "Age: %d\t", line_age);
+
+            if ( line_age < expire_limit) {
+                // Age is good, read next line and process it
+
+                (void)fetch_file_line(f, line);
+
+                if (line[0] != '#') { // It's a packet, not a timestamp line
+//fprintf(stderr,"%s\n",line);
+                    decode_ax25_line(line,'F',-1, 1);   // Decode the packet
+                }
+                else {
+                    goto restart_sync;
+                }
+            }
+        }
+    }
+    if (feof(f)) { // Close file if at the end
+        (void)fclose(f);
+    }
+}
+
+
+
+
+
+// Restore weather alerts so that we have a clear picture of the
+// current state.  Do this before we start the interfaces.  Only
+// reload if the log files datestamps are relatively current.
+//
+// Check timestamps on each file in turn.  If relatively
+// current, read them in the correct order:
+// wx_alert.log.3
+// wx_alert.log.2
+// wx_alert.log.1
+// wx.alert.log
+//
+void load_wx_alerts_from_log(void) {
+    time_t time_now;
+    char filename[MAX_FILENAME];
+
+
+    time_now = sec_now();
+
+    fprintf(stderr,"*** Reading WX Alert log files\n");
+
+    // wx_alert.log.3
+    xastir_snprintf(filename,
+        sizeof(filename),
+        "%s.3",
+        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+    load_wx_alerts_from_log_working_sub(time_now, filename);
+
+    // wx_alert.log.2
+    xastir_snprintf(filename,
+        sizeof(filename),
+        "%s.2",
+        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+    load_wx_alerts_from_log_working_sub(time_now, filename);
+
+    // wx_alert.log.1
+    xastir_snprintf(filename,
+        sizeof(filename),
+        "%s.1",
+        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+    load_wx_alerts_from_log_working_sub(time_now, filename);
+
+    // wx_alert.log
+    xastir_snprintf(filename,
+        sizeof(filename),
+        "%s",
+        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+    load_wx_alerts_from_log_working_sub(time_now, filename);
+
+    fill_in_new_alert_entries();
+
+    fprintf(stderr,"*** Done with WX Alert log files\n");
+}
+
+
+
+
+
 // Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //

@@ -136,7 +136,7 @@ char *get_map_ext (char *filename);
 char *get_map_dir (char *fullpath);
 void load_auto_maps(Widget w, char *dir);
 void load_maps(Widget w);
-void fill_in_new_alert_entries(Widget w, char *dir);
+void fill_in_new_alert_entries(void);
 void load_alert_maps(Widget w, char *dir);
 void  index_update_xastir(char *filename, unsigned long bottom, unsigned long top, unsigned long left, unsigned long right, int default_map_layer);
 void  index_update_ll(char *filename, double bottom, double top, double left, double right, int default_map_layer);

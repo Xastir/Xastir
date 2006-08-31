@@ -1383,9 +1383,11 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
     if (log_wx_alert_data && from != DATA_VIA_FILE) {
         char temp_msg[MAX_MESSAGE_LENGTH+1];
 
+        // Attempt to reconstruct the original weather alert packet
+        // here, minus the path.
         xastir_snprintf(temp_msg,
             sizeof(temp_msg),
-            "%s>APRS::%-9s:%s%s",
+            "%s>APRS::%-9s:%s{%s",
             from_call,
             call_sign,
             data,
@@ -1448,7 +1450,7 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
 
     // This function fills in the Shapefile filename and index
     // so that we can later draw it.
-    fill_in_new_alert_entries(da, ALERT_MAP_DIR);
+    fill_in_new_alert_entries();
 
     if (debug_level & 2)
         fprintf(stderr,"alert_data_add end\n");
