@@ -396,10 +396,10 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // we're expiring records from our hash properly we
             // probably don't need this anymore.
             //
-            if (alert->title[0] == '\0') {    // It's empty
-		fprintf(stderr, "wx_gui:alert->title NULL\n");
-                break;
-            }
+//            if (alert->title[0] == '\0') {    // It's empty
+//		fprintf(stderr, "wx_gui:alert->title NULL\n");
+//                break;
+//            }
 	    alert_list[nn++] = alert;
 	}
 	qsort(alert_list, nn, sizeof(alert_entry *), alert_comp);
