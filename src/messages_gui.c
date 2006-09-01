@@ -1125,6 +1125,10 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         }
     }
 
+    // Move focus to the first message box to make typing the next
+    // message easier.
+    XmProcessTraversal(mw[ii].message_data_line1, XmTRAVERSE_CURRENT);
+
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now" );
 
 }
