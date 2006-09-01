@@ -202,6 +202,8 @@ static aloha_stats the_aloha_stats;
 #define ALOHA_CALC_INTERVAL 1800 
 #define ALOHA_STATUS_INTERVAL 300
 
+int process_emergency_packet_again = 0;
+
 
 
 
@@ -14127,26 +14129,80 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                 // emergency message for this station within the
                 // last 30 minutes.  If we pop these up constantly
                 // it gets quite annoying.
-                if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
-                        || ((last_emergency_time + 60*30) < sec_now()) ) {
+// EMERGENCY
 
-                    // Callsign is different or enough time has
-                    // passed
+                if (emergency_distance_check) {
+                    double distance;
+                    char course_deg[5];
 
-                    last_emergency_time = sec_now();
-                    xastir_snprintf(last_emergency_callsign,
-                        sizeof(last_emergency_callsign),
-                        "%s",
-                        call_sign);
 
-                    // Bring up the Find Station dialog so that the
-                    // operator can go to the location quickly
-                    xastir_snprintf(locate_station_call,
-                        sizeof(locate_station_call),
-                        "%s",
-                        call_sign);
+                    distance = distance_from_my_station(call_sign, course_deg);
 
-                    Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)1 );
+// Because of the distance check we have to receive a valid position
+// from the station BEFORE we process the EMERGENCY portion and
+// check distance, doing the popups.  We need to figure out a way to
+// throw the packet back into the queue if it was an emergency
+// packet so that we process these packets twice each.  That way
+// only one packet from the emergency station is required to
+// generate the popups.
+
+                    if (distance == 0.0) {
+                        process_emergency_packet_again++;
+                    }
+
+                    // Check whether the station is near enough to
+                    // us to require that we alert on the packet.
+                    //
+                    // This may be slightly controversial, but if we
+                    // don't know WHERE a station is, we can't help
+                    // much in an emergency, can we?  The
+                    // zero-distance check helps in the case where
+                    // we haven't yet or never get a position packet
+                    // for a station.  As soon as we have a position
+                    // and it is within a reasonable range, we do
+                    // our emergency popups.
+                    //
+                    if ( distance != 0.0 && (float)distance <= emergency_range ) {
+
+                        if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
+                                || ((last_emergency_time + 60*30) < sec_now()) ) {
+
+                            char temp[50];
+                            char temp2[150];
+
+                            // Callsign is different or enough time has
+                            // passed
+
+                            last_emergency_time = sec_now();
+                            xastir_snprintf(last_emergency_callsign,
+                                sizeof(last_emergency_callsign),
+                                "%s",
+                                call_sign);
+
+                            // Bring up the Find Station dialog so that the
+                            // operator can go to the location quickly
+                            xastir_snprintf(locate_station_call,
+                                sizeof(locate_station_call),
+                                "%s",
+                                call_sign);
+
+                            Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)1 );
+
+                            // Bring up another dialog with the
+                            // callsign plus distance/bearing to the
+                            // station.
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.1f",
+                                distance);
+                            xastir_snprintf(temp2,
+                                sizeof(temp2),
+                                langcode("WPUPSTI022"),
+                                temp,
+                                course_deg);
+                            popup_message_always(call_sign, temp2);
+                        }
+                    }
                 }
                 break;
 
@@ -17294,9 +17350,22 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                 double distance;    // miles or km
                 char course_deg[5];
 
-
+// EMERGENCY
                 if (emergency_distance_check) {
+
                     distance = distance_from_my_station(call_sign, course_deg);
+
+// Because of the distance check we have to receive a valid position
+// from the station BEFORE we process the EMERGENCY portion and
+// check distance, doing the popups.  We need to figure out a way to
+// throw the packet back into the queue if it was an emergency
+// packet so that we process these packets twice each.  That way
+// only one packet from the emergency station is required to
+// generate the popups.
+
+                    if (distance == 0.0) {
+                        process_emergency_packet_again++;
+                    }
 
                     // Check whether the station is near enough to
                     // us to require that we alert on the packet.
@@ -17326,6 +17395,9 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                         // annoying.
                         if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
                              || ((last_emergency_time + 60*30) < sec_now()) ) {
+
+                            char temp[50];
+                            char temp2[150];
                     
                             // Callsign is different or enough time
                             // has passed
@@ -17355,6 +17427,20 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                             // real emergency.
                             //
                             popup_message_always(langcode("POPEM00036"), backup);
+
+                            // Bring up another dialog with the
+                            // callsign plus distance/bearing to the
+                            // station.
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%0.1f",
+                                distance);
+                            xastir_snprintf(temp2,
+                                sizeof(temp2),
+                                langcode("WPUPSTI022"),
+                                temp,
+                                course_deg);
+                            popup_message_always(call_sign, temp2);
                         }
                     }
                 }
@@ -17520,6 +17606,15 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         }
     }
 
+// EMERGENCY
+    // For emergency packets we need to process them twice, to try
+    // to get a position before we do the distance check.
+    //
+    if (process_emergency_packet_again) {
+        process_emergency_packet_again = 0;
+//fprintf(stderr,"Again: %s\n", backup);
+        decode_ax25_line(backup, from, port, dbadd);
+    }
 
     if (debug_level & 1)
         fprintf(stderr,"decode_ax25_line: exiting\n");
