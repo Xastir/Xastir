@@ -14169,6 +14169,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
 
                             char temp[50];
                             char temp2[150];
+                            char temp3[300];
+                            char timestring[101];
 
                             // Callsign is different or enough time has
                             // passed
@@ -14200,7 +14202,13 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                                 langcode("WPUPSTI022"),
                                 temp,
                                 course_deg);
-                            popup_message_always(call_sign, temp2);
+                            get_timestamp(timestring);
+                            xastir_snprintf(temp3,
+                                sizeof(temp3),
+                                "%s  %s",
+                                timestring,
+                                temp2);
+                            popup_message_always(call_sign, temp3);
                         }
                     }
                 }
@@ -17398,6 +17406,8 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
                             char temp[50];
                             char temp2[150];
+                            char temp3[300];
+                            char timestring[101];
                     
                             // Callsign is different or enough time
                             // has passed
@@ -17440,7 +17450,14 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                                 langcode("WPUPSTI022"),
                                 temp,
                                 course_deg);
-                            popup_message_always(call_sign, temp2);
+                            get_timestamp(timestring);
+                            xastir_snprintf(temp3,
+                                sizeof(temp3),
+                                "%s  %s",
+                                timestring,
+                                temp2);
+                            popup_message_always(call_sign, temp3);
+
                         }
                     }
                 }
