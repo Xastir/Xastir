@@ -16208,6 +16208,8 @@ void decode_info_field(char *call,
 fprintf(stderr,"RDF:  %10s:  %s\n", call, message);
 // Saw this:
 // RDF:     FUKDE-4:  4807.20N/00320.05W#/aPRS DIIPEATEP qth PlOURAY 56 2
+// Looking on findu, this is the raw packet:
+// FUKDE-4>AXZ186,WIDE3,qAo,F8CIY:%4807.20N/00320.05W#/aPRS DIPEATEP qth PlOURAY 56 2
 
 
 // Here is where we'd add a call to an RDF decode function so that
