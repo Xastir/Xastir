@@ -16039,6 +16039,8 @@ void decode_info_field(char *call,
     }
 
     if (!done) {
+        int rdf_type;
+
         data_id = message[0];           // look at the APRS Data Type ID (first char in information field)
         message += 1;                   // extract data ID from information field
         ok_igate_net = 1;               // as default report packet to internet
@@ -16266,21 +16268,117 @@ void decode_info_field(char *call,
                 break;
 
             case '%':   // Agrelo DFJr / MicroFinder Radio Direction Finding
-                 if (debug_level & 1)
+
+                if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: %%\n");
 
-fprintf(stderr,"RDF:  %10s:  %s\n", call, message);
-// Saw this:
-// RDF:     FUKDE-4:  4807.20N/00320.05W#/aPRS DIIPEATEP qth PlOURAY 56 2
-// Looking on findu, this is the raw packet:
-// FUKDE-4>AXZ186,WIDE3,qAo,F8CIY:%4807.20N/00320.05W#/aPRS DIPEATEP qth PlOURAY 56 2
+                // Here is where we'd add a call to an RDF decode
+                // function so that we could display vectors on the
+                // map for each RDF position.
 
+//
+// Agrelo format:  "%XXX/Q<cr>"
+//
+// "XXX" is relative bearing to the signal (000-359).  Careful here:
+// At least one unit reports in magnetic instead of relative
+// degrees.  "000" means no direction info available, 360 means true
+// north.
+//
+// "Q" is bearing quality (0-9).  0 = unsuitable.  9 = manually
+// entered.  1-8 = varying quality with 8 being the best.
+//
+// I've also seen these formats, which may not be Agrelo compatible:
+//
+//      "%136.0/9"
+//      "%136.0/8/158.0" (That last number is magnetic bearing)
+//
+// These sentences may be sent MULTIPLE times per second, like 20 or
+// more!  If we decide to average readings, we'll need to dump our
+// averages and start over if our course changes.
+//
 
-// Here is where we'd add a call to an RDF decode function so that
-// we could display vectors on the map for each RDF position.
+                // Check for Agrelo format:
+                if (    strlen(message) >= 5
+                        && is_num_chr(message[0])   // "%136/9"
+                        && is_num_chr(message[1])
+                        && is_num_chr(message[2])
+                        && message[3] == '/'
+                        && is_num_chr(message[4]) ) {
+
+                    rdf_type = 1;
+
+                    fprintf(stderr,
+                        "Type 1 RDF packet from call: %s\tBearing: %c%c%c\tQuality: %c\n",
+                        call,
+                        message[0],
+                        message[1],
+                        message[2],
+                        message[4]);
+ 
+                }
+
+                // Check for extended formats (not
+                // Agrelo-compatible):
+                else if (strlen(message) >= 13
+                        && is_num_chr(message[0])   // "%136.0/8/158.0"
+                        && is_num_chr(message[1])
+                        && is_num_chr(message[2])
+                        && message[3] == '.'
+                        && is_num_chr(message[4])
+                        && message[5] == '/'
+                        && is_num_chr(message[6])
+                        && message[7] == '/'
+                        && is_num_chr(message[8])
+                        && is_num_chr(message[9])
+                        && is_num_chr(message[10])
+                        && message[11] == '.'
+                        && is_num_chr(message[12]) ) {
+
+                    rdf_type = 3;
+
+                    fprintf(stderr,
+                        "Type 3 RDF packet from call: %s\tBearing: %c%c%c%c%c\tQuality: %c\tMag Bearing: %c%c%c%c%c\n",
+                        call,
+                        message[0],
+                        message[1],
+                        message[2],
+                        message[3],
+                        message[4],
+                        message[6],
+                        message[8],
+                        message[9],
+                        message[10],
+                        message[11],
+                        message[12]);
+                }
+
+                // Check for extended formats (not
+                // Agrelo-compatible):
+                else if (strlen(message) >= 7
+                        && is_num_chr(message[0])   // "%136.0/9"
+                        && is_num_chr(message[1])
+                        && is_num_chr(message[2])
+                        && message[3] == '.'
+                        && is_num_chr(message[4])
+                        && message[5] == '/'
+                        && is_num_chr(message[6]) ) {
+
+                    rdf_type = 2;
+
+                    fprintf(stderr,
+                        "Type 2 RDF packet from call: %s\tBearing: %c%c%c%c%c\tQuality: %c\n",
+                        call,
+                        message[0],
+                        message[1],
+                        message[2],
+                        message[3],
+                        message[4],
+                        message[6]);
+                }
 
                 // Don't set "done" as we want these to appear in
-                // the status text for the record.
+                // the status text for the record until we get the
+                // full decoding for this type of packet coded up.
                 break;
  
             case '~':   // UI-format messages, not relevant for APRS ("Do not use" in Reference)
