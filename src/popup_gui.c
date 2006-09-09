@@ -146,6 +146,9 @@ void popup_message_always(char *banner, char *message) {
     Atom delw;
 
 
+    if (disable_all_popups)
+        return;
+
     if (banner == NULL || message == NULL)
         return;
 
@@ -252,6 +255,9 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 void popup_message(char *banner, char *message) {
     char timestring[110];
 
+
+    if (disable_all_popups)
+        return;
 
     if (banner == NULL || message == NULL)
         return;

@@ -8142,7 +8142,6 @@ void init_station_data(void) {
     next_time_sn = 0;                   // serial number for unique time index
     current_trail_color = 0x00;         // first trail color used will be 0x01
     last_station_remove = sec_now();    // last time we checked for stations to remove
-    track_station_on = 0;               // no tracking at startup
 }
 
 

@@ -1209,6 +1209,9 @@ Display *display;       /*  Display             */
 int last_popup_x;
 int last_popup_y;
 
+int disable_all_popups = 0;
+char temp_tracking_station_call[30] = "";
+
 time_t program_start_time;
 int measuring_distance = 0;
 int moving_object = 0;
@@ -25695,7 +25698,7 @@ int main(int argc, char *argv[], char *envp[]) {
     static char lang_to_use_or[30];
     char temp[100];
     static char *Geometry = NULL;
- 
+
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
     String fallback_resources[] = {
@@ -25935,7 +25938,7 @@ int main(int argc, char *argv[], char *envp[]) {
     // used, which is actually parsed out by the XtIntrinsics code,
     // not directly in Xastir code.
     //
-    while ((ag = getopt(argc, argv, "c:v:l:g:012346789tim")) != EOF) {
+    while ((ag = getopt(argc, argv, "c:f:v:l:g:012346789timp")) != EOF) {
 
         switch (ag) {
             
@@ -25944,6 +25947,21 @@ int main(int argc, char *argv[], char *envp[]) {
 	                xastir_snprintf(xa_config_dir,sizeof(xa_config_dir),optarg);
         	        fprintf(stderr,"Using config dir %s\n",xa_config_dir);
             	}
+                break;
+
+            case 'f':   // Track callsign
+                if (optarg) {
+                    xastir_snprintf(temp_tracking_station_call,
+                        sizeof(temp_tracking_station_call),
+                        optarg);
+                    fprintf(stderr,
+                        "Tracking callsign %s\n",
+                        temp_tracking_station_call);
+                    (void)remove_leading_spaces(temp_tracking_station_call);
+                    (void)remove_trailing_spaces(temp_tracking_station_call);
+                    (void)remove_trailing_dash_zero(temp_tracking_station_call);
+                    (void)to_upper(temp_tracking_station_call);
+                }
                 break;
 
             case 't':
@@ -26002,6 +26020,12 @@ int main(int argc, char *argv[], char *envp[]) {
                     Geometry = argv[optind++];
                 break;
 
+            case 'p':   // Disable popups
+                disable_all_popups = 1;
+                pop_up_new_bulletins = 0;
+                warn_about_mouse_modifiers = 0;
+                break;
+
             default:
                 ag_error++;
                 break;
@@ -26012,6 +26036,7 @@ int main(int argc, char *argv[], char *envp[]) {
     if (ag_error){
         fprintf(stderr,"\nXastir Command line Options\n\n");
         fprintf(stderr,"-c /path/dir       Xastir config dir\n");
+        fprintf(stderr,"-f callsign        Track callsign\n");
         fprintf(stderr,"-i                 Install private Colormap\n");
         fprintf(stderr,"-geometry WxH+X+Y  Set Window Geometry\n");
         fprintf(stderr,"-l Dutch           Set the language to Dutch\n");
@@ -26022,6 +26047,7 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"-l Portuguese      Set the language to Portuguese\n");
         fprintf(stderr,"-l Spanish         Set the language to Spanish\n");
         fprintf(stderr,"-m                 Deselect Maps\n");
+        fprintf(stderr,"-p                 Disable popups\n");
         fprintf(stderr,"-t                 Internal SIGSEGV handler enabled\n");
         fprintf(stderr,"-v level           Set the debug level\n\n");
         fprintf(stderr,"\n");

@@ -1844,7 +1844,7 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     int box_len;
     Atom delw;
 //    DataRow *p_station;
- 
+
 
 //fprintf(stderr,"Send_message\n");
 
