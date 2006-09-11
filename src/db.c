@@ -15657,7 +15657,6 @@ if (reply_ack) { // For debugging, so we only have reply-ack
 //    fprintf(stderr,"Attempting to send message to RF: %s\n", ipacket_message);
 }
 
-/*
             output_igate_rf(call,
                 addr,
                 path,
@@ -15665,7 +15664,6 @@ if (reply_ack) { // For debugging, so we only have reply-ack
                 port,
                 third_party,
                 NULL);
-*/
 
             igate_msgs_tx++;
         }
@@ -16214,9 +16212,7 @@ void decode_info_field(char *call,
 //fprintf(stderr,"Calling decode_message\n");
                 done = decode_message(call,path,message,from,port,third_party);
 //fprintf(stderr,"Back from decode_message\n");
-
                 // there could be messages I should not retransmit to internet... ??? Queries to me...
-                ok_igate_rf = done;
                 break;
 
             case '>':   // Status                                   [APRS Reference, chapter 16]
@@ -16231,8 +16227,6 @@ void decode_info_field(char *call,
                     fprintf(stderr,"decode_info_field: ? (query)\n");
                 done = process_query(call,path,message,from,port,third_party);
                 ignore = 1;     // don't treat undecoded packets as status text
-
-                ok_igate_rf = 0;    // Don't igate these to RF!
                 break;
 
             case 'T':   // Telemetry data                           [APRS Reference, chapter 13]
@@ -16241,8 +16235,6 @@ void decode_info_field(char *call,
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: T (telem)\n");
                  done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party, station_is_mine, 0);
-
-                ok_igate_rf = done;
                 break;
  
             case '{':   // User-defined APRS packet format     //}
@@ -16272,9 +16264,6 @@ void decode_info_field(char *call,
 
                 // Don't set "done" as we want these to appear in
                 // the status text for the record.
-
-                ok_igate_rf = 0; // Response to general IGATE query,
-                                 // so don't gate it
                 break;
 
             case '%':   // Agrelo DFJr / MicroFinder Radio Direction Finding
@@ -16389,8 +16378,6 @@ void decode_info_field(char *call,
                 // Don't set "done" as we want these to appear in
                 // the status text for the record until we get the
                 // full decoding for this type of packet coded up.
-               
-                ok_igate_rf = 1; 
                 break;
  
             case '~':   // UI-format messages, not relevant for APRS ("Do not use" in Reference)
@@ -16399,7 +16386,6 @@ void decode_info_field(char *call,
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: ~,&\n");
                 ignore = 1;     // Don't treat undecoded packets as status text
-                ok_igate_rf = 0;
                 break;
         }
 
