@@ -352,6 +352,13 @@ First Time Install:
      your distribution. Now that OpenMotif is available, you may be happier
      running it than LessTif, but either one should work with Xastir.
 
+     Some users have had problems with OpenMotif, and others have had troubles
+     with LessTif. Symptoms are often menu problems (menus don't draw
+     correctly, menus won't respond to clicks). If you encounter these
+     problems, then uninstall the current Motif and install the other.  Several
+     Mac users have reported problems with OpenMotif, so LessTif may be a
+     better place to start.
+
         2a. Download LessTif version 0.91.1 or higher or download OpenMotif.
         Follow the instructions provided, compile it and install it.
 
