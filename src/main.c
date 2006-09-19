@@ -299,6 +299,10 @@ int  restart_xastir_now = 0;
 int currently_selected_stations      = 0;
 int currently_selected_stations_save = 0;
 
+// If my_trail_diff_color is 0, all my calls (SSIDs) will use MY_TRAIL_COLOR.
+// If my_trail_diff_color = 1 then each different ssid for my callsign will use a different color.
+int my_trail_diff_color = 0;  
+
 
 // Used in segfault handler
 char dangerous_operation[200];
@@ -823,6 +827,7 @@ Widget compressed_objects_items_tx;
 Widget new_bulletin_popup_enable;
 Widget zero_bulletin_popup_enable;
 Widget warn_about_mouse_modifiers_enable;
+Widget my_trail_diff_color_enable;
 Widget load_predefined_objects_menu_from_file_enable;
 Widget load_predefined_objects_menu_from_file;
 int pop_up_new_bulletins = 0;
@@ -9394,6 +9399,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     float y_distance_real;
     float full_distance;
     double area;
+    float area_acres; // area in acres
     long a_x, a_y, b_x, b_y;
     char str_lat[20];
     char str_long[20];
@@ -9664,22 +9670,39 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         // Old method using planar geometry:
                         //area = x_distance_real * y_distance_real;
 
+                        // calculate area in acres
+                        switch (english_units) { 
+                           case 1:
+                           case 2:
+                               area_acres = area * 2.2956749e-05;
+                               break;
+                           default:  // Metric
+                               area_acres = area * 2.4710439e-04;
+                               break;
+                        }
+                        //if (area_acres<0.1) 
+                        //     area_acres = 0;
+
 //fprintf(stderr,"Old method: %f\nNew method: %f\n\n",
 //    x_distance_real * y_distance_real,
 //    area);
+
+                        
 
 // NOTE:  Angles currently change at zoom==1, so we purposely don't
 // give an angle in that measurement instance below.
 //
                         xastir_snprintf(temp,
                             sizeof(temp),
-                            "%0.2f %s, x=%0.2f %s, y=%0.2f %s, %0.2f %s %s, %s: %s %s",
+                            "%0.2f %s, x=%0.2f %s, y=%0.2f %s, %0.2f %s %s (%0.2f %s), %s: %s %s",
                             full_distance, un_alt,      // feet/meters
                             x_distance_real, un_alt,    // feet/meters
                             y_distance_real, un_alt,    // feet/meters
                             area,
                             langcode("POPUPMA038"), // square
                             un_alt,
+                            area_acres,
+                            "acres",
                             langcode("POPUPMA041"), // Bearing
                             (scale_y == 1) ? "??" : temp_course, // Fix for zoom==1
                             langcode("POPUPMA042") );   // degrees
@@ -21102,6 +21125,11 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     pop_up_new_bulletins = (int)XmToggleButtonGetState(new_bulletin_popup_enable);
     view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_popup_enable);
 
+    // user interface refers to all my trails in one color
+    // my trail diff color as 0 means my trails in one color, so select
+    // button when my trail diff color is 0 rather than 1.
+    my_trail_diff_color = !(int)XmToggleButtonGetState(my_trail_diff_color_enable);
+
     // Predefined (SAR/EVENT) objects menu loading (default hardcoded SAR objects or objects from file)
     predefined_menu_from_file = (int)XmToggleButtonGetState(load_predefined_objects_menu_from_file_enable);
 
@@ -21467,6 +21495,23 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+        // Show all My trails in one color
+        my_trail_diff_color_enable = XtVaCreateManagedWidget(langcode("WPUPCFD032"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, new_bulletin_popup_enable,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, warn_about_mouse_modifiers_enable,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+       
        
         // Check box to load predefined (SAR/Event) objects menu from a file or not.
         xastir_snprintf(loadfrom,
@@ -21705,6 +21750,14 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(warn_about_mouse_modifiers_enable,TRUE,FALSE);
         else
             XmToggleButtonSetState(warn_about_mouse_modifiers_enable,FALSE,FALSE);
+
+        // user interface refers to all my trails in one color
+        // my trail diff color as 0 means my trails in one color, so select
+        // button when my trail diff color is 0 rather than 1.
+        if(my_trail_diff_color)  
+            XmToggleButtonSetState(my_trail_diff_color_enable,FALSE,FALSE);
+        else
+            XmToggleButtonSetState(my_trail_diff_color_enable,TRUE,FALSE);
 
         if(predefined_menu_from_file) {
             // Option to load the predefined SAR objects menu items from a file.

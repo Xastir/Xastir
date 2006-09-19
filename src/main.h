@@ -185,6 +185,8 @@ extern int predefined_menu_from_file;
 
 extern int draw_labeled_grid_border;  // used to turn on or off border on map
 
+extern int my_trail_diff_color;  // trails for mycall with different ssids have the same or a different color
+
 extern int output_station_type;
 
 extern int emergency_beacon;

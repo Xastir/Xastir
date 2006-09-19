@@ -411,6 +411,11 @@ see the duplicate positions and/or tracks displayed on the map.  This option
 is almost never needed in practice, but can be useful for special events like
 search and rescue operations.
 
+"My Trails in one color" shows all trails with your callsign but different 
+ssids in the same color.  With My trails in one color selected, mycall-1 
+and mycall-2 are shown in the same color.  With My trails in one color
+unchecked, mycall-1 and mycall-2 are shown in different colors.  
+
 "Load predefined objects from file" and the pick list which follows it allows 
 you to replace the list of Predefined objects that are accessible from the 
 right click pop-up menu with your own list of objects.  A set of standard

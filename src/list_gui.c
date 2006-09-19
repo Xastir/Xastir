@@ -390,6 +390,28 @@ end_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy
 
 
 
+/* 
+ * Callback for station icon in list.
+ * Calls a function to center the map on the selected station from the list.
+ */
+void Call_locate_station(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    if (clientData != NULL && strlen(clientData) > 0) { 
+       locate_station(w, clientData, 1,1,1); 
+    } 
+}
+
+
+
+/* 
+ * *** This callback is not linked to a control on list yet. ***
+ * Invokes the station information dialog for the selected station from the list.
+ */
+void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    if (clientData != NULL && strlen(clientData) > 0) { 
+       Station_data(w, clientData, NULL); 
+    } 
+}
+
 
 
 /*
@@ -582,6 +604,13 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
                 XtManageChild(SL_da[type][row]);
+
+                // Pressing the icon button centers the map on the station.
+                XtAddCallback((XmPushButtonWidget)SL_da[type][row],
+                      XmNactivateCallback, 
+                      Call_locate_station, 
+                      XmTextFieldGetString(SL_call[type][row])
+                      );
 
                 // number in list
                 xastir_snprintf(temp, sizeof(temp), "%*d", strwid, (i+1+new_offset));
@@ -1793,10 +1822,10 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                               (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             // station symbol graphics
-            SL_da[type][i] = XtVaCreateManagedWidget("Station_List icon", xmLabelWidgetClass, win_list,
+            SL_da[type][i] = XtVaCreateManagedWidget("Station_List icon", xmPushButtonWidgetClass, win_list,
                                       XmNtopAttachment,         XmATTACH_OPPOSITE_WIDGET,
                                       XmNtopWidget,             SL_list[type][i],
-                                      XmNtopOffset,             2,
+                                      XmNtopOffset,             1,
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNleftAttachment,        XmATTACH_WIDGET,
                                       XmNleftWidget,            SL_list[type][i],
@@ -1805,8 +1834,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNlabelPixmap,           SL_icon[type][i],
                                       XmNbackground,            colors[0xff],
                                       NULL);
-            XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
-                              (XtEventHandler)mouseScrollHandler, (char*)clientData);
+            //XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
+            //                  (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             // call sign
             SL_call[type][i]= XtVaCreateManagedWidget("Station_List call data", xmTextFieldWidgetClass, win_list,
@@ -1826,7 +1855,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       NULL);
             XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
-                              (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                             (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             switch (type) {
                 case LST_ALL:   // station list

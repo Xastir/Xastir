@@ -426,6 +426,7 @@ WPUPCFD028|Warn if Modifier Keys||
 WPUPCFD029|View zero-distance bulletins||
 WPUPCFD030|Disable Posit Dupe-Checks||
 WPUPCFD031|Load predefined objects from file||
+WPUPCFD032|My trails in one color||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configure Timing||

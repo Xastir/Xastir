@@ -491,6 +491,7 @@ void save_data(void)  {
         store_char (fout, "STATION_MESSAGE_TYPE", aprs_station_message_type);
         store_string (fout, "STATION_POWER", my_phg);
         store_string (fout, "STATION_COMMENTS", my_comment);
+        store_int (fout, "MY_TRAIL_DIFF_COLOR", my_trail_diff_color);
         if (debug_level & 1)
             fprintf(stderr,"Save Data 1\n");
 
@@ -1134,6 +1135,10 @@ void load_data_or_default(void) {
             || my_comment[0] == '\0') {
         sprintf (my_comment, "XASTIR-%s", XASTIR_SYSTEM);
     }
+    /* replacing defined MY_TRAIL_DIFF_COLOR from db.c, default 0 matches 
+       default value of MY_TRAIL_DIFF_COLOR to show all mycall-ssids in 
+       the same color.  */
+    my_trail_diff_color = get_int ("MY_TRAIL_DIFF_COLOR", 0, 1, 0);
 
     /* default values */
     screen_width = get_long ("SCREEN_WIDTH", 61l, 10000l, 61l);
