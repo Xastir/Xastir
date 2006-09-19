@@ -22,6 +22,9 @@
  * Look at the README for more information on the program.
  */
 
+/* Note: this file should be called db.h, but was renamed to database.h
+ * to avoid conflicts with the Berkeley DB package.  */
+
 /*
  * Database structures
  *
@@ -578,6 +581,7 @@ extern DataRow *t_oldest; // pointer to first element in time ordered station
 extern DataRow *t_newest; // pointer to last element in time ordered station
                           // list
 extern void init_station_data(void);
+extern void Station_data(Widget w, XtPointer clientData, XtPointer calldata);
 extern int station_data_auto_update;
 extern int  next_station_name(DataRow **p_curr);
 extern int  prev_station_name(DataRow **p_curr);

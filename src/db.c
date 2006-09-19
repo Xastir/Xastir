@@ -22,6 +22,10 @@
  * Look at the README for more information on the program.
  */
 
+/* Note: the header file for db.c should be called db.h, 
+ * but is named database.h to avoid conflicts with the 
+ * Berkeley DB package.  
+ */
 
 // NOTE:  decode_info_field() is a good place to start for decoding.
 

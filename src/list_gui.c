@@ -55,6 +55,7 @@
 #include "messages.h"
 #include "draw_symbols.h"
 #include "list_gui.h"
+#include "database.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -606,7 +607,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XtManageChild(SL_da[type][row]);
 
                 // Pressing the icon button centers the map on the station.
-                XtAddCallback((XmPushButtonWidget)SL_da[type][row],
+                XtAddCallback( (XtPointer)(XmPushButtonWidget)SL_da[type][row],
                       XmNactivateCallback, 
                       Call_locate_station, 
                       XmTextFieldGetString(SL_call[type][row])
