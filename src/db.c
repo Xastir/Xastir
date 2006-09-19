@@ -16435,14 +16435,11 @@ void decode_info_field(char *call,
                 && (strlen(orig_message) > 0) ) { // Not empty
 
             // Here's where we inject our own callsign like this:
-            // "WE7U-15*,I" in order to provide injection ID for our
-            // igate.  We need to add a '*' character after our
-            // callsign as we inject, to show it came through us.
-            // On the way back out of the internet it can get a '*'
-            // added after the 'I' perhaps.
+            // "WE7U-15,I" in order to provide injection ID for our
+            // igate.
             xastir_snprintf(line,
                 sizeof(line),
-                "%s>%s,%s*,I:%s",
+                "%s>%s,%s,I:%s",
                 (strlen(origin)) ? origin : call,
                 path,
                 my_callsign,
@@ -17700,14 +17697,11 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 //fprintf(stderr,"Retransmitting x_spider packet: %s\n", line);
 
             // Here's where we inject our own callsign like this:
-            // "WE7U-15*,I" in order to provide injection ID for our
-            // igate.  We need to add a '*' character after our
-            // callsign as we inject, to show it came through us.
-            // On the way back out of the internet it can get a '*'
-            // added after the 'I' perhaps.
+            // "WE7U-15,I" in order to provide injection ID for our
+            // igate.
             xastir_snprintf(tmp_line,
                 sizeof(tmp_line),
-                "%s>%s,%s*,I:%s",
+                "%s>%s,%s,I:%s",
                 call_sign,
                 path,
                 my_callsign,
