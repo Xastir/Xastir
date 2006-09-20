@@ -8299,7 +8299,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     sizeof(header_txt),
                     "%c%s %s\r",
                     '\3',
-                    "\rMYCALL",
+                    "MYCALL",
                     my_callsign);
 
                 // Send the callsign out to the TNC only if the interface is up and tx is enabled???
