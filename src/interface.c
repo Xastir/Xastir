@@ -8295,11 +8295,19 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 output_net[0] = '\0';
 
                 /* Set my call sign */
+                // The leading \r is sent to normal serial TNCs.  The only
+                // reason for it is that some folks' D700s are getting 
+                // garbage in the input buffer, and the result is the mycall
+                // line is rejected.  The \r at the beginning clears out the 
+                // junk and lets it go through.  But data_out_ax25 tries to 
+                // parse the MYCALL line, and the presence of a leading \r 
+                // breaks it.
                 xastir_snprintf(header_txt,
                     sizeof(header_txt),
                     "%c%s %s\r",
                     '\3',
-                    "MYCALL",
+                    ((port_data[port].device_type !=DEVICE_AX25_TNC)?
+                                "\rMYCALL":"MYCALL"),
                     my_callsign);
 
                 // Send the callsign out to the TNC only if the interface is up and tx is enabled???
