@@ -1735,6 +1735,17 @@ static void data_out_ax25(int port, unsigned char *string) {
     // Check for commands (start with Control-C)
     if (string[0] == (unsigned char)3) { // Yes, process TNC type commands
 
+        // NOTE added 20 Sep:
+        // The following processing tacitly assumes that there is no leading
+        // white space before the commands.  This assumption was violated 
+        // briefly when a carriage return was added prior to MYCALL (as a
+        // cheesy work-around intended to clear garbage from D700 input 
+        // buffers).  That change broke AX25 ports because of this.
+        // TODO:
+        // don't assume that the command starts at string[1].  Step through
+        // and remove leading white space to *find* where the command starts.
+        // We know there must be one, because string[0] was control-c.
+       
         // Look for MYCALL command
         if (strncmp((char *)&string[1],"MYCALL", 6) == 0) {
 
