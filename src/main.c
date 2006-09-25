@@ -241,12 +241,18 @@ extern char compiledate[];
 // station text in the drawing area.
 //#define USE_LARGE_STATION_FONT
 
+// If next line uncommented, Xastir will display the status line
+// in 2 rows instead of the normal single row.  Formatted especially
+// for 640 pixel wide screens.  It also gives a little extra room for 
+// the number of stations and the Zoom factor.
+// #define USE_TWO_STATUS_LINES
 
 // Enable this next line to set all flags properly for a 640x480
 // touch-screen:  Makes the main window smaller due to the reduced
 // font sizes, makes all dialogs come up at the upper-left of the
-// main Xastir screen, and reverses buttons 1 and 3 so that the more
-// important mouse menus are accessible via the touch-screen.
+// main Xastir screen, reverses buttons 1 and 3 so that the more
+// important mouse menus are accessible via the touch-screen, and
+// sets it for 2 status lines.
 //
 //#define LCD640x480TOUCH
 //
@@ -254,6 +260,7 @@ extern char compiledate[];
   #define USE_SMALL_SYSTEM_FONT
   #define FIXED_DIALOG_STARTUP
   #define SWAP_MOUSE_BUTTONS
+  #define USE_TWO_STATUS_LINES
 #endif
 
 
@@ -8068,6 +8075,135 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     // Create bottom text area
     //
+#ifdef USE_TWO_STATUS_LINES
+
+    // Quantity of stations box, Bottom left corner
+    text3 = XtVaCreateWidget("create_appshell text_output3",
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             14,
+            XmNwidth,               ((22*FONT_WIDTH)+2),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_FORM,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Zoom level box, Bottom second from left
+    text4 = XtVaCreateWidget("create_appshell text_output4",
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             10,
+            XmNwidth,               ((15*FONT_WIDTH)+2),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text3,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Log indicator box, Bottom second from right
+    log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             8,
+            XmNwidth,               ((8*FONT_WIDTH)),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text4,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Interface status indicators, Bottom right corner
+    iface_da = XtVaCreateWidget("create_appshell iface",
+            xmDrawingAreaWidgetClass,
+            form,
+            XmNwidth,               22*(MAX_IFACE_DEVICES/2),
+            XmNheight,              20,
+            XmNunitType,            XmPIXELS,
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNbottomOffset,        5,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          log_indicator,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Message box, on Top left
+    text = XtVaCreateWidget("create_appshell text_output",
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             30,
+            XmNwidth,               ((29*FONT_WIDTH)+2),
+            XmNtopOffset,           4,
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_WIDGET,
+            XmNbottomWidget,        text3,
+            XmNleftAttachment,      XmATTACH_FORM,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Coordinate display box, Top right
+    text2 = XtVaCreateWidget("create_appshell text_output2",
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             35,
+            XmNwidth,   do_dbstatus?((37*FONT_WIDTH)+2):((24*FONT_WIDTH)+2),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_WIDGET,
+            XmNbottomWidget,        text3,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+#else
+
     // Message box, on left
     text = XtVaCreateWidget("create_appshell text_output",
             xmTextFieldWidgetClass,
@@ -8192,6 +8328,11 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+#endif // USE_TWO_STATUS_LINES
+
+    // The separator goes on top of the text box no matter how
+    // many lines the status bar is, so I'm putting if after the
+    // endif statement  - DCR
     sep = XtVaCreateManagedWidget("create_appshell sep6",
             xmSeparatorGadgetClass,
             form,
