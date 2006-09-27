@@ -448,7 +448,7 @@ WPUPCFC003|gg.ggggg|d|
 WPUPCFC004|gg mm.mmm|m|
 WPUPCFC005|gg mm ss.s|s|
 WPUPCFC006|UTM|U|
-WPUPCFC007|MGRS||
+WPUPCFC007|USNG/MGRS||
 WPUPCFC008|UTM con zone speciali||
 #
 # Configurazione GPS

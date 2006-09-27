@@ -450,7 +450,7 @@ WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
-WPUPCFC007|MGRS||
+WPUPCFC007|USNG/MGRS||
 WPUPCFC008|UTM w/special zones||
 #
 # PopUp "Configure GPS"
