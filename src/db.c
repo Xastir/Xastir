@@ -17796,7 +17796,10 @@ void  read_file_line(FILE *f) {
                         "%s",
                         line);
 
-                    decode_ax25_line(line,'F',-1, 1);   // Decode the packet
+                    if (line[0] != '#') {
+                        decode_ax25_line(line,'F',-1, 1);   // Decode the packet
+                    }
+
                     return;                             // only read line by line
                 }
             }
