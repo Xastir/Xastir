@@ -15512,12 +15512,20 @@ else {
         // could have sort of line number
         //fprintf(stderr,"found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);
 
+/*
         (void)alert_data_add(addr,
             call,
             message,
             msg_id,
             MESSAGE_NWS,
             from);
+*/
+
+// We don't wish to record these in memory.  They cause an infinite
+// loop in the current code and a massive memory leak.
+return(1);  // Tell the calling program that the packet was ok so
+            // that it doesn't add it with data_add() itself!
+
 
         done = 1;
         if (operate_as_an_igate>1
@@ -17723,10 +17731,12 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     // For emergency packets we need to process them twice, to try
     // to get a position before we do the distance check.
     //
+// This causes an infinite loop on packets that don't have a
+// distance!  Disabling it for now.
     if (process_emergency_packet_again) {
         process_emergency_packet_again = 0;
 //fprintf(stderr,"Again: %s\n", backup);
-        decode_ax25_line(backup, from, port, dbadd);
+//        decode_ax25_line(backup, from, port, dbadd);
     }
 
     if (debug_level & 1)
