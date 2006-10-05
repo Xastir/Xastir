@@ -1973,9 +1973,9 @@ void overlay_symbol(char symbol, char data, DataRow *fill) {
 
         if (data >= 'a' && data <= 'j') {
             // Found a compressed posit numerical overlay
-            data = data - 'a';  // Convert to a digit
+            data = data - 'a'+'0';  // Convert to a digit
         }
-        else if ( (data >= '0' && data <= '9')
+        if ( (data >= '0' && data <= '9')
                 || (data >= 'A' && data <= 'Z') ) {
             // Found normal overlay character
             fill->aprs_symbol.aprs_type = '\\';
