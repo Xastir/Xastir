@@ -4971,7 +4971,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     else if (english_units) {
         xastir_snprintf(temp,
             sizeof(temp),
-            "%s %s (9W @ 20ft %s, 3dB %s, %s 10.0km)",
+            "%s %s (9W @ 20ft %s, 3dB %s, %s 6.2mi)",
             langcode("WPUPSTI014"), // "Current Power Gain:"
             langcode("WPUPSTI069"), // "default"
             langcode("WPUPSTI070"), // "HAAT"
