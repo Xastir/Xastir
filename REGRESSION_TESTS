@@ -1142,7 +1142,7 @@ grep -i error regression.log | grep -vi errorpopups | grep -v "checking for stre
 
 # Test with ALL options enabled but various header files disabled
 #echo
-echo -n "  02 TEST: ALL: /usr/include/magick disabled:                           "
+echo -n "  35 TEST: ALL: ImageMagick disabled      "
 rm -rf autom4te.cache
 rm regression.log
 sudo chmod 000 /usr/include/magick  # Disable ImageMagick headers
