@@ -201,7 +201,7 @@ DataRow *station_shortcuts[16384];
 // used to time aloha calculations
 static time_t aloha_time = 0;
 static time_t aloha_status_time = 0;
-static double aloha_radius=-1;
+static double aloha_radius=-1;  // in miles
 static aloha_stats the_aloha_stats;
 // calculate every half hour, display in status line every 5 minutes
 #define ALOHA_CALC_INTERVAL 1800 
@@ -3810,13 +3810,14 @@ void display_file(Widget w) {
         if (aloha_radius != -1) {
               // if we actually have an aloha radius calculated already
             long l_lat,l_lon;
-            double distance=aloha_radius;
 
             l_lat = convert_lat_s2l(my_lat);
             l_lon = convert_lon_s2l(my_long);
-            if (!english_units)
-                distance *= 0.62137119; // convert to miles for draw routine
-            draw_aloha_circle(l_lon,l_lat,distance,colors[0x0e], pixmap_final);
+            draw_aloha_circle(l_lon,
+                l_lat,
+                aloha_radius,
+                colors[0x0e],
+                pixmap_final);
         }
     }
 
@@ -18237,7 +18238,7 @@ void calc_aloha(int secs_now)    {
         aloha_radius = -1.0;
 
 // Debug:  Let's us play with/display aloha circles right away:
-//aloha_radius = 40.0;
+//aloha_radius = 40.0;    // Miles
 
         the_aloha_stats.digis=0;
         the_aloha_stats.wxs = 0;
@@ -18268,9 +18269,11 @@ void calc_aloha(int secs_now)    {
         }
         if (secs_now > aloha_status_time) {
             if ( aloha_radius != -1 ) {
-                xastir_snprintf(status_text,sizeof(status_text),
-                                langcode("BBARSTA044"),(int)aloha_radius,
-                                (english_units)?" miles":" km");
+                xastir_snprintf(status_text,
+                    sizeof(status_text),
+                    langcode("BBARSTA044"),
+                    (english_units) ? (int)aloha_radius : (int)(aloha_radius * cvt_mi2len),
+                    (english_units) ? " miles" : " km");
                 statusline(status_text,1);
             }
             aloha_status_time = secs_now + ALOHA_STATUS_INTERVAL;
@@ -18345,16 +18348,17 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
         strncat(format,"\n",sizeof(format)-strlen(format));
 
         // We now have the whole format string, now print using it:
-        xastir_snprintf(temp,sizeof(temp),format,(int)aloha_radius,
-                        (english_units)?" miles":" km",
-                        the_aloha_stats.total,
-                        the_aloha_stats.digis,
-                        the_aloha_stats.mobiles_in_motion,
-                        the_aloha_stats.other_mobiles,
-                        the_aloha_stats.wxs,
-                        the_aloha_stats.homes,
-                        hours, Hours,
-                        minutes, Minutes);
+        xastir_snprintf(temp,sizeof(temp),format,
+            (english_units) ? (int)aloha_radius : (int)(aloha_radius * cvt_mi2len),
+            (english_units)?" miles":" km",
+            the_aloha_stats.total,
+            the_aloha_stats.digis,
+            the_aloha_stats.mobiles_in_motion,
+            the_aloha_stats.other_mobiles,
+            the_aloha_stats.wxs,
+            the_aloha_stats.homes,
+            hours, Hours,
+            minutes, Minutes);
 
         popup_message_always(langcode("PULDNVI016"),temp);
     }
