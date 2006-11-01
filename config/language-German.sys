@@ -7,7 +7,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 11. Jan 2006, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 01. Nov 2006, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -389,8 +389,8 @@ WPUPDPD003|Nur Internet Daten||
 WPUPDPD004|TNC und Internet Daten||
 WPUPDPD005|TNC||
 WPUPDPD006|NET||
-WPUPDPD007|Station Capabilities||
-WPUPDPD008|Mine Only||
+WPUPDPD007|Stations-Resourcen||
+WPUPDPD008|Nur meine||
 #
 # PopUp "Station - Station finden"
 WPUPLSP001|Finde Station||
@@ -432,7 +432,7 @@ WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
 WPUPCFD030|Position Dubletten-Prüfung aus||
 WPUPCFD031|Vordefinierte Objekte aus Datei laden||
-WPUPCFD032|My trails in one color||
+WPUPCFD032|Meine Spuren in einer Farbe||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||
@@ -730,11 +730,11 @@ WPUPMSB014|Typ||
 WPUPMSB015|Rundmeldung||
 WPUPMSB016|*TIMEOUT*||
 WPUPMSB017|*ABBRUCH*||
-WPUPMSB018|*REJECTED*||
-WPUPMSB019|Change Path||
-WPUPMSB020|Use Default Path(s)||
-WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path (Hint):||
+WPUPMSB018|*ZURÜCKGEWIESEN*||
+WPUPMSB019|Pfad ändern||
+WPUPMSB020|Standard-Pfad(e) benutzen||
+WPUPMSB021|Direkt (kein Pfad)||
+WPUPMSB022|Umgekehrter Pfad (Hinweis):||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||
@@ -872,6 +872,7 @@ STIFCC0103|RAC-Index zu alt, erstelle neu...||
 #
 # Band open message 
 UMBNDO0001|in Entfernung von||
+#
 #
 # Allgemeine Optionen
 UNIOP00001|Ok||
@@ -1084,14 +1085,14 @@ POPEM00043|Kein Objekt/Item!||
 POPEM00044|Findu-Wegdaten: fehlgeschlagen||
 POPEM00045|Findu-Wegdaten: fertig||
 POPEM00046|Berkeley DB header/shared library passen nicht! Map-Cache aus.||
-POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
-POPEM00048|Emergency Beacon Mode!||
-POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
-POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
-POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
-POPEM00052|Callsign is EMPTY!||
-POPEM00053|Message is EMPTY!||
-POPEM00054|We're trying to talk to ourselves!||
+POPEM00047|Senden ist global GESPERRT. Notfall-Baken werden NICHT gesendet!||
+POPEM00048|Notfall-Baken-Modus!||
+POPEM00049|NOTFALL-BAKEN-MODUS, senden alle 60 Sekunden!||
+POPEM00050|Schnittstellen oder Positionen/Senden GESPERRT. Notfall-Baken werden NICHT gesendet!||
+POPEM00051|Altnet ist aktiv (Menu Einstellungen->Grundeinstellungen)||
+POPEM00052|Rufzeichen ist LEER!||
+POPEM00053|Nachricht ist LEER!||
+POPEM00054|Wir versuchen mit uns selbst zu reden!||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -1297,9 +1298,9 @@ CADPUD008|Abbrechen||
 CADPUD009|CAD-Objekte löschen?||
 CADPUD010|Alle löschen||
 CADPUD011|Ausgewählte löschen||
-CADPUD012|Solid||
-CADPUD013|Dashed||
-CADPUD014|Double Dash||
+CADPUD012|durchgezogen||
+CADPUD013|gestrichelt||
+CADPUD014|doppelt gestrichelt||
 #
 #
 # Format strings for map metadata in top border
