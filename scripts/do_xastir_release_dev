@@ -17,7 +17,7 @@
 #   Admin
 #   Edit/Add File Releases
 #   Edit Releases (xastir-development)
-#   Edit This Release (xastir-1.8.3)
+#   Edit This Release (xastir-1.8.5)
 #
 
 
@@ -83,7 +83,7 @@ printf("\n*** Consider running the STABLE script to update that tag, if appropri
 
 
 sub Get_release {
-  printf("\nRelease number (i.e. 1.8.3)?\n");
+  printf("\nRelease number (i.e. 1.8.5)?\n");
   $release = <>;
   chomp($release);
 }
