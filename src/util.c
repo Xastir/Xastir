@@ -4111,12 +4111,13 @@ int valid_path(char *path) {
                 ast++;                  // count asterisks in call
                 allast++;               // count asterisks in path
             }
-            else if ((ch <'A' || ch > 'Z')
-                    && (ch <'0' || ch > '9')
-                    && ch != '-'
-                    && ch != 'q'        // Q-construct stuff
-                    && ch != 'r'        // Q-construct stuff
-                    && ch != 'o') {     // Q-construct stuff
+            else if ((ch <'A' || ch > 'Z')      // Not A-Z
+                    && (ch <'a' || ch > 'z')    // Not a-z
+                    && (ch <'0' || ch > '9')    // Not 0-9
+                    && ch != '-') {
+                // Note that Q-construct and internet callsigns can
+                // have a-z in them, AX.25 callsigns cannot unless
+                // they are in a 3rd-party packet.
 
                 if (debug_level & 1)
                     fprintf(stderr, "valid_path: Bad Path: Anti-loop stuff from aprsd or lower-case chars found\n");
