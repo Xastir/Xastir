@@ -172,7 +172,8 @@ required:
 [ ] gcc
 [ ] gv
 [ ] gzip
-[ ] ImageMagick
+[ ] ImageMagick  (See notes under "Adding ImageMagick" below 
+                  --- there are problems with the Cygwin package)
 [ ] lcms
 [ ] less
 [ ] lesstif
@@ -801,13 +802,21 @@ This script is now also in the Xastir sources as
 
 
 
-OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3 &
-ImageMagick 5.5.7):
+OPTIONAL:  Adding ImageMagick:
 --------------------------------------------------------------
-Note: Recent Cygwin installations include ImageMagick 5.5.7-2.
-You only need to manually install ImageMagick if you did not have
-the 3 Magic choices when installing or if Xastir doesn't find
-ImageMagick.
+Note: Recent Cygwin installations include ImageMagick 6.0.4.
+Unfortunately, this install is linked against some X11 DLLs that no
+longer get installed by the most recent X11 package.  See
+   http://comments.gmane.org/gmane.os.cygwin.xfree/16493
+for a work-around.  
+
+The ideal solution to the problem mentioned above is to rebuild
+ImageMagick from source code instead of using the (now-unmaintained)
+Cygwin ImageMagick package.  The instructions below walk you through a
+build of a much older version of ImageMagick, and should still be
+fairly accurate for a more recent vintage (as of this writing,
+ImageMagick versions are up over 6.2, meaning that both the version in
+Cygwin and the version mentione below are very old).
 
 Allows using more than 68 different graphics format files as maps,
 by creating an associated .geo file for each with tie-points.  This
@@ -816,8 +825,8 @@ Xastir, and NOAA weather radar images.  Other people are working on
 integrating even more online mapping sources.  This will also allow
 you to use any GIF/JPG/XPM/BMP/... image as an Xastir map.
 
-Note:  The Cygwin binary for ImageMagick-5.5.5 has a problem in it's
-Magick-config script which makes it impossible to use for our
+Note: The much older Cygwin binary for ImageMagick-5.5.5 has a problem
+in it's Magick-config script which makes it impossible to use for our
 purposes.  Don't try to use that version.  Some people reported a
 similar problem with 5.5.7.
 
