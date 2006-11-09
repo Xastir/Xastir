@@ -1141,9 +1141,8 @@ void load_data_or_default(void) {
     my_trail_diff_color = get_int ("MY_TRAIL_DIFF_COLOR", 0, 1, 0);
 
     /* default values */
-    screen_width = get_long ("SCREEN_WIDTH", 61l, 10000l, 61l);
-    screen_height = get_long ("SCREEN_HEIGHT", 1l, 10000l, 1l);
-
+    screen_width = get_long ("SCREEN_WIDTH", 61l, 10000l, 590l);
+    screen_height = get_long ("SCREEN_HEIGHT", 1l, 10000l, 420l);
 
 //    screen_x_offset = (Position)get_int ("SCREEN_X_OFFSET", 0, 10000, 0);
 //    screen_y_offset = (Position)get_int ("SCREEN_Y_OFFSET", 0, 10000, 0);
