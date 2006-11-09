@@ -9025,7 +9025,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     // Reset the minimum window size so that we can adjust the
     // window downwards again, but only down to size 61.  If we go
-    // any smaller heighth-wise then we end up getting segfaults,
+    // any smaller height-wise then we end up getting segfaults,
     // probably because we're trying to update some widgets that
     // aren't visible at that point.
     //
