@@ -1,0 +1,12 @@
+Makefile.in
+Makefile
+shpcreate
+shpadd
+shpdump
+dbfcreate
+dbfadd
+dbfdump
+shptest
+shptreedump
+shputils
+shprewind
