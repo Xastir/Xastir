@@ -1,0 +1,204 @@
+2003-04-07  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* Issue 1.2.10 Release.
+
+2003-03-10  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* dbfopen.c: modified DBFWriteAttribute call so that it returns FALSE
+	if it has to truncate the input value.
+
+2003-01-28  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shptree.c: avoid build warnings.
+
+2002-05-07  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* dbfopen.c: Added DBFWriteAttributeDirectly() from the AVCE00
+	distribution to simplify AVC integration in GDAL.
+
+	* shptree.c: added use of qsort() in place of bubble sort as 
+	submitted by Bernhard Herzog.
+
+2002-04-10  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shpopen.c: Added SHPRewindObject() to correct ring winding.
+
+	* shprewind.c: New utility program.
+
+2002-03-12  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shapelib.def: added DBFWriteNULLAttribute.
+
+2002-01-17  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* contrib/ShapeFileII.pas: Contributed Delphi Pascal interface
+	to Shapelib. 
+
+2002-01-15  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shapelib.h: Added support for SHAPELIB_DLLEXPORT macro, and write
+	up material attempting to explain the use of SHPAPI_CALL macros.
+
+	* dbfopen.c: Compute nHeaderLength in DBFCloneEmpty() instead of
+	copying it from the source file so we don't have quirks when copying
+	from files with extra bytes of spacers in the header that don't 
+	themselves get copied properly.
+
+2001-12-07  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shpopen.c: Fix fclose() of SHX file if SHX file fails to open. 
+	Should be closing SHP file.  Reported by Ben Discoe.
+
+2001-11-28  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* dbfopen.c: two fixes for compiler warnings as suggested by
+	Richard Hash.
+
+2001-11-01  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shpopen.c/shapefil.h: Move record buffer into SHPInfo so that 
+	different threads can safely access separate files.  Other threading
+	issues may remain.
+
+2001-08-28  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* Issue Shapelib 1.2.9
+
+	* shputils.c: DBFAddField() call should check for -1 return value
+	for failure.
+
+2001-07-03  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shpopen.c: cleanup better if SHX missing, provided by 
+	Riccardo Cohen.
+
+2001-06-21  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* dbfopen.c: Fixed NULL support with patches from Jim Matthews. 
+
+	* shpopen.c: Be more careful of establishing initial file bounds in
+	face of possible NULL shapes.
+
+2001-06-01  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* dbfopen.c: ensure binary mode open.
+
+2001-05-31  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shpopen.c: Add support for writing null shapes.
+
+	* dbfopen.c: added DBFGetFieldIndex(), contributed by Jim Matthews.
+
+	* dbfopen.c/shapefil.h/dbf_api.h: added support for NULL fields
+	in .dbf files. 
+
+2001-05-28  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shpopen.c: add some checking on the record count to ensure it
+	is reasonable.
+
+2001-05-23  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* shapefile.h, shpopen.c, dbfopen.c, shptree.c: added the SHPAPI_CALL
+	macro to allow compilation with _stdcall conventions. 
+
+2001-02-06  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* Fixed a few memory leaks when SHPOpen() fails. 
+
+2000-12-05  Frank Warmerdam  <warmerdam@pobox.com>
+
+	* Fix from Craig Bruce (Cubewerx) for DBFReadAttribute() for
+	the white space trimming code to avoid reading outside allocated
+	memory.
+
+2000-11-02  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Checked in upgraded shputils.c from Bill Miller.
+
+2000-10-05  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Fixed DBFWriteAttribute() to ensure we can't overwrite the
+	end of the szSField buffer even if the width is set large.
+	Bug report by Kirk Benell <kirk@rsinc.com>.
+
+2000-09-25  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Added DBFGetNativeFieldType() (contributed by Daniel) to dbfopen.c.
+
+2000-07-18  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* added better enforcement of -1 for append in SHPWriteObject().
+
+2000-07-07  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Added stdlib.h and string.h where needed, and removed lots of 
+	unused variables, mainly from example mainlines at the suggestion
+	of Bill Hughes. 
+
+2000-05-24  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Added logic to shpadd to grow vertex lists at the suggestion of 
+	Santiago Nullo <sn@softhome.net>.
+	
+2000-05-23  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Added checks in dbfopen.c on return result of fseek() and fread().
+
+	* Avoid crashing in DBReadIntegerAttribute() or DBFReadDoubleAttribte()
+	if the field or record are out of range.
+
+2000-03-28  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Release as 1.2.8.
+
+	* Incorporated a -version-info fix and added mkinstalldirs from Jan.
+
+2000-03-17  Frank Warmerdam  <warmerda@cs46980-c>
+
+	* Added shared library hack to Makefile.
+
+	* Fixed up test scripts to look in ./ for executables.
+
+Wed Feb 16 11:20:29 2000  Frank Warmerdam  <warmerda@gdal.velocet.ca>
+
+	* Release 1.2.7.
+
+	* Modified SHPReadObject() so that will return NULL (type 0) shapes
+	in a sort of sensible way.
+
+Wed Dec 15 08:49:53 1999  Frank Warmerdam  <warmerda@gdal.velocet.ca>
+
+	* Fixed record size written at beginning of records in .shp
+	file.  It was 4 bytes to long (thanks to Mikko Syrja of 3D-system Oy)
+	
+	* Use atof() instead of sscanf() in dbfopen.c, and add stdlib.h.
+
+Mon Dec 13 12:29:01 1999  Frank Warmerdam  <warmerda@gdal.velocet.ca>
+
+	* Added support for uppercase .DBF extention c/o 
+          Dennis Christopher <dennis@avenza.com>
+
+Fri Nov  5 09:12:31 1999  Frank Warmerdam  <warmerda@gdal.velocet.ca>
+
+	* Updated license headers to include the option of use of the code
+	  under the LGPL.
+	  
+1999-09-15 <warmerda@CS46980-B>
+
+	* Added shapelib.dll target to makefile.vc.
+
+Mon May 10 23:19:42 1999  Frank Warmerdam  <warmerda@gdal.velocet.ca>
+
+	* Added candrsn's improvements to extension handling in dbfopen.c
+
+	* Added ``raw tuple'' api to dbfopen.c, still not in dbf_api.html.
+	  From candrsn.
+	
+
+Tue May  4 11:04:31 1999  Frank Warmerdam  <warmerda@gdal.velocet.ca>
+
+	* Prepare 1.2.5 release.
+
+	* Added support for 'F' fields.
+

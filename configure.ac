@@ -221,6 +221,8 @@ AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}")
 
 # Check for Shapelib
 use_shapelib=yes
+LIBSHP=""
+SUBSHP=""
 AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=$withval)
 if test "${use_shapelib}" = "yes"; then
   use_shapelib=no
@@ -231,7 +233,21 @@ if test "${use_shapelib}" = "yes"; then
   AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
   break)])
 fi
-
+if test "${use_shapelib}" = "no"; then
+ AC_MSG_WARN([***************************************************])  
+ AC_MSG_WARN([Your system does not have shapelib installed.  Using ])
+ AC_MSG_WARN([an internal version, which will lead to larger executable])
+ AC_MSG_WARN([ file size.  To eliminate this warning, install shapelib on your system.])
+ LIBSHP="-Lshapelib -lshape"
+ CPPFLAGS="-Ishapelib $CPPFLAGS"
+ SUBSHP="shapelib" 
+ use_shapelib=yes
+ AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
+ AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
+ AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
+fi
+AC_SUBST(SUBSHP)
+AC_SUBST(LIBSHP)
 
 # Check for pcre
 use_pcre=yes
@@ -615,6 +631,7 @@ AC_CONFIG_FILES([Makefile \
     scripts/Makefile \
     src/Makefile \
     src/rtree/Makefile \
+    src/shapelib/Makefile \
     symbols/Makefile \
     xastir.spec \
     xastir-min.spec]) 

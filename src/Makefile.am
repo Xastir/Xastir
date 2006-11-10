@@ -6,8 +6,8 @@
 bin_PROGRAMS = xastir xastir_udp_client
 noinst_PROGRAMS = testawk
 
-SUBDIRS = @SUBRTREE@
-DIST_SUBDIRS = rtree
+SUBDIRS = @SUBRTREE@ @SUBSHP@
+DIST_SUBDIRS = rtree shapelib
 
 EXTRA_DIST=icon.xbm
 
@@ -88,7 +88,7 @@ compiledate.c: $(XASTIR_SRC)
 remove_compiledate:
 	rm -f compiledate.c compiledate.o
 
-xastir_LDADD=@LIBRTREE@
+xastir_LDADD=@LIBRTREE@ @LIBSHP@
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 

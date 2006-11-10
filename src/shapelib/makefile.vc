@@ -1,0 +1,55 @@
+
+#CFLAGS	=	/DSHPAPI_CALL=__stdcall
+
+default:	all
+
+all:	shpcreate.exe shpadd.exe shpdump.exe shprewind.exe dbfcreate.exe \
+	dbfadd.exe dbfdump.exe shptest.exe shptreedump.exe shapelib.dll
+
+shpopen.obj:	shpopen.c shapefil.h
+	$(CC) $(CFLAGS) -c shpopen.c
+
+shptree.obj:	shptree.c shapefil.h
+	$(CC) $(CFLAGS) -c shptree.c
+
+dbfopen.obj:	dbfopen.c shapefil.h
+	$(CC) $(CFLAGS) -c dbfopen.c
+
+shpcreate.exe:	shpcreate.c shpopen.obj
+	$(CC) $(CFLAGS) shpcreate.c shpopen.obj $(LINKOPT) -o shpcreate
+
+shpadd.exe:		shpadd.c shpopen.obj
+	$(CC) $(CFLAGS) shpadd.c shpopen.obj $(LINKOPT)
+
+shpdump.exe:	shpdump.c shpopen.obj
+	$(CC) $(CFLAGS) shpdump.c shpopen.obj $(LINKOPT)
+
+shprewind.exe:	shprewind.c shpopen.obj
+	$(CC) $(CFLAGS) shprewind.c shpopen.obj $(LINKOPT)
+
+dbfcreate.exe:	dbfcreate.c dbfopen.obj
+	$(CC) $(CFLAGS) dbfcreate.c dbfopen.obj $(LINKOPT)
+
+dbfadd.exe:	dbfadd.c dbfopen.obj
+	$(CC) $(CFLAGS) dbfadd.c dbfopen.obj $(LINKOPT)
+
+dbfdump.exe:	dbfdump.c dbfopen.obj
+	$(CC) $(CFLAGS) dbfdump.c dbfopen.obj $(LINKOPT)
+
+shptest.exe:	shptest.c shpopen.obj
+	$(CC) $(CFLAGS) shptest.c shpopen.obj $(LINKOPT)
+
+shputils.exe:	shputils.c shpopen.obj dbfopen.obj
+	$(CC) $(CFLAGS) shputils.c shpopen.obj dbfopen.obj $(LINKOPT) 
+
+shptreedump.exe:	shptreedump.c shptree.obj shpopen.obj
+	$(CC) $(CFLAGS) shptreedump.c shptree.obj shpopen.obj $(LINKOPT)
+
+clean:
+	-del *.obj dbfdump dbfcreate dbfadd shpdump shpcreate shpadd shputils
+	-del *.lib
+	-del *.dll
+
+shapelib.dll:    shpopen.obj dbfopen.obj shptree.obj shapelib.def
+	link /dll /def:shapelib.def /out:shapelib.dll /implib:shapelib.lib \
+		shpopen.obj dbfopen.obj shptree.obj 
