@@ -632,6 +632,7 @@ AC_CONFIG_FILES([Makefile \
     src/Makefile \
     src/rtree/Makefile \
     src/shapelib/Makefile \
+    src/shapelib/contrib/Makefile \
     symbols/Makefile \
     xastir.spec \
     xastir-min.spec]) 
