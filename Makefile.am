@@ -18,7 +18,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         missing mkinstalldirs placeholder FAQ LICENSE README README.CVS \
         README.Getting-Started README.Contributing README.MAPS README.win32 \
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE xastir.1 terraserver.geo \
-        terraserver-reflectivity.geo terraserver-urban.geo \
+        terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
         terraserver-topo.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
         CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse
 
@@ -36,6 +36,7 @@ gnisdir=${pkgdatadir}/GNIS
 gnis_DATA=placeholder
 
 mapdir=${pkgdatadir}/maps
+map_DATA=worldhi.map
 
 onlinedir=${pkgdatadir}/maps/Online
 online_DATA=terraserver.geo terraserver-topo.geo tigermap.geo \
