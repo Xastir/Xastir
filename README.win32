@@ -807,9 +807,9 @@ OPTIONAL:  Adding ImageMagick:
 Note: Recent Cygwin installations include ImageMagick 6.0.4.
 Unfortunately, this install is linked against some X11 DLLs that no
 longer get installed by the most recent X11 package.  See
-   http://comments.gmane.org/gmane.os.cygwin.xfree/16493
-for a work-around.  NOTE:  It appears this problem may have been
-fixed in the latest-latest ImageMagick/Cygwin package.
+   http://comments.gmane.org/gmane.os.cygwin.xfree/16493 for a
+work-around.  NOTE: It appears this problem may have been fixed in the
+latest-latest (as of 13 November 2006) ImageMagick/Cygwin package.
 
 The ideal solution to the problem mentioned above is to rebuild
 ImageMagick from source code instead of using the (now-unmaintained)
