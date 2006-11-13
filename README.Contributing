@@ -221,8 +221,10 @@ To build with custom CFLAGS like this, just tell configure what you
 want CFLAGS to be:
  ./configure CFLAGS="-O -g -fno-inline"
 
-Naturally, you need to build every file after changing configure like
-this, so do a make clean before building:
+Naturally, unless you're using build directories separate from the
+source directory (see below under "Segregating specialized builds"),
+you need to build every file after changing configure like this, so do
+a make clean before building:
 
   make clean
   make 
@@ -270,7 +272,7 @@ script:
   cd build-normal
   ../xastir/configure
   make
-  make-install
+  make install
 
 The configure script uses the path that you gave when you ran it to figure 
 out where to find the source code.
