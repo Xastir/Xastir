@@ -4,3 +4,4 @@ Makefile
 testawk
 xastir
 xastir_udp_client
+compiledate.c
