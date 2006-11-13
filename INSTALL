@@ -553,6 +553,18 @@ First Time Install:
      This is also the format for weather alert maps.  This support is provided
      by the shapelib package.
 
+     NOTE:  There are TWO ways to install Shapelib, using the version of
+     Shapelib that comes with Xastir (statically linked with Xastir), or using
+     a separate Shapelib shared library (dynamically linked with Xastir).  If
+     you ONLY require Shapelib for Xastir and won't need it for any other
+     program, then you may use the private copy distributed with Xastir,
+     skipping the Shapelib install instructions in this section.  If you have
+     other programs which need Shapelib, then it is recommended that you
+     install Shapelib first as a shared library, per the instructions below.
+     If you skip the instructions in this sections, "./configure" will set the
+     compile up so that the private Shapelib code will be statically
+     linked to the executable.
+
      It isn't clear from the install instructions in shapelib, but just 
      installing the library is sufficient, and just typing "make" and 
      "make install" doesn't make or install the libraries.  Take these steps:
