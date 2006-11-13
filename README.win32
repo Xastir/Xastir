@@ -690,6 +690,13 @@ Allows using many sources of online polygon, polyline, and point
 maps, including ones from NOAA.  This is the only format used for
 weather alert maps.
 
+NOTE:  A private copy of the Shapelib library is now included with
+Xastir.  If you need Shapelib only for use with the Xastir program
+you can rely on this private copy to be installed and statically
+linked with Xastir.  If you need Shapelib for any other program,
+it's recommended that you install it as shown below instead, so that
+Xastir and the other programs will use a shared library.
+
 [ ] From a BASH shell, type:
 
     cd ~/src
@@ -1276,7 +1283,8 @@ in that blown directory.  Make Clean doesn't do a thing and the old
 settings and mistakes stick around no matter what you try."
 
 Make sure you've got Shapelib installed on your system else Xastir
-won't find GDAL.  Both are needed.
+won't find GDAL (the private Xastir copy of Shapelib is fine).  Both
+are needed.
 
 Download "gdal-1.2.0b.tar.gz".  In a cygwin window, type the
 following:
