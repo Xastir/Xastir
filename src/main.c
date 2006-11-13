@@ -289,6 +289,7 @@ unsigned int geometry_width, geometry_height;
 int geometry_flags;
 
 static int initial_load = 1;
+int first_time_run = 0;
 
 /* JMT - works under FreeBSD */
 uid_t euid;
@@ -907,8 +908,6 @@ void sel3_switch(int switchpos, Widget first, Widget second, Widget third);
 void sel4_switch(int switchpos, Widget first, Widget second, Widget third, Widget fourth);
 
 static void Configure_station(Widget w, XtPointer clientData, XtPointer callData);
-
-
 
 static void Configure_defaults(Widget w, XtPointer clientData, XtPointer callData);
 
@@ -10668,6 +10667,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
         else {  // Not the first time UpdateTime was called.
                 // Perform the regular updates.
+
+            if (first_time_run) {
+                first_time_run = 0;
+                Configure_station(NULL, NULL, NULL);
+            }
 
             popup_time_out_check(current_time);         // clear popup windows after timeout
             check_statusline_timeout(current_time);     // clear statusline after timeout
@@ -24418,7 +24422,7 @@ void Configure_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer 
 /*
  *  Setup Configure Station dialog
  */
-void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, cs_form, cs_form1, button_ok, button_cancel, call, frame, frame2,
                 framephg, pg2, formphg,
                 power_box,poption0,poption1,poption2,poption3,poption4,poption5,poption6,poption7,poption8,poption9,poption10,
@@ -24436,6 +24440,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
     Atom delw;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
+
 
     if(!configure_station_dialog) {
         configure_station_dialog = XtVaCreatePopupShell(langcode("WPUPCFS001"),
@@ -24915,7 +24920,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 NULL);
         XtAddCallback(configure_button_symbol, XmNactivateCallback, Configure_change_symbol, configure_station_dialog);
 
-
+ 
 //----- Frame for Power-Gain
         framephg = XtVaCreateManagedWidget("Configure_station framephg", 
                 xmFrameWidgetClass, 
@@ -25402,7 +25407,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 NULL);
         XtAddCallback(doption9,XmNvalueChangedCallback,Directivity_toggle,"8");
 
-
+ 
 //-----------------------
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),
                 xmLabelWidgetClass, 
@@ -25796,6 +25801,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         pos_dialog(configure_station_dialog);
 
         delw = XmInternAtom(XtDisplay(configure_station_dialog),"WM_DELETE_WINDOW", FALSE);
+
         XmAddWMProtocolCallback(configure_station_dialog, delw, Configure_station_destroy_shell, (XtPointer)configure_station_dialog);
 
         XtManageChild(cs_form);
@@ -25809,6 +25815,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtManageChild(pane);
 
         XtPopup(configure_station_dialog,XtGrabNone);
+
         fix_dialog_size(configure_station_dialog);
 
         // Move focus to the Close button.  This appears to highlight the
@@ -26654,6 +26661,30 @@ int main(int argc, char *argv[], char *envp[]) {
             }
 
 
+            // Check whether we're running Xastir for the first time.
+            // If so, my_callsign will be "NOCALL".   In this case
+            // write "worldhi.map" into ~/.xastir/config/selected_maps.sys
+            // so that we get the efault map on startup.  Also
+            // request to bring up the Configure->Station dialog in
+            // this case.
+            //
+            if (strncasecmp(my_callsign,"NOCALL",6) == 0) {
+                FILE *ff;
+ 
+//                fprintf(stderr,"***** First time run *****\n");
+
+                // Set the flag
+                first_time_run = 1;
+ 
+                // Write the default map into the selected map file
+                ff = fopen( get_user_base_dir(SELECTED_MAP_DATA), "a");
+                if (ff != NULL) {
+                    fprintf(ff,"worldhi.map\n");
+                    (void)fclose(ff);
+                }
+            }
+
+
             // Mark the "selected" field in the in-memory map index
             // to correspond to the selected_maps.sys file.
             map_chooser_init();
@@ -26694,3 +26725,5 @@ int main(int argc, char *argv[], char *envp[]) {
     quit(0);
     return 0;
 }
+
+
