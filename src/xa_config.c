@@ -214,9 +214,9 @@ int get_int(char *option, int low, int high, int def) {
     }
 
     if (!ret) {
-        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %d\n",
-            option,
-            def);
+//        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %d\n",
+//            option,
+//            def);
         return(def);
     }
 
@@ -243,9 +243,9 @@ long get_long(char *option, long low, long high, long def) {
     }
 
     if (!ret) {
-        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %ld\n",
-            option,
-            def);
+//        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %ld\n",
+//            option,
+//            def);
         return(def);
     }
 
