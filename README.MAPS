@@ -1082,8 +1082,8 @@ Getting Maps and other Data Files for Xastir:
        We now have a script in the xastir/scripts directory called
        "get-NWSdata" which fetches the files you need and plops them
        into the correct directory and unzips them.  Run that script
-       as root.  You may then try the NWS-TEST.log test shown below
-       to verify proper operation.
+       as root.  It requires "wget" to work.  You may then try the
+       NWS-TEST.log test shown below to verify proper operation.
 
         --------------------------
         The files of interest are:
@@ -1265,7 +1265,8 @@ DRAWING YOUR OWN MAPS USING XASTIR ITSELF:
 
     The final result here will be ESRI Shapefile vector maps that
     you can then use within Xastir.  You'll need Shapelib compiled
-    into Xastir to make use of this feature.
+    into Xastir to make use of this feature (the private copy of
+    Shapelib is fine for this).
 
     Turn off Object Transmit first (Interface menu).
 
