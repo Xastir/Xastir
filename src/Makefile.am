@@ -90,6 +90,8 @@ remove_compiledate:
 
 xastir_LDADD=@LIBRTREE@ @LIBSHP@
 
+testawk_LDADD=@LIBSHP@
+
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 xastir_udp_client_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
