@@ -81,6 +81,77 @@ So...  Let's get started!
 --------------------------------------------------------------------
 
 
+Latest info:
+
+*) Xastir starts up with a default world map the first time you run
+it plus pops up a dialog where you can enter your callsign.  Enter
+a callsign, then close/restart Xastir or save the configuration via
+"File->Configure->Save Config Now!".  Either of these methods saves
+the callsign to disk.
+
+*) Xastir includes "Shapefile" map capability by default.  Run the
+script:
+
+    "xastir/scripts/get-NWSdata"
+or
+    "/usr/local/lib/xastir/get-NWSdata"
+
+as root to download/install NOAA Shapefile maps using the "wget"
+utility.  You'll of course need wget installed in order to fetch the
+files using this method.  Installing the NWS files enables weather
+alert support in Xastir.  Verify that "Map->Enable Weather Alerts" is
+selected and that "Map->Disable All Maps" is _not_ selected, else
+you won't see weather alerts on your screen.
+
+
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+
+
+Sources of help you may find useful:
+
+*) "FAQ" file
+
+*) "INSTALL" file:  Non-Windows instructions for installing Xastir
+   and optional map libraries may be found here.
+
+*) "README" file:  General info and some OS-specific notes.
+
+*) "README.Contributing" file:  Info on how to contribute to the
+   Xastir project.
+
+*) "README.CVS" file:  Info on a more advanced way to keep up-to-date
+   on the latest Xastir sources.
+
+*) "README.Getting-Started" file:  The file you're reading.
+
+*) "README.MAPS" file:  Much of the info about maps and where to get
+   them may be found here.  Also see the Xastir Documentation
+   section, the Wiki pages, at <http://www.xastir.org>
+
+*) "README.win32" file:  For Windows/Cygwin users.
+
+*) "UPGRADE" file:  Useful info for updating some old versions of
+   Xastir.
+
+*) Xastir Web-based documentation, including a set of Wiki pages,
+   found at <http://www.xastir.org>
+
+*) Xastir man page, accessed by typing "man xastir" on a Unix or
+   Unix-like system.  This page is a bit out-of-date.
+
+*) "Help->Help Index" in the Xastir program itself.  Note that only
+   the English language variation of this is somewhat up-to-date.
+
+*) Mailing lists at <http://www.xastir.org>
+
+*) User forums at <http://www.xastir.org>
+
+
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+
+
 Minimal Install:
 ----------------
 
@@ -333,9 +404,9 @@ local Shapefile maps, online street/topo/satellite-image maps,
 weather alerts, and audio alerts.  Optionally you can add
 synthesized speech to the mix.
 
-  You'll need to run
-xastir/scripts/get-NWSdata as root after you do the install in order
-to get the NOAA data files you'll need for the weather alerts.
+You'll need to run xastir/scripts/get-NWSdata as root after you do
+the install in order to get the NOAA data files you'll need for the
+weather alerts.  "get-NWSdata" requires "wget" in order to work.
 
 This is what you'd like to see at the end of the "./configure" run
 (minimum, there may be more "yes" answers):
@@ -459,10 +530,11 @@ won't run.
 
 If you've configured in ShapeLib capability, you'll need to run
 xastir/scripts/get-NWSdata as the root user in order to get the NOAA
-data files you'll need for the weather alerts.  Run this script
-periodically (once every six months perhaps?) to keep your weather
-alert maps up-to-date.  If you're not in the U.S. or one of it's
-possessions then you can safely ignore this download.
+data files you'll need for the weather alerts.  The script requires
+"wget" in order to work.  Run this script periodically (once every
+six months perhaps?) to keep your weather alert maps up-to-date.  If
+you're not in the U.S. or one of it's possessions then you can safely
+ignore this download.
 
 
 Various ways to manipulate Xastir:
@@ -634,10 +706,17 @@ your maps.
 
 Enabling Weather Alerts:
 ------------------------
-You must have Shapelib compiled into Xastir.  PRCE/dbfawk are
-optional.  Install NOAA shapefile maps as specified in README.MAPS.
-These files must be installed into the
-/usr/local/share/xastir/Counties/ directory.
+You must have Shapelib compiled into Xastir.  Xastir now comes with
+Shapelib support built-in.  PRCE/dbfawk are optional.  Install NOAA
+shapefile maps as specified in README.MAPS.  These files must be
+installed into the /usr/local/share/xastir/Counties/ directory.  You
+may use this script to download/install them for you:
+    
+    "xastir/scripts/get-NWSdata"
+or
+    "/usr/local/lib/xastir/get-NWSdata"
+
+which must be run as the root user, and requires "wget" to work.
 
 A neat trick:  You can copy some of these maps into the
 /usr/local/share/xastir/maps directory somewhere (a new subdirectory
