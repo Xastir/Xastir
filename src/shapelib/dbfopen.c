@@ -34,6 +34,29 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.1  2006/11/10 21:48:10  tvrusso
+ * Add shapelib as an internal library, and use it if we don't find an external
+ * one.
+ *
+ * Make a loud warning if we do so, because the result of this is that we'll
+ * have a bigger executable.
+ *
+ * This commit is bigger than it needs to be, because it includes all of
+ * shapelib, including the contrib directory.
+ *
+ * Added an automake-generated Makefile for this thing.
+ *
+ * Builds only a static library, and calls it "libshape.a" instead of
+ * "libshp.a" so that if we use ask to use the static one while there is
+ * also an external one installed, the linker doesn't pull in the shared
+ * library one unbidden.
+ *
+ * This stuff can be tested on a system with libshp installed by configuring with
+ * "--without-shapelib"
+ *
+ * I will be removing Makefile.in because it's not supposed to be in CVS.  My
+ * mistake.
+ *
  * Revision 1.48  2003/03/10 14:51:27  warmerda
  * DBFWrite* calls now return FALSE if they have to truncate
  *
@@ -182,8 +205,8 @@
  * Added header.
  */
 
-static char rcsid[] = 
-  "$Id$";
+//static char rcsid[] = 
+//  "$Id$";
 
 #include "shapefil.h"
 
@@ -1068,7 +1091,7 @@ static int DBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField,
 	{
             int		nWidth = psDBF->panFieldSize[iField];
 
-            if( sizeof(szSField)-2 < nWidth )
+            if( (int)sizeof(szSField)-2 < nWidth )
                 nWidth = sizeof(szSField)-2;
 
 	    sprintf( szFormat, "%%%dd", nWidth );
@@ -1086,7 +1109,7 @@ static int DBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField,
 	{
             int		nWidth = psDBF->panFieldSize[iField];
 
-            if( sizeof(szSField)-2 < nWidth )
+            if( (int)sizeof(szSField)-2 < nWidth )
                 nWidth = sizeof(szSField)-2;
 
 	    sprintf( szFormat, "%%%d.%df", 
