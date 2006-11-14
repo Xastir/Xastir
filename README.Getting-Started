@@ -489,6 +489,10 @@ window manager's menus or create an icon on your desktop which
 starts it.  Those are operating system/window manager-specific, so
 we won't cover how to do that here.
 
+The first time you start Xastir it will show a default map of the
+world plus pop up the File->Configure->Station dialog.  Enter a
+callsign on that dialog and press the OK button.
+
 
 Changing the Language:
 
@@ -507,16 +511,18 @@ you'll see this:
   Xastir Command line Options
 
   -c /path/dir       Xastir config dir
+  -f callsign        Track callsign
   -i                 Install private Colormap
   -geometry WxH+X+Y  Set Window Geometry
-  -lDutch            Set the language to Dutch
-  -lEnglish          Set the language to English
-  -lFrench           Set the language to French
-  -lGerman           Set the language to German
-  -lItalian          Set the language to Italian
-  -lPortuguese       Set the language to Portuguese
-  -lSpanish          Set the language to Spanish
+  -l Dutch           Set the language to Dutch
+  -l English         Set the language to English
+  -l French          Set the language to French
+  -l German          Set the language to German
+  -l Italian         Set the language to Italian
+  -l Portuguese      Set the language to Portuguese
+  -l Spanish         Set the language to Spanish
   -m                 Deselect Maps
+  -p                 Disable popups
   -t                 Internal SIGSEGV handler enabled
   -v level           Set the debug level
 
