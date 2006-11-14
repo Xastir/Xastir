@@ -1196,7 +1196,7 @@ void load_data_or_default(void) {
 
     icon_outline_style = get_int ("MAP_ICONOUTLINESTYLE", 0, 3, 0);
 
-    wx_alert_style = get_int ("MAP_WX_ALERT_STYLE", 0, 1, 1);
+    wx_alert_style = get_int ("MAP_WX_ALERT_STYLE", 0, 1, 0);
 
     // Empty string is ok here
     if (!get_string("ALTNET_CALL", altnet_call, sizeof(altnet_call)))
@@ -1316,7 +1316,7 @@ void load_data_or_default(void) {
 
     draw_labeled_grid_border = get_int ("MAPS_LABELED_GRID_BORDER", 0, 1, 0);
 
-    map_color_levels = get_int ("MAPS_LEVELS", 0, 1, 0);
+    map_color_levels = get_int ("MAPS_LEVELS", 0, 1, 1);
 
     map_labels = get_int ("MAPS_LABELS", 0, 1, 1);
 
@@ -1441,17 +1441,17 @@ void load_data_or_default(void) {
     Display_.phg_of_moving = get_int ("DISPLAY_MOBILES_PHG", 0, 1, 0);
     Display_.altitude = get_int ("DISPLAY_ALTITUDE", 0, 1, 0);
     Display_.course = get_int ("DISPLAY_COURSE", 0, 1, 0);
-    Display_.speed = get_int ("DISPLAY_SPEED", 0, 1, 0);
+    Display_.speed = get_int ("DISPLAY_SPEED", 0, 1, 1);
     Display_.speed_short = get_int ("DISPLAY_SPEED_SHORT", 0, 1, 0);
     Display_.dist_bearing = get_int ("DISPLAY_DIST_COURSE", 0, 1, 0);
-    Display_.weather = get_int ("DISPLAY_WEATHER", 0, 1, 0);
-    Display_.weather_text = get_int ("DISPLAY_STATION_WX", 0, 1, 0);
+    Display_.weather = get_int ("DISPLAY_WEATHER", 0, 1, 1);
+    Display_.weather_text = get_int ("DISPLAY_STATION_WX", 0, 1, 1);
     Display_.temperature_only = get_int ("DISPLAY_TEMP_ONLY", 0, 1, 0);
-    Display_.wind_barb = get_int ("DISPLAY_WIND_BARB", 0, 1, 0);
+    Display_.wind_barb = get_int ("DISPLAY_WIND_BARB", 0, 1, 1);
     Display_.trail = get_int ("DISPLAY_STATION_TRAILS", 0, 1, 1);
     Display_.last_heard = get_int ("DISPLAY_LAST_HEARD", 0, 1, 0);
-    Display_.ambiguity = get_int ("DISPLAY_POSITION_AMB", 0, 1, 0);
-    Display_.df_data = get_int ("DISPLAY_DF_INFO", 0, 1, 0);
+    Display_.ambiguity = get_int ("DISPLAY_POSITION_AMB", 0, 1, 1);
+    Display_.df_data = get_int ("DISPLAY_DF_INFO", 0, 1, 1);
     Display_.dr_data = get_int ("DISPLAY_DEAD_RECKONING_INFO", 0, 1, 1);
     Display_.dr_arc = get_int ("DISPLAY_DEAD_RECKONING_ARC", 0, 1, 1);
     Display_.dr_course = get_int ("DISPLAY_DEAD_RECKONING_COURSE", 0, 1, 1);
