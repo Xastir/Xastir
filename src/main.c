@@ -16472,13 +16472,13 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmStringFree(xb);
     //xms is still defined
 
-    xa = XmStringCreateLtoR("\n\n" ABOUT_MSG "\n\n\nLibraries used: " XASTIR_INSTALLED_LIBS,XmFONTLIST_DEFAULT_TAG);  // Add some newlines
+    xa = XmStringCreateLtoR("\n\n" ABOUT_MSG "\n\n\nLibraries used: " XASTIR_INSTALLED_LIBS, XmFONTLIST_DEFAULT_TAG);  // Add some newlines
     xb = XmStringConcat(xms, xa);
     XmStringFree(xa);
     XmStringFree(xms);
     //xb is still defined
 
-    xa = XmStringCreateLtoR(XmVERSION_STRING, XmFONTLIST_DEFAULT_TAG);  // Add the Motif version string
+    xa = XmStringCreateLtoR("\n" XmVERSION_STRING, XmFONTLIST_DEFAULT_TAG);  // Add the Motif version string
     xms = XmStringConcat(xb, xa);
     XmStringFree(xa);
     XmStringFree(xb);
