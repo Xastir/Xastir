@@ -34,6 +34,9 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.2  2006/11/14 21:28:02  we7u
+ * Casting a couple of variables to int's to get rid of compiler warnings.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -207,6 +210,7 @@
 
 //static char rcsid[] = 
 //  "$Id$";
+
 
 #include "shapefil.h"
 
