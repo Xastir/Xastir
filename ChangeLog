@@ -1,3 +1,215 @@
+2006-11-14 19:52  we7u
+
+	* configure.ac (1.157): Fixing up the Shapelib config options.
+
+2006-11-14 19:52  we7u
+
+	* xastir.1 (1.13): Updating the man page a bit.
+
+2006-11-14 16:28  we7u
+
+	* configure.ac (1.156): Changes to make it obvious in the configure
+	  output text and in Help->About that we're using the internal
+	  Shapelib.  This change doesn't affect summary.log.
+
+2006-11-14 15:41  we7u
+
+	* src/main.c (1.725): Putting a newline in front of the Motif
+	  version string in Help->About.
+
+2006-11-14 08:19  tvrusso
+
+	* configure.ac (1.155): Fix the "-I" flag in CPPFLAGS when local
+	  shapelib is being built.
+
+	  As it was, the compiler would not find the local shapefil.h file
+	  unless you were building in the actual xastir source code directory,
+	  or if shapefil.h was already installed system-wide.
+
+	  Noticed this while attempting a fresh build on a brand new laptop,
+	  on which I'd decided to attempt the simplest possible build, with no
+	  shapelib installed.
+
+2006-11-13 19:46  we7u
+
+	* README.Getting-Started (1.29): Added notes about the private copy
+	  of Shapelib and when it might be used, the "wget" requirement for
+	  the get-NWSdata script, putting in a callsign when initially
+	  starting Xastir, and a list of various places to get Xastir help.
+
+2006-11-13 19:43  we7u
+
+	* README.win32 (1.138): Mentioning the private Shapelib version and
+	  when it might be used.
+
+2006-11-13 19:43  we7u
+
+	* README.MAPS (1.86): Mentioning "wget" as a requirement for
+	  get-NWSdata.  Mentioning the private install of Shapelib.
+
+2006-11-13 19:41  we7u
+
+	* INSTALL (1.89): Adding info about the alternate method of getting
+	  Shapefile support.
+
+2006-11-13 15:10  tvrusso
+
+	* README.Contributing (1.14): Fix up a mistake in the description
+	  of "build directories", and add a reference to that technique to an
+	  earlier section that advocates doing all the builds in the source
+	  directory.
+
+	  Build directories are such a powerful tool for developers, we should
+	  make sure we recommend it when talking about doing multiple builds.
+
+2006-11-13 14:56  tvrusso
+
+	* README.win32 (1.137): Attach a date to qualify the meaning of
+	  "latest" in the ImageMagick section.
+
+2006-11-13 14:48  tvrusso
+
+	* src/Makefile.am (1.42): Add a testawk_LDADD line to
+	  src/Makefile.am so that this test program can link if shapelib is
+	  not installed.
+
+	  I have no idea why this didn't fail when I was testing the shapelib
+	  addition.
+
+2006-11-13 14:25  we7u
+
+	* README.win32 (1.136): Updating the description for ImageMagick
+	  bug.
+
+2006-11-13 14:24  we7u
+
+	* src/.cvsignore (1.5), src/shapelib/.cvsignore (1.2): Adding
+	  another couple of derived files to the .cvsignore file.
+
+2006-11-13 01:36  we7u
+
+	* src/main.c (1.724): Enabling default map on initial startup, plus
+	  if the callsign is "NOCALL", bring up the Configure->Station dialog.
+
+2006-11-13 01:26  we7u
+
+	* src/xa_config.c (1.163): Getting rid of many of the messages you
+	  get on startup when config file settings are missing.
+
+2006-11-12 00:26  tvrusso
+
+	* src/shapelib/contrib/Makefile.am (1.2): Add CVS revision
+	  information and copyright.
+
+2006-11-12 00:11  we7u
+
+	* README.MAPS (1.85): Adding attribution for the default map.
+
+2006-11-11 23:46  tvrusso
+
+	* configure.ac (1.154), src/shapelib/Makefile.am (1.2),
+	  src/shapelib/shprewind (1.2), src/shapelib/contrib/.cvsignore
+	  (1.1), src/shapelib/contrib/Makefile (1.2),
+	  src/shapelib/contrib/Makefile.am (1.1),
+	  src/shapelib/contrib/Makefile_orig (1.1): Add EXTRA_DIST and
+	  DIST_SUBDIRS lines so that the shapelib stuff is properly bundled
+	  when doing a "make dist" for release.
+
+	  The Makefile.am in the contrib directory does not actually build any
+	  of the contrib codes.  That's another step for another moment.  I
+	  just wanted to make sure that any make dist that is done is sure to
+	  bundle the entire shapelib directory in order to comply with the
+	  terms of the license.
+
+	  The "Makefile_orig" script in the shapelib/contrib directory could
+	  be used temporarily to build the shapelib tools.  Ultimately, they
+	  could be built by the new makefile, but it's not really the goal of
+	  this exercise to do all that.  In fact, at some point it might be
+	  reasonable for xastir's shapelib directory to contain only the files
+	  needed for building the library, but that will probably require
+	  modifying it to be under GPL instead of LGPL.  That's just a matter
+	  of editing some license files, not any code.
+
+	  Also, removed the shprewind file from the shapelib directory.  This
+	  is a linux binary that for some reason was in the shapelib source
+	  tarball I had.  It should never have been added to xastir's CVS
+	  repository.
+
+2006-11-11 23:01  we7u
+
+	* Makefile.am (1.37): Adding a default map to the distribution.
+
+2006-11-11 22:51  we7u
+
+	* worldhi.map (1.1): Adding a default map.  Map was created by
+	  Keith Sproul, WU2Z, and used with his permission.
+
+2006-11-10 21:49  tvrusso
+
+	* src/shapelib/.cvsignore (1.1): Add .cvsignore.
+
+2006-11-10 21:49  tvrusso
+
+	* src/shapelib/Makefile.in (1.2): CVS cleanup.
+
+2006-11-10 21:48  tvrusso
+
+	* configure.ac (1.153), src/Makefile.am (1.41),
+	  src/shapelib/LICENSE.LGPL (1.1), src/shapelib/Makefile.am (1.1),
+	  src/shapelib/Makefile.in (1.1),
+	  src/shapelib/Makefile_shapelib_orig (1.1), src/shapelib/README
+	  (1.1), src/shapelib/README.tree (1.1), src/shapelib/dbf_api.html
+	  (1.1), src/shapelib/dbfadd.c (1.1), src/shapelib/dbfcreate.c
+	  (1.1), src/shapelib/dbfdump.c (1.1), src/shapelib/dbfopen.c
+	  (1.1), src/shapelib/libtool (1.1), src/shapelib/makefile.vc
+	  (1.1), src/shapelib/makeshape.sh (1.1),
+	  src/shapelib/mkinstalldirs (1.1), src/shapelib/shapefil.h (1.1),
+	  src/shapelib/shapelib.def (1.1), src/shapelib/shapelib.html
+	  (1.1), src/shapelib/shp_api.html (1.1), src/shapelib/shpadd.c
+	  (1.1), src/shapelib/shpcreate.c (1.1), src/shapelib/shpdump.c
+	  (1.1), src/shapelib/shpopen.c (1.1), src/shapelib/shprewind
+	  (1.1), src/shapelib/shprewind.c (1.1), src/shapelib/shptest.c
+	  (1.1), src/shapelib/shptree.c (1.1), src/shapelib/shptreedump.c
+	  (1.1), src/shapelib/shputils.c (1.1), src/shapelib/stream1.out
+	  (1.1), src/shapelib/stream1.sh (1.1), src/shapelib/stream2.out
+	  (1.1), src/shapelib/stream2.sh (1.1), src/shapelib/stream3.out
+	  (1.1), src/shapelib/contrib/Makefile (1.1),
+	  src/shapelib/contrib/ShapeFileII.pas (1.1),
+	  src/shapelib/contrib/dbfcat.c (1.1),
+	  src/shapelib/contrib/dbfinfo.c (1.1),
+	  src/shapelib/contrib/makefile.vc (1.1),
+	  src/shapelib/contrib/my_nan.h (1.1),
+	  src/shapelib/contrib/shpcat.c (1.1),
+	  src/shapelib/contrib/shpcentrd.c (1.1),
+	  src/shapelib/contrib/shpdata.c (1.1),
+	  src/shapelib/contrib/shpdxf.c (1.1),
+	  src/shapelib/contrib/shpfix.c (1.1),
+	  src/shapelib/contrib/shpgeo.c (1.1),
+	  src/shapelib/contrib/shpgeo.h (1.1),
+	  src/shapelib/contrib/shpinfo.c (1.1),
+	  src/shapelib/contrib/shpproj.c (1.1),
+	  src/shapelib/contrib/shpwkb.c (1.1): Add shapelib as an internal
+	  library, and use it if we don't find an external one.
+
+	  Make a loud warning if we do so, because the result of this is that
+	  we'll have a bigger executable.
+
+	  This commit is bigger than it needs to be, because it includes all
+	  of shapelib, including the contrib directory.
+
+	  Added an automake-generated Makefile for this thing.
+
+	  Builds only a static library, and calls it "libshape.a" instead of
+	  "libshp.a" so that if we use ask to use the static one while there
+	  is also an external one installed, the linker doesn't pull in the
+	  shared library one unbidden.
+
+	  This stuff can be tested on a system with libshp installed by
+	  configuring with "--without-shapelib"
+
+	  I will be removing Makefile.in because it's not supposed to be in
+	  CVS.  My mistake.
+
 2006-11-09 16:23  we7u
 
 	* src/xa_config.c (1.162): Changing the default window size on
@@ -2416,6 +2628,11 @@
 
 	* Davis/.cvsignore (1.2), LaCrosse/.cvsignore (1.2): Updating the
 	  list of files that CVS should skip.
+
+2006-01-26 19:02  we7u
+
+	* LaCrosse/autom4te.cache/.cvsignore (1.2): We don't need this
+	  directory in CVS.  Getting rid of it.
 
 2006-01-26 16:59  we7u
 
@@ -11203,15 +11420,29 @@
 	  Davis/bootstrap.sh (1.1), Davis/configure.ac (1.1): Moved these
 	  from xastir/src/Davis to xastir/Davis
 
+2004-06-02 16:33  we7u
+
+	* src/Davis/src/Makefile.am (1.3), src/Davis/src/db2APRS.c (1.3),
+	  src/Davis/src/defs.h (1.2), src/Davis/AUTHORS (1.2),
+	  src/Davis/COPYING (1.2), src/Davis/INSTALL (1.2), src/Davis/NEWS
+	  (1.2), src/Davis/bootstrap.sh (1.2), src/Davis/configure.ac
+	  (1.3), src/Davis/Makefile.am (1.4), src/Davis/README (1.7):
+	  Moving these to a new spot.
+
 2004-06-02 03:28  we7u
 
 	* src/Makefile.am (1.17): Removing Davis from the list of
 	  subdirectories for now.
 
+2004-06-01 23:09  we7u
+
+	* src/Davis/Makefile.am (1.3): More Davis tweaks.
+
 2004-06-01 22:49  we7u
 
-	* src/Makefile.am (1.16): Tweaks to include the Davis code in the
-	  released tgz files.
+	* src/Makefile.am (1.16), src/Davis/Makefile.am (1.2),
+	  src/Davis/src/Makefile.am (1.2): Tweaks to include the Davis code
+	  in the released tgz files.
 
 2004-05-31 05:34  we7u
 
@@ -11890,6 +12121,11 @@
 	* acinclude.m4 (1.14): Tweaking Cygwin serial ports to more
 	  standard port names.
 
+2004-03-23 22:56  we7u
+
+	* src/Davis/README (1.6), src/Davis/src/db2APRS.c (1.2): Changes by
+	  Bruce Bennett, KB8ROP.
+
 2004-03-23 18:01  we7u
 
 	* src/wx.c (1.37): Changes by Bruce Bennett.
@@ -12229,6 +12465,11 @@
 
 	* INSTALL (1.31): Updating some libtiff/libgeotiff notes.
 
+2004-02-22 05:21  we7u
+
+	* src/Davis/README (1.5): Changes contributed by Bruce Bennett,
+	  KB8ROP
+
 2004-02-21 20:35  kd6zwr
 
 	* src/map_shp.c (1.45): Add label levels for point style shapefiles
@@ -12296,15 +12537,50 @@
 	* configure.ac (1.79), src/main.c (1.442): Adding a list of the
 	  compiled-in libraries to the Help->About dialog.
 
+2004-02-06 17:02  we7u
+
+	* src/Davis/INSTALL (1.1): Adding another file that automake
+	  requires.
+
 2004-02-05 19:00  we7u
 
 	* INSTALL (1.30), README.CVS (1.10), README.win32 (1.79): Updating
 	  CVS instructions because SourceForge isn't handling compression
 	  currently.
 
+2004-02-05 00:17  we7u
+
+	* src/Davis/configure.ac (1.2): Adding another required file.
+	  Added small tweaks to allow using slightly older autoconf (2.53) and
+	  automake (1.6.3).
+
 2004-02-04 20:41  we7u
 
 	* bootstrap.sh (1.7): Adding the CVS tag line.
+
+2004-02-04 20:24  we7u
+
+	* src/Davis/README (1.4): Updating the instructions for the latest
+	  install procedure.
+
+2004-02-04 20:19  we7u
+
+	* src/Davis/src/Makefile.am (1.1), src/Davis/src/db2APRS.c (1.1),
+	  src/Davis/src/defs.h (1.1): Adding new files to this project.
+	  the .c and .h files were moved from one directory up to this new
+	  location.
+
+2004-02-04 20:18  we7u
+
+	* src/Davis/AUTHORS (1.1), src/Davis/COPYING (1.1),
+	  src/Davis/Makefile.am (1.1), src/Davis/NEWS (1.1),
+	  src/Davis/bootstrap.sh (1.1), src/Davis/configure.ac (1.1):
+	  Adding new files to this project for the first time.
+
+2004-02-04 20:17  we7u
+
+	* src/Davis/config.h (1.3), src/Davis/db2APRS.c (1.3): Moving these
+	  files to new locations, so removing the old versions.
 
 2004-02-04 16:49  we7u
 
@@ -12422,8 +12698,9 @@
 	  (1.95), src/util.h (1.24), src/view_message_gui.c (1.16),
 	  src/wx.c (1.36), src/wx.h (1.5), src/wx_gui.c (1.31),
 	  src/x_spider.c (1.6), src/x_spider.h (1.3), src/xa_config.c
-	  (1.110), src/xa_config.h (1.5), src/xastir.h (1.35): Updating
-	  copyright notices.
+	  (1.110), src/xa_config.h (1.5), src/xastir.h (1.35),
+	  src/Davis/README (1.3), src/Davis/config.h (1.2),
+	  src/Davis/db2APRS.c (1.2): Updating copyright notices.
 
 2004-01-26 16:11  we7u
 
@@ -12510,6 +12787,11 @@
 	  KB4AMA.  Just send a USR1 signal via "kill -USR1 <pid>" and Xastir
 	  will create a new snapshot.  Useful for web page front-ends.
 
+2004-01-16 20:58  we7u
+
+	* src/Davis/README (1.2): Added a note regarding an example compile
+	  line for SuSE 9.0.
+
 2004-01-16 20:25  gstueve
 
 	* src/alert.c (1.66), src/alert.h (1.17): Change numeric index
@@ -12520,6 +12802,13 @@
 
 	* scripts/fcc-get (1.3): Update for new diretory layout with
 	  generic path name & add passive ftp.
+
+2004-01-16 18:58  we7u
+
+	* src/Davis/README (1.1), src/Davis/config.h (1.1),
+	  src/Davis/db2APRS.c (1.1): Adding new TCP/IP daemon for connect
+	  Xastir to the Davis weather station data using Meteo.  Contributed
+	  by Bruce Bennett, KB8ROP.
 
 2004-01-16 18:14  we7u
 
@@ -24603,6 +24892,11 @@
 	* callpass/Makefile (1.2): Removing Makefile.  This is created
 	  automatically during the "configure" stage.
 
+2002-02-10 01:47  kg4ijb
+
+	* src/callpass/Makefile.am (1.2), src/callpass/Makefile.in (1.5),
+	  src/callpass/callpass.c (1.2): These have been moved to root
+
 2002-02-10 00:56  kg4ijb
 
 	* Makefile.in (1.2), configure (1.4), configure.in (1.4),
@@ -24614,17 +24908,17 @@
 2002-02-09 14:48  kg4ijb
 
 	* config.h.in (1.2), configure (1.3), configure.in (1.3),
-	  m4/Makefile.in (1.4): Added config check for Xpm (hack) untill I
-	  can do something better.
+	  m4/Makefile.in (1.4), src/callpass/Makefile.in (1.4): Added
+	  config check for Xpm (hack) untill I can do something better.
 
 2002-02-09 14:14  kg4ijb
 
-	* configure (1.2), configure.in (1.2), m4/Makefile.in (1.3):
-	  updated release information
+	* configure (1.2), configure.in (1.2), m4/Makefile.in (1.3),
+	  src/callpass/Makefile.in (1.3): updated release information
 
 2002-02-08 04:45  kg4ijb
 
-	* m4/Makefile.in (1.2): rebuilds
+	* m4/Makefile.in (1.2), src/callpass/Makefile.in (1.2): rebuilds
 
 2002-02-07 00:58  we7u
 
@@ -24681,8 +24975,10 @@
 	  src/view_message_gui.c (1.1), src/wx.c (1.1), src/wx.h (1.1),
 	  src/wx_gui.c (1.1), src/xa_config.c (1.1), src/xa_config.h (1.1),
 	  src/xastir.h (1.1), src/snprintf.h (1.1), src/snprintf.c (1.1),
-	  symbols/Makefile.am (1.1), symbols/Makefile.in (1.1),
-	  symbols/symbols.dat (1.1): Initial revision
+	  src/callpass/Makefile.am (1.1), src/callpass/Makefile.in (1.1),
+	  src/callpass/callpass.c (1.1), symbols/Makefile.am (1.1),
+	  symbols/Makefile.in (1.1), symbols/symbols.dat (1.1): Initial
+	  revision
 
 2002-02-02 03:18  kg4ijb
 
@@ -24700,6 +24996,8 @@
 	  (1.1.1.1), src/wx.c (1.1.1.1), src/wx.h (1.1.1.1), src/wx_gui.c
 	  (1.1.1.1), src/xa_config.c (1.1.1.1), src/xa_config.h (1.1.1.1),
 	  src/xastir.h (1.1.1.1), src/snprintf.h (1.1.1.1), src/snprintf.c
+	  (1.1.1.1), src/callpass/Makefile.am (1.1.1.1),
+	  src/callpass/Makefile.in (1.1.1.1), src/callpass/callpass.c
 	  (1.1.1.1), symbols/Makefile.am (1.1.1.1), symbols/Makefile.in
 	  (1.1.1.1), symbols/symbols.dat (1.1.1.1): rc1 intital import
 
