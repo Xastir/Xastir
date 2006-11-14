@@ -69,13 +69,13 @@ use_festival=yes
 use_gpsman=yes
 use_err_popups=no
 use_lsb=no
-AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=$withval)
+AC_ARG_WITH(festival,[  --without-festival      Disable festival features.],use_festival=$withval)
 
-AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=$withval)
+AC_ARG_WITH(gpsman,[  --without-gpsman        Disable gpsman features.],use_gpsman=$withval)
 
-AC_ARG_WITH(errorpopups,[  --with-errorpopups       Send error popups to stderr.],use_err_popups=$withval)
+AC_ARG_WITH(errorpopups,[  --with-errorpopups      Send error popups to stderr.],use_err_popups=$withval)
 
-AC_ARG_WITH(lsb,[ --with-lsb       Enable Linux Standard Base.],use_lsb=$withval)
+AC_ARG_WITH(lsb,[  --with-lsb              Enable Linux Standard Base.],use_lsb=$withval)
 
 
 # Now that all the various "use_" variables are set, probe for binaries.
@@ -221,29 +221,43 @@ AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}")
 
 # Check for Shapelib
 use_shapelib=yes
-use_shapelib_internal=no
+force_internal_shapelib=no
+shapelib_desired=yes
 LIBSHP=""
 SUBSHP=""
-AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=$withval)
-if test "${use_shapelib}" = "yes"; then
+AC_ARG_WITH(internal-shapelib,[  --with-internal-shapelib  Force use of internal shapelib library.],force_internal_shapelib=$withval)
+AC_ARG_WITH(shapelib,[  --without-shapelib      Disable shapelib features.],shapelib_desired=$withval)
+if test "${shapelib_desired}" = "no"; then
+  use_shapelib=no
+  force_internal_shapelib=no
+fi
+if test "${force_internal_shapelib}" = "yes"; then
+  AC_MSG_WARN([***************************************************************** ])  
+  AC_MSG_WARN([Internal Shapelib library has been forced.                        ])
+  AC_MSG_WARN([***************************************************************** ])
+  # Temporary setting to get into if block below
+  use_shapelib=no
+fi
+if test "${shapelib_desired}" = "yes" -a "${force_internal_shapelib}" = "no"; then
   use_shapelib=no
   AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
-  LIBS="$LIBS -lshp"
-  AC_CHECK_LIB(shp,DBFGetFieldIndex,
-    AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
-  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
-  break)])
+    LIBS="$LIBS -lshp"
+    AC_CHECK_LIB(shp,DBFGetFieldIndex,
+      AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
+    AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
+    break)])
 fi
-if test "${use_shapelib}" = "no"; then
- AC_MSG_WARN([***************************************************])  
- AC_MSG_WARN([Your system does not have shapelib installed.  Using ])
- AC_MSG_WARN([an internal version, which will lead to larger executable])
- AC_MSG_WARN([ file size.  To eliminate this warning, install shapelib on your system.])
- use_shapelib_internal=yes
+if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
+ AC_MSG_WARN([**************************************************************** ])  
+ AC_MSG_WARN([Your system does not have shapelib installed.  Using an internal ])
+ AC_MSG_WARN([version.  This may lead to a larger filesize for the executable. ])
+ AC_MSG_WARN([Install shapelib on your system to eliminate this warning.       ])
+ AC_MSG_WARN([**************************************************************** ])  
  LIBSHP="-Lshapelib -lshape"
  CPPFLAGS="-I\$(top_srcdir)/src/shapelib $CPPFLAGS"
  SUBSHP="shapelib" 
  use_shapelib=yes
+ force_internal_shapelib=yes
  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
  AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
@@ -251,9 +265,10 @@ fi
 AC_SUBST(SUBSHP)
 AC_SUBST(LIBSHP)
 
+
 # Check for pcre
 use_pcre=yes
-AC_ARG_WITH(pcre,[  --without-pcre       Disable pcre features.],use_pcre=$withval)
+AC_ARG_WITH(pcre,[  --without-pcre          Disable pcre features.],use_pcre=$withval)
 if test "${use_pcre}" = "yes"; then
   use_pcre=no
   AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
@@ -305,7 +320,7 @@ fi
 
 # Check for AX.25 library 
 use_ax25=yes
-AC_ARG_WITH(ax25,[  --without-ax25       Disable ax25 features.],use_ax25=$withval)
+AC_ARG_WITH(ax25,[  --without-ax25          Disable ax25 features.],use_ax25=$withval)
 if test "${use_ax25}" = "yes"; then
   use_ax25=no
   AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, use_ax25=yes
@@ -317,7 +332,7 @@ fi
 
 # use dbfawk
 use_dbfawk=yes
-AC_ARG_WITH(dbfawk,[  --without-dbfawk       Disable dbfawk features.],use_dbfawk=$withval)
+AC_ARG_WITH(dbfawk,[  --without-dbfawk        Disable dbfawk features.],use_dbfawk=$withval)
 # dbfawk requires shapelib and pcre.  Make sure:
 if test "${use_dbfawk}" = "yes"; then
   if test "${use_pcre}" = "yes" -a "${use_shapelib}" = "yes"; then
@@ -332,7 +347,7 @@ fi
 use_rtree=no
 LIBRTREE=""
 SUBRTREE=""
-AC_ARG_WITH(rtree,[  --with-rtree       Enable spatial indexing of shapefiles for faster rendering.],[use_rtree=$withval])
+AC_ARG_WITH(rtree,[  --with-rtree            Enable spatial indexing of shapefiles for faster rendering.],[use_rtree=$withval])
 if test "${use_rtree}" = "yes" ; then
   if test "${use_shapelib}" = "yes"; then
     AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
@@ -350,13 +365,13 @@ AC_SUBST(LIBRTREE)
 # Check for GDAL.  Make sure that the GDAL check is towards the
 # last, as it can mess up shapelib and libgeotiff currently.
 use_gdal=yes
-AC_ARG_WITH(gdal,[  --without-gdal       Disable gdal features.],use_gdal=$withval)
+AC_ARG_WITH(gdal,[  --without-gdal          Disable gdal features.],use_gdal=$withval)
 if test "${use_gdal}" = "yes"; then
 XASTIR_CHECK_GDAL
 fi
 
 
-AC_ARG_ENABLE(davis, [  --enable-davis       Turn on Davis support],
+AC_ARG_ENABLE(davis, [  --enable-davis          Turn on Davis support],
   [case "${enableval}" in
     yes) davis=true ;;
      no) davis=false ;;
@@ -377,7 +392,7 @@ fi
 # linking it with Xastir, but require the "--with-libgc" flag to
 # enable it.
 use_libgc=no
-AC_ARG_WITH(libgc,[  --with-libgc       Enable libgc features.],use_libgc=$withval)
+AC_ARG_WITH(libgc,[  --with-libgc            Enable libgc features.],use_libgc=$withval)
 if test "${use_libgc}" = "yes"; then
     AC_CHECK_HEADERS([gc.h], LIBGC_INC="yes", use_libgc=no)
     AC_CHECK_LIB([gc], [GC_init], , use_libgc=no)
@@ -390,7 +405,7 @@ fi
 # Check whether profiling was requested.  If so, add the "-pg" flag
 # to CFLAGS.  Require "--with-profiling" flag to enable it.
 use_profiling=no
-AC_ARG_WITH(profiling,[  --with-profiling       Enable profiling features.],use_profiling=$withval)
+AC_ARG_WITH(profiling,[  --with-profiling        Enable profiling features.],use_profiling=$withval)
 if test "${use_profiling}" = "yes"; then
     CFLAGS="$CFLAGS -pg"
 fi
@@ -401,7 +416,7 @@ fi
 
 # Check for Berkeley DB.
 use_map_cache=yes
-AC_ARG_WITH(map_cache,[  --without-map-cache       Disable Map Caching.],use_map_cache=$withval)
+AC_ARG_WITH(map_cache,[  --without-map-cache     Disable Map Caching.],use_map_cache=$withval)
 if test "${use_map_cache}" = "yes"; then
   XASTIR_BERKELEY_DB_CHK
 fi
@@ -413,7 +428,7 @@ fi
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
 use_imagemagick=yes
-AC_ARG_WITH(imagemagick,[  --without-imagemagick       Disable imagemagick features.],use_imagemagick=$withval)
+AC_ARG_WITH(imagemagick,[  --without-imagemagick   Disable imagemagick features.],use_imagemagick=$withval)
 if test "${use_imagemagick}" = "yes"; then
   XASTIR_CHECK_IMAGEMAGICK
 fi
@@ -616,7 +631,7 @@ LIBS=`echo $LIBS | sed -e 's/  */ /g'`
 # Change the output text for Shapelib if we're using the internal
 # library.  The below will be used for the configure summary and for
 # the Help->About text in Xastir.
-if test "${use_shapelib_internal}" = "yes"; then
+if test "${force_internal_shapelib}" = "yes"; then
   ILIBS=`echo $ILIBS | sed -e 's/ShapeLib/ShapeLib(internal)/g'`
   use_shapelib="yes (internal)"
 fi
