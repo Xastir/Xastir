@@ -20,12 +20,32 @@ A summary of options is included below.
 Specify an optional config directory. Defaults to ~/.xastir
 .TP
 .br
+.B \-f callsign
+Track callsign
+.TP
+.br
 .B \-i
 Use a private colormap
 .TP
 .br
+.B \-geometry WxH+x+y
+Set Window Geometry/Position
+.TP
+.br
 .B \-l Language
 Xastir remembers the language once you set it the first time.
+.TP
+.br
+.B \-m
+Deselect Maps
+.TP
+.br
+.B \-p
+Disable popups
+.TP
+.br
+.B \-t
+Internal SIGSEGV handler enabled
 .TP
 .br
 .B \-v Level
@@ -41,12 +61,36 @@ Current choices are:
 .B Dutch English French German Italian Portuguese Spanish.
 .SH Usage is:
 .br
-.B xastir -i -v2047 -lDutch &
+.B xastir -i -v 2047 -l Dutch &
+.br
+.SH SIGNALS
+.B SIGINT, SIQQUIT, SIGTERM
+Cause Xastir to exit.
+.br
+.B SIGHUP
+Causes a restart.
+.br
+.B SIGUSR1
+Causes a snapshot to occur.
+.br
+.SH NETWORK PORTS
+Enable these ports on this menu:  "Interface->Enable Server Ports"
+.br
+.PP
+.B TCP:2023
+Bidirectional TCP port for clients to connect to.  Requires login if
+client will be transmitting.
+.br
+.B UDP:2023
+Unidirectional UDP input port for clients to inject packets.  See
+the documentation for the format.
 .br
 .SH "SEE ALSO"
 The program is documented fully by
 .IR "help-English.dat" ,
-available via the HELP menu option in Xastir.
+available via the HELP menu option in Xastir, plus the various
+README and INSTALL text files that come with the program.  Also see
+<http://www.xastir.org> and the Documentation Wiki there.
 .br
 .PP
 .B Xastir
