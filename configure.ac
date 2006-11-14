@@ -239,7 +239,7 @@ if test "${use_shapelib}" = "no"; then
  AC_MSG_WARN([an internal version, which will lead to larger executable])
  AC_MSG_WARN([ file size.  To eliminate this warning, install shapelib on your system.])
  LIBSHP="-Lshapelib -lshape"
- CPPFLAGS="-Ishapelib $CPPFLAGS"
+ CPPFLAGS="-I\$(top_srcdir)/src/shapelib $CPPFLAGS"
  SUBSHP="shapelib" 
  use_shapelib=yes
  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
