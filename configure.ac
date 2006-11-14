@@ -221,6 +221,7 @@ AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}")
 
 # Check for Shapelib
 use_shapelib=yes
+use_shapelib_internal=no
 LIBSHP=""
 SUBSHP=""
 AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=$withval)
@@ -238,6 +239,7 @@ if test "${use_shapelib}" = "no"; then
  AC_MSG_WARN([Your system does not have shapelib installed.  Using ])
  AC_MSG_WARN([an internal version, which will lead to larger executable])
  AC_MSG_WARN([ file size.  To eliminate this warning, install shapelib on your system.])
+ use_shapelib_internal=yes
  LIBSHP="-Lshapelib -lshape"
  CPPFLAGS="-I\$(top_srcdir)/src/shapelib $CPPFLAGS"
  SUBSHP="shapelib" 
@@ -610,7 +612,16 @@ TESTED_LIBS=`echo $LIBS | sed -e 's/  */ /g'`
 MAGICK_DEP_LIBS=`echo $MAGICK_DEP_LIBS | sed -e 's/  */ /g'` 
 LIBS=`echo $LIBS | sed -e 's/  */ /g'` 
 
- 
+
+# Change the output text for Shapelib if we're using the internal
+# library.  The below will be used for the configure summary and for
+# the Help->About text in Xastir.
+if test "${use_shapelib_internal}" = "yes"; then
+  ILIBS=`echo $ILIBS | sed -e 's/ShapeLib/ShapeLib(internal)/g'`
+  use_shapelib="yes (internal)"
+fi
+
+
 AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
 
 
