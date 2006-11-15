@@ -21,5 +21,3 @@ config.log
 config.status
 summary.log
 stamp-h1
-xastir.spec
-xastir-min.spec
