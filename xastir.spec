@@ -1,0 +1,75 @@
+Summary   : Amateur Station Tracking and Reporting system for amateur radio
+Name      : xastir
+Version   : 1.8.5
+Release   : 1
+#Epoch    : 1
+License   : GPL
+Group     : Applications/Networking
+Packager  : n2ygk@weca.org
+# Icon    : src/xastir.xpm
+Source    : http://prdownloads.sourceforge.net/xastir/xastir-%{version}.tar.gz
+URL       : http://www.xastir.org
+BuildRoot : %{_tmppath}/%{name}-buildroot
+Requires  : /usr/X11R6/include/Xm/Xm.h
+
+%description
+Xastir is a graphical application that interfaces HAM radio
+and internet access to realtime mapping software.
+
+Install XASTIR if you are interested in APRS(tm) and HAM radio
+software.
+
+%prep
+%setup -q
+#%patch
+
+%build
+./bootstrap.sh
+%configure
+make
+
+%install
+rm -rf ${RPM_BUILD_ROOT}
+%makeinstall
+# Docs go into package docs area instead of here:
+rm -rf ${RPM_BUILD_ROOT}/usr/share/xastir/doc
+
+%clean
+rm -rf ${RPM_BUILD_ROOT}
+
+%files
+%defattr(-,root,root)
+
+# Documents:  Go into special doc area
+%doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
+%doc README README.Contributing README.CVS README.Getting-Started
+%doc README.MAPS README.win32 UPGRADE
+
+
+%{_prefix}/bin
+%{_prefix}/share/xastir/help
+%{_prefix}/share/xastir/config
+%{_prefix}/share/xastir/symbols
+%{_prefix}/man
+%{_prefix}/lib/xastir
+
+# protect user-installed map and other files from being clobbered
+
+%config %{_prefix}/share/xastir/maps
+%dir %attr(666,root,root) %{_prefix}/share/xastir/maps/GPS
+%config %{_prefix}/share/xastir/Counties
+%config %{_prefix}/share/xastir/fcc
+%config %{_prefix}/share/xastir/GNIS
+%config %{_prefix}/share/xastir/sounds
+
+%changelog
+* Thu Jul 03 2003 Alan Crosswell <n2ygk@weca.org> 
+- 1.2.1 my patches now integrated into the main trunk.
+* Sat Jun 21 2003 Alan Crosswell <n2ygk@weca.org> 
+- added xastir-maps.patch
+* Mon Jun 16 2003 Alan Crosswell <n2ygk@weca.org> 
+- 1.2.0
+* Fri Jun 06 2003 Alan Crosswell <n2ygk@weca.org> 
+- June 5 snapshot
+* Thu May 15 2003 Alan Crosswell <n2ygk@weca.org> 
+- start with chuck's spec file for 1.1.4
