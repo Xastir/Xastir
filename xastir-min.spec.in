@@ -25,7 +25,7 @@ software.
 
 %build
 ./bootstrap.sh
-%configure --without-ax25 --without-festival --without-gpsman --without-shapelib --without-libproj --without-geotiff --without-gdal --without-pcre --without-dbfawk --without-map-cache
+%configure --without-ax25 --without-festival --without-gpsman --with-internal-shapelib --without-libproj --without-geotiff --without-gdal --without-pcre --without-dbfawk --without-map-cache
 make
 
 %install
