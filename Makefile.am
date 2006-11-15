@@ -56,10 +56,13 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
         README.Getting-Started README.Contributing
 
 # It'd be nice to remove the directory and contents at
-# "${prefix}/doc" then install a symlink called "doc" there pointing
+# "${pkgdatadir}/doc" then install a symlink called "doc" there pointing
 # to "${prefix}/share/doc/xastir/".  The new location for the
 # documentation is FHS compliant.
 
+install-exec-hook:
+	-rm -rf ${pkgdatadir}/doc ; \
+	ln -s ${prefix}/share/doc/xastir ${pkgdatadir}/doc
  
 mandir=${prefix}/share/man
 man_MANS=xastir.1
