@@ -45,9 +45,9 @@ rm -rf /usr/src/packages/SOURCES/xastir*
 cp xastir-*.tar.gz /usr/src/packages/SOURCES/.
 #
 #
-# Build minimum system (only ImageMagick included), binary package
-# only.  Rename this file so that the following rpmbuild doesn't
-# overwrite it.
+# Build minimum system (only ImageMagick and internal Shapelib
+# included), binary package only.  Rename this file so that the
+# following rpmbuild doesn't overwrite it.
 echo
 echo
 echo "*******************************************"
