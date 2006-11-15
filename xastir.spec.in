@@ -31,8 +31,9 @@ make
 %install
 rm -rf ${RPM_BUILD_ROOT}
 %makeinstall
-# Docs go into package docs area instead of here:
-rm -rf ${RPM_BUILD_ROOT}/usr/share/xastir/doc
+# Docs go into package docs area instead of the Makefile install
+# locations listed here:
+rm -rf ${RPM_BUILD_ROOT}/usr/share/doc
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
@@ -40,7 +41,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %files
 %defattr(-,root,root)
 
-# Documents:  Go into special doc area
+# Documents:  Go into special doc area at /usr/share/doc/xastir/ or
+# /usr/share/doc/packages/xastir/
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
 %doc README README.Contributing README.CVS README.Getting-Started
 %doc README.MAPS README.win32 UPGRADE

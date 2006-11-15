@@ -50,11 +50,17 @@ gps_DATA=placeholder
 sounddir=${pkgdatadir}/sounds
 sound_DATA=placeholder
 
-docdir=${pkgdatadir}/doc
+docdir=${prefix}/share/doc/xastir
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
         README.MAPS README.win32 COPYING INSTALL UPGRADE \
         README.Getting-Started README.Contributing
 
+# It'd be nice to remove the directory and contents at
+# "${prefix}/doc" then install a symlink called "doc" there pointing
+# to "${prefix}/share/doc/xastir/".  The new location for the
+# documentation is FHS compliant.
+
+ 
 mandir=${prefix}/share/man
 man_MANS=xastir.1
 
