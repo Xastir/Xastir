@@ -55,7 +55,7 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
         README.MAPS README.win32 COPYING INSTALL UPGRADE \
         README.Getting-Started README.Contributing
 
-mandir=${prefix}/man
+mandir=${prefix}/share/man
 man_MANS=xastir.1
 
 ChangeLog::
