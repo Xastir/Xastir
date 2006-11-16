@@ -61,8 +61,7 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
 # documentation is FHS compliant.
 
 install-exec-hook:
-	-rm -rf ${pkgdatadir}/doc ; \
-	ln -s ${prefix}/share/doc/xastir ${pkgdatadir}/doc
+	-rm -rf ${pkgdatadir}/doc
  
 mandir=${prefix}/share/man
 man_MANS=xastir.1
