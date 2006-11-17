@@ -222,8 +222,23 @@ do
 		fi 
 		make 
 		make lib
+#WARNING WARNING WARNING
+# On any system that uses GCC 4.x as its compiler, it is probably necessary
+# to uncomment the stuff between here and the next "else".  If you see
+# an error message of the form
+#  /usr/bin/ld: makegeo: hidden symbol `__stack_chk_fail_local' in /usr/lib/libc_nonshared.a(stack_chk_fail_local.oS) is referenced by DSO
+#  /usr/bin/ld: final link failed: Nonrepresentable section on output
+#  collect2: ld returned 1 exit status
+# when libgeotiff's makefile gets to linking "makegeo", this is your
+# problem.  Uncomment these lines and rerun the script.
+#----uncomment below--------
+#       elif [ $XA_LIB = 'libgeotiff-1.2.3' ]
+#       then
+#          # libgeotiff tries to use ld -shared for linking shared library,
+#          # which is wrong on linux with GCC 4.x
+#          ./configure --with-ld-shared="gcc -shared"
+#          make 
 	else
-
 		./configure
 		make 
 	fi  2>&1 >>${XA_LIB}.build.$$
