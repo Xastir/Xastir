@@ -234,6 +234,14 @@ do
 #----uncomment below--------
 #       elif [ $XA_LIB = 'libgeotiff-1.2.3' ]
 #       then
+#          #The libgeotiff tar ball has last modification time of the configure
+#          # script and the configure.in from which it's generated such that
+#          # as soon as we type "make", the Makefile tries to regenerate
+#          # configure and then run it with no arguments, interfering with
+#          # our intentions here.  So we "touch" configure so it's newer
+#          # than configure.in, and make leaves them alone.  The right 
+#          # fix would be to change that makefile, but this is easier
+#          touch configure
 #          # libgeotiff tries to use ld -shared for linking shared library,
 #          # which is wrong on linux with GCC 4.x
 #          ./configure --with-ld-shared="gcc -shared"
