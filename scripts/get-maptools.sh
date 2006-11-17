@@ -39,7 +39,8 @@ XASDIR=$HOME/src/xastir
 XASTIR_TMP=$XASDIR/tmp
 XASTIR_LIB=$XASDIR/lib
 
-
+# Make sure this exists!
+mkdir -p $XASTIR_TMP
 
 printf "Checking MACHTYPE found: %s\n" $MACHTYPE
 
@@ -109,7 +110,7 @@ else
 	LDCONF_FILE=/etc/ld.so.conf
     fi
 
-    if [ ! -f $LDCONf_FILE ]
+    if [ ! -f $LDCONF_FILE ]
     then 
 	sudo touch $LDCONF_FILE
     fi
@@ -141,8 +142,8 @@ fi
 ALL="	http://internap.dl.sourceforge.net/sourceforge/pcre/pcre-6.3.tar.gz
 	http://dl.maptools.org/dl/shapelib/shapelib-1.2.10.tar.gz\
 	http://dl.maptools.org/dl/proj/proj-4.4.9.tar.gz\
-	http://dl.maptools.org/dl/gdal/gdal-1.3.1.tar.gz\
-	http://dl.maptools.org/dl/geotiff/libgeotiff/libgeotiff-1.2.3.tar.gz"
+	http://dl.maptools.org/dl/geotiff/libgeotiff/libgeotiff-1.2.3.tar.gz\
+	http://dl.maptools.org/dl/gdal/gdal-1.3.2.tar.gz"
 
 #for XA_LIB in shapelib-1.2.10 proj-4.4.9 gdal-1.3.1 libgeotiff-1.2.3
 
