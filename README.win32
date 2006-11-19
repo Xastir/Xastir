@@ -727,7 +727,7 @@ or  http://wetnet.net/~we7u/xastir/shapelib/
     cd ~/src/shapelib
     tar xzvf shapelib-1.2.10.tar.gz
 
-[ ] Edit Shapelib's Makefile to remove the space after the "-h" on
+[ ] Essential: Edit Shapelib's Makefile to remove the space after the "-h" on
 the line that looks like this:
 
     /usr/bin/ld -G -h libshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
@@ -737,7 +737,7 @@ Change it to this (one space missing and 'c' changed to "cygwin"):
     /usr/bin/ld -G -hlibshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lcygwin
 
 I've had another report that says having the space is OK now.  The
-"-lcygwin" is important to bypass the "_reent" bug below.
+"-lcygwin" is important to bypass the "__getreent" bug below.
 
 Here are the commands to bring up an editor on the file:
 
