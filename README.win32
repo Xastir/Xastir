@@ -686,6 +686,19 @@ work is done to figure out and document the process.
 
 RECOMMENDED:  Adding Shapelib (tested with shapelib-1.2.10):
 ------------------------------------------------------------
+
+*******************************NOTE**************************************
+As of 10 November 2006, xastir's source tree contains a copy of shapelib
+1.2.10, and automatically builds shapelib if you don't have it installed.
+At this point, the only reason to follow the "Adding Shapelib" instructions
+below is if you need the shapelib shared libraries to work in other cygwin
+software.  So unless you do, just skip this section and xastir's build process
+will automatically build and use its own "internal" shapelib support.  Since
+the instructions below contain some "gotchas" that you have to work around,
+just using internal support is far easier if you don't need shapelib for
+other projects.
+************************************************************************
+
 Allows using many sources of online polygon, polyline, and point
 maps, including ones from NOAA.  This is the only format used for
 weather alert maps.
