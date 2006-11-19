@@ -977,14 +977,15 @@ This means if you're online, you can have access to street maps
 
 
 
-OPTIONAL:  Install geoTIFF support:
+OPTIONAL:  Install GeoTIFF support:
 -----------------------------------
-Note: Recent Cygwin installations include geoTIFF support.  You only
-need to manually install libgeotiff if you did not have the 3
+Note: Recent Cygwin installations include GeoTIFF support, and if you
+installed everything in the list in step 1, you already have it..  You
+only need to manually install libgeotiff if you did not have the 3
 libgeotiff choices, the 2 libproj choices, and the proj choice
-available when installing, or if Xastir doesn't find libgeotiff.
+available when installing cygwin, or if Xastir doesn't find libgeotiff.
 
-Allows using USGS DRG topo maps or other types of geoTIFF
+Allows using USGS DRG topo maps or other types of GeoTIFF
 maps/images and has the ability to tile smaller maps into a larger
 contiguous map of an area:
 
@@ -996,7 +997,7 @@ installed through cygwin setup instead.  Be sure to install the
 "-devel" versions that will include headers and libraries needed to
 compile xastir.]
 
-For geoTIFF support (such as USGS DRG topo maps) you need one each
+For GeoTIFF support (such as USGS DRG topo maps) you need one each
 of libproj, proj-nad27, and libgeotiff:
 
 
@@ -1132,7 +1133,7 @@ that file is already present:
 
 It should find libtiff/libproj/libgeotiff at the configure stage and
 compile in support for geotiff maps.  You should now be able to use
-USGS geoTIFF topo maps, and see them tiled together in the map
+USGS GeoTIFF topo maps, and see them tiled together in the map
 window into a continuous map.
 
 
