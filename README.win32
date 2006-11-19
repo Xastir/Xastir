@@ -1028,6 +1028,9 @@ follow the instructions below carefully.
 Adding libproj to Cygwin (tested with proj-4.4.7):
 --------------------------------------------------
 
+Again, if you installed everything suggested in step 1, you already
+have this and building libproj from source is unnecessary.
+
 NOTE: You must install libproj BEFORE compiling libgeotiff, because
 libgeotiff uses libproj to do the datum translations. If you install
 libgeotiff first, datum translations won't work.
