@@ -277,10 +277,12 @@ if test "${use_pcre}" = "yes"; then
   break)])
 fi
 
- 
+
 # Check for XPM
-AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
-AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
+if test "${use_lsb}" = "no"; then 
+  AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
+  AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
+fi
  
  
 # Check for libproj
