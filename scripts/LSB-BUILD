@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# $Id$
+# Copyright (C) 2006  The Xastir Group
+
+# The trick here:  Compile Lesstif as an LSB package, installed at
+# /opt/lsb-lesstif, using LSB-LESSTIF script.  This requires making
+# /opt/lsb/lib/libXt.so unusable and moving libXt.a from the OS
+# there.  Once done, put the /opt/lsb/lib directory back to normal,
+# then do the following:
+#
+# Create a tmp directory at /opt/lsb/lib/tmp.  Copy these files to
+# /opt/lsb/lib/tmp and make symlinks up one directory:
+#
+#    /usr/X11R6/libXp.a
+#    /usr/X11R6/libXpm.a
+#    /opt/lsb-lesstif/lib/libXm.a
+#
+# This will allow us to statically link libraries without mucking
+# around with the Makefiles.  When done compiling, put the
+# /opt/lsb/lib directory back to normal.
+#
+# An easy way to do the above is with a symlink for /opt/lsb/lib.
+# Make different directories called lib.orig, lib.lesstif, and
+# lib.xastir, and set up each one for the various types of compiles.
+# When all done, make the symlink point back to lib.orig.
+
+./bootstrap.sh
+
+export PATH=${PATH}:/opt/lsb/bin
+export LSBCC_WARN=1
+export LSBCC_SHAREDLIBS=
+
+CC=lsbcc ./configure \
+    --prefix=/opt/lsb-xastir \
+    --with-lsb \
+    --without-ax25 \
+    --without-festival \
+    --without-gpsman \
+    --without-imagemagick \
+    --without-libproj \
+    --without-geotiff \
+    --without-gdal \
+    --with-internal-shapelib \
+    --without-pcre \
+    --without-dbfawk \
+    --without-map_cache
+#    --x-libraries=/opt/lsb/lib \
+#    --x-includes=/opt/lsb/include \
+#    --with-motif-includes=/opt/lsb-lesstif/include \
+#    --with-motif-libraries=/opt/lsb-lesstif/lib
+#    --x-libraries=$LSB_LIB_PATH
+
+make clean
+
+##sed -i 's/^LIBS =/LIBS = -L\/opt\/lsb-lesstif\/lib -L\/opt\/lsb\/lib -lXp /g' src/Makefile
+#sed -i 's/^LIBS =/LIBS = -L\/opt\/lsb-lesstif\/lib /g' src/Makefile
+#sed -i 's/^LIBS =/LIBS = -L\/opt\/lsb-lesstif\/lib /g' callpass/Makefile
+
+find . -type f -name Makefile -print | while read i
+  do
+    sed -i 's/\/usr\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/local\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/X11R6\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/lib/\/opt\/lsb\/lib/g' $i
+    sed -i 's/\/usr\/X11R6\/lib/\/opt\/lsb\/lib/g' $i
+    sed -i 's/\/usr\/X11\/lib/\/opt\/lsb\/lib/g' $i
+#    sed -i 's/\/usr\/X11\/include/\/opt\/lsb-lesstif\/include/g' $i
+    sed -i 's/\/usr\/X11\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/local\/lib/\/opt\/lsb\/lib/g' $i
+  done
+
+(sudo make install 2>&1) | tee make.log
+
+

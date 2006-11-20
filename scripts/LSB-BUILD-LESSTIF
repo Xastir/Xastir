@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# $Id$
+# Copyright (C) 2006  The Xastir Group
+
+# Compile lesstif-0.95.0 under Linux Standard Base 3.0.  Install
+# into /opt/lsb-lesstif/ directory.
+
+# If we copy /usr/X11R6/lib/libXt.a into /opt/lsb/lib, then change
+# permissions on /opt/lsb/lib/libXt.so so that it's unreadable, then
+# we end up getting the static version of libXt compiled in.
+# Unfortunately this corrupts our LSB install, plus we end up with
+# an OS-specific binary statically linked to our binary.  SuSE has a
+# "NOTES" section in their binaries...
+
+export PATH=${PATH}:/opt/lsb/bin
+export LSBCC_WARN=1
+export LSBCC_SHAREDLIBS=
+
+# Edit lib/Xm/ImageCache.c: Change "_XInitImageFuncPtrs" to
+# "XInitImage" in two places, then comment out the first instance:
+sed -i -e 's/_XInitImageFuncPtrs/XInitImage/g' lib/Xm-2.1/ImageCache.c
+sed -i -e 's/^extern void XInitImage/\/\/extern void XInitImage/g' lib/Xm-2.1/ImageCache.c
+# Comment out the sighandler_t line in lib/Xm/DebugUtil.c:
+sed -i -e 's/^typedef void ..sighandler_t/\/\/typedef void (*sighandler_t/' lib/Xm-2.1/DebugUtil.c
+
+CC=lsbcc ./configure \
+    --prefix=/opt/lsb-lesstif \
+    --enable-static \
+    --disable-shared \
+    --x-libraries=/opt/lsb/lib \
+    --x-includes=/opt/lsb/include \
+    --with-motif-includes=/opt/lsb/include \
+    --with-motif-libraries=/opt/lsb/lib
+
+make clean
+
+# Remove "-lXt" from these files after running configure:
+#sed -i -e 's/\-lXt//g' clients/Motif-2.1/mwm/Makefile
+#sed -i -e 's/\-lXt//g' clients/Motif-2.1/xmbind/Makefile
+#sed -i -e 's/\-lXt//g' clients/Motif-2.1/uil/Makefile
+
+find . -type f -name Makefile -print | while read i
+  do
+#    sed -i 's/\-lXt//g' $i
+#    sed -i 's/\-lX11/-lX11 -lXt/g' $i
+    sed -i 's/\/usr\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/local\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/X11R6\/include/\/opt\/lsb\/include/g' $i
+    sed -i 's/\/usr\/lib/\/opt\/lsb\/lib/g' $i
+    sed -i 's/\/usr\/X11R6\/lib/\/opt\/lsb\/lib/g' $i
+    sed -i 's/\/usr\/X11\/lib/\/opt\/lsb\/lib/g' $i
+  done
+
+# Change lib/Xm-2.1/Makefile to move "-lXt" to end of line with
+# "--static" prepended to it.
+#sed -i -e 's/\-lXt//g' lib/Xm-2.1/Makefile
+#sed -i -e 's/\(X_EXTRA_LIBS)/(X_EXTRA_LIBS) --static -lXt/g' lib/Xm-2.1/Makefile
+
+# Do the Same for lib/Xm-2.1/libXm.la
+#sed -i -e 's/\-lXt//g' lib/Xm-2.1/libXm.la
+#sed -i -e 's/\(X_EXTRA_LIBS)/(X_EXTRA_LIBS) --static -lXt/g' lib/Xm-2.1/libXm.la
+
+# And for clients/Motif-2.1/Makefile
+# And for 
+
+(make 2>&1) | tee make.log
+
+# Remove "-lXt" from these files:
+#sed -i -e 's/\-lXt//g' lib/Xm-2.1/libXm.la
+#sed -i 's/\/usr\/X11R6\/lib/\/opt\/lsb\/lib/g' lib/Xm-2.1/libXm.la
+#sed -i -e 's/\-lXt//g' clients/Motif-2.1/mwm/Makefile
+
+#make
+
+sudo make install
+
+#echo ""
+#echo lsbappchk
+#lsbappchk -A \
+#    -L lib/Xm-2.1/.libs/libXm.so.2 \
+#    -L lib/Mrm-2.1/.libs/libMrm.so.2 \
+#    -L lib/Uil-2.1/.libs/libUil.so.2 \
+#    clients/Motif-2.1/mwm/.libs/mwm
+#
+#echo ""
+#echo lsblibchk
+#cd /opt/lsb-lesstif/lib
+#sudo lsblibchk -j /var/tmp/lsblibchk_junk.txt
+#rm /var/tmp/lsblibchk_junk.txt
+
+
