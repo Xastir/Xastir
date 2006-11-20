@@ -40,7 +40,9 @@ unzip -p l_amat.zip EN.dat \
 echo "*********************************"
 echo "*** Fetching the RAC database ***"
 echo "*********************************"
-wget -c --passive-ftp ftp://ftp.rac.ca/pub/cdncaldb.zip
+#wget -c --passive-ftp ftp://ftp.rac.ca/pub/cdncaldb.zip
+wget -c --no-passive-ftp ftp://ftp.rac.ca/pub/cdncaldb.zip
+#wget -c ftp://ftp.rac.ca/pub/cdncaldb.zip
 #
 echo "***********************************"
 echo "*** Installing the RAC database ***"
