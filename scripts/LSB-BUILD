@@ -29,7 +29,11 @@
 
 export PATH=${PATH}:/opt/lsb/bin
 export LSBCC_WARN=1
-export LSBCC_SHAREDLIBS=
+
+# A colon-separated list of "extra" shared libraries to link with
+# the application.  Each shared lib must be LSB-compliant and must
+# be distributed along with the application.
+#export LSBCC_SHAREDLIBS=libXm.so
 
 CC=lsbcc ./configure \
     --prefix=/opt/lsb-xastir \
