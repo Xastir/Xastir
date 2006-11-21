@@ -3,27 +3,42 @@
 # $Id$
 # Copyright (C) 2006  The Xastir Group
 
-# The trick here:  Compile Lesstif as an LSB package, installed at
-# /opt/lsb-lesstif, using LSB-LESSTIF script.  This requires making
-# /opt/lsb/lib/libXt.so unusable and moving libXt.a from the OS
-# there.  Once done, put the /opt/lsb/lib directory back to normal,
-# then do the following:
+# The trick:  First compile Lesstif as an LSB package, installed at
+# /opt/lsb-lesstif, using LSB-BUILD-LESSTIF script.  The commands
+# below assume you've set up the directory structure at /opt/lsb
+# specified at the top of that script.
 #
-# Create a tmp directory at /opt/lsb/lib/tmp.  Copy these files to
-# /opt/lsb/lib/tmp and make symlinks up one directory:
+# We should have /opt/lsb/lib.orig & /opt/lsb/lib.lesstif
+# directories at this point along with a symlink from /opt/lsb/lib
+# -> lib.lesstif:
 #
-#    /usr/X11R6/libXp.a
-#    /usr/X11R6/libXpm.a
-#    /opt/lsb-lesstif/lib/libXm.a
+#   cd /opt/lsb
+#   cp -R lib.orig lib.xastir
+#   rm lib                 (remove the symlink we created before)
+#   ln -s lib.xastir lib   (link to the new directory)
+#   cd lib
+#   rm libXt.so            (or just "chmod 000 libXt.so")
+#   ln -s /usr/X11R6/lib/libXt.a
+#   ln -s /opt/lsb-lesstif/lib/libXm.a
+#
+#   cd /opt/lsb
+#   cp -R include include.xastir
+#   mv include include.orig
+#   ln -s include.xastir include  (link to the new directory)
+#   cd include
+#   ln -s /opt/lsb-lesstif/include/Xm
 #
 # This will allow us to statically link libraries without mucking
-# around with the Makefiles.  When done compiling, put the
-# /opt/lsb/lib directory back to normal.
+# around with the Makefiles.  When done compiling the LSB-Xastir
+# package, put the /opt/lsb/lib directory back to normal by issuing
+# these commands:
 #
-# An easy way to do the above is with a symlink for /opt/lsb/lib.
-# Make different directories called lib.orig, lib.lesstif, and
-# lib.xastir, and set up each one for the various types of compiles.
-# When all done, make the symlink point back to lib.orig.
+#  cd /opt/lsb
+#  rm lib include             (remove the symlinks)
+#  ln -s lib.orig lib         (link back to the original directory)
+#  ln -s include.orig include (link back to the original directory)
+#
+
 
 ./bootstrap.sh
 
