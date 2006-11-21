@@ -9,9 +9,25 @@
 # If we copy /usr/X11R6/lib/libXt.a into /opt/lsb/lib, then change
 # permissions on /opt/lsb/lib/libXt.so so that it's unreadable, then
 # we end up getting the static version of libXt compiled in.
-# Unfortunately this corrupts our LSB install, plus we end up with
-# an OS-specific binary statically linked to our binary.  SuSE has a
-# "NOTES" section in their binaries...
+# Unfortunately messes up the /opt/lsb/lib directory plus we end up
+# with an OS-specific binary statically linked to our binary.  SuSE
+# has a "NOTES" section in their binaries...  Need to check the
+# OpenSuSE license to see if we can statically link to it.
+#
+# Actual method used:
+#
+#   cd /opt/lsb
+#   cp -R lib lib.lesstif
+#   mv lib lib.orig
+#   ln -s lib.lesstif lib
+#   cd lib
+#   rm libXt.so (or just "chmod 000 libXt.so")
+#   ln -s /usr/X11R6/lib/libXt.a
+#
+# This makes it easy to switch back to the default library setup by
+# changing the /opt/lsb/lib symlink.
+#
+
 
 export PATH=${PATH}:/opt/lsb/bin
 export LSBCC_WARN=1
