@@ -18,7 +18,7 @@
 #   ln -s lib.xastir lib   (link to the new directory)
 #   cd lib
 #   rm libXt.so            (or just "chmod 000 libXt.so")
-#   ln -s /usr/X11R6/lib/libXt.a
+#   cp PATH/libXt.a .      (special lib from LSB applib)
 #   ln -s /opt/lsb-lesstif/lib/libXm.a
 #
 #   cd /opt/lsb
@@ -64,17 +64,8 @@ CC=lsbcc ./configure \
     --without-pcre \
     --without-dbfawk \
     --without-map_cache
-#    --x-libraries=/opt/lsb/lib \
-#    --x-includes=/opt/lsb/include \
-#    --with-motif-includes=/opt/lsb-lesstif/include \
-#    --with-motif-libraries=/opt/lsb-lesstif/lib
-#    --x-libraries=$LSB_LIB_PATH
 
 make clean
-
-##sed -i 's/^LIBS =/LIBS = -L\/opt\/lsb-lesstif\/lib -L\/opt\/lsb\/lib -lXp /g' src/Makefile
-#sed -i 's/^LIBS =/LIBS = -L\/opt\/lsb-lesstif\/lib /g' src/Makefile
-#sed -i 's/^LIBS =/LIBS = -L\/opt\/lsb-lesstif\/lib /g' callpass/Makefile
 
 find . -type f -name Makefile -print | while read i
   do
@@ -84,7 +75,6 @@ find . -type f -name Makefile -print | while read i
     sed -i 's/\/usr\/lib/\/opt\/lsb\/lib/g' $i
     sed -i 's/\/usr\/X11R6\/lib/\/opt\/lsb\/lib/g' $i
     sed -i 's/\/usr\/X11\/lib/\/opt\/lsb\/lib/g' $i
-#    sed -i 's/\/usr\/X11\/include/\/opt\/lsb-lesstif\/include/g' $i
     sed -i 's/\/usr\/X11\/include/\/opt\/lsb\/include/g' $i
     sed -i 's/\/usr\/local\/lib/\/opt\/lsb\/lib/g' $i
   done
