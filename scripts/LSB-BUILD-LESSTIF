@@ -6,13 +6,14 @@
 # Compile lesstif-0.95.0 under Linux Standard Base 3.0.  Install
 # into /opt/lsb-lesstif/ directory.
 
-# If we copy /usr/X11R6/lib/libXt.a into /opt/lsb/lib, then change
-# permissions on /opt/lsb/lib/libXt.so so that it's unreadable, then
-# we end up getting the static version of libXt compiled in.
-# Unfortunately messes up the /opt/lsb/lib directory plus we end up
-# with an OS-specific binary statically linked to our binary.  SuSE
-# has a "NOTES" section in their binaries...  Need to check the
-# OpenSuSE license to see if we can statically link to it.
+# In order to build Lesstif on LSB we need a static version of the
+# LSB libXt.so library, called libXt.a.  To get this, we must
+# compile the "applib" portion of LSB and snag it from there.  We
+# can then copy it or symlink it into /opt/lsb/lib and change
+# permissions on /opt/lsb/lib/libXt.so so that it's unreadable.
+# We'll get the static version of libXt compiled in to our app that
+# way.  Put the .so back and disable the .a when we're done
+# compiling Lesstif and Xastir so that the LSB runtime is intact.
 #
 # Actual method used:
 #
@@ -22,7 +23,7 @@
 #   ln -s lib.lesstif lib
 #   cd lib
 #   rm libXt.so (or just "chmod 000 libXt.so")
-#   ln -s /usr/X11R6/lib/libXt.a
+#   ln -s PATH/libXt.a
 #
 # This makes it easy to switch back to the default library setup by
 # changing the /opt/lsb/lib symlink.
