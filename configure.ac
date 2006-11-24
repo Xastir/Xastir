@@ -663,7 +663,8 @@ AC_CONFIG_FILES([Makefile \
     src/shapelib/contrib/Makefile \
     symbols/Makefile \
     xastir.spec \
-    xastir-min.spec]) 
+    xastir-min.spec \
+    xastir-lsb.spec]) 
  
 AC_OUTPUT 
 
