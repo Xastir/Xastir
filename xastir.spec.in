@@ -7,7 +7,7 @@ License   : GPL
 Group     : Applications/Networking
 Packager  : n2ygk@weca.org
 # Icon    : src/@PACKAGE@.xpm
-Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-%{version}.tar.gz
+Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 URL       : http://www.xastir.org
 BuildRoot : %{_tmppath}/%{name}-buildroot
 Requires  : /usr/X11R6/include/Xm/Xm.h
