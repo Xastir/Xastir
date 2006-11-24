@@ -1,0 +1,97 @@
+Summary      : Amateur Station Tracking and Reporting system for Amateur Radio APRS
+Name         : lsb-xastir
+Version      : @VERSION@
+Release      : 1
+#Epoch       : 1
+License      : GPL
+#Vendor      :
+Group        : Applications/Networking
+Packager     : Curt Mills, WE7U <archer@eskimo.com>
+# Icon       : src/xastir.xpm
+Source       : http://prdownloads.sourceforge.net/xastir/xastir-@VERSION@.tar.gz
+URL          : http://www.xastir.org
+BuildRoot    : %{_tmppath}/%{name}-buildroot
+Requires     :
+#AutoReqProv : no
+PreReq       : lsb >= 3.0
+#
+#
+# Stuff gleaned from the LSB appbat RPM build files:
+#
+# Force a 486 target
+#buildarchtranslate: i686 i486
+#buildarchtranslate: i586 i486
+#buildarchtranslate: pentium3 i486
+#buildarchtranslate: pentium4 i486
+#buildarchtranslate: athlon i486
+#buildarchtranslate: k6 i486a
+#
+# Overrides for LSB packaging
+# We want a non-root build.  Just put everything in the same directory.
+# Only _rpmdir and _builddir are actually used in these builds but we
+# define all five of the directories for completeness.
+#%_topdir	/home/archer/xastir
+#%_rpmdir	%{_topdir}/rpm
+#%_specdir	%{_topdir}/rpm
+#%_builddir	%{_topdir}/rpm
+#%_sourcedir	%{_topdir}/rpm
+#%_srcrpmdir	%{_topdir}/rpm
+#%pkgroot	%{_topdir}/rpm
+#
+#%_messagelevel 0
+#
+# Replace the "buildpolicy" defined in the distro's brp-(distro) file.
+# Forces uncompressed manpages so the specfiles don't vary.
+#%__os_install_post \
+#	/usr/lib/rpm/brp-strip \
+#	/usr/lib/rpm/brp-strip-comment-note
+#
+# Unpackaged files in a build root don't terminate a build
+#%_unpackaged_files_terminate_build 0
+#
+# Missing %doc files in the build directory don't terminate a build
+#%_missing_doc_files_terminate_build 0
+#
+# Force gzip payload
+#%_binary_payload w9.gzdio
+
+
+%description
+Xastir is a graphical application that interfaces HAM radio
+and internet access to real-time mapping software.
+
+Install XASTIR if you are interested in APRS(tm) and HAM radio
+software.
+
+%prep
+%setup -q
+#%patch
+%build
+%install
+%clean
+
+%files
+%defattr(-,root,root)
+
+# Documents:  Go into special doc area at /opt/lsb-xastir/share/doc/xastir/
+%doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
+%doc README README.Contributing README.CVS README.Getting-Started
+%doc README.MAPS README.win32 UPGRADE
+
+/opt/lsb-xastir/bin
+/opt/lsb-xastir/share/xastir/help
+/opt/lsb-xastir/share/xastir/config
+/opt/lsb-xastir/share/xastir/symbols
+/opt/lsb-xastir/share/man
+/opt/lsb-xastir/lib/xastir
+
+# protect user-installed map and other files from being clobbered
+%config /opt/lsb-xastir/share/xastir/maps
+%dir %attr(666,root,root) /opt/lsb-xastir/share/xastir/maps/GPS
+%config /opt/lsb-xastir/share/xastir/Counties
+%config /opt/lsb-xastir/share/xastir/fcc
+%config /opt/lsb-xastir/share/xastir/GNIS
+%config /opt/lsb-xastir/share/xastir/sounds
+
+%changelog
+
