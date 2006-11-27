@@ -86,4 +86,10 @@ strip src/testawk
 strip callpass/callpass
 (sudo make install 2>&1) | tee install.log
 
+/opt/lsb/bin/lsbappchk -A /opt/lsb-xastir/bin/xastir
+
+#tar czf xastir.tgz /opt/lsb-xastir
+#sudo rm -rf /usr/src/packages/SOURCES/xastir*
+#sudo cp xastir.tgz /usr/src/packages/SOURCES/.
+#rpmbuild -bb --clean xastir-lsb.spec
 
