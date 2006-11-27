@@ -444,7 +444,7 @@ void draw_geo_image_map (Widget w,
 			 int destination_pixmap,
 			 map_draw_flags *mdf) {
 #ifdef NO_GRAPHICS
-    fprintf(stderr,"XPM and/or ImageMagick support have not been compiled in.");
+    fprintf(stderr,"XPM and/or ImageMagick support have not been compiled in.\n");
 #else   // NO_GRAPHICS
     char file[MAX_FILENAME+1];      // Complete path/name of image file
     char short_filenm[MAX_FILENAME+1];
