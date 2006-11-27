@@ -2,16 +2,15 @@ Summary      : Amateur Station Tracking and Reporting system for Amateur Radio A
 Name         : lsb-xastir
 Version      : @VERSION@
 Release      : 1
-#Epoch       : 1
-License      : GPL
-#Vendor      :
+Copyright    : GPL
 Group        : Applications/Networking
 Packager     : Curt Mills, WE7U <archer@eskimo.com>
 # Icon       : src/xastir.xpm
 Source       : http://prdownloads.sourceforge.net/xastir/xastir-@VERSION@.tar.gz
 URL          : http://www.xastir.org
-BuildRoot    : %{_tmppath}/%{name}-buildroot
-Requires     :
+#BuildRoot   : %{_tmppath}/%{name}-buildroot
+BuildRoot    : RPM
+#Requires    :
 #AutoReqProv : no
 PreReq       : lsb >= 3.0
 #
