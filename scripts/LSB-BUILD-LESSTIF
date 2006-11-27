@@ -4,7 +4,7 @@
 # Copyright (C) 2006  The Xastir Group
 
 # Compile lesstif-0.95.0 under Linux Standard Base 3.0.  Install
-# into /opt/lsb-lesstif/ directory.
+# into /opt/lsb-lesstif/ directory structure.
 
 # In order to build Lesstif on LSB we need a static version of the
 # LSB libXt.so library, called libXt.a.  To get this, we must
@@ -39,12 +39,17 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=
 
+
+# Patches to the Lesstif source code:
+#
 # Edit lib/Xm/ImageCache.c: Change "_XInitImageFuncPtrs" to
 # "XInitImage" in two places, then comment out the first instance:
 sed -i -e 's/_XInitImageFuncPtrs/XInitImage/g' lib/Xm-2.1/ImageCache.c
 sed -i -e 's/^extern void XInitImage/\/\/extern void XInitImage/g' lib/Xm-2.1/ImageCache.c
+#
 # Comment out the sighandler_t line in lib/Xm/DebugUtil.c:
 sed -i -e 's/^typedef void ..sighandler_t/\/\/typedef void (*sighandler_t/' lib/Xm-2.1/DebugUtil.c
+
 
 CC=lsbcc ./configure \
     --prefix=/opt/lsb-lesstif \
