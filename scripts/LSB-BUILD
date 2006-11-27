@@ -63,7 +63,8 @@ CC=lsbcc ./configure \
     --with-internal-shapelib \
     --without-pcre \
     --without-dbfawk \
-    --without-map_cache
+    --without-map_cache \
+    --with-rtree
 
 make clean
 
