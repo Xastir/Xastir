@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# $Id$
+# Copyright (C) 2006  The Xastir Group
+
+# Compile jpeg-6b under Linux Standard Base 3.0.  Install into
+# /opt/lsb-jpeg/ directory structure.
+
+export PATH=${PATH}:/opt/lsb/bin
+export LSBCC_WARN=1
+
+# A colon-separated list of "extra" shared libraries to link with
+# the application.  Each shared lib must be LSB-compliant and must
+# be distributed along with the application.
+#export LSBCC_SHAREDLIBS=
+
+CC=lsbcc ./configure \
+    --prefix=/opt/lsb-jpeg \
+    --exec_prefix=/opt/lsb-jpeg \
+    --enable-static
+
+make clean
+
+(make 2>&1) | tee make.log
+
+sudo mkdir /opt/lsb-jpeg /opt/lsb-jpeg/lib /opt/lsb-jpeg/include
+#make -n install-lib
+sudo make install-lib
+
+
