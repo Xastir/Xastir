@@ -18,10 +18,12 @@
 #   ln -s lib.xastir lib   (link to the new directory)
 #   cd lib
 #   rm libXt.so            (or just "chmod 000 libXt.so")
+#   rm libz.so             (or just "chmod 000 libz.so")
 #   cp PATH/libXt.a .      (lib from LSB CVS: "lsb/appbat" module)
 #   ln -s /opt/lsb-lesstif/lib/libXm.a (from our Lesstif compile)
 #   ln -s /opt/lsb-zlib/lib/libz.a
 #   ln -s /opt/lsb-jpeg/lib/libjpeg.a
+#   ln -s /opt/lsb-pcre/lib/libpcre.a
 #   ln -s /usr/local/lib/libtiff.a
 #   ln -s /usr/local/lib/libproj.a
 #   ln -s /usr/local/lib/libgeotiff.a
