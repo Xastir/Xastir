@@ -21,7 +21,10 @@
 #   cp PATH/libXt.a .      (lib from LSB CVS: "lsb/appbat" module)
 #   ln -s /opt/lsb-lesstif/lib/libXm.a (from our Lesstif compile)
 #   ln -s /opt/lsb-zlib/lib/libz.a
+#   ln -s /opt/lsb-jpeg/lib/libjpeg.a
+#   ln -s /usr/local/lib/libtiff.a
 #   ln -s /usr/local/lib/libproj.a
+#   ln -s /usr/local/lib/libgeotiff.a
 #
 #   cd /opt/lsb
 #   cp -R include include.xastir
