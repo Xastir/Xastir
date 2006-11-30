@@ -20,6 +20,7 @@
 #   rm libXt.so            (or just "chmod 000 libXt.so")
 #   cp PATH/libXt.a .      (lib from LSB CVS: "lsb/appbat" module)
 #   ln -s /opt/lsb-lesstif/lib/libXm.a (from our Lesstif compile)
+#   ln -s /opt/lsb-zlib/lib/libz.a
 #   ln -s /usr/local/lib/libproj.a
 #
 #   cd /opt/lsb
@@ -53,18 +54,19 @@ export LSBCC_WARN=1
 
 CC=lsbcc ./configure \
     --prefix=/opt/lsb-xastir \
-    --with-lsb \
     --without-ax25 \
     --without-festival \
     --without-gpsman \
     --without-imagemagick \
-    --without-geotiff \
+    --with-proj \
+    --with-geotiff \
     --without-gdal \
     --with-internal-shapelib \
     --without-pcre \
     --without-dbfawk \
     --without-map_cache \
-    --with-rtree
+    --with-rtree \
+    --with-lsb
 
 make clean
 
