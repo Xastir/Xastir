@@ -65,8 +65,8 @@ CC=lsbcc ./configure \
     --with-geotiff \
     --without-gdal \
     --with-internal-shapelib \
-    --without-pcre \
-    --without-dbfawk \
+    --with-pcre \
+    --with-dbfawk \
     --without-map_cache \
     --with-rtree \
     --with-lsb
