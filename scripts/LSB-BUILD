@@ -20,6 +20,7 @@
 #   rm libXt.so            (or just "chmod 000 libXt.so")
 #   cp PATH/libXt.a .      (lib from LSB CVS: "lsb/appbat" module)
 #   ln -s /opt/lsb-lesstif/lib/libXm.a (from our Lesstif compile)
+#   ln -s /usr/local/lib/libproj.a
 #
 #   cd /opt/lsb
 #   cp -R include include.xastir
@@ -57,7 +58,6 @@ CC=lsbcc ./configure \
     --without-festival \
     --without-gpsman \
     --without-imagemagick \
-    --without-libproj \
     --without-geotiff \
     --without-gdal \
     --with-internal-shapelib \
