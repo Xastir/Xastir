@@ -74,6 +74,7 @@ find . -type f -name Makefile -print | while read i
 
 (make 2>&1) | tee make.log
 
+#make -n install
 sudo make install
 
 
