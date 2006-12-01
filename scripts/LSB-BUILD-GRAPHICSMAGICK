@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# $Id$
+# Copyright (C) 2006  The Xastir Group
+
+# Compile GraphicsMagick-1.1.7 under Linux Standard Base 3.0.
+# Install into /opt/lsb-graphicsmagick/ directory structure.
+#
+# We need these additional libraries before compiling
+# GraphicsMagick:
+#
+# ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz
+# http://www.libpng.org/pub/png/pngcode.html
+# ftp://ftp.remotesensing.org/libtiff/
+# http://www.gzip.org/zlib/
+
+
+export PATH=${PATH}:/opt/lsb/bin
+export LSBCC_WARN=1
+
+# A colon-separated list of "extra" shared libraries to link with
+# the application.  Each shared lib must be LSB-compliant and must
+# be distributed along with the application.
+#export LSBCC_SHAREDLIBS=
+
+# Change freetype2 to LSB include directory in configure.
+sed -i -e 's@{freetype_prefix}/include/freetype2@/opt/lsb/include@g' configure
+
+CC=lsbcc ./configure \
+    --prefix=/opt/lsb-graphicsmagick \
+    --exec_prefix=/opt/lsb-graphicsmagick \
+    --enable-static \
+    --without-magick-plus-plus \
+    --without-perl \
+    --x-libraries=/opt/lsb/lib \
+    --without-x \
+    --enable-libtool-verbose \
+    --enable-maintainer-mode \
+    --without-freetype \
+    --without-freetype2 \
+    --without-gslib \
+    --without-png
+
+make clean
+
+(CPPFLAGS="-I/opt/lsb/include" LDFLAGS="/opt/lsb/lib" make 2>&1) | tee make.log
+
+#CPPFLAGS="-I/opt/lsb/include" LDFLAGS="/opt/lsb/lib" make -n install
+CPPFLAGS="-I/opt/lsb/include" LDFLAGS="/opt/lsb/lib" sudo make install
+
+
