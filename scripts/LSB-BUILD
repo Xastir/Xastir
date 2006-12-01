@@ -28,6 +28,7 @@
 #   ln -s /usr/local/lib/libtiff.a
 #   ln -s /usr/local/lib/libproj.a
 #   ln -s /usr/local/lib/libgeotiff.a
+#   ln -s /opt/lsb-graphicsmagick/lib/libGraphicsMagick.a libMagick.a
 #
 #   cd /opt/lsb
 #   cp -R include include.xastir
@@ -37,7 +38,8 @@
 #   ln -s /opt/lsb-lesstif/include/Xm (from our Lesstif compile)
 #   ln -s /opt/lsb-pcre/include/pcre.h
 #   ln -s /opt/lsb-curl/include/curl
-#
+#   ln -s /opt/lsb-graphicsmagick/include/GraphicsMagick/magick
+
 # This will allow us to statically link libraries without mucking
 # around with the Makefiles.  When done compiling the LSB-Xastir
 # package, put the /opt/lsb/lib directory back to normal by issuing
@@ -65,7 +67,7 @@ CC=lsbcc ./configure \
     --without-ax25 \
     --without-festival \
     --without-gpsman \
-    --without-imagemagick \
+    --with-imagemagick \
     --with-proj \
     --with-geotiff \
     --without-gdal \
