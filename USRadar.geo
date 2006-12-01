@@ -32,5 +32,6 @@ REFRESH 720
 # The following should work for a 16-bit color map.
 #TRANSPARENT 0x0ffff
 # The following should work for all color maps, now.
-TRANSPARENT 0x0ffffffff
+#TRANSPARENT 0x0ffffffff
+TRANSPARENT 0x000000000
 
