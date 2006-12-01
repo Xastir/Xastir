@@ -13,7 +13,7 @@
 # http://www.libpng.org/pub/png/pngcode.html
 # ftp://ftp.remotesensing.org/libtiff/
 # http://www.gzip.org/zlib/
-
+# http://www.ece.uvic.ca/~mdadams/jasper/
 
 export PATH=${PATH}:/opt/lsb/bin
 export LSBCC_WARN=1
@@ -39,6 +39,8 @@ CC=lsbcc ./configure \
     --without-freetype \
     --without-freetype2 \
     --without-gslib \
+    --with-quantum-depth=16 \
+    --disable-installed \
     --without-png
 
 make clean
