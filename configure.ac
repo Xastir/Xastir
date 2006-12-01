@@ -112,8 +112,19 @@ AC_SEARCH_LIBS(tan,math m)
 AC_CHECK_LIB([Xext], [XextAddDisplay])
 AC_CHECK_LIB([Xp], [XpGetDocumentData]) 
 AC_CHECK_LIB([Xt], [XtDisplay]) 
-AC_CHECK_LIB([Xm], [XmTextFindString]) 
-AC_CHECK_LIB([curl], [curl_global_init])
+AC_CHECK_LIB([Xm], [XmTextFindString])
+
+
+
+if test "${use_lsb}" = "no"; then 
+  AC_CHECK_LIB([curl], [curl_global_init])
+else
+  AC_DEFINE(HAVE_LIBCURL, , Define to 1 if your `shp' library has DBFGetFieldIndex. )
+  LIBS="${LIBS} -lcurl"
+fi
+
+
+
 # JMT - XXX - why is this here?
 AC_CHECK_LIB(compat, main, 
     [LIBCOMPAT="-lcompat"
