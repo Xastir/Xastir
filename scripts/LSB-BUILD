@@ -42,6 +42,8 @@
 #   ln -s /opt/lsb-curl/include/curl
 #   ln -s /opt/lsb-png/include/png.h
 #   ln -s /opt/lsb-jasper/include/jasper
+#   rm zlib.h
+#   ln -s /opt/lsb-zlib/include/zlib.h
 #   ln -s /opt/lsb-graphicsmagick/include/GraphicsMagick/magick
 
 # This will allow us to statically link libraries without mucking
