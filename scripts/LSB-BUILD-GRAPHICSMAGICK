@@ -40,8 +40,7 @@ CC=lsbcc ./configure \
     --without-freetype2 \
     --without-gslib \
     --with-quantum-depth=16 \
-    --disable-installed \
-    --without-png
+    --disable-installed
 
 make clean
 
