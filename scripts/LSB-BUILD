@@ -24,6 +24,7 @@
 #   ln -s /opt/lsb-zlib/lib/libz.a
 #   ln -s /opt/lsb-jpeg/lib/libjpeg.a
 #   ln -s /opt/lsb-pcre/lib/libpcre.a
+#   ln -s /opt/lsb-curl/lib/libcurl.a
 #   ln -s /usr/local/lib/libtiff.a
 #   ln -s /usr/local/lib/libproj.a
 #   ln -s /usr/local/lib/libgeotiff.a
@@ -34,6 +35,8 @@
 #   ln -s include.xastir include  (link to the new directory)
 #   cd include
 #   ln -s /opt/lsb-lesstif/include/Xm (from our Lesstif compile)
+#   ln -s /opt/lsb-pcre/include/pcre.h
+#   ln -s /opt/lsb-curl/include/curl
 #
 # This will allow us to statically link libraries without mucking
 # around with the Makefiles.  When done compiling the LSB-Xastir
