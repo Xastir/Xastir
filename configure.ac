@@ -453,10 +453,17 @@ fi
 use_imagemagick=yes
 AC_ARG_WITH(imagemagick,[  --without-imagemagick   Disable imagemagick features.],use_imagemagick=$withval)
 if test "${use_imagemagick}" = "yes"; then
-  XASTIR_CHECK_IMAGEMAGICK
+  if test "${use_lsb}" = "no"; then
+    XASTIR_CHECK_IMAGEMAGICK
+  else
+    MAGIC_BIN="/opt/lsb-graphicsmagick/bin/GraphicsMagick-config"
+    CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`"
+    CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`"
+    LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`"
+    LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS"
+    AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
+  fi
 fi
-
-
 
 
 
@@ -468,6 +475,7 @@ else
   CPPFLAGS="$CPPFLAGS -DXASTIR_DATA_BASE=\\\"${datadir}/xastir\\\""
 fi 
  
+
 
 # Add a special option that makes Cygwin link much faster (from
 # Henk de Groot)
