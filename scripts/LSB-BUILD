@@ -28,6 +28,8 @@
 #   ln -s /usr/local/lib/libtiff.a
 #   ln -s /usr/local/lib/libproj.a
 #   ln -s /usr/local/lib/libgeotiff.a
+#   ln -s /opt/lsb-png/lib/libpng.a
+#   ln -s /opt/lsb-jasper/lib/libjasper.a
 #   ln -s /opt/lsb-graphicsmagick/lib/libGraphicsMagick.a libMagick.a
 #
 #   cd /opt/lsb
@@ -38,6 +40,8 @@
 #   ln -s /opt/lsb-lesstif/include/Xm (from our Lesstif compile)
 #   ln -s /opt/lsb-pcre/include/pcre.h
 #   ln -s /opt/lsb-curl/include/curl
+#   ln -s /opt/lsb-png/include/png.h
+#   ln -s /opt/lsb-jasper/include/jasper
 #   ln -s /opt/lsb-graphicsmagick/include/GraphicsMagick/magick
 
 # This will allow us to statically link libraries without mucking
