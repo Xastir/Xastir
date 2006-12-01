@@ -1253,7 +1253,7 @@ fprintf(stderr,"1 ");
     // if that did not generate a valid size, bail out... 
     if ( (geo_image_width == 0) || (geo_image_height == 0) ) {
         fprintf(stderr,"*** Skipping '%s', IMAGESIZE tag missing or incorrect. ***\n",file);
-        fprintf(stderr,"Perhaps no XPM or ImageMagick library support is installed?\n");
+        fprintf(stderr,"Perhaps no XPM/ImageMagick/GraphicsMagick library support is installed?\n");
         return;
     }
     // calculate bottom right map corner from tiepoints

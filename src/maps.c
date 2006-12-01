@@ -377,7 +377,7 @@ void maps_init(void)
     fprintf(stderr,"\nSupport for these additional map types has been compiled in: \n");
  
 #ifdef HAVE_IMAGEMAGICK
-    fprintf(stderr,"%10s   Image Map (ImageMagick library, many formats allowed)\n","geo");
+    fprintf(stderr,"%10s   Image Map (ImageMagick/GraphicsMagick library, many formats allowed)\n","geo");
 #endif  // HAVE_IMAGEMAGICK
 
 #ifndef NO_GRAPHICS
