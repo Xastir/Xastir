@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# $Id$
+# Copyright (C) 2006  The Xastir Group
+
+# Compile Berkely db-4.4.20 under Linux Standard Base 3.0.  Install
+# into /opt/lsb-db/ directory structure.
+
+export PATH=${PATH}:/opt/lsb/bin
+export LSBCC_WARN=1
+
+# A colon-separated list of "extra" shared libraries to link with
+# the application.  Each shared lib must be LSB-compliant and must
+# be distributed along with the application.
+#export LSBCC_SHAREDLIBS=
+
+cd build_unix
+
+CC=lsbcc ../dist/configure \
+    --prefix=/opt/lsb-db \
+    --exec_prefix=/opt/lsb-db \
+    --enable-static
+
+make clean
+
+(make 2>&1) | tee make.log
+
+#make -n install
+sudo make install
+
+

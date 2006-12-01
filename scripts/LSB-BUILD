@@ -31,6 +31,7 @@
 #   ln -s /opt/lsb-png/lib/libpng.a
 #   ln -s /opt/lsb-jasper/lib/libjasper.a
 #   ln -s /opt/lsb-graphicsmagick/lib/libGraphicsMagick.a libMagick.a
+#   ln -s /opt/lsb-db/lib/libdb.a
 #
 #   cd /opt/lsb
 #   cp -R include include.xastir
@@ -45,6 +46,7 @@
 #   rm zlib.h
 #   ln -s /opt/lsb-zlib/include/zlib.h
 #   ln -s /opt/lsb-graphicsmagick/include/GraphicsMagick/magick
+#   ln -s /opt/lsb-db/include/db.h
 
 # This will allow us to statically link libraries without mucking
 # around with the Makefiles.  When done compiling the LSB-Xastir
@@ -80,7 +82,7 @@ CC=lsbcc ./configure \
     --with-internal-shapelib \
     --with-pcre \
     --with-dbfawk \
-    --without-map_cache \
+    --with-map_cache \
     --with-rtree \
     --with-lsb
 
