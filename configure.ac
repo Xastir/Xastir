@@ -385,13 +385,22 @@ AC_SUBST(SUBRTREE)
 AC_SUBST(LIBRTREE)
 
 
+
 # Check for GDAL.  Make sure that the GDAL check is towards the
 # last, as it can mess up shapelib and libgeotiff currently.
 use_gdal=yes
 AC_ARG_WITH(gdal,[  --without-gdal          Disable gdal features.],use_gdal=$withval)
 if test "${use_gdal}" = "yes"; then
-XASTIR_CHECK_GDAL
+  if test "${use_lsb}" = "no"; then 
+    XASTIR_CHECK_GDAL
+  else
+    CPPFLAGS="$CPPFLAGS -I/opt/lsb-gdal/include"
+    LDFLAGS="$LDFLAGS -L/opt/lsb-gdal/lib -lgdal"
+    LIBS="$LIBS -lgdal"
+    AC_DEFINE(HAVE_LIBGDAL, , [Define to 1 if you have the `gdal' library (-lgdaal).])
+  fi
 fi
+
 
 
 AC_ARG_ENABLE(davis, [  --enable-davis          Turn on Davis support],
