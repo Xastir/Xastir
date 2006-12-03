@@ -5023,8 +5023,15 @@ int fetch_remote_file(char *fileimg, char *local_filename) {
         curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
 #endif  // LIBCURL_VERSION_NUM
 
-// Only newer libcurl has this?
-// curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
+#ifdef __LSB__
+        // This prevents a segfault for the case where we get a timeout on
+        // domain name lookup or file transfer.
+
+        // Only newer libcurl has this?
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif // __LSB__
+
 
         ftpfile.filename = local_filename;
         ftpfile.stream = NULL;
