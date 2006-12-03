@@ -445,7 +445,8 @@ static void* findu_transfer_thread(void *arg) {
 
         // Reset global "busy" variable
         fetching_findu_trail_now = 0;
-        
+
+        // End the thread
         return(NULL);
     }
 
