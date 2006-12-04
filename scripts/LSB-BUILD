@@ -117,3 +117,7 @@ strip callpass/callpass
 #sudo cp xastir.tgz /usr/src/packages/SOURCES/.
 #rpmbuild -bb --clean xastir-lsb.spec
 
+tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/lsb-xastir
+scp xastir-lsb-1.8.5.tar.bz2 eskimo:ftp/aprs/xastir/LSB/.
+
+
