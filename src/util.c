@@ -5023,15 +5023,18 @@ int fetch_remote_file(char *fileimg, char *local_filename) {
         curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
 #endif  // LIBCURL_VERSION_NUM
 
-
-#ifdef __LSB__
+        // Added in libcurl 7.10
+#if (LIBCURL_VERSION_NUM >= 0x070a00)
         // This prevents a segfault for the case where we get a timeout on
-        // domain name lookup or file transfer.
-
-        // Only newer libcurl has this?
+        // domain name lookup.  It has to do with the ALARM signal
+        // and siglongjmp(), which we use in hostname.c already.
+        // This URL talks about it a bit more, plus see the libcurl
+        // docs:
+        //
+        //     http://curl.haxx.se/mail/lib-2002-12/0103.html
+        //
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-#endif // __LSB__
-
+#endif // LIBCURL_VERSION_NUM
 
         ftpfile.filename = local_filename;
         ftpfile.stream = NULL;
