@@ -18,7 +18,9 @@ CC=lsbcc ./configure \
     --prefix=/opt/lsb-gdal \
     --exec_prefix=/opt/lsb-gdal \
     --enable-static
-
+ 
+#    --without-libtool
+ 
 make clean
 
 (make 2>&1) | tee make.log
