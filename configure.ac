@@ -642,7 +642,7 @@ else
   ILIBS="$ILIBS      "
 fi
 if test "${use_lsb}" = "yes"; then
-  ILIBS="$ILIBS lsb"
+  ILIBS="$ILIBS LSB"
 else
   ILIBS="$ILIBS    "
 fi
@@ -756,7 +756,7 @@ echo "Building with ErrorPopups (Old Method) ............. : $use_err_popups"
 echo "Building with libgc (Debug) ........................ : $use_libgc"
 echo "Building with profiling (Debug) .................... : $use_profiling"
 echo "Building with rtree indexing (Experimental) ........ : $use_rtree"
-echo "Building with Linux Standard Base (Experimental) ... : $use_lsb"
+echo "Building with Linux Standard Base .............. ... : $use_lsb"
 #echo Building with Davis/MySQL.......... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
