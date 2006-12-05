@@ -26664,7 +26664,7 @@ int main(int argc, char *argv[], char *envp[]) {
             // Check whether we're running Xastir for the first time.
             // If so, my_callsign will be "NOCALL".   In this case
             // write "worldhi.map" into ~/.xastir/config/selected_maps.sys
-            // so that we get the efault map on startup.  Also
+            // so that we get the default map on startup.  Also
             // request to bring up the Configure->Station dialog in
             // this case.
             //
