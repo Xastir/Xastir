@@ -26,10 +26,11 @@ export LSBCC_WARN=1
 # Change freetype2 to LSB include directory in configure.
 sed -i -e 's@{freetype_prefix}/include/freetype2@/opt/lsb/include@g' configure
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-graphicsmagick \
     --exec_prefix=/opt/lsb-graphicsmagick \
     --enable-static \
+    --disable-shared \
     --without-magick-plus-plus \
     --without-perl \
     --x-libraries=/opt/lsb/lib \

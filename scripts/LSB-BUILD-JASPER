@@ -14,10 +14,11 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-jasper \
     --exec_prefix=/opt/lsb-jasper \
-    --enable-static
+    --enable-static \
+    --disable-shared
 
 make clean
 

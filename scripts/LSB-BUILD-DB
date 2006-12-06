@@ -16,10 +16,11 @@ export LSBCC_WARN=1
 
 cd build_unix
 
-CC=lsbcc ../dist/configure \
+CC=lsbcc CXX=lsbc++ ../dist/configure \
     --prefix=/opt/lsb-db \
     --exec_prefix=/opt/lsb-db \
-    --enable-static
+    --enable-static \
+    --disable-shared
 
 make clean
 

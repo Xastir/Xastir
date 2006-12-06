@@ -45,6 +45,7 @@
 #   ln -s /opt/lsb-jasper/include/jasper
 #   rm zlib.h
 #   ln -s /opt/lsb-zlib/include/zlib.h
+#   ln -s /opt/lsb-zlib/include/zconf.h
 #   ln -s /opt/lsb-graphicsmagick/include/GraphicsMagick/magick
 #   ln -s /opt/lsb-db/include/db.h
 
@@ -70,7 +71,7 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=libXm.so
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-xastir \
     --without-ax25 \
     --without-festival \
@@ -90,14 +91,14 @@ make clean
 
 find . -type f -name Makefile -print | while read i
   do
-    sed -i 's/\/usr\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/local\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/X11R6\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/lib/\/opt\/lsb\/lib/g' $i
-    sed -i 's/\/usr\/X11R6\/lib/\/opt\/lsb\/lib/g' $i
-    sed -i 's/\/usr\/X11\/lib/\/opt\/lsb\/lib/g' $i
-    sed -i 's/\/usr\/X11\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/local\/lib/\/opt\/lsb\/lib/g' $i
+    sed -i 's@/usr/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/local/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/X11R6/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/lib@/opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11R6/lib@/opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11/lib@/opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/local/lib@/opt/lsb/lib@g' $i
   done
 
 (make 2>&1) | tee make.log
@@ -114,7 +115,7 @@ strip callpass/callpass
 #sudo cp xastir.tgz /usr/src/packages/SOURCES/.
 #rpmbuild -bb --clean xastir-lsb.spec
 
-tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/lsb-xastir
-scp xastir-lsb-1.8.5.tar.bz2 eskimo:ftp/aprs/xastir/LSB/.
+#tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/lsb-xastir
+#scp xastir-lsb-1.8.5.tar.bz2 eskimo:ftp/aprs/xastir/LSB/.
 
 

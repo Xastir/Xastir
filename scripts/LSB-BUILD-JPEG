@@ -14,7 +14,7 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-jpeg \
     --exec_prefix=/opt/lsb-jpeg \
     --enable-static

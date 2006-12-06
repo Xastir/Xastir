@@ -14,12 +14,14 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=
 
+#CC=lsbcc CXX=lsbc++ ./configure \
 CC=lsbcc ./configure \
     --prefix=/opt/lsb-pcre \
     --exec_prefix=/opt/lsb-pcre \
-    --enable-static
+    --enable-static \
+    --disable-shared
 
-#make clean
+make clean
 
 (make 2>&1) | tee make.log
 

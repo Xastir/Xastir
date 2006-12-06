@@ -14,12 +14,13 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-curl \
     --exec_prefix=/opt/lsb-curl \
     --enable-static \
     --disable-ldap \
-    --without-libidn
+    --without-libidn \
+    --disable-shared
 
 make clean
 

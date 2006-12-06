@@ -18,7 +18,7 @@ export LSBCC_WARN=1
 #
 sed -i -e 's/\$exec_prefix#/$prefix#/g' configure
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-zlib \
     --exec_prefix=/opt/lsb-zlib \
     --enable-static

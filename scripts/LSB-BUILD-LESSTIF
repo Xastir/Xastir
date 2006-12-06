@@ -51,25 +51,26 @@ sed -i -e 's/^extern void XInitImage/\/\/extern void XInitImage/g' lib/Xm-2.1/Im
 sed -i -e 's/^typedef void ..sighandler_t/\/\/typedef void (*sighandler_t/' lib/Xm-2.1/DebugUtil.c
 
 
-CC=lsbcc ./configure \
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-lesstif \
     --enable-static \
     --x-libraries=/opt/lsb/lib \
     --x-includes=/opt/lsb/include \
     --with-motif-includes=/opt/lsb/include \
-    --with-motif-libraries=/opt/lsb/lib
-#    --disable-shared
+    --with-motif-libraries=/opt/lsb/lib \
+    --disable-shared
 
 make clean
 
 find . -type f -name Makefile -print | while read i
   do
-    sed -i 's/\/usr\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/local\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/X11R6\/include/\/opt\/lsb\/include/g' $i
-    sed -i 's/\/usr\/lib/\/opt\/lsb\/lib/g' $i
-    sed -i 's/\/usr\/X11R6\/lib/\/opt\/lsb\/lib/g' $i
-    sed -i 's/\/usr\/X11\/lib/\/opt\/lsb\/lib/g' $i
+    sed -i 's@/usr/include@opt/lsb/include@g' $i
+    sed -i 's@/usr/local/include@opt/lsb/include@g' $i
+    sed -i 's@/usr/X11R6/include@opt/lsb/include@g' $i
+    sed -i 's@/usr/lib@opt/lsb/lib@g' $i
+    sed -i 's@/usr/local/lib@opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11R6/lib@opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11/lib@opt/lsb/lib@g' $i
   done
 
 (make 2>&1) | tee make.log

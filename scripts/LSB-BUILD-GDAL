@@ -14,18 +14,53 @@ export LSBCC_WARN=1
 # be distributed along with the application.
 #export LSBCC_SHAREDLIBS=
 
-CC=lsbcc ./configure \
+# Change "export *" to "const std::exception &e"
+sed -i -e 's/exception\*/const std::exception \&e/g' frmts/ilwis/ilwisdataset.cpp
+
+CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-gdal \
     --exec_prefix=/opt/lsb-gdal \
-    --enable-static
- 
-#    --without-libtool
+    --oldincludedir=/opt/lsb/include \
+    --disable-shared \
+    --without-ld-shared \
+    --enable-static \
+    --with-static-proj4 \
+    --with-threads \
+    --without-pcraster \
+    --without-pg \
+    --without-python \
+    --without-ngpyton \
+    --without-netcdf \
+    --without-png \
+    --without-jpeg \
+    --without-gif \
+    --without-jasper \
+    --without-perl \
+    --without-libz
+
+#    --without-libtiff \
+#    --without-geotiff \
+#    --without-libtool \
  
 make clean
+
+find . -type f -name Makefile -print | while read i
+  do
+    sed -i 's@/usr/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/local/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/X11R6/include@/opt/lsb/include@g' $i
+    sed -i 's@/usr/lib@/opt/lsb/lib@g' $i
+    sed -i 's@/usr/local/lib@/opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11R6/lib@/opt/lsb/lib@g' $i
+    sed -i 's@/usr/X11/lib@/opt/lsb/lib@g' $i
+  done
+
+sed -i 's@/usr/lib@/opt/lsb/lib@g' libgdal.la
+sed -i 's@/usr/local/lib@/opt/lsb/lib@g' libgdal.la
 
 (make 2>&1) | tee make.log
 
 #make -n install
-sudo make install
+#(sudo make install 2>&1) | tee install.log
 
 
