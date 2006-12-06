@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# $Id$
+# Copyright (C) 2006  The Xastir Group
+
+# Compile the optional libraries that Xastir can use under Linux
+# Standard Base 3.0, in the proper compile order.
+#
+# These are the files needed:
+#
+# curl-7.16.0.tar.gz
+# db-4.4.20.tar.gz
+# gdal-1.3.2b2.tar.gz
+# GraphicsMagick-1.1.7.tar.bz2
+# jasper-1.701.0.zip
+# jpegsrc.v6b.tar.gz
+# lesstif-0.95.0.tar.gz
+# libpng-1.2.14.tar.gz
+# libXt.a (from LSB CVS, static library)
+# pcre-6.7.tar.gz
+# zlib-1.2.3.tar.gz
+#
+# Run this from the /home/src/lsb/ directory, and have the above
+# files present there.  This script needs SUDO access to install
+# files as well.
+
+cd /home/src/lsb
+
+tar xzf zlib-1.2.3.tar.gz
+(cd zlib-1.2.3; ../LSB-BUILD-ZLIB)
+rm -rf zlib-1.2.3
+
+tar xzf jpegsrc.v6b.tar.gz
+(cd jpeg-6b; ../LSB-BUILD-JPEG)
+rm -rf jpeg-6b
+
+tar xzf db-4.4.20.tar.gz
+(cd db-4.4.20; ../LSB-BUILD-DB)
+rm -rf db-4.4.20
+
+tar xzf curl-7.16.0.tar.gz
+(cd curl-7.16.0; ../LSB-BUILD-CURL)
+rm -rf curl-7.16.0
+
+# Shows an error creating a shared library but installs the static
+# library we need before it errors out...
+unzip -q jasper-1.701.0.zip
+(cd jasper-1.701.0; ../LSB-BUILD-JASPER)
+rm -rf jasper-1.701.0
+
+tar xzf libpng-1.2.14.tar.gz
+(cd libpng-1.2.14; ../LSB-BUILD-PNG)
+rm -rf libpng-1.2.14
+
+tar xzf pcre-6.7.tar.gz
+(cd pcre-6.7; ../LSB-BUILD-PCRE)
+rm -rf pcre-6.7
+
+tar xzf lesstif-0.95.0.tar.gz
+(cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
+rm -rf lesstif-0.95.0
+
+# Shows an error creating a shared library but installs the static
+# library we need before it errors out...
+tar xjf GraphicsMagick-1.1.7.tar.bz2
+(cd GraphicsMagick-1.1.7; ../LSB-BUILD-GRAPHICSMAGICK)
+rm -rf GraphicsMagick-1.1.7
+
+# PROBLEM HERE
+#tar xzf gdal-1.3.2b2.tar.gz
+#(cd gdal-1.3.2b2; ../LSB-BUILD-GDAL)
+#rm -rf gdal-1.3.2b2
+
+# Create the links needed in /opt/lsb/lib.xastir and
+# /opt/lsb/lib.include directories
+
+
