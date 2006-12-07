@@ -85,7 +85,7 @@ export LSBCC_WARN=1
 #export LSBCC_SHAREDLIBS=libXm.so
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/xastir \
+    --prefix=/opt/Xastir \
     --without-ax25 \
     --without-festival \
     --without-gpsman \
@@ -121,14 +121,14 @@ strip src/testawk
 strip callpass/callpass
 (sudo make install 2>&1) | tee install.log
 
-/opt/lsb/bin/lsbappchk -A /opt/xastir/bin/xastir
+/opt/lsb/bin/lsbappchk -A /opt/Xastir/bin/xastir
 
-#tar czf xastir.tgz /opt/xastir
+#tar czf xastir.tgz /opt/Xastir
 #sudo rm -rf /usr/src/packages/SOURCES/xastir*
 #sudo cp xastir.tgz /usr/src/packages/SOURCES/.
 #rpmbuild -bb --clean xastir-lsb.spec
 
-#tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/xastir
+tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/Xastir
 #scp xastir-lsb-1.8.5.tar.bz2 eskimo:ftp/aprs/xastir/LSB/.
 
 

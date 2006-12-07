@@ -84,25 +84,25 @@ software.
 %files
 %defattr(-,root,root)
 
-# Documents:  Go into special doc area at /opt/xastir/share/doc/xastir/
+# Documents:  Go into special doc area at /opt/Xastir/share/doc/xastir/
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
 %doc README README.Contributing README.CVS README.Getting-Started
 %doc README.MAPS README.win32 UPGRADE COPYING.LIB.LESSTIF
 
-/opt/xastir/bin
-/opt/xastir/share/xastir/help
-/opt/xastir/share/xastir/config
-/opt/xastir/share/xastir/symbols
-/opt/xastir/share/man
-/opt/xastir/lib/xastir
+/opt/Xastir/bin
+/opt/Xastir/share/xastir/help
+/opt/Xastir/share/xastir/config
+/opt/Xastir/share/xastir/symbols
+/opt/Xastir/share/man
+/opt/Xastir/lib/xastir
 
 # protect user-installed map and other files from being clobbered
-%config /opt/xastir/share/xastir/maps
-%dir %attr(666,root,root) /opt/xastir/share/xastir/maps/GPS
-%config /opt/xastir/share/xastir/Counties
-%config /opt/xastir/share/xastir/fcc
-%config /opt/xastir/share/xastir/GNIS
-%config /opt/xastir/share/xastir/sounds
+%config /opt/Xastir/share/xastir/maps
+%dir %attr(666,root,root) /opt/Xastir/share/xastir/maps/GPS
+%config /opt/Xastir/share/xastir/Counties
+%config /opt/Xastir/share/xastir/fcc
+%config /opt/Xastir/share/xastir/GNIS
+%config /opt/Xastir/share/xastir/sounds
 
 %changelog
 
