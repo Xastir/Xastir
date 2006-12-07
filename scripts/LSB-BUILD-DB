@@ -17,8 +17,8 @@ export LSBCC_WARN=1
 cd build_unix
 
 CC=lsbcc CXX=lsbc++ ../dist/configure \
-    --prefix=/opt/lsb-db \
-    --exec_prefix=/opt/lsb-db \
+    --prefix=/opt/lsb-tmp \
+    --exec_prefix=/opt/lsb-tmp \
     --enable-static \
     --disable-shared
 

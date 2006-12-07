@@ -16,8 +16,8 @@ export LSBCC_WARN=1
 
 #CC=lsbcc CXX=lsbc++ ./configure \
 CC=lsbcc ./configure \
-    --prefix=/opt/lsb-pcre \
-    --exec_prefix=/opt/lsb-pcre \
+    --prefix=/opt/lsb-tmp \
+    --exec_prefix=/opt/lsb-tmp \
     --enable-static \
     --disable-shared
 

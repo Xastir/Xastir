@@ -27,8 +27,8 @@ export LSBCC_WARN=1
 sed -i -e 's@{freetype_prefix}/include/freetype2@/opt/lsb/include@g' configure
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/lsb-graphicsmagick \
-    --exec_prefix=/opt/lsb-graphicsmagick \
+    --prefix=/opt/lsb-tmp \
+    --exec_prefix=/opt/lsb-tmp \
     --enable-static \
     --disable-shared \
     --without-magick-plus-plus \

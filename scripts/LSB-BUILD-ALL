@@ -24,7 +24,7 @@
 # files present there.  This script needs SUDO access to install
 # files as well.
 
-cd /home/src/lsb
+#cd /home/src/lsb
 
 tar xzf zlib-1.2.3.tar.gz
 (cd zlib-1.2.3; ../LSB-BUILD-ZLIB)

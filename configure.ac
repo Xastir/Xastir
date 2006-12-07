@@ -394,8 +394,8 @@ if test "${use_gdal}" = "yes"; then
   if test "${use_lsb}" = "no"; then 
     XASTIR_CHECK_GDAL
   else
-    CPPFLAGS="$CPPFLAGS -I/opt/lsb-gdal/include"
-    LDFLAGS="$LDFLAGS -L/opt/lsb-gdal/lib -lgdal"
+    CPPFLAGS="$CPPFLAGS -I/opt/lsb-tmp/include"
+    LDFLAGS="$LDFLAGS -L/opt/lsb-tmp/lib -lgdal"
     LIBS="$LIBS -lgdal"
     AC_DEFINE(HAVE_LIBGDAL, , [Define to 1 if you have the `gdal' library (-lgdaal).])
   fi
@@ -465,7 +465,7 @@ if test "${use_imagemagick}" = "yes"; then
   if test "${use_lsb}" = "no"; then
     XASTIR_CHECK_IMAGEMAGICK
   else
-    MAGIC_BIN="/opt/lsb-graphicsmagick/bin/GraphicsMagick-config"
+    MAGIC_BIN="/opt/lsb-tmp/bin/GraphicsMagick-config"
     CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`"
     CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`"
     LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`"
@@ -756,7 +756,7 @@ echo "Building with ErrorPopups (Old Method) ............. : $use_err_popups"
 echo "Building with libgc (Debug) ........................ : $use_libgc"
 echo "Building with profiling (Debug) .................... : $use_profiling"
 echo "Building with rtree indexing (Experimental) ........ : $use_rtree"
-echo "Building with Linux Standard Base .............. ... : $use_lsb"
+echo "Building with Linux Standard Base .................. : $use_lsb"
 #echo Building with Davis/MySQL.......... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 

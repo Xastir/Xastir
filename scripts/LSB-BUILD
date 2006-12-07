@@ -19,35 +19,35 @@
 #   cd lib
 #   rm libXt.so            (or just "chmod 000 libXt.so")
 #   rm libz.so             (or just "chmod 000 libz.so")
-#   cp PATH/libXt.a .      (lib from LSB CVS: "lsb/appbat" module)
-#   ln -s /opt/lsb-lesstif/lib/libXm.a (from our Lesstif compile)
-#   ln -s /opt/lsb-zlib/lib/libz.a
-#   ln -s /opt/lsb-jpeg/lib/libjpeg.a
-#   ln -s /opt/lsb-pcre/lib/libpcre.a
-#   ln -s /opt/lsb-curl/lib/libcurl.a
+#   cp /home/src/lsb/libXt.a .      (lib from LSB CVS: "lsb/appbat" module)
+#   ln -s /opt/lsb-tmp/lib/libXm.a (from our Lesstif compile)
+#   ln -s /opt/lsb-tmp/lib/libz.a
+#   ln -s /opt/lsb-tmp/lib/libjpeg.a
+#   ln -s /opt/lsb-tmp/lib/libpcre.a
+#   ln -s /opt/lsb-tmp/lib/libcurl.a
 #   ln -s /usr/local/lib/libtiff.a
 #   ln -s /usr/local/lib/libproj.a
 #   ln -s /usr/local/lib/libgeotiff.a
-#   ln -s /opt/lsb-png/lib/libpng.a
-#   ln -s /opt/lsb-jasper/lib/libjasper.a
-#   ln -s /opt/lsb-graphicsmagick/lib/libGraphicsMagick.a libMagick.a
-#   ln -s /opt/lsb-db/lib/libdb.a
+#   ln -s /opt/lsb-tmp/lib/libpng.a
+#   ln -s /opt/lsb-tmp/lib/libjasper.a
+#   ln -s /opt/lsb-tmp/lib/libGraphicsMagick.a libMagick.a
+#   ln -s /opt/lsb-tmp/lib/libdb.a
 #
 #   cd /opt/lsb
 #   cp -R include include.xastir
 #   mv include include.orig
 #   ln -s include.xastir include  (link to the new directory)
 #   cd include
-#   ln -s /opt/lsb-lesstif/include/Xm (from our Lesstif compile)
-#   ln -s /opt/lsb-pcre/include/pcre.h
-#   ln -s /opt/lsb-curl/include/curl
-#   ln -s /opt/lsb-png/include/png.h
-#   ln -s /opt/lsb-jasper/include/jasper
+#   ln -s /opt/lsb-tmp/include/Xm (from our Lesstif compile)
+#   ln -s /opt/lsb-tmp/include/pcre.h
+#   ln -s /opt/lsb-tmp/include/curl
+#   ln -s /opt/lsb-tmp/include/png.h
+#   ln -s /opt/lsb-tmp/include/jasper
 #   rm zlib.h
-#   ln -s /opt/lsb-zlib/include/zlib.h
-#   ln -s /opt/lsb-zlib/include/zconf.h
-#   ln -s /opt/lsb-graphicsmagick/include/GraphicsMagick/magick
-#   ln -s /opt/lsb-db/include/db.h
+#   ln -s /opt/lsb-tmp/include/zlib.h
+#   ln -s /opt/lsb-tmp/include/zconf.h
+#   ln -s /opt/lsb-tmp/include/GraphicsMagick/magick
+#   ln -s /opt/lsb-tmp/include/db.h
 
 # This will allow us to statically link libraries without mucking
 # around with the Makefiles.  When done compiling the LSB-Xastir

@@ -15,15 +15,15 @@ export LSBCC_WARN=1
 #export LSBCC_SHAREDLIBS=
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/lsb-jpeg \
-    --exec_prefix=/opt/lsb-jpeg \
+    --prefix=/opt/lsb-tmp \
+    --exec_prefix=/opt/lsb-tmp \
     --enable-static
 
 make clean
 
 (make 2>&1) | tee make.log
 
-sudo mkdir /opt/lsb-jpeg /opt/lsb-jpeg/lib /opt/lsb-jpeg/include
+#sudo mkdir /opt/lsb-tmp /opt/lsb-tmp/lib /opt/lsb-tmp/include
 #make -n install-lib
 sudo make install-lib
 

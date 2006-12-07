@@ -15,8 +15,8 @@ export LSBCC_WARN=1
 #export LSBCC_SHAREDLIBS=
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/lsb-png \
-    --exec_prefix=/opt/lsb-png \
+    --prefix=/opt/lsb-tmp \
+    --exec_prefix=/opt/lsb-tmp \
     --enable-static \
     --disable-shared
 

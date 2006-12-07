@@ -52,7 +52,7 @@ sed -i -e 's/^typedef void ..sighandler_t/\/\/typedef void (*sighandler_t/' lib/
 
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/lsb-lesstif \
+    --prefix=/opt/lsb-tmp \
     --enable-static \
     --x-libraries=/opt/lsb/lib \
     --x-includes=/opt/lsb/include \

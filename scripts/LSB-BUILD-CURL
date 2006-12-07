@@ -15,8 +15,8 @@ export LSBCC_WARN=1
 #export LSBCC_SHAREDLIBS=
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/lsb-curl \
-    --exec_prefix=/opt/lsb-curl \
+    --prefix=/opt/lsb-tmp \
+    --exec_prefix=/opt/lsb-tmp \
     --enable-static \
     --disable-ldap \
     --without-libidn \
