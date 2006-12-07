@@ -20,7 +20,8 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE xastir.1 terraserver.geo \
         terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
         terraserver-topo.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
-        CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse
+        CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse \
+        COPYING COPYING.LIB.LESSTIF AUTHORS
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
         config.guess config.sub install-sh missing mkinstalldirs \
@@ -53,7 +54,8 @@ sound_DATA=placeholder
 docdir=${prefix}/share/doc/xastir
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
         README.MAPS README.win32 COPYING INSTALL UPGRADE \
-        README.Getting-Started README.Contributing
+        README.Getting-Started README.Contributing \
+        COPYING.LIB.LESSTIF
 
 # It'd be nice to remove the directory and contents at
 # "${pkgdatadir}/doc" then install a symlink called "doc" there pointing

@@ -87,7 +87,7 @@ software.
 # Documents:  Go into special doc area at /opt/lsb-xastir/share/doc/xastir/
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
 %doc README README.Contributing README.CVS README.Getting-Started
-%doc README.MAPS README.win32 UPGRADE
+%doc README.MAPS README.win32 UPGRADE COPYING.LIB.LESSTIF
 
 /opt/lsb-xastir/bin
 /opt/lsb-xastir/share/xastir/help
