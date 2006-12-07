@@ -3,8 +3,21 @@
 # $Id$
 # Copyright (C) 2006  The Xastir Group
 
+# NOTE:
+# "Free Standards Group, FSG, Linux Standard Base, LSB, Free
+# Standards Certified, LSB Certified and the Free Standards
+# Certified logo are trademarks, service marks and certification
+# marks, as appropriate, of Free Standards Group in the United
+# States and in other countries."
+#
+# We are in no way representing that Xastir has been certified by
+# the FSG.  To do so costs real money.  We do intend some Xastir
+# binaries to install and run properly on LSB-3.0 compliant x86
+# Linux systems though...
+#
+
 # The trick:  First compile Lesstif as an LSB package, installed at
-# /opt/lsb-lesstif, using LSB-BUILD-LESSTIF script.  The commands
+# /opt/lsb-tmp, using LSB-BUILD-LESSTIF script.  The commands
 # below assume you've set up the directory structure at /opt/lsb
 # specified at the top of that script.
 #
@@ -72,7 +85,7 @@ export LSBCC_WARN=1
 #export LSBCC_SHAREDLIBS=libXm.so
 
 CC=lsbcc CXX=lsbc++ ./configure \
-    --prefix=/opt/lsb-xastir \
+    --prefix=/opt/xastir \
     --without-ax25 \
     --without-festival \
     --without-gpsman \
@@ -108,14 +121,14 @@ strip src/testawk
 strip callpass/callpass
 (sudo make install 2>&1) | tee install.log
 
-/opt/lsb/bin/lsbappchk -A /opt/lsb-xastir/bin/xastir
+/opt/lsb/bin/lsbappchk -A /opt/xastir/bin/xastir
 
-#tar czf xastir.tgz /opt/lsb-xastir
+#tar czf xastir.tgz /opt/xastir
 #sudo rm -rf /usr/src/packages/SOURCES/xastir*
 #sudo cp xastir.tgz /usr/src/packages/SOURCES/.
 #rpmbuild -bb --clean xastir-lsb.spec
 
-#tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/lsb-xastir
+#tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/xastir
 #scp xastir-lsb-1.8.5.tar.bz2 eskimo:ftp/aprs/xastir/LSB/.
 
 

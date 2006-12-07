@@ -1,3 +1,15 @@
+# NOTE:
+# “Free Standards Group, FSG, Linux Standard Base, LSB, Free
+# Standards Certified, LSB Certified and the Free Standards
+# Certified logo are trademarks, service marks and certification
+# marks, as appropriate, of Free Standards Group in the United
+# States and in other countries.”
+#
+# We are in no way representing that Xastir has been certified by
+# the FSG.  To do so costs real money.  We do intend some Xastir
+# binaries to install and run properly on LSB-3.0 compliant x86
+# Linux systems though...
+#
 Summary      : Amateur Station Tracking and Reporting system for Amateur Radio APRS
 Name         : lsb-xastir
 Version      : @VERSION@
