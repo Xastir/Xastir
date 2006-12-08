@@ -101,9 +101,9 @@ though...
 -------------------------------
 
 
-*) libcurl is available under the following license which is only
-applicable for a distributed Xastir binary which includes this
-library:
+*) libcurl is available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 COPYRIGHT AND PERMISSION NOTICE
 
@@ -135,9 +135,9 @@ authorization of the copyright holder.
 -------------------------------
 
 
-*) libdb is available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) libdb is available under the following license.  Note that this 
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 The following is the license that applies to this copy of the
 Berkeley DB software.  For a license to use the Berkeley DB software
@@ -244,9 +244,9 @@ http://www.sleepycat.com.
 -------------------------------
 
 
-*) GraphicsMagick is available under the following license which is
-only applicable for a distributed Xastir binary which includes this
-library:
+*) GraphicsMagick is available under the following license.  Note
+that this license is only applicable to a distributed Xastir BINARY
+which includes this library:
 
 This file is part of the GraphicsMagick software distributed by the
 GraphicsMagick Group.
@@ -481,9 +481,9 @@ The licences which components of this software fall under are as follows.
 -------------------------------
 
 
-*) Jasper available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) Jasper available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 JasPer License Version 2.0
 
@@ -541,9 +541,9 @@ EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
 -------------------------------
 
 
-*) Jpeg available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) Jpeg available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 In plain English:
 
@@ -633,9 +633,9 @@ We are required to state that
 -------------------------------
 
 
-*) Lesstif available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) Lesstif available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 The included files COPYING and COPYING.LIB.LESSTIF, as may apply.
 
@@ -643,9 +643,9 @@ The included files COPYING and COPYING.LIB.LESSTIF, as may apply.
 -------------------------------
 
 
-*) libpng available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) libpng available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 This copy of the libpng notices is provided for your convenience.  In case of
 any discrepancy between this copy and the notices in the file png.h that is
@@ -761,9 +761,9 @@ November 28, 2006
 -------------------------------
 
 
-*) PCRE available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) PCRE available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
 PCRE is a library of functions to support regular expressions whose syntax
 and semantics are as close as possible to those of the Perl 5 language.
@@ -838,9 +838,9 @@ POSSIBILITY OF SUCH DAMAGE.
 -------------------------------
 
 
-*) ZLIB available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) ZLIB available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
  (C) 1995-2004 Jean-loup Gailly and Mark Adler
 
@@ -879,9 +879,9 @@ versions.
 -------------------------------
 
 
-*) libXt.a available under the following license which is only 
-applicable for a distributed Xastir binary which includes this
-library:
+*) libXt.a available under the following license.  Note that this
+license is only applicable to a distributed Xastir BINARY which
+includes this library:
 
                                   Licenses
 
