@@ -293,6 +293,10 @@ fi
 if test "${use_lsb}" = "no"; then 
   AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
   AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
+else
+  AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )
+  AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )
+  AC_DEFINE(HAVE_X11_XPM_H, , Define to 1 if you have 'X11/xpm.h' )
 fi
  
  
