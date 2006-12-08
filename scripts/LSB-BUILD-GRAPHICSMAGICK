@@ -54,7 +54,8 @@ CC=lsbcc CXX=lsbc++ ./configure \
     --without-freetype \
     --without-freetype2 \
     --without-gslib \
-    --with-quantum-depth=16 \
+    --with-quantum-depth=16
+#
     --disable-installed
 
 make clean
@@ -63,5 +64,14 @@ make clean
 
 #CPPFLAGS="-I/opt/lsb/include" LDFLAGS="/opt/lsb/lib" make -n install
 CPPFLAGS="-I/opt/lsb/include" LDFLAGS="/opt/lsb/lib" sudo make install
+
+# The Make has bombed out at this point, so finish the compile of
+# "gm" in the utilities directory
+(cd utilities; \
+    /opt/lsb/bin/lsbcc -g -O2 -Wall -o gm gm.o \
+        ../magick/.libs/libGraphicsMagick.a \
+        -L/opt/lsb/lib -ltiff -ljasper -lpng -lz -lm -lpthread -ljpeg; \
+   strip gm; \
+   sudo make install)
 
 
