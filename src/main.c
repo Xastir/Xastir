@@ -10577,29 +10577,28 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 
     if (restart_xastir_now) {
+        char bin_path[250];
 
-
-// Debug:  Print out the first string in argv, which should be the
-// name of the program "xastir".
-//temp = (char *)my_argv[0];
-//fprintf(stderr, "%s\n", (char *)temp );
-
-
-// WE7U:
-// We need to snag the path to the executable from somewhere so that
-// we can start up again on a variety of systems.  Trying to get it
-// from argv[0] doesn't work as that ends up as "xastir" with no
-// path.
-
-
-
-        // Start up Xastir again in this process space.  This is
-        // triggered by receiving a SIGHUP signal to the main
-        // process, which causes the signal handler restart() to
-        // run.  restart() shuts down most things nicely and then
-        // sets the restart_xastir_now  global variable.
+        // Restart Xastir in this process space.  This is triggered
+        // by receiving a SIGHUP signal to the main process, which
+        // causes the signal handler restart() to run.  restart()
+        // shuts down most things nicely and then sets the
+        // restart_xastir_now  global variable.
         //
-        execve("/usr/local/bin/xastir", my_argv, my_envp);
+        // We need to snag the path to the executable from somewhere
+        // so that we can start up again on a variety of systems.
+        // Trying to get it from argv[0] doesn't work as that ends
+        // up as "xastir" with no path.  We therefore get it from
+        // XASTIR_BIN_PATH which we define in configure.ac
+        //
+//        execve("/usr/local/bin/xastir", my_argv, my_envp);
+        xastir_snprintf(bin_path,
+            sizeof(bin_path),
+            "%s/bin/xastir",
+            XASTIR_BIN_PATH);
+
+        // Restart this Xastir instance
+        execve(bin_path, my_argv, my_envp);
     }
 
 
