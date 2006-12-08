@@ -43,7 +43,7 @@ Motif or OpenMotif or LessTiff  Required  The GUI widget set
 pthreads                        Required  Threading capability
 Shapelib                        Recommended ESRI Shapefile maps and WX alerts
 pcre                            Recommended used with Shapefile maps
-Xpm                             Optional  XPM images
+Xpm                             Optional  XPM images + Snapshots + Printing
 ImageMagick                     Optional  MANY graphics images
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
