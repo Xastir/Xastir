@@ -69,6 +69,10 @@ tar xzf pcre-6.7.tar.gz
 (cd pcre-6.7; ../LSB-BUILD-PCRE)
 rm -rf pcre-6.7
 
+# Archive was from:  <http://koala.ilog.fr/ftp/pub/xpm/>
+# Note:  We may just need to add X11/xpm.h from our own system X11
+# directory in order to make this work, as libXpm.a didn't get
+# statically linked to this executable.
 tar xvf xpm-3.4k.tar.gz
 (cd xpm-3.4k; ../LSB-BUILD-XPM)
 rm -rf xpm-3.4k
