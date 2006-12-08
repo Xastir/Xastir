@@ -232,7 +232,8 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
     // Perform a "finger" command in another process
     xastir_snprintf(temp,
         sizeof(temp),
-        "/usr/bin/finger %s@wxsvr.net",
+        "%s %s@wxsvr.net",
+        FINGER_PATH,
         handle);
     if (!(pp = popen (temp, "r"))) {    // Go do the finger command
         perror (temp);  // Print an error message if it failed
