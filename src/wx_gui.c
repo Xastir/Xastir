@@ -116,7 +116,11 @@ void wx_alert_finger_output( Widget widget, char *handle) {
     register unsigned int ac = 0;   // Arg Count
     char temp[1024];
     XmString item;
+
+#ifdef HAVE_FINGER
     register FILE *pp;
+#endif  // HAVE_FINGER
+
     extern FILE *popen(const char *, const char *);
 
 
@@ -229,15 +233,17 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
     // case it was left up from a previous query.
     XmListDeleteAllItems(wx_detailed_alert_list);
 
+#ifdef HAVE_FINGER
+
     // Perform a "finger" command in another process
     xastir_snprintf(temp,
         sizeof(temp),
-        "%s %s@wxsvr.net",
+        "%s %s@wxsvr.net 2>&1",
         FINGER_PATH,
         handle);
     if (!(pp = popen (temp, "r"))) {    // Go do the finger command
+        fprintf(stderr,"Could not open a pipe for running the 'finger' command\n");
         perror (temp);  // Print an error message if it failed
-        fprintf(stderr,"Weather server didn't answer or 'finger' command couldn't be run\n");
     }
     else {
         while (fgets (temp, sizeof (temp), pp)) {   // While we have data to process
@@ -260,6 +266,18 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         }
         pclose (pp);
     }
+
+#else   // HAVE_FINGER
+
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "The path to the 'finger' command was not compiled into Xastir, sorry.");
+    item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+    XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+    XmStringFree(item);
+
+#endif  // HAVE_FINGER
+
 }
 
 
