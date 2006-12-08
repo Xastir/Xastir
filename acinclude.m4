@@ -170,6 +170,12 @@ if test "$convert" != "no"; then
   AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}", [Path to convert]) 
 fi
  
+AC_PATH_PROG(finger, [finger], no, $BINPATH)
+if test "$finger" != "no"; then
+  AC_DEFINE_UNQUOTED(HAVE_FINGER, 1, [Define if you have finger]) 
+  AC_DEFINE_UNQUOTED(FINGER_PATH, "${finger}", [Path to finger]) 
+fi
+
 AC_PATH_PROG(lpr, [lpr /dev/null], no, $BINPATH)
 if test "$lpr" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_LPR, 1, [Define if you have lpr]) 
