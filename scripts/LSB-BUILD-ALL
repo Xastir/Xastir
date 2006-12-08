@@ -69,6 +69,10 @@ tar xzf pcre-6.7.tar.gz
 (cd pcre-6.7; ../LSB-BUILD-PCRE)
 rm -rf pcre-6.7
 
+tar xvf xpm-3.4k.tar.gz
+(cd xpm-3.4k; ../LSB-BUILD-XPM)
+rm -rf xpm-3.4k
+
 tar xzf lesstif-0.95.0.tar.gz
 (cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
 rm -rf lesstif-0.95.0
