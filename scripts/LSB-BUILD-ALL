@@ -73,14 +73,6 @@ tar xzf lesstif-0.95.0.tar.gz
 (cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
 rm -rf lesstif-0.95.0
 
-# Archive was from:  <http://koala.ilog.fr/ftp/pub/xpm/>
-# Note:  We may just need to add X11/xpm.h from our own system X11
-# directory in order to make this work, as libXpm.a didn't get
-# statically linked to this executable.
-tar xvf xpm-3.4k.tar.gz
-(cd xpm-3.4k; ../LSB-BUILD-XPM)
-rm -rf xpm-3.4k
-
 # Shows an error creating a shared library but installs the static
 # library we need before it errors out...
 tar xjf GraphicsMagick-1.1.7.tar.bz2
