@@ -128,10 +128,10 @@ strip callpass/callpass
 # Copy GraphicsMagick "gm" binary to the Xastir area
 sudo /bin/cp /opt/lsb-tmp/bin/gm /opt/Xastir/bin/.
 
-/opt/lsb/bin/lsbappchk -nA /opt/Xastir/bin/xastir
-/opt/lsb/bin/lsbappchk -nA /opt/Xastir/bin/callpass
-/opt/lsb/bin/lsbappchk -nA /opt/Xastir/bin/xastir_udp_client
-/opt/lsb/bin/lsbappchk -nA /opt/Xastir/bin/gm
+(lsbappchk -nA /opt/Xastir/bin/xastir 2>&1) | grep -v SHT_NOTE
+(lsbappchk -nA /opt/Xastir/bin/callpass 2>&1) | grep -v SHT_NOTE
+(lsbappchk -nA /opt/Xastir/bin/xastir_udp_client 2>&1) | grep -v SHT_NOTE
+(lsbappchk -nA /opt/Xastir/bin/gm 2>&1) | grep -v SHT_NOTE
 
 #tar czf xastir.tgz /opt/Xastir
 #sudo rm -rf /usr/src/packages/SOURCES/xastir*
