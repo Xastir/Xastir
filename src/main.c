@@ -683,7 +683,7 @@ char gps_map_filename_base[MAX_FILENAME];   // Same minus ".shp"
 char gps_map_filename_base2[MAX_FILENAME];   // Same minus ".shp" and color
 char gps_temp_map_filename[MAX_FILENAME];
 char gps_temp_map_filename_base[MAX_FILENAME];  // Same minus ".shp"
-char gps_dbfawk_format[]="BEGIN_RECORD {key=\"\"; lanes=1; color=%d; name=\"%s\"; filled=0; pattern=0; display_level=256; label_level=128; label_color=8; symbol=\"\"}\n";
+char gps_dbfawk_format[]="BEGIN_RECORD {key=\"\"; lanes=1; color=%d; name=\"%s\"; filled=0; pattern=0; display_level=65536; label_level=128; label_color=8; symbol=\"\"}\n";
 int gps_map_color = 0;              // Chosen color of gps map
 int gps_map_color_offset;           // offset into colors array of that color.
 char gps_map_type[30];              // Type of GPS download
