@@ -5,6 +5,7 @@
 
 # Compile curl-7.16.0 under Linux Standard Base 3.0.  Install into
 # /opt/lsb-tmp/ directory structure.
+# <http://curl.haxx.se/>
 
 # NOTE:
 # "Free Standards Group, FSG, Linux Standard Base, LSB, Free

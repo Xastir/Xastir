@@ -2,6 +2,7 @@
 
 # $Id$
 # Copyright (C) 2006  The Xastir Group
+# <http://www.sleepycat.com>
 
 # Compile Berkely db-4.4.20 under Linux Standard Base 3.0.  Install
 # into /opt/lsb-tmp/ directory structure.

@@ -21,17 +21,17 @@
 #
 # These are the files needed:
 #
-# curl-7.16.0.tar.gz
-# db-4.4.20.tar.gz
-# gdal-1.3.2b2.tar.gz
-# GraphicsMagick-1.1.7.tar.bz2
-# jasper-1.701.0.zip
-# jpegsrc.v6b.tar.gz
-# lesstif-0.95.0.tar.gz
-# libpng-1.2.14.tar.gz
-# libXt.a (from LSB CVS, static library)
-# pcre-6.7.tar.gz
-# zlib-1.2.3.tar.gz
+# curl-7.16.0.tar.gz    <http://curl.haxx.se/>
+# db-4.4.20.tar.gz      <http://www.sleepycat.com>
+# gdal-1.3.2b2.tar.gz   <http://gdal.org/>
+# GraphicsMagick-1.1.7.tar.bz2 <http://www.graphicsmagick.org/>
+# jasper-1.701.0.zip    <http://www.ece.uvic.ca/~mdadams/jasper/>
+# jpegsrc.v6b.tar.gz    <http://www.ijg.org/>
+# lesstif-0.95.0.tar.gz <http://www.lesstif.org/>
+# libpng-1.2.14.tar.gz  <http://www.libpng.org/pub/png/libpng.html>
+# libXt.a               <http://gforge.freestandards.org/scm/?group_id=5>
+# pcre-6.7.tar.gz       <http://www.pcre.org/>
+# zlib-1.2.3.tar.gz     <http://www.zlib.net/>
 #
 # Run this from the /home/src/lsb/ directory, and have the above
 # files present there.  This script needs SUDO access to install
