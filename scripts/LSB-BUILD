@@ -91,7 +91,7 @@ export LSBCC_WARN=1
 CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/Xastir \
     --without-ax25 \
-    --without-festival \
+    --with-festival \
     --without-gpsman \
     --with-imagemagick \
     --with-proj \
