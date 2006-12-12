@@ -3904,7 +3904,7 @@ void Station_data_destroy_track( /*@unused@*/ Widget widget, XtPointer clientDat
 
 
 // This function merely reformats the button callback in order to
-// call wx_alert_double_click_action, which expects the paramter in
+// call wx_alert_double_click_action, which expects the parameter in
 // calldata instead of in clientData.
 //
 void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
