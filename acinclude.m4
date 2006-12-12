@@ -239,7 +239,6 @@ if test "$use_festival" != "no"; then
  AC_PATH_PROG(festival, [festival], no, $BINPATH)
  if test "$festival" != "no"; then
    AC_DEFINE_UNQUOTED(HAVE_FESTIVAL, 1, [Define if you have festival])
-   AC_DEFINE_UNQUOTED(FESTIVAL_PATH, "${festival}", [Path to festival])
  fi
 fi
 
