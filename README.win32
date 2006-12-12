@@ -529,18 +529,6 @@ the NTFS "convert.exe" program instead of the ImageMagick
 If you experience this, check your path settings and make sure that
 ImageMagick's path is first.
 
-To make the "Fetch NWS Alerts" button work for weather objects and
-to be able to double-click on a weather alert in the View->Weather
-Alerts window, type this into a Cygwin command window:
-
-    ln -s `which finger` /usr/bin/finger
-
-(the ` is a backquote, left of number 1 on keyboard. NOT single
-quote).  Without this, the NWS alert window appears with blank and
-the console will display:
-
-    "sh: /usr/bin/finger: No such file or directory".
-
 When specifying serial ports to use with Xastir,
 
     "COM1" is called "/dev/ttyS0" in Cygwin (and Linux)

@@ -30,6 +30,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #ifdef  HAVE_LOCALE_H
 #include <locale.h>
@@ -116,12 +121,11 @@ void wx_alert_finger_output( Widget widget, char *handle) {
     register unsigned int ac = 0;   // Arg Count
     char temp[1024];
     XmString item;
-
-#ifdef HAVE_FINGER
-    register FILE *pp;
-#endif  // HAVE_FINGER
-
-    extern FILE *popen(const char *, const char *);
+    FILE *fd;
+    int ret;
+    int server_fd;
+    struct sockaddr_in serv_addr;
+    struct hostent *serverhost;
 
 
     if (debug_level & 1)
@@ -233,51 +237,135 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
     // case it was left up from a previous query.
     XmListDeleteAllItems(wx_detailed_alert_list);
 
-#ifdef HAVE_FINGER
+    // Perform a "finger" command, which is really just a telnet
+    // with a single line command sent to the remote host, then a
+    // bunch of text sent back.  We implement it here via our own
+    // TCP code, as it's really very simple.
 
-    // Perform a "finger" command in another process
+    // Allocate a socket for our use
+    if ((server_fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+//        fprintf(stderr,"wx_alert_finger_output: can't get socket\n");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "wx_alert_finger_output: can't get socket");
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+        return;
+    }
+
+    memset(&serv_addr, 0, sizeof(serv_addr));
+
+    serverhost = gethostbyname("wxsvr.net");
+    if (serverhost == (struct hostent *)0) {
+//        fprintf(stderr,"wx_alert_finger_output: gethostbyname failed\n");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "wx_alert_finger_output: gethostbyname failed");
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+        (void)close(server_fd); // Close the socket
+        return;
+    }
+    memmove(&serv_addr.sin_addr,serverhost->h_addr, (size_t)serverhost->h_length);
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(79); // Finger protocol uses port 79
+
+    if (connect(server_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
+//        fprintf(stderr,"wx_alert_finger_output: connect to server failed\n");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "wx_alert_finger_output: connect to server failed");
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+        (void)close(server_fd);    // Close the socket
+        return;
+    }
+
+    // Create a file descriptor for the socket
+    fd = fdopen(dup(server_fd),"wb");
+    if (fd == NULL) {
+//        fprintf(stderr,"Couldn't create duplicate write socket\n");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "Couldn't create duplicate write socket");
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+        (void)close(server_fd); // Close the socket
+        return;
+    }
+
+    // Set up the text we're going to send to the remote finger
+    // server.
     xastir_snprintf(temp,
         sizeof(temp),
-        "%s %s@wxsvr.net 2>&1",
-        FINGER_PATH,
+        "%s\r\n",
         handle);
-    if (!(pp = popen (temp, "r"))) {    // Go do the finger command
-        fprintf(stderr,"Could not open a pipe for running the 'finger' command\n");
-        perror (temp);  // Print an error message if it failed
-    }
-    else {
-        while (fgets (temp, sizeof (temp), pp)) {   // While we have data to process
-            char *ptr;
 
-            // Remove any linefeeds or carriage returns from each
-            // string.
-            ptr = temp;
-            while ( (ptr = strpbrk(temp, "\n\r")) )
-                memmove(ptr, ptr+1, strlen(ptr)+1);
+    // Send the request text out the socket
+    ret = fprintf(fd, temp);
 
-            if (debug_level & 1)
-                fprintf(stderr,"%s\n",temp);
-
-            // Create an XmString for each line and add it to the
-            // end of the list.
-            item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
-            XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
-            XmStringFree(item);
-        }
-        pclose (pp);
+    if (ret == 0 || ret == -1) {
+//        fprintf(stderr,"Couldn't send finger command to wxsvr\n");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "Couldn't send finger command to wxsvr");
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+        (void)fclose(fd);
+        (void)close(server_fd); // Close the socket
+        return;
     }
 
-#else   // HAVE_FINGER
+    // Close the duplicate port we used for writing
+    (void)fclose(fd);
 
-    xastir_snprintf(temp,
-        sizeof(temp),
-        "The path to the 'finger' command was not compiled into Xastir, sorry.");
-    item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
-    XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
-    XmStringFree(item);
+//
+// Read back the results from the socket
+//
 
-#endif  // HAVE_FINGER
+    // Create a file descriptor for the socket
+    fd = fdopen(dup(server_fd),"rb");
+    if (fd == NULL) {
+//        fprintf(stderr,"Couldn't create duplicate read socket\n");
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "Couldn't create duplicate read socket");
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+        (void)close(server_fd); // Close the socket
+        return;
+    }
 
+    // Process the data we received from the remote finger server
+    //
+    while (fgets (temp, sizeof (temp), fd)) {   // While we have data to process
+        char *ptr;
+
+        // Remove any linefeeds or carriage returns from each
+        // string.
+        ptr = temp;
+        while ( (ptr = strpbrk(temp, "\n\r")) )
+            memmove(ptr, ptr+1, strlen(ptr)+1);
+
+        if (debug_level & 1)
+            fprintf(stderr,"%s\n",temp);
+
+        // Create an XmString for each line and add it to the
+        // end of the list.
+        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+        XmStringFree(item);
+    }
+
+    // All done!
+    fclose(fd);
+    (void)close(server_fd); // Close the socket
 }
 
 
