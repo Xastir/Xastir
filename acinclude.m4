@@ -327,7 +327,7 @@ save_ldflags="$LDFLAGS"
 # First look for the needed Magick-config script, which tells us all
 # of the build options we need.
 #
-AC_CHECK_PROG(use_imagemagick, [Magick-config --version], yes, no) 
+AC_CHECK_PROG(use_imagemagick, [Magick-config], yes, no) 
 if test "$use_imagemagick" = "yes"; then
   MAGIC_BIN="Magick-config"
 else
@@ -408,7 +408,6 @@ fi
 
 
 
-# JMT - this is pure evil and will not be edited at the present time
 AC_DEFUN([XASTIR_CHECK_GRAPHICSMAGICK],
 [
 
@@ -422,6 +421,7 @@ save_ldflags="$LDFLAGS"
 # First look for the needed GraphicsMagick-config script, which tells us all
 # of the build options we need.
 #
+#use_graphicsmagick="no"
 AC_CHECK_PROG(use_graphicsmagick, [GraphicsMagick-config --version], yes, no) 
 if test "$use_graphicsmagick" = "yes"; then
   MAGIC_BIN="GraphicsMagick-config"
