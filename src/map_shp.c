@@ -941,7 +941,7 @@ void draw_shapefile_map (Widget w,
             /* find out which dbf fields we care to read */
             fld_info = dbfawk_field_list(hDBF, dbffields);
 
-        } else {                /* should never be reached anymore! */
+       } else {                /* should never be reached anymore! */
             fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
             //exit(1);  // Debug
             return;
@@ -1937,6 +1937,11 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             if (sig_info) {
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
+                // If we are a GPS file, we disable gps_flag because we've 
+                // found a matching dbfawk file.  dbfawk always trumps 
+                // hard-coded GPS directory behavior.
+                gps_flag = 0;
+
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
                     fprintf(stderr,"color=%d ",color);
