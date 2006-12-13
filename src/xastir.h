@@ -163,7 +163,7 @@ extern int index_maps_on_startup;
 #define FONT_DEFAULT FONT_MEDIUM
 extern char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
 
-#ifdef HAVE_IMAGEMAGICK  //N0VH
+#ifdef HAVE_MAGICK  //N0VH
 extern int tiger_show_grid;
 extern int tiger_show_counties;
 extern int tiger_show_cities;
@@ -178,7 +178,7 @@ extern int tiger_show_statehwy;
 extern int tiger_show_water;
 extern int tiger_show_lakes;
 extern int tiger_show_misc;
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 #ifdef HAVE_LIBGEOTIFF
 extern int DRG_XOR_colors;

@@ -71,7 +71,7 @@ static int DISPLAY_XASTIR_COORDINATES = 0;
 # endif // HAVE_SYS_TIME_H
 #endif  // TIME_WITH_SYS_TIME
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 #include <sys/types.h>
 #undef RETSIGTYPE
 /* JMT - stupid ImageMagick */
@@ -101,7 +101,7 @@ static int DISPLAY_XASTIR_COORDINATES = 0;
 #undef PACKAGE_VERSION
 #define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
 #undef XASTIR_PACKAGE_VERSION
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
 #ifdef  HAVE_LIBINTL_H
 #include <libintl.h>
@@ -428,9 +428,9 @@ static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
 Widget map_chooser_maps_selected_data = (Widget)NULL;
 int re_sort_maps = 1;
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 static void Config_tiger(Widget w, XtPointer clientData, XtPointer callData);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 #ifdef HAVE_LIBGEOTIFF
 static void Config_DRG(Widget w, XtPointer clientData, XtPointer callData);
@@ -477,10 +477,10 @@ int map_background_color;       /* Background color for maps */
 #if !defined(NO_GRAPHICS)
 Widget raster_intensity[11];
 static void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata);
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
 Widget gamma_adjust_dialog = (Widget)NULL;
 Widget gamma_adjust_text;
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 #endif  // NO_GRAPHICS
 
 Widget map_font_dialog = (Widget)NULL;
@@ -758,7 +758,7 @@ int festival_speak_ID;
 //#endif    // HAVE_FESTIVAL
 int ATV_screen_ID;
 
-#ifdef HAVE_IMAGEMAGICK //N0VH
+#ifdef HAVE_MAGICK //N0VH
 Widget configure_tiger_dialog = (Widget) NULL;
 Widget tiger_cities,
        tiger_grid,
@@ -789,7 +789,7 @@ int tiger_show_statehwy = TRUE;
 int tiger_show_water = TRUE;
 int tiger_show_lakes = TRUE;
 int tiger_show_misc = TRUE;
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 
 #ifdef HAVE_LIBGEOTIFF
@@ -4233,7 +4233,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-#if !defined(NO_GRAPHICS) && defined(HAVE_IMAGEMAGICK)
+#if !defined(NO_GRAPHICS) && defined(HAVE_MAGICK)
 void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -4396,7 +4396,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     } else
         (void)XRaiseWindow(XtDisplay(gamma_adjust_dialog), XtWindow(gamma_adjust_dialog));
 }
-#endif  // NO_GRAPHICS && HAVE_IMAGEMAGICK
+#endif  // NO_GRAPHICS && HAVE_MAGICK
 
 
 
@@ -5063,9 +5063,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         cad_show_comment_button,
 #if !defined(NO_GRAPHICS)
         Raster_intensity_Pane, raster_intensity_button,
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
         gamma_adjust_button, tiger_config_button,
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 #ifdef HAVE_LIBGEOTIFF
         drg_config_button,
 #endif  // HAVE_LIBGEOTIFF
@@ -6396,7 +6396,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(raster_intensity[8],  XmNactivateCallback,Raster_intensity,"0.8");
     XtAddCallback(raster_intensity[9],  XmNactivateCallback,Raster_intensity,"0.9");
     XtAddCallback(raster_intensity[10], XmNactivateCallback,Raster_intensity,"1.0");
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
             xmPushButtonWidgetClass, map_config_pane,
@@ -6405,7 +6405,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 #endif  // NO_GRAPHICS
 
     // map label font select
@@ -6516,7 +6516,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(map_icon_outline3,   XmNactivateCallback,Map_icon_outline,"3");
 
 
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
     tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),
             xmPushButtonGadgetClass,
             map_config_pane,
@@ -6525,7 +6525,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 #ifdef HAVE_LIBGEOTIFF
     drg_config_button= XtVaCreateManagedWidget(langcode("PULDNMP030"),
@@ -16506,7 +16506,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     //}
 #endif  // AVE_NETAX25_AXLIB_H
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
     xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
     xa = XmStringConcat(xb, xms);
     XmStringFree(xb);
@@ -16518,7 +16518,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmStringFree(xa);
     XmStringFree(xb);
     //xms is still defined
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
     xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
     xa = XmStringConcat(xb, xms);
     XmStringFree(xb);
@@ -19546,7 +19546,7 @@ void map_chooser_fill_in (void) {
 
 ///////////////////////////////////////  Configure Tigermaps Dialog //////////////////////////////////////////////
 //N0VH
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
 
 
 
@@ -20061,7 +20061,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     } else
         (void)XRaiseWindow(XtDisplay(configure_tiger_dialog), XtWindow(configure_tiger_dialog));
 }
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 ///////////////////////// End of Configure Tiger code ///////////////////////////////////
 
 
@@ -26060,11 +26060,15 @@ int main(int argc, char *argv[], char *envp[]) {
 #endif
 
 #ifdef HAVE_IMAGEMAGICK
-    #if (MagickLibVersion < 0x0538)
-        MagickIncarnate(*argv);
-    #else   // MagickLibVersion < 0x0538
-        InitializeMagick(*argv);
-    #endif  // MagickLibVersion < 0x0538
+  #if (MagickLibVersion < 0x0538)
+    MagickIncarnate(*argv);
+  #else   // MagickLibVersion < 0x0538
+    InitializeMagick(*argv);
+  #endif  // MagickLibVersion < 0x0538
+#else
+#ifdef HAVE_GRAPHICSMAGICK
+    InitializeMagick(*argv);
+#endif  //HAVE_GRAPHICSMAGICK
 #endif  // HAVE_IMAGEMAGICK
 
     /* check fhs directories ?*/

@@ -164,14 +164,21 @@ if test "$wget" != "no"; then
 fi
 
 if test "$use_lsb" = "yes"; then
-  AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
-  AC_DEFINE_UNQUOTED(CONVERT_PATH, "/opt/Xastir/bin/gm convert", [Path to convert]) 
+  AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have gm or convert]) 
+  AC_DEFINE_UNQUOTED(CONVERT_PATH, "/opt/Xastir/bin/gm convert", [Path to gm or convert]) 
 else
-  AC_PATH_PROG(convert, [convert --version], no, $BINPATH)
-  AC_CHECK_FILE(/usr/bin/convert.exe, convert="/usr/bin/convert")
-  if test "$convert" != "no"; then
-    AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
-    AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}", [Path to convert]) 
+  AC_PATH_PROG(gm, [gm version], no, $BINPATH)
+  AC_CHECK_FILE(/usr/bin/gm.exe, gm="/usr/bin/gm")
+  if test "$gm" != "no"; then
+    AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have gm or convert]) 
+    AC_DEFINE_UNQUOTED(CONVERT_PATH, "${gm} convert", [Path to gm or convert])
+  else 
+    AC_PATH_PROG(convert, [convert --version], no, $BINPATH)
+    AC_CHECK_FILE(/usr/bin/convert.exe, convert="/usr/bin/convert")
+    if test "$convert" != "no"; then
+      AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
+      AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}", [Path to convert]) 
+    fi
   fi
 fi
  
@@ -302,6 +309,10 @@ fi
 ]
 )
 
+
+
+
+
 # JMT - this is pure evil and will not be edited at the present time
 AC_DEFUN([XASTIR_CHECK_IMAGEMAGICK],
 [
@@ -392,6 +403,83 @@ fi
 # End of ImageMagick checks 
 
 ])
+
+
+
+
+
+# JMT - this is pure evil and will not be edited at the present time
+AC_DEFUN([XASTIR_CHECK_GRAPHICSMAGICK],
+[
+
+# Check for GraphicsMagick 
+# 
+save_cppflags="$CPPFLAGS" 
+save_cxxflags="$CXXFLAGS" 
+save_libs="$LIBS" 
+save_ldflags="$LDFLAGS" 
+#
+# First look for the needed GraphicsMagick-config script, which tells us all
+# of the build options we need.
+#
+AC_CHECK_PROG(use_graphicsmagick, [GraphicsMagick-config --version], yes, no) 
+if test "$use_graphicsmagick" = "yes"; then
+  MAGIC_BIN="GraphicsMagick-config"
+else
+  #
+  # Test for MacOSX/Fink directories under "/sw".
+  #
+  AC_CHECK_FILE(/sw/bin/GraphicsMagick-config, use_graphicsmagick="yes") 
+  if test "$use_graphicsmagick" = "yes"; then
+    MAGIC_BIN="/sw/bin/GraphicsMagick-config"
+  else
+    AC_MSG_WARN(*** Cannot find GraphicsMagick-config:  Building w/o GraphicsMagick support. ***) 
+  fi
+fi
+#
+if test "$use_graphicsmagick" = "yes"; then
+  #
+  # Figure out the build options using the GraphicsMagick-config script
+  #
+  CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`" 
+  CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`" 
+  LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`" 
+  LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS" 
+  # 
+  # For the case of apple-darwin, we don't want to check the
+  # headers/libraries 'cuz the standard macros won't find them anyway.
+  #
+  if test "$darwin" = "yes"; then
+    AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
+  else
+    AC_CHECK_HEADER(GraphicsMagick/magick/api.h, use_graphicsmagick="yes", use_graphicsmagick="no")
+    if test "$use_graphicsmagick" = "no"; then
+      AC_MSG_WARN(*** Cannot find GraphicsMagick include files: Building w/o GraphicsMagick support. ***)
+    else
+      AC_CHECK_LIB([GraphicsMagick], [WriteImage],
+AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library]), use_graphicsmagick="no")
+      if test "$use_graphicsmagick" = "no"; then
+        AC_MSG_WARN(*** Cannot find GraphicsMagick library files: Building w/o GraphicsMagick support. ***)
+      fi
+    fi
+  fi
+else
+  #
+  # No GraphicsMagick found.  Restore variables.
+  #
+  CPPFLAGS=$save_cppflags 
+  CXXFLAGS=$save_cxxflags 
+  LIBS=$save_libs 
+  LDFLAGS=$save_ldflags 
+fi 
+# 
+# End of GraphicsMagick checks 
+
+])
+
+
+
+
 
 # things grabbed elsewhere
 

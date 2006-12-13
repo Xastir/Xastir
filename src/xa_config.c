@@ -532,10 +532,10 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "MAP_DRAW_FILLED_COLORS", map_color_fill);
 
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
         sprintf (name, "%f", imagemagick_gamma_adjust);
         store_string(fout, "IMAGEMAGICK_GAMMA_ADJUST", name);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
         sprintf (name, "%f", raster_map_intensity);
         store_string(fout, "RASTER_MAP_INTENSITY", name);
 #endif  // NO_GRAPHICS
@@ -575,7 +575,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_string (fout, "MAPS_LABEL_FONT_BORDER", rotated_label_fontname[FONT_BORDER]);
         store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT]);
 //N0VH
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
         store_int (fout, "NET_MAP_TIMEOUT", net_map_timeout);
         store_int (fout, "TIGERMAP_SHOW_GRID", tiger_show_grid);
         store_int (fout, "TIGERMAP_SHOW_COUNTIES", tiger_show_counties);
@@ -591,7 +591,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "TIGERMAP_SHOW_WATER", tiger_show_water);
         store_int (fout, "TIGERMAP_SHOW_LAKES", tiger_show_lakes);
         store_int (fout, "TIGERMAP_SHOW_MISC", tiger_show_misc);
-#endif //HAVE_IMAGEMAGICK
+#endif //HAVE_MAGICK
 
 #ifdef HAVE_LIBGEOTIFF
         store_int (fout, "DRG_XOR_COLORS", DRG_XOR_colors);
@@ -1170,7 +1170,7 @@ void load_data_or_default(void) {
     map_color_fill = get_int ( "MAP_DRAW_FILLED_COLORS", 0, 1, 1);
 
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
     if (!get_string("IMAGEMAGICK_GAMMA_ADJUST", name, sizeof(name))
             || name[0] == '\0') {
         imagemagick_gamma_adjust = 0.0;
@@ -1180,7 +1180,7 @@ void load_data_or_default(void) {
             fprintf(stderr,"load_data_or_default:sscanf parsing error\n");
         }
     }
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
     if (!get_string("RASTER_MAP_INTENSITY", name, sizeof(name))
             || name[0] == '\0') {
         raster_map_intensity = 1.0;
@@ -1376,7 +1376,7 @@ void load_data_or_default(void) {
     }
 
 //N0VH
-#if defined(HAVE_IMAGEMAGICK)
+#if defined(HAVE_MAGICK)
     net_map_timeout = get_int ("NET_MAP_TIMEOUT", 10, 300, 120);
 
     tiger_show_grid = get_int ("TIGERMAP_SHOW_GRID", 0, 1, 0);
@@ -1393,7 +1393,7 @@ void load_data_or_default(void) {
     tiger_show_water = get_int ("TIGERMAP_SHOW_WATER", 0, 1, 1);
     tiger_show_lakes = get_int ("TIGERMAP_SHOW_LAKES", 0, 1, 1);
     tiger_show_misc = get_int ("TIGERMAP_SHOW_MISC", 0, 1, 1);
-#endif //HAVE_IMAGEMAGICK
+#endif //HAVE_MAGICK
 
 #ifdef HAVE_LIBGEOTIFF
     DRG_XOR_colors = get_int ("DRG_XOR_COLORS", 0, 1, 0);

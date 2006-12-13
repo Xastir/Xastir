@@ -46,7 +46,7 @@
 #include <strings.h>
 #endif  // HAVE_STRINGS_H
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -69,7 +69,11 @@
 #undef PACKAGE_TARNAME
 #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 #undef PACKAGE_VERSION
+#ifdef HAVE_GRAPHICSMAGICK
+#include <GraphicsMagick/magick/api.h>
+#else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
+#endif  // HAVE_GRAPHICSMAGICK 
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
 #undef XASTIR_PACKAGE_BUGREPORT
@@ -85,7 +89,7 @@
 #undef PACKAGE_VERSION
 #define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
 #undef XASTIR_PACKAGE_VERSION
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
 #include <dirent.h>
 #include <netinet/in.h>
@@ -130,9 +134,9 @@
 // Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"
 // to disable some routines below if the support for them
 // is not compiled in.
-#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM) || defined(HAVE_IMAGEMAGICK))
+#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM) || defined(HAVE_MAGICK))
   #define NO_GRAPHICS 1
-#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_IMAGEMAGICK)
+#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_MAGICK)
 
 #if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
   #define NO_XPM 1
@@ -376,9 +380,9 @@ void maps_init(void)
 
     fprintf(stderr,"\nSupport for these additional map types has been compiled in: \n");
  
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
     fprintf(stderr,"%10s   Image Map (ImageMagick/GraphicsMagick library, many formats allowed)\n","geo");
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 #ifndef NO_GRAPHICS
 #ifdef HAVE_LIBCURL

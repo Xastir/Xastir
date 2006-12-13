@@ -81,16 +81,16 @@
 // Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"
 // to disable some routines below if the support for them
 // is not compiled in.
-#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM) || defined(HAVE_IMAGEMAGICK))
+#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM) || defined(HAVE_MAGICK))
   #define NO_GRAPHICS 1
-#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_IMAGEMAGICK)
+#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_MAGICK)
 
 #if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
   #define NO_XPM 1
 #endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
 
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -113,7 +113,11 @@
 #undef PACKAGE_TARNAME
 #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 #undef PACKAGE_VERSION
+#ifdef HAVE_GRAPHICSMAGICK
+#include <GraphicsMagick/magick/api.h>
+#else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
+#endif  // HAVE_GRAPHICSMAGICK
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
 #undef XASTIR_PACKAGE_BUGREPORT
@@ -129,7 +133,7 @@
 #undef PACKAGE_VERSION
 #define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
 #undef XASTIR_PACKAGE_VERSION
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
 // Must be last include file
 #include "leak_detection.h"
@@ -210,7 +214,7 @@ void draw_toporama_map (Widget w,
         map_draw_flags *mdf,
         int toporama_flag) {    // 50 or 250
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 
     char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
     char map_it[MAX_FILENAME];
@@ -418,7 +422,7 @@ void draw_toporama_map (Widget w,
         destination_pixmap,
         mdf);
 
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 }
  
 
@@ -455,7 +459,7 @@ void draw_geo_image_map (Widget w,
     int width,height;
 #ifndef NO_XPM
     XpmAttributes atb;              // Map attributes after map's read into an XImage
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -500,7 +504,7 @@ void draw_geo_image_map (Widget w,
     double scale_x_nm;              // nm per Xastir coordinate unit
     long scale_x0;                  // at widest map area
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
     char local_filename[MAX_FILENAME];
     ExceptionInfo exception;
     Image *image;
@@ -533,9 +537,9 @@ void draw_geo_image_map (Widget w,
     int z, url_n=0, url_e=0, t_zoom=16, t_scale=12800;
     char zstr0[8];
     char zstr1[8];
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
     XImage *xi;                 // Temp XImage used for reading in current image
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
     int terraserver_flag = 0;   // U.S. satellite images/topo/reflectivity/urban
                                 // areas via terraserver
@@ -563,11 +567,11 @@ void draw_geo_image_map (Widget w,
     time_mark(1);
 #endif  // TIMING_DEBUG
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
   #ifdef USE_MAP_CACHE 
     int map_cache_return;
   #endif  // USE_MAP_CACHE
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
@@ -665,10 +669,10 @@ void draw_geo_image_map (Widget w,
             if (strncasecmp (line, "TERRASERVER-TOPO", 16) == 0) {
                 // Set to max brightness as it looks weird when the
                 // intensity variable comes into play.
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 // This one causes problems now.  Not sure why.
 //                xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
                 terraserver_flag = 2;
             }
 
@@ -732,26 +736,26 @@ void draw_geo_image_map (Widget w,
                     // Apparently, if QuantumDepth is 16 bits, r, g, and b
                     // values are duplicated in the high and low byte, which
                     // is just bizarre
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
                     if (QuantumDepth == 16) {
                         r=r|(r<<8);
                         g=g|(g<<8);
                         b=b|(b<<8);
                     }
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
                     //fprintf(stderr,"Original Transparent %lx\n",trans_color);
                     //fprintf(stderr,"Transparent r,g,b=%x,%x,%x\n",r,g,b);
                     if (visual_type == NOT_TRUE_NOR_DIRECT) {
                         XColor junk;
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
                         if (QuantumDepth == 16) {
                             junk.red=r;
                             junk.green=g;
                             junk.blue=b;
                         }
                         else
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
                         {
                             junk.red= r<<8;
                             junk.green = g<<8;
@@ -786,7 +790,7 @@ void draw_geo_image_map (Widget w,
                     {do_crop = crop_y1; crop_y1=crop_y2; crop_y2=do_crop;}
                 do_crop = 1;
             }   
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
             if (strncasecmp(line, "GAMMA", 5) == 0)
                 imagemagick_options.gamma_flag = sscanf(line + 6, "%f,%f,%f",
                                                         &imagemagick_options.r_gamma,
@@ -820,7 +824,7 @@ void draw_geo_image_map (Widget w,
                     "%s",
                     line+9); 
             }
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
         }
         (void)fclose (f);
     }
@@ -835,7 +839,7 @@ void draw_geo_image_map (Widget w,
     //
     if (tigerserver_flag) {
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 
         // We need to send the "nocache" parameter to this function
         // for those instances when the tigermap received is bad.
@@ -844,7 +848,7 @@ void draw_geo_image_map (Widget w,
         //
         draw_tiger_map(w, filenm, destination_pixmap, nocache);
 
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
         return;
     }
@@ -855,7 +859,7 @@ void draw_geo_image_map (Widget w,
     //
     if (WMSserver_flag) {
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
         // Pass the URL in "fileimg"
         draw_WMS_map(w,
             filenm,
@@ -865,7 +869,7 @@ void draw_geo_image_map (Widget w,
             trans_color,
             nocache); // Don't use cached version if non-zero
 
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
         return;
     }
@@ -873,7 +877,7 @@ void draw_geo_image_map (Widget w,
 
     if (toporama_flag) {
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
         // Pass all of the parameters to it.  We'll need to use them
         // to call draw_geo_image_map() again shortly, after we
         // fetch the remote .geo file.
@@ -886,7 +890,7 @@ void draw_geo_image_map (Widget w,
             destination_pixmap,
             mdf,
             toporama_flag);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
         return;
     }
@@ -922,7 +926,7 @@ void draw_geo_image_map (Widget w,
     else
         map_proj = 0;           // Lat/Lon, default
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
     if (terraserver_flag) {
 //http://terraservice.net/download.ashx?t=1&s=10&x=2742&y=26372&z=10&w=820&h=480
         if (scale_y <= 4) {
@@ -1100,7 +1104,7 @@ void draw_geo_image_map (Widget w,
             fprintf(stderr,"URL: %s\n", fileimg);
         }
     }
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
     //
     // DK7IN: we should check what we got from the geo file
@@ -1182,7 +1186,7 @@ void draw_geo_image_map (Widget w,
             // what to do for remote files... hmm... -cbell
         } else {
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
             GetExceptionInfo(&exception);
             image_info=CloneImageInfo((ImageInfo *) NULL);
             xastir_snprintf(image_info->filename,
@@ -1245,7 +1249,7 @@ fprintf(stderr,"1 ");
                 DestroyImage(image);
             if (image_info)
                 DestroyImageInfo(image_info);
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
         }
     }
 
@@ -1396,7 +1400,7 @@ fprintf(stderr,"1 ");
     if ( (strncasecmp ("http", fileimg, 4) == 0)
             || (strncasecmp ("ftp", fileimg, 3) == 0)
             || (terraserver_flag) ) {
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
         char *ext;
 
         if (debug_level & 16)
@@ -1501,7 +1505,7 @@ fprintf(stderr,"1 ");
         //name of the map file now instead of the .geo file.
         // Tell ImageMagick where to find it
         xastir_snprintf(file, sizeof(file), "%s", local_filename);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
     } else {
         //fprintf(stderr,"Not ftp or http file\n");
@@ -1532,7 +1536,7 @@ fprintf(stderr,"1 ");
 // The status line is not updated yet, probably 'cuz we're too busy
 // getting the map in this thread and aren't redrawing?
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
     GetExceptionInfo(&exception);
     image_info=CloneImageInfo((ImageInfo *) NULL);
     xastir_snprintf(image_info->filename,
@@ -2141,7 +2145,7 @@ fprintf(stderr,"2 ");
             fprintf(stderr,"Class Type = sRGBColorspace\n");
     }
 
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
 
     // We don't have ImageMagick libs compiled in, so use the
     // XPM library instead.
@@ -2218,7 +2222,7 @@ fprintf(stderr,"2 ");
     width  = atb.width;
     height = atb.height;
 
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
     // draw the image from the file out to the map screen
 
@@ -2301,15 +2305,15 @@ fprintf(stderr,"2 ");
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
         if (image)
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
         if (xi)
             XDestroyImage (xi);
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
         // Update to screen
         (void)XCopyArea(XtDisplay(da),
             pixmap,
@@ -2332,15 +2336,15 @@ fprintf(stderr,"2 ");
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
             if (image)
                 DestroyImage(image);
             if (image_info)
                 DestroyImageInfo(image_info);
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
             if (xi)
                 XDestroyImage (xi);
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
             // Update to screen
             (void)XCopyArea(XtDisplay(da),
                 pixmap,
@@ -2420,7 +2424,7 @@ fprintf(stderr,"2 ");
 //            }
 
                         // now copy a pixel from the map image to the screen
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
                         l = map_x + map_y * image->columns;
                         trans_skip = 1; // possibly transparent
                         if (image->storage_class == PseudoClass) {
@@ -2446,17 +2450,17 @@ fprintf(stderr,"2 ");
                                 trans_skip = 0; // draw it
                             }
                         }
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
                         (void)XSetForeground (XtDisplay (w), gc, XGetPixel (xi, map_x, map_y));
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
 
                         // Skip drawing if a transparent pixel
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
                         if ( pixel_pack[l].opacity == 0 && !trans_skip  ) // skip transparent
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
                         if (!trans_skip)    // skip transparent
-#endif  // HAVE_IMAGEMAGICK
+#endif  // HAVE_MAGICK
 
                             (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
                     } // check map boundaries in y direction
@@ -2467,15 +2471,15 @@ fprintf(stderr,"2 ");
         }
     } // loop over map pixel rows
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
     if (image)
         DestroyImage(image);
     if (image_info)
         DestroyImageInfo(image_info);
-#else   // HAVE_IMAGEMAGICK
+#else   // HAVE_MAGICK
     if (xi)
         XDestroyImage (xi);
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
 #ifdef TIMING_DEBUG
     time_mark(0);

@@ -62,7 +62,7 @@
 # endif // HAVE_SYS_TIME_H
 #endif  // TIME_WITH_SYS_TIME
 
-//#ifdef HAVE_IMAGEMAGICK
+//#ifdef HAVE_MAGICK
 //#include <sys/types.h>
 //#undef RETSIGTYPE
 ///* JMT - stupid ImageMagick */
@@ -76,7 +76,11 @@
 //#undef PACKAGE_TARNAME
 //#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 //#undef PACKAGE_VERSION
+//#ifdef HAVE_GRAPHICSMAGICK
+//#include <GraphicsMagick/magick/api.h>
+//#else   // HAVE_GRAPHICSMAGICK
 //#include <magick/api.h>
+//#endif  // HAVE_GRAPHICSMAGICK 
 //#undef PACKAGE_BUGREPORT
 //#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
 //#undef XASTIR_PACKAGE_BUGREPORT
@@ -92,7 +96,7 @@
 //#undef PACKAGE_VERSION
 //#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
 //#undef XASTIR_PACKAGE_VERSION
-//#endif // HAVE_IMAGEMAGICK
+//#endif // HAVE_MAGICK
 
 //#ifdef  HAVE_LIBINTL_H
 //#include <libintl.h>

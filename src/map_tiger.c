@@ -77,7 +77,7 @@
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -100,7 +100,11 @@
 #undef PACKAGE_TARNAME
 #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 #undef PACKAGE_VERSION
+#ifdef HAVE_GRAPHICSMAGICK
+#include <GraphicsMagick/magick/api.h>
+#else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
+#endif  // HAVE_GRAPHICSMAGICK 
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
 #undef XASTIR_PACKAGE_BUGREPORT
@@ -116,7 +120,7 @@
 #undef PACKAGE_VERSION
 #define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
 #undef XASTIR_PACKAGE_VERSION
-#endif // HAVE_IMAGEMAGICK
+#endif // HAVE_MAGICK
 
 // Must be last include file
 #include "leak_detection.h"
@@ -131,7 +135,7 @@ extern int mag;
 
 
 void get_tiger_local_file(char * local_filename, char * fileimg){
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 
 //  char local_filename[MAX_FILENAME];
 
@@ -230,7 +234,7 @@ clear_dangerous();
     // Set permissions on the file so that any user can overwrite it.
     chmod(local_filename, 0666);
 
-#endif  //HAVE_IMAGEMAGICK
+#endif  //HAVE_MAGICK
 
 } // end get_tiger_local_file
 
@@ -242,7 +246,7 @@ clear_dangerous();
  * draw_tiger_map()
  * N0VH
  **********************************************************/
-#ifdef HAVE_IMAGEMAGICK
+#ifdef HAVE_MAGICK
 void draw_tiger_map (Widget w,
         char *filenm,
         int destination_pixmap,
@@ -918,5 +922,5 @@ void draw_tiger_map (Widget w,
     if (image_info)
        DestroyImageInfo(image_info);
 }
-#endif //HAVE_IMAGEMAGICK
+#endif //HAVE_MAGICK
 ///////////////////////////////////////////// End of Tigermap code ///////////////////////////////////////

@@ -195,9 +195,9 @@ extern int snapshot_interval;
 extern int grid_size;
 
 #if !defined(NO_GRAPHICS)
-  #if defined(HAVE_IMAGEMAGICK)
+  #if defined(HAVE_MAGICK)
     extern float imagemagick_gamma_adjust;
-  #endif    // HAVE_IMAGEMAGICK
+  #endif    // HAVE_MAGICK
 #endif  // NO_GRAPHICS
 
 extern float raster_map_intensity;

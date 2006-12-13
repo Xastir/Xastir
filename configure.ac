@@ -461,22 +461,36 @@ fi
 
 
 
-# Check for ImageMagick.  This check is VERY important to have as
-# the last check, as it messes up the previous checks if it fails.
-use_imagemagick=yes
-AC_ARG_WITH(imagemagick,[  --without-imagemagick   Disable imagemagick features.],use_imagemagick=$withval)
-if test "${use_imagemagick}" = "yes"; then
+# Check for GraphicsMagick.  If not available/desired then check for
+# ImageMagick.  These checks are VERY important to have as the last,
+# as they mess up previous checks if they fail.
+#
+use_graphicsmagick=yes
+use_imagemagick=no
+AC_ARG_WITH(graphicsmagick,[  --without-graphicsmagick   Disable graphicsmagick features.],use_graphicsmagick=$withval)
+if test "${use_graphicsmagick}" = "yes"; then
   if test "${use_lsb}" = "no"; then
-    XASTIR_CHECK_IMAGEMAGICK
+    XASTIR_CHECK_GRAPHICSMAGICK
   else
     MAGIC_BIN="/opt/lsb-tmp/bin/GraphicsMagick-config"
     CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`"
     CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`"
     LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`"
     LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS"
-    AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
+    AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
+  fi
+else
+  use_imagemagick=yes
+  AC_ARG_WITH(imagemagick,[  --without-imagemagick   Disable imagemagick features.],use_imagemagick=$withval)
+  if test "${use_imagemagick}" = "yes"; then
+    XASTIR_CHECK_IMAGEMAGICK
   fi
 fi
+if test "${use_imagemagick}" = "yes" -o "${use_graphicsmagick}" = "yes"; then
+  AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library])
+fi
+
+
 
 
 
@@ -581,14 +595,14 @@ if test "${use_gpsman}" = "yes"; then
 else
   ILIBS="$ILIBS       "
 fi
-if test "${use_imagemagick}" = "yes"; then
-  if test "${use_lsb}" = "yes"; then 
+if test "${use_graphicsmagick}" = "yes"; then
     ILIBS="$ILIBS GraphicsMagick"
-  else
-    ILIBS="$ILIBS ImageMagick"
-  fi 
 else
-  ILIBS="$ILIBS            "
+  if test "${use_imagemagick}" = "yes"; then
+    ILIBS="$ILIBS ImageMagick   "
+  else
+    ILIBS="$ILIBS               "
+  fi 
 fi
 if test "${use_proj}" = "yes"; then
   ILIBS="$ILIBS libProj"
@@ -757,10 +771,15 @@ echo "Building with AX25 ................................. : $use_ax25"
 echo "Building with Festival ............................. : $use_festival"
 echo "Building with GPSMan ............................... : $use_gpsman"
 
-if test "${use_lsb}" = "yes"; then 
-echo "Building with GraphicsMagick ....................... : $use_imagemagick"
+echo -n "Building with GraphicsMagick/ImageMagick ........... : "
+if test "${use_graphicsmagick}" = "yes"; then 
+  echo "GraphicsMagick"
 else
-echo "Building with ImageMagick .......................... : $use_imagemagick"
+  if test "${use_imagemagick}" = "yes"; then
+    echo "ImageMagick"
+  else
+    echo "no"
+  fi
 fi
 
 echo "Building with libproj .............................. : $use_proj"
