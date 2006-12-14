@@ -3,6 +3,11 @@
 # $Id$
 # Copyright (C) 2006  The Xastir Group
 
+# TODO:
+# Check for a link at /opt/Xastir/share/xastir.  If found, remove it
+# until we're done creating the .tar.bz2 file.  Perhaps do an rm -rf
+# there and symlink it to /usr/local/share/xastir when done.
+
 # NOTE:
 # "Free Standards Group, FSG, Linux Standard Base, LSB, Free
 # Standards Certified, LSB Certified and the Free Standards
