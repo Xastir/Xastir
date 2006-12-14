@@ -3821,9 +3821,7 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
     FILE *f;
     FILE *f_temp;
     char line[300];
-#ifdef HAVE_CP
-    char command[300];
-#endif  // HAVE_CP
+    int ret;
 
 
     // Loop through all station records and clear out the
@@ -3833,32 +3831,21 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
     // Get rid of the tactical callsign hash here
     destroy_tactical_hash();
 
-    // Comment out all active lines in the log file via a '#' mark.
     ptr = get_user_base_dir("config/tactical_calls.log");
     xastir_snprintf(file,sizeof(file),"%s",ptr);
 
     ptr = get_user_base_dir("config/tactical_calls-temp.log");
     xastir_snprintf(file_temp,sizeof(file_temp),"%s",ptr);
 
-#ifdef HAVE_CP
-    // Copy to a temp file
-    xastir_snprintf(command,
-        sizeof(command),
-        "%s -f %s %s",
-        CP_PATH,
-        file,
-        file_temp);
-
-    if ( debug_level & 512 )
-        fprintf(stderr,"%s\n", command );
-
-    if ( system( command ) != 0 ) {
+    // Our own internal function from util.c
+    ret = copy_file(file, file_temp);
+    if (ret) {
         fprintf(stderr,"\n\nCouldn't create temp file %s!\n\n\n",
             file_temp);
         return;
     }
-#endif  // HAVE_CP
 
+    // Comment out all active lines in the log file via a '#' mark.
     // Read one line at a time from the temp file.  Add a '#'
     // mark to the line if it doesn't already have it, then write
     // that line to the original file.
