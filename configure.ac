@@ -122,18 +122,13 @@ else
   AC_DEFINE(HAVE_LIBCURL, , Define to 1 if your `shp' library has DBFGetFieldIndex. )
   LIBS="${LIBS} -lcurl"
 fi
-#
-# If no libcurl found, test for wget binary.  This test doesn't work
-# yet and the wget code below always gets run.  Eventually I'd like
-# to make this work so we don't do unnecessary tests, plus we don't
-# define things we don't use in "config.h".
-#
-if test "x${HAVE_LIBCURL}" = "x" -a "${use_lsb}" = "no"; then
-  AC_PATH_PROG(wget, [wget --version], no, $BINPATH)
-  if test "$wget" != "no"; then
-    AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
-    AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}", [Path to wget]) 
-  fi
+
+
+
+AC_PATH_PROG(wget, [wget --version], no, $BINPATH)
+if test "$wget" != "no"; then
+  AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
+  AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}", [Path to wget]) 
 fi
 
 
@@ -805,11 +800,11 @@ echo "Building with ShapeLib ............................. : $use_shapelib"
 echo "Building with pcre ................................. : $use_pcre"
 echo "Building with dbfawk ............................... : $use_dbfawk"
 echo "Building with map caching .......................... : $use_map_cache"
+echo "Building with rtree indexing ....................... : $use_rtree"
 echo "----------------------------------------------------------"
 echo "Building with ErrorPopups (Old Method) ............. : $use_err_popups"
 echo "Building with libgc (Debug) ........................ : $use_libgc"
 echo "Building with profiling (Debug) .................... : $use_profiling"
-echo "Building with rtree indexing (Experimental) ........ : $use_rtree"
 echo "Building with Linux Standard Base .................. : $use_lsb"
 #echo Building with Davis/MySQL.......... : $davis
 echo 
