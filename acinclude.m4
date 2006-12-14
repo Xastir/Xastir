@@ -275,7 +275,8 @@ AC_DEFUN([XASTIR_CHECK_GDAL],
 use_gdal=no
 #
 # Important: DO NOT use "use_gdal" as the variable here, because AC_CHECK_PROG
-# will do nothing if the variable is already set!  
+# will do nothing if the variable is already set!
+#
 AC_CHECK_PROG(found_gdal_config, [gdal-config], yes, no)
 if test "${found_gdal_config}" = "yes"; then
    save_cppflags="$CPPFLAGS" 
@@ -327,22 +328,31 @@ save_ldflags="$LDFLAGS"
 # First look for the needed Magick-config script, which tells us all
 # of the build options we need.
 #
-AC_CHECK_PROG(use_imagemagick, [Magick-config], yes, no) 
-if test "$use_imagemagick" = "yes"; then
+# Important: DO NOT use "use_imagemagick" as the variable here,
+# because AC_CHECK_PROG will do nothing if the variable is already set!
+#
+use_imagemagick=no
+AC_CHECK_PROG(found_im_config, [Magick-config], yes, no) 
+if test "${found_im_config}" = "yes"; then
+  use_imagemagick=yes
   MAGIC_BIN="Magick-config"
 else
   #
   # Test for MacOSX/Fink directories under "/sw".
   #
-  AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
-  if test "$use_imagemagick" = "yes"; then
+  # Important: DO NOT use "use_imagemagick" as the variable here,
+  # because AC_CHECK_PROG will do nothing if the variable is already set!
+  #
+  AC_CHECK_PROG(found_im_config2, [Magick-config], yes, no, "/sw/bin")
+  if test "${found_im_config2}" = "yes"; then
+    use_imagemagick=yes
     MAGIC_BIN="/sw/bin/Magick-config"
   else
     AC_MSG_WARN(*** Cannot find Magick-config:  Building w/o ImageMagick support. ***) 
   fi
 fi
 #
-if test "$use_imagemagick" = "yes"; then
+if test "${use_imagemagick}" = "yes"; then
   #
   # Compute the ImageMagick revision number
   #
@@ -368,21 +378,21 @@ if test "$use_imagemagick" = "yes"; then
   # For the case of apple-darwin, we don't want to check the
   # headers/libraries 'cuz the standard macros won't find them anyway.
   #
-  if test "$darwin" = "yes"; then
+  if test "${darwin}" = "yes"; then
     AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
   else
     AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
-    if test "$use_imagemagick" = "no"; then
+    if test "${use_imagemagick}" = "no"; then
       AC_MSG_WARN(*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***)
     else
       AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
-      if test "$use_imagemagick" = "no"; then
+      if test "${use_imagemagick}" = "no"; then
         AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
       fi
     fi
   fi
-  #
-#  if test "$magickold" = "yes"; then 
+#
+#  if test "${magickold}" = "yes"; then 
 # This used to be important, as some versions didn't support the
 # Tigermap intensity slider.
 #    AC_MSG_WARN(*********************************************************)
@@ -421,23 +431,31 @@ save_ldflags="$LDFLAGS"
 # First look for the needed GraphicsMagick-config script, which tells us all
 # of the build options we need.
 #
-#use_graphicsmagick="no"
-AC_CHECK_PROG(use_graphicsmagick, [GraphicsMagick-config --version], yes, no) 
-if test "$use_graphicsmagick" = "yes"; then
+# Important: DO NOT use "use_graphicsmagick" as the variable here,
+# because AC_CHECK_PROG will do nothing if the variable is already set!
+#
+use_graphicsmagick=no
+AC_CHECK_PROG(found_gm_config, [GraphicsMagick-config], yes, no )
+if test "${found_gm_config}" = "yes"; then
+  use_graphicsmagick=yes
   MAGIC_BIN="GraphicsMagick-config"
 else
   #
   # Test for MacOSX/Fink directories under "/sw".
   #
-  AC_CHECK_FILE(/sw/bin/GraphicsMagick-config, use_graphicsmagick="yes") 
-  if test "$use_graphicsmagick" = "yes"; then
+  # Important: DO NOT use "use_graphicsmagick" as the variable here,
+  # because AC_CHECK_PROG will do nothing if the variable is already set!
+  #
+  AC_CHECK_PROG(found_gm_config2, [GraphicsMagick-config], yes, no, "/sw/bin")
+  if test "${found_gm_config2}" = "yes"; then
+    use_graphicsmagick=yes
     MAGIC_BIN="/sw/bin/GraphicsMagick-config"
   else
     AC_MSG_WARN(*** Cannot find GraphicsMagick-config:  Building w/o GraphicsMagick support. ***) 
   fi
 fi
 #
-if test "$use_graphicsmagick" = "yes"; then
+if test "${use_graphicsmagick}" = "yes"; then
   #
   # Figure out the build options using the GraphicsMagick-config script
   #
@@ -449,16 +467,16 @@ if test "$use_graphicsmagick" = "yes"; then
   # For the case of apple-darwin, we don't want to check the
   # headers/libraries 'cuz the standard macros won't find them anyway.
   #
-  if test "$darwin" = "yes"; then
+  if test "${darwin}" = "yes"; then
     AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
   else
     AC_CHECK_HEADER(GraphicsMagick/magick/api.h, use_graphicsmagick="yes", use_graphicsmagick="no")
-    if test "$use_graphicsmagick" = "no"; then
+    if test "${use_graphicsmagick}" = "no"; then
       AC_MSG_WARN(*** Cannot find GraphicsMagick include files: Building w/o GraphicsMagick support. ***)
     else
       AC_CHECK_LIB([GraphicsMagick], [WriteImage],
 AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library]), use_graphicsmagick="no")
-      if test "$use_graphicsmagick" = "no"; then
+      if test "${use_graphicsmagick}" = "no"; then
         AC_MSG_WARN(*** Cannot find GraphicsMagick library files: Building w/o GraphicsMagick support. ***)
       fi
     fi
