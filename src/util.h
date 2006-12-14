@@ -115,6 +115,7 @@ extern void compute_current_DR_position(DataRow *p_station, long *x_long, long *
 
 extern int  filethere(char *fn);
 extern int  filecreate(char *fn);
+extern int copy_file(char *infilename, char *outfilename);
 extern time_t file_time(char *fn);
 extern void load_wx_alerts_from_log(void);
 extern void log_data(char *file, char *line);

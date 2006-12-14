@@ -3449,6 +3449,49 @@ time_t file_time(char *fn) {
 }
 
 
+
+
+
+// Function written by Adam Hahn, AI4QB.  Contributed to the public
+// domain.  We've modified it from his initial code so any bugs are
+// our fault.
+int copy_file(char *infilename, char *outfilename) {
+    FILE *infile, *outfile;
+    char *buffer;
+    size_t numread = 0;
+
+
+    if ((infile = fopen(infilename,"rb")) > (FILE *)0) {
+
+        if ((outfile = fopen(outfilename,"wb")) > (FILE *)0) {
+            buffer = (char *)malloc(1024);
+
+            while (!feof(infile)) {
+                numread = fread(buffer, 1, 1024, infile);
+                fwrite(buffer, 1, numread, outfile);
+            }
+            free(buffer);
+            fflush(outfile);
+            fclose(outfile);
+        }
+        else {
+            fprintf(stderr,"Error opening destination file %s for writing", outfilename);
+            fclose(infile);
+            return(1);
+        }
+        fclose(infile);
+    }
+    else {
+        fprintf(stderr,"Error opening source file %s for reading", infilename);
+        return(1);
+    }
+    return 0;
+}
+
+
+
+
+
 // used by log_data 
 void rotate_file(char *file, int max_keep ){
     int i; 
