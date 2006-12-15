@@ -488,6 +488,10 @@ if test "${use_graphicsmagick}" = "yes"; then
     AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
   fi
 fi
+#
+# Note: This must be a separate "if" as the use_graphicsmagick
+# variable gets set to "no" if GM is not available above.
+#
 if test "${use_graphicsmagick}" = "no"; then
   use_imagemagick=yes
   AC_ARG_WITH(imagemagick,[  --without-imagemagick   Disable imagemagick features.],use_imagemagick=$withval)
@@ -495,6 +499,9 @@ if test "${use_graphicsmagick}" = "no"; then
     XASTIR_CHECK_IMAGEMAGICK
   fi
 fi
+#
+#
+#
 if test "${use_imagemagick}" = "yes" -o "${use_graphicsmagick}" = "yes"; then
   AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library])
 else
