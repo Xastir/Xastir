@@ -26046,17 +26046,19 @@ int main(int argc, char *argv[], char *envp[]) {
     curl_global_init(CURL_GLOBAL_ALL);
 #endif
 
-#ifdef HAVE_IMAGEMAGICK
-  #if (MagickLibVersion < 0x0538)
-    MagickIncarnate(*argv);
-  #else   // MagickLibVersion < 0x0538
-    InitializeMagick(*argv);
-  #endif  // MagickLibVersion < 0x0538
-#else
+
 #ifdef HAVE_GRAPHICSMAGICK
     InitializeMagick(*argv);
+#else   // HAVE_GRAPHICSMAGICK
+    #ifdef HAVE_IMAGEMAGICK
+        #if (MagickLibVersion < 0x0538)
+            MagickIncarnate(*argv);
+        #else   // MagickLibVersion < 0x0538
+            InitializeMagick(*argv);
+        #endif  // MagickLibVersion < 0x0538
+    #endif  // HAVE_IMAGEMAGICK
 #endif  //HAVE_GRAPHICSMAGICK
-#endif  // HAVE_IMAGEMAGICK
+
 
     /* check fhs directories ?*/
 
