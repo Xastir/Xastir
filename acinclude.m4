@@ -458,8 +458,7 @@ if test "${use_graphicsmagick}" = "yes"; then
     if test "${use_graphicsmagick}" = "no"; then
       AC_MSG_WARN(*** Cannot find GraphicsMagick include files: Building w/o GraphicsMagick support. ***)
     else
-      AC_CHECK_LIB([GraphicsMagick], [WriteImage],
-AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library]), use_graphicsmagick="no")
+      AC_CHECK_LIB([GraphicsMagick], [WriteImage], AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library]), use_graphicsmagick="no")
       if test "${use_graphicsmagick}" = "no"; then
         AC_MSG_WARN(*** Cannot find GraphicsMagick library files: Building w/o GraphicsMagick support. ***)
       fi
