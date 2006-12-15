@@ -174,7 +174,7 @@ int RTreeSearchCallback(int id, void* arg)
  *******************************************************************/
 void create_shapefile_map(char *dir, char *shapefile_name, int type,
         int quantity, double *padfx, double *padfy, double *padfz,
-        int add_timestamp) {
+        int add_timestamp, char * shape_label) {
 
     SHPHandle my_shp_handle;
     SHPObject *my_object;
@@ -256,6 +256,9 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
     // Add a date/time field and set the length.  Field 1.
     DBFAddField(my_dbf_handle, "DateTime", FTString, strlen(timedatestring) + 1, 0);
 
+    // Add a label field
+    DBFAddField(my_dbf_handle, "Label", FTString, strlen(shape_label) + 1, 0);
+
     // Note that if were passed additional parameters that went
     // along with the lat/long/altitude points, we could write those
     // into the DBF file in the loop below.  We would have to change
@@ -295,6 +298,12 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
             index,
             1,
             timedatestring);
+
+        // Write the label string
+        DBFWriteStringAttribute( my_dbf_handle,
+            index,
+            2,
+            shape_label);
     }
 
     // Close the .shp/.shx/.dbf files
@@ -413,7 +422,8 @@ void create_map_from_trail(char *call_sign) {
             x,
             y,
             z,
-            1); // Add a timestamp to the front of the filename
+            1, // Add a timestamp to the front of the filename
+            call_sign); 
 
         // Free the storage that we malloc'ed
         free(x);

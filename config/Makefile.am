@@ -16,6 +16,7 @@ EXTRA_DIST = \
     xastir.rgb \
     gps_wpt.dbfawk \
     24kgrid.dbfawk \
+    stored_track.dbfawk \
     tgr2shp.dbfawk \
     tgr2shppoly.dbfawk \
     tgrcty.dbfawk \

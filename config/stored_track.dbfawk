@@ -1,0 +1,9 @@
+BEGIN {
+dbfinfo="Credits:DateTime:Label;
+dbffields="Label:DateTime";
+}
+
+BEGIN_RECORD {key=""; lanes=3; color=12; name=""; filled=0; pattern=0; display_level=65536; label_level=256; label_color=12; symbol=""}
+
+/^Label=(.*)$/ {name="$1";}
+/^DateTime=(.*)$/ {name="$name ($1)";}
