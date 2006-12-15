@@ -903,6 +903,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
         sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
+        if (sig_info) gps_flag = 0; // trump gps_flag-- use dbfawk
         if (!sig_info) {
             fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
             sig_info = dbfawk_default_sig;
@@ -1937,11 +1938,6 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             if (sig_info) {
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
-                // If we are a GPS file, we disable gps_flag because we've 
-                // found a matching dbfawk file.  dbfawk always trumps 
-                // hard-coded GPS directory behavior.
-                gps_flag = 0;
-
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
                     fprintf(stderr,"color=%d ",color);
