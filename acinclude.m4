@@ -298,7 +298,6 @@ fi
 
 
 
-# JMT - this is pure evil and will not be edited at the present time
 AC_DEFUN([XASTIR_CHECK_IMAGEMAGICK],
 [
 
@@ -331,8 +330,22 @@ else
   if test "${found_im_config2}" = "yes"; then
     use_imagemagick=yes
     MAGIC_BIN="/sw/bin/Magick-config"
-#  else
-#    AC_MSG_WARN(*** Cannot find Magick-config:  Building w/o ImageMagick support. ***) 
+    AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
+  else
+    #
+    # Test for MacOSX/DarwinPorts directories under "/opt/local".
+    #
+    # Important: DO NOT use "use_imagemagick" as the variable here,
+    # because AC_CHECK_PROG will do nothing if the variable is already set!
+    #
+    AC_CHECK_PROG(found_im_config3, [Magick-config], yes, no, "/opt/local/bin")
+    if test "${found_im_config3}" = "yes"; then
+      use_imagemagick=yes
+      MAGIC_BIN="/opt/local/bin/Magick-config"
+      AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
+#    else
+#      AC_MSG_WARN(*** Cannot find Magick-config:  Building w/o ImageMagick support. ***) 
+    fi
   fi
 fi
 #
@@ -434,8 +447,22 @@ else
   if test "${found_gm_config2}" = "yes"; then
     use_graphicsmagick=yes
     MAGIC_BIN="/sw/bin/GraphicsMagick-config"
-#  else
-#    AC_MSG_WARN(*** Cannot find GraphicsMagick-config:  Building w/o GraphicsMagick support. ***) 
+    AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
+  else
+    #
+    # Test for MacOSX/DarwinPorts directories under "/opt/local".
+    #
+    # Important: DO NOT use "use_graphicsmagick" as the variable here,
+    # because AC_CHECK_PROG will do nothing if the variable is already set!
+    #
+    AC_CHECK_PROG(found_gm_config3, [GraphicsMagick-config], yes, no, "/opt/local/bin")
+    if test "${found_gm_config3}" = "yes"; then
+      use_graphicsmagick=yes
+      MAGIC_BIN="/opt/local/bin/GraphicsMagick-config"
+      AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
+#    else
+#      AC_MSG_WARN(*** Cannot find GraphicsMagick-config:  Building w/o GraphicsMagick support. ***) 
+    fi
   fi
 fi
 #
