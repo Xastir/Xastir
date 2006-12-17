@@ -28,9 +28,9 @@
 # Look at the README for more information on the program.
 #
 
-# uncomment as appropriate. You'll want gnu tar
-#TAR=/usr/local/bin/tar 
-TAR=/bin/tar
+# You'll want it to find gnu tar here
+#TAR=gtar
+TAR=tar
 
 MAPTOOLS=http://dl.maptools.org/dl
 
