@@ -120,9 +120,9 @@ cygwin*)
 ;;
 darwin*)
   system=Darwin
-  LDFLAGS="-L/sw/lib -L/opt/lib -L/opt/local/lib $LDFLAGS"
-  CPPFLAGS="-I/sw/include -I/opt/include -I/opt/local/include $CPPFLAGS"
-  EXTRA_BIN_PATH=":/opt/bin:/opt/local/bin:/sw/bin"
+  LDFLAGS="-L/sw/lib -L/opt/local/lib $LDFLAGS"
+  CPPFLAGS="-I/sw/include -I/opt/local/include $CPPFLAGS"
+  EXTRA_BIN_PATH=":/opt/local/bin:/sw/bin"
 ;;
 freebsd*)
   system=FreeBSD
@@ -135,7 +135,7 @@ linux*)
 #
 #
 # Useful for testing MacOSX paths on a Linux development box:
-#  EXTRA_BIN_PATH=":/opt/bin:/opt/local/bin:/sw/bin"
+#  EXTRA_BIN_PATH=":/opt/local/bin:/sw/bin"
 #
 #
 ;;
