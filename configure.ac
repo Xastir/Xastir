@@ -504,8 +504,8 @@ fi
 #
 if test "${use_imagemagick}" = "yes" -o "${use_graphicsmagick}" = "yes"; then
   AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library])
-else
-  AC_MSG_WARN(*** Building w/o GraphicsMagick or ImageMagick support. ***)
+#else
+#  AC_MSG_WARN(*** Building w/o GraphicsMagick or ImageMagick support. ***)
 fi
 
 
