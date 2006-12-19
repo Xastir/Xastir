@@ -379,10 +379,10 @@ if test "${use_dbfawk}" = "yes"; then
 fi
 
 
-use_rtree=no
+use_rtree=yes
 LIBRTREE=""
 SUBRTREE=""
-AC_ARG_WITH(rtree,[  --with-rtree            Enable spatial indexing of shapefiles for faster rendering.],[use_rtree=$withval])
+AC_ARG_WITH(rtree,[  --without-rtree            disable spatial indexing of shapefiles.],[use_rtree=$withval])
 if test "${use_rtree}" = "yes" ; then
   if test "${use_shapelib}" = "yes"; then
     AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
