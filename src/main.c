@@ -14779,7 +14779,15 @@ void check_for_new_gps_map(int curr_sec) {
                 gps_details_selected = 0;
                 return;
             }
- 
+
+            // Write out a WKT in a .prj file to go with this shapefile.
+            xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%s/%s.prj",
+                            get_user_base_dir("gps"),
+                            gps_map_filename_base);
+            xastirWriteWKT(temp);
+
             if (strcmp(gps_map_type,"Waypoints") != 0) {
                 // KM5VY: Create a really, really simple dbfawk file to
                 // go with the shapefile.  This is a dbfawk file of the

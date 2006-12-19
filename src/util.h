@@ -168,6 +168,7 @@ extern int check_unproto_path( char *data );
 extern void set_dangerous( char *ptr );
 extern void clear_dangerous(void);
 
+void xastirWriteWKT(char *name);
 
 #endif // __XASTIR_UTIL_H
 
