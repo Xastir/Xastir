@@ -182,7 +182,6 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
     char credit_string[] = "Created by Xastir, http://www.xastir.org";
     char temp_shapefile_name[MAX_FILENAME];
     char temp_prj_name[MAX_FILENAME];
-    FILE *f;
 
     if (debug_level & 16) {
         fprintf(stderr,"create_shapefile_map\n");
