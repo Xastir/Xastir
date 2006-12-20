@@ -28,9 +28,22 @@
 # Look at the README for more information on the program.
 #
 
-# You'll want it to find gnu tar here
-#TAR=gtar
-TAR=tar
+TAR=gtar
+if ($TAR --version | grep "GNU")
+then
+  echo Found GNU tar
+else
+  echo Did not find gtar, checking for tar
+  TAR=tar
+  if ($TAR --version | grep "GNU")
+  then
+    echo Found GNU tar
+  else
+    echo Did not find GNU tar
+    exit
+  fi
+fi
+
 
 MAPTOOLS=http://dl.maptools.org/dl
 
