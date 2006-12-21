@@ -260,6 +260,10 @@ fi
 
 ])
 
+
+
+
+
 # TVR - I don't think this is quite as evil as Jack thinks CHECK_IMAGEMAGICK is
 # It assumes that gdal-config is in the user's path, and doesn't try to
 # explore alternate paths.
@@ -278,11 +282,13 @@ if test "${found_gdal_config}" = "yes"; then
 
    GDAL_BIN="gdal-config"
    CPPFLAGS="$CPPFLAGS `${GDAL_BIN} --cflags`" 
+#
 # This is an annoyance: gdal-config --libs outputs both LDFLAGS and LIBS 
 # stuff.  AC_CHECK_LIB puts the -l in if it works, and we only want the LDFLAGS
 #   LIBS="$LIBS `${GDAL_BIN} --libs`"
 # Remove the -lgdal from what gdal-config --libs returns, because AC_CHECK_LIB
 # will put it into LIBS for us.
+#
    LDFLAGS="$LDFLAGS `${GDAL_BIN} --libs | sed -e 's/-lgdal[^ ]*//'`"
    AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister,
                     [use_gdal="yes"
@@ -313,11 +319,6 @@ BINPATH="${PATH}${EXTRA_BIN_PATH}"
 
 # Check for ImageMagick 
 # 
-save_cppflags="$CPPFLAGS" 
-save_cxxflags="$CXXFLAGS" 
-save_libs="$LIBS" 
-save_ldflags="$LDFLAGS" 
-#
 # First look for the needed Magick-config script, which tells us all
 # of the build options we need.
 #
@@ -347,7 +348,12 @@ if test "${use_imagemagick}" = "yes"; then
 #    magickold="yes"; 
 #  elif test "$magickmajor" -eq 5 -a "$magickminor" -eq 4 -a "$magicktiny" -lt 9; then 
 #    magickold="yes"; 
-#  fi 
+#  fi
+  #
+  save_cppflags="$CPPFLAGS" 
+  save_cxxflags="$CXXFLAGS" 
+  save_libs="$LIBS" 
+  save_ldflags="$LDFLAGS" 
   #
   # Figure out the build options using the Magick-config script
   #
@@ -365,6 +371,16 @@ if test "${use_imagemagick}" = "yes"; then
       AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
     fi
   fi
+  #
+  if test "${use_imagemagick}" = "no"; then
+    #
+    # No ImageMagick found.  Restore variables.
+    #
+    CPPFLAGS=$save_cppflags 
+    CXXFLAGS=$save_cxxflags 
+    LIBS=$save_libs 
+    LDFLAGS=$save_ldflags 
+  fi 
 #
 #  if test "${magickold}" = "yes"; then 
 # This used to be important, as some versions didn't support the
@@ -374,16 +390,7 @@ if test "${use_imagemagick}" = "yes"; then
 #    AC_MSG_WARN(*** Upgrade to 5.4.9 or newer for full functionality. ***)
 #    AC_MSG_WARN(*********************************************************) 
 #  fi 
-else
-  #
-  # No ImageMagick found.  Restore variables.
-  #
-  CPPFLAGS=$save_cppflags 
-  CXXFLAGS=$save_cxxflags 
-  LIBS=$save_libs 
-  LDFLAGS=$save_ldflags 
-fi 
-# 
+fi
 # End of ImageMagick checks 
 
 ])
@@ -398,11 +405,6 @@ BINPATH="${PATH}${EXTRA_BIN_PATH}"
 
 # Check for GraphicsMagick 
 # 
-save_cppflags="$CPPFLAGS" 
-save_cxxflags="$CXXFLAGS" 
-save_libs="$LIBS" 
-save_ldflags="$LDFLAGS" 
-#
 # First look for the needed GraphicsMagick-config script, which tells us all
 # of the build options we need.
 #
@@ -419,6 +421,10 @@ if test "$GMAGIC_BIN" != "no"; then
 fi
 #
 if test "${use_graphicsmagick}" = "yes"; then
+  save_cppflags="$CPPFLAGS" 
+  save_cxxflags="$CXXFLAGS" 
+  save_libs="$LIBS" 
+  save_ldflags="$LDFLAGS" 
   #
   # Figure out the build options using the GraphicsMagick-config script
   #
@@ -436,14 +442,16 @@ if test "${use_graphicsmagick}" = "yes"; then
       AC_MSG_WARN(*** Cannot find GraphicsMagick library files: Building w/o GraphicsMagick support. ***)
     fi
   fi
-else
   #
-  # No GraphicsMagick found.  Restore variables.
-  #
-  CPPFLAGS=$save_cppflags 
-  CXXFLAGS=$save_cxxflags 
-  LIBS=$save_libs 
-  LDFLAGS=$save_ldflags 
+  if test "${use_graphicsmagick}" = "no"; then
+    #
+    # No GraphicsMagick found.  Restore variables.
+    #
+    CPPFLAGS=$save_cppflags 
+    CXXFLAGS=$save_cxxflags 
+    LIBS=$save_libs 
+    LDFLAGS=$save_ldflags 
+  fi
 fi 
 # 
 # End of GraphicsMagick checks 
