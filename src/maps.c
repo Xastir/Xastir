@@ -3902,9 +3902,151 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 
 
 //WE7U3
-// Print_window:  Prints the drawing area to a Postscript file.
+// Print_window:  Prints the drawing area to a Postscript file and
+// then sends it to the printer program (usually "lpr).
 //
 static void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
+
+#ifdef NO_XPM
+//    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
+    popup_message_always(langcode("POPEM00035"),
+        "XPM or ImageMagick support not compiled into Xastir! Cannot Print!");
+#else   // NO_XPM
+
+    char xpm_filename[MAX_FILENAME];
+    char ps_filename[MAX_FILENAME];
+    char command[MAX_FILENAME*2];
+    char temp[MAX_FILENAME];
+    int xpmretval;
+
+
+    xastir_snprintf(xpm_filename,
+        sizeof(xpm_filename),
+        "%s/print.xpm",
+        get_user_base_dir("tmp"));
+
+    xastir_snprintf(ps_filename,
+        sizeof(ps_filename),
+        "%s/print.ps",
+        get_user_base_dir("tmp"));
+
+    busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
+
+    // Get rid of the Print dialog
+    Print_postscript_destroy_shell(widget, print_postscript_dialog, NULL );
+
+    if ( debug_level & 512 )
+        fprintf(stderr,"Creating %s\n", xpm_filename );
+
+    xastir_snprintf(temp, sizeof(temp), langcode("PRINT0012") );
+    statusline(temp,1);       // Dumping image to file...
+
+    chdir(get_user_base_dir("tmp"));
+    xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),// Display *display
+            "print.xpm",                                 // char *filename
+            pixmap_final,                                // Pixmap pixmap
+            (Pixmap)NULL,                                // Pixmap shapemask
+            NULL );
+
+    if (xpmretval != XpmSuccess) {
+        fprintf(stderr,"ERROR writing %s: %s\n", xpm_filename,
+            XpmGetErrorString(xpmretval));
+        return; 
+    }
+    else {          // We now have the xpm file created on disk
+
+        chmod( xpm_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+
+        if ( debug_level & 512 )
+            fprintf(stderr,"Convert %s ==> %s\n", xpm_filename, ps_filename );
+
+
+        // Convert it to a postscript file for printing.  This depends
+        // on the ImageMagick command "convert".
+        //
+
+        if (debug_level & 512)
+            fprintf(stderr,"Width: %ld\tHeight: %ld\n", screen_width, screen_height);
+
+        xastir_snprintf(temp, sizeof(temp), langcode("PRINT0013") );
+        statusline(temp,1);       // Converting to Postscript...
+
+
+#ifdef HAVE_CONVERT
+        xastir_snprintf(command,
+            sizeof(command),
+            "%s -filter Point %s %s",
+            CONVERT_PATH,
+            xpm_filename,
+            ps_filename );
+
+        if ( debug_level & 512 )
+            fprintf(stderr,"%s\n", command );
+
+        if ( system( command ) != 0 ) {
+            fprintf(stderr,"\n\nPrint: Couldn't convert from XPM to PS!\n\n\n");
+            return;
+        }
+#endif  // HAVE_CONVERT
+
+        chmod( ps_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+
+        // Delete temporary xpm file
+        if ( !(debug_level & 512) )
+            unlink( xpm_filename );
+
+        if ( debug_level & 512 )
+            fprintf(stderr,"Printing postscript file %s\n", ps_filename);
+
+// Note: This needs to be changed to "lp" for Solaris.
+// Also need to have a field to configure the printer name.  One
+// fill-in field could do both.
+//
+// Since we could be running SUID root, we don't want to be
+// calling "system" anyway.  Several problems with it.
+
+        xastir_snprintf(command,
+            sizeof(command),
+            "%s %s",
+//            LPR_PATH,
+            printer_program,
+            ps_filename );
+
+        if ( debug_level & 512 )
+            fprintf(stderr,"%s\n", command);
+
+        if ( system( command ) != 0 ) {
+            fprintf(stderr,"\n\nPrint: Couldn't send to the printer!\n\n\n");
+            return;
+        }
+
+/*
+        if ( !(debug_level & 512) )
+            unlink( ps_filename );
+*/
+
+        if ( debug_level & 512 )
+            fprintf(stderr,"  Done printing.\n");
+    }
+
+    xastir_snprintf(temp, sizeof(temp), langcode("PRINT0014") );
+    statusline(temp,1);       // Finished creating print file.
+
+    //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );
+
+#endif // NO_XPM
+
+}
+
+
+
+
+
+//WE7U3
+// Print_preview:  Prints the drawing area to a Postscript file and
+// then sends it to a print preview program.
+//
+static void Print_preview( Widget widget, XtPointer clientData, XtPointer callData ) {
 
 #ifdef NO_XPM
 //    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
@@ -4644,8 +4786,8 @@ XtSetSensitive(button_preview,FALSE);
                                       NULL);
 
 
-//        XtAddCallback(button_preview, XmNactivateCallback, Print_window, "1" );
-        XtAddCallback(button_ok, XmNactivateCallback, Print_window, "0" );
+//        XtAddCallback(button_preview, XmNactivateCallback, Print_preview, "1" );
+        XtAddCallback(button_ok, XmNactivateCallback, Print_preview, "0" );
         XtAddCallback(button_cancel, XmNactivateCallback, Print_properties_destroy_shell, print_properties_dialog);
 
 
@@ -4731,8 +4873,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 //
 void Print_Postscript( Widget w, XtPointer clientData, XtPointer callData ) {
     static Widget pane, form, button_print, button_cancel,
-            sep, button_preview,
-            printer_label, previewer_label;
+            sep, button_preview;
     Atom delw;
 
     if (!print_postscript_dialog) {
@@ -4776,21 +4917,6 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       NULL);
 
 
-/*
-//        printer_label = XtVaCreateManagedWidget(langcode("PRINT0002"),xmLabelWidgetClass, form,
-        printer_label = XtVaCreateManagedWidget("Postscript Printer",xmLabelWidgetClass, form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, button_print,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-*/
-
- 
         printer_data = XtVaCreateManagedWidget("Print_Postscript printer_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
@@ -4804,7 +4930,6 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
-//                                      XmNleftWidget, printer_label,
                                       XmNleftWidget, button_print,
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
@@ -4828,22 +4953,6 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
                                       NULL);
-
-
-/*
-//        previewer_label = XtVaCreateManagedWidget(langcode("PRINT0002"),xmLabelWidgetClass, form,
-        previewer_label = XtVaCreateManagedWidget("Postscript Previewer",xmLabelWidgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, button_print,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, button_preview,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-*/
 
  
         previewer_data = XtVaCreateManagedWidget("Print_Postscript previewer_data", xmTextFieldWidgetClass, form,
@@ -4898,7 +5007,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
 
 
         XtAddCallback(button_preview, XmNactivateCallback, Print_properties, NULL );
-//        XtAddCallback(button_print, XmNactivateCallback, Print_window, "0" );
+        XtAddCallback(button_print, XmNactivateCallback, Print_window, NULL );
         XtAddCallback(button_cancel, XmNactivateCallback, Print_postscript_destroy_shell, print_postscript_dialog);
 
         // Fill in the text fields from persistent variables out of the config file.
