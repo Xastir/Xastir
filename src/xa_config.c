@@ -1199,13 +1199,27 @@ void load_data_or_default(void) {
             || printer_program[0] == '\0') {
         xastir_snprintf(printer_program,
             sizeof(printer_program),
+            "%s",
+#ifdef LPR_PATH
+            // Path to LPR if defined
             LPR_PATH);
+#else // LPR_PATH
+            // Empty path
+            "");
+#endif // LPR_PATH
     }
     if (!get_string ("PREVIEWER_PROGRAM", previewer_program, sizeof(previewer_program))
             || previewer_program[0] == '\0') {
         xastir_snprintf(previewer_program,
             sizeof(previewer_program),
+            "%s",
+#ifdef GV_PATH
+            // Path to GV if defined
             GV_PATH);
+#else // GV_PATH
+            // Empty path
+            "");
+#endif // GV_PATH
     }
 
     letter_style = get_int ("MAP_LETTERSTYLE", 0, 2, 1);
