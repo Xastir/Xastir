@@ -3963,6 +3963,8 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     if (xpmretval != XpmSuccess) {
         fprintf(stderr,"ERROR writing %s: %s\n", xpm_filename,
             XpmGetErrorString(xpmretval));
+        popup_message_always(langcode("POPEM00035"),
+            "Error writing xpm image file! Cannot Print!");
         return; 
     }
     else {          // We now have the xpm file created on disk
@@ -3996,7 +3998,9 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
             fprintf(stderr,"%s\n", command );
 
         if ( system( command ) != 0 ) {
-            fprintf(stderr,"\n\nPrint: Couldn't convert from XPM to PS!\n\n\n");
+//            fprintf(stderr,"\n\nPrint: Couldn't convert from XPM to PS!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "Couldn't convert from XPM to PS!");
             return;
         }
 #endif  // HAVE_CONVERT
@@ -4020,15 +4024,23 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
         xastir_snprintf(command,
             sizeof(command),
             "%s %s",
-//            LPR_PATH,
             printer_program,
             ps_filename );
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
 
+        if (printer_program[0] == '\0') {
+//            fprintf(stderr,"\n\nPrint: No print program defined!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "No print program defined!");
+            return;
+        }
+
         if ( system( command ) != 0 ) {
-            fprintf(stderr,"\n\nPrint: Couldn't send to the printer!\n\n\n");
+//            fprintf(stderr,"\n\nPrint: Couldn't send to the printer!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "Couldn't send to the printer!");
             return;
         }
 
@@ -4066,11 +4078,11 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         "XPM or ImageMagick support not compiled into Xastir! Cannot Print!");
 #else   // NO_GRAPHICS
 
-#ifndef HAVE_GV
-//    fprintf(stderr,"GV support not compiled into Xastir!\n");
-    popup_message_always(langcode("POPEM00035"),
-        "GV support not compiled into Xastir! Cannot Print!");
-#else   // HAVE_GV
+//#ifndef HAVE_GV
+////    fprintf(stderr,"GV support not compiled into Xastir!\n");
+//    popup_message_always(langcode("POPEM00035"),
+//        "GV support not compiled into Xastir! Cannot Print!");
+//#else   // HAVE_GV
 
     char xpm_filename[MAX_FILENAME];
     char ps_filename[MAX_FILENAME];
@@ -4122,6 +4134,8 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     if (xpmretval != XpmSuccess) {
         fprintf(stderr,"ERROR writing %s: %s\n", xpm_filename,
             XpmGetErrorString(xpmretval));
+        popup_message_always(langcode("POPEM00035"),
+            "Error writing XPM file!");
         return; 
     }
     else {          // We now have the xpm file created on disk
@@ -4242,7 +4256,9 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
             fprintf(stderr,"%s\n", command );
 
         if ( system( command ) != 0 ) {
-            fprintf(stderr,"\n\nPrint: Couldn't convert from XPM to PS!\n\n\n");
+//            fprintf(stderr,"\n\nPrint: Couldn't convert from XPM to PS!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "Couldn't convert from XPM to PS!");
             return;
         }
 #endif  // HAVE_CONVERT
@@ -4265,21 +4281,30 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
 /*
         xastir_snprintf(command,
             sizeof(command),
-            "%s -Plp %s",
-//            LPR_PATH,
+            "%s %s",
             printer_program,
             ps_filename );
+
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
 
+        if (printer_program[0] == '\0') {
+//            fprintf(stderr,"\n\nPrint: No print program defined!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "No print program defined!");
+            return;
+        }
+
         if ( system( command ) != 0 ) {
-            fprintf(stderr,"\n\nPrint: Couldn't send to the printer!\n\n\n");
+//            fprintf(stderr,"\n\nPrint: Couldn't send to the printer!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "Couldn't send to the printer!");
             return;
         }
 */
 
 
-#ifdef HAVE_GV
+//#ifdef HAVE_GV
         // Bring up the "gv" postscript viewer
         xastir_snprintf(command,
             sizeof(command),
@@ -4299,11 +4324,20 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
 
-        if ( system( command ) != 0 ) {
-            fprintf(stderr,"\n\nPrint: Couldn't bring up the gv viewer!\n\n\n");
+        if (previewer_program[0] == '\0') {
+//            fprintf(stderr,"\n\nPrint: No print previewer defined!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "No print previewer defined!");
             return;
         }
-#endif  // HAVE_GV
+
+        if ( system( command ) != 0 ) {
+//            fprintf(stderr,"\n\nPrint: Couldn't bring up the gv viewer!\n\n\n");
+            popup_message_always(langcode("POPEM00035"),
+                "Couldn't bring up the gv viewer!");
+            return;
+        }
+//#endif  // HAVE_GV
 
 /*
         if ( !(debug_level & 512) )
@@ -4319,7 +4353,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
 
     //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );
 
-#endif  // HAVE_GV
+//#endif  // HAVE_GV
 #endif // NO_XPM
 
 }
