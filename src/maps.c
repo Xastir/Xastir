@@ -159,6 +159,10 @@ int outline_border_labels_color = 0x20;
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
 static xastir_mutex print_properties_dialog_lock;
+
+Widget print_postscript_dialog = (Widget)NULL;
+static xastir_mutex print_postscript_dialog_lock;
+
 Widget rotate_90 = (Widget)NULL;
 Widget auto_rotate = (Widget)NULL;
 //char  print_paper_size[20] = "Letter";  // Displayed in dialog, but not used yet.
@@ -416,6 +420,7 @@ void maps_init(void)
 #endif  // NO_XPM
 
     init_critical_section( &print_properties_dialog_lock );
+    init_critical_section( &print_postscript_dialog_lock );
 
     // Clear the minor UTM/MGRS grid arrays.  Do _not_ allocate
     // memory for the points.
@@ -3813,6 +3818,28 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
             pixmap, 0, 0);
 }
 
+
+
+
+
+//WE7U3
+static void Print_postscript_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+
+begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_destroy_shell" );
+
+    XtDestroyWidget(shell);
+    print_postscript_dialog = (Widget)NULL;
+
+end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_destroy_shell" );
+
+}
+
+
+
+
+
 static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -3830,6 +3857,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 
 
 
+//WE7U3
 // Print_window:  Prints the drawing area to a Postscript file.
 //
 static void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
@@ -3877,9 +3905,8 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 
     busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
 
-    // Get rid of Print Properties dialog
+    // Get rid of the Print Properties dialog
     Print_properties_destroy_shell(widget, print_properties_dialog, NULL );
-
 
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
@@ -4204,7 +4231,6 @@ static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
 
 
 
-
 // Print_properties:  Prints the drawing area to a PostScript file
 //
 // Perhaps later:
@@ -4218,6 +4244,9 @@ void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
 //            res_label1, res_label2, res_x, res_y, button_preview,
             monochrome, invert;
     Atom delw;
+
+    // Get rid of the Print dialog
+    Print_postscript_destroy_shell(w, print_postscript_dialog, NULL );
 
     if (!print_properties_dialog) {
 
@@ -4643,6 +4672,226 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
     }
 }
 
+
+
+
+
+//WE7U3
+// General print dialog.  From here we can either print Postscript
+// files to the device selected in this dialog, or head off to a
+// print preview program that might allow us a variety of print
+// options.  From here we should be able to set the print device
+// and the print preview program & path.
+//
+void Print_Postscript( Widget w, XtPointer clientData, XtPointer callData ) {
+    static Widget pane, form, button_print, button_cancel,
+            sep, button_preview,
+            printer_label, printer_data,
+            previewer_label, previewer_data;
+    Atom delw;
+
+    if (!print_postscript_dialog) {
+
+
+begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" );
+
+
+        print_postscript_dialog = XtVaCreatePopupShell(langcode("PULDNFI015"),
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse, XmDESTROY,
+            XmNdefaultPosition, FALSE,
+            NULL);
+
+
+        pane = XtVaCreateWidget("Print_postscript pane",xmPanedWindowWidgetClass, print_postscript_dialog,
+                          XmNbackground, colors[0xff],
+                          NULL);
+
+
+        form =  XtVaCreateWidget("Print_postscript form",xmFormWidgetClass, pane,
+                            XmNfractionBase, 3,
+                            XmNbackground, colors[0xff],
+                            XmNautoUnmanage, FALSE,
+                            XmNshadowThickness, 1,
+                            NULL);
+
+
+//        button_print = XtVaCreateManagedWidget(langcode("PULDNFI015"),xmPushButtonGadgetClass, form,
+        button_print = XtVaCreateManagedWidget("Print to Device",xmPushButtonGadgetClass, form,
+ 
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      NULL);
+
+
+/*
+//        printer_label = XtVaCreateManagedWidget(langcode("PRINT0002"),xmLabelWidgetClass, form,
+        printer_label = XtVaCreateManagedWidget("Postscript Printer",xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, button_print,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+*/
+
+ 
+        printer_data = XtVaCreateManagedWidget("Print_Postscript printer_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 40,
+                                      XmNwidth, ((40*7)+2),
+                                      XmNmaxLength, 100,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+//                                      XmNleftWidget, printer_label,
+                                      XmNleftWidget, button_print,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      NULL);
+
+
+//        button_preview = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
+        button_preview = XtVaCreateManagedWidget("Print to Preview Program",xmPushButtonGadgetClass, form,
+ 
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, button_print,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      NULL);
+
+
+/*
+//        previewer_label = XtVaCreateManagedWidget(langcode("PRINT0002"),xmLabelWidgetClass, form,
+        previewer_label = XtVaCreateManagedWidget("Postscript Previewer",xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, button_print,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, button_preview,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+*/
+
+ 
+        previewer_data = XtVaCreateManagedWidget("Print_Postscript previewer_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 40,
+                                      XmNwidth, ((40*7)+2),
+                                      XmNmaxLength, 100,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, button_print,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, button_preview,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      NULL);
+
+
+        sep = XtVaCreateManagedWidget("Print_postscript sep", xmSeparatorGadgetClass,form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, button_preview,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, sep,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_FORM,
+                                      XmNbottomOffset, 5,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment, XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      XmNbackground, colors[0xff],
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      NULL);
+
+
+        XtAddCallback(button_preview, XmNactivateCallback, Print_properties, NULL );
+//        XtAddCallback(button_print, XmNactivateCallback, Print_window, "0" );
+        XtAddCallback(button_cancel, XmNactivateCallback, Print_postscript_destroy_shell, print_postscript_dialog);
+
+
+//        XmTextFieldSetString(paper_size_data,print_paper_size);
+
+
+end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" );
+
+
+        pos_dialog(print_postscript_dialog);
+
+
+        delw = XmInternAtom(XtDisplay(print_postscript_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(print_postscript_dialog, delw, Print_postscript_destroy_shell, (XtPointer)print_postscript_dialog);
+
+
+        XtManageChild(form);
+        XtManageChild(pane);
+
+
+        XtPopup(print_postscript_dialog,XtGrabNone);
+        fix_dialog_size(print_postscript_dialog);
+
+
+        // Move focus to the Cancel button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(print_postscript_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+
+    }
+    else {
+        (void)XRaiseWindow(XtDisplay(print_postscript_dialog), XtWindow(print_postscript_dialog));
+    }
+}
+ 
 
 
 

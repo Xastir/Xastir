@@ -5386,7 +5386,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback( print_button, XmNactivateCallback, Print_properties, NULL );
+    XtAddCallback( print_button, XmNactivateCallback, Print_Postscript, NULL );
 
     config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
             xmCascadeButtonGadgetClass,
