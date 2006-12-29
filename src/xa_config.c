@@ -540,6 +540,9 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_string(fout, "RASTER_MAP_INTENSITY", name);
 #endif  // NO_GRAPHICS
 
+        store_string(fout, "PRINT_PROGRAM", printer_program);
+        store_string(fout, "PREVIEWER_PROGRAM", previewer_program);
+
         store_int (fout, "MAP_LETTERSTYLE", letter_style);
         store_int (fout, "MAP_ICONOUTLINESTYLE", icon_outline_style);
         store_int (fout, "MAP_WX_ALERT_STYLE", wx_alert_style);
@@ -1191,6 +1194,19 @@ void load_data_or_default(void) {
         }
     }
 #endif  // NO_GRAPHICS
+
+    if (!get_string ("PRINT_PROGRAM", printer_program, sizeof(printer_program))
+            || printer_program[0] == '\0') {
+        xastir_snprintf(printer_program,
+            sizeof(printer_program),
+            LPR_PATH);
+    }
+    if (!get_string ("PREVIEWER_PROGRAM", previewer_program, sizeof(previewer_program))
+            || previewer_program[0] == '\0') {
+        xastir_snprintf(previewer_program,
+            sizeof(previewer_program),
+            GV_PATH);
+    }
 
     letter_style = get_int ("MAP_LETTERSTYLE", 0, 2, 1);
 

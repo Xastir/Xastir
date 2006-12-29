@@ -159,10 +159,11 @@ int outline_border_labels_color = 0x20;
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
 static xastir_mutex print_properties_dialog_lock;
-
 Widget print_postscript_dialog = (Widget)NULL;
 static xastir_mutex print_postscript_dialog_lock;
-
+Widget printer_data;
+Widget previewer_data;
+ 
 Widget rotate_90 = (Widget)NULL;
 Widget auto_rotate = (Widget)NULL;
 //char  print_paper_size[20] = "Letter";  // Displayed in dialog, but not used yet.
@@ -175,6 +176,9 @@ int   print_in_monochrome = 0;
 int   print_resolution = 150;           // 72 dpi is normal for Postscript.
                                         // 100 or 150 dpi work well with HP printer
 int   print_invert = 0;                 // Reverses black/white
+
+char printer_program[MAX_FILENAME+1];
+char previewer_program[MAX_FILENAME+1];
 
 time_t last_snapshot = 0;               // Used to determine when to take next snapshot
 int doing_snapshot = 0;
@@ -3826,9 +3830,49 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
 static void Print_postscript_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
+    char *temp_ptr;
 
 begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_destroy_shell" );
 
+    if (print_postscript_dialog) {
+        // Snag the path to the printer program from the print dialog
+        temp_ptr = XmTextFieldGetString(printer_data);
+        xastir_snprintf(printer_program,
+            sizeof(printer_program),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+        (void)remove_trailing_spaces(printer_program);
+
+        // Check for empty variable
+        if (printer_program[0] == '\0') {
+            xastir_snprintf(printer_program,
+                sizeof(printer_program),
+                "%s",
+                LPR_PATH);
+        }
+
+//fprintf(stderr,"%s\n", printer_program);
+
+        // Snag the path to the previewer program from the print dialog
+        temp_ptr = XmTextFieldGetString(previewer_data);
+        xastir_snprintf(previewer_program,
+            sizeof(previewer_program),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+        (void)remove_trailing_spaces(previewer_program);
+
+        // Check for empty variable
+        if (previewer_program[0] == '\0') {
+            xastir_snprintf(previewer_program,
+                sizeof(previewer_program),
+                "%s",
+                GV_PATH);
+        }
+//fprintf(stderr,"%s\n", previewer_program);
+    }
+ 
     XtDestroyWidget(shell);
     print_postscript_dialog = (Widget)NULL;
 
@@ -3882,7 +3926,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     char scale[50] = "";
     char density[50] = "";
     char command[MAX_FILENAME*2];
-    char temp[100];
+    char temp[MAX_FILENAME];
 
 #ifdef HAVE_OLD_GV
     char format[50] = "-portrait ";
@@ -4068,7 +4112,8 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
         xastir_snprintf(command,
             sizeof(command),
             "%s -Plp %s",
-            LPR_PATH,
+//            LPR_PATH,
+            printer_program,
             ps_filename );
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -4092,7 +4137,8 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
             "%s %s--scale=-2 %s &",
 #endif  // HAVE_OLD_GV
 
-            GV_PATH,
+//            GV_PATH,
+            previewer_program,
             format,
             ps_filename );
 
@@ -4686,8 +4732,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 void Print_Postscript( Widget w, XtPointer clientData, XtPointer callData ) {
     static Widget pane, form, button_print, button_cancel,
             sep, button_preview,
-            printer_label, printer_data,
-            previewer_label, previewer_data;
+            printer_label, previewer_label;
     Atom delw;
 
     if (!print_postscript_dialog) {
@@ -4717,7 +4762,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
 
 
 //        button_print = XtVaCreateManagedWidget(langcode("PULDNFI015"),xmPushButtonGadgetClass, form,
-        button_print = XtVaCreateManagedWidget("Print to Device",xmPushButtonGadgetClass, form,
+        button_print = XtVaCreateManagedWidget("Direct to:",xmPushButtonGadgetClass, form,
  
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
@@ -4753,7 +4798,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 40,
                                       XmNwidth, ((40*7)+2),
-                                      XmNmaxLength, 100,
+                                      XmNmaxLength, MAX_FILENAME,
                                       XmNbackground, colors[0x0f],
                                       XmNtopAttachment,XmATTACH_FORM,
                                       XmNtopOffset, 5,
@@ -4770,7 +4815,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
 
 
 //        button_preview = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
-        button_preview = XtVaCreateManagedWidget("Print to Preview Program",xmPushButtonGadgetClass, form,
+        button_preview = XtVaCreateManagedWidget("Via Previewer:",xmPushButtonGadgetClass, form,
  
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, button_print,
@@ -4808,7 +4853,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 40,
                                       XmNwidth, ((40*7)+2),
-                                      XmNmaxLength, 100,
+                                      XmNmaxLength, MAX_FILENAME,
                                       XmNbackground, colors[0x0f],
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, button_print,
@@ -4856,9 +4901,9 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
 //        XtAddCallback(button_print, XmNactivateCallback, Print_window, "0" );
         XtAddCallback(button_cancel, XmNactivateCallback, Print_postscript_destroy_shell, print_postscript_dialog);
 
-
-//        XmTextFieldSetString(paper_size_data,print_paper_size);
-
+        // Fill in the text fields from persistent variables out of the config file.
+        XmTextFieldSetString(printer_data, printer_program);
+        XmTextFieldSetString(previewer_data, previewer_program);
 
 end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" );
 
