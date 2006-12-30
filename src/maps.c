@@ -3829,8 +3829,10 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
 //WE7U3
 static void Print_postscript_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
-    XtPopdown(shell);
     char *temp_ptr;
+
+
+    XtPopdown(shell);
 
 begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_destroy_shell" );
 
