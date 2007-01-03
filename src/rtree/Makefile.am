@@ -1,6 +1,6 @@
 
 # $Id$
-# Copyright (C) 2004-2005  The Xastir Group
+# Copyright (C) 2004-2007  The Xastir Group
 
 noinst_LIBRARIES=librtree.a
 librtree_a_SOURCES=index.c \

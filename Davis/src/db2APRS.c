@@ -3,7 +3,7 @@
  * @(#)$Id$
  *
  * Copyright (C) 2004 Bruce Bennett <bruts@adelphia.net>
- * Portions Copyright (C) 2004-2006 The Xastir Group
+ * Portions Copyright (C) 2004-2007 The Xastir Group
  *
  * (see the files README and COPYING for more details)
  *

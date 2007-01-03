@@ -4,7 +4,7 @@
 
 
 /* Copyright (C) 2002, 2004 Christopher Clark  <firstname.lastname@cl.cam.ac.uk> */
-/* Portions Copyright (C) 2004-2006  The Xastir Group */
+/* Portions Copyright (C) 2004-2007  The Xastir Group */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

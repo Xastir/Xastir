@@ -3,7 +3,7 @@
 
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
- * Portions Copyright (C) 2004-2006  The Xastir Group
+ * Portions Copyright (C) 2004-2007  The Xastir Group
  */
 
 #ifdef HAVE_CONFIG_H

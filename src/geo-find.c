@@ -3,7 +3,7 @@
 
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
- * Portions Copyright (C) 2004-2006  The Xastir Group
+ * Portions Copyright (C) 2004-2007  The Xastir Group
  *
  * The geo_find() function defined here uses an address map built by 
  * geo-*-to-* to parse an address and convert it to geographical

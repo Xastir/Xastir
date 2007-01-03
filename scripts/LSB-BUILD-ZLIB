@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # $Id$
-# Copyright (C) 2006  The Xastir Group
+# Copyright (C) 2006-2007  The Xastir Group
 # <http://www.zlib.net/>
 
 # Compile zlib-1.2.3 0 under Linux Standard Base 3.0.  Install into

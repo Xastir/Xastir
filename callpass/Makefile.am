@@ -1,6 +1,6 @@
 # $Id$
 
-# Copyright (C) 2000-2006  The Xastir Group
+# Copyright (C) 2000-2007  The Xastir Group
 
 
 MAINTAINERCLEANFILES=Makefile.in
