@@ -27,7 +27,8 @@
 # GraphicsMagick-1.1.7.tar.bz2 <http://www.graphicsmagick.org/>
 # jasper-1.701.0.zip    <http://www.ece.uvic.ca/~mdadams/jasper/>
 # jpegsrc.v6b.tar.gz    <http://www.ijg.org/>
-# lesstif-0.95.0.tar.gz <http://www.lesstif.org/>
+####### lesstif-0.95.0.tar.gz <http://www.lesstif.org/>
+# lesstif-0.94.4.tar.gz <http://www.lesstif.org/>
 # libpng-1.2.14.tar.gz  <http://www.libpng.org/pub/png/libpng.html>
 # libXt.a               <http://gforge.freestandards.org/scm/?group_id=5>
 # pcre-6.7.tar.gz       <http://www.pcre.org/>
@@ -69,9 +70,15 @@ tar xzf pcre-6.7.tar.gz
 (cd pcre-6.7; ../LSB-BUILD-PCRE)
 rm -rf pcre-6.7
 
-tar xzf lesstif-0.95.0.tar.gz
-(cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
-rm -rf lesstif-0.95.0
+
+#tar xzf lesstif-0.95.0.tar.gz
+#(cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
+#rm -rf lesstif-0.95.0
+#
+tar xzf lesstif-0.94.4.tar.gz
+(cd lesstif-0.94.4; ../LSB-BUILD-LESSTIF)
+rm -rf lesstif-0.94.4
+
 
 # Shows an error creating a shared library but installs the static
 # library we need before it errors out...
