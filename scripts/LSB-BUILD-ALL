@@ -71,10 +71,10 @@ tar xzf pcre-6.7.tar.gz
 rm -rf pcre-6.7
 
 
-#tar xzf lesstif-0.95.0.tar.gz
-#(cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
-#rm -rf lesstif-0.95.0
-#
+##tar xzf lesstif-0.95.0.tar.gz
+##(cd lesstif-0.95.0; ../LSB-BUILD-LESSTIF)
+##rm -rf lesstif-0.95.0
+##
 tar xzf lesstif-0.94.4.tar.gz
 (cd lesstif-0.94.4; ../LSB-BUILD-LESSTIF)
 rm -rf lesstif-0.94.4
@@ -87,9 +87,9 @@ tar xjf GraphicsMagick-1.1.7.tar.bz2
 rm -rf GraphicsMagick-1.1.7
 
 # PROBLEM HERE
-#tar xzf gdal-1.3.2b2.tar.gz
-#(cd gdal-1.3.2b2; ../LSB-BUILD-GDAL)
-#rm -rf gdal-1.3.2b2
+##tar xzf gdal-1.3.2b2.tar.gz
+##(cd gdal-1.3.2b2; ../LSB-BUILD-GDAL)
+##rm -rf gdal-1.3.2b2
 
 # Create the links needed in /opt/lsb/lib.xastir and
 # /opt/lsb/lib.include directories
