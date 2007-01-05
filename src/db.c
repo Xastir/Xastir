@@ -5378,11 +5378,14 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
  *  If calldata is non-NULL, then we drop straight through to the
  *  Modify->Object or Assign_Tactical_Call dialogs.
  *
- * clientData: NULL = Station Info
- *             "1"  = Object -> Modify
- *             "2"  = Move Object
- *             "3"  = Assign Tactical Call
- *             "4"  = Send Message To
+ * Input parameters:
+ *     clientData:  Station callsign
+ *
+ *     calldata: NULL = Station Info
+ *               "1"  = Object -> Modify
+ *               "2"  = Move Object
+ *               "3"  = Assign Tactical Call
+ *               "4"  = Send Message To
  *
  */
 void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
@@ -5404,6 +5407,8 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
     int restore_position = 0;
 
 
+//fprintf(stderr,"db.c:Station_data start\n");
+
     busy_cursor(appshell);
 
     db_station_info_callsign = (char *) clientData; // Used for auto-updating this dialog
@@ -5418,6 +5423,26 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
     else {
         fprintf(stderr,"Couldn't find station in database\n");
         return; // Don't update current/create new dialog
+    }
+
+
+    if (calldata != NULL) { // We were called from the
+                            // Object->Modify, Assign Tactical Call,
+                            // or Send Message To menu items.
+        if (strncmp(calldata,"1",1) == 0) {
+            Modify_object(w, (XtPointer)p_station, calldata);
+        }
+        else if (strncmp(calldata,"2",1) == 0) {
+            Modify_object(w, (XtPointer)p_station, calldata);
+        }
+        else if (strncmp(calldata,"3",1) == 0) {
+            Assign_Tactical_Call(w, (XtPointer)p_station, calldata);
+        }
+        else if (strncmp(calldata,"4",1) == 0) {
+//fprintf(stderr,"Send Message To: %s\n", p_station->call_sign);
+            Send_message_call(NULL, (XtPointer) p_station->call_sign, NULL);
+        }
+        return;
     }
 
  
@@ -5952,27 +5977,6 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
-    if (calldata != NULL) {     // We were called from the
-                                // Object->Modify or Assign
-                                // Tactical Call menu items
-        if (strncmp(calldata,"1",1) == 0) {
-            Modify_object(w, (XtPointer)p_station, calldata);
-        }
-        else if (strncmp(calldata,"2",1) == 0) {
-            Modify_object(w, (XtPointer)p_station, calldata);
-        }
-        else if (strncmp(calldata,"3",1) == 0) {
-            Assign_Tactical_Call(w, (XtPointer)p_station, calldata);
-        }
-        else if (strncmp(calldata,"4",1) == 0) {
-//fprintf(stderr,"Send Message To: %s\n", p_station->call_sign);
-            Send_message_call(NULL, (XtPointer) p_station->call_sign, NULL);
-        }
-
-        // We just drew all of the above, but now we wish to destroy it and
-        // just leave the modify dialog in place.
-        Station_data_destroy_shell(w, (XtPointer)db_station_info, NULL);
-    }
 }
 
 
