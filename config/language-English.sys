@@ -1150,6 +1150,10 @@ PRINT0013|Converting to Postscript...||
 PRINT0014|Finished creating print file||
 PRINT0015|Print Status||
 #
+# Print Dialog
+PRINT1001|Direct to:||
+PRINT1002|Via Previewer:||
+#
 # Locate Feature and Find Address Dialogs
 FEATURE001|Name:||
 FEATURE002|State/Province:||

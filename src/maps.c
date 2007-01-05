@@ -3826,7 +3826,6 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
 
 
 
-//WE7U3
 static void Print_postscript_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
@@ -3848,14 +3847,17 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_d
 
         // Check for empty variable
         if (printer_program[0] == '\0') {
+
+#ifdef LPR_PATH
+            // Path to LPR if defined
             xastir_snprintf(printer_program,
                 sizeof(printer_program),
                 "%s",
-#ifdef LPR_PATH
-                // Path to LPR if defined
                 LPR_PATH);
 #else // LPR_PATH
-                // Empty path
+            // Empty path
+            xastir_snprintf(printer_program,
+                sizeof(printer_program),
                 "");
 #endif // LPR_PATH
         }
@@ -3873,14 +3875,17 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_d
 
         // Check for empty variable
         if (previewer_program[0] == '\0') {
+
+#ifdef GV_PATH
+            // Path to GV if defined
             xastir_snprintf(previewer_program,
                 sizeof(previewer_program),
                 "%s",
-#ifdef GV_PATH
-                // Path to GV if defined
                 GV_PATH);
 #else // GV_PATH
-                // Empty string
+            // Empty string
+            xastir_snprintf(previewer_program,
+                sizeof(previewer_program),
                 "");
 #endif // GV_PATH
         }
@@ -3900,6 +3905,10 @@ end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_des
 
 static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
+
+    if (!shell)
+        return;
+
     XtPopdown(shell);
 
 begin_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_destroy_shell" );
@@ -3915,7 +3924,6 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 
 
 
-//WE7U3
 // Print_window:  Prints the drawing area to a Postscript file and
 // then sends it to the printer program (usually "lpr).
 //
@@ -4068,9 +4076,9 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 
 
 
-//WE7U3
-// Print_preview:  Prints the drawing area to a Postscript file and
-// then sends it to a print preview program.
+// Print_preview:  Prints the drawing area to a Postscript file.  If
+// previewer_program has "gv" in it, then use the various options
+// selected by the user.  If not, skip those options.
 //
 static void Print_preview( Widget widget, XtPointer clientData, XtPointer callData ) {
 
@@ -4079,12 +4087,6 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     popup_message_always(langcode("POPEM00035"),
         "XPM or ImageMagick support not compiled into Xastir! Cannot Print!");
 #else   // NO_GRAPHICS
-
-//#ifndef HAVE_GV
-////    fprintf(stderr,"GV support not compiled into Xastir!\n");
-//    popup_message_always(langcode("POPEM00035"),
-//        "GV support not compiled into Xastir! Cannot Print!");
-//#else   // HAVE_GV
 
     char xpm_filename[MAX_FILENAME];
     char ps_filename[MAX_FILENAME];
@@ -4095,13 +4097,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     char density[50] = "";
     char command[MAX_FILENAME*2];
     char temp[MAX_FILENAME];
-
-#ifdef HAVE_OLD_GV
-    char format[50] = "-portrait ";
-#else   // HAVE_OLD_GV
-    char format[50] = "--orientation=portrait";
-#endif  // HAVE_OLD_GV
-
+    char format[100] = " ";
     int xpmretval;
 
 
@@ -4117,7 +4113,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
 
     busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
 
-    // Get rid of the Print Properties dialog
+    // Get rid of the Print Properties dialog if it exists
     Print_properties_destroy_shell(widget, print_properties_dialog, NULL );
 
     if ( debug_level & 512 )
@@ -4148,51 +4144,43 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
             fprintf(stderr,"Convert %s ==> %s\n", xpm_filename, ps_filename );
 
 
-        // Convert it to a postscript file for printing.  This depends
-        // on the ImageMagick command "convert".
+        // If we're not using "gv", skip most of the code below and
+        // go straight to the previewer program portion of the code.
         //
-        // Other options to try in the future:
-        // -label
-        //
-        if ( print_auto_scale ) {
-//            sprintf(scale, "-geometry 612x792 -page 612x792 ");   // "Letter" size at 72 dpi
-//            sprintf(scale, "-sample 612x792 -page 612x792 ");     // "Letter" size at 72 dpi
-            xastir_snprintf(scale, sizeof(scale), "-page 1275x1650+0+0 "); // "Letter" size at 150 dpi
-        }
-        else
-            scale[0] = '\0';    // Empty string
+        if ( strcasestr(previewer_program,"gv") ) {
+
+            // Convert it to a postscript file for printing.  This
+            // depends on the ImageMagick command "convert".
+            //
+            // Other options to try in the future:
+            // -label
+            //
+         if ( print_auto_scale ) {
+//                sprintf(scale, "-geometry 612x792 -page 612x792 ");   // "Letter" size at 72 dpi
+//                sprintf(scale, "-sample 612x792 -page 612x792 ");     // "Letter" size at 72 dpi
+                xastir_snprintf(scale, sizeof(scale), "-page 1275x1650+0+0 "); // "Letter" size at 150 dpi
+            }
+            else
+                scale[0] = '\0';    // Empty string
 
 
-        if ( print_in_monochrome )
-            xastir_snprintf(mono, sizeof(mono), "-monochrome +dither " );    // Monochrome
-        else
-            xastir_snprintf(mono, sizeof(mono), "+dither ");                // Color
+            if ( print_in_monochrome )
+                xastir_snprintf(mono, sizeof(mono), "-monochrome +dither " );    // Monochrome
+            else
+                xastir_snprintf(mono, sizeof(mono), "+dither ");                // Color
 
 
-        if ( print_invert )
-            xastir_snprintf(invert, sizeof(invert), "-negate " );              // Reverse Colors
-        else
-            invert[0] = '\0';   // Empty string
+            if ( print_invert )
+                xastir_snprintf(invert, sizeof(invert), "-negate " );              // Reverse Colors
+            else
+                invert[0] = '\0';   // Empty string
 
 
-        if (debug_level & 512)
-            fprintf(stderr,"Width: %ld\tHeight: %ld\n", screen_width, screen_height);
+            if (debug_level & 512)
+                fprintf(stderr,"Width: %ld\tHeight: %ld\n", screen_width, screen_height);
 
 
-        if ( print_rotated ) {
-            xastir_snprintf(rotate, sizeof(rotate), "-rotate -90 " );
-
-#ifdef HAVE_OLD_GV
-            xastir_snprintf(format, sizeof(format), "-landscape " );
-#else   // HAVE_OLD_GV
-            xastir_snprintf(format, sizeof(format), "--orientation=landscape " );
-#endif  // HAVE_OLD_GV
-
-        }
-        else if ( print_auto_rotation ) {
-            // Check whether the width or the height of the pixmap is greater.
-            // If width is greater than height, rotate the image by 270 degrees.
-            if (screen_width > screen_height) {
+            if ( print_rotated ) {
                 xastir_snprintf(rotate, sizeof(rotate), "-rotate -90 " );
 
 #ifdef HAVE_OLD_GV
@@ -4201,46 +4189,63 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
                 xastir_snprintf(format, sizeof(format), "--orientation=landscape " );
 #endif  // HAVE_OLD_GV
 
-                if (debug_level & 512)
-                    fprintf(stderr,"Rotating\n");
+            }
+            else if ( print_auto_rotation ) {
+                // Check whether the width or the height of the
+                // pixmap is greater.  If width is greater than
+                // height, rotate the image by 270 degrees.
+                if (screen_width > screen_height) {
+                    xastir_snprintf(rotate, sizeof(rotate), "-rotate -90 " );
+
+#ifdef HAVE_OLD_GV
+                    xastir_snprintf(format, sizeof(format), "-landscape " );
+#else   // HAVE_OLD_GV
+                    xastir_snprintf(format, sizeof(format), "--orientation=landscape " );
+#endif  // HAVE_OLD_GV
+
+                    if (debug_level & 512)
+                        fprintf(stderr,"Rotating\n");
+                }
+                else {
+                    rotate[0] = '\0';   // Empty string
+                    if (debug_level & 512)
+                        fprintf(stderr,"Not Rotating\n");
+                }
             }
             else {
                 rotate[0] = '\0';   // Empty string
                 if (debug_level & 512)
                     fprintf(stderr,"Not Rotating\n");
             }
+
+
+            // Higher print densities require more memory and time
+            // to process
+            xastir_snprintf(density, sizeof(density), "-density %dx%d", print_resolution,
+                    print_resolution );
+
+            xastir_snprintf(temp, sizeof(temp), langcode("PRINT0013") );
+            statusline(temp,1);       // Converting to Postscript...
+
+
+            // Filters:
+            // Point (ok at higher dpi's)
+            // Box  (not too bad)
+            // Triangle (no)
+            // Hermite (no)
+            // Hanning (no)
+            // Hamming (no)
+            // Blackman (better but still not good)
+            // Gaussian (no)
+            // Quadratic (no)
+            // Cubic (no)
+            // Catrom (not too bad)
+            // Mitchell (no)
+            // Lanczos (no)
+            // Bessel (no)
+            // Sinc (not too bad)
+
         }
-        else {
-            rotate[0] = '\0';   // Empty string
-            if (debug_level & 512)
-                fprintf(stderr,"Not Rotating\n");
-        }
-
-
-        // Higher print densities require more memory and time to process
-        xastir_snprintf(density, sizeof(density), "-density %dx%d", print_resolution,
-                print_resolution );
-
-        xastir_snprintf(temp, sizeof(temp), langcode("PRINT0013") );
-        statusline(temp,1);       // Converting to Postscript...
-
-
-        // Filters:
-        // Point (ok at higher dpi's)
-        // Box  (not too bad)
-        // Triangle (no)
-        // Hermite (no)
-        // Hanning (no)
-        // Hamming (no)
-        // Blackman (better but still not good)
-        // Gaussian (no)
-        // Quadratic (no)
-        // Cubic (no)
-        // Catrom (not too bad)
-        // Mitchell (no)
-        // Lanczos (no)
-        // Bessel (no)
-        // Sinc (not too bad)
 
 #ifdef HAVE_CONVERT
         xastir_snprintf(command,
@@ -4274,51 +4279,13 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         if ( debug_level & 512 )
             fprintf(stderr,"Printing postscript file %s\n", ps_filename);
 
-// Note: This needs to be changed to "lp" for Solaris.
-// Also need to have a field to configure the printer name.  One
-// fill-in field could do both.
-//
 // Since we could be running SUID root, we don't want to be
 // calling "system" anyway.  Several problems with it.
-/*
+
+        // Bring up the postscript viewer
         xastir_snprintf(command,
             sizeof(command),
-            "%s %s",
-            printer_program,
-            ps_filename );
-
-        if ( debug_level & 512 )
-            fprintf(stderr,"%s\n", command);
-
-        if (printer_program[0] == '\0') {
-//            fprintf(stderr,"\n\nPrint: No print program defined!\n\n\n");
-            popup_message_always(langcode("POPEM00035"),
-                "No print program defined!");
-            return;
-        }
-
-        if ( system( command ) != 0 ) {
-//            fprintf(stderr,"\n\nPrint: Couldn't send to the printer!\n\n\n");
-            popup_message_always(langcode("POPEM00035"),
-                "Couldn't send to the printer!");
-            return;
-        }
-*/
-
-
-//#ifdef HAVE_GV
-        // Bring up the "gv" postscript viewer
-        xastir_snprintf(command,
-            sizeof(command),
-//            "%s %s-scale -2 -media Letter %s &",
-
-#ifdef HAVE_OLD_GV
-            "%s %s-scale -2 %s &",
-#else   // HAVE_OLD_GV
-            "%s %s--scale=-2 %s &",
-#endif  // HAVE_OLD_GV
-
-//            GV_PATH,
+            "%s %s %s &",
             previewer_program,
             format,
             ps_filename );
@@ -4334,12 +4301,11 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         }
 
         if ( system( command ) != 0 ) {
-//            fprintf(stderr,"\n\nPrint: Couldn't bring up the gv viewer!\n\n\n");
+//            fprintf(stderr,"\n\nPrint: Couldn't bring up the postscript viewer!\n\n\n");
             popup_message_always(langcode("POPEM00035"),
-                "Couldn't bring up the gv viewer!");
+                "Couldn't bring up the viewer!");
             return;
         }
-//#endif  // HAVE_GV
 
 /*
         if ( !(debug_level & 512) )
@@ -4355,7 +4321,6 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
 
     //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );
 
-//#endif  // HAVE_GV
 #endif // NO_XPM
 
 }
@@ -4467,7 +4432,10 @@ static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
 
 
 
-// Print_properties:  Prints the drawing area to a PostScript file
+
+// Print_properties:  Prints the drawing area to a PostScript file.
+// Provides various togglebuttons for configuring the "gv" previewer
+// only.
 //
 // Perhaps later:
 // 1) Select an area on the screen to print
@@ -4477,12 +4445,22 @@ void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
     static Widget pane, form, button_ok, button_cancel,
             sep, auto_scale,
 //            paper_size, paper_size_data, scale, scale_data, blank_background,
-//            res_label1, res_label2, res_x, res_y, button_preview,
+//            res_label1, res_label2, res_x, res_y,
             monochrome, invert;
     Atom delw;
 
     // Get rid of the Print dialog
     Print_postscript_destroy_shell(w, print_postscript_dialog, NULL );
+
+
+    // If we're not using "gv", skip the entire dialog below and go
+    // straight to the actual previewer function.
+    //
+    if ( !strcasestr(previewer_program,"gv") ) {
+        Print_preview(w, NULL, NULL);
+        return;
+    }
+
 
     if (!print_properties_dialog) {
 
@@ -4776,27 +4754,6 @@ XtSetSensitive(res_y,FALSE);
                                       NULL);
 
 
-/*
-        button_preview = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 1,
-                                      XmNrightOffset, 2,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      NULL);
-XtSetSensitive(button_preview,FALSE);
-*/
-
-
 //        button_ok = XtVaCreateManagedWidget(langcode("PRINT0011"),xmPushButtonGadgetClass, form,
         button_ok = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -4834,8 +4791,7 @@ XtSetSensitive(button_preview,FALSE);
                                       NULL);
 
 
-//        XtAddCallback(button_preview, XmNactivateCallback, Print_preview, "1" );
-        XtAddCallback(button_ok, XmNactivateCallback, Print_preview, "0" );
+        XtAddCallback(button_ok, XmNactivateCallback, Print_preview, NULL );
         XtAddCallback(button_cancel, XmNactivateCallback, Print_properties_destroy_shell, print_properties_dialog);
 
 
@@ -4912,7 +4868,6 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 
 
 
-//WE7U3
 // General print dialog.  From here we can either print Postscript
 // files to the device selected in this dialog, or head off to a
 // print preview program that might allow us a variety of print
@@ -4950,9 +4905,8 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                             NULL);
 
 
-//        button_print = XtVaCreateManagedWidget(langcode("PULDNFI015"),xmPushButtonGadgetClass, form,
-        button_print = XtVaCreateManagedWidget("Direct to:",xmPushButtonGadgetClass, form,
- 
+        // "Direct to:"
+        button_print = XtVaCreateManagedWidget(langcode("PRINT1001"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -4987,9 +4941,8 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       NULL);
 
 
-//        button_preview = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
-        button_preview = XtVaCreateManagedWidget("Via Previewer:",xmPushButtonGadgetClass, form,
- 
+        // "Via Previewer:"
+        button_preview = XtVaCreateManagedWidget(langcode("PRINT1002"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, button_print,
                                       XmNtopOffset, 5,
@@ -7364,7 +7317,6 @@ void index_save_to_file(void) {
 
 
 
-//WE7U2
 // This function is currently not used.
 //
 // Function used to add map directories/files to the in-memory map
@@ -7595,7 +7547,6 @@ static void index_sort(void) {
 
 
 
-//WE7U2
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.

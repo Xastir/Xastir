@@ -1147,6 +1147,10 @@ PRINT0013|Convirtiendo a Postscript...||
 PRINT0014|Creando archivo de impresión Finalizado||
 PRINT0015|Estado de Impresora||
 #
+# Print Dialog
+PRINT1001|Direct to:||
+PRINT1002|Via Previewer:||
+#
 # Diálogo de localizar forma
 FEATURE001|Nombre:||
 FEATURE002|Estado/Provincia:||

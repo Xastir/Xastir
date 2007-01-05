@@ -1144,6 +1144,10 @@ PRINT0013|Conversione in Postscript...||
 PRINT0014|Fine elaborazione file.||
 PRINT0015|Stato del processo di stampa||
 #
+# Print Dialog
+PRINT1001|Direct to:||
+PRINT1002|Via Previewer:||
+#
 # Finestra di dialogo localizza elemento mappa
 FEATURE001|Nome:||
 FEATURE002|Stato/Provincia:||

@@ -1158,6 +1158,10 @@ PRINT0013|Converteren naar postscript...||
 PRINT0014|Gereed met aanmaken print bestand||
 PRINT0015|Printer status||
 #
+# Print Dialog
+PRINT1001|Direct to:||
+PRINT1002|Via Previewer:||
+#
 # Locate Feature Dialog
 FEATURE001|Naam:||
 FEATURE002|Provincie:||
