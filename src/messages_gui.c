@@ -54,7 +54,8 @@ static xastir_mutex auto_msg_dialog_lock;
 xastir_mutex send_message_dialog_lock;
 
 void select_station_type(int ii);
- 
+
+
 
 
 
@@ -823,6 +824,8 @@ void Send_message_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
     int ii;
 //    char *temp_ptr;
 //    char temp1[MAX_LINE_SIZE+1];
+
+//fprintf(stderr,"3Send_message_destroy_shell() start\n");
  
     ii=atoi((char *)clientData);
 
@@ -857,6 +860,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
         XtDestroyWidget(mw[ii].send_message_dialog);
     }
 
+
     mw[ii].send_message_dialog = (Widget)NULL;
     mw[ii].to_call_sign[0] = '\0';
     mw[ii].send_message_call_data = (Widget)NULL;
@@ -873,6 +877,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
  
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_destroy_shell" );
 
+//fprintf(stderr,"3Send_message_destroy_shell() finished\n");
+ 
 }
 
 
@@ -1300,7 +1306,7 @@ void Clear_messages_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char call[20];
 
-    if(clientData !=NULL) {
+    if(clientData != NULL) {
         xastir_snprintf(call,
             sizeof(call),
             "%s",
@@ -1313,13 +1319,34 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 
 
 
+// These are used for callbacks below so that we have a unique
+// identifier for the XtRemoveCallback() function to work with.  The
+// last two parameters of an XtAddCallback() or XtRemoveCallback()
+// must be unique.
+//
+void Send_message_now_1( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Send_message_now( w, clientData, callData);
+}
+void Send_message_now_2( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Send_message_now( w, clientData, callData);
+}
+void Send_message_now_3( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Send_message_now( w, clientData, callData);
+}
+void Send_message_now_4( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Send_message_now( w, clientData, callData);
+}
+
+
+
+
+
 void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
 
-//fprintf(stderr, "  build:   i:%d  hamhud:%d  d700:%d  d7:%d\n", i, hamhud, d700, d7);
+//fprintf(stderr, "\n  build:   i:%d  hamhud:%d  d700:%d  d7:%d\n", i, hamhud, d700, d7);
 
     // HamHUD mode (Here we're assuming the 4x20 LCD in the HamHUD-II)
     if (hamhud) {
-
         // Draw a textfield widget of size 20
         mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
             xmTextFieldWidgetClass, 
@@ -1580,17 +1607,24 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             NULL);
     }
 
+
+//fprintf(stderr,"Starting to add callbacks\n");
+
+
     if (mw[i].message_data_line1) // If exists, add another callback
-        XtAddCallback(mw[i].message_data_line1, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].message_data_line1, XmNactivateCallback, Send_message_now_1, (XtPointer)mw[i].win);
 
     if (mw[i].message_data_line2) // If exists, add another callback
-        XtAddCallback(mw[i].message_data_line2, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].message_data_line2, XmNactivateCallback, Send_message_now_2, (XtPointer)mw[i].win);
 
     if (mw[i].message_data_line3) // If exists, add another callback
-        XtAddCallback(mw[i].message_data_line3, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].message_data_line3, XmNactivateCallback, Send_message_now_3, (XtPointer)mw[i].win);
 
     if (mw[i].message_data_line4) // If exists, add another callback
-        XtAddCallback(mw[i].message_data_line4, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].message_data_line4, XmNactivateCallback, Send_message_now_4, (XtPointer)mw[i].win);
+
+//fprintf(stderr,"Exiting build_send_message_input_boxes()\n");
+
 }
 
 
@@ -1602,50 +1636,46 @@ void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
 //fprintf(stderr, "\nrebuild:  ii:%d  hamhud:%d  d700:%d  d7:%d\n", ii, hamhud, d700, d7);
 
 
-    // Take down the dialog
-//    XtPopdown(mw[ii].send_message_dialog);
-
-
-    // Remove callbacks 
-    if (mw[ii].message_data_line1) // If exists, remove callback callback
-        XtRemoveCallback(mw[ii].message_data_line1, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
-
-    if (mw[ii].message_data_line2) // If exists, remove callback
-        XtRemoveCallback(mw[ii].message_data_line2, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
-
-    if (mw[ii].message_data_line3) // If exists, remove callback
-        XtRemoveCallback(mw[ii].message_data_line3, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
-
-    if (mw[ii].message_data_line4) // If exists, remove callback
-        XtRemoveCallback(mw[ii].message_data_line4, XmNactivateCallback, Send_message_now, (XtPointer)mw[ii].win);
-
+// Lesstif appears to have a problem with removing/adding widgets to
+// a dialog that's already been created and will segfault in this
+// case.  In order to make LSB-Xastir more reliable we disable the
+// dynamically-created widget code here and stick with the default
+// setup (one long TextField widget for input).
+//
+// Perhaps we need to do a Lesstif detect and do the same thing
+// anytime Lesstif is used as well?
+//
+#ifndef __LSB__
 
     // Remove the current message widgets
-    if (mw[ii].message_data_line4)
+    if (mw[ii].message_data_line4) {
         XtDestroyWidget(mw[ii].message_data_line4);
+    }
 
-    if (mw[ii].message_data_line3)
+    if (mw[ii].message_data_line3) {
         XtDestroyWidget(mw[ii].message_data_line3);
+    }
 
-    if (mw[ii].message_data_line2)
+    if (mw[ii].message_data_line2) {
         XtDestroyWidget(mw[ii].message_data_line2);
+    }
 
-    if (mw[ii].message_data_line1)
+    if (mw[ii].message_data_line1) {
         XtDestroyWidget(mw[ii].message_data_line1);
+    }
 
 
-    mw[ii].message_data_line1 = NULL;
-    mw[ii].message_data_line2 = NULL;
-    mw[ii].message_data_line3 = NULL;
-    mw[ii].message_data_line4 = NULL;
+    mw[ii].message_data_line1 = (Widget)NULL;
+    mw[ii].message_data_line2 = (Widget)NULL;
+    mw[ii].message_data_line3 = (Widget)NULL;
+    mw[ii].message_data_line4 = (Widget)NULL;
 
 
     // Build the new boxes
     build_send_message_input_boxes(ii, hamhud, d700, d7);
 
+#endif  // __LSB__
 
-    // Bring up the reconstructed dialog
-//    XtPopup(mw[ii].send_message_dialog, XtGrabNone);
 }
 
 
@@ -1718,6 +1748,11 @@ void select_station_type(int ii) {
     char *temp_ptr;
 
 
+    if (mw[ii].send_message_call_data == NULL) {
+        fprintf(stderr,"messages_gui.c:select_station_type():mw[ii].send_message_call_data is NULL\n");
+        return;
+    }
+
     temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
     xastir_snprintf(call_sign,
         sizeof(call_sign),
@@ -1762,15 +1797,18 @@ void select_station_type(int ii) {
         }
 
         // If not D700 or D7, check for HamHUD in the TOCALL.
-        // APHH2/APRHH2.  We'll skip the version number soas to
+        // APHH2/APRHH2.  We'll skip the version number so-as to
         // catch future versions as well.
         //
         if (!d700 && !d7) {
-            if (strncmp(p_station->node_path_ptr,"APRHH",5) == 0
-                    || strncmp(p_station->node_path_ptr,"APHH",4) == 0) {
-                hamhud++;
+            if (p_station->node_path_ptr) {
+                if (strncmp(p_station->node_path_ptr,"APRHH",5) == 0
+                        || strncmp(p_station->node_path_ptr,"APHH",4) == 0) {
+                    hamhud++;
+                }
             }
         }
+
 
         if (hamhud) {
 //            fprintf(stderr,"HamHUD found\n");
@@ -1843,10 +1881,9 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     int groupon;
     int box_len;
     Atom delw;
-//    DataRow *p_station;
 
 
-//fprintf(stderr,"Send_message\n");
+//fprintf(stderr,"\n1Send_message\n");
 
     groupon=0;
     box_len=105;
@@ -2248,7 +2285,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
  
         XtAddCallback(mw[i].button_ok, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
 
-        XtAddCallback(mw[i].button_cancel, XmNactivateCallback, Send_message_destroy_shell,(XtPointer)mw[i].win);
+        XtAddCallback(mw[i].button_cancel, XmNactivateCallback, Send_message_destroy_shell, (XtPointer)mw[i].win);
  
 // Note group messages isn't implemented fully yet.  When it is, the following might have
 // to change again:
@@ -2290,10 +2327,15 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
     }
 
+//fprintf(stderr,"2calling select_station_type()\n");
+
     // Re-arrange the outgoing message boxes based on the type of
     // device we're talking to.
     select_station_type(i);
  
+//fprintf(stderr,"2returned from select_station_type()\n");
+//fprintf(stderr,"1end of Send_message()\n");
+
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 
 }
