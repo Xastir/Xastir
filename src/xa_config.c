@@ -319,7 +319,12 @@ char *get_data_base_dir(char *dir) {
     char *env_ptr;
 
     // Snag this variable from the environment if it exists there,
-    // else grab it from the define in config.h
+    // else grab it from the define from the compile command-line
+    // that should look like one of these:
+    //
+    // -DXASTIR_DATA_BASE=\"/opt/Xastir/share/xastir\"
+    // -DXASTIR_DATA_BASE=\"/usr/local/share/xastir\"
+    //
     xastir_snprintf(base,
         sizeof(base),
         "%s",
