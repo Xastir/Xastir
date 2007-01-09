@@ -1345,6 +1345,12 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
 
 //fprintf(stderr, "\n  build:   i:%d  hamhud:%d  d700:%d  d7:%d\n", i, hamhud, d700, d7);
 
+
+// Skip most of these sections and go to the default section if
+// using LSB.  We have problems with Lesstif segfaulting on us
+// otherwise.
+#ifndef __LSB__
+
     // HamHUD mode (Here we're assuming the 4x20 LCD in the HamHUD-II)
     if (hamhud) {
         // Draw a textfield widget of size 20
@@ -1582,7 +1588,12 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
    }
 
     // Standard APRS Mode
-   else {  // Standard APRS message box size (67)
+   else // Standard APRS message box size (67)
+
+#endif  // __LSB__
+
+    {
+
        mw[i].message_data_line1 = XtVaCreateManagedWidget("Send_message smmd", 
             xmTextFieldWidgetClass, 
             mw[i].form,
@@ -2069,7 +2080,12 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+#ifndef __LSB__
         XtAddCallback(mw[i].D7_mode,XmNvalueChangedCallback,D7_Msg,(XtPointer)i);
+#else   // __LSB__
+        XtSetSensitive(mw[i].D7_mode, FALSE);
+#endif  // __LSB__
 
         mw[i].D700_mode =XtVaCreateManagedWidget("D700",
                 xmToggleButtonGadgetClass,
@@ -2088,7 +2104,12 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
             NULL);
+
+#ifndef __LSB__
         XtAddCallback(mw[i].D700_mode,XmNvalueChangedCallback,D700_Msg,(XtPointer)i);
+#else   // __LSB__
+        XtSetSensitive(mw[i].D700_mode, FALSE);
+#endif  // __LSB__
 
         mw[i].HamHUD_mode =XtVaCreateManagedWidget("HamHUD",
                 xmToggleButtonGadgetClass,
@@ -2107,7 +2128,12 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
             NULL);
+
+#ifndef __LSB__
         XtAddCallback(mw[i].HamHUD_mode,XmNvalueChangedCallback,HamHUD_Msg,(XtPointer)i);
+#else   // __LSB__
+        XtSetSensitive(mw[i].HamHUD_mode, FALSE);
+#endif  // __LSB__
 
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
                 xmLabelWidgetClass, 
