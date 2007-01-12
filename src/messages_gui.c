@@ -977,6 +977,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             temp_ptr);
         XtFree(temp_ptr);
 
+#ifndef __LSB__
+
         // If D700/D7 mode, fetch message_data_line2
         if (d700 || d7) {
             temp_ptr = XmTextFieldGetString(mw[ii].message_data_line2);
@@ -1032,7 +1034,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
                 temp_line3,
                 temp_line4);
         }
-        else {  // Use line1 only
+        else
+
+#endif  // __LSB__ 
+
+        {  // Use line1 only
             xastir_snprintf(temp2,
                 sizeof(temp2),
                 "%s",
@@ -2387,6 +2393,9 @@ void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
 
             // Bring up a Send Message box for each callsign found.
             Send_message_call(NULL, message_pool[ii].to_call_sign, NULL);
+
+            // Fill in the old data in case it doesn't auto-fill
+            Check_new_call_messages(NULL, (XtPointer)ii, NULL);
         }
     }
 }
