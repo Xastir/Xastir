@@ -245,6 +245,7 @@ PULDQUS003|Pregunta a Estaciones WX|W|
 PULDNMG004|Fijar Mensaje en Contestación Automática|F|
 PULDNMG005|Activar Auto contestación de Mensaje|A|
 PULDNMG006|Satélite Modo de Reconocimiento|M|
+PULDNMG007|Show Pending Messages|P|
 #
 # Menú de Interfaces
 PULDNTNT04|Interface Control||

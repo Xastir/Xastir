@@ -241,6 +241,7 @@ PULDQUS003|WX Stations Query|W|
 PULDNMG004|Modify Auto Reply Message|A|
 PULDNMG005|Enable Auto Reply Message||
 PULDNMG006|Satellite Ack Mode|M|
+PULDNMG007|Show Pending Messages|P|
 #
 # Menu "Interfaces"
 PULDNTNT04|Interface Control|C|

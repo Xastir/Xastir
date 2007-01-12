@@ -246,6 +246,7 @@ PULDQUS003|Pergunta a estacoes WX|W|
 PULDNMG004|Modificar mensagem de resposta automatica|f|
 PULDNMG005|Activar mensagem de resposta automatica|A|
 PULDNMG006|Modo de reconhecimento por satelite|M|
+PULDNMG007|Show Pending Messages|P|
 #
 # Menu de interfaces
 PULDNTNT04|Interface Control||

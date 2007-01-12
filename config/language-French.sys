@@ -243,6 +243,7 @@ PULDQUS003|Info stations météo|m|
 PULDNMG004|Configurer réponse automatique|o|
 PULDNMG005|Activer réponse automatique|R|
 PULDNMG006|Mode "Satellite Ack"|M|
+PULDNMG007|Show Pending Messages|P|
 #
 # Menu "Interfaces"
 PULDNTNT04|Contrôle de l'interface|C|

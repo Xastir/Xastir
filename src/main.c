@@ -5071,6 +5071,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         smart_beacon_button, map_indexer_button,
         map_all_indexer_button, auto_msg_set_button,
         message_button, send_message_to_button,
+        show_pending_messages_button,
         open_messages_group_button, clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
         filter_data_button, filter_display_button,
@@ -7472,6 +7473,13 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+    show_pending_messages_button = XtVaCreateManagedWidget(langcode("PULDNMG007"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDNMG007"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     open_messages_group_button = XtVaCreateManagedWidget(langcode("PULDNMG002"),
             xmPushButtonGadgetClass,
             messagepane,
@@ -7839,6 +7847,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(coordinate_calculator_button, XmNactivateCallback,Coordinate_calc,"");
 
     XtAddCallback(send_message_to_button,       XmNactivateCallback,Send_message,NULL);
+    XtAddCallback(show_pending_messages_button, XmNactivateCallback,Show_pending_messages,NULL);
     XtAddCallback(open_messages_group_button,   XmNactivateCallback,Send_message,"*");
     XtAddCallback(clear_messages_button,XmNactivateCallback,Clear_messages,NULL);
     XtAddCallback(save_button,          XmNactivateCallback,Save_Config,NULL);

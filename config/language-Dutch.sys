@@ -254,6 +254,7 @@ PULDQUS003|WX Stations Aanvraag|t|
 PULDNMG004|Automatisch Antwoord Bericht|A|
 PULDNMG005|Automatisch Beantwoorden|B|
 PULDNMG006|Sateliet Bevestigings Mode|M|
+PULDNMG007|Show Pending Messages|P|
 #
 # Menu "Interfaces"
 PULDNTNT04|Interface besturing||

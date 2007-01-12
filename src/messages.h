@@ -81,6 +81,8 @@ typedef struct {
 } Message_Window;
 
 
+extern Message_transmit message_pool[MAX_OUTGOING_MESSAGES+1];
+
 extern Widget auto_msg_on, auto_msg_off;
 
 extern int auto_reply;
@@ -105,6 +107,7 @@ extern xastir_mutex send_message_dialog_lock;
 extern void messages_gui_init(void);
 extern void get_send_message_path(char *callsign, char *path, int path_size);
 extern void Send_message(Widget w, XtPointer clientData, XtPointer callData);
+extern void Show_pending_messages(Widget w, XtPointer clientData, XtPointer callData);
 extern void Clear_messages(Widget w, XtPointer clientData, XtPointer callData);
 void kick_outgoing_timer(char *callsign);
 extern void Send_message_call(Widget w, XtPointer clientData, XtPointer callData);

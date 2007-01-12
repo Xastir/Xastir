@@ -250,6 +250,7 @@ PULDQUS003|Abfrage Wetterstationen|W|
 PULDNMG004|Setze automatische Antwort|t|
 PULDNMG005|Automatische Antwort|A|
 PULDNMG006|Satelliten ACK Modus|M|
+PULDNMG007|Show Pending Messages|P|
 #
 # Menu "Schnittstellen"
 PULDNTNT04|Schnittstellensteuerung||

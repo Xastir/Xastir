@@ -2370,6 +2370,31 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 
 
 
+// Bring up a Send Message dialog for each QSO that has pending
+// outbound messages.
+//
+void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    int ii;
+
+
+    // Look through the outgoing message queue.  Find all callsigns
+    // that we're currently trying to send messages to.
+    //
+    for (ii = 0; ii < MAX_OUTGOING_MESSAGES; ii++) {
+
+        // If it matches the callsign we're talking to
+        if (message_pool[ii].active==MESSAGE_ACTIVE) {
+
+            // Bring up a Send Message box for each callsign found.
+            Send_message_call(NULL, message_pool[ii].to_call_sign, NULL);
+        }
+    }
+}
+
+
+
+
+
 /************************* Auto msg **************************************/
 /*************************************************************************/
 void Auto_msg_option( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
