@@ -4147,7 +4147,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         // If we're not using "gv", skip most of the code below and
         // go straight to the previewer program portion of the code.
         //
-        if ( strcasestr(previewer_program,"gv") ) {
+        if ( strstr(previewer_program,"gv") ) {
 
             // Convert it to a postscript file for printing.  This
             // depends on the ImageMagick command "convert".
@@ -4456,7 +4456,7 @@ void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
     // If we're not using "gv", skip the entire dialog below and go
     // straight to the actual previewer function.
     //
-    if ( !strcasestr(previewer_program,"gv") ) {
+    if ( !strstr(previewer_program,"gv") ) {
         Print_preview(w, NULL, NULL);
         return;
     }
