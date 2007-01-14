@@ -42,6 +42,10 @@
 #include "leak_detection.h"
 
 
+#if defined(__LSB__) || defined(LESSTIF_VERSION)
+  #define NO_DYNAMIC_WIDGETS 1
+#endif
+
 
 #define MAX_PATH 200
 
@@ -936,9 +940,13 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
     char temp1[MAX_CALLSIGN+1];
     char temp2[68];
     char temp_line1[68] = "";
+
+#ifndef NO_DYNAMIC_WIDGETS
     char temp_line2[23] = "";
     char temp_line3[23] = "";
     char temp_line4[10] = "";
+#endif	// NO_DYNAMIC_WIDGETS
+
     char path[200];
     int ii, jj;
     char *temp_ptr;
@@ -977,7 +985,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             temp_ptr);
         XtFree(temp_ptr);
 
-#ifndef __LSB__
+#ifndef NO_DYNAMIC_WIDGETS
 
         // If D700/D7 mode, fetch message_data_line2
         if (d700 || d7) {
@@ -1036,7 +1044,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         }
         else
 
-#endif  // __LSB__ 
+#endif  // NO_DYNAMIC_WIDGETS 
 
         {  // Use line1 only
             xastir_snprintf(temp2,
@@ -1355,7 +1363,8 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
 // Skip most of these sections and go to the default section if
 // using LSB.  We have problems with Lesstif segfaulting on us
 // otherwise.
-#ifndef __LSB__
+
+#ifndef NO_DYNAMIC_WIDGETS
 
     // HamHUD mode (Here we're assuming the 4x20 LCD in the HamHUD-II)
     if (hamhud) {
@@ -1596,7 +1605,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
     // Standard APRS Mode
    else // Standard APRS message box size (67)
 
-#endif  // __LSB__
+#endif  // NO_DYNAMIC_WIDGETS
 
     {
 
@@ -1661,8 +1670,8 @@ void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
 //
 // Perhaps we need to do a Lesstif detect and do the same thing
 // anytime Lesstif is used as well?
-//
-#ifndef __LSB__
+
+#ifndef NO_DYNAMIC_WIDGETS
 
     // Remove the current message widgets
     if (mw[ii].message_data_line4) {
@@ -1691,7 +1700,7 @@ void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
     // Build the new boxes
     build_send_message_input_boxes(ii, hamhud, d700, d7);
 
-#endif  // __LSB__
+#endif  // NO_DYNAMIC_WIDGETS
 
 }
 
@@ -2086,12 +2095,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
-#ifndef __LSB__
+#ifndef NO_DYNAMIC_WIDGETS
         XtAddCallback(mw[i].D7_mode,XmNvalueChangedCallback,D7_Msg,(XtPointer)i);
-#else   // __LSB__
+#else   // NO_DYNAMIC_WIDGETS
         XtSetSensitive(mw[i].D7_mode, FALSE);
-#endif  // __LSB__
+#endif  // NO_DYNAMIC_WIDGETS
 
         mw[i].D700_mode =XtVaCreateManagedWidget("D700",
                 xmToggleButtonGadgetClass,
@@ -2111,11 +2119,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
             NULL);
 
-#ifndef __LSB__
+#ifndef NO_DYNAMIC_WIDGETS
         XtAddCallback(mw[i].D700_mode,XmNvalueChangedCallback,D700_Msg,(XtPointer)i);
-#else   // __LSB__
+#else   // NO_DYNAMIC_WIDGETS
         XtSetSensitive(mw[i].D700_mode, FALSE);
-#endif  // __LSB__
+#endif  // NO_DYNAMIC_WIDGETS
 
         mw[i].HamHUD_mode =XtVaCreateManagedWidget("HamHUD",
                 xmToggleButtonGadgetClass,
@@ -2135,11 +2143,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
             NULL);
 
-#ifndef __LSB__
+#ifndef NO_DYNAMIC_WIDGETS
         XtAddCallback(mw[i].HamHUD_mode,XmNvalueChangedCallback,HamHUD_Msg,(XtPointer)i);
-#else   // __LSB__
+#else   // NO_DYNAMIC_WIDGETS
         XtSetSensitive(mw[i].HamHUD_mode, FALSE);
-#endif  // __LSB__
+#endif  // NO_DYNAMIC_WIDGETS
 
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),
                 xmLabelWidgetClass, 
