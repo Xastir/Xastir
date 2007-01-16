@@ -128,6 +128,12 @@ strip src/xastir
 strip src/xastir_udp_client
 strip src/testawk
 strip callpass/callpass
+
+# Get rid of the LSB-Xastir install files so that we get a clean
+# install each time to make the .tar.bz2 file from.
+echo Removing /opt/Xastir/
+sudo /bin/rm -rf /opt/Xastir
+
 (sudo make install 2>&1) | tee install.log
 
 # Copy GraphicsMagick "gm" binary to the Xastir area
@@ -138,12 +144,19 @@ sudo /bin/cp /opt/lsb-tmp/bin/gm /opt/Xastir/bin/.
 (lsbappchk -nA /opt/Xastir/bin/xastir_udp_client 2>&1) | grep -v SHT_NOTE
 (lsbappchk -nA /opt/Xastir/bin/gm 2>&1) | grep -v SHT_NOTE
 
-#tar czf xastir.tgz /opt/Xastir
-#sudo rm -rf /usr/src/packages/SOURCES/xastir*
-#sudo cp xastir.tgz /usr/src/packages/SOURCES/.
-#rpmbuild -bb --clean xastir-lsb.spec
+REV="1.8.5"
 
-tar cjf xastir-lsb-1.8.5.tar.bz2 /opt/Xastir
-#scp xastir-lsb-1.8.5.tar.bz2 eskimo:ftp/aprs/xastir/LSB/.
+FILENAME=`date +xastir-lsb-$REV-%Y-%b-%d.tar.bz2`
+
+tar cjf $FILENAME /opt/Xastir
+
+# Remove old versions of the package from the ftp site
+ssh eskimo rm ftp/aprs/xastir/LSB/xastir-lsb*
+
+# Upload the latest version
+scp xastir-lsb-$REV-* eskimo:ftp/aprs/xastir/LSB/.
+
+# Fix the permissions so that people can download the file
+ssh eskimo chmod 644 ftp/aprs/xastir/LSB/*
 
 
