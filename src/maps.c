@@ -1163,16 +1163,16 @@ void draw_vector_ll(Widget w,
     // The format conversions you'll need if you try to
     // compress this into two lines will get you into
     // trouble.
-    x1i = x1L - NW_corner_longitude;
+    x1i = (int)(x1L - NW_corner_longitude);
     x1i = x1i / scale_x;
  
-    y1i = y1L - NW_corner_latitude;
+    y1i = (int)(y1L - NW_corner_latitude);
     y1i = y1i / scale_y;
 
-    x2i = x2L - NW_corner_longitude;
+    x2i = (int)(x2L - NW_corner_longitude);
     x2i = x2i / scale_x;
  
-    y2i = y2L - NW_corner_latitude;
+    y2i = (int)(y2L - NW_corner_latitude);
     y2i = y2i / scale_y;
 
     if (skip_duplicates) {
