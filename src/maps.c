@@ -1141,11 +1141,10 @@ void draw_vector_ll(Widget w,
     //fprintf(stderr,"%lf,%lf  %lf,%lf\t",x1,y1,x2,y2);
     if ( !clip2d(&x1, &y1, &x2, &y2) ) {
         // Skip this vector
-        //fprintf(stderr,"Line not visible\n");
-        //fprintf(stderr,"%lf,%lf  %lf,%lf\n",x1,y1,x2,y2);
+//fprintf(stderr,"Line not visible: %lf,%lf  %lf,%lf\n",y1,x1,y2,x2);
         return;
     }
-    //fprintf(stderr,"%lf,%lf  %lf,%lf\n",x1,y1,x2,y2);
+//fprintf(stderr,"%lf,%lf  %lf,%lf\n",x1,y1,x2,y2);
  
     // Convert the points to the Xastir coordinate system.
     convert_to_xastir_coordinates(&x1L,
@@ -1158,20 +1157,22 @@ void draw_vector_ll(Widget w,
         x2,
         y2);
 
+//fprintf(stderr,"%ld,%ld  %ld,%ld\n",x1L,y1L,x2L,y2L);
+ 
     // Convert to screen coordinates.  Careful here!
     // The format conversions you'll need if you try to
     // compress this into two lines will get you into
     // trouble.
-    x1i = x1 - NW_corner_longitude;
+    x1i = x1L - NW_corner_longitude;
     x1i = x1i / scale_x;
  
-    y1i = y1 - NW_corner_latitude;
+    y1i = y1L - NW_corner_latitude;
     y1i = y1i / scale_y;
 
-    x2i = x2 - NW_corner_longitude;
+    x2i = x2L - NW_corner_longitude;
     x2i = x2i / scale_x;
  
-    y2i = y2 - NW_corner_latitude;
+    y2i = y2L - NW_corner_latitude;
     y2i = y2i / scale_y;
 
     if (skip_duplicates) {
@@ -1179,10 +1180,18 @@ void draw_vector_ll(Widget w,
                 && last_x2i == x2i
                 && last_y1i == y1i
                 && last_y2i == y2i) {
+//            fprintf(stderr,"Duplicate line\n");
             return;
         }
     }
+//fprintf(stderr,"NW_corner_latitude:%ld, NW_corner_longitude:%ld, scale_x:%ld, scale_y:%ld\n",
+//    NW_corner_latitude,
+//    NW_corner_longitude,
+//    scale_x,
+//    scale_y);
 
+//fprintf(stderr,"%d,%d  %d,%d\n\n",x1i,y1i,x2i,y2i);
+ 
     // XDrawLine uses 16-bit unsigned integers
     // (shorts).  Make sure we stay within the limits.
     // clip2d() should make sure of this anyway as it clips lines to
@@ -1759,9 +1768,11 @@ void draw_major_utm_mgrs_grid(Widget w) {
     char mgrs_lr_digraph[3] = "  ";  // MGRS digraph for lower right corner of screen
 
  
+//fprintf(stderr,"draw_major_utm_mgrs_grid start\n");
+ 
     if (!long_lat_grid) // We don't wish to draw a map grid
         return;
-    
+ 
     // Vertical lines:
 
     // Draw the vertical vectors (except for the irregular regions
@@ -1972,6 +1983,9 @@ void draw_major_utm_mgrs_grid(Widget w) {
     // Set the line width and style in the GC to 1 pixel wide for
     // drawing the smaller grid
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+
+//fprintf(stderr,"draw_major_utm_mgrs_grid end\n");
+ 
 } // End of draw_major_utm_mgrs_grid()
 
 
@@ -3240,7 +3254,7 @@ void draw_grid(Widget w) {
     // UTM grid and the complete Lat/Long grid.
     (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);
-    (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
+    (void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
 
     if (coordinate_system == USE_UTM
             || coordinate_system == USE_UTM_SPECIAL
@@ -3248,6 +3262,9 @@ void draw_grid(Widget w) {
 
         int ret_code;
 
+//draw_vector_ll(w, -5.0, -5.0,  5.0,  5.0, gc_tint, pixmap_final, 0);
+//draw_vector_ll(w,  5.0,  5.0, -5.0, -5.0, gc_tint, pixmap_final, 0);
+ 
         // Draw major UTM/MGRS zones
         draw_major_utm_mgrs_grid(w);
  
