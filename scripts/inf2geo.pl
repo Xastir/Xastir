@@ -17,7 +17,8 @@
 #
 # Read in .inf file (from Ui-View)
 # Convert the lat/long coordinates into dd.dddd format
-# Get the image extents via "identify -ping filename"
+# Get the image extents via "identify -ping filename" or
+# "gm identify -ping filename".
 # Write out the .geo file
 # Note that this program assumes (and converts to)
 # lower-case for the filename.
@@ -118,6 +119,9 @@ sub makeGeo {
     # test.gif GIF 1148x830+0+0 PseudoClass 256c Palette 8-bit 48kb 0.4u 0:01
     # in later versions of ImageMagick.
     #
+    # GraphicsMagick returns a string like this:
+    # i4-mo.gif GIF 1020x581+0+0 PseudoClass 256c 8-bit 475.8k 0.050u 0:01
+    #
 
     chomp($string);
     $string =~ s/.*\s(\d+x\d+).*/$1/;    # Grab the 1148x830 portion
@@ -211,21 +215,28 @@ sub findImageFile {
     $filename = shift;
     @extensions = ("gif", "bmp", "jpg", "png", "emf");
     foreach $xtn (@extensions) {
-	$try_filename = "$filename.$xtn";
-#	print "Looking for $try_filename\n";
-	$string = `identify -ping $try_filename 2>/dev/null`;
-	if ($string ne "") {
-	    $filename = $try_filename;
-	    $image_size = $string;
-	}
+        $try_filename = "$filename.$xtn";
+#        print "Looking for $try_filename\n";
+
+        # Try GraphicsMagick's 'gm' first
+        $string = `gm identify -ping $try_filename 2>/dev/null`;
+        if ($string eq "") {
+            # Else try ImageMagick's 'identify'
+            $string = `identify -ping $try_filename 2>/dev/null`;
+        }
+        if ($string ne "") {
+            # Found the file and GM or IM
+            $filename = $try_filename;
+            $image_size = $string;
+        }
     }
     if ($image_size eq "") {
-	print "Image file not found for $filename, maybe be a case problem\n" ;
-	return;
+        print "Image file not found for $filename, may be be a case problem\n" ;
+        print "or a problem finding GraphicsMagick's 'gm' or ImageMagick's 'identify' program\n";
+        print "Make sure that either GraphicsMagick or ImageMagick is installed.\n";
+        return;
     }
     
     print "Found this image: $image_size\n";
     return ($filename, $image_size);
 }
-
-
