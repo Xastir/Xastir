@@ -339,8 +339,8 @@ void draw_toporama_map (Widget w,
         my_zoom = 0.02;
              
     xastir_snprintf(fileimg, sizeof(fileimg),
-//        "http://mm.aprs.net/toporama.cgi?set=%d|lat=%f|lon=%f|width=%d|height=%d|zoom=%0.3f",
-        "http://www2.findu.com/toporama.cgi?set=%d|lat=%f|lon=%f|width=%d|height=%d|zoom=%0.3f",
+        "http://mm.aprs.net/toporama.cgi?set=%d|lat=%f|lon=%f|width=%d|height=%d|zoom=%0.3f",
+//        "http://www2.findu.com/toporama.cgi?set=%d|lat=%f|lon=%f|width=%d|height=%d|zoom=%0.3f",
         toporama_flag,  // Scale, 50 or 250
         lat_center,
         long_center,
