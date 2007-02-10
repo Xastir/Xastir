@@ -567,6 +567,7 @@ Global Operations:
 LeftClick       Select Menu or GUI Item (when in menus or dialogs)
 LeftDblClick    FetchAlertText (when in View->Wx Alerts dialog)
 RightClick      OptionsMenu
+Home            Center the map on your home station
 PageUp          ZoomOut
 PageDown        ZoomIn
 ArrowUp         PanUp
