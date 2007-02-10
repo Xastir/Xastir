@@ -179,7 +179,7 @@ BUILD db2APRS
 
 It's the usual:
 
-$ cd xastir/src/Davis
+$ cd xastir/Davis
 $ ./bootstrap.sh
 $ ./configure
 $ make
