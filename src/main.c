@@ -880,6 +880,7 @@ static void Pan_left_less(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_right(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_right_less(Widget w, XtPointer clientData, XtPointer calldata);
 void Center_Zoom(Widget w, XtPointer clientData, XtPointer calldata);
+void Go_Home(Widget w, XtPointer clientData, XtPointer calldata);
 int center_zoom_override = 0;
 Widget center_zoom_dialog = (Widget)NULL;
 Widget custom_zoom_dialog = (Widget)NULL;
@@ -10163,7 +10164,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
         // We want to branch from the keysym instead of the keycode
         (void)XLookupString( (XKeyEvent *)event, buffer, bufsize, &key, &compose );
-        //fprintf(stderr,"main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
+	//fprintf(stderr,"main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
+
+        // keycode ??, keysym 65360 is Home (0x???? on sun kbd)
+//        if ((key == 65360) || (key == 0x????)) {
+        if (key == 65360) {
+            Go_Home(w, NULL, NULL);
+        }
 
         // keycode 99, keysym 65365 is PageUp (0xffda on sun kbd)
         if ((key == 65365) || (key == 0xffda)) {
@@ -12923,6 +12930,18 @@ void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
     new_mid_y = y;
     new_scale_y = scale_y;
     display_zoom_image(1);
+}
+
+
+
+
+
+void Go_Home( Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    DataRow *p_station;
+
+    if (search_station_name(&p_station,my_callsign,1)) {
+        set_map_position(w, p_station->coord_lat, p_station->coord_lon);
+    }
 }
 
 
