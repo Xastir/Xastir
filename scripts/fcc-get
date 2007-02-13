@@ -41,18 +41,18 @@ echo "*********************************"
 echo "*** Fetching the RAC database ***"
 echo "*********************************"
 #wget -c --passive-ftp ftp://ftp.rac.ca/pub/cdncaldb.zip
-wget -c --no-passive-ftp ftp://ftp.rac.ca/pub/cdncaldb.zip
+wget -c http://205.236.99.41/%7Eindicatif/download/amateur.zip
 #wget -c ftp://ftp.rac.ca/pub/cdncaldb.zip
 #
 echo "***********************************"
 echo "*** Installing the RAC database ***"
 echo "***********************************"
-unzip cdncaldb.zip AMATEUR.RPT
-mv AMATEUR.RPT $XASTIR_BASE/fcc/AMACALL.LST
+unzip amateur.zip amateur.rpt
+mv amateur.rpt $XASTIR_BASE/fcc/AMACALL.LST
 #
 #
 # Remove the original downloads
-rm l_amat.zip cdncaldb.zip
+rm l_amat.zip amateur.zip
 echo "*************"
 echo "*** Done! ***"
 echo "*************"
