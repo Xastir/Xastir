@@ -4964,12 +4964,19 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
             /* first time port */
             XmToggleButtonSetState(Inet_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(Inet_transmit_data,TRUE,FALSE);
-            //XmTextFieldSetString(Inet_host_data,"first.aprs.net");
-            XmTextFieldSetString(Inet_host_data,"");
-            XmTextFieldSetString(Inet_port_data,"10151");
-            XmTextFieldSetString(Inet_filter_data,"");
-            XmTextFieldSetString(Inet_comment,"");
-            XmToggleButtonSetState(Inet_reconnect_data,FALSE,FALSE);
+
+            // Core APRS-IS Servers
+            XmTextFieldSetString(Inet_host_data,"rotate.aprs.net");
+
+            // Filtered port
+            XmTextFieldSetString(Inet_port_data,"14580");
+
+            // Filter of 500 miles around my location. But only if I
+            // enable transmit on that interface and globally!
+            XmTextFieldSetString(Inet_filter_data,"m/500");
+
+            XmTextFieldSetString(Inet_comment,"Core INET Servers");
+            XmToggleButtonSetState(Inet_reconnect_data,TRUE,FALSE);
         } else {
             /* reconfig */
 
@@ -5445,7 +5452,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmToggleButtonSetState(Database_transmit_data,TRUE,FALSE);
             //XmTextFieldSetString(Database_host_data,"first.aprs.net");
             XmTextFieldSetString(Database_host_data,"");
-            XmTextFieldSetString(Database_port_data,"10151");
+            XmTextFieldSetString(Database_port_data,"");
             XmTextFieldSetString(Database_filter_data,"");
             XmTextFieldSetString(Database_comment,"");
             XmToggleButtonSetState(Database_reconnect_data,FALSE,FALSE);
