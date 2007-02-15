@@ -773,6 +773,12 @@ player in the File->Configure->Audio Alarms dialog.  Common ones are
 vplay and auplay, but there are many others.  Enable the types of
 alarms you desire in that same dialog.
 
+You should be able to test it manually from a shell by typing the
+command in something like this:  vplay filename
+
+Once you find a command that works, type it into Xastir's Audio
+Alarms dialog exactly the same except omit the filename.
+
 
 Enabling Synthesized Speech:
 ----------------------------
