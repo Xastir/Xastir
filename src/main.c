@@ -176,8 +176,6 @@ static int DISPLAY_XASTIR_COORDINATES = 0;
 #include "x_spider.h"
 #include "map_cache.h"
 
-extern char compiledate[];
-
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>
 #include <Xm/ComboBox.h>
@@ -12697,6 +12695,8 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
             case(8):    // 10% out
                 new_scale_y = (int)(scale_y * 1.1);
+                if (new_scale_y == scale_y)
+                  new_scale_y++;
                 break;
 
             case(9):    // 10% in
@@ -16486,6 +16486,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     float version;
     char string1[100];
     char string2[100];
+    extern char compiledate[];
    
     xb = XmStringCreateLtoR("\nXastir V" VERSION "\n", XmFONTLIST_DEFAULT_TAG);
     xa = XmStringCreateLtoR(compiledate, XmFONTLIST_DEFAULT_TAG);
