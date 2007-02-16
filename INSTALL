@@ -633,22 +633,50 @@ First Time Install:
     "xastir/scripts/get_shapelib.sh".
 
 
+   5. OPTIONAL:  Install -either- GraphicsMagick or ImageMagick support as
+     shown below.  Xastir will use one or the other but not both.  It'll prefer
+     GraphicsMagick over ImageMagick both are installed.  Do step 5a -or- 5b
+     below to get this type of image support compiled into Xastir.
 
+     Allows using more than 68 different graphics format files as maps, by
+     creating an associated .geo file for each with tie-points.  This support
+     will allow use of online Tiger and Terraserver maps with Xastir, and NOAA
+     weather radar images.  Other people are working on integrating even more
+     online mapping sources.  This will also allow you to use any GIF/JPG/XPM/
+     BMP/... image as an Xastir map. Installation instructions are included in
+     the package. If you choose to install from a binary install, be sure that
+     you have all the graphic format libraries that it was originally built
+     with.
 
-   5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
-     68 different graphics format files as maps, by creating an associated .geo
-     file for each with tie-points.  This support will allow use of online
-     Tiger and Terraserver maps with Xastir, and NOAA weather radar images.
-     Other people are working on integrating even more online mapping sources. 
-     This will also allow you to use any GIF/JPG/XPM/BMP/... image as an Xastir
-     map. Installation instructions are included in the package. If you choose
-     to install from a binary install, be sure that you have all the graphic
-     format libraries that ImageMagick was originally built with. 
-
-     The easiest way to install this is with a package from your linux
+     The easiest way to install one of these is via a package from your linux
      distribution's CD or ftp site. If you install from such a package, make
      sure the header files are installed. These are often in a separate package
-     called ImageMagick-devel or similar.
+     called GraphicsMagick-devel or ImageMagick-devel or similar.
+
+ 
+   5a. OPTIONAL:  Install GraphicsMagick support.
+
+     Download the GraphicsMagick sources from:
+
+     http://www.graphicsmagick.org
+
+     Uncompress/un-tar them...
+
+        tar -xzvf Gr*
+
+     Change directory to the newly created ImageMagick directory and
+     compile:
+
+        cd Gr*
+        ./configure --with-quantum-depth=16 --without-magick-plus-plus --without-perl --without-gslib
+        make
+        su -c 'make install'
+
+     Skip the next step (5b) as you only need ImageMagick support installed if
+     you _don't_ install GraphicsMagick.
+ 
+ 
+   5b. OPTIONAL:  Install ImageMagick graphics support.
 
      Note that Xastir's "./configure" stage may fail trying to compile in
      ImageMagick support.  If this happens, make sure you have the ImageMagick
