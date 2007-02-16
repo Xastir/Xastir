@@ -635,7 +635,7 @@ First Time Install:
 
    5. OPTIONAL:  Install -either- GraphicsMagick or ImageMagick support as
      shown below.  Xastir will use one or the other but not both.  It'll prefer
-     GraphicsMagick over ImageMagick both are installed.  Do step 5a -or- 5b
+     GraphicsMagick over ImageMagick if both are installed.  Do step 5a -or- 5b
      below to get this type of image support compiled into Xastir.
 
      Allows using more than 68 different graphics format files as maps, by
