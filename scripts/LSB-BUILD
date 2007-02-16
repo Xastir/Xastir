@@ -83,6 +83,14 @@
 #
 
 
+REV="1.8.5"
+FILENAME=`date +xastir-lsb-$REV-%Y-%b-%d.tar.bz2`
+
+
+# Remove old versions of the package
+rm xastir-lsb-*.bz2
+
+
 ./bootstrap.sh
 
 export PATH=${PATH}:/opt/lsb/bin
@@ -143,10 +151,6 @@ sudo /bin/cp /opt/lsb-tmp/bin/gm /opt/Xastir/bin/.
 (lsbappchk -nA /opt/Xastir/bin/callpass 2>&1) | grep -v SHT_NOTE
 (lsbappchk -nA /opt/Xastir/bin/xastir_udp_client 2>&1) | grep -v SHT_NOTE
 (lsbappchk -nA /opt/Xastir/bin/gm 2>&1) | grep -v SHT_NOTE
-
-REV="1.8.5"
-
-FILENAME=`date +xastir-lsb-$REV-%Y-%b-%d.tar.bz2`
 
 tar cjf $FILENAME /opt/Xastir
 
