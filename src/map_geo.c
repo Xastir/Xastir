@@ -2002,7 +2002,7 @@ fprintf(stderr,"2 ");
     }
 
     if (debug_level & 16)
-        fprintf(stderr,"Colors = %ld\n", image->colors);
+        fprintf(stderr,"Colors = %d\n", image->colors);
 
     // Set up our own version of the color map.
     if (image->storage_class == PseudoClass && image->colors <= 256) {
