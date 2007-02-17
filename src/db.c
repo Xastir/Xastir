@@ -7030,11 +7030,11 @@ static void extract_multipoints(DataRow *p_station,
     int data_size;
 
 
-    if (debug_level && MULTI_DEBUG)
+    if (debug_level & MULTI_DEBUG)
         fprintf(stderr,"extract_multipoints: start\n");
 
     if (data == NULL) {
-        if (debug_level && MULTI_DEBUG)
+        if (debug_level & MULTI_DEBUG)
             fprintf(stderr,"extract_multipoints: Return\n");
         return;
     }
@@ -7172,7 +7172,7 @@ static void extract_multipoints(DataRow *p_station,
                     if (p_station->multipoint_data == NULL) {
                         p_station->num_multipoints = 0;
                         fprintf(stderr,"Couldn't malloc MultipointRow'\n");
-                        if (debug_level && MULTI_DEBUG)
+                        if (debug_level & MULTI_DEBUG)
                             fprintf(stderr,"extract_multipoints: Return\n");
                         return;
                     }
@@ -7235,7 +7235,7 @@ static void extract_multipoints(DataRow *p_station,
             fprintf(stderr,"    station has %d points\n", p_station->num_multipoints);
     }
 
-    if (debug_level && MULTI_DEBUG)
+    if (debug_level & MULTI_DEBUG)
         fprintf(stderr,"extract_multipoints: Return\n");
 }
 
