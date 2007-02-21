@@ -9242,7 +9242,7 @@ void delete_all_stations(void) {
 void check_station_remove(int curr_sec) {
     DataRow *p_station, *p_station_t_newer;
     time_t t_rem;
-    int done = 0;
+    int done;
 
 
     // Run through this routine every STATION_REMOVE_CYCLE
@@ -9267,8 +9267,7 @@ void check_station_remove(int curr_sec) {
         t_rem = curr_sec - (1 * 15);
 #endif
 
-        p_station = t_oldest;    // Oldest station in our list
-        while (p_station != NULL && !done) {
+        for (done = 0, p_station = t_oldest; p_station != NULL && !done; p_station = p_station_t_newer) {
 
             // Save a pointer to the next record in time-order
             // before we delete a record and lose it.
@@ -9324,7 +9323,6 @@ void check_station_remove(int curr_sec) {
             else {
                 done++;                                         // all other stations are newer...
             }
-            p_station = p_station_t_newer;
         }
         last_station_remove = curr_sec;
     }
