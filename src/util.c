@@ -1491,6 +1491,9 @@ time_t time_from_aprsstring(char *aprs_time) {
         default:
             break;
     }
+    if (day > 31) {
+        day = 31; // Wierd, can't have too many days in the month!
+    }
 
     // We set up our alert_time so that it points into the same
     // struct as time_now.  We do this both so that we can get
