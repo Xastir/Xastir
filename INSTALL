@@ -668,7 +668,7 @@ First Time Install:
      compile:
 
         cd Gr*
-        ./configure --with-quantum-depth=16 --without-magick-plus-plus --without-perl --without-gslib
+        ./configure --with-quantum-depth=16 --enable-shared
         make
         su -c 'make install'
 
