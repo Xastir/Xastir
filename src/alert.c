@@ -1239,8 +1239,10 @@ void alert_build_list(Message *fill) {
                 entry.alert_tag,
                 compressed_wx);     // Stick the long string in here
 
-            if (ret != 3)
+            if (ret < 3) {
                 fprintf(stderr,"sscanf parsed %d/3 values in alert.c\n", ret);
+                compressed_wx[0] = '\0';  // Remove stale compressed alerts.
+            }
 
             compressed_wx[255] = '\0';
 

@@ -1493,6 +1493,8 @@ time_t time_from_aprsstring(char *aprs_time) {
     }
     if (day > 31) {
         day = 31; // Wierd, can't have too many days in the month!
+        hour = 23;
+        minute = 59;
     }
 
     // We set up our alert_time so that it points into the same
