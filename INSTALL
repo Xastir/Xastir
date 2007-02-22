@@ -671,6 +671,7 @@ First Time Install:
         ./configure --with-quantum-depth=16 --enable-shared
         make
         su -c 'make install'
+        su -c '/sbin/ldconfig'
 
      Skip the next step (5b) as you only need ImageMagick support installed if
      you _don't_ install GraphicsMagick.
@@ -721,6 +722,7 @@ First Time Install:
         ./configure
         make
         su -c 'make install'
+        su -c '/sbin/ldconfig'
 
      These instructions are courtesy of Wes Johnston.
      -------------------------------------------------------------------------
