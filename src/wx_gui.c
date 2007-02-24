@@ -390,6 +390,8 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
         "%s",
         choice);
 
+    XtFree(choice);	// Release as soon as we're done!
+
     handle[13] = '\0';  // Terminate the string
     // Remove spaces
     ptr = handle;
@@ -401,8 +403,6 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
         fprintf(stderr,"Handle: %s\n",handle);
 
     wx_alert_finger_output( widget, handle);
-
-    XtFree(choice);
 }
 
 
@@ -555,7 +555,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 XmListAddItemUnselected(wx_alert_list, item, 0);
             } else {
 		// Replace it in the window.  Note: This might re-order the list each time.
-                XmListReplaceItemsPosUnselected(wx_alert_list, &item, 1, ii);
+                XmListReplaceItemsPos(wx_alert_list, &item, 1, ii);
             }
 
             XmStringFree(item);
