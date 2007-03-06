@@ -106,7 +106,7 @@ CC=lsbcc CXX=lsbc++ ./configure \
     --without-ax25 \
     --with-festival \
     --without-gpsman \
-    --with-imagemagick \
+    --with-graphicsmagick \
     --with-proj \
     --with-geotiff \
     --without-gdal \
