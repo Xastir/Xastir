@@ -2003,7 +2003,11 @@ fprintf(stderr,"2 ");
     }
 
     if (debug_level & 16)
+#ifdef HAVE_GRAPHICSMAGICK
         fprintf(stderr,"Colors = %d\n", image->colors);
+#else   // HAVE_GRAPHICSMAGICK
+        fprintf(stderr,"Colors = %ld\n", image->colors);
+#endif  // HAVE_GRAPHICSMAGICK
 
     // Set up our own version of the color map.
     if (image->storage_class == PseudoClass && image->colors <= 256) {
