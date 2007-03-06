@@ -70,7 +70,8 @@
 #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 #undef PACKAGE_VERSION
 #ifdef HAVE_GRAPHICSMAGICK
-#include <GraphicsMagick/magick/api.h>
+/*#include <GraphicsMagick/magick/api.h>*/
+#include <magick/api.h>
 #else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
 #endif  // HAVE_GRAPHICSMAGICK 
