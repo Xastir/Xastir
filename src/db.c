@@ -1864,7 +1864,7 @@ void mdata_delete_type(const char msg_type, const time_t reference_time) {
 
 
 
-void check_message_remove(int curr_sec) {       // called in timing loop
+void check_message_remove(time_t curr_sec) {       // called in timing loop
 
     // Time to check for old messages again?  (Currently every ten
     // minutes)
@@ -9239,7 +9239,7 @@ void delete_all_stations(void) {
  *  Called from main.c:UpdateTime() on a periodic basis.
  *
  */
-void check_station_remove(int curr_sec) {
+void check_station_remove(time_t curr_sec) {
     DataRow *p_station, *p_station_t_newer;
     time_t t_rem;
     int done;
