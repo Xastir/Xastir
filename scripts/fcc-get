@@ -30,7 +30,7 @@ echo "*** Filtering/sorting/installing the FCC database ***"
 echo "*****************************************************"
 if [ -r l_amat.zip ]; then unzip -p l_amat.zip EN.dat \
     | /usr/bin/perl -pe 's/\r\r\n//g;s/\r//g' \
-    | sort -k 4 -t \| >$XASTIR_BASE/fcc/EN.dat; fi
+    | sort -k 5,5 -t \| >$XASTIR_BASE/fcc/EN.dat; fi
 #    | sort +4 -t \| >$XASTIR_BASE/fcc/EN.dat; fi
 #
 #
