@@ -33,7 +33,10 @@
 // Used only for special debugging of message/station expiration.
 // Leave commented out for normal operation.
 //#define EXPIRE_DEBUG
-
+#define DEBUG_MESSAGE_REMOVE_CYCLE 15
+#define DEBUG_STATION_REMOVE_CYCLE 15
+#define DEBUG_MESSAGE_REMOVE 3600
+#define DEBUG_STATION_REMOVE 3600
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -1869,7 +1872,7 @@ void check_message_remove(time_t curr_sec) {       // called in timing loop
     // Time to check for old messages again?  (Currently every ten
     // minutes)
 #ifdef EXPIRE_DEBUG
-    if ( last_message_remove < (curr_sec - 15) ) {
+    if ( last_message_remove < (curr_sec - DEBUG_MESSAGE_REMOVE_CYCLE) ) {
 #else // EXPIRE_DEBUG
     if ( last_message_remove < (curr_sec - MESSAGE_REMOVE_CYCLE) ) {
 #endif
@@ -1878,7 +1881,7 @@ void check_message_remove(time_t curr_sec) {       // called in timing loop
         // sec_remove with the RECORD_NOTACTIVE flag.  This will
         // mark them for re-use.
 #ifdef EXPIRE_DEBUG
-        mdata_delete_type('\0', curr_sec-15);
+        mdata_delete_type('\0', curr_sec-DEBUG_MESSAGE_REMOVE);
 #else   // EXPIRE_DEBUG
         mdata_delete_type('\0', curr_sec-sec_remove);
 #endif
@@ -9249,7 +9252,7 @@ void check_station_remove(time_t curr_sec) {
     // seconds (currently every five minutes)
 #ifdef EXPIRE_DEBUG
     // Check every 15 seconds, useful for debug only.
-    if (last_station_remove < (curr_sec - 15)) {   // DEBUG
+    if (last_station_remove < (curr_sec - DEBUG_STATION_REMOVE_CYCLE)) {   // DEBUG
 #else
     if (last_station_remove < (curr_sec - STATION_REMOVE_CYCLE)) {
 #endif
@@ -9264,7 +9267,7 @@ void check_station_remove(time_t curr_sec) {
 
 #ifdef EXPIRE_DEBUG
         // Expire every 15 seconds, useful for debug only.
-        t_rem = curr_sec - (1 * 15);
+        t_rem = curr_sec - (1 * DEBUG_STATION_REMOVE);
 #endif
 
         for (done = 0, p_station = t_oldest; p_station != NULL && !done; p_station = p_station_t_newer) {
@@ -9305,7 +9308,17 @@ void check_station_remove(time_t curr_sec) {
 
                 else {  // Not one of mine, doesn't have a tactical
                         // callsign assigned, so start deleting
- 
+
+                    //The debug output needs to be before the delete, as 
+                    // we're freeing the data pointed to by p_station! 
+#ifdef EXPIRE_DEBUG
+                    fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);
+                    fprintf(stderr,"deleting\n");
+                    fprintf(stderr,"Last heard time: %d\n",p_station->sec_heard);
+                    fprintf(stderr," t_rem: %d\n",t_rem);
+                    fprintf(stderr," next older record has time %d\n",p_station_t_newer->sec_heard);
+#endif
+
                     mdelete_messages(p_station->call_sign); // Delete messages
                     station_del_ptr(p_station);
                     //(void)delete_trail(p_station);        // Free track storage if it exists.
@@ -9313,14 +9326,20 @@ void check_station_remove(time_t curr_sec) {
                     //(void)delete_multipoints(p_station);  // Free multipoint memory, if allocated
                     //delete_station_memory(p_station);     // Free memory
 
-#ifdef EXPIRE_DEBUG
-                    fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);
-                    fprintf(stderr,"deleting\n");
-#endif
-
                 }
             }
             else {
+#ifdef EXPIRE_DEBUG
+                DataRow *testPtr = sanity_check_time_list(t_rem);
+                if (testPtr) {
+                    fprintf(stderr,"TIME-SORTED LIST SANITY CHECK FAILED!\n");
+                    fprintf(stderr," At least one station left after expire with time older than %d\n",t_rem);
+                    fprintf(stderr,"   Station name: %s\n", testPtr->call_sign);
+                    fprintf(stderr,"   Last heard time %d\n",testPtr->sec_heard);
+                    fprintf(stderr,"   Seconds ago: %d\n",curr_sec-testPtr->sec_heard);
+                    fprintf(stderr,"   Seconds older than expire time: %d\n",t_rem-testPtr->sec_heard);
+                }
+#endif
                 done++;                                         // all other stations are newer...
             }
         }
@@ -18370,4 +18389,24 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
     }
 }
 
+// Debugging tool:
+// Check to see if time list contains any stations older than remove_time.
+// If the expire code did its job properly, there should be none.  If there
+// are none, we return NULL.  If there are any, we return the pointer to the
+// last one found (which should be the newest of them by virtue of how we
+// walk the list).
+DataRow * sanity_check_time_list(time_t remove_time)  {
+    DataRow *p_station, *p_station_t_newer, *retval;
+    retval=NULL;
+    
+    for (p_station = t_oldest; p_station != NULL; 
+         p_station = p_station_t_newer) {
+        p_station_t_newer = p_station->t_newer;
+        // Don't count my station in this.
+        if (!is_my_station(p_station) && p_station->sec_heard < remove_time) {
+            retval=p_station;
+        }
+    }
 
+    return (retval);
+}

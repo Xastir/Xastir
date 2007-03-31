@@ -640,4 +640,6 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData,
                       XtPointer callData); // popup window
 
 int comp_by_dist(const void *,const void *);// used only for qsort
+DataRow * sanity_check_time_list(time_t); // used only for debugging
+
 #endif /* XASTIR_DATABASE_H */
