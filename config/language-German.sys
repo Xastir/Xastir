@@ -7,7 +7,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 01. Nov 2006, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 08.04.2007, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -250,7 +250,7 @@ PULDQUS003|Abfrage Wetterstationen|W|
 PULDNMG004|Setze automatische Antwort|t|
 PULDNMG005|Automatische Antwort|A|
 PULDNMG006|Satelliten ACK Modus|M|
-PULDNMG007|Show Pending Messages|P|
+PULDNMG007|Unerledigte Nachrichten zeigen|U|
 #
 # Menu "Schnittstellen"
 PULDNTNT04|Schnittstellensteuerung||
@@ -863,7 +863,6 @@ STIFCC0009|Erweitert ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
-#
 # FCC-RAC indexing/searching
 STIFCC0100|FCC-Index zu alt, erstelle neu...||
 STIFCC0101|Rufzeichensuche||
@@ -1154,9 +1153,9 @@ PRINT0013|Konvertiere in Postscript...||
 PRINT0014|Erstellen der Druckdatei beendet||
 PRINT0015|Druckerstatus||
 #
-# Print Dialog
-PRINT1001|Direct to:||
-PRINT1002|Via Previewer:||
+# Drucker Dialog
+PRINT1001|Direkt an:||
+PRINT1002|Über Vorschau:||
 #
 # Locate Feature Dialog
 FEATURE001|Name:||
@@ -1311,7 +1310,13 @@ CADPUD014|doppelt gestrichelt||
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA001|XASTIR Karte von %s (oben links) to %s (unten rechts).  UTM %d m Gitter, %s Datum. ||
-#"XASTIR Map of <lat/long> (upper left) to <lat/long> (lower right).  Lat/Long grid, <wgs84> datum. ",
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA002|XASTIR Karte von %s (oben links) to %s %s (unten rechts).  Breite/Länge Gitter, %s Datum.||
-#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM zones, <wgs84> datum. ",
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA003|XASTIR Karte von %s (oben links) to %s (unten rechts).  UTM Zonen, %s Datum.||
