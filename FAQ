@@ -86,6 +86,7 @@ The Questions
     4.25 Why doesn't Terraserver work for some locations?
     4.26 Some station or config settings are not getting saved, why?
     4.27 Why are my colors messed up when running via VNC?
+    4.28 Why are the labels missing in the Configure->Timing dialog?
 
 
 5.  Features
@@ -878,6 +879,31 @@ The Answers
 
     vncserver :5 -name melecom -depth 24 -geometry 800x600 -pixelformat rgb565
 
+    4.28 Why are the labels missing in the Configure->Timing dialog?
+
+    Some versions of the Lesstif widget set have this bug.  Try
+    switching to a different version of Lesstif or switch to
+    OpenMotif and you should see the labels again.  So that you can
+    actually operate Xastir, here's what you _should_ have seen:
+
+        On the left:
+        ------------
+        Posit TX Interval (min)
+        Object/Item TX Interval (min)
+        GPS Check Interval (sec)
+        Dead-Reckoning Timeout (min)
+        New Track Time (min)
+        RINO -> Objects Interval (min), 0=Disabled
+        Snapshot Interval (min)
+
+        On the right:
+        -------------
+        Station Ghosting Time (min)
+        Station Clear Time (hours)
+        Station Delete Time (days)
+        Serial Inter-Char Delay (ms)
+        New Track Interval (degrees)
+        Internet Map Timeout (sec)
 
 5.  Features
 
