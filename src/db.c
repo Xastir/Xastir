@@ -35,8 +35,8 @@
 //#define EXPIRE_DEBUG
 #define DEBUG_MESSAGE_REMOVE_CYCLE 15
 #define DEBUG_STATION_REMOVE_CYCLE 15
-#define DEBUG_MESSAGE_REMOVE 3600
-#define DEBUG_STATION_REMOVE 3600
+#define DEBUG_MESSAGE_REMOVE 600
+#define DEBUG_STATION_REMOVE 600
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -9338,6 +9338,8 @@ void check_station_remove(time_t curr_sec) {
                     fprintf(stderr,"   Last heard time %d\n",testPtr->sec_heard);
                     fprintf(stderr,"   Seconds ago: %d\n",curr_sec-testPtr->sec_heard);
                     fprintf(stderr,"   Seconds older than expire time: %d\n",t_rem-testPtr->sec_heard);
+                    fprintf(stderr,"--------\n");
+                    dump_time_sorted_list();
                 }
 #endif
                 done++;                                         // all other stations are newer...
@@ -18409,4 +18411,24 @@ DataRow * sanity_check_time_list(time_t remove_time)  {
     }
 
     return (retval);
+}
+
+// Debugging tool
+// dump out the entire time-sorted list starting from oldest and proceeding
+// to newest
+void dump_time_sorted_list() {
+    DataRow *p_station, *p_station_t_newer;
+    struct tm *time;
+    fprintf(stderr,"\tTime-sorted list dump \n");
+    fprintf(stderr, "\t Call Sign:\tsec_heard\tdate/time\n");
+    for (p_station = t_oldest; p_station != NULL; 
+         p_station = p_station_t_newer) {
+        p_station_t_newer = p_station->t_newer;
+        time = localtime(&p_station->sec_heard);
+
+        fprintf(stderr,"\t%s\t%d\t%02d/%02d %02d:%02d:%02d\n",
+                p_station->call_sign, p_station->sec_heard,
+                time->tm_mon+1,time->tm_mday,
+                time->tm_hour, time->tm_min, time->tm_sec);
+    }
 }
