@@ -87,6 +87,7 @@ The Questions
     4.26 Some station or config settings are not getting saved, why?
     4.27 Why are my colors messed up when running via VNC?
     4.28 Why are the labels missing in the Configure->Timing dialog?
+    4.29 Xastir can't find "xastir.rgb" or some other file.  What's wrong?
 
 
 5.  Features
@@ -907,6 +908,82 @@ The Answers
 
     A screenshot on the Wiki of this dialog:
     <http://www.xastir.org/wiki/index.php/Notes:Timing_Slider_Dialog_Screenshot>
+
+    4.29 Xastir can't find "xastir.rgb" or some other file.  What's wrong?
+
+    This could be one of several things.  We'll check them in order:
+
+    a) If you get this exact message:
+
+        "Error! can not find color file: /xastir/config/xastir.rgb"
+
+    Then it could be that you're not getting a variable defined on
+    the compile line.  This text or similar should appear for each
+    file compiled:
+
+        -DXASTIR_DATA_BASE=\"/usr/local/share/xastir\"
+
+    If you're not seeing this, or the variable is defined to an
+    empty string or is otherwise incorrect, you may need to
+    upgrade/downgrade your autoconf or automake packages and rerun
+    the Xastir install starting at the "./bootstrap.sh" stage.
+
+    b) Did you run the "make install" stage as root or using "sudo"
+    after you compiled Xastir?  If not, Xastir couldn't install
+    files it needs to run.
+
+    c) Another possible problem is a corrupt or very old
+    ~/.xastir/config/xastir.cnf file.  Check for this by typing:
+
+        cd
+        mv .xastir .xastir.save
+        xastir
+
+    If it comes up ok this time, then either paths in your config
+    file are incorrect or the config file is corrupt.  If there's no
+    change, go back to your original configuration by typing:
+
+        cd
+        rm -rf .xastir  # NOTE: this will delete ~/.xastir and all contents!
+        mv .xastir.save .xastir
+
+    d) Yet another thing to check is the value in your LANG variable.
+    It should be either "en_US" or "C" for Xastir to read/write
+    config files correctly:
+
+        echo $LANG
+
+    If it is something else, start Xastir like this:
+
+        export LANG=en_US; xastir -geometry -0-0 &
+
+    You can create an alias in your shell for this so that you don't
+    have to remember to type it each time.
+
+    e) Perhaps you're trying to run an old Xastir executable that
+    was compiled with different paths, or you have an LSB-Xastir
+    installed and have compiled or installed Xastir in the normal
+    fashion as well.  Type this to see where the executable is
+    trying to run from:
+
+        which xastir
+    -or-
+        whereis xastir
+
+    f) It's possible that your autoconf/automake packages need to be
+    upgraded or downgraded.  These packages are somewhat version
+    dependent on each other, so it's likely that you'll have to do
+    this upgrade or downgrade as a pair for things to work correctly.
+    After the upgrade or downgrade, recompile Xastir starting at the
+    "./bootstrap.sh" stage so that the configure and Makefile
+    scripts are re-created.
+
+        ./bootstrap.sh
+        ./configure
+        make
+
+    Make sure that you now see a reasonable path for the
+    XASTIR_DATA_BASE variable on each compile line.
 
 5.  Features
 
