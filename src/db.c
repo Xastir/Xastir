@@ -9315,8 +9315,8 @@ void check_station_remove(time_t curr_sec) {
                     fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);
                     fprintf(stderr,"deleting\n");
                     fprintf(stderr,"Last heard time: %ld\n",p_station->sec_heard);
-                    fprintf(stderr," t_rem: %d\n",t_rem);
-                    fprintf(stderr," next older record has time %d\n",p_station_t_newer->sec_heard);
+                    fprintf(stderr," t_rem: %ld\n",t_rem);
+                    fprintf(stderr," next older record has time %ld\n",p_station_t_newer->sec_heard);
 #endif
 
                     mdelete_messages(p_station->call_sign); // Delete messages
@@ -9333,11 +9333,11 @@ void check_station_remove(time_t curr_sec) {
                 DataRow *testPtr = sanity_check_time_list(t_rem);
                 if (testPtr) {
                     fprintf(stderr,"TIME-SORTED LIST SANITY CHECK FAILED!\n");
-                    fprintf(stderr," At least one station left after expire with time older than %d\n",t_rem);
+                    fprintf(stderr," At least one station left after expire with time older than %ld\n",t_rem);
                     fprintf(stderr,"   Station name: %s\n", testPtr->call_sign);
-                    fprintf(stderr,"   Last heard time %d\n",testPtr->sec_heard);
-                    fprintf(stderr,"   Seconds ago: %d\n",curr_sec-testPtr->sec_heard);
-                    fprintf(stderr,"   Seconds older than expire time: %d\n",t_rem-testPtr->sec_heard);
+                    fprintf(stderr,"   Last heard time %ld\n",testPtr->sec_heard);
+                    fprintf(stderr,"   Seconds ago: %ld\n",curr_sec-testPtr->sec_heard);
+                    fprintf(stderr,"   Seconds older than expire time: %ld\n",t_rem-testPtr->sec_heard);
                     fprintf(stderr,"--------\n");
                     dump_time_sorted_list();
                 }
