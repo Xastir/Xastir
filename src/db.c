@@ -18416,7 +18416,7 @@ DataRow * sanity_check_time_list(time_t remove_time)  {
 // Debugging tool
 // dump out the entire time-sorted list starting from oldest and proceeding
 // to newest
-void dump_time_sorted_list() {
+void dump_time_sorted_list(void) {
     DataRow *p_station, *p_station_t_newer;
     struct tm *time;
     fprintf(stderr,"\tTime-sorted list dump \n");
