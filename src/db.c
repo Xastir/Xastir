@@ -9314,7 +9314,7 @@ void check_station_remove(time_t curr_sec) {
 #ifdef EXPIRE_DEBUG
                     fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);
                     fprintf(stderr,"deleting\n");
-                    fprintf(stderr,"Last heard time: %d\n",p_station->sec_heard);
+                    fprintf(stderr,"Last heard time: %ld\n",p_station->sec_heard);
                     fprintf(stderr," t_rem: %d\n",t_rem);
                     fprintf(stderr," next older record has time %d\n",p_station_t_newer->sec_heard);
 #endif
@@ -18426,7 +18426,7 @@ void dump_time_sorted_list(void) {
         p_station_t_newer = p_station->t_newer;
         time = localtime(&p_station->sec_heard);
 
-        fprintf(stderr,"\t%s\t%d\t%02d/%02d %02d:%02d:%02d\n",
+        fprintf(stderr,"\t%s\t%ld\t%02d/%02d %02d:%02d:%02d\n",
                 p_station->call_sign, p_station->sec_heard,
                 time->tm_mon+1,time->tm_mday,
                 time->tm_hour, time->tm_min, time->tm_sec);
