@@ -4376,6 +4376,7 @@ int serial_init (int port) {
     char temp1[100];
     pid_t status;
     int ii;
+    int myerrno;
 
     status = -9999;
 
@@ -4474,6 +4475,7 @@ int serial_init (int port) {
     // Try to open the serial port now
     ENABLE_SETUID_PRIVILEGE;
     port_data[port].channel = open(port_data[port].device_name, O_RDWR|O_NOCTTY);
+    myerrno = errno;
     DISABLE_SETUID_PRIVILEGE;
     if (port_data[port].channel == -1){
 
@@ -4482,6 +4484,85 @@ int serial_init (int port) {
 
         if (debug_level & 2)
             fprintf(stderr,"Could not open channel on port %d!\n",port);
+
+        switch (myerrno) {
+
+            case EACCES:
+                fprintf(stderr,"\tEACCESS ERROR\n");
+                break;
+
+            case EEXIST:
+                fprintf(stderr,"\tEEXIST ERROR\n");
+                break;
+
+            case EFAULT:
+                fprintf(stderr,"\tEFAULT ERROR\n");
+                break;
+
+            case EISDIR:
+                fprintf(stderr,"\tEISDIR ERROR\n");
+                break;
+
+            case ELOOP:
+                fprintf(stderr,"\tELOOP ERROR\n");
+                break;
+
+            case EMFILE:
+                fprintf(stderr,"\tEMFILE ERROR\n");
+                break;
+
+            case ENAMETOOLONG:
+                fprintf(stderr,"\tENAMETOOLONG ERROR\n");
+                break;
+
+            case ENFILE:
+                fprintf(stderr,"\tEMFILE ERROR\n");
+                break;
+
+            case ENODEV:
+                fprintf(stderr,"\tENODEV ERROR\n");
+                break;
+
+            case ENOENT:
+                fprintf(stderr,"\tENOENT ERROR\n");
+                break;
+
+            case ENOMEM:
+                fprintf(stderr,"\tENOMEM ERROR\n");
+                break;
+
+            case ENOSPC:
+                fprintf(stderr,"\tENOSPC ERROR\n");
+                break;
+
+            case ENOTDIR:
+                fprintf(stderr,"\tENOTDIR ERROR\n");
+                break;
+
+            case ENXIO:
+                fprintf(stderr,"\tENXIO ERROR\n");
+                break;
+
+            case EOVERFLOW:
+                fprintf(stderr,"\tEOVERFLOW ERROR\n");
+                break;
+
+            case EPERM:
+                fprintf(stderr,"\tEPERM ERROR\n");
+                break;
+
+            case EROFS:
+                fprintf(stderr,"\tEROFS ERROR\n");
+                break;
+
+            case ETXTBSY:
+                fprintf(stderr,"\tETXTBSY ERROR\n");
+                break;
+
+            default:
+                fprintf(stderr,"\tOTHER ERROR\n");
+                break;
+        }
 
         return (-1);
     }
