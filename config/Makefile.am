@@ -19,6 +19,7 @@ EXTRA_DIST = \
     stored_track.dbfawk \
     tgr2shp.dbfawk \
     tgr2shppoly.dbfawk \
+    tgr2shppoly_2006.dbfawk \
     tgrcty.dbfawk \
     tgrkgl.dbfawk \
     tgrlk.dbfawk \
