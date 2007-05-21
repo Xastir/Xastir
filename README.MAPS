@@ -246,56 +246,69 @@ Getting Maps and other Data Files for Xastir:
       available only in uncompressed or in tar/bzip2 format.  To decompress
       the latter file, you'd type "bunzip2 filename" and then
       "tar xvf filename".
+   
+      TIGER/Line Shapefiles:
 
-      Tiger/Line 2003 data converted to shapefile format is available from
-      http://xastir.tamu.edu/. These maps only work with dbfawk support, and
-      only contain vectors; no filled regions such as water.  2004 data is now
-      available and should be available in the form of Shapefiles for Xastir
-      users soon.  We should have Polygons available along with the 2004 data,
-      whereas the 2003 Shapefile maps are missing those (see below).
+      Tiger/Line 2006 Second Edition data converted to shapefile format is 
+      available from ftp://aprs.tamu.edu/. Look in the "pub/TIGER_2006_SE" 
+      directory.  These maps only work with dbfawk support
 
-      Notes from Tom Russo as to the technique used to convert the files:
+      Tiger/Line 2003 data converted to shapefile format is available
+      from ftp://aprs.tamu.edu/.  Look in the "pub/TIGER_2006_SE/"
+      directory. These maps only work with dbfawk support.
 
-        "I have been able to download recent (2003) TIGER/Line data from The
-        US Census Bureau's 2003 TIGER web site and convert them to shapefiles.
-        It's a piece of cake. Download the county files you want. Then unzip
-        each one into its own directory (call it "in_directory"). Then cd to
-        in_directory and run the following command:
+      You can also create your own TIGER/Line shapefiles from the raw
+      data at the Census web site,
+      http://www.census.gov/geo/www/tiger/index.html.  
+      The process requires two conversions: converting the linear
+      features, and assembling the polygon features.  The TIGER/Line data is
+      a topological format, and polygons are not stored in a simple manner;
+      this second step is time consuming.
 
-          ogr2ogr -f "ESRI Shapefile" -t_srs EPSG:4326 foo .
+      To convert the polylines: 
+      Download the county files you want. Then unzip each one into its
+      own directory (call it "in_directory"). Then cd to in_directory and
+      run the following command:
 
-        This will create a subdirectory of in_directory called "foo" which will
-        contain a number of shapefiles and auxiliary data. The files called
-        "CompleteChain.*" are the ones you want; they are the polylines
-        corresponding to roads and other linear features. Copy these to your
-        xastir maps directory and rename them to the name of the county they
-        represent. Then install tgr2shp.dbfawk in your share/xastir/config
-        directory and reindex maps. Ta da. See above: tgr2shp.dbfawk is now
-        part of the xastir distribution..."
+            ogr2ogr -f "ESRI Shapefile" -t_srs EPSG:4326 foo .
 
-      Note that you'll need dbfawk support compiled into Xastir to make these
-      2003 Tiger/Line maps look nice.  Derrick Breshear created scripts to
-      process all of the Tiger/Line raw data into Shapefiles, then they were
-      put on a download site made available by Kevin Glueck,
-      "http://xastir.tamu.edu/".  Thanks go to Tom, Derrick, and Kevin for
-      making these maps so accessible to the rest of us.
+      This will create a subdirectory of in_directory called "foo" which
+      will contain a number of shapefiles and auxiliary data. The files
+      called "CompleteChain.*" are the ones you want; they are the polylines
+      corresponding to roads and other linear features. Copy these to your
+      xastir maps directory and rename them to the name of the county they
+      represent. Then install tgr2shp.dbfawk in your share/xastir/config
+      directory and reindex maps. Ta da. See above: tgr2shp.dbfawk is now
+      part of the xastir distribution..."
 
-      While there is not yet a web site from which you can download
-      TIGER/Line polygons as shapefiles, you can create your own polygon
-      shapefiles from raw TIGER/line data (see below).  This requires
-      GDAL/OGR configured with python support, and requires that you have
-      the Python language installed.  Use the script Xastir_tigerpoly.py
-      included in the "scripts" directory of Xastir's source tree.  As an
-      example, if you have un-zipped the file TGR35001.zip (the TIGER/Line
-      file for Bernalillo County, NM) into a directory called TGR35001, then
+      Note that you'll need dbfawk support compiled into Xastir to make
+      these Tiger/Line maps look nice.  For the 2003 TIGER/Line data,
+      Derrick Breshear created scripts to process all of the Tiger/Line raw
+      data into Shapefiles, then they were put on a download site made
+      available by Kevin Glueck, "http://xastir.tamu.edu/".  The 2006 Second
+      Edition data were processed by Jason Winningham and made available on
+      the ftp://aprs.tamu.edu/ site by Gerry Creager.  Thanks go to Tom,
+      Derrick, Kevin, Jason and Gerry for making these maps so accessible to
+      the rest of us.
 
-        Xastir_tigerpoly.py TGR35001 Bernalillo_County_NM_Polys.shp
+      The second step to rolling your own TIGER/Line shapefiles is to
+      assemble the polygons.  This requires GDAL/OGR configured with python
+      support, and requires that you have the Python language installed.
+      Use the script Xastir_tigerpoly.py included in the "scripts" directory
+      of Xastir's source tree.
 
-      would create a shapefile of TIGER polygons (water bodies,
-      political boundaries, parks, wilderness areas) that you can install 
-      in your maps directory and read directly using normal shapefile support.
+      As an example, if you have un-zipped the file TGR35001.zip (the
+      TIGER/Line file for Bernalillo County, NM) into a directory called
+      TGR35001, then
+   
+            Xastir_tigerpoly.py TGR35001 Bernalillo_County_NM_Polys.shp
+
+      would create a shapefile of TIGER polygons (water bodies, political
+      boundaries, parks, wilderness areas) that you can install in your maps
+      directory and read directly using normal shapefile support.
+      
       Viewing these shapefiles as filled polygons requires dbfawk support,
-      and the rules for displaying them are contained in the file 
+      and the rules for displaying them are contained in the file
       tgr2shppoly.dbfawk.
 
 
