@@ -3213,6 +3213,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // Draw other points associated with the station, if any.
     // KG4NBB
+    if (debug_level & 128)
+        fprintf(stderr,"  Number of multiponts = %d\n",p_station->num_multipoints);
     if (p_station->num_multipoints != 0) {
         draw_multipoints( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
                           (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
@@ -7034,15 +7036,17 @@ static void extract_multipoints(DataRow *p_station,
 
 
     if (debug_level & MULTI_DEBUG)
-        fprintf(stderr,"extract_multipoints: start\n");
+        fprintf(stderr,"extract_multipoints: start processing %s\n",
+                p_station->call_sign);
 
     if (data == NULL) {
         if (debug_level & MULTI_DEBUG)
-            fprintf(stderr,"extract_multipoints: Return\n");
+            fprintf(stderr,"extract_multipoints: No Data, returning\n");
         return;
     }
 
-//fprintf(stderr,"Data: %s\t\t", data);
+    if (debug_level & MULTI_DEBUG)
+        fprintf(stderr,"Data: %s\t\t\n", data);
 
     data_size = strlen(data);
 
@@ -7063,10 +7067,20 @@ static void extract_multipoints(DataRow *p_station,
 
     p = data;
 
+    if (debug_level & MULTI_DEBUG) {
+        if (strstr(p,START_STR) == NULL)
+            fprintf(stderr," Data does not start with space-brace, it starts with %c%c\n", p[0],p[1]);
+        else
+            fprintf(stderr," Data starts with space-brace\n");
+    }
+
     // Look for the opening string.
 
     while (!found && p < end && (p = strstr(p, START_STR)) != NULL) {
         // The opening string was found. Check the following information.
+        if (debug_level & MULTI_DEBUG) 
+            fprintf(stderr,"  Found opening brace, next chars are %c %c %c\n",
+                    *(p+2),*(p+3),*(p+4));
 
         if (islower((int)*(p+2)) && isdigit((int)*(p+3)) && (p2 = strchr(p+4, LBRACE)) != NULL && ((p2 - p) % 2) == 1) {
             // It all looks good!
@@ -7076,7 +7090,8 @@ static void extract_multipoints(DataRow *p_station,
         else {
             // The following characters are not right. Advance and
             // look again.
-
+            if (debug_level & MULTI_DEBUG) 
+                fprintf(stderr,"  Found opening string (}) but next characters are not right: %c %c %c\n",*(p+2),*(p+3),*(p+4));
             ++p;
         }
     }
@@ -7176,7 +7191,7 @@ static void extract_multipoints(DataRow *p_station,
                         p_station->num_multipoints = 0;
                         fprintf(stderr,"Couldn't malloc MultipointRow'\n");
                         if (debug_level & MULTI_DEBUG)
-                            fprintf(stderr,"extract_multipoints: Return\n");
+                            fprintf(stderr,"extract_multipoints: Malloc failure, returning\n");
                         return;
                     }
                 }
@@ -7239,7 +7254,7 @@ static void extract_multipoints(DataRow *p_station,
     }
 
     if (debug_level & MULTI_DEBUG)
-        fprintf(stderr,"extract_multipoints: Return\n");
+        fprintf(stderr,"extract_multipoints: Normal Return\n");
 }
 
 #undef MULTI_DEBUG
@@ -11233,7 +11248,12 @@ void add_comment(DataRow *p_station, char *comment_string) {
     //fprintf(stderr,"1Comment: (%s)\n",comment_string);
     (void)remove_trailing_spaces(comment_string);
     //fprintf(stderr,"2Comment: (%s)\n",comment_string);
-    (void)remove_leading_spaces(comment_string);
+
+    ///////TVR DEBUGING RESULTS 28 March 2007:
+    //NO! DON'T DO THIS --- it breaks multipoint objects!
+    //    (void)remove_leading_spaces(comment_string);
+    ///////////////////////////////////////////
+
     //fprintf(stderr,"3Comment: (%s)\n",comment_string);
  
     len = strlen(comment_string);
@@ -11751,6 +11771,9 @@ int data_add(int type,
                 break;
 
             case (APRS_OBJECT):
+                if (debug_level & 2048) {
+                    fprintf (stderr,"  Object: before any extractions at all, data is \"%s\"\n",data);
+                    }
 
                 // If old match is a killed Object (owner doesn't
                 // matter), new one is an active Object and owned by
@@ -11824,11 +11847,17 @@ int data_add(int type,
                         sizeof(p_station->origin),
                         "%s",
                         origin);                   // define it as object
+                    if (debug_level & 2048) {
+                        fprintf (stderr,"  Object: before any extractions, data is \"%s\"\n",data);
+                    }
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);            // altitude
 
+                    if (debug_level & 2048) {
+                        fprintf (stderr,"  Object: calling extract_multipoints with data \"%s\"\n",data);
+                    }
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 0);
  

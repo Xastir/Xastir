@@ -169,6 +169,9 @@ extern void set_dangerous( char *ptr );
 extern void clear_dangerous(void);
 
 void xastirWriteWKT(char *name);
+char * makeMultiline(int numPairs, double *lon, double *lat, char colorStyle,
+                     int lineType, char* sqnc,
+                     double *lonCentr, double *latCentr );
 
 #endif // __XASTIR_UTIL_H
 

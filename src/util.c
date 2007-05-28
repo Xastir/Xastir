@@ -5581,3 +5581,152 @@ void xastirWriteWKT(char *filename)
         fprintf(stderr,"Could not open file %s for writing\n",filename);
     }        
 }
+
+// makeMultiline
+// Create an APRS multiline string given an array of lat/lon pairs.
+//
+// Allocates memory that must be freed by the caller.
+//
+// lon and lat are arrays.  lonObj, latObj are return values of object
+// location (point from which offsets are computed).  
+//
+// lineType is 0 for a closed polygon, 1 for a polyline
+//
+// colorStyle is a character as defined in the wxsvr.net multiline protocol
+// web site at wxsvr.net.  
+//
+// character | color | style
+//   a          red     solid
+//   b          red     dashed
+//   c          red     double-dashed
+//   d          yellow  solid
+//   e          yellow  dashed
+//   f          yellow  double-dashed
+//   g          blue    solid
+//   h          blue    dashed
+//   i          blue    double-dashed
+//   j          green   solid
+//   k          green   dashed
+//   l          green   double-dashed
+
+// Returns a null pointer if user requested too many vertices, or if scale
+// is out of range, or if we fail to malloc the string.
+//
+// One could pass only a list of lat/lons here and get back a point at which
+// to create an object (at the centroid) and a string representing the 
+// multiline.
+#define minFun(a,b) ( ((a)<(b))?(a):(b))
+#define maxFun(a,b) ( ((a)>(b))?(a):(b))
+
+char * makeMultiline(int numPairs, double *lon, double *lat, char colorStyle,
+                     int lineType, char* sqnc,
+                     double *lonCentr, double *latCentr  )
+{
+    
+    char * returnString;
+    
+    // the APRS spec requires a max of 43 chars in the comment section of 
+    // objects, which leaves room for only so many vertices in a multiline 
+    //   number allowed= (43-(6-4))/2=16
+    if ( numPairs > 16) {
+        returnString = NULL;
+    } else {
+        double minLat, minLon;
+        double maxLat, maxLon;
+        int iPair;
+        double scale1,scale2,scale;
+        
+        // find min/max of arrays
+        minLat=minLon=180;
+        maxLat=maxLon=-180;
+        
+        for ( iPair=0; iPair < numPairs; iPair++) {
+            minLon = minFun(minLon,lon[iPair]);
+            minLat = minFun(minLat,lat[iPair]);
+            maxLon = maxFun(maxLon,lon[iPair]);
+            maxLat = maxFun(maxLat,lat[iPair]);
+        }
+
+        *lonCentr = (maxLon+minLon)/2;
+        *latCentr = (maxLat+minLat)/2;
+        
+        // Compute scale:
+        // The scale is the value that makes the maximum or minimum offset
+        // map to +44 or -45.  Pick the scale factor that keeps the
+        // offsets in that range:
+        
+        if (maxLat > maxLon) {
+            scale1= (maxLat-*latCentr)/44.0;
+        } else {
+            scale1= (maxLon-*lonCentr)/44.0;
+        }
+
+        if (minLat < minLon) {
+            scale2 = (minLat-*latCentr)/(-45.0);
+        } else {
+            scale2 = (minLon-*lonCentr)/(-45.0);
+        }
+
+        scale = maxFun(scale1,scale2);
+        
+        if (scale < .0001) {
+            scale=0.0001;
+        }
+
+        if (scale > 1) {
+            // Out of range, no shape returned
+            returnString = NULL;
+        } else {
+            // Not all systems have a log10(), but they all have log() 
+            // So let's stick with natural logs
+            double ln10=log(10.0);
+            // KLUDGE:  the multiline spec says we use 
+            // 20*(int)(log10(scale/.0001)) to generate the scale char,
+            // but this means we'll often produce real scales that are smaller
+            // than the one we just calculated, which means we'd produce
+            // offsets outside the (-45,44) allowed range.  So kludge and 
+            // add 1 to the value
+            int lnscalefac=20*log(scale/.0001)/ln10+1;
+            int rsMaxLen=numPairs*2+6+4+1;
+            int stringOffset=0;
+
+            // Now recompute the scale to be the one we actually transmitted
+            // This pretty much means we'll never have the best precision
+            // we could possibly have, but it'll be close enough
+            scale=pow(10,(double)lnscalefac/20-4);
+
+            // We're ready to produce the multiline string.  So get on with it
+            
+            // multiline string is "}CTS" (literal "}" followed by
+            // line Color-style specifier, followed by open/closed
+            // Type specifier, followed by Scale character), followed
+            // by even number of character pairs, followed by "{seqnc"
+            // (sequence number).
+
+
+            returnString=malloc(sizeof(char)*rsMaxLen);
+
+            if (returnString != NULL) {
+                returnString[stringOffset++]=' ';
+                returnString[stringOffset++]='}';
+                returnString[stringOffset++]=colorStyle;
+                returnString[stringOffset++]= (lineType == 0)?'0':'1';
+                
+                returnString[stringOffset++] = lnscalefac+33;
+                
+                for ( iPair=0; iPair<numPairs; ++iPair) {
+                    double latOffset=lat[iPair]-*latCentr;
+                    double lonOffset=lon[iPair]-*lonCentr;
+                    
+                    returnString[stringOffset++]=
+                        (char)((int)(latOffset/scale)+78);
+                    returnString[stringOffset++]=
+                        (char)((int)(lonOffset/scale)+78);
+                }
+                returnString[stringOffset++]='{';
+                strncpy(&(returnString[stringOffset]),sqnc,6);
+            }
+        }
+    }
+    return (returnString);
+}
