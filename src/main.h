@@ -133,6 +133,7 @@ extern int serial_char_pacing;  // Inter-character delay in ms.
 extern int disable_all_maps;
 extern int re_sort_maps;
 extern Widget trackme_button;
+extern Widget CAD_close_polygon_menu_item;
 extern int debug_level;
 extern int my_position_valid;
 extern int using_gps_position;

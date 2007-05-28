@@ -2815,6 +2815,11 @@ void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
         if(!cs_CAD) {
             cs_CAD=XCreateFontCursor(XtDisplay(da),XC_pencil);
         }
+    
+        // enable the close polygon button on an open CAD menu
+        if (CAD_close_polygon_menu_item) { 
+            XtSetSensitive(CAD_close_polygon_menu_item,TRUE);
+        } 
 
         (void)XDefineCursor(XtDisplay(da),XtWindow(da),cs_CAD);
         (void)XFlush(XtDisplay(da));
@@ -2833,6 +2838,11 @@ void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
         // Remove the special "pencil" cursor.
         (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
         (void)XFlush(XtDisplay(da));
+
+        // disable the close polygon button on an open CAD menu.
+        if (CAD_close_polygon_menu_item) { 
+            XtSetSensitive(CAD_close_polygon_menu_item,FALSE);
+        } 
     }
 }
 

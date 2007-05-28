@@ -365,6 +365,7 @@ Widget measure_button;
 Widget move_button;
 Widget cad_draw_button;
 
+Widget CAD_close_polygon_menu_item;
 
 int Station_transmit_type;
 int Igate_type;
@@ -5008,7 +5009,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
     Widget sar_object_menu;
-    Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
+    Widget CAD_sub, CAD1, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, send_message_to;
@@ -5880,12 +5881,17 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA031")); ac++;
 
     // "Close Polygon"
-    CAD2=XtCreateManagedWidget(langcode("POPUPMA031"),
+    CAD_close_polygon_menu_item=XtCreateManagedWidget(langcode("POPUPMA031"),
             xmPushButtonGadgetClass,
             CAD_sub,
             al,
             ac);
-    XtAddCallback(CAD2,XmNactivateCallback,Draw_CAD_Objects_close_polygon,NULL);
+    XtAddCallback(CAD_close_polygon_menu_item,XmNactivateCallback,Draw_CAD_Objects_close_polygon,NULL);
+    // disable the close polygon menu item if not in draw mode
+    if (draw_CAD_objects_flag==1)
+        XtSetSensitive(CAD_close_polygon_menu_item,TRUE);
+    if (draw_CAD_objects_flag==0)
+        XtSetSensitive(CAD_close_polygon_menu_item,FALSE);
 
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
