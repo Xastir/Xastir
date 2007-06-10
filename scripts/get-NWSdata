@@ -32,13 +32,13 @@
 # <http://www.weather.gov/geodata/>
 
 
-FILE1="z_18oc06"  # NWSM Libraries: Public Zone Boundaries
+FILE1="z_11mr07"  # NWSM Libraries: Public Zone Boundaries
 FILE2="w_16mr06"  # NWSM Libraries: County Warning Area Boundaries
 FILE3="mz30nv06"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE4="oz15de04"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE5="hz28au04"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE6="c_16mr06"  # County Libraries: AWIPS Counties
-FILE7="fz24my06"  # NWSM Libraries: Fire Weather Zone Boundaries
+FILE7="fz17ap07"  # NWSM Libraries: Fire Weather Zone Boundaries
 
 
 cd /usr/local/share/xastir/Counties
