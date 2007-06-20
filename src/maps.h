@@ -210,8 +210,6 @@ extern void map_plot (Widget w, long max_x, long max_y, long x_long_cord, long y
 
 extern void map_gdal_init(void);
 
-extern int check_trans (XColor c, unsigned long c_trans_color);
-
 // A struct to pass down in to map driver functions so they can have 
 // driver-specific flags.  Most drivers won't care about any (or even all)
 // of the flags, but this way we can just pass a single pointer rather than

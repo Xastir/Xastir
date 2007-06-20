@@ -152,6 +152,48 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm,
 
 
 
+/*  typedef struct _transparent_color_record{
+        unsigned long trans_color;
+        struct _transparent_color_record *next;
+    } transparent_color_record;
+*/
+    // Pointer to head of transparent color linked list.
+    transparent_color_record *trans_color_head = NULL;
+
+
+
+
+
+    void empty_trans_color_list(void) {
+        transparent_color_record *p;
+
+        while (trans_color_head != NULL) {
+            p = trans_color_head;
+            trans_color_head = p->next;
+            free(p);
+        }
+    }
+
+
+
+
+
+    void new_trans_color(unsigned long trans_color) {
+        transparent_color_record *p;
+
+fprintf(stderr,"New transparent color: %lx\n", trans_color);
+        p = (transparent_color_record *)malloc( sizeof(transparent_color_record) );
+        // Fill in value
+        p->trans_color = trans_color;
+        // Link it to transparent color list
+        p->next = trans_color_head;
+        trans_color_head = p;
+    }
+ 
+
+
+
+
 /********************(**********************************************
 * check_trans()
 *
@@ -161,16 +203,20 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm,
 * ok to use IM calls.
 ******************************************(************************/
 
-int check_trans (XColor c, unsigned long c_trans_color) {
+int check_trans (XColor c, transparent_color_record *c_trans_color_head) {
+    transparent_color_record *p = c_trans_color_head;
+
     //    fprintf (stderr, "pix = %li,%lx, chk = %li,%lx.\n",c.pixel,c.pixel,c_trans_color,c_trans_color);
-    // need to load an array from the geo file of colors to zap
-    // for now, just a static list to test
+    // A linked list from the geo file of colors to zap.
 
     //    if ( c.pixel == (unsigned long) 0x000000 ) {
     //    return 1; // black background
     //}
-    if ( c.pixel == c_trans_color ) {
-        return 1;
+    while (p) {
+        if ( c.pixel == p->trans_color ) {
+            return 1;
+        }
+        p = p->next;
     }
 
     return 0; // everything else is OK to draw
@@ -559,8 +605,7 @@ void draw_geo_image_map (Widget w,
 #ifdef FUZZYRASTER
     int rasterfuzz = 3;    // ratio to skip 
 #endif //FUZZYRASTER
-    int do_check_trans = 0;  // do we bother checking for transparent colors
-    unsigned long trans_color;    // what color to zap
+    unsigned long temp_trans_color;    // what color to zap
     int trans_skip = 0;  // skip transparent pixel
     int crop_x1=0, crop_x2=0, crop_y1=0, crop_y2=0; // pixel crop box
     int do_crop = 0;     // do we crop pixels
@@ -599,6 +644,7 @@ void draw_geo_image_map (Widget w,
 
 
     // Read the .geo file to find out map filename and tiepoint info
+    empty_trans_color_list();
     n_tp = 0;
     geo_datum[0]      = '\0';
     geo_projection[0] = '\0';
@@ -723,17 +769,17 @@ void draw_geo_image_map (Widget w,
                 // need to make this read a list of colors to zap
                 // out.  Use 32-bit unsigned values, so we can
                 // handle 32-bit color displays.
-                if (1 != sscanf (line + 12, "%lx", &trans_color)) {
+                if (1 != sscanf (line + 12, "%lx", &temp_trans_color)) {
                     fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
                 }
 
                 {
                     unsigned short r,g,b;
-                    // We'll assume the trans_color has been specified as a 
-                    // 24-bit quantity
-                    r = (trans_color&0xff0000) >> 16;
-                    g = (trans_color&0x00ff00)>>8;
-                    b = trans_color&0x0000ff;
+                    // We'll assume the temp_trans_color has been
+                    // specified as a 24-bit quantity
+                    r = (temp_trans_color&0xff0000) >> 16;
+                    g = (temp_trans_color&0x00ff00)>>8;
+                    b = temp_trans_color&0x0000ff;
                     // Now this is an incredible kludge, but seems to be right
                     // Apparently, if QuantumDepth is 16 bits, r, g, and b
                     // values are duplicated in the high and low byte, which
@@ -745,7 +791,7 @@ void draw_geo_image_map (Widget w,
                         b=b|(b<<8);
                     }
 #endif  // HAVE_MAGICK
-                    //fprintf(stderr,"Original Transparent %lx\n",trans_color);
+                    //fprintf(stderr,"Original Transparent %lx\n",temp_trans_color);
                     //fprintf(stderr,"Transparent r,g,b=%x,%x,%x\n",r,g,b);
                     if (visual_type == NOT_TRUE_NOR_DIRECT) {
                         XColor junk;
@@ -764,15 +810,17 @@ void draw_geo_image_map (Widget w,
                             junk.blue = b<<8;
                         }
                         XAllocColor(XtDisplay(w),cmap,&junk);
-                        trans_color = junk.pixel;
+                        temp_trans_color = junk.pixel;
                     } else {
-                        pack_pixel_bits(r,g,b,&trans_color);
+                        pack_pixel_bits(r,g,b,&temp_trans_color);
                     }
-                    //fprintf(stderr,"Packed Transparent %lx\n",trans_color);
+                    //fprintf(stderr,"Packed Transparent %lx\n",temp_trans_color);
                 }
 
-                do_check_trans = 1;
-//fprintf(stderr,"New Transparent: %lx\n",trans_color);
+//fprintf(stderr,"New Transparent: %lx\n",temp_trans_color);
+
+                // Link color to transparent color list
+                new_trans_color(temp_trans_color);
             }
             if (strncasecmp(line, "CROP", 4) == 0) { 
                 if (4 != sscanf (line + 5, "%d %d %d %d", 
@@ -867,8 +915,7 @@ void draw_geo_image_map (Widget w,
             filenm,
             destination_pixmap,
             fileimg,
-            do_check_trans,
-            trans_color,
+            trans_color_head,
             nocache); // Don't use cached version if non-zero
 
 #endif  // HAVE_MAGICK
@@ -2046,7 +2093,7 @@ fprintf(stderr,"2 ");
 
             // Take care not to screw up the transparency value by
             // the raster_map_intensity multiplication factor.
-            if ( do_check_trans ) {
+            if ( trans_color_head ) {
 //fprintf(stderr,"Checking for transparency\n");
 
                 // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -2059,7 +2106,7 @@ fprintf(stderr,"2 ");
                                     &my_colors[l].pixel);
                 }
 
-                if (check_trans(my_colors[l],trans_color) ) {
+                if (check_trans(my_colors[l],trans_color_head) ) {
 
                     // Found a transparent color.  Leave it alone.
                     leave_unchanged++;
@@ -2434,8 +2481,8 @@ fprintf(stderr,"2 ");
                         l = map_x + map_y * image->columns;
                         trans_skip = 1; // possibly transparent
                         if (image->storage_class == PseudoClass) {
-                            if ( do_check_trans && 
-                                    check_trans(my_colors[index_pack[l]],trans_color) ) {
+                            if ( trans_color_head && 
+                                    check_trans(my_colors[index_pack[l]],trans_color_head) ) {
                                 trans_skip = 1; // skip it
                             }
                             else {
@@ -2447,8 +2494,8 @@ fprintf(stderr,"2 ");
                                             pixel_pack[l].green * raster_map_intensity,
                                             pixel_pack[l].blue * raster_map_intensity,
                                             &my_colors[0].pixel);
-                            if ( do_check_trans && 
-                                    check_trans(my_colors[0],trans_color) ) {
+                            if ( trans_color_head && 
+                                    check_trans(my_colors[0],trans_color_head) ) {
                                 trans_skip = 1; // skip it
                             }
                             else {
