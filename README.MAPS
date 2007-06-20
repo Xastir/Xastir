@@ -1014,7 +1014,8 @@ Getting Maps and other Data Files for Xastir:
       TRANSPARENT:  Color to remove from the background (make it transparent).
           Use a number, 0=black.  Color-mapped images use the map value, so 
           white is usually 0xffff.  Value can be decimal or hex if preceeded 
-          by "0x".  
+          by "0x".  Multiple TRANSPARENT lines can be used in a file to make
+          multiple colors transparent.
       CROP: removes borders.  Values are [left top right bottom] with
           (0,0) at the upper left.  A good value for the NWS radar
           images above is "CROP 35 20 616 600"
