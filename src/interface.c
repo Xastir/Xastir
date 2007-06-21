@@ -4304,7 +4304,7 @@ void dtr_all_set(int dtr) {
 
 
 //***********************************************************
-// Serial port close
+// Serial port close.  Remove the lockfile as well.
 // port is port# used
 //***********************************************************
 int serial_detach(int port) {
@@ -4349,6 +4349,30 @@ int serial_detach(int port) {
         (void)unlink(fn);
         DISABLE_SETUID_PRIVILEGE;
     }
+    else {
+
+        // If we didn't have the port in use, for instance we
+        // weren't able to open it, we should check whether a
+        // lockfile exists for the port and see if another running
+        // process owns the lockfile (the PID of the owner is inside
+        // the lockfile).  If not, remove the lockfile 'cuz it may
+        // have been ours from this or a previous run.  Note that we
+        // can now run multiple Xastir sessions from a single user,
+        // and the lockfiles must be kept straight between them.  If
+        // a lockfile doesn't contain a PID from a running process,
+        // it's fair game to delete the lockfile and/or take over
+        // the port with a new lockfile.
+        //
+        //   if (lockfile exists) {
+        //       PID = read contents of lockfile
+        //       if (PID is running) {
+        //           Do nothing, leave the file alone
+        //       }
+        //       else {
+        //           Delete the lockfile
+        //       }
+        //   }
+    }
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_detach(2)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -4368,7 +4392,8 @@ int serial_init (int port) {
     FILE *lock;
     int speed;
     pid_t mypid = 0;
-    int myintpid;
+    pid_t lockfile_pid = 0;
+    int lockfile_intpid;
     char fn[600];
     uid_t user_id;
     struct passwd *user_info;
@@ -4415,45 +4440,70 @@ int serial_init (int port) {
     }
 
 
-    // check for lock file
+    // check for lockfile
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s",
             get_device_name_only(port_data[port].device_name));
+
     if (filethere(fn) == 1) {
+
         // Also look for pid of other process and see if it is a valid lock
         fprintf(stderr,"Found an existing lockfile %s for this port!\n",fn);
+
         lock = fopen(fn,"r");
         if (lock != NULL) { // We could open it so it must have
                             // been created by this userid
-            if (fscanf(lock,"%d %99s %99s",&myintpid,temp,temp1) == 3) {
-                //fprintf(stderr,"Current lock %d %s %s\n",mypid,temp,temp1);
-                mypid = (pid_t)myintpid;
+            if (fscanf(lock,"%d %99s %99s",&lockfile_intpid,temp,temp1) == 3) {
+                //fprintf(stderr,"Current lock %d %s %s\n",lockfile_intpid,temp,temp1);
+                lockfile_pid = (pid_t)lockfile_intpid;
 
 #ifdef HAVE_GETPGRP
-  #ifdef GETPGRP_VOID
+  #ifdef GETPGRP_VOID   
+                // Won't this one get our process group instead of
+                // the process group for the lockfile?  Not of that
+                // much use to us here.
                 status = getpgrp();
   #else // GETPGRP_VOID
-                status = getpgrp(mypid);
+                status = getpgrp(lockfile_pid);
   #endif // GETPGRP_VOID
 #else   // HAVE_GETPGRP
-                status = getpgid(mypid);
+                status = getpgid(lockfile_pid);
 #endif // HAVE_GETPGRP
 
             }
             else {
                 // fscanf parsed the wrong number of items.
-                // Lockfile is different, perhaps created by some
+                // lockfile is different, perhaps created by some
                 // other program.
             }
 
             (void)fclose(lock);
 
-            // check to see if it is stale
-            if (status != mypid) {
+            // See whether the existing lockfile is stale.  Remove
+            // the file if it belongs to our process group or if the
+            // PID in the file is no longer running.
+            //
+            // The only time we _shouldn't_ delete the file and
+            // claim the port for our own is when the process that
+            // created the lockfile is still running.
+
+            // Get my process id
+            mypid = getpid();
+
+            // If status = -1, the process that created the lockfile
+            // is no longer running and of course will not match
+            // "lockfile_pid", so we can delete it.
+            //
+            // If "lockfile_pid == mypid", then this currently
+            // running instance of Xastir was the one that created
+            // the lockfile and it is again ok to delete it.
+            //
+            if (status != lockfile_pid || lockfile_pid == mypid) {
                 fprintf(stderr,"Lock is stale!  Removing it.\n");
                 ENABLE_SETUID_PRIVILEGE;
                 (void)unlink(fn);
                 DISABLE_SETUID_PRIVILEGE;
-            } else {
+            }
+            else {
                 fprintf(stderr,"Cannot open port:  Another program has the lock!\n");
 
                 if (end_critical_section(&port_data_lock, "interface.c:serial_init(2)" ) > 0)
@@ -4461,9 +4511,10 @@ int serial_init (int port) {
 
                 return (-1);
             }
-        } else {    // Couldn't open it, so the lock must have been
+        }
+        else {    // Couldn't open it, so the lock must have been
                     // created by another userid
-            fprintf(stderr,"Cannot open port:  Another program has the lock!\n");
+            fprintf(stderr,"Cannot open port:  Lockfile cannot be opened!\n");
 
             if (end_critical_section(&port_data_lock, "interface.c:serial_init(3)" ) > 0)
                 fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -4567,7 +4618,7 @@ int serial_init (int port) {
         return (-1);
     }
 
-    // Attempt to create the lock file
+    // Attempt to create the lockfile
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
     if (debug_level & 2)
         fprintf(stderr,"Create lock file %s\n",fn);
@@ -4576,7 +4627,7 @@ int serial_init (int port) {
     lock = fopen(fn,"w");
     DISABLE_SETUID_PRIVILEGE;
     if (lock != NULL) {
-        // get my process id for lock file
+        // get my process id for lockfile
         mypid = getpid();
 
         // get user info
@@ -4589,14 +4640,14 @@ int serial_init (int port) {
 
         fprintf(lock,"%9d %s %s",(int)mypid,"xastir",temp);
         (void)fclose(lock);
-        // We've successfully created our own lock file
+        // We've successfully created our own lockfile
     }
     else {
         // lock failed
         if (debug_level & 2)
             fprintf(stderr,"Warning:  Failed opening LCK file!  Continuing on...\n");
 
-        /* if we can't create lock file don't fail!
+        /* if we can't create lockfile don't fail!
 
 if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -4613,7 +4664,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         if (debug_level & 2)
             fprintf(stderr,"Could not get t port attributes for port %d!\n",port);
 
-        // Here we should close the port and remove the lock.
+        // Close the port and remove the lock.
         serial_detach(port);
 
         return (-1);
@@ -4627,7 +4678,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         if (debug_level & 2)
             fprintf(stderr,"Could not get t_old port attributes for port %d!\n",port);
 
-        // Here we should close the port and remove the lock.
+        // Close the port and remove the lock.
         serial_detach(port);
 
         return (-1);
@@ -4689,7 +4740,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         if (debug_level & 2)
             fprintf(stderr,"Could not set port input speed for port %d!\n",port);
 
-        // Here we should close the port and remove the lock.
+        // Close the port and remove the lock.
         serial_detach(port);
 
         return (-1);
@@ -4703,7 +4754,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         if (debug_level & 2)
             fprintf(stderr,"Could not set port output speed for port %d!\n",port);
 
-        // Here we should close the port and remove the lock.
+        // Close the port and remove the lock.
         serial_detach(port);
 
         return (-1);
@@ -4717,7 +4768,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         if (debug_level & 2)
             fprintf(stderr,"Could not flush data for port %d!\n",port);
 
-        // Here we should close the port and remove the lock.
+        // Close the port and remove the lock.
         serial_detach(port);
 
         return (-1);
@@ -4731,7 +4782,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         if (debug_level & 2)
             fprintf(stderr,"Could not set port attributes for port %d!\n",port);
 
-        // Here we should close the port and remove the lock.
+        // Close the port and remove the lock.
         serial_detach(port);
 
         return (-1);
