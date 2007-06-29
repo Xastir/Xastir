@@ -40,7 +40,7 @@
 
 struct Branch BranchBuf[MAXCARD+1];
 int BranchCount;
-struct Rect CoverSplit;
+struct Rect l_CoverSplit;
 
 /* variables for finding a partition */
 struct PartitionVars
