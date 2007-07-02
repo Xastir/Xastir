@@ -89,7 +89,7 @@ The Questions
     4.28 Why are the labels missing in the Configure->Timing dialog?
     4.29 Xastir can't find "xastir.rgb" or some other file.  What's wrong?
     4.30 Why can't I see station trails as stations move around?
-
+    4.31 Why don't the maps I installed show up in the Map Chooser?
 
 5.  Features
 
@@ -997,6 +997,47 @@ The Answers
     If this problem and others occur, such as your latitude/longitude
     getting lost between runs, this might indicate a problem with
     your LANG variable.  See question #4.26 above.
+
+    4.31 Why don't the maps I installed show up in the Map Chooser?
+
+    Install the maps in the correct place, normally
+    "/usr/local/share/xastir/maps/" or subdirectories below there. If
+    running LSB-Xastir it's "/opt/Xastir/share/xastir/maps/".
+
+    Make sure the map directories and files have read permissions
+    for the user.
+
+    Select "Map->Configure->Index: Add New Maps", then check in Map
+    Chooser to see if the map is listed.  If not, try the "Reindex
+    ALL Maps" option.
+
+    Verify that you have installed the map libraries necessary to
+    handle the types of maps you're wishing to use: "Help->About".
+    Also you can check the messages written to STDERR in the shell
+    you start Xastir from.
+
+    Check this file to see if map indexing found the file at all.
+    It's the same file that Map Chooser reads to display the map
+    selections:
+
+        ~/.xastir/config/map_index.sys
+
+    If the map is a raster map, you can check whether your installed
+    ImageMagick or GraphicsMagick can display the image.
+
+        For IM:   display <filename>
+        For GM:   gm display <filename>
+
+    If it's an internet-based map you're trying to download/display,
+    verify in the Xterm that you have internet maps enabled using
+    either libcurl or wget.  Check manually whether curl or wget
+    (whichever Xastir is using) can fetch a remote file.  Check
+    whether a file like ~/.xastir/tmp/map.gif or map.jpg shows up
+    after you try to fetch a file, even if Xastir doesn't display
+    it.  See if one of the above "display" commands will display it
+    if so.  Check the File->Configure->Timing dialog for the
+    "Internet Map Timeout" setting: Adjust it upwards if Xastir is
+    timing out fetching the remove map.
 
 5.  Features
 
