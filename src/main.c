@@ -21432,7 +21432,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 station_type, type_box,
                 styp1, styp2, styp3, styp4, styp5, styp6,
                 igate_option, igate_box,
-                igtyp0, igtyp1, igtyp2;
+                igtyp0, igtyp1, igtyp2, altnet_label;
     Atom delw;
     Arg al[50];                      /* Arg List */
     register unsigned int ac = 0;   /* Arg Count */
@@ -21776,9 +21776,22 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-//        altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", 
-//                xmTextFieldWidgetClass, 
-//                my_form,
+        // "ALTNET:"
+        altnet_label = XtVaCreateManagedWidget(langcode("WPUPCFD033"),
+                xmLabelWidgetClass,
+                my_form,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, altnet_active,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, compressed_objects_items_tx,
+                XmNrightAttachment, XmATTACH_NONE,
+                NULL);
+
         altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", 
                 xmTextWidgetClass, 
                 my_form,
@@ -21794,9 +21807,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget, altnet_active,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, compressed_objects_items_tx,
-                XmNrightAttachment,XmATTACH_FORM,
-                XmNrightOffset, 160,
+                XmNleftWidget, altnet_label,
+                XmNrightAttachment, XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 

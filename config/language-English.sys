@@ -428,6 +428,7 @@ WPUPCFD029|View zero-distance bulletins||
 WPUPCFD030|Disable Posit Dupe-Checks||
 WPUPCFD031|Load predefined objects from file||
 WPUPCFD032|My trails in one color||
+WPUPCFD033|ALTNET:||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configure Timing||
