@@ -88,6 +88,7 @@ The Questions
     4.27 Why are my colors messed up when running via VNC?
     4.28 Why are the labels missing in the Configure->Timing dialog?
     4.29 Xastir can't find "xastir.rgb" or some other file.  What's wrong?
+    4.30 Why can't I see station trails as stations move around?
 
 
 5.  Features
@@ -984,6 +985,18 @@ The Answers
 
     Make sure that you now see a reasonable path for the
     XASTIR_DATA_BASE variable on each compile line.
+
+    4.30 Why can't I see station trails as stations move around?
+
+    Enable Station->Filter Display->Display Trail
+
+    File->Configure->Timing->"New Track Time" and "New Track Interval
+    should be set above zero.  Defaults for these are 45 and 1
+    respectively.
+
+    If this problem and others occur, such as your latitude/longitude
+    getting lost between runs, this might indicate a problem with
+    your LANG variable.  See question #4.26 above.
 
 5.  Features
 
