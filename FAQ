@@ -1039,6 +1039,17 @@ The Answers
     "Internet Map Timeout" setting: Adjust it upwards if Xastir is
     timing out fetching the remove map.
 
+    If all else fails, try removing the ~/.xastir directory and all
+    contents.  Warning:  This will cause you to lose all of your
+    personal Xastir configuration, including callsign, location,
+    bookmarks, map levels and other map settings, etc.  Once you've
+    done this, verify that your LANG setting is either "C" or
+    "en_US", with no additional characters in there, then start
+    Xastir from that same shell with the correct LANG setting.
+    Xastir should index all of your maps on startup. After it is
+    complete, bring up the Map Chooser and all available maps should
+    be listed.
+
 5.  Features
 
     5.1  Why doesn't Xastir include <insert your feature here>?
