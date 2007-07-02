@@ -409,8 +409,10 @@ if test "${use_rtree}" = "yes" ; then
     AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
     # check to see if the RTree functions already exist in libraries included
     # so far (e.g. GDAL).  If not, build our own.
-    AC_SEARCH_LIBS(RTreeSearch, , , 
-      [
+    AC_SEARCH_LIBS(RTreeSearch, ,
+      [ RTREE_LIB="external" ] , 
+      [  
+         RTREE_LIB="internal"
          LIBRTREE="-Lrtree -lrtree"
          SUBRTREE="rtree"
       ])
@@ -817,7 +819,12 @@ echo "Building with ShapeLib ............................. : $use_shapelib"
 echo "Building with pcre ................................. : $use_pcre"
 echo "Building with dbfawk ............................... : $use_dbfawk"
 echo "Building with map caching .......................... : $use_map_cache"
-echo "Building with rtree indexing ....................... : $use_rtree"
+echo -n "Building with rtree indexing ....................... :"
+if test "$use_rtree" = "yes"; then
+  echo " yes ($RTREE_LIB)"
+else
+  echo " no"
+fi
 echo "----------------------------------------------------------"
 echo "Building with ErrorPopups (Old Method) ............. : $use_err_popups"
 echo "Building with libgc (Debug) ........................ : $use_libgc"
