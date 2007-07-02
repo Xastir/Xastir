@@ -61,10 +61,10 @@ static void RTreeGetBranches(struct Node *N, struct Branch *B)
 	BranchCount = MAXKIDS(n) + 1;
 
 	/* calculate rect containing all in the set */
-	l_CoverSplit = BranchBuf[0].rect;
+	CoverSplit = BranchBuf[0].rect;
 	for (i=1; i<MAXKIDS(n)+1; i++)
 	{
-		l_CoverSplit = RTreeCombineRect(&l_CoverSplit, &BranchBuf[i].rect);
+		CoverSplit = RTreeCombineRect(&CoverSplit, &BranchBuf[i].rect);
 	}
 
 	RTreeInitNode(n);
@@ -159,8 +159,8 @@ static void RTreePickSeeds(struct PartitionVars *P)
 		}
 
 		/* find width of the whole collection along this dimension */
-		width[dim] = l_CoverSplit.boundary[high] -
-			     l_CoverSplit.boundary[dim];
+		width[dim] = CoverSplit.boundary[high] -
+			     CoverSplit.boundary[dim];
 	}
 
 	/* pick the best separation dimension and the two seed rects */
@@ -397,7 +397,7 @@ static void RTreePrintPVars(struct PartitionVars *p)
 	printf("count[1] = %d  area = %f\n", p->count[1], p->area[1]);
 	printf("total area = %f  effectiveness = %3.2f\n",
 		p->area[0] + p->area[1],
-		RTreeRectSphericalVolume(&l_CoverSplit)/(p->area[0]+p->area[1]));
+		RTreeRectSphericalVolume(&CoverSplit)/(p->area[0]+p->area[1]));
 
 	printf("cover[0]:\n");
 	RTreePrintRect(&p->cover[0], 0);
