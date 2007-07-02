@@ -38,9 +38,9 @@
 
 #define METHODS 1
 
-struct Branch BranchBuf[MAXCARD+1];
-int BranchCount;
-struct Rect CoverSplit;
+struct Branch Xastir_BranchBuf[MAXCARD+1];
+int Xastir_BranchCount;
+struct Rect Xastir_CoverSplit;
 
 /* variables for finding a partition */
 struct PartitionVars
@@ -51,4 +51,4 @@ struct PartitionVars
 	int count[2];
 	struct Rect cover[2];
 	RectReal area[2];
-} Partitions[METHODS];
+} Xastir_Partitions[METHODS];

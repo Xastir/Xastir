@@ -35,15 +35,15 @@
 #ifndef __CARD__
 #define __CARD__
 
-extern int NODECARD;
-extern int LEAFCARD;
+extern int Xastir_NODECARD;
+extern int Xastir_LEAFCARD;
 
 /* balance criteria for node splitting */
 /* NOTE: can be changed if needed. */
-#define MinNodeFill (NODECARD / 2)
-#define MinLeafFill (LEAFCARD / 2)
+#define MinNodeFill (Xastir_NODECARD / 2)
+#define MinLeafFill (Xastir_LEAFCARD / 2)
 
-#define MAXKIDS(n) ((n)->level > 0 ? NODECARD : LEAFCARD)
+#define MAXKIDS(n) ((n)->level > 0 ? Xastir_NODECARD : Xastir_LEAFCARD)
 #define MINFILL(n) ((n)->level > 0 ? MinNodeFill : MinLeafFill)
 
 #endif

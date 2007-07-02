@@ -35,8 +35,8 @@
 #include "index.h"
 #include "card.h"
 
-int NODECARD = MAXCARD;
-int LEAFCARD = MAXCARD;
+int Xastir_NODECARD = MAXCARD;
+int Xastir_LEAFCARD = MAXCARD;
 
 static int set_max(int *which, int new_max)
 {
@@ -46,7 +46,7 @@ static int set_max(int *which, int new_max)
 	return 1;
 }
 
-int RTreeSetNodeMax(int new_max) { return set_max(&NODECARD, new_max); }
-int RTreeSetLeafMax(int new_max) { return set_max(&LEAFCARD, new_max); }
-int RTreeGetNodeMax(void) { return NODECARD; }
-int RTreeGetLeafMax(void) { return LEAFCARD; }
+int Xastir_RTreeSetNodeMax(int new_max) { return set_max(&Xastir_NODECARD, new_max); }
+int Xastir_RTreeSetLeafMax(int new_max) { return set_max(&Xastir_LEAFCARD, new_max); }
+int Xastir_RTreeGetNodeMax(void) { return Xastir_NODECARD; }
+int Xastir_RTreeGetLeafMax(void) { return Xastir_LEAFCARD; }

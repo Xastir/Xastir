@@ -1795,7 +1795,7 @@ void draw_shapefile_map (Widget w,
             RTree_hitarray_index=0;
             // the callback will be executed every time the search finds a 
             // shape whose bounding box overlaps the viewport.
-            nhits = RTreeSearch(si->root, &viewportRect, 
+            nhits = Xastir_RTreeSearch(si->root, &viewportRect, 
                                 RTreeSearchCallback, 0);
             //fprintf(stderr,"Found %d hits in %s\n",nhits,file);
         } else {

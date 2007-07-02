@@ -42,9 +42,9 @@
 
 // Initialize one branch cell in a node.
 //
-static void RTreeInitBranch(struct Branch *b)
+static void Xastir_RTreeInitBranch(struct Branch *b)
 {
-	RTreeInitRect(&(b->rect));
+	Xastir_RTreeInitRect(&(b->rect));
 	b->child = NULL;
 }
 
@@ -52,21 +52,21 @@ static void RTreeInitBranch(struct Branch *b)
 
 // Initialize a Node structure.
 //
-void RTreeInitNode(struct Node *N)
+void Xastir_RTreeInitNode(struct Node *N)
 {
 	register struct Node *n = N;
 	register int i;
 	n->count = 0;
 	n->level = -1;
 	for (i = 0; i < MAXCARD; i++)
-		RTreeInitBranch(&(n->branch[i]));
+		Xastir_RTreeInitBranch(&(n->branch[i]));
 }
 
 
 
 // Make a new node and initialize to have all branch cells empty.
 //
-struct Node * RTreeNewNode(void)
+struct Node * Xastir_RTreeNewNode(void)
 {
 	register struct Node *n;
 
@@ -76,12 +76,12 @@ struct Node * RTreeNewNode(void)
         //        nnodes_alloced++;
         //        bytes_malloced+= sizeof(struct Node);
         //        fprintf(stderr,"   Currently %d nodes (%ld bytes) in all rtrees\n",nnodes_alloced, bytes_malloced);
-	RTreeInitNode(n);
+	Xastir_RTreeInitNode(n);
 	return n;
 }
 
 
-void RTreeFreeNode(struct Node *p)
+void Xastir_RTreeFreeNode(struct Node *p)
 {
 	assert(p);
 	//delete p;
@@ -92,14 +92,14 @@ void RTreeFreeNode(struct Node *p)
 
 
 
-static void RTreePrintBranch(struct Branch *b, int depth)
+static void Xastir_RTreePrintBranch(struct Branch *b, int depth)
 {
-	RTreePrintRect(&(b->rect), depth);
-	RTreePrintNode(b->child, depth);
+	Xastir_RTreePrintRect(&(b->rect), depth);
+	Xastir_RTreePrintNode(b->child, depth);
 }
 
 
-extern void RTreeTabIn(int depth)
+extern void Xastir_RTreeTabIn(int depth)
 {
 	int i;
 	for(i=0; i<depth; i++)
@@ -109,12 +109,12 @@ extern void RTreeTabIn(int depth)
 
 // Print out the data in a node.
 //
-void RTreePrintNode(struct Node *n, int depth)
+void Xastir_RTreePrintNode(struct Node *n, int depth)
 {
 	int i;
 	assert(n);
 
-	RTreeTabIn(depth);
+	Xastir_RTreeTabIn(depth);
 	printf("node");
 	if (n->level == 0)
 		printf(" LEAF");
@@ -129,13 +129,13 @@ void RTreePrintNode(struct Node *n, int depth)
 	for (i=0; i<n->count; i++)
 	{
 		if(n->level == 0) {
-                    //			RTreeTabIn(depth);
+                    //			Xastir_RTreeTabIn(depth);
                     //			printf("\t%d: data = %d\n", i, n->branch[i].child);
 		}
 		else {
-			RTreeTabIn(depth);
+			Xastir_RTreeTabIn(depth);
 			printf("branch %d\n", i);
-			RTreePrintBranch(&n->branch[i], depth+1);
+			Xastir_RTreePrintBranch(&n->branch[i], depth+1);
 		}
 	}
 }
@@ -145,14 +145,14 @@ void RTreePrintNode(struct Node *n, int depth)
 // Find the smallest rectangle that includes all rectangles in
 // branches of a node.
 //
-struct Rect RTreeNodeCover(struct Node *N)
+struct Rect Xastir_RTreeNodeCover(struct Node *N)
 {
 	register struct Node *n = N;
 	register int i, first_time=1;
 	struct Rect r;
 	assert(n);
 
-	RTreeInitRect(&r);
+	Xastir_RTreeInitRect(&r);
 	for (i = 0; i < MAXKIDS(n); i++)
 		if (n->branch[i].child)
 		{
@@ -162,7 +162,7 @@ struct Rect RTreeNodeCover(struct Node *N)
 				first_time = 0;
 			}
 			else
-				r = RTreeCombineRect(&r, &(n->branch[i].rect));
+				r = Xastir_RTreeCombineRect(&r, &(n->branch[i].rect));
 		}
 	return r;
 }
@@ -175,7 +175,7 @@ struct Rect RTreeNodeCover(struct Node *N)
 // In case of a tie, pick the one which was smaller before, to get
 // the best resolution when searching.
 //
-int RTreePickBranch(struct Rect *R, struct Node *N)
+int Xastir_RTreePickBranch(struct Rect *R, struct Node *N)
 {
 	register struct Rect *r = R;
 	register struct Node *n = N;
@@ -195,9 +195,9 @@ int RTreePickBranch(struct Rect *R, struct Node *N)
 		if (n->branch[i].child)
 		{
 			rr = &n->branch[i].rect;
-			area = RTreeRectSphericalVolume(rr);
-			tmp_rect = RTreeCombineRect(r, rr);
-			increase = RTreeRectSphericalVolume(&tmp_rect) - area;
+			area = Xastir_RTreeRectSphericalVolume(rr);
+			tmp_rect = Xastir_RTreeCombineRect(r, rr);
+			increase = Xastir_RTreeRectSphericalVolume(&tmp_rect) - area;
 			if (increase < bestIncr || first_time)
 			{
 				best = i;
@@ -223,7 +223,7 @@ int RTreePickBranch(struct Rect *R, struct Node *N)
 // Returns 1 if node split, sets *new_node to address of new node.
 // Old node updated, becomes one of two.
 //
-int RTreeAddBranch(struct Branch *B, struct Node *N, struct Node **New_node)
+int Xastir_RTreeAddBranch(struct Branch *B, struct Node *N, struct Node **New_node)
 {
 	register struct Branch *b = B;
 	register struct Node *n = N;
@@ -249,7 +249,7 @@ int RTreeAddBranch(struct Branch *B, struct Node *N, struct Node **New_node)
 	else
 	{
 		assert(new_node);
-		RTreeSplitNode(n, b, new_node);
+		Xastir_RTreeSplitNode(n, b, new_node);
 		return 1;
 	}
 }
@@ -258,28 +258,28 @@ int RTreeAddBranch(struct Branch *B, struct Node *N, struct Node **New_node)
 
 // Disconnect a dependent node.
 //
-void RTreeDisconnectBranch(struct Node *n, int i)
+void Xastir_RTreeDisconnectBranch(struct Node *n, int i)
 {
 	assert(n && i>=0 && i<MAXKIDS(n));
 	assert(n->branch[i].child);
 
-	RTreeInitBranch(&(n->branch[i]));
+	Xastir_RTreeInitBranch(&(n->branch[i]));
 	n->count--;
 }
 
 // Destroy (free) node recursively. 
-void RTreeDestroyNode (struct Node *n)
+void Xastir_RTreeDestroyNode (struct Node *n)
 {
     int i;
     //    fprintf(stderr,"  Freeing node %lx\n",(unsigned long int) n);
     if (n->level > 0) {  //it is not leaf -> destroy childs 
-        for ( i = 0; i < NODECARD; i++) {
+        for ( i = 0; i < Xastir_NODECARD; i++) {
             if ( n->branch[i].child ) {
-                RTreeDestroyNode ( n->branch[i].child );
+                Xastir_RTreeDestroyNode ( n->branch[i].child );
             }
         }
     }
     
     //
-    RTreeFreeNode( n );
+    Xastir_RTreeFreeNode( n );
 }

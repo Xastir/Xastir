@@ -163,7 +163,7 @@ void empty_shpinfo(shpinfo *si) {
     if (si) {
         if (si->root) {
             //            fprintf(stderr,"        Freeing root\n");
-            RTreeDestroyNode(si->root);
+            Xastir_RTreeDestroyNode(si->root);
             si->root=NULL;
         }
 
@@ -236,7 +236,7 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
     CHECKMALLOC(temp->filename);
     strncpy(temp->filename,filename,filenm_len+1);
     temp->filename[filenm_len]='\0';  // just to be safe
-    temp->root = RTreeNewIndex();  
+    temp->root = Xastir_RTreeNewIndex();  
     temp->creation = sec_now();
     temp->last_access = temp->creation;
 
@@ -301,12 +301,12 @@ void build_rtree (struct Node **root, SHPHandle sHP) {
         bbox_shape.boundary[3]=(RectReal) psCShape->dfYMax;
         SHPDestroyObject ( psCShape );
         // Only insert the rect if it will not fail the assertion in 
-        // RTreeInsertRect --- this will cause us to ignore any shapes that
+        // Xastir_RTreeInsertRect --- this will cause us to ignore any shapes that
         // have invalid bboxes (or that return invalid bboxes from shapelib
         // for whatever reason
         if (bbox_shape.boundary[0] <= bbox_shape.boundary[2] &&
             bbox_shape.boundary[1] <= bbox_shape.boundary[3])
-            RTreeInsertRect(&bbox_shape,i+1,root,0);
+            Xastir_RTreeInsertRect(&bbox_shape,i+1,root,0);
     }
 }
 

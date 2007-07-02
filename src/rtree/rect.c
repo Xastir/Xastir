@@ -51,7 +51,7 @@
 /*-----------------------------------------------------------------------------
 | Initialize a rectangle to have all 0 coordinates.
 -----------------------------------------------------------------------------*/
-void RTreeInitRect(struct Rect *R)
+void Xastir_RTreeInitRect(struct Rect *R)
 {
 	register struct Rect *r = R;
 	register int i;
@@ -64,7 +64,7 @@ void RTreeInitRect(struct Rect *R)
 | Return a rect whose first low side is higher than its opposite side -
 | interpreted as an undefined rect.
 -----------------------------------------------------------------------------*/
-struct Rect RTreeNullRect(void)
+struct Rect Xastir_RTreeNullRect(void)
 {
 	struct Rect r;
 	register int i;
@@ -83,7 +83,7 @@ struct Rect RTreeNullRect(void)
 | Fills in random coordinates in a rectangle.
 | The low side is guaranteed to be less than the high side.
 -----------------------------------------------------------------------------*/
-void RTreeRandomRect(struct Rect *R)
+void Xastir_RTreeRandomRect(struct Rect *R)
 {
 	register struct Rect *r = R;
 	register int i;
@@ -110,7 +110,7 @@ void RTreeRandomRect(struct Rect *R)
 | and has size from 0 to the size of the data area in each dimension,
 | i.e. search rect can stick out beyond data area.
 -----------------------------------------------------------------------------*/
-void RTreeSearchRect(struct Rect *Search, struct Rect *Data)
+void Xastir_RTreeSearchRect(struct Rect *Search, struct Rect *Data)
 {
 	register struct Rect *search = Search, *data = Data;
 	register int i, j;
@@ -145,16 +145,16 @@ void RTreeSearchRect(struct Rect *Search, struct Rect *Data)
 /*-----------------------------------------------------------------------------
 | Print out the data for a rectangle.
 -----------------------------------------------------------------------------*/
-void RTreePrintRect(struct Rect *R, int depth)
+void Xastir_RTreePrintRect(struct Rect *R, int depth)
 {
 	register struct Rect *r = R;
 	register int i;
 	assert(r);
 
-	RTreeTabIn(depth);
+	Xastir_RTreeTabIn(depth);
 	printf("rect:\n");
 	for (i = 0; i < NUMDIMS; i++) {
-		RTreeTabIn(depth+1);
+		Xastir_RTreeTabIn(depth+1);
 		printf("%f\t%f\n", r->boundary[i], r->boundary[i + NUMDIMS]);
 	}
 }
@@ -162,7 +162,7 @@ void RTreePrintRect(struct Rect *R, int depth)
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional volume of a rectangle
 -----------------------------------------------------------------------------*/
-RectReal RTreeRectVolume(struct Rect *R)
+RectReal Xastir_RTreeRectVolume(struct Rect *R)
 {
 	register struct Rect *r = R;
 	register int i;
@@ -181,7 +181,7 @@ RectReal RTreeRectVolume(struct Rect *R)
 
 /*-----------------------------------------------------------------------------
 | Define the NUMDIMS-dimensional volume the unit sphere in that dimension into
-| the symbol "UnitSphereVolume"
+| the symbol "Xastir_UnitSphereVolume"
 | Note that if the gamma function is available in the math library and if the
 | compiler supports static initialization using functions, this is
 | easily computed for any dimension. If not, the value can be precomputed and
@@ -200,12 +200,12 @@ static double sphere_volume(double dimension)
 	log_volume = dimension/2.0 * log_pi - log_gamma;
 	return exp(log_volume);
 }
-static const double UnitSphereVolume = sphere_volume(NUMDIMS);
+static const double Xastir_UnitSphereVolume = sphere_volume(NUMDIMS);
 
 #else
 
 /* Precomputed volumes of the unit spheres for the first few dimensions */
-const double UnitSphereVolumes[] = {
+const double Xastir_UnitSphereVolumes[] = {
 	0.000000,  /* dimension   0 */
 	2.000000,  /* dimension   1 */
 	3.141593,  /* dimension   2 */
@@ -231,7 +231,7 @@ const double UnitSphereVolumes[] = {
 #if NUMDIMS > 20
 #	error "not enough precomputed sphere volumes"
 #endif
-#define UnitSphereVolume UnitSphereVolumes[NUMDIMS]
+#define Xastir_UnitSphereVolume Xastir_UnitSphereVolumes[NUMDIMS]
 
 #endif
 
@@ -245,7 +245,7 @@ const double UnitSphereVolumes[] = {
  * A fast approximation to the volume of the bounding sphere for the
  * given Rect. By Paul B.
  */
-RectReal RTreeRectSphericalVolume(struct Rect *R)
+RectReal Xastir_RTreeRectSphericalVolume(struct Rect *R)
 {
 	register struct Rect *r = R;
 	register int i;
@@ -259,14 +259,14 @@ RectReal RTreeRectSphericalVolume(struct Rect *R)
 		if (c_size > maxsize)
 			maxsize = c_size;
 	}
-	return (RectReal)(pow(maxsize/2, NUMDIMS) * UnitSphereVolume);
+	return (RectReal)(pow(maxsize/2, NUMDIMS) * Xastir_UnitSphereVolume);
 }
 #endif
 
 /*
  * The exact volume of the bounding sphere for the given Rect.
  */
-RectReal RTreeRectSphericalVolume(struct Rect *R)
+RectReal Xastir_RTreeRectSphericalVolume(struct Rect *R)
 {
 	register struct Rect *r = R;
 	register int i;
@@ -281,14 +281,14 @@ RectReal RTreeRectSphericalVolume(struct Rect *R)
 		sum_of_squares += half_extent * half_extent;
 	}
 	radius = sqrt(sum_of_squares);
-	return (RectReal)(pow(radius, NUMDIMS) * UnitSphereVolume);
+	return (RectReal)(pow(radius, NUMDIMS) * Xastir_UnitSphereVolume);
 }
 
 
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional surface area of a rectangle
 -----------------------------------------------------------------------------*/
-RectReal RTreeRectSurfaceArea(struct Rect *R)
+RectReal Xastir_RTreeRectSurfaceArea(struct Rect *R)
 {
 	register struct Rect *r = R;
 	register int i, j;
@@ -317,7 +317,7 @@ RectReal RTreeRectSurfaceArea(struct Rect *R)
 /*-----------------------------------------------------------------------------
 | Combine two rectangles, make one that includes both.
 -----------------------------------------------------------------------------*/
-struct Rect RTreeCombineRect(struct Rect *R, struct Rect *Rr)
+struct Rect Xastir_RTreeCombineRect(struct Rect *R, struct Rect *Rr)
 {
 	register struct Rect *r = R, *rr = Rr;
 	register int i, j;
@@ -343,7 +343,7 @@ struct Rect RTreeCombineRect(struct Rect *R, struct Rect *Rr)
 /*-----------------------------------------------------------------------------
 | Decide whether two rectangles overlap.
 -----------------------------------------------------------------------------*/
-int RTreeOverlap(struct Rect *R, struct Rect *S)
+int Xastir_RTreeOverlap(struct Rect *R, struct Rect *S)
 {
 	register struct Rect *r = R, *s = S;
 	register int i, j;
@@ -365,7 +365,7 @@ int RTreeOverlap(struct Rect *R, struct Rect *S)
 /*-----------------------------------------------------------------------------
 | Decide whether rectangle r is contained in rectangle s.
 -----------------------------------------------------------------------------*/
-int RTreeContained(struct Rect *R, struct Rect *S)
+int Xastir_RTreeContained(struct Rect *R, struct Rect *S)
 {
 	register struct Rect *r = R, *s = S;
 	register int i, j, result;
