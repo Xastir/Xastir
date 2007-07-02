@@ -385,25 +385,6 @@ if test "${use_dbfawk}" = "yes"; then
 fi
 
 
-use_rtree=yes
-LIBRTREE=""
-SUBRTREE=""
-AC_ARG_WITH(rtree,[  --without-rtree            disable spatial indexing of shapefiles.],[use_rtree=$withval])
-if test "${use_rtree}" = "yes" ; then
-  if test "${use_shapelib}" = "yes"; then
-    AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
-    LIBRTREE="-Lrtree -lrtree"
-    SUBRTREE="rtree"
-  else
-    echo "*** Warning: rtree requires shapelib."
-    use_rtree=no
-  fi
-fi
-AC_SUBST(SUBRTREE)
-AC_SUBST(LIBRTREE)
-
-
-
 # Check for GDAL.  Make sure that the GDAL check is towards the
 # last, as it can mess up shapelib and libgeotiff currently.
 use_gdal=yes
@@ -418,6 +399,29 @@ if test "${use_gdal}" = "yes"; then
     AC_DEFINE(HAVE_LIBGDAL, , [Define to 1 if you have the `gdal' library (-lgdaal).])
   fi
 fi
+
+use_rtree=yes
+LIBRTREE=""
+SUBRTREE=""
+AC_ARG_WITH(rtree,[  --without-rtree            disable spatial indexing of shapefiles.],[use_rtree=$withval])
+if test "${use_rtree}" = "yes" ; then
+  if test "${use_shapelib}" = "yes"; then
+    AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
+    # check to see if the RTree functions already exist in libraries included
+    # so far (e.g. GDAL).  If not, build our own.
+    AC_SEARCH_LIBS(RTreeSearch, , , 
+      [
+         LIBRTREE="-Lrtree -lrtree"
+         SUBRTREE="rtree"
+      ])
+  else
+    echo "*** Warning: rtree requires shapelib."
+    use_rtree=no
+  fi
+fi
+AC_SUBST(SUBRTREE)
+AC_SUBST(LIBRTREE)
+
 
 
 
