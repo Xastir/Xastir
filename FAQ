@@ -56,7 +56,7 @@ The Questions
     4.4 I run Xastir, and get on the air, but nobody else sees me on their screens.
     4.5 I run Xastir, and get on the air, but none of the other stations
         appear on my screen?
-    4.6 Who is this APX142 guy who all my stuff is getting sent to? Who are these
+    4.6 Who is this APX190 guy who all my stuff is getting sent to? Who are these
         RELAY, WIDE and TRACE people digipeating packets, and why are they putting
         different callsigns in the fields where their names used to be? Why
         doesn't anyone answer me when I connect to them? HELP!!!
@@ -494,7 +494,7 @@ The Answers
 
     Check that ALTNET support in File|Configure|Defaults is disabled.
     If activated, it only shows stations transmitting TO the callsign
-    listed in the box.  I sometimes set it to APX or APX142 in order to
+    listed in the box.  I sometimes set it to APX or APX190 in order to
     see who's running Xastir/who's running the _latest_ Xastir.  Set
     it to "WEIRD" and you'll only see those transmitting to "WEIRD".
 
@@ -505,7 +505,7 @@ The Answers
     invalid. This is a newer addition to APRS(tm), and recent Xastir releases
     decode this correctly.
 
-    4.6 Who is this APX142 guy who all my stuff is getting sent to? Who are
+    4.6 Who is this APX190 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are
         they putting different callsigns in the fields where their names used
         to be? Why doesn't anyone answer me when I connect to them? HELP!!!
