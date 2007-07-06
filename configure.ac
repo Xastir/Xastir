@@ -815,11 +815,11 @@ echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured to use the following
 echo options and external libraries:
 echo
 echo MINIMUM OPTIONS:
-echo "  Building with ShapeLib ............................. : $use_shapelib"
+echo "  Building with ShapeLib ..................... : $use_shapelib"
 echo
 echo RECOMMENDED OPTIONS:
 
-echo -n "  Building with GraphicsMagick/ImageMagick ........... : "
+echo -n "  Building with GraphicsMagick/ImageMagick ... : "
 if test "${use_graphicsmagick}" = "yes"; then 
   echo "yes (GraphicsMagick)"
 else
@@ -829,25 +829,25 @@ else
     echo "no"
   fi
 fi
-echo "  Building with pcre ................................. : $use_pcre"
-echo "  Building with dbfawk ............................... : $use_dbfawk"
-echo "  Building with map caching .......................... : $use_map_cache"
-echo "  Building with rtree indexing ....................... : $use_rtree"
-echo "  Building with internet map retrieval ............... : $use_retrieval"
+echo "  Building with pcre ......................... : $use_pcre"
+echo "  Building with dbfawk ....................... : $use_dbfawk"
+echo "  Building with map caching .................. : $use_map_cache"
+echo "  Building with rtree indexing ............... : $use_rtree"
+echo "  Building with internet map retrieval ....... : $use_retrieval"
 echo
 echo FOR THE ADVENTUROUS:
-echo "  Building with AX25 ................................. : $use_ax25"
-echo "  Building with Festival ............................. : $use_festival"
-echo "  Building with GPSMan ............................... : $use_gpsman"
-echo "  Building with libproj .............................. : $use_proj"
-echo "  Building with GeoTiff .............................. : $use_geotiff"
-echo "  Building with GDAL/OGR ............................. : $use_gdal"
+echo "  Building with AX25 ......................... : $use_ax25"
+echo "  Building with libproj ...................... : $use_proj"
+echo "  Building with GeoTiff ...................... : $use_geotiff"
+echo "  Building with Festival ..................... : $use_festival"
+echo "  Building with GDAL/OGR ..................... : $use_gdal"
+echo "  Building with GPSMan/gpsmanshp ............. : $use_gpsman"
 echo
 echo DEVELOPER OPTIONS:
-echo "  Building with ErrorPopups (Old Method) ............. : $use_err_popups"
-echo "  Building with libgc (Debug) ........................ : $use_libgc"
-echo "  Building with profiling (Debug) .................... : $use_profiling"
-echo "  Building with Linux Standard Base .................. : $use_lsb"
+echo "  Building with ErrorPopups (Old Method) ..... : $use_err_popups"
+echo "  Building with libgc (Debug) ................ : $use_libgc"
+echo "  Building with profiling (Debug) ............ : $use_profiling"
+echo "  Building with Linux Standard Base .......... : $use_lsb"
 #echo   Building with Davis/MySQL.......... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
