@@ -16487,7 +16487,7 @@ void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget d;
     XmString xms, xa, xb;
-    Arg al[50];
+    Arg al[200];
     unsigned int ac;
     float version;
     char string1[100];
