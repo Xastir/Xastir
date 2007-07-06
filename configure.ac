@@ -122,19 +122,34 @@ AC_CHECK_LIB([Xm], [XmTextFindString])
 
 
 
+use_curl=no
 if test "${use_lsb}" = "no"; then 
-  AC_CHECK_LIB([curl], [curl_global_init])
+  AC_CHECK_LIB([curl], [curl_global_init], use_curl="yes")
 else
   AC_DEFINE(HAVE_LIBCURL, , Define to 1 if your `shp' library has DBFGetFieldIndex. )
   LIBS="${LIBS} -lcurl"
+  use_curl=yes
 fi
 
 
 
+use_wget=no
 AC_PATH_PROG(wget, [wget --version], no, $BINPATH)
 if test "$wget" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
   AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}", [Path to wget]) 
+  use_wget=yes
+fi
+
+
+
+use_retrieval=no
+if test "${use_curl}" = "yes"; then
+  use_retrieval="yes (libcurl)"
+else
+  if test "${use_wget}" = "yes"; then
+    use_retrieval="yes (wget)"
+  fi
 fi
 
 
@@ -790,35 +805,41 @@ echo
 echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured to use the following
 echo options and external libraries:
 echo
-echo "Building with AX25 ................................. : $use_ax25"
-echo "Building with Festival ............................. : $use_festival"
-echo "Building with GPSMan ............................... : $use_gpsman"
+echo MINIMUM OPTIONS:
+echo "  Building with ShapeLib ............................. : $use_shapelib"
+echo
+echo RECOMMENDED OPTIONS:
 
-echo -n "Building with GraphicsMagick/ImageMagick ........... : "
+echo -n "  Building with GraphicsMagick/ImageMagick ........... : "
 if test "${use_graphicsmagick}" = "yes"; then 
-  echo "GraphicsMagick"
+  echo "yes (GraphicsMagick)"
 else
   if test "${use_imagemagick}" = "yes"; then
-    echo "ImageMagick"
+    echo "yes (ImageMagick)"
   else
     echo "no"
   fi
 fi
-
-echo "Building with libproj .............................. : $use_proj"
-echo "Building with GeoTiff .............................. : $use_geotiff"
-echo "Building with GDAL/OGR ............................. : $use_gdal"
-echo "Building with ShapeLib ............................. : $use_shapelib"
-echo "Building with pcre ................................. : $use_pcre"
-echo "Building with dbfawk ............................... : $use_dbfawk"
-echo "Building with map caching .......................... : $use_map_cache"
-echo "Building with rtree indexing ....................... : $use_rtree"
-echo "----------------------------------------------------------"
-echo "Building with ErrorPopups (Old Method) ............. : $use_err_popups"
-echo "Building with libgc (Debug) ........................ : $use_libgc"
-echo "Building with profiling (Debug) .................... : $use_profiling"
-echo "Building with Linux Standard Base .................. : $use_lsb"
-#echo Building with Davis/MySQL.......... : $davis
+echo "  Building with pcre ................................. : $use_pcre"
+echo "  Building with dbfawk ............................... : $use_dbfawk"
+echo "  Building with map caching .......................... : $use_map_cache"
+echo "  Building with rtree indexing ....................... : $use_rtree"
+echo "  Building with internet map retrieval ............... : $use_retrieval"
+echo
+echo FOR THE ADVENTUROUS
+echo "  Building with AX25 ................................. : $use_ax25"
+echo "  Building with Festival ............................. : $use_festival"
+echo "  Building with GPSMan ............................... : $use_gpsman"
+echo "  Building with libproj .............................. : $use_proj"
+echo "  Building with GeoTiff .............................. : $use_geotiff"
+echo "  Building with GDAL/OGR ............................. : $use_gdal"
+echo
+echo DEVELOPER OPTIONS:
+echo "  Building with ErrorPopups (Old Method) ............. : $use_err_popups"
+echo "  Building with libgc (Debug) ........................ : $use_libgc"
+echo "  Building with profiling (Debug) .................... : $use_profiling"
+echo "  Building with Linux Standard Base .................. : $use_lsb"
+#echo   Building with Davis/MySQL.......... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
 if test "x$xastirpath" != "x" ; then 
