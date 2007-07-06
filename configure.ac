@@ -842,12 +842,16 @@ echo "  Building with GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
 echo "  Building with Festival (Text-to-speech) .............. : $use_festival"
 echo "  Building with GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
 echo "  Building with GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
-echo
-echo DEVELOPER OPTIONS:
-echo "  Building with ErrorPopups (Old Method) ............... : $use_err_popups"
-echo "  Building with libgc (Debug memory usage) ............. : $use_libgc"
-echo "  Building with profiling (Debug code efficiency) ...... : $use_profiling"
-echo "  Building with Linux Standard Base (LSB) .............. : $use_lsb"
+
+if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes"; then
+  echo
+  echo DEVELOPER OPTIONS:
+  echo "  Building with ErrorPopups (Old Method) ............... : $use_err_popups"
+  echo "  Building with libgc (Debug memory usage) ............. : $use_libgc"
+  echo "  Building with profiling (Debug code efficiency) ...... : $use_profiling"
+  echo "  Building with Linux Standard Base (LSB) .............. : $use_lsb"
+fi
+
 #echo   Building with Davis/MySQL............................. : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
