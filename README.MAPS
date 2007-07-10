@@ -9,7 +9,7 @@ Recommended Configurations for:
 
     Minimum:  Shapelib, pcre
     --------
-      Allows use of all built-in map types plus 2003 Tigermap data,
+      Allows use of all built-in map types plus 2003 (and later) Tigermap data,
       shapefile weather alerts, and local ESRI Shapefile format
       maps, including U.S. satellite/image/topo maps via Internet.
 
@@ -62,7 +62,7 @@ USGS GNIS           Built-in.  Can split into county-sized chunks
 Address Lookup      Built-in.
 Weather Alerts      Shapelib
 pre-2003 Tigermaps  Shapelib
-2003 Tigermaps      Shapelib, pcre
+post-2003 Tigermaps Shapelib, pcre
 ESRI Shapefiles     Shapelib
 Image Maps          ImageMagick.  Often need lcms library and others
                     as well (whatever it takes to make ImageMagick
@@ -253,7 +253,7 @@ Getting Maps and other Data Files for Xastir:
       available from ftp://aprs.tamu.edu/. Look in the "pub/TIGER_2006_SE" 
       directory.  These maps only work with dbfawk support
 
-      Tiger/Line 2003 data converted to shapefile format is available
+      Tiger/Line 2006 data converted to shapefile format is available
       from ftp://aprs.tamu.edu/.  Look in the "pub/TIGER_2006_SE/"
       directory. These maps only work with dbfawk support.
 
@@ -1031,6 +1031,12 @@ Getting Maps and other Data Files for Xastir:
       download preprocessed data based on Census Tiger 2003 data at:
       http://www.dementia.org/geocoder/tgr2003/
 
+      Reprocessed geocoding files from the 2006 Second Edition TIGER/Line 
+      data were produced by Jason Winningham in June of 2007 and made 
+      available on the TAMU FTP server by Gerry Creager.  They are much
+      better than the 2003 data, and it is recommended that they be used
+      instead.  Download them from 
+         ftp://aprs.tamu.edu/pub/geocode/
 
      Geographic Names Information System Labels:
 
