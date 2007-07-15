@@ -18,6 +18,7 @@ XASTIR_SRC = \
     color.c color.h \
     datum.c datum.h \
     db.c database.h \
+    db_gis.c db_gis.h \
     dbfawk.c dbfawk.h \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \
