@@ -69,13 +69,16 @@ use_festival=yes
 use_gpsman=yes
 use_err_popups=no
 use_lsb=no
+use_spatial_db=no
+use_postgis=no
+use_mysql_spatial=no
 AC_ARG_WITH(festival,[  --without-festival      Disable festival features.],use_festival=$withval)
 
 AC_ARG_WITH(gpsman,[  --without-gpsman        Disable gpsman features.],use_gpsman=$withval)
 
 AC_ARG_WITH(errorpopups,[  --with-errorpopups      Send error popups to stderr.],use_err_popups=$withval)
 
-AC_ARG_WITH(lsb,[  --with-lsb              Enable Linux Standard Base.],use_lsb=$withval)
+AC_ARG_WITH(lsb, [  --with-lsb              Enable Linux Standard Base.],use_lsb=$withval)
 
 
 # Now that all the various "use_" variables are set, probe for binaries.
@@ -89,6 +92,7 @@ fi
 if test "x${gpsman}" = "xno"; then
   use_gpsman=no
 fi
+
 
 # JMT - XXX - what is this and why is it relevant?
 #AC_DEFINE(_REENTRANT, 1, [Use reentrant code if available.]) 
@@ -373,6 +377,30 @@ if test "${use_geotiff}" = "yes"; then
     fi
 fi 
 
+# Check for spatial database support
+use_postgis=no
+AC_ARG_WITH(postgis, [  --with-postgis          Enable Postgresql with PostGIS.],use_postgis=$withval)
+if test "${use_postgis}" != "no"; then
+  XASTIR_CHECK_POSTGIS
+fi
+use_mysql=no
+AC_ARG_WITH(mysql, [  --with-mysql	Enable MySQL, with spatial support if available.],use_mysql=$withval)
+if test "${use_mysql}" != "no"; then
+  XASTIR_CHECK_MYSQL
+fi
+
+if test "${use_postgis}" = "yes"; then
+  use_spatial_db=yes
+  AC_DEFINE(HAVE_SPATIAL_DB, 1, [Spatial database support available] )
+  AC_DEFINE(HAVE_DB, 1, [Database support available] )
+fi
+if test "${use_mysql_spatial}" = "yes"; then
+  use_spatial_db=yes
+  AC_DEFINE(HAVE_DB, 1, [Database support available] )
+  AC_DEFINE(HAVE_SPATIAL_DB, 1, [Spatial database support available] )
+elif test use_mysql_any = "yes"; then
+  AC_DEFINE(HAVE_DB, 1, [Database support available] )
+fi
 
 # Check for AX.25 library 
 use_ax25=yes
@@ -706,7 +734,7 @@ if test "${use_curl}" = "yes"; then
   ILIBS="$ILIBS libcurl"
 else
   if test "${use_wget}" = "yes"; then
-  ILIBS="$ILIBS wget   "
+    ILIBS="$ILIBS wget   "
   else
     ILIBS="$ILIBS        "
   fi
@@ -843,13 +871,17 @@ echo "  Building with Festival (Text-to-speech) .............. : $use_festival"
 echo "  Building with GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
 echo "  Building with GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
 
-if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes"; then
+if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
   echo
   echo DEVELOPER OPTIONS:
   echo "  Building with ErrorPopups (Old Method) ............... : $use_err_popups"
   echo "  Building with libgc (Debug memory usage) ............. : $use_libgc"
   echo "  Building with profiling (Debug code efficiency) ...... : $use_profiling"
   echo "  Building with Linux Standard Base (LSB) .............. : $use_lsb"
+  echo "  Building with Spatial database support ............... : $use_spatial_db"
+  echo "  Building with Spatial database Postgresql/Postgis .... : $use_postgis"
+  echo "  Building with MySQL .................................. : $use_mysql_any"
+  echo "  Building with MySQL Spatial database support ......... : $use_mysql_spatial"
 fi
 
 #echo   Building with Davis/MySQL............................. : $davis

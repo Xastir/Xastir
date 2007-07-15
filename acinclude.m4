@@ -258,6 +258,8 @@ if test "$use_lsb" != "no"; then
  AC_DEFINE_UNQUOTED(__LSB__, 1, [Define if you're compiling for Linux Standard Base])
 fi
 
+
+
 ])
 
 
@@ -310,6 +312,128 @@ fi
 )
 
 
+
+AC_DEFUN([XASTIR_CHECK_POSTGIS],
+[
+BINPATH="${PATH}${EXTRA_BIN_PATH}"
+# test for postgresql
+if test "${with_postgis+set}" = set; then
+  PG_CONFIG="pg_config"
+  if test "$with_postgis" != "yes"; then 
+    # get path if provided
+    pg_path="$with_postgis"
+    PG_CONFIG_PATH="${pg_path}/bin"
+    BINPATH="${BINPATH}:${PG_CONFIG_PATH}"
+    POSTGIS_LIB_DIR="-L${pg_path}/lib"
+    AC_PATH_PROG(PG_CONFIG, [pg_config], no, $PG_CONFIG_PATH)
+  else 
+    AC_PATH_PROG(PG_CONFIG, [pg_config], no)
+  fi
+  if test "$PG_CONFIG" != "no"; then
+    # Check for postgis spatial extensions.
+    # Look for lwpostgis.sql script in default location.
+    # If found, is likely a postgis installation.
+    # Need more definitive test for postgis, as this may fail to detect postgres 
+    # installations where this script was removed, and will incorrectly 
+    # detect postgres without postgis where this script has been installed but not run.
+    AC_PATH_PROG(LWPOSTGIS, [lwpostgis.sql], no, "${pg_path}/share")
+    if test "LWPOSTGIS" != "no"; then 
+       #postgres with postgis enabled
+       use_postgis=yes
+       use_spatial_db=yes
+       save_cppflags="$CPPFLAGS" 
+       save_cxxflags="$CXXFLAGS" 
+       save_libs="$LIBS" 
+       save_ldflags="$LDFLAGS" 
+       CPPFLAGS="$CPPFLAGS -I`${PG_CONFIG} --includedir` `${PG_CONFIG} --cppflags`" 
+       CXXFLAGS="$CXXFLAGS `${PG_CONFIG} --cflags`" 
+       LDFLAGS="$LDFLAGS `${PG_CONFIG} --ldflags`" 
+       LIBS="${POSTGIS_LIB_DIR} `${PG_CONFIG} --libs` -lpq $LIBS" 
+       AC_DEFINE(HAVE_POSTGIS, 1, Postgresql with postgis is present. )
+    else
+       AC_MSG_WARN(*** Cannot find lwpostgis.sql:  Building w/o Postgresql/Postgis support. ***)
+       AC_MSG_WARN(*** Postgresql was found, but does not appear to have Postgis added.     ***)
+       AC_MSG_WARN(*** Install and enable postgis and leave the lwpostgis.sql script in     ***)
+       AC_MSG_WARN(*** ${pg_path}/share                                                     ***)
+    fi
+  else
+    use_postgis=no
+    AC_MSG_WARN(*** Cannot find pg_config:  Building w/o Postgresql/Postgis support. ***)
+    AC_MSG_WARN(*** Specify the path to the posgresql installation directory         ***)
+    AC_MSG_WARN(*** For example: --with-postgis=/usr/local/pgsql                     ***)
+  fi
+fi
+
+])
+
+AC_DEFUN([XASTIR_CHECK_MYSQL],
+[
+BINPATH="${PATH}${EXTRA_BIN_PATH}"
+
+# test for MySQL
+if test "${with_mysql+set}" = set; then
+  MYSQL_CONFIG="mysql_config"
+  if test "$with_mysql" != "yes"; then 
+    # get path to mysql_config if provided
+    mysql_path="$with_mysql"
+    BINPATH="${BINPATH}:${mysql_path}"
+    AC_PATH_PROG(MYSQL_CONFIG, [mysql_config], no, $mysql_path)
+  else 
+    AC_PATH_PROG(MYSQL_CONFIG, [mysql_config], no)
+  fi
+  use_mysql_spatial=no
+  use_mysql_any=no
+  if test "$MYSQL_CONFIG" != "no"; then
+  
+    # check for mysql version with spatial support 
+    # look for mysql 4.1.2 or greater for spatial support 
+    # and standardized prepared statements
+    # 4.1.0 and 4.1.1 have spatial support, but only early versions
+    # of prepared statement functions that changed in 4.1.2
+    AC_MSG_CHECKING([mysql version >= 4.1.2])
+    mysqlversion=`$MYSQL_CONFIG --version`
+    mysqlversionmajor=`echo ${mysqlversion} | cut -d '.' -f 1`
+    mysqlversionminor=`echo ${mysqlversion} | cut -d '.' -f 2`
+    mysqlversiontiny=`echo ${mysqlversion} | cut -d '.' -f 3`
+    if test "$mysqlversionmajor" -gt 4 ; then
+      mysql_has_spatial="yes"
+    elif test "$mysqlversionmajor" -ge 4 -a "$mysqlversionminor" -gt 1 ; then
+      mysql_has_spatial="yes"
+    elif test "$mysqlversionmajor" -ge 4 -a "$mysqlversionminor" -ge 1 -a "$mysqlversiontiny" -ge 2 ; then
+      mysql_has_spatial="yes"
+    else
+      mysql_has_spatial="no"
+    fi
+    AC_MSG_RESULT($mysql_has_spatial)
+    # if mysql version < 4.1, mysql present but no spatial support 
+    if test "$mysql_has_spatial" == "yes"; then
+       # mysql with spatial support
+       use_mysql_spatial=yes
+       use_spatial_db=yes
+       AC_DEFINE(HAVE_MYSQL_SPATIAL, 1, MySQL with spatial support is present.)
+    else 
+       AC_MSG_WARN(*** MySQL version $mysqlversion detected is < 4.1.2         ***)
+       AC_MSG_WARN(*** Spatial support enabled only for MySQL 4.1.2 and higher ***)
+       AC_MSG_WARN(*** MySQL support for Lat/Long fields is available but      ***)
+       AC_MSG_WARN(*** not for Points Polygons or other spatial objects.       ***)
+    fi
+    save_cppflags="$CPPFLAGS" 
+    save_cxxflags="$CXXFLAGS" 
+    save_libs="$LIBS" 
+    CPPFLAGS="$CPPFLAGS `${MYSQL_CONFIG} --cflags`" 
+    CXXFLAGS="$CXXFLAGS `${MYSQL_CONFIG} --cflags`" 
+    LIBS=" `${MYSQL_CONFIG} --libs` $LIBS" 
+    use_mysql_any=yes
+    AC_DEFINE(HAVE_MYSQL, 1, MySQL is present.)
+  else
+    AC_MSG_WARN(*** Cannot find mysql_config:  Building w/o MySQL support. ***)
+    AC_MSG_WARN(*** Specify the path to mysql_config                       ***)
+    AC_MSG_WARN(*** For example: --with-mysql=/var/lib/mysql               ***)
+  fi
+
+fi
+#AC_MSG_RESULT($use_mysql_spatial)
+])
 
 
 
