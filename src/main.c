@@ -168,6 +168,7 @@ static int DISPLAY_XASTIR_COORDINATES = 0;
 #include "datum.h"
 #include "igate.h"
 #include "objects.h"
+#include "db_gis.h"
 
 #ifdef HAVE_LIBSHP
   #include "shp_hash.h"
