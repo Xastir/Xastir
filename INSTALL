@@ -664,7 +664,7 @@ First Time Install:
 
         tar -xzvf Gr*
 
-     Change directory to the newly created ImageMagick directory and
+     Change directory to the newly created GraphicsMagick directory and
      compile:
 
         cd Gr*
