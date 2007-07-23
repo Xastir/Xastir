@@ -247,7 +247,7 @@ AC_CHECK_FUNCS([getwd inet_ntoa memmove mempcpy memset mkdir munmap pow])
 AC_CHECK_FUNCS([putenv select setenv setlocale settimeofday signal sigignore])
 AC_CHECK_FUNCS([snprintf socket sqrt stpcpy strcasecmp strchr strdup])
 AC_CHECK_FUNCS([strerror strncasecmp strpbrk strptime strrchr strstr])
-AC_CHECK_FUNCS([strtol strtoul tzset vsnprintf])
+AC_CHECK_FUNCS([strtof strtol strtoul tzset vsnprintf])
 
 # Check for deprecated/current pthread functions
 AC_CHECK_FUNCS([pthread_mutexattr_setkind_np pthread_mutexattr_settype])

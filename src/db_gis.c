@@ -21,6 +21,11 @@
  * Look at the README for more information on the program.
  */
 
+// Some systems don't have strtof
+#ifndef HAVE_STRTOF
+  #define strtof(a,b) atof(a)
+#endif
+
 // include postgresql library for postgis support
 #ifdef HAVE_POSTGIS
 #include <libpq-fe.h>
