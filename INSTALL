@@ -642,20 +642,12 @@ First Time Install:
       make -f Makefile_shapelib_orig
 
       cd contrib
-      make -f Makefile_orig shpdxf dbfinfo dbfcat shpfix shpcat
+      make -f Makefile_orig
 
-    The following compiles error-out on my system (these compiles
-    don't currently work):
-
-      make -f Makefile_orig shpproj
-      make -f Makefile_orig shpcentrd
-      make -f Makefile_orig shpdata
-      make -f Makefile_orig shpwkb
-      make -f Makefile_orig shpinfo
-
-    I find "shpinfo" to be of use sometimes.  We should probably
-    tweak this so that all of the utilities can be compiled, maybe
-    with a "make utils" or "make shputils" command or similar.
+     You'll be left with useful executables in the xastir/src/shapelib and
+     xastir/src/shapelib/contrib directories.  It's your choice whether to
+     copy them to a directory in your path (perhaps /usr/local/bin?) to make
+     them easier to use.
 
 
    5. OPTIONAL:  Install -either- GraphicsMagick or ImageMagick support as
