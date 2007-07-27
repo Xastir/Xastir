@@ -436,7 +436,10 @@ This is what you'd like to see at the end of the "./configure" run
 
 Note:  You may see "ImageMagick" instead of "GraphicsMagick" and/or
 "wget" instead of "libcurl" for your installation of Xastir.  Those
-are alternative packages that give similar functionality.
+are alternative packages that give similar functionality.  You may
+also see "(internal)" at the end of the Shapelib line, which is fine
+also.
+
 
 TBD
 
@@ -482,7 +485,9 @@ This is what you'd like to see at the end of the "./configure" run:
 
 Note:  You may see "ImageMagick" instead of "GraphicsMagick" and/or
 "wget" instead of "libcurl" for your installation of Xastir.  Those
-are alternative packages that give similar functionality.
+are alternative packages that give similar functionality.  You may
+also see "(internal)" at the end of the Shapelib line, which is fine
+also.
 
 
 TBD
