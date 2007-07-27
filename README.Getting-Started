@@ -330,17 +330,17 @@ more things in there later.
 This is what you'd like to see at the end of the "./configure" run
 (minimum, there may be more "yes" answers):
 
-  Building with AX25.......... : no
-  Building with Festival...... : no
-  Building with GPSMan........ : no
-  Building with ImageMagick... : no
-  Building with libproj....... : no
-  Building with GeoTiff....... : no
-  Building with GDAL/OGR...... : no
-  Building with ShapeLib...... : no
-  Building with pcre.......... : no
-  Building with dbfawk........ : no
-  Building with libgc (Debug). : no
+  AX25.......... : no
+  Festival...... : no
+  GPSMan........ : no
+  ImageMagick... : no
+  libproj....... : no
+  GeoTiff....... : no
+  GDAL/OGR...... : no
+  ShapeLib...... : no
+  pcre.......... : no
+  dbfawk........ : no
+  libgc (Debug). : no
 
 In other words, Xastir should build/compile with NO optional
 libraries installed!  This will still give you USGS GNIS maps,
@@ -411,17 +411,32 @@ weather alerts.  "get-NWSdata" requires "wget" in order to work.
 This is what you'd like to see at the end of the "./configure" run
 (minimum, there may be more "yes" answers):
 
-  Building with AX25.......... : no
-  Building with Festival...... : no
-  Building with GPSMan........ : no
-  Building with ImageMagick... : yes
-  Building with libproj....... : no
-  Building with GeoTiff....... : no
-  Building with GDAL/OGR...... : no
-  Building with ShapeLib...... : yes
-  Building with pcre.......... : yes
-  Building with dbfawk........ : yes
-  Building with libgc (Debug). : no
+
+-------------------------------------------------------------------
+  MINIMUM OPTIONS:
+    ShapeLib (Vector maps) ................. : yes
+
+  RECOMMENDED OPTIONS:
+    GraphicsMagick/ImageMagick (Raster maps) : yes (GraphicsMagick)
+    pcre (Shapefile customization) ......... : yes
+    dbfawk (Shapefile customization) ....... : yes 
+    rtree indexing (Shapefile speedups) .... : no
+    map caching (Raster map speedups) ...... : no
+    internet map retrieval ................. : yes (libcurl)
+
+  FOR THE ADVENTUROUS:
+    AX25 (Linux Kernel I/O Drivers) ........ : no
+    libproj (USGS Topos & Aerial Photos) ... : no
+    GeoTiff (USGS Topos & Aerial Photos) ... : no
+    Festival (Text-to-speech) .............. : no
+    GDAL/OGR (Obtuse map formats) .......... : no
+    GPSMan/gpsmanshp (GPS downloads) ....... : no 
+-------------------------------------------------------------------
+
+
+Note:  You may see "ImageMagick" instead of "GraphicsMagick" and/or
+"wget" instead of "libcurl" for your installation of Xastir.  Those
+are alternative packages that give similar functionality.
 
 TBD
 
@@ -442,17 +457,33 @@ all of the supported map types.
 
 This is what you'd like to see at the end of the "./configure" run:
 
-  Building with AX25.......... : yes
-  Building with Festival...... : yes
-  Building with GPSMan........ : yes
-  Building with ImageMagick... : yes
-  Building with libproj....... : yes
-  Building with GeoTiff....... : yes
-  Building with GDAL/OGR...... : yes
-  Building with ShapeLib...... : yes
-  Building with pcre.......... : yes
-  Building with dbfawk........ : yes
-  Building with libgc (Debug). : no
+
+-------------------------------------------------------------------
+  MINIMUM OPTIONS:
+    ShapeLib (Vector maps) ................. : yes
+
+  RECOMMENDED OPTIONS:
+    GraphicsMagick/ImageMagick (Raster maps) : yes (GraphicsMagick)
+    pcre (Shapefile customization) ......... : yes
+    dbfawk (Shapefile customization) ....... : yes
+    rtree indexing (Shapefile speedups) .... : yes
+    map caching (Raster map speedups) ...... : yes
+    internet map retrieval ................. : yes (libcurl)
+
+  FOR THE ADVENTUROUS:
+    AX25 (Linux Kernel I/O Drivers) ........ : yes
+    libproj (USGS Topos & Aerial Photos) ... : yes
+    GeoTiff (USGS Topos & Aerial Photos) ... : yes
+    Festival (Text-to-speech) .............. : yes
+    GDAL/OGR (Obtuse map formats) .......... : yes
+    GPSMan/gpsmanshp (GPS downloads) ....... : yes
+-------------------------------------------------------------------
+
+
+Note:  You may see "ImageMagick" instead of "GraphicsMagick" and/or
+"wget" instead of "libcurl" for your installation of Xastir.  Those
+are alternative packages that give similar functionality.
+
 
 TBD
 

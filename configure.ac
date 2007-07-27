@@ -552,8 +552,6 @@ fi
 #
 if test "${use_imagemagick}" = "yes" -o "${use_graphicsmagick}" = "yes"; then
   AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library])
-#else
-#  AC_MSG_WARN(*** Building w/o GraphicsMagick or ImageMagick support. ***)
 fi
 
 
@@ -843,11 +841,11 @@ echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured to use the following
 echo options and external libraries:
 echo
 echo MINIMUM OPTIONS:
-echo "  Building with ShapeLib (Vector maps) ................. : $use_shapelib"
+echo "  ShapeLib (Vector maps) ................. : $use_shapelib"
 echo
 echo RECOMMENDED OPTIONS:
 
-echo -n "  Building with GraphicsMagick/ImageMagick (Raster maps) : "
+echo -n "  GraphicsMagick/ImageMagick (Raster maps) : "
 if test "${use_graphicsmagick}" = "yes"; then 
   echo "yes (GraphicsMagick)"
 else
@@ -857,34 +855,34 @@ else
     echo "no"
   fi
 fi
-echo "  Building with pcre (Shapefile customization) ......... : $use_pcre"
-echo "  Building with dbfawk (Shapefile customization) ....... : $use_dbfawk"
-echo "  Building with rtree indexing (Shapefile speedups) .... : $use_rtree"
-echo "  Building with map caching (Raster map speedups) ...... : $use_map_cache"
-echo "  Building with internet map retrieval ................. : $use_retrieval"
+echo "  pcre (Shapefile customization) ......... : $use_pcre"
+echo "  dbfawk (Shapefile customization) ....... : $use_dbfawk"
+echo "  rtree indexing (Shapefile speedups) .... : $use_rtree"
+echo "  map caching (Raster map speedups) ...... : $use_map_cache"
+echo "  internet map retrieval ................. : $use_retrieval"
 echo
 echo FOR THE ADVENTUROUS:
-echo "  Building with AX25 (Linux Kernel I/O Drivers) ........ : $use_ax25"
-echo "  Building with libproj (USGS Topos & Aerial Photos) ... : $use_proj"
-echo "  Building with GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
-echo "  Building with Festival (Text-to-speech) .............. : $use_festival"
-echo "  Building with GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
-echo "  Building with GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
+echo "  AX25 (Linux Kernel I/O Drivers) ........ : $use_ax25"
+echo "  libproj (USGS Topos & Aerial Photos) ... : $use_proj"
+echo "  GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
+echo "  Festival (Text-to-speech) .............. : $use_festival"
+echo "  GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
+echo "  GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
 
 if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
   echo
   echo DEVELOPER OPTIONS:
-  echo "  Building with ErrorPopups (Old Method) ............... : $use_err_popups"
-  echo "  Building with libgc (Debug memory usage) ............. : $use_libgc"
-  echo "  Building with profiling (Debug code efficiency) ...... : $use_profiling"
-  echo "  Building with Linux Standard Base (LSB) .............. : $use_lsb"
-  echo "  Building with Spatial database support ............... : $use_spatial_db"
-  echo "  Building with Spatial database Postgresql/Postgis .... : $use_postgis"
-  echo "  Building with MySQL .................................. : $use_mysql_any"
-  echo "  Building with MySQL Spatial database support ......... : $use_mysql_spatial"
+  echo "  ErrorPopups (Old Method) ............... : $use_err_popups"
+  echo "  libgc (Debug memory usage) ............. : $use_libgc"
+  echo "  profiling (Debug code efficiency) ...... : $use_profiling"
+  echo "  Linux Standard Base (LSB) .............. : $use_lsb"
+  echo "  Spatial database support ............... : $use_spatial_db"
+  echo "  Spatial database Postgresql/Postgis .... : $use_postgis"
+  echo "  MySQL .................................. : $use_mysql_any"
+  echo "  MySQL Spatial database support ......... : $use_mysql_spatial"
 fi
 
-#echo   Building with Davis/MySQL............................. : $davis
+#echo   Davis/MySQL............................. : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
 if test "x$xastirpath" != "x" ; then 
