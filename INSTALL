@@ -235,7 +235,7 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
         ftp://ftp.remotesensing.org/pub/proj/
         http://wetnet.net/~we7u/xastir/
 
-    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.3):
+    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.4):
     --------------------------------------------------
         http://dl.maptools.org/dl/geotiff/libgeotiff/
         http://www.remotesensing.org/geotiff/geotiff.html
@@ -489,7 +489,7 @@ First Time Install:
        -----------------------
 
      NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
-       libgeotiff-1.2.3 may compile properly.  libgeotiff is intimately
+       libgeotiff-1.2.4 may compile properly.  libgeotiff is intimately
        tied to your version of libtiff.  libgeotiff 1.2.x or greater
        requires libtiff-3.6.0 BETA or later.  If your version of libtiff is
        older, get libgeotiff 1.1.4 or 1.1.5.  For the latter case you may
@@ -524,13 +524,13 @@ First Time Install:
        using private include files, yet still compile in support for your
        particular version of libtiff.
 
-       With libgeotiff-1.2.3/libtiff-3.6.0-beta or newer you shouldn't
+       With libgeotiff-1.2.4/libtiff-3.6.0-beta or newer you shouldn't
        need to copy these files across.  The newer libtiff and libgeotiff
        can work together using public interfaces.
      ------------------------
 
-        tar xzvf libgeotiff-1.2.3.tar.gz (or newer)
-        cd libgeotiff-1.2.3
+        tar xzvf libgeotiff-1.2.4.tar.gz (or newer)
+        cd libgeotiff-1.2.4
         ./configure
         make
         su (root)
