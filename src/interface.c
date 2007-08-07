@@ -6983,10 +6983,14 @@ void init_device_names(void) {
         sizeof(dtype[DEVICE_SERIAL_MKISS_TNC].device_name),
         "%s",
         langcode("IFDNL00013"));
+
+#ifdef HAVE_DB
     xastir_snprintf(dtype[DEVICE_SQL_DATABASE].device_name,
         sizeof(dtype[DEVICE_SQL_DATABASE].device_name),
         "%s",
         langcode("IFDNL00014"));
+#endif /* HAVE_DB */
+
 fprintf(stderr,"Initialized sql type: %s\n",dtype[DEVICE_SQL_DATABASE].device_name);
 }
 
