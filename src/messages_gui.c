@@ -1797,7 +1797,7 @@ void select_station_type(int ii) {
         int hamhud = 0;
         int d700 = 0;
         int d7 = 0;
-        int tx_only = 0;
+//        int tx_only = 0;
 
 
 //fprintf(stderr,"Found callsign: %s\n", call_sign);
