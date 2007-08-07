@@ -7614,11 +7614,19 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 
             port=get_open_device();     // Find an unused port number
             /*fprintf(stderr,"Open_port %d\n",port);*/
+
+#ifdef HAVE_DB
 fprintf(stderr,"Open_port %d\n",port);
+#endif /* HAVE_DB */
+ 
             if(port!=-1) {
                 /*devices[port].device_type=found;*/
                 /*fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);*/
+
+#ifdef HAVE_DB
 fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);
+#endif /* HAVE_DB */
+ 
                 switch (found) {
 
 //WE7U:  Set up for new KISS device type
