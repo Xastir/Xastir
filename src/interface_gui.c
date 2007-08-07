@@ -5509,12 +5509,12 @@ Widget config_Sql_Database_dialog = (Widget)NULL;  // dialog for sql server data
 Widget Sql_Database_active_on_startup;
 Widget Sql_Database_query_on_startup_data;
 Widget Sql_Database_host_data;
-Widget Sql_Database_port_data;
+Widget Sql_Database_iport_data;   // = sp, tcp port number on which to connect to database server
 Widget Sql_Database_comment;
 Widget Sql_Database_password_data;
 Widget Sql_Database_transmit_data;
 Widget Sql_Database_reconnect_data;
-int    Sql_Database_port;
+int    Sql_Database_port;   // xastir interface port number, not tcp/ip port
 Widget Sql_Database_username_data;
 Widget Sql_Database_schema_name_data;
 Widget Sql_Database_dbms_data;
@@ -5546,7 +5546,7 @@ void Sql_Database_set_defaults_mysql(/*@unused@*/ Widget widget, XtPointer clien
    XmToggleButtonSetState(Sql_Database_active_on_startup,TRUE,FALSE);
    XmToggleButtonSetState(Sql_Database_transmit_data,TRUE,FALSE);
    XmTextFieldSetString(Sql_Database_host_data,"localhost");
-   XmTextFieldSetString(Sql_Database_port_data,"3306");
+   XmTextFieldSetString(Sql_Database_iport_data,"3306");
    XmTextFieldSetString(Sql_Database_username_data,"xastir_user");
    XmTextFieldSetString(Sql_Database_schema_name_data,"xastir");
    // **  get default from mysql_config at configure time 
@@ -5577,7 +5577,7 @@ void Sql_Database_set_defaults_postgis(/*@unused@*/ Widget widget, XtPointer cli
    XmToggleButtonSetState(Sql_Database_active_on_startup,TRUE,FALSE);
    XmToggleButtonSetState(Sql_Database_transmit_data,TRUE,FALSE);
    XmTextFieldSetString(Sql_Database_host_data,"localhost");
-   XmTextFieldSetString(Sql_Database_port_data,"5432");
+   XmTextFieldSetString(Sql_Database_iport_data,"5432");
    XmTextFieldSetString(Sql_Database_username_data,"xastir_user");
    XmTextFieldSetString(Sql_Database_schema_name_data,"xastir");
    // **  get default from mysql_config at configure time 
@@ -5626,6 +5626,8 @@ void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer cal
     busy_cursor(appshell);
     was_up=0;
 
+    if (debug_level & 2)
+         fprintf(stderr,"Storing SQL Database interface on port %d\n",Sql_Database_port);
     // determine if there is an active connection based on this interface,
     // if so, stop it and restart after changes have been made.
     if (get_device_status(Sql_Database_port) == DEVICE_IN_USE) {
@@ -5656,7 +5658,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
     (void)remove_trailing_spaces(devices[Sql_Database_port].device_host_name);
 
     //port
-    temp_ptr = XmTextFieldGetString(Sql_Database_port_data);
+    temp_ptr = XmTextFieldGetString(Sql_Database_iport_data);
     devices[Sql_Database_port].sp=atoi(temp_ptr);
     XtFree(temp_ptr);
 
@@ -5686,7 +5688,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
         temp_ptr);
     XtFree(temp_ptr);
     (void)remove_trailing_spaces(devices[Sql_Database_port].database_schema);
-fprintf(stderr,"Reached schema name\n");
+
     // database type
     cb_selected = FALSE;
     XtVaGetValues(Sql_Database_dbms_data,XmNselectedPosition, &cb_selected, NULL);
@@ -5703,7 +5705,6 @@ fprintf(stderr,"Reached schema name\n");
         devices[Sql_Database_port].database_type = DB_MYSQL;
 #endif /* HAVE_MYSQL */
     }
-fprintf(stderr,"Reached dbms type\n");
 
     // schema type
     cb_selected = FALSE;
@@ -5766,7 +5767,7 @@ fprintf(stderr,"Reached dbms type\n");
     }
 
     /* add device type */
-    devices[Database_port].device_type=DEVICE_SQL_DATABASE;
+    devices[Sql_Database_port].device_type=DEVICE_SQL_DATABASE;
 
 end_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data" );
 
@@ -5775,7 +5776,8 @@ end_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data" )
 
     // close the dialog
     Sql_Database_destroy_shell(widget,clientData,callData);
-fprintf(stderr,"Done storing sql interface parameters\n");
+    if (debug_level & 2)
+       fprintf(stderr,"Done storing sql interface parameters\n");
 }
 
 
@@ -5820,7 +5822,9 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
     */
 
     if(!config_Sql_Database_dialog) {
+        // port is position in xastir interface list, not tcp port on which to connect
         Sql_Database_port=port;
+
         // SQL Server Database
         config_Sql_Database_dialog = XtVaCreatePopupShell("SQL Server Database",
             xmDialogShellWidgetClass, appshell,
@@ -6019,7 +6023,8 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment,  XmATTACH_NONE,
             NULL);
 
-        // port 
+        // tcp port for server, not xastir interface port
+        // port
         iport = XtVaCreateManagedWidget(langcode("WPUPCFID03"),xmLabelWidgetClass, form,
             XmNtopAttachment,    XmATTACH_WIDGET,
             XmNtopWidget,        Sql_Database_transmit_data,
@@ -6032,7 +6037,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNbackground,       colors[0xff],
             NULL);
         
-        Sql_Database_port_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
+        Sql_Database_iport_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
             XmNnavigationType,   XmTAB_GROUP,
             XmNtraversalOn,      TRUE,
             XmNeditable,         TRUE,
@@ -6392,7 +6397,7 @@ fprintf(stderr,"After first combobox\n");
             XmTextFieldSetString(Sql_Database_host_data,devices[Sql_Database_port].device_host_name);
             XmTextFieldSetString(Sql_Database_schema_name_data,devices[Sql_Database_port].database_schema);
             xastir_snprintf(temp, sizeof(temp), "%d", devices[Sql_Database_port].sp);
-            XmTextFieldSetString(Sql_Database_port_data,temp);
+            XmTextFieldSetString(Sql_Database_iport_data,temp);
             XmTextFieldSetString(Sql_Database_username_data,devices[Sql_Database_port].database_username);
             XmTextFieldSetString(Sql_Database_password_data,devices[Sql_Database_port].device_host_pswd);
             XmTextFieldSetString(Sql_Database_unix_socket_data,devices[Sql_Database_port].database_unix_socket);
@@ -7375,6 +7380,7 @@ void modify_device_list(int option, int port) {
                             break;
 
                         case DEVICE_NET_DATABASE:
+                        case DEVICE_SQL_DATABASE:
                         case DEVICE_NET_STREAM:
                         case DEVICE_NET_GPSD:
                         case DEVICE_NET_WX:
@@ -7615,18 +7621,10 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
             port=get_open_device();     // Find an unused port number
             /*fprintf(stderr,"Open_port %d\n",port);*/
 
-#ifdef HAVE_DB
-fprintf(stderr,"Open_port %d\n",port);
-#endif /* HAVE_DB */
- 
             if(port!=-1) {
                 /*devices[port].device_type=found;*/
                 /*fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);*/
 
-#ifdef HAVE_DB
-fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);
-#endif /* HAVE_DB */
- 
                 switch (found) {
 
 //WE7U:  Set up for new KISS device type

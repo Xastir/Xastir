@@ -7262,14 +7262,16 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                     device->device_host_name);
                 conn = openConnection(device);
                 //if ( conn != NULL ) { 
-                   fprintf(stderr, "Opened connection\n");
+                   if (debug_level & 2)
+                       fprintf(stderr, "Opened connection\n");
                    ok = 1;
                 //}
                 if (ok == 1) {
                     /* if connected save top of call list */
                     ok = storeStationSimpleToGisDb(&conn, n_first);
                     if (ok==1) { 
-                         fprintf(stderr,"Stored station n_first\n");
+                         if (debug_level & 2)
+                             fprintf(stderr,"Stored station n_first\n");
                          // iterate through station_pointers and write all stations currently known
                          dr = n_first->n_next;
                          if (dr!=NULL) { 
