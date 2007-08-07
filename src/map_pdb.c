@@ -83,9 +83,6 @@
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
 
-extern int npoints;		/* tsk tsk tsk -- globals */
-extern int mag;
-
 
 // Note:  There are long's in the pdb_hdr that are not being used.
 // If they were, the ntohl() function would need to be used in order
@@ -221,7 +218,7 @@ void draw_palm_image_map(Widget w,
         return;
     }
  
-    if (debug_level & 16)
+    if (debug_level & 512)
         fprintf(stderr,"opened file: %s\n", filename);
 
     fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn);
@@ -275,10 +272,10 @@ void draw_palm_image_map(Widget w,
     // internal map in hundredths of seconds (was "scale" which was wrong,
     // scale is not used for the map corners)
     // Multipy now so we don't have to do it for every use below...
-    map_left = map_left * 10;
-    map_right = map_right * 10;
-    map_top = map_top * 10;
-    map_bottom = map_bottom * 10;
+    map_left *= 10;
+    map_right *= 10;
+    map_top *= 10;
+    map_bottom *= 10;
 
 
     // Check whether we're indexing or drawing the map
@@ -407,7 +404,7 @@ void draw_palm_image_map(Widget w,
 
                         fread(&vector_point, sizeof(vector_point), 1, fn);
 
-                        if (debug_level & 512) {
+                        if ((debug_level & 513) == 513) {
                             fprintf(stderr,"\tnext x %d, next y %d\n",
                                 vector_point.next_x,
                                 vector_point.next_y);
@@ -583,8 +580,6 @@ void draw_palm_image_map(Widget w,
 
     fclose(fn);
 
-    if (debug_level & 16)
+    if (debug_level & 512)
         fprintf(stderr,"Closed file\n");
 }
-
-
