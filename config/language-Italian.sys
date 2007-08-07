@@ -935,6 +935,7 @@ IFDNL00010|TNC Seriale in KISS||
 IFDNL00011|Database su Rete (Non ancora Implementato)||
 IFDNL00012|AGWPE Via Rete||
 IFDNL00013|TNC Seriale in Multi-Port KISS||
+IFDNL00014|SQL Database (Experimental)||
 #
 #Interface device info 
 IFDIN00000|%s %2d %s sulla seriale %s   %s|| 
