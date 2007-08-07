@@ -97,6 +97,7 @@
 #include "wx.h"
 #include "hostname.h"
 #include "x_spider.h"
+#include "db_gis.h"
 
 #ifdef HAVE_LIBAX25
 #include <netax25/ax25.h>
@@ -6982,6 +6983,11 @@ void init_device_names(void) {
         sizeof(dtype[DEVICE_SERIAL_MKISS_TNC].device_name),
         "%s",
         langcode("IFDNL00013"));
+    xastir_snprintf(dtype[DEVICE_SQL_DATABASE].device_name,
+        sizeof(dtype[DEVICE_SQL_DATABASE].device_name),
+        "%s",
+        langcode("IFDNL00014"));
+fprintf(stderr,"Initialized sql type: %s\n",dtype[DEVICE_SQL_DATABASE].device_name);
 }
 
 
@@ -7223,7 +7229,65 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 }
 
 
+#ifdef HAVE_DB
+/* Add a device, passing it a pointer to the ioparam 
+ * that describes the interface to start up, rather than passing
+ * an extracted list of elements 
+ *
+ * temporary addition for testing sql_database_functionality 
+ * when working, needs to be integrated into add_device
+ */
+int add_device_by_ioparam(int port_avail, ioparam *device) {
+    int ok;
+    int done = 0;
+    DataRow *dr;
+    ok = -1;
+    Connection conn;
 
+    if (port_avail >= 0){
+        switch (device->device_type) {
+            case DEVICE_SQL_DATABASE:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a sql db connection to %s\n",device->device_host_name);
+                clear_port_data(port_avail,0);
+
+                port_data[port_avail].device_type = DEVICE_SQL_DATABASE;
+                xastir_snprintf(port_data[port_avail].device_host_name,
+                    sizeof(port_data[port_avail].device_host_name),
+                    "%s",
+                    device->device_host_name);
+                conn = openConnection(device);
+                //if ( conn != NULL ) { 
+                   fprintf(stderr, "Opened connection\n");
+                   ok = 1;
+                //}
+                if (ok == 1) {
+                    /* if connected save top of call list */
+                    ok = storeStationSimpleToGisDb(&conn, n_first);
+                    if (ok==1) { 
+                         fprintf(stderr,"Stored station n_first\n");
+                         // iterate through station_pointers and write all stations currently known
+                         dr = n_first->n_next;
+                         if (dr!=NULL) { 
+                             while (done==0) { 
+                                 ok = storeStationSimpleToGisDb(&conn, dr);
+                                 if (ok==1) {
+                                    dr = dr->n_next;
+                                    if (dr==NULL) { 
+                                        done = 1;
+                                    } 
+                                 } else { 
+                                    done = 1;
+                                 }
+                             }
+                         }
+                    }
+                }
+        }
+    }
+    return ok;
+}
+#endif /* HAVE_DB */
 
 
 //***********************************************************
@@ -7975,6 +8039,13 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             "");
                     }
                     break;
+#ifdef HAVE_DB
+                case DEVICE_SQL_DATABASE:
+                    if (devices[i].connect_on_startup == 1 || override) {
+                       (void)add_device_by_ioparam(i, &devices[i]);
+                    }
+                    break;
+#endif /* HAVE_DB */
 
                 default:
                     break;

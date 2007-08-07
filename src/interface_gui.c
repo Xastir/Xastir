@@ -41,6 +41,7 @@
 #include "wx.h"
 #include "draw_symbols.h"
 #include "util.h"
+#include "db_gis.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -5027,7 +5028,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_Inet" );
 /*****************************************************/
 
 /**** DATABASE CONFIGURE ******/
-Widget config_Database_dialog = (Widget)NULL;
+Widget config_Database_dialog = (Widget)NULL;      
 Widget Database_active_on_startup;
 Widget Database_host_data;
 Widget Database_port_data;
@@ -5496,6 +5497,927 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_Database" );
     }
 }
 
+
+#ifdef HAVE_DB
+//AA3SD-SQL SERVER DATABASE, for db_gis spatial databases
+/*****************************************************/
+/* Configure SQL Database Server GUI                 */
+/*****************************************************/
+
+/**** DATABASE CONFIGURE ******/
+Widget config_Sql_Database_dialog = (Widget)NULL;  // dialog for sql server database connections used in db_gis.c
+Widget Sql_Database_active_on_startup;
+Widget Sql_Database_query_on_startup_data;
+Widget Sql_Database_host_data;
+Widget Sql_Database_port_data;
+Widget Sql_Database_comment;
+Widget Sql_Database_password_data;
+Widget Sql_Database_transmit_data;
+Widget Sql_Database_reconnect_data;
+int    Sql_Database_port;
+Widget Sql_Database_username_data;
+Widget Sql_Database_schema_name_data;
+Widget Sql_Database_dbms_data;
+Widget Sql_Database_unix_socket_data;
+Widget Sql_Database_schema_type_data;
+Widget Sql_Database_errormessage_data;   // display most recent error message on connection
+
+
+
+
+
+#ifdef HAVE_MYSQL
+// Set the values on the user interface to an appropriate set 
+// of defaults for connecting to a mysql database.
+void Sql_Database_set_defaults_mysql(/*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+   XmString cb_item;
+   //cb_item = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
+   cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL][0], XmFONTLIST_DEFAULT_TAG);
+#ifdef HAVE_MYSQL_SPATIAL
+   //cb_item = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
+   cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL_SPATIAL][0], XmFONTLIST_DEFAULT_TAG);
+#endif /* HAVE_MYSQL_SPATIAL */
+   XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
+   XmStringFree(cb_item);
+   //cb_item = XmStringCreateLtoR("Xastir - simple", XmFONTLIST_DEFAULT_TAG);
+   cb_item = XmStringCreateLtoR(&xastir_schema_type[XASTIR_SCHEMA_SIMPLE][0], XmFONTLIST_DEFAULT_TAG);
+   XmComboBoxSelectItem(Sql_Database_schema_type_data,cb_item);  
+   XmStringFree(cb_item);
+   XmToggleButtonSetState(Sql_Database_active_on_startup,TRUE,FALSE);
+   XmToggleButtonSetState(Sql_Database_transmit_data,TRUE,FALSE);
+   XmTextFieldSetString(Sql_Database_host_data,"localhost");
+   XmTextFieldSetString(Sql_Database_port_data,"3306");
+   XmTextFieldSetString(Sql_Database_username_data,"xastir_user");
+   XmTextFieldSetString(Sql_Database_schema_name_data,"xastir");
+   // **  get default from mysql_config at configure time 
+   XmTextFieldSetString(Sql_Database_unix_socket_data,"/var/lib/mysql/mysql.sock");
+   XmTextFieldSetString(Sql_Database_comment,"");
+   XmToggleButtonSetState(Sql_Database_reconnect_data,FALSE,FALSE);
+   // don't set Sql_Database_errormessage_data - leave most recent error message visible
+}
+#endif /* HAVE_MYSQL */
+
+
+
+
+
+#ifdef HAVE_POSTGIS
+// Set the values on the user interface to an appropriate set 
+// of defaults for connecting to a postgresql database.
+void Sql_Database_set_defaults_postgis(/*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+   XmString cb_item;
+   //cb_item = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
+   cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_POSTGIS][0], XmFONTLIST_DEFAULT_TAG);
+   XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
+   XmStringFree(cb_item);
+   //cb_item = XmStringCreateLtoR("Xastir - simple", XmFONTLIST_DEFAULT_TAG);
+   cb_item = XmStringCreateLtoR(&xastir_schema_type[XASTIR_SCHEMA_SIMPLE][0], XmFONTLIST_DEFAULT_TAG);
+   XmComboBoxSelectItem(Sql_Database_schema_type_data,cb_item);  
+   XmStringFree(cb_item);
+   XmToggleButtonSetState(Sql_Database_active_on_startup,TRUE,FALSE);
+   XmToggleButtonSetState(Sql_Database_transmit_data,TRUE,FALSE);
+   XmTextFieldSetString(Sql_Database_host_data,"localhost");
+   XmTextFieldSetString(Sql_Database_port_data,"5432");
+   XmTextFieldSetString(Sql_Database_username_data,"xastir_user");
+   XmTextFieldSetString(Sql_Database_schema_name_data,"xastir");
+   // **  get default from mysql_config at configure time 
+   XmTextFieldSetString(Sql_Database_unix_socket_data,"");
+   XmTextFieldSetString(Sql_Database_comment,"");
+   XmToggleButtonSetState(Sql_Database_reconnect_data,FALSE,FALSE);
+   // don't set Sql_Database_errormessage_data - leave most recent error message visible
+}
+#endif /* HAVE_POSTGIS */
+
+
+
+
+
+// Destroy the dialog used to set properties for a SQL database interface.
+void Sql_Database_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    config_Sql_Database_dialog = (Widget)NULL;
+    if (choose_interface_dialog != NULL)
+        Choose_interface_destroy_shell(choose_interface_dialog,choose_interface_dialog,NULL);
+
+    choose_interface_dialog = (Widget)NULL;
+}
+
+
+
+
+
+
+/* Callback for OK button on SQL database interface properties dialog.
+   Creates a new interface with the parameters provided in the dialog, or
+   alters the values of the selected interface that was displayed in the
+   dialog.
+   Differs from other interfaces in that an active database connection needs
+   to be started from the interface parameters.
+*/
+void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    int was_up;      // flag to restart connection with new parameters 
+    char *temp_ptr;  // temporary variable for retrieving string data from XmTextFields
+    int cb_selected; // temporary variable for retrieving combo box selections
+
+    // change to use code from db_gis.c 
+
+    busy_cursor(appshell);
+    was_up=0;
+
+    // determine if there is an active connection based on this interface,
+    // if so, stop it and restart after changes have been made.
+    if (get_device_status(Sql_Database_port) == DEVICE_IN_USE) {
+        /* if active shutdown before changes are made */
+        fprintf(stderr,"Device is up, disconnecting from database \n");
+        was_up=1;
+
+        // close connection
+
+    }
+
+// This needs to be a unitary transaction for other interfaces as we don't 
+// want to read/write data from an interface while its configuration is in an
+// inconsistent state.  In this case (SQL databases, we still need this to be
+// a unitary transaction in case a new connection is created while the 
+// configuration is in an inconsistent state.  
+begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data" );
+
+    // ** set the interface values needed to make a connection to a database **
+
+    // hostname
+    temp_ptr = XmTextFieldGetString(Sql_Database_host_data);
+    xastir_snprintf(devices[Sql_Database_port].device_host_name,
+        sizeof(devices[Sql_Database_port].device_host_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(devices[Sql_Database_port].device_host_name);
+
+    //port
+    temp_ptr = XmTextFieldGetString(Sql_Database_port_data);
+    devices[Sql_Database_port].sp=atoi(temp_ptr);
+    XtFree(temp_ptr);
+
+    //username
+    temp_ptr = XmTextFieldGetString(Sql_Database_username_data);
+    xastir_snprintf(devices[Sql_Database_port].database_username,
+        sizeof(devices[Sql_Database_port].database_username),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(devices[Sql_Database_port].device_host_pswd);
+
+    //password
+    temp_ptr = XmTextFieldGetString(Sql_Database_password_data);
+    xastir_snprintf(devices[Sql_Database_port].device_host_pswd,
+        sizeof(devices[Sql_Database_port].device_host_pswd),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(devices[Sql_Database_port].device_host_pswd);
+
+    // schema name
+    temp_ptr = XmTextFieldGetString(Sql_Database_schema_name_data);
+    xastir_snprintf(devices[Sql_Database_port].database_schema,
+        sizeof(devices[Sql_Database_port].database_schema),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(devices[Sql_Database_port].database_schema);
+fprintf(stderr,"Reached schema name\n");
+    // database type
+    cb_selected = FALSE;
+    XtVaGetValues(Sql_Database_dbms_data,XmNselectedPosition, &cb_selected, NULL);
+    
+    if (cb_selected) { 
+        devices[Sql_Database_port].database_type = cb_selected;
+    } else {  
+        // If no selection,
+        // default to mysql non-spatial, unless postgis is available.
+#ifdef HAVE_POSTGIS
+        devices[Sql_Database_port].database_type = DB_POSTGIS;
+#endif /* HAVE_POSTGIS */
+#ifdef HAVE_MYSQL 
+        devices[Sql_Database_port].database_type = DB_MYSQL;
+#endif /* HAVE_MYSQL */
+    }
+fprintf(stderr,"Reached dbms type\n");
+
+    // schema type
+    cb_selected = FALSE;
+    XtVaGetValues(Sql_Database_schema_type_data,XmNselectedPosition, &cb_selected, NULL);
+    
+    if (cb_selected) { 
+        devices[Sql_Database_port].database_schema_type = cb_selected;
+    } else {  
+        // If no selection, default to simple schema.
+        devices[Sql_Database_port].database_schema_type = XASTIR_SCHEMA_SIMPLE;
+    }
+
+    // unix socket 
+    temp_ptr = XmTextFieldGetString(Sql_Database_unix_socket_data);
+    xastir_snprintf(devices[Sql_Database_port].database_unix_socket,
+        sizeof(devices[Sql_Database_port].database_unix_socket),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(devices[Sql_Database_port].database_unix_socket);
+
+    // reset the error message to a blank
+    xastir_snprintf(devices[Sql_Database_port].database_errormessage,
+        sizeof(devices[Sql_Database_port].database_errormessage),
+        " ");
+
+    // ** set additional interface values **
+
+    // comment to display on interface list
+    temp_ptr = XmTextFieldGetString(Sql_Database_comment);
+    xastir_snprintf(devices[Sql_Database_port].comment,
+        sizeof(devices[Sql_Database_port].comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(devices[Sql_Database_port].comment);
+
+    // activate on startup
+    if(XmToggleButtonGetState(Sql_Database_active_on_startup))
+        devices[Sql_Database_port].connect_on_startup=1;
+    else
+        devices[Sql_Database_port].connect_on_startup=0;
+
+    // allow saving data 
+    if(XmToggleButtonGetState(Sql_Database_transmit_data))
+        devices[Sql_Database_port].transmit_data=1;
+    else
+        devices[Sql_Database_port].transmit_data=0;
+
+    // reconnect on database connection failure 
+    if(XmToggleButtonGetState(Sql_Database_reconnect_data))
+        devices[Sql_Database_port].reconnect=1;
+    else
+        devices[Sql_Database_port].reconnect=0;
+
+    if (was_up) {
+        // If the connection was allready open when we started then reconnect
+        // and reopen the database connection with the new parameters.
+
+    }
+
+    /* add device type */
+    devices[Database_port].device_type=DEVICE_SQL_DATABASE;
+
+end_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
+
+    // close the dialog
+    Sql_Database_destroy_shell(widget,clientData,callData);
+fprintf(stderr,"Done storing sql interface parameters\n");
+}
+
+
+
+/* dialog to obtain connection parameters for a SQL server (MySQL/Postgresql)
+ * database for spatialy enabled database support 
+ */
+void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
+    static Widget  pane, form, button_ok, button_cancel, label_dbms, label_schema_type,
+                ihost, iport, password, unix_socket, error_message,
+                sep, comment, username, schema_name;
+    static Widget button_mysql_defaults;    // set form values to defaults for mysql
+    static Widget button_postgis_defaults;  // set form values to deaults for postgresql/postgis
+    int defaults_set;  // Have defaults been set on form for new interface?
+                       // Used to make only a single set defaults call when 
+                       // support for multiple types of dbms are available.
+
+    Atom delw;
+    char temp[40];
+    XmString cb_item;
+    /*
+    // configuration parameters for a sql server database 
+    char   database_username[20];                 // username to use to connect to database  
+                                                  // default xastir
+    int    database_type;                         // type of dbms (posgresql, mysql, etc)    
+                                                  // default mysql
+    char   database_schema[20];                   // name of database or schema to use       
+                                                  // default xastir
+    char   database_errormessage[255];            // most recent error message from 
+                                                     attempting to make a 
+                                                     connection with using this descriptor.  
+    int    database_schema_type;         // table structures to use in the database
+                                             A database schema could contain both APRSWorld 
+                                             and XASTIR table structures, but a separate database
+                                             descriptor should be defined for each.  
+                                         // default simple
+    char   database_unix_socket[255];             // MySQL - unix socket parameter (path and 
+                                                     filename) 
+    // device_host_name = hostname for database server 
+    // sp = port on which to connect to database server (Not database_port)
+    // device_host_password =  password to use to connect to database -- security issue needs to be addressed
+    */
+
+    if(!config_Sql_Database_dialog) {
+        Sql_Database_port=port;
+        // SQL Server Database
+        config_Sql_Database_dialog = XtVaCreatePopupShell("SQL Server Database",
+            xmDialogShellWidgetClass, appshell,
+            XmNdeleteResponse,        XmDESTROY,
+            XmNdefaultPosition,       FALSE,
+            NULL);
+
+        pane = XtVaCreateWidget("Config_Database pane",xmPanedWindowWidgetClass, config_Sql_Database_dialog,
+            XmNbackground, colors[0xff],
+            NULL);
+
+        form =  XtVaCreateWidget("Config_Database form",xmFormWidgetClass, pane,
+            XmNfractionBase,    13,
+            XmNbackground,      colors[0xff],
+            XmNautoUnmanage,    FALSE,
+            XmNshadowThickness, 1,
+            NULL);
+
+        // Activate on startup
+        Sql_Database_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_FORM,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        // DMBS
+        label_dbms = XtVaCreateManagedWidget("Database",xmLabelWidgetClass, form,
+            XmNtopAttachment,     XmATTACH_FORM,
+            XmNtopOffset,         15,
+            XmNbottomAttachment,  XmATTACH_NONE,
+            XmNleftAttachment,    XmATTACH_WIDGET,
+            XmNleftWidget,        Sql_Database_active_on_startup,
+            XmNleftOffset,        10,
+            XmNrightAttachment,   XmATTACH_NONE,
+            XmNbackground,        colors[0xff],
+            NULL);
+        // Combo box to pick dbms
+        Sql_Database_dbms_data = XtVaCreateManagedWidget("select dbms", xmComboBoxWidgetClass, form,
+            XmNtopAttachment,     XmATTACH_FORM,
+            XmNtopOffset,         5,
+            XmNbottomAttachment,  XmATTACH_NONE,
+            XmNleftAttachment,    XmATTACH_WIDGET,
+            XmNleftWidget,        label_dbms,
+            XmNleftOffset,        1,
+            XmNrightAttachment,   XmATTACH_NONE,
+            XmNnavigationType,    XmTAB_GROUP,
+            XmNcomboBoxType,      XmDROP_DOWN_LIST,
+            XmNpositionMode,      XmONE_BASED, 
+            XmNvisibleItemCount,  3,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+        // *** when localizing these strings propagate the localizations to 
+        // the set default functions above and to constants for picklist 
+        // selection recognition.  ***
+#ifdef HAVE_MYSQL
+        // mysql
+        //cb_item = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
+        cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL][0], XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,DB_MYSQL,1);  
+        XmStringFree(cb_item);
+#endif /* HAVE_MYSQL */
+#ifdef HAVE_POSTGIS
+        // postgresql
+        //cb_item = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
+        cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_POSTGIS][0], XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,DB_POSTGIS,1);  
+        XmStringFree(cb_item);
+#endif /* HAVE_MYSQL */
+#ifdef HAVE_MYSQL_SPATIAL
+        // mysql with spatial extensions
+        //cb_item = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
+        cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL_SPATIAL][0], XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,DB_MYSQL_SPATIAL,1);  
+        XmStringFree(cb_item);
+#endif /* HAVE_MYSQL_SPATIAL */
+
+        // Schema Type
+        label_schema_type = XtVaCreateManagedWidget("With Tables for",xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_FORM,
+            XmNtopOffset,        15,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       Sql_Database_dbms_data,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+        // Combo box to pick schema
+        Sql_Database_schema_type_data = XtVaCreateManagedWidget("Tables to use", xmComboBoxWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_FORM,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       label_schema_type,
+            XmNleftOffset,       1,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNcomboBoxType,     XmDROP_DOWN_LIST,
+            XmNpositionMode,     XmONE_BASED, 
+            XmNvisibleItemCount, 3,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+        // *** need to add constants for order and localization *** 
+        // ? use an array - schm_typ[XASTIR_SCHEMA_SIMPLE]=langcode("codeforxastirsimple").... ? 
+        // ?or some other form of key-value pairs? 
+
+        // simple
+        //cb_item = XmStringCreateLtoR("Xastir - simple", XmFONTLIST_DEFAULT_TAG);
+        cb_item = XmStringCreateLtoR(&xastir_schema_type[XASTIR_SCHEMA_SIMPLE][0], XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(Sql_Database_schema_type_data,cb_item,1,1);  
+        XmStringFree(cb_item);
+
+/* not yet implemented
+        // aprs world
+        cb_item = XmStringCreateLtoR("APRSWorld", XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(cad_line_style_data,cb_item,2,1);  
+        XmStringFree(cb_item);
+
+        // full
+        cb_item = XmStringCreateLtoR("Xastir - full", XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(cad_line_style_data,cb_item,2,1);  
+        XmStringFree(cb_item);
+
+        // cad
+        cb_item = XmStringCreateLtoR("Xastir - CAD", XmFONTLIST_DEFAULT_TAG);
+        XmComboBoxAddItem(cad_line_style_data,cb_item,2,1);  
+        XmStringFree(cb_item);
+*/
+
+        // Store data
+        Sql_Database_transmit_data  = XtVaCreateManagedWidget("Store incoming data",xmToggleButtonWidgetClass,form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_dbms_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        // Retrieve data on start
+        Sql_Database_query_on_startup_data  = XtVaCreateManagedWidget("Load data on start",xmToggleButtonWidgetClass,form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_dbms_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       Sql_Database_transmit_data,
+            XmNleftOffset,       15,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        // put retieve now button here.
+
+        // hostname
+        ihost = XtVaCreateManagedWidget(langcode("WPUPCFID02"),xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_transmit_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+        Sql_Database_host_data = XtVaCreateManagedWidget("Config_Database host_data", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          55,
+            XmNmaxLength,        255,
+            XmNbackground,       colors[0x0f],
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_transmit_data,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       ihost,
+            XmNleftOffset,       1,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+
+        // port 
+        iport = XtVaCreateManagedWidget(langcode("WPUPCFID03"),xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_transmit_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       Sql_Database_host_data,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+        
+        Sql_Database_port_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          5,
+            XmNmaxLength,        6,
+            XmNbackground,       colors[0x0f],
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_transmit_data,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       iport,
+            XmNleftOffset,       1,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+        
+        // Username 
+        username = XtVaCreateManagedWidget("Username",xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_host_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+        
+        Sql_Database_username_data = XtVaCreateManagedWidget("Config_Database username_data", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          15,
+            XmNmaxLength,        25,
+            XmNbackground,       colors[0x0f],
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_host_data,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       username,
+            XmNleftOffset,       1,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+        // Password
+        password = XtVaCreateManagedWidget("Password",xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_host_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       Sql_Database_username_data, 
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        Sql_Database_password_data = XtVaCreateManagedWidget("Config_Database password_data", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          15,
+            XmNmaxLength,        20,
+            XmNbackground,       colors[0x0f],
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       password,
+            XmNleftOffset,       1,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_host_data,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+        //  Schema/Database name
+        schema_name = XtVaCreateManagedWidget("Schema/Database name",xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_username_data,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        Sql_Database_schema_name_data= XtVaCreateManagedWidget("Config_Database schema_name_data", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          25,
+            XmNmaxLength,        50,
+            XmNbackground,       colors[0x0f],
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       schema_name,
+            XmNleftOffset,       1,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_username_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+
+        // MySQL unix socket
+        unix_socket = XtVaCreateManagedWidget("MySQL unix socket",xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_username_data,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       Sql_Database_schema_name_data,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        Sql_Database_unix_socket_data = XtVaCreateManagedWidget("Config_Database unix_socket_data", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          30,
+            XmNmaxLength,        190,
+            XmNbackground,       colors[0x0f],
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       unix_socket,
+            XmNleftOffset,       1,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_username_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+
+        // comment
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_schema_name_data,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+        Sql_Database_comment = XtVaCreateManagedWidget("Config_Database comment", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         TRUE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          25,
+            XmNwidth,            ((25*7)+2),
+            XmNmaxLength,        49,
+            XmNbackground,       colors[0x0f],
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_schema_name_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       comment,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+
+        // reconnect on network failure
+        Sql_Database_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFID11"),xmToggleButtonWidgetClass,form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_comment,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        // most recent error 
+        error_message = XtVaCreateManagedWidget("Most Recent Error:",xmLabelWidgetClass, form,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_reconnect_data,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNleftOffset,       10,
+            XmNrightAttachment,  XmATTACH_NONE,
+            XmNbackground,       colors[0xff],
+            NULL);
+        // error message isn't editable and isn't saved
+        Sql_Database_errormessage_data = XtVaCreateManagedWidget("Config_Database error_message", xmTextFieldWidgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNeditable,         FALSE,
+            XmNcursorPositionVisible, TRUE,
+            XmNsensitive,        TRUE,
+            XmNshadowThickness,  1,
+            XmNcolumns,          79,
+            XmNwidth,            ((79*7)+2),
+            XmNmaxLength,        255,
+            XmNbackground,       colors[0x0f],
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_reconnect_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_WIDGET,
+            XmNleftWidget,       error_message,
+            XmNrightAttachment,  XmATTACH_NONE,
+            NULL);
+
+        // separator line 
+        sep = XtVaCreateManagedWidget("Config_Database sep", xmSeparatorGadgetClass,form,
+            XmNorientation,      XmHORIZONTAL,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        Sql_Database_errormessage_data,
+            XmNtopOffset,        5,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment,   XmATTACH_FORM,
+            XmNrightAttachment,  XmATTACH_FORM,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        // button: MySQL Defaults
+        button_mysql_defaults = XtVaCreateManagedWidget("MySQL Defaults",xmPushButtonGadgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        sep,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset,     5,
+            XmNleftAttachment,   XmATTACH_POSITION,
+            XmNleftPosition,     1,
+            XmNrightAttachment,  XmATTACH_POSITION,
+            XmNrightPosition,    3,
+            XmNbackground,       colors[0xff],
+            NULL);
+        // button: Postgis Defaults
+        button_postgis_defaults = XtVaCreateManagedWidget("Postgis Defaults",xmPushButtonGadgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        sep,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset,     5,
+            XmNleftAttachment,   XmATTACH_POSITION,
+            XmNleftPosition,     4,
+            XmNrightAttachment,  XmATTACH_POSITION,
+            XmNrightPosition,    6,
+            XmNbackground,       colors[0xff],
+            NULL);
+        // button: OK
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        sep,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset,     5,
+            XmNleftAttachment,   XmATTACH_POSITION,
+            XmNleftPosition,     7,
+            XmNrightAttachment,  XmATTACH_POSITION,
+            XmNrightPosition,    9,
+            XmNbackground,       colors[0xff],
+            NULL);
+        // button: Cancel
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+            XmNnavigationType,   XmTAB_GROUP,
+            XmNtraversalOn,      TRUE,
+            XmNtopAttachment,    XmATTACH_WIDGET,
+            XmNtopWidget,        sep,
+            XmNtopOffset,        10,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNbottomOffset,     5,
+            XmNleftAttachment,   XmATTACH_POSITION,
+            XmNleftPosition,     10,
+            XmNrightAttachment,  XmATTACH_POSITION,
+            XmNrightPosition,    12,
+            XmNbackground,       colors[0xff],
+            NULL);
+
+        XtAddCallback(button_mysql_defaults, 
+            XmNactivateCallback, Sql_Database_set_defaults_mysql, config_Sql_Database_dialog);
+        XtAddCallback(button_postgis_defaults, 
+            XmNactivateCallback, Sql_Database_set_defaults_postgis, config_Sql_Database_dialog);
+        XtAddCallback(button_ok, 
+            XmNactivateCallback, Sql_Database_change_data, config_Sql_Database_dialog);
+        XtAddCallback(button_cancel, 
+            XmNactivateCallback, Sql_Database_destroy_shell, config_Sql_Database_dialog);
+
+        pos_dialog(config_Sql_Database_dialog);
+
+        delw = XmInternAtom(XtDisplay(config_Sql_Database_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(config_Sql_Database_dialog, 
+            delw, Sql_Database_destroy_shell, (XtPointer)config_Sql_Database_dialog);
+
+        if (config_type==0) {
+            /* first time port */
+            // Default settings for a new interface.
+            defaults_set = 0;
+#ifdef HAVE_MYSQL
+            Sql_Database_set_defaults_mysql(config_Sql_Database_dialog,NULL,NULL);
+            defaults_set = 1;
+#endif /* HAVE_MYSQL */
+#ifdef HAVE_POSTGIS
+            if (defaults_set==0) { 
+               // mysql support not available, use postgis
+               Sql_Database_set_defaults_postgis(config_Sql_Database_dialog,NULL,NULL);
+            }
+#endif /* HAVE_POSTGIS */
+        } else {
+            /* reconfigure an existing interface */
+
+// why critical section here?  We are reading data from an existing configuration, 
+// not changing the configuration while the interface might be in use.
+begin_critical_section(&devices_lock, "interface_gui.c:Config_sql_Database" );
+
+            // *** need to look up localized string for database_type ***
+fprintf(stderr,"Loading parameters %s\n",devices[Sql_Database_port].comment);
+            cb_item = XmStringCreateLtoR(&xastir_dbms_type[devices[Sql_Database_port].database_type][0], XmFONTLIST_DEFAULT_TAG);
+            XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
+fprintf(stderr,"After first combobox\n");
+            XmStringFree(cb_item);
+            cb_item = XmStringCreateLtoR(&xastir_schema_type[devices[Sql_Database_port].database_schema_type][0], XmFONTLIST_DEFAULT_TAG);
+            XmComboBoxSelectItem(Sql_Database_schema_type_data,cb_item);  
+            XmStringFree(cb_item);
+
+            if (devices[Sql_Database_port].connect_on_startup)
+                XmToggleButtonSetState(Sql_Database_active_on_startup,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Sql_Database_active_on_startup,FALSE,FALSE);
+
+            if (devices[Sql_Database_port].query_on_startup)
+                XmToggleButtonSetState(Sql_Database_query_on_startup_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Sql_Database_query_on_startup_data,FALSE,FALSE);
+
+
+            if (devices[Sql_Database_port].transmit_data)
+                XmToggleButtonSetState(Sql_Database_transmit_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Sql_Database_transmit_data,FALSE,FALSE);
+
+            XmTextFieldSetString(Sql_Database_host_data,devices[Sql_Database_port].device_host_name);
+            XmTextFieldSetString(Sql_Database_schema_name_data,devices[Sql_Database_port].database_schema);
+            xastir_snprintf(temp, sizeof(temp), "%d", devices[Sql_Database_port].sp);
+            XmTextFieldSetString(Sql_Database_port_data,temp);
+            XmTextFieldSetString(Sql_Database_username_data,devices[Sql_Database_port].database_username);
+            XmTextFieldSetString(Sql_Database_password_data,devices[Sql_Database_port].device_host_pswd);
+            XmTextFieldSetString(Sql_Database_unix_socket_data,devices[Sql_Database_port].database_unix_socket);
+            XmTextFieldSetString(Sql_Database_comment,devices[Sql_Database_port].comment);
+            // display most recent error message
+            XmTextFieldSetString(Sql_Database_errormessage_data,devices[Sql_Database_port].database_errormessage);
+
+            if (devices[Sql_Database_port].reconnect)
+                XmToggleButtonSetState(Sql_Database_reconnect_data,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(Sql_Database_reconnect_data,FALSE,FALSE);
+
+end_critical_section(&devices_lock, "interface_gui.c:Config_sql_Database" );
+
+        }
+        XtManageChild(form);
+        XtManageChild(pane);
+
+        XtPopup(config_Sql_Database_dialog,XtGrabNone);
+        fix_dialog_size(config_Sql_Database_dialog);
+    } else {
+        (void)XRaiseWindow(XtDisplay(config_Sql_Database_dialog), XtWindow(config_Sql_Database_dialog));
+    }
+}
+#endif /* HAVE_DB */
 
 
 
@@ -6350,9 +7272,18 @@ int are_shells_up(void) {
                                 if (config_Database_dialog) {
                                     (void)XRaiseWindow(XtDisplay(config_Database_dialog), XtWindow(config_Database_dialog));
                                 } else {
-                                    if (config_AGWPE_dialog) {
-                                        (void)XRaiseWindow(XtDisplay(config_AGWPE_dialog), XtWindow(config_AGWPE_dialog));
-                                    } else up=0;
+#ifdef HAVE_DB
+                                    if (config_Sql_Database_dialog) {
+                                        (void)XRaiseWindow(XtDisplay(config_Sql_Database_dialog), XtWindow(config_Sql_Database_dialog));
+                                    } else {
+
+#endif /* HAVE_DB */
+                                        if (config_AGWPE_dialog) {
+                                            (void)XRaiseWindow(XtDisplay(config_AGWPE_dialog), XtWindow(config_AGWPE_dialog));
+                                        } else up=0;
+#ifdef HAVE_DB
+                                    }
+#endif /* HAVE_DB */
                                 }
                             }
                         }
@@ -6562,6 +7493,7 @@ void modify_device_list(int option, int port) {
                             break;
 
                         case DEVICE_NET_DATABASE:
+                        case DEVICE_SQL_DATABASE:
                         case DEVICE_NET_STREAM:
                         case DEVICE_NET_GPSD:
                         case DEVICE_NET_WX:
@@ -6682,9 +7614,11 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 
             port=get_open_device();     // Find an unused port number
             /*fprintf(stderr,"Open_port %d\n",port);*/
+fprintf(stderr,"Open_port %d\n",port);
             if(port!=-1) {
                 /*devices[port].device_type=found;*/
                 /*fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);*/
+fprintf(stderr,"adding device %s on port %d\n",dtype[found].device_name,port);
                 switch (found) {
 
 //WE7U:  Set up for new KISS device type
@@ -6777,7 +7711,14 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                             fprintf(stderr,"ADD NET DATABASE\n");
                         Config_Database(w, 0, port);
                         break;
-
+#ifdef HAVE_DB
+                    case DEVICE_SQL_DATABASE:
+                        /* configure this port */
+                        if (debug_level & 1)
+                            fprintf(stderr,"ADD SQL DATABASE\n");
+                        Config_sql_Database(w, 0, port);
+                        break;
+#endif /* HAVE_DB */
                     case DEVICE_NET_AGWPE:
                         /* configure this port */
                         if (debug_level & 1)
@@ -7128,8 +8069,19 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                                 fprintf(stderr,"Modify NET DATABASE\n");
                             Config_Database(w, 1, port);
                             break;
+#ifdef HAVE_DB
+                        case DEVICE_SQL_DATABASE:
+ 
+end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
+
+                            /* configure this port */
+                            if (debug_level & 1)
+                                fprintf(stderr,"Modify SQL DATABASE\n");
+                            Config_sql_Database(w, 1, port);
+                            break;
 
                         case DEVICE_NET_AGWPE:
+#endif /* HAVE_DB */
  
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
@@ -7538,6 +8490,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                     break;
 
                 case DEVICE_NET_DATABASE:
+                case DEVICE_SQL_DATABASE:
                 case DEVICE_NET_STREAM:
                 case DEVICE_NET_AGWPE:
                     s='4';  // Select icon for status bar

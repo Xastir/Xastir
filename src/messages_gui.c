@@ -1797,9 +1797,21 @@ void select_station_type(int ii) {
         int hamhud = 0;
         int d700 = 0;
         int d7 = 0;
+        int tx_only = 0;
 
 
 //fprintf(stderr,"Found callsign: %s\n", call_sign);
+
+        // check if station appears to be a transmit only station such as the TinyTrak and OpenTrak trackers.
+// ********* wrong test ********** 
+//if (p_station->aprs_symbol != NULL) { 
+//   if (p_station->aprs_symbol.aprs_type != NULL) { 
+//      fprintf(stderr,"Has Type: %s\n", p_station->aprs_symbol.aprs_type);
+//        if is_tx_only(p_station) {  
+//            tx_only++;
+//        }
+//   }
+//}
 
         // Check first two comment records, if they exist
         if (p_station->comment_data != NULL) {

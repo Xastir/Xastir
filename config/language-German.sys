@@ -1321,3 +1321,20 @@ MDATA002|XASTIR Karte von %s (oben links) to %s %s (unten rechts).  Breite/Länge
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA003|XASTIR Karte von %s (oben links) to %s (unten rechts).  UTM Zonen, %s Datum.||
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
+XADBMST001|MySQL (lat/long)||
+# DB_POSTGIS 
+XADBMST002|Postgreql with Postgis||
+# DB_MYSQL_SPATIAL
+XADBMST003|MySQL (spatial)||
+# XASTIR_SCHEMA_SIMPLE]
+XASCHEMA01|Xastir Simple Schema||
+#XASTIR_SCHEMA_CAD
+XASCHEMA02|Xastir CAD Schema||
+#XASTIR_SCHEMA_COMPLEX
+XASCHEMA03|Xastir full Schema||
+#XASTIR_SCHEMA_APRSWORLD
+XASCHEMA04|APRSWorld Schema||

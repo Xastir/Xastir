@@ -10663,6 +10663,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             da_resize(w, NULL,NULL);            // make sure the size is right after startup & create image
             set_last_position();                // init last map position
 
+#ifdef HAVE_DB
+//uncomment to enable hardcoded test of writing station to db
+//simpleDbTest();
+#endif /* HAVE_DB */
             // Restore weather alerts so that we have a clear
             // picture of the current state.  Do this before we
             // start the interfaces.

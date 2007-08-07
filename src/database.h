@@ -337,7 +337,6 @@ typedef struct _MultipointRow{
 //
 // todo: check the string length!
 //
-
 typedef struct _DataRow {
 
     struct _DataRow *n_next;    // pointer to next element in name ordered list

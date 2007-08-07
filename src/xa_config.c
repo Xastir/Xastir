@@ -49,6 +49,7 @@
 #include "geo.h"
 #include "snprintf.h"
 #include "objects.h"
+#include "db_gis.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -698,6 +699,52 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
                 name_temp);
             strncat (name, "RADIO_PORT", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].radio_port);
+
+#ifdef HAVE_DB
+            
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "DATABASE_TYPE", sizeof(name) - strlen(name));
+            store_int (fout, name, devices[i].database_type);
+
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "DATABASE_SCHEMA_TYPE", sizeof(name) - strlen(name));
+            store_int (fout, name, devices[i].database_schema_type);
+
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "DATABASE_USERNAME", sizeof(name) - strlen(name));
+            store_string (fout, name, devices[i].database_username);
+
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "DATABASE_SCHEMA", sizeof(name) - strlen(name));
+            store_string (fout, name, devices[i].database_schema);
+
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "DATABASE_UNIX_SOCKET", sizeof(name) - strlen(name));
+            store_string (fout, name, devices[i].database_unix_socket);
+
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "QUERY_ON_STARTUP", sizeof(name) - strlen(name));
+            store_int (fout, name, devices[i].query_on_startup);
+
+#endif /* HAVE_DB */
 
             xastir_snprintf(name,
                 sizeof(name),
@@ -1529,6 +1576,64 @@ void load_data_or_default(void) {
             xastir_snprintf(devices[i].radio_port,
                 sizeof(devices[i].radio_port),
                 "0");
+
+#ifdef HAVE_DB        
+
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "DATABASE_TYPE", sizeof(name) - strlen(name));
+        devices[i].database_type = get_int (name, 0,MAX_DB_TYPE,DB_MYSQL);
+        
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "DATABASE_SCHEMA_TYPE", sizeof(name) - strlen(name));
+        devices[i].database_schema_type = get_int (name, 0,MAX_XASTIR_SCHEMA,XASTIR_SCHEMA_SIMPLE);
+        
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "DATABASE_USERNAME", sizeof(name) - strlen(name));
+        // default to xastir
+        if (!get_string (name, devices[i].database_username, sizeof(devices[i].database_username)))
+            xastir_snprintf(devices[i].database_username,
+                sizeof(devices[i].database_username),
+                "xastir");
+        
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "DATABASE_SCHEMA", sizeof(name) - strlen(name));
+        // default to xastir
+        if (!get_string (name, devices[i].database_schema, sizeof(devices[i].database_schema)))
+            xastir_snprintf(devices[i].database_schema,
+                sizeof(devices[i].database_schema),
+                "xastir");
+
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "DATABASE_UNIX_SOCKET", sizeof(name) - strlen(name));
+        // empty string is ok here
+        if (!get_string (name, devices[i].database_unix_socket, sizeof(devices[i].database_unix_socket)))
+            xastir_snprintf(devices[i].database_unix_socket,
+                sizeof(devices[i].database_unix_socket),
+                "0");
+
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "QUERY_ON_STARTUP", sizeof(name) - strlen(name));
+        devices[i].query_on_startup = get_int (name, 0,1,0);
+
+#endif /* HAVE_DB */
 
         xastir_snprintf(name,
             sizeof(name),

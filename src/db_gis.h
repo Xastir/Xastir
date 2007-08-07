@@ -22,13 +22,20 @@
  */
 
 #include "xastir.h"
+#include "interface.h"  // ioparam struct is used to store descriptions of databases
+                        // to which to connect.
 
-extern char *xastirCoordToLatLongWKT(float x, float y, char *wkt);
+extern char *xastirCoordToLatLongWKT(long x, long y, char *wkt);
 
 #ifdef HAVE_DB
+// maximum number of open database connections
+#define MAX_DB_CONNECTIONS 20
 
+// includes for database client libraries and 
 // constants to identify database types
-
+// constants are used in interface_gui.c 
+// where the specify order on picklist 
+// *** Need to localize these and the schema types ***
 #ifdef HAVE_MYSQL
 // MySQL version 3.x and higher
 #include <mysql.h>
@@ -50,6 +57,9 @@ extern char *xastirCoordToLatLongWKT(float x, float y, char *wkt);
 #define DB_MYSQL_SPATIAL 3
 #endif /* HAVE_MYSQL_SPATIAL */
 
+#define MAX_DB_TYPE 3 // largest value for DB_ 
+                      // used in load_data_or_default
+
 // constants to control database schema versioning
 
 // Version of the mysql/postgresql table structures this version of xastir expects to find.
@@ -70,14 +80,23 @@ extern char *xastirCoordToLatLongWKT(float x, float y, char *wkt);
 #define XASTIR_SCHEMA_COMPLEX 3    // full aprs concept support
 #define XASTIR_SCHEMA_APRSWORLD 4  // aprs world implementaiton
 
+#define MAX_XASTIR_SCHEMA 4  // largest value for xastir_schema_ 
+                             // used in load_data_or_default
+
+#define XASTIR_SCHEMA_DESCRIPTOR_MAX_SIZE 50  // largest allowed size of a localized schema descriptor string
+#define XASTIR_DB_DESCRIPTOR_MAX_SIZE 50      // largest allowed size of a localized dbms descriptor string
+
+
 // description of a database
+// replaced with extension of ioparam struct in interface.h
+/*
 typedef struct {
-   char name[100];    // name of connection to display to user
-   int type;          // type of dbms (posgresql, mysql, etc)
-   char host[255];    // hostname for database server
-   int port;          // port on which to connect to database server
-   char username[20]; // username to use to connect to database
-   char password[20]; // password to use to connect to database 
+   char name[MAX_DEVICE_NAME+1]; // name of connection to display to user  - ioparam device_name
+   char host[255];    // hostname for database server           - ioparam device_host_name
+   int port;          // port on which to connect to database server  - ioparam sp
+   char password[20]; // password to use to connect to database - ioparam device_host_password
+   char username[20]; // username to use to connect to database 
+   int type;          // type of dbms (posgresql, mysql, etc)   
    char schema[20];   // name of database or schema to use
    char makeerrormessage[255]; // most recent error message from attempting to make a 
                       // connection with using this descriptor.
@@ -85,14 +104,15 @@ typedef struct {
                       // A database schema could contain both APRSWorld 
                       // and XASTIR table structures, but a separate database
                       // descriptor should be defined for each.  
-   char unix_socket[255];   // MySQL - unix socket parameter
+   char unix_socket[255];   // MySQL - unix socket parameter (path and filename)
    //connection_list open_connections // list of open connections to this database
 } DbDescriptor;
-
+*/
 // a database connection 
 typedef struct {
-   int type;         // type of dbms (postgresql, mysql, etc, redundant from descriptor->type)
-   DbDescriptor descriptor;  // connection parameters used to establish this connnection
+   int type;          // type of dbms (postgresql, mysql, etc, redundant from descriptor->type)
+   ioparam descriptor;  // connection parameters used to establish this connnection
+                      // stored in ioparam struct defined in interface.h
 #ifdef HAVE_MYSQL
    MYSQL  *mhandle;   // mysql connection
 #endif /* HAVE_MYSQL */
@@ -110,10 +130,12 @@ typedef struct{
 
 
 // connection management
-extern Connection openConnection (DbDescriptor *aDbDescriptor);
+extern Connection openConnection (ioparam *aioparm);
 extern void closeConnection (Connection *aDbConnection);
 extern int testConnection(Connection *aDbConnection);
 
+extern char xastir_dbms_type[3][51];
+extern char xastir_schema_type[4][51];
 
 // storing and retrieving data from a database
 extern int storeStationToGisDb(Connection *aDbConnection, DataRow *aStation);
@@ -121,6 +143,7 @@ extern int storeCadToGisDb(Connection *aDbConnection, CADRow *aCadObject);
 extern int storeStationSimpleToGisDb(Connection *aDbConnection, DataRow *aStation);
 extern int getAllSimplePositions(Connection *aDbConnection);
 extern int getAllSimplePositionsInBoundingBox(Connection *aDbConnection, int east, int west, int north, int south);
+extern ioparam simpleDbTest(void);
 
 #endif /* HAVE_SPATIAL_DB */
 

@@ -650,6 +650,42 @@ void get_timestamp(char *timestring) {
 
 
 
+/* function get_iso_datetime converts time in seconds to an ISO date 
+ * time in the form yyyy-mm-dd hh:mm:ss utc_offset
+ * @param aTime time in seconds since the begining of the unix epoch
+ * @param timestring pointer to a char[101] into which the timestamp
+ * is written in the format yyyy-mm-dd hh:mm:ss followed by a utc 
+ * offset for the timezone.
+ * @param nowIfNotSet when true, if aTime is not set (int)aTime==0, 
+ * then return the current time rather than formatting aTime, when
+ * false, returns formatted aTime even if it was zero.  
+ * @param nowIfInvalid when true, if aTime is invalid (int)aTime=-1,
+ * then returns the formatted current time rather than formatting 
+ * aTime, otherwise returns formatted invalid time.
+ * @returns 0 on when (int)aTime==-1 where time provided invalid
+ * returns 1 otherwise. */
+int get_iso_datetime(time_t aTime, char *timestring,int nowIfNotSet, int nowIfInvalid) {
+    struct tm *time_now;
+    time_t secs_now;
+    int returnvalue = 1;
+    if (((int)aTime==0 && nowIfNotSet) || ((int)aTime==-1 && nowIfInvalid)) { 
+        secs_now=sec_now();
+        time_now = localtime(&secs_now);
+        (void)strftime(timestring,100,"%F %H:%M:%S %z",time_now);
+    } else { 
+        // will also end up here if time_t is -1
+        (void)strftime(timestring,100,"%F %H:%M:%S %z",localtime(&aTime));
+    }
+    if ((int)aTime==-1) { 
+        returnvalue = 0;
+    }
+    return returnvalue;
+}
+
+
+
+
+
 /***********************************************************/
 /* returns the hour (00..23), localtime                    */
 /***********************************************************/

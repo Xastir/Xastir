@@ -71,7 +71,7 @@
 
 
 
-#define MAX_IFACE_DEVICE_TYPES 14
+#define MAX_IFACE_DEVICE_TYPES 15
 
 /* Define Device Types */
 enum Device_Types {
@@ -88,7 +88,8 @@ enum Device_Types {
     DEVICE_SERIAL_KISS_TNC,     // KISS TNC on serial port (not ax.25 kernel device)
     DEVICE_NET_DATABASE,
     DEVICE_NET_AGWPE,
-    DEVICE_SERIAL_MKISS_TNC     // Multi-port KISS TNC, like the Kantronics KAM
+    DEVICE_SERIAL_MKISS_TNC,    // Multi-port KISS TNC, like the Kantronics KAM
+    DEVICE_SQL_DATABASE         // SQL server (MySQL/Postgis) database
 };
 
 enum Device_Active {
@@ -148,6 +149,7 @@ typedef struct {
     char device_name[100];
 } iodevices;
 
+
 typedef struct {
     int    device_type;                           /* device type                             */
     char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
@@ -178,6 +180,34 @@ typedef struct {
     int    fullduplex;                            /* KISS parameter */
     int    relay_digipeat;                        /* If 1: interface should RELAY digipeat */
     int    init_kiss;				              /* Initialize KISS-Mode on startup */
+#ifdef HAVE_DB
+    // to support connections to sql server databases for db_gis.c 
+    char   database_username[20];                 /* Username to use to connect to database  */
+    int    database_type;                         /* Type of dbms (posgresql, mysql, etc)    */
+    char   database_schema[20];                   /* Name of database or schema to use       */
+    char   database_errormessage[255];            /* Most recent error message from 
+                                                     attempting to make a 
+                                                     connection with using this descriptor.  */
+    int    database_schema_type;                  /* table structures to use in the database
+                                                     A database schema could contain both 
+                                                     APRSWorld and XASTIR table structures, 
+                                                     but a separate database descriptor
+                                                     needs to be defined for each.  */
+    char   database_unix_socket[255];             /* MySQL - unix socket parameter (path and 
+                                                     filename) */
+    // Need a pointer here, and one in connection pointing back here.  How to do????
+    //Connection *database_connection;              
+                                                  /* Pointer to database connection that
+                                                     contains database handle (with type 
+                                                     of handle being dependent on type of 
+                                                     database.  */
+    int    query_on_startup;                      /* Load stations from this database on 
+                                                     startup. */
+    // Use of other ioparam variables for sql server database connections:  
+    // device_host_name = hostname for database server 
+    // sp = port on which to connect to database server 
+    // device_host_pswd =  password to use to connect to database -- security issue needs to be addressed
+#endif /* HAVE_DB */
 } ioparam;
 
 
@@ -247,6 +277,7 @@ extern void output_waypoint_data(char *message);
 extern void send_ax25_frame(int port, char *source, char *destination, char *path, char *data);
 
 extern pid_t getpgid(pid_t pid);
+
 
 #endif /* XASTIR_INTERFACE_H */
 

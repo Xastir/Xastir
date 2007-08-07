@@ -13038,6 +13038,11 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                 SayText(station_id);
             }
 #endif  // HAVE_FESTIVAL
+
+#ifdef HAVE_DB
+            // write station data to sql database
+            //ok = storeStationSimpleToGisDb(&conn, p_station);
+#endif /* HAVE_DB */
         } // end found_pos
 
     }   // valid data into database
