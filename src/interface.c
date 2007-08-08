@@ -6989,9 +6989,10 @@ void init_device_names(void) {
         sizeof(dtype[DEVICE_SQL_DATABASE].device_name),
         "%s",
         langcode("IFDNL00014"));
-#endif /* HAVE_DB */
 
 fprintf(stderr,"Initialized sql type: %s\n",dtype[DEVICE_SQL_DATABASE].device_name);
+#endif /* HAVE_DB */
+
 }
 
 
