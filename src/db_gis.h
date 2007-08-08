@@ -25,7 +25,7 @@
 #include "interface.h"  // ioparam struct is used to store descriptions of databases
                         // to which to connect.
 
-extern char *xastirCoordToLatLongWKT(long x, long y, char *wkt);
+extern int xastirCoordToLatLongWKT(long x, long y, char *wkt);
 
 #ifdef HAVE_DB
 // maximum number of open database connections

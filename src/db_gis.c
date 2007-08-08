@@ -782,20 +782,34 @@ int storeCadToGisDbPostgis(Connection *aDbConnection, CADRow *aCadObject) {
  * Should only be called through wrapper function.  Do not call directly.
  */
 int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aStation) { 
-    int returnvalue = 0;
-    char timestring[101];
+    int returnvalue = 0;  // Default return value is failure.
+    int ok;  // Holds results of tests when building query.
+    char wkt[100];  // well know text representation of latitude and longitude of point
+    char timestring[101];  // string representation of the time heard or the current time
+    char call_sign[MAX_CALLSIGN];  
     PGconn *conn = aDbConnection->phandle;
     // prepare statement
     char sql[100] = "insert into simpleStation (call, transmit_time, position) values ('%1','%2','%3')";
+
+
     // get call, position, and time
+    ok = xastirCoordToLatLongWKT(aStation->coord_lon, aStation->coord_lat, wkt);
+    if (ok==1) { 
+        xastir_snprintf(call_sign,sizeof(call_sign),"%s",aStation->call_sign);
+ 
+        // get time in seconds, adjust to datetime
+        // If my station or another unset sec_heard is 
+        // encountered, use current time instead, use time
+        // provided if it was invalid.
+        get_iso_datetime(aStation->sec_heard,timestring,True,False);
 
-    // get time in seconds, adjust to datetime
-    // If my station or another unset sec_heard is 
-    // encountered, use current time instead, use time
-    // provided if it was invalid.
-    get_iso_datetime(aStation->sec_heard,timestring,True,False);
+        // send query
+        
 
-    // send query
+    } else { 
+        // problem with coordinates of station 
+        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
+    }
     return returnvalue;
 }
 
@@ -936,7 +950,8 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
     int returnvalue = 0;
     int mysqlreturn;
     int test;
-    char wkt[100];
+    int ok;    // variable to store results of tests preparatory to firing query
+    char wkt[100];  // well know text representation of latitude and longitude of point
     char timestring[100+1];
     MYSQL *conn = aDbConnection->mhandle;
     // prepare statement
@@ -966,24 +981,28 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
            //bind[1]->buffer_length
            //bind[1]->buffer_type
            //bind[1]->isnull
-           xastirCoordToLatLongWKT(aStation->coord_lon, aStation->coord_lat, wkt);
-           bind[2].buffer = wkt;
-           //bind[2]->length
-           //bind[2]->buffer_length
-           //bind[2]->buffer_type
-           //bind[2]->isnull
-           test = mysql_stmt_bind_param(statement, bind);
-           if (test==0) { 
-               mysql_interpret_error(test,aDbConnection);
-           } else { 
-               // send query
-               mysqlreturn = mysql_stmt_execute(statement);
-               if (mysqlreturn!=0) { 
-                   returnvalue=0;
-                   mysql_interpret_error(mysqlreturn,aDbConnection);
-               } else {
-                   returnvalue=1;
+           ok = xastirCoordToLatLongWKT(aStation->coord_lon, aStation->coord_lat, wkt);
+           if (ok==1) { 
+               bind[2].buffer = wkt;
+               //bind[2]->length
+               //bind[2]->buffer_length
+               //bind[2]->buffer_type
+               //bind[2]->isnull
+               test = mysql_stmt_bind_param(statement, bind);
+               if (test==0) { 
+                   mysql_interpret_error(test,aDbConnection);
+               } else { 
+                   // send query
+                   mysqlreturn = mysql_stmt_execute(statement);
+                   if (mysqlreturn!=0) { 
+                       returnvalue=0;
+                       mysql_interpret_error(mysqlreturn,aDbConnection);
+                   } else {
+                       returnvalue=1;
+                   }
                }
+           } else { 
+                xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
            }
        } else { 
            // set call not null error message
@@ -1058,7 +1077,7 @@ int getAllSimplePositionsMysqlSpatialInBoundingBox(Connection *aDbConnection, ch
   # APRS_Symbol in xastir 
   create table simpleStation (
      simpleStationId int primary key not null auto_increment
-     station varchar(MAX_STATION) not null,  # callsign of station, length up to max_callsign
+     station varchar(MAX_CALLSIGN) not null,  # callsign of station, length up to max_callsign
      symbol varchar(1),     # aprs symbol character
      overlay varchar(1),    # aprs overlay table character
      aprstype varchar(1)    # aprs type, required???
@@ -1136,8 +1155,8 @@ int getAllSimplePositionsMysqlSpatialInBoundingBox(Connection *aDbConnection, ch
  * If failure, stores error message in aDbConnection->errormessage.
  */
 int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStation) { 
-    int returnvalue = 0;
-    int mysqlreturn = 1;
+    int returnvalue = 0;  // default return value is failure.
+    int mysqlreturn = 1;  // result of sending mysql query.
     char sql[200];
     // Next three variables are one character in two bytes plus one character for
     // filling by mysql_real_escape_string().  
@@ -1161,7 +1180,7 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
         get_iso_datetime(aStation->sec_heard,timestring,True,False);
         // get coord_lat, coord_long in xastir coordinates and convert to decimal degrees
         ok = convert_from_xastir_coordinates (&longitude, &latitude, aStation->coord_lon, aStation->coord_lat);
-        if (ok>0) { 
+        if (ok==1) { 
             // build insert query with call, time, and position
             // handle special cases of null, \ and ' characters in type, symbol, and overlay.
             if (aStation->aprs_symbol.aprs_symbol==NULL) { 
@@ -1183,16 +1202,19 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
             // send query
             fprintf(stderr,"MySQL Query:\n%s\n",sql);
             mysqlreturn = mysql_query(conn, sql);
+            if (mysqlreturn!=0) { 
+                // get the mysql error message
+                mysql_interpret_error(mysqlreturn,aDbConnection);
+            } else {
+                // insert query was successfull, return value is ok.
+                returnvalue=1;
+            }
+        } else { 
+            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
         } 
-        if (mysqlreturn!=0) { 
-            returnvalue=0;
-            mysql_interpret_error(mysqlreturn,aDbConnection);
-        } else {
-            returnvalue=1;
-        }
     } else { 
-         // set call not null error message
-         xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Station callsign is required and was blank or null.");
+        // set call not null error message
+        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Station callsign is required and was blank or null.");
     }
     return returnvalue;
 }
@@ -1326,20 +1348,23 @@ void mysql_interpret_error(int errorcode, Connection *aDbConnection) {
  * @param x longitude in xastir coordinates = decimal 100ths of a second.  
  * @param y latitude in xastir coordinates = decimal 100ths of a second.  
  * @param pointer to a char[29] string to hold well known text representation.
+ * returns 1 on success, 0 on failure.
  */
-char *xastirCoordToLatLongWKT(long x, long y, char *wkt) { 
+int xastirCoordToLatLongWKT(long x, long y, char *wkt) { 
     // 1 xastir coordinate = 1/100 of a second
     // 100*60*60 xastir coordinates (=360000 xastir coordinates) = 1 degree
     // 360000   xastir coordinates = 1 degree
     // conversion to string decimal degrees handled by utility fuctions
+    int returnvalue = 0;  // defaults to failure
     float latitude;
     float longitude;
     int ok;
     ok = convert_from_xastir_coordinates (&longitude,&latitude, x, y);
     if (ok>0) { 
        xastir_snprintf(wkt, sizeof(wkt), "POINT(%3.6f %3.6f)", latitude, longitude);
-    }
-    return wkt;
+       returnvalue = 1;
+    } 
+    return returnvalue;
 }
 
 
