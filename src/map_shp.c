@@ -3478,6 +3478,7 @@ if (on_screen) {
 
                                     // Draw the hole polygon
                                     if (num_vertices >= 3) {
+                                        XDestroyRegion(region[temp_region2]); // Release the old
                                         region[temp_region2] = XPolygonRegion(points,
                                             num_vertices,
                                             WindingRule);
