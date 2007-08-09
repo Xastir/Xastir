@@ -248,7 +248,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         xastir_snprintf(temp,
             sizeof(temp),
             "wx_alert_finger_output: can't get socket");
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
         return;
@@ -262,7 +262,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         xastir_snprintf(temp,
             sizeof(temp),
             "wx_alert_finger_output: gethostbyname failed");
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
         (void)close(server_fd); // Close the socket
@@ -277,7 +277,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         xastir_snprintf(temp,
             sizeof(temp),
             "wx_alert_finger_output: connect to server failed");
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
         (void)close(server_fd);    // Close the socket
@@ -291,7 +291,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         xastir_snprintf(temp,
             sizeof(temp),
             "Couldn't create duplicate write socket");
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
         (void)close(server_fd); // Close the socket
@@ -313,7 +313,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         xastir_snprintf(temp,
             sizeof(temp),
             "Couldn't send finger command to wxsvr");
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
         (void)fclose(fd);
@@ -335,7 +335,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         xastir_snprintf(temp,
             sizeof(temp),
             "Couldn't create duplicate read socket");
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
         (void)close(server_fd); // Close the socket
@@ -358,7 +358,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
 
         // Create an XmString for each line and add it to the
         // end of the list.
-        item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+        item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
         XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
         XmStringFree(item);
     }
@@ -544,7 +544,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 alert->desc2,
                 alert->desc3);
 
-            item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+            item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG, XmCHARSET_TEXT, NULL);
 
             ii++;
 
