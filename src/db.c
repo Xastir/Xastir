@@ -8531,14 +8531,9 @@ void delete_station_memory(DataRow *p_del) {
 /*@null@*/ DataRow *insert_new_station(DataRow *p_name, DataRow *p_time) {
     DataRow *p_new;
 
-    p_new = (DataRow *)malloc(sizeof(DataRow));
+    p_new = (DataRow *)calloc(1, sizeof(DataRow));
 
     if (p_new != NULL) {                // we really got the memory
-        p_new->call_sign[0] = '\0';     // just to be sure
-        p_new->n_next = NULL;
-        p_new->n_prev = NULL;
-        p_new->t_newer = NULL;
-        p_new->t_older = NULL;
         insert_name(p_new,p_name);      // insert element into name ordered list
         insert_time(p_new,p_time);      // insert element into time ordered list
     }
@@ -9756,6 +9751,7 @@ int extract_speed_course(char *info, char *speed, char *course) {
 
     len = (int)strlen(info);
     found = 0;
+    speed[0] = course[0] = '\0';
     if (len >= 7) {
         found = 1;
         for(i=0; found && i<7; i++) {           // check data format
@@ -17471,6 +17467,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             "%s",
             path0);
 
+        memset(info_copy, '\0', sizeof(info_copy));
         xastir_snprintf(info_copy,
             sizeof(info_copy),
             "%s",
