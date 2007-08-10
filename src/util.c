@@ -2613,6 +2613,7 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     if (p == NULL)  // No decimal point found
         return(0l);
 
+    memset(copy, '\0', sizeof(copy));
     offset = p - lat;   // Arithmetic on pointers
     switch (offset) {
         case 0:     // .MM[MM]N
@@ -2724,6 +2725,7 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     if (p == NULL)  // No decimal point found
         return(0l);
 
+    memset(copy, '\0', sizeof(copy));
     offset = p - lon;   // Arithmetic on pointers
     switch (offset) {
         case 0:     // .MM[MM]N
@@ -5408,7 +5410,8 @@ int check_unproto_path ( char *data ) {
                 if (is_wide) {
                     if (debug_level & 1)
                         fprintf(stderr,"Found wideN-n at slot %d\n", ii);
-                    have_widen++;
+                    if (strcmp(ViaCalls[ii], "WIDE1-1") !=0) // Home station, RELAY replacement
+			have_widen++;
 
                     // We know its a WIDEn-N, time to find out what n is
                     if (strlen(ViaCalls[ii]) != 7) {
