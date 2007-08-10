@@ -759,17 +759,17 @@ line[n] = '\0';
         // off any line-end characters that might be present, then
         // add a "\r\n" combo on the end.
         //
-        if (line[n-1] == '\r' || line[n-1] == '\n') {
+        if (n >= 1 && (line[n-1] == '\r' || line[n-1] == '\n')) {
             line[n-1] = '\0';
             n--;
         }
-        if (line[n-1] == '\r' || line[n-1] == '\n') {
+        if (n >= 1 && (line[n-1] == '\r' || line[n-1] == '\n')) {
             line[n-1] = '\0';
             n--;
         }
         // Add carriage-return/linefeed onto the end
         strncat(line, "\r\n", 2);
-        n = n+2;
+        n += 2;
 
         while (q != NULL) {
 //          fprintf(stderr,"pipe_check: %s\n",line);
@@ -968,6 +968,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
     // service them).
     //
     listen(sockfd, 5);
+    memset((char *)&cli_addr, 0, sizeof(cli_addr));
 
     // Infinite loop
     //
