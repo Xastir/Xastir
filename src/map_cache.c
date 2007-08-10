@@ -393,6 +393,7 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
         }
     }
 
+    free(dbp); 
 /* end map_cache_put */
 
     return (0) ; 
