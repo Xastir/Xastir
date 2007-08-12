@@ -26,6 +26,11 @@
                         // to which to connect.
 
 extern int xastirCoordToLatLongWKT(long x, long y, char *wkt);
+extern int xastirCoordToLatLongPoint(long x, long y, char *wkt);
+
+// maximum size of a well known text representation of a geometry
+// 100 should be fine for points, will need to be longer for other geometries.
+#define MAX_WKT 100
 
 #ifdef HAVE_DB
 // maximum number of open database connections
@@ -50,6 +55,7 @@ extern int xastirCoordToLatLongWKT(long x, long y, char *wkt);
 // Postgresql with postgis
 #include <libpq-fe.h>
 #define DB_POSTGIS 2
+#define POSTGRES_RESULTFORMAT_TEXT 0
 #endif /* HAVE_POSTGIS */
 
 #ifdef HAVE_MYSQL_SPATIAL
@@ -134,8 +140,8 @@ extern Connection openConnection (ioparam *aioparm);
 extern void closeConnection (Connection *aDbConnection);
 extern int testConnection(Connection *aDbConnection);
 
-extern char xastir_dbms_type[3][51];
-extern char xastir_schema_type[4][51];
+extern char xastir_dbms_type[4][51];
+extern char xastir_schema_type[5][51];
 
 // storing and retrieving data from a database
 extern int storeStationToGisDb(Connection *aDbConnection, DataRow *aStation);
