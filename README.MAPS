@@ -253,9 +253,15 @@ Getting Maps and other Data Files for Xastir:
       available from ftp://aprs.tamu.edu/. Look in the "pub/TIGER_2006_SE" 
       directory.  These maps only work with dbfawk support
 
-      Tiger/Line 2006 data converted to shapefile format is available
-      from ftp://aprs.tamu.edu/.  Look in the "pub/TIGER_2006_SE/"
-      directory. These maps only work with dbfawk support.
+      Unpack the zipfiles in your maps directory.  I recommend creating
+      a "TIGER_2006_SE" subdirectory or something similar, and unpacking
+      the zipfile there.  When unpacked, each state zipfile will produce
+      a directory with the state's postal abbreviation as its name, and
+      two subdirectories, "Polylines" and "Polygons."  These directories
+      each contain shapefiles with different information in them --- Polylines
+      are linear features such as roads and streams, Polygons are area features
+      such as parks and airports.  You need both, even though they have the
+      same names (the name of the county they cover).
 
       You can also create your own TIGER/Line shapefiles from the raw
       data at the Census web site,
