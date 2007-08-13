@@ -139,6 +139,7 @@ int build_rac_index(void) {
     /* ====================================================================    */
     /*    Skip past the header to the first callsign (VA2AA)        */
     /*                                    */
+    memset(racdata, 0, sizeof(racdata));
     while (!feof(fdb) && strncmp(racdata,"VA",2)) {
         call_offset = (unsigned long)ftell(fdb);
         if (fgets(racdata, (int)sizeof(racdata), fdb)==NULL) {
