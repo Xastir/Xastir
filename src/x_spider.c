@@ -857,11 +857,6 @@ void clear_proc_title(void)
   free(environ);
 }
 
-void clear_proc_title_i(int x)
-{
-    exit(x);
-}
-
 void set_proc_title(char *fmt,...) {
     va_list msg;
     static char statbuf[8192];
@@ -1117,7 +1112,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
                 inet_ntoa(cli_addr.sin_addr),
                 "(xastir)");
             //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-	    (void) signal(SIGHUP, clear_proc_title_i);
+	    (void) signal(SIGHUP, exit);
 #endif  // __linux__
 
 // It'd be very cool here to include the IP address of the remote
@@ -1497,7 +1492,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider TCP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-	(void) signal(SIGHUP, clear_proc_title_i);
+	(void) signal(SIGHUP, exit);
 #endif  // __linux__
  
 
@@ -1614,7 +1609,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider UDP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-	(void) signal(SIGHUP, clear_proc_title_i);
+	(void) signal(SIGHUP, exit);
 #endif  // __linux__
  
 
