@@ -344,10 +344,10 @@ Widget predefined_object_menu_items[MAX_NUMBER_OF_PREDEFINED_OBJECTS];
 
 int debug_level;
 
-//Widget hidden_shell = (Widget) NULL;
-Widget appshell = (Widget) NULL;
-Widget form = (Widget) NULL;
-Widget da = (Widget) NULL;
+//Widget hidden_shell;
+Widget appshell;
+Widget form;
+Widget da;
 Widget text;
 Widget text2;
 Widget text3;
@@ -11799,10 +11799,10 @@ void shut_down_server(void) {
 
         // Send a kill to the main server process
         if (tcp_server_pid)
-            kill(tcp_server_pid, 1);
+            kill(tcp_server_pid, SIGHUP);
 
         if (udp_server_pid)
-            kill(udp_server_pid, 1);
+            kill(udp_server_pid, SIGHUP);
 
         wait(NULL); // Reap the status of the process
 
@@ -11816,10 +11816,10 @@ void shut_down_server(void) {
         // Send a more forceful kill signal in case the "nice" kill
         // signal didn't work.
         if (tcp_server_pid)
-            kill(tcp_server_pid, 9);
+            kill(tcp_server_pid, SIGKILL);
 
         if (udp_server_pid)
-            kill(udp_server_pid, 9);
+            kill(udp_server_pid, SIGKILL);
     }
 }
 
@@ -26186,6 +26186,7 @@ int main(int argc, char *argv[], char *envp[]) {
         "00");
     gps_valid = 0;
 
+    memset(&appshell, 0, sizeof(appshell));
 
     // Here we had to add "g:" in order to allow -geometry to be
     // used, which is actually parsed out by the XtIntrinsics code,
