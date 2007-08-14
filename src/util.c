@@ -5410,8 +5410,10 @@ int check_unproto_path ( char *data ) {
                 if (is_wide) {
                     if (debug_level & 1)
                         fprintf(stderr,"Found wideN-n at slot %d\n", ii);
+
                     if (strcmp(ViaCalls[ii], "WIDE1-1") !=0) // Home station, RELAY replacement
-			have_widen++;
+                        have_widen++;  // Note: We mark "have_relay" for
+                                       // "WIDE1-1" instead of "have_widen"
 
                     // We know its a WIDEn-N, time to find out what n is
                     if (strlen(ViaCalls[ii]) != 7) {
