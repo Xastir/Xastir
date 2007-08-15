@@ -111,7 +111,7 @@ extern void fix_dialog_vsize(Widget w);
 
 extern int debug_level;
 extern GC gc;
-extern int colors[];
+extern Pixel colors[];
 
 
 extern float f_center_longitude;   // Floating point map center longitude

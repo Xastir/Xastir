@@ -250,9 +250,9 @@ extern What_to_display Display_;
 
 extern int currently_selected_stations;
 extern int currently_selected_stations_save;
-extern int colors[256];
+extern Pixel colors[256];
 #define MAX_TRAIL_COLORS 32
-extern int trail_colors[MAX_TRAIL_COLORS];
+extern Pixel trail_colors[MAX_TRAIL_COLORS];
 extern int current_trail_color;
 extern int english_units;
 extern int do_dbstatus;

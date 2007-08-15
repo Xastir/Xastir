@@ -1004,8 +1004,8 @@ float x_screen_distance;     // x screen distance
 char user_dir[1000];            /* user directory file */
 int delay_time;                 /* used to delay display data */
 time_t last_weather_cycle;      // Time of last call to cycle_weather()
-int colors[256];                /* screen colors */
-int trail_colors[MAX_TRAIL_COLORS]; /* station trail colors, duh */
+Pixel colors[256];              /* screen colors */
+Pixel trail_colors[MAX_TRAIL_COLORS]; /* station trail colors, duh */
 int current_trail_color;        /* what color to draw station trails with */
 Pixel_Format visual_type = NOT_TRUE_NOR_DIRECT;
 int install_colormap;           /* if visual_type == NOT_TRUE..., should we install priv cmap */
@@ -3239,7 +3239,7 @@ int create_image(Widget w) {
     /* map default background color */
     switch (map_background_color){
         case 0 :
-            colors[0xfd] = (int)GetPixelByName(appshell,"gray73");
+            colors[0xfd] = GetPixelByName(appshell,"gray73");
             break;
 
         case 1 :
@@ -5267,7 +5267,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     // result in this problem:  'Error: atttempt to add non-widget
     // child "DropSiteManager" to parent "xastir"'.
     //
-    XmStringFree(XmStringCreateSimple(""));
+    (void) XmIsMotifWMRunning(appshell);
 
 
     form = XtVaCreateWidget("create_appshell form",
@@ -5594,7 +5594,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep?",
+    (void)XtVaCreateManagedWidget("create_appshell sep1?",
             xmSeparatorGadgetClass,
             viewpane,
             MY_FOREGROUND_COLOR,
@@ -5625,7 +5625,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep?",
+    (void)XtVaCreateManagedWidget("create_appshell sep2?",
             xmSeparatorGadgetClass,
             viewpane,
             MY_FOREGROUND_COLOR,
@@ -5654,7 +5654,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep?",
+    (void)XtVaCreateManagedWidget("create_appshell sep3?",
             xmSeparatorGadgetClass,
             viewpane,
             MY_FOREGROUND_COLOR,
@@ -9152,6 +9152,8 @@ void create_gc(Widget w) {
 
     if (gc != 0)
         return;
+
+    memset(&values, 0, sizeof(values));
 
     // Allocate colors
     // Note that the names here are the ones given in xastir.rgb
@@ -26641,7 +26643,6 @@ int main(int argc, char *argv[], char *envp[]) {
                 applicationShellWidgetClass,
                 XmNmappedWhenManaged, FALSE,
                 NULL);
-                
 
             display = XtDisplay(appshell);
 
@@ -26650,6 +26651,7 @@ int main(int argc, char *argv[], char *envp[]) {
                 exit(-1);   // Must exit here as we can't get our display.
             }
 
+            XtSetValues(XmGetXmDisplay(display), NULL, 0);
 
             // DK7IN: now scanf and printf use "," instead of "."
             // that leads to several problems in the initialization.
