@@ -166,7 +166,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
  
             (void)XSetForeground( XtDisplay(w),
                 gc,
-                (int)GetPixelByName(w,"black") );
+                GetPixelByName(w,"black") );
 
 // Old:
 //(void)XFillRectangle(XtDisplay(w),where,gc,x-2,(y-11),(length*6)+3,13);
@@ -3018,7 +3018,7 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 
     //fprintf(stderr,"Selected a symbol: %d\n", clientData);
 
-    if ( (int)clientData > 0) {
+    if ( i > 0) {
         //fprintf(stderr,"Symbol is from primary symbol table: /%c\n",(char)i);
         table[0] = '/';
         symbol[0] = (char)i;
