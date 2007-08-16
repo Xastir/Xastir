@@ -1307,6 +1307,7 @@ fprintf(stderr,"1 ");
                 DestroyImage(image);
             if (image_info)
                 DestroyImageInfo(image_info);
+            DestroyExceptionInfo(&exception);
 #endif // HAVE_MAGICK
         }
     }
@@ -1651,6 +1652,7 @@ fprintf(stderr,"2 ");
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -1674,6 +1676,7 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -1726,7 +1729,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+         DestroyExceptionInfo(&exception);
+       return;
     }
 
     if (imagemagick_options.gamma_flag) {
@@ -1752,7 +1756,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+        DestroyExceptionInfo(&exception);
+         return;
     }
 
     if (imagemagick_options.contrast != 0) {
@@ -1778,7 +1783,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+         DestroyExceptionInfo(&exception);
+       return;
     }
 
     if (imagemagick_options.negate != -1) {
@@ -1804,6 +1810,7 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -1830,6 +1837,7 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -1856,7 +1864,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+        DestroyExceptionInfo(&exception);
+         return;
     }
 
 #if (MagickLibVersion >= 0x0539)
@@ -1884,7 +1893,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+       DestroyExceptionInfo(&exception);
+         return;
     }
 
     if (imagemagick_options.modulate[0] != '\0') {
@@ -1928,7 +1938,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+         DestroyExceptionInfo(&exception);
+       return;
     }
 
     // crop image: if we just use CropImage(), then the tiepoints will be off
@@ -1995,7 +2006,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+       DestroyExceptionInfo(&exception);
+         return;
     }
 
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
@@ -2005,7 +2017,8 @@ fprintf(stderr,"2 ");
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
-        return;
+       DestroyExceptionInfo(&exception);
+         return;
     }
 
     HandlePendingEvents(app_context);
@@ -2025,7 +2038,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+       DestroyExceptionInfo(&exception);
+         return;
     }
 
     index_pack = GetIndexes(image);
@@ -2055,7 +2069,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+         DestroyExceptionInfo(&exception);
+       return;
     }
 
     if (debug_level & 16)
@@ -2166,7 +2181,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+       DestroyExceptionInfo(&exception);
+         return;
     }
 
 #ifdef TIMING_DEBUG
@@ -2387,7 +2403,8 @@ fprintf(stderr,"2 ");
             (unsigned int)screen_height,
             0,
             0);
-        return;
+       DestroyExceptionInfo(&exception);
+         return;
     }
 
 
@@ -2418,7 +2435,8 @@ fprintf(stderr,"2 ");
                 (unsigned int)screen_height,
                 0,
                 0);
-            return;
+            DestroyExceptionInfo(&exception);
+             return;
         }
 
         scr_y = (c_y - NW_corner_latitude) / scale_y;
@@ -2538,7 +2556,8 @@ fprintf(stderr,"2 ");
         DestroyImage(image);
     if (image_info)
         DestroyImageInfo(image_info);
-#else   // HAVE_MAGICK
+    DestroyExceptionInfo(&exception);
+ #else   // HAVE_MAGICK
     if (xi)
         XDestroyImage (xi);
 #endif // HAVE_MAGICK
