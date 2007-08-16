@@ -1209,6 +1209,7 @@ void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
     char temp[400];
 
     if (station_list_first) {
+        memset(&SL_scroll, 0, sizeof(SL_scroll));
         init_station_lists();           // init icons at very first list call
         station_list_first=0;
     }
