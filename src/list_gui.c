@@ -65,7 +65,7 @@
 
 
 
-
+#define SL_MAX 20
 
 // List Numbers (defined in list_gui.h)
 // 0: LST_ALL   - all stations list
@@ -80,33 +80,34 @@
 Widget station_list_dialog[LST_NUM];           // store list definitions
 static xastir_mutex station_list_dialog_lock;  // Mutex lock for above
 
-Widget SL_list[LST_NUM][20];
-Widget SL_da[LST_NUM][20];
-Widget SL_call[LST_NUM][20];
-Pixmap SL_icon[LST_NUM][20];            // icons for different lists and list rows
+Widget SL_list[LST_NUM][SL_MAX];
+Widget SL_da[LST_NUM][SL_MAX];
+Widget SL_call[LST_NUM][SL_MAX];
+char * SL_callback[LST_NUM][SL_MAX];
+Pixmap SL_icon[LST_NUM][SL_MAX];        // icons for different lists and list rows
 Pixmap blank_icon;                      // holds an empty icon
 Widget SL_scroll[LST_NUM];
-Widget SL_wx_wind_course[LST_NUM][20];
-Widget SL_wx_wind_speed[LST_NUM][20];
-Widget SL_wx_wind_gust[LST_NUM][20];
-Widget SL_wx_temp[LST_NUM][20];
-Widget SL_wx_hum[LST_NUM][20];
-Widget SL_wx_baro[LST_NUM][20];
-Widget SL_wx_rain_h[LST_NUM][20];
-Widget SL_wx_rain_00[LST_NUM][20];
-Widget SL_wx_rain_24[LST_NUM][20];
-Widget SL_course[LST_NUM][20];
-Widget SL_speed[LST_NUM][20];
-Widget SL_alt[LST_NUM][20];
-Widget SL_lat_long[LST_NUM][20];
-Widget SL_packets[LST_NUM][20];
-Widget SL_sats[LST_NUM][20];
-Widget SL_my_course[LST_NUM][20];
-Widget SL_my_distance[LST_NUM][20];
-Widget SL_pos_time[LST_NUM][20];
-Widget SL_node_path[LST_NUM][20];
-Widget SL_power_gain[LST_NUM][20];
-Widget SL_comments[LST_NUM][20];
+Widget SL_wx_wind_course[LST_NUM][SL_MAX];
+Widget SL_wx_wind_speed[LST_NUM][SL_MAX];
+Widget SL_wx_wind_gust[LST_NUM][SL_MAX];
+Widget SL_wx_temp[LST_NUM][SL_MAX];
+Widget SL_wx_hum[LST_NUM][SL_MAX];
+Widget SL_wx_baro[LST_NUM][SL_MAX];
+Widget SL_wx_rain_h[LST_NUM][SL_MAX];
+Widget SL_wx_rain_00[LST_NUM][SL_MAX];
+Widget SL_wx_rain_24[LST_NUM][SL_MAX];
+Widget SL_course[LST_NUM][SL_MAX];
+Widget SL_speed[LST_NUM][SL_MAX];
+Widget SL_alt[LST_NUM][SL_MAX];
+Widget SL_lat_long[LST_NUM][SL_MAX];
+Widget SL_packets[LST_NUM][SL_MAX];
+Widget SL_sats[LST_NUM][SL_MAX];
+Widget SL_my_course[LST_NUM][SL_MAX];
+Widget SL_my_distance[LST_NUM][SL_MAX];
+Widget SL_pos_time[LST_NUM][SL_MAX];
+Widget SL_node_path[LST_NUM][SL_MAX];
+Widget SL_power_gain[LST_NUM][SL_MAX];
+Widget SL_comments[LST_NUM][SL_MAX];
 int station_list_first = 1;
 int list_size_h[LST_NUM];       // height of entire list widget
 int list_size_w[LST_NUM];       // width  of entire list widget
@@ -316,11 +317,12 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists
 
     for (type=0;type<LST_NUM;type++) {
         station_list_dialog[type] = NULL;       // set list to undefined
-        for (i=0;i<20;i++) {
+        for (i=0;i<SL_MAX;i++) {
             SL_icon[type][i] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
                                 DefaultDepthOfScreen(XtScreen(appshell)));
         }
     }
+    memset(SL_callback, 0, sizeof(SL_callback));
 
 end_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists" );
 
@@ -376,16 +378,61 @@ int stations_types(int type) {
 
 void station_list_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int type;
+    int i;
 
     type = atoi((char *)clientData);
     XtPopdown(station_list_dialog[type]);
 
-begin_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
+    begin_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
+
+    for (i = 0; i < 17; i++) {
+        XtDestroyWidget(SL_list[type][i]);
+        XtDestroyWidget(SL_da[type][i]);
+        XtDestroyWidget(SL_call[type][i]);
+        if (SL_callback[type][i]) {
+            XtFree(SL_callback[type][i]);
+            SL_callback[type][i] = NULL;
+        }
+        switch (type) {
+          case LST_ALL:   // station list
+          case LST_TNC:   // local station list
+          case LST_TIM:
+          case LST_OBJ:   // Objects/Items
+          case LST_MYOBJ: // My objects/items
+            XtDestroyWidget(SL_packets[type][i]);
+            XtDestroyWidget(SL_pos_time[type][i]);
+            XtDestroyWidget(SL_node_path[type][i]);
+            XtDestroyWidget(SL_power_gain[type][i]);
+            XtDestroyWidget(SL_comments[type][i]);
+            break;
+          case LST_MOB:
+            XtDestroyWidget(SL_packets[type][i]);
+            XtDestroyWidget(SL_course[type][i]);
+            XtDestroyWidget(SL_speed[type][i]);
+            XtDestroyWidget(SL_alt[type][i]);
+            XtDestroyWidget(SL_lat_long[type][i]);
+            XtDestroyWidget(SL_sats[type][i]);
+            XtDestroyWidget(SL_my_course[type][i]);
+            XtDestroyWidget(SL_my_distance[type][i]);
+            break;
+          case LST_WX:
+            XtDestroyWidget(SL_wx_wind_course[type][i]);
+            XtDestroyWidget(SL_wx_wind_speed[type][i]);
+            XtDestroyWidget(SL_wx_wind_gust[type][i]);
+            XtDestroyWidget(SL_wx_temp[type][i]);
+            XtDestroyWidget(SL_wx_hum[type][i]);
+            XtDestroyWidget(SL_wx_baro[type][i]);
+            XtDestroyWidget(SL_wx_rain_h[type][i]);
+            XtDestroyWidget(SL_wx_rain_00[type][i]);
+            XtDestroyWidget(SL_wx_rain_24[type][i]);
+            break;
+        }
+    }
 
     XtDestroyWidget(station_list_dialog[type]);
     station_list_dialog[type] = (Widget)NULL;           // clear list definition
 
-end_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
+    end_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
 
 }
 
@@ -606,11 +653,14 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
                 XtManageChild(SL_da[type][row]);
 
+                if (SL_callback[type][row]) XtFree(SL_callback[type][row]);
+                SL_callback[type][row] = XmTextFieldGetString(SL_call[type][row]);
+
                 // Pressing the icon button centers the map on the station.
                 XtAddCallback( (XtPointer)SL_da[type][row],
                       XmNactivateCallback, 
                       Call_locate_station, 
-                      XmTextFieldGetString(SL_call[type][row])
+                      SL_callback[type][row]
                       );
 
                 // number in list
