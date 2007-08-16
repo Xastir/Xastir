@@ -3243,51 +3243,51 @@ int create_image(Widget w) {
             break;
 
         case 1 :
-            colors[0xfd] = (int)GetPixelByName(w,"MistyRose");
+            colors[0xfd] = GetPixelByName(w,"MistyRose");
             break;
 
         case 2 :
-            colors[0xfd] = (int)GetPixelByName(w,"NavyBlue");
+            colors[0xfd] = GetPixelByName(w,"NavyBlue");
             break;
 
         case 3 :
-            colors[0xfd] = (int)GetPixelByName(w,"SteelBlue");
+            colors[0xfd] = GetPixelByName(w,"SteelBlue");
             break;
 
         case 4 :
-            colors[0xfd] = (int)GetPixelByName(w,"MediumSeaGreen");
+            colors[0xfd] = GetPixelByName(w,"MediumSeaGreen");
             break;
 
         case 5 :
-            colors[0xfd] = (int)GetPixelByName(w,"PaleGreen");
+            colors[0xfd] = GetPixelByName(w,"PaleGreen");
             break;
 
         case 6 :
-            colors[0xfd] = (int)GetPixelByName(w,"PaleGoldenrod");
+            colors[0xfd] = GetPixelByName(w,"PaleGoldenrod");
             break;
 
         case 7 :
-            colors[0xfd] = (int)GetPixelByName(w,"LightGoldenrodYellow");
+            colors[0xfd] = GetPixelByName(w,"LightGoldenrodYellow");
             break;
 
         case 8 :
-            colors[0xfd] = (int)GetPixelByName(w,"RosyBrown");
+            colors[0xfd] = GetPixelByName(w,"RosyBrown");
             break;
 
         case 9 :
-            colors[0xfd] = (int)GetPixelByName(w,"firebrick");
+            colors[0xfd] = GetPixelByName(w,"firebrick");
             break;
 
         case 10 :
-            colors[0xfd] = (int)GetPixelByName(w,"white");
+            colors[0xfd] = GetPixelByName(w,"white");
             break;
 
         case 11 :
-            colors[0xfd] = (int)GetPixelByName(w, "black");
+            colors[0xfd] = GetPixelByName(w, "black");
             break;
 
         default:
-            colors[0xfd] = (int)GetPixelByName(appshell,"gray73");
+            colors[0xfd] = GetPixelByName(appshell,"gray73");
             map_background_color=0;
             break;
     }
@@ -5126,9 +5126,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     // Allocate a couple of colors that we'll need before we get
     // around to calling create_gc(), which creates the rest.
     //
-    colors[0x08] = (int)GetPixelByName(appshell,"black");
-    colors[0x0c] = (int)GetPixelByName(appshell,"red");
-    colors[0xff] = (int)GetPixelByName(appshell,"gray73");
+    colors[0x08] = GetPixelByName(appshell,"black");
+    colors[0x0c] = GetPixelByName(appshell,"red");
+    colors[0xff] = GetPixelByName(appshell,"gray73");
 
 
     ac = 0;
@@ -9018,6 +9018,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
 
 
+    // Flush all pending requests to the X server.
+    XFlush(display);
+
     // Don't discard events in X11 queue, but wait for the X11
     // server to catch up.
     (void)XSync(XtDisplay(appshell), False);
@@ -9108,7 +9111,7 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
             XtAddCallback(predefined_object_menu_items[i],
                 XmNactivateCallback,
                 Create_SAR_Object,
-                (int *)predefinedObjects[i].index);
+                predefinedObjects[i].index);
 
             if (predefinedObjects[i].index_of_child > -1) {
 
@@ -9120,7 +9123,7 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
                     XtAddCallback(predefined_object_menu_items[i],
                         XmNactivateCallback,
                         Create_SAR_Object,
-                        (int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
+                        predefinedObjects[predefinedObjects[i].index_of_child].index);
                 }
             }
         }
@@ -9157,134 +9160,134 @@ void create_gc(Widget w) {
 
     // Allocate colors
     // Note that the names here are the ones given in xastir.rgb
-    colors[0x00] = (int)GetPixelByName(w,"DarkGreen");  // was darkgreen (same)
-    colors[0x01] = (int)GetPixelByName(w,"purple");
-    colors[0x02] = (int)GetPixelByName(w,"DarkGreen");  // was darkgreen (same)
-    colors[0x03] = (int)GetPixelByName(w,"cyan");
-    colors[0x04] = (int)GetPixelByName(w,"brown");
-    colors[0x05] = (int)GetPixelByName(w,"plum");       // light magenta
-    colors[0x06] = (int)GetPixelByName(w,"orange");
-    colors[0x07] = (int)GetPixelByName(w,"darkgray");
-    colors[0x08] = (int)GetPixelByName(w,"black");      // Foreground font color
-    colors[0x09] = (int)GetPixelByName(w,"blue");
-    colors[0x0a] = (int)GetPixelByName(w,"green");              // PHG (old)
-    colors[0x0b] = (int)GetPixelByName(w,"mediumorchid"); // light purple
-    colors[0x0c] = (int)GetPixelByName(w,"red");
-    colors[0x0d] = (int)GetPixelByName(w,"magenta");
-    colors[0x0e] = (int)GetPixelByName(w,"yellow");
-    colors[0x0f] = (int)GetPixelByName(w,"white");              //
-    colors[0x10] = (int)GetPixelByName(w,"black");
-    colors[0x11] = (int)GetPixelByName(w,"black");
-    colors[0x12] = (int)GetPixelByName(w,"black");
-    colors[0x13] = (int)GetPixelByName(w,"black");
-    colors[0x14] = (int)GetPixelByName(w,"lightgray");
-    colors[0x15] = (int)GetPixelByName(w,"magenta");
-    colors[0x16] = (int)GetPixelByName(w,"mediumorchid"); // light purple
-    colors[0x17] = (int)GetPixelByName(w,"lightblue");
-    colors[0x18] = (int)GetPixelByName(w,"purple");
-    colors[0x19] = (int)GetPixelByName(w,"orange2");    // light orange
-    colors[0x1a] = (int)GetPixelByName(w,"SteelBlue");
-    colors[0x20] = (int)GetPixelByName(w,"white");
+    colors[0x00] = GetPixelByName(w,"DarkGreen");  // was darkgreen (same)
+    colors[0x01] = GetPixelByName(w,"purple");
+    colors[0x02] = GetPixelByName(w,"DarkGreen");  // was darkgreen (same)
+    colors[0x03] = GetPixelByName(w,"cyan");
+    colors[0x04] = GetPixelByName(w,"brown");
+    colors[0x05] = GetPixelByName(w,"plum");       // light magenta
+    colors[0x06] = GetPixelByName(w,"orange");
+    colors[0x07] = GetPixelByName(w,"darkgray");
+    colors[0x08] = GetPixelByName(w,"black");      // Foreground font color
+    colors[0x09] = GetPixelByName(w,"blue");
+    colors[0x0a] = GetPixelByName(w,"green");              // PHG (old)
+    colors[0x0b] = GetPixelByName(w,"mediumorchid"); // light purple
+    colors[0x0c] = GetPixelByName(w,"red");
+    colors[0x0d] = GetPixelByName(w,"magenta");
+    colors[0x0e] = GetPixelByName(w,"yellow");
+    colors[0x0f] = GetPixelByName(w,"white");              //
+    colors[0x10] = GetPixelByName(w,"black");
+    colors[0x11] = GetPixelByName(w,"black");
+    colors[0x12] = GetPixelByName(w,"black");
+    colors[0x13] = GetPixelByName(w,"black");
+    colors[0x14] = GetPixelByName(w,"lightgray");
+    colors[0x15] = GetPixelByName(w,"magenta");
+    colors[0x16] = GetPixelByName(w,"mediumorchid"); // light purple
+    colors[0x17] = GetPixelByName(w,"lightblue");
+    colors[0x18] = GetPixelByName(w,"purple");
+    colors[0x19] = GetPixelByName(w,"orange2");    // light orange
+    colors[0x1a] = GetPixelByName(w,"SteelBlue");
+    colors[0x20] = GetPixelByName(w,"white");
 
     // Area object colors.  Order must not be changed. If beginning moves,
     // update draw_area and draw_map.
     // High
-    colors[0x21] = (int)GetPixelByName(w,"black");   // AREA_BLACK_HI
-    colors[0x22] = (int)GetPixelByName(w,"blue");    // AREA_BLUE_HI
-    colors[0x23] = (int)GetPixelByName(w,"green");   // AREA_GREEN_HI
-    colors[0x24] = (int)GetPixelByName(w,"cyan3");    // AREA_CYAN_HI
-    colors[0x25] = (int)GetPixelByName(w,"red");     // AREA_RED_HI
-    colors[0x26] = (int)GetPixelByName(w,"magenta"); // AREA_VIOLET_HI
-    colors[0x27] = (int)GetPixelByName(w,"yellow");  // AREA_YELLOW_HI
-    colors[0x28] = (int)GetPixelByName(w,"gray35");  // AREA_GRAY_HI
+    colors[0x21] = GetPixelByName(w,"black");   // AREA_BLACK_HI
+    colors[0x22] = GetPixelByName(w,"blue");    // AREA_BLUE_HI
+    colors[0x23] = GetPixelByName(w,"green");   // AREA_GREEN_HI
+    colors[0x24] = GetPixelByName(w,"cyan3");    // AREA_CYAN_HI
+    colors[0x25] = GetPixelByName(w,"red");     // AREA_RED_HI
+    colors[0x26] = GetPixelByName(w,"magenta"); // AREA_VIOLET_HI
+    colors[0x27] = GetPixelByName(w,"yellow");  // AREA_YELLOW_HI
+    colors[0x28] = GetPixelByName(w,"gray35");  // AREA_GRAY_HI
     // Low
-    colors[0x29] = (int)GetPixelByName(w,"gray27");   // AREA_BLACK_LO
-    colors[0x2a] = (int)GetPixelByName(w,"blue4");    // AREA_BLUE_LO
-    colors[0x2b] = (int)GetPixelByName(w,"green4");   // AREA_GREEN_LO
-    colors[0x2c] = (int)GetPixelByName(w,"cyan4");    // AREA_CYAN_LO
-    colors[0x2d] = (int)GetPixelByName(w,"red4");     // AREA_RED_LO
-    colors[0x2e] = (int)GetPixelByName(w,"magenta4"); // AREA_VIOLET_LO
-    colors[0x2f] = (int)GetPixelByName(w,"yellow4");  // AREA_YELLOW_LO
-    colors[0x30] = (int)GetPixelByName(w,"gray53"); // AREA_GRAY_LO
+    colors[0x29] = GetPixelByName(w,"gray27");   // AREA_BLACK_LO
+    colors[0x2a] = GetPixelByName(w,"blue4");    // AREA_BLUE_LO
+    colors[0x2b] = GetPixelByName(w,"green4");   // AREA_GREEN_LO
+    colors[0x2c] = GetPixelByName(w,"cyan4");    // AREA_CYAN_LO
+    colors[0x2d] = GetPixelByName(w,"red4");     // AREA_RED_LO
+    colors[0x2e] = GetPixelByName(w,"magenta4"); // AREA_VIOLET_LO
+    colors[0x2f] = GetPixelByName(w,"yellow4");  // AREA_YELLOW_LO
+    colors[0x30] = GetPixelByName(w,"gray53"); // AREA_GRAY_LO
 
-    colors[0x40] = (int)GetPixelByName(w,"yellow");     // symbols ...
-    colors[0x41] = (int)GetPixelByName(w,"DarkOrange3");
-    colors[0x42] = (int)GetPixelByName(w,"purple");
-    colors[0x43] = (int)GetPixelByName(w,"gray80");
-    colors[0x44] = (int)GetPixelByName(w,"red3");
-    colors[0x45] = (int)GetPixelByName(w,"brown1");
-    colors[0x46] = (int)GetPixelByName(w,"brown3");
-    colors[0x47] = (int)GetPixelByName(w,"blue4");
-    colors[0x48] = (int)GetPixelByName(w,"DeepSkyBlue");
-    colors[0x49] = (int)GetPixelByName(w,"DarkGreen");
-    colors[0x4a] = (int)GetPixelByName(w,"red2");
-    colors[0x4b] = (int)GetPixelByName(w,"green3");
-    colors[0x4c] = (int)GetPixelByName(w,"MediumBlue");
-    colors[0x4d] = (int)GetPixelByName(w,"white");
-    colors[0x4e] = (int)GetPixelByName(w,"gray53");
-    colors[0x4f] = (int)GetPixelByName(w,"gray35");
-    colors[0x50] = (int)GetPixelByName(w,"gray27");
-    colors[0x51] = (int)GetPixelByName(w,"black");      // ... symbols
+    colors[0x40] = GetPixelByName(w,"yellow");     // symbols ...
+    colors[0x41] = GetPixelByName(w,"DarkOrange3");
+    colors[0x42] = GetPixelByName(w,"purple");
+    colors[0x43] = GetPixelByName(w,"gray80");
+    colors[0x44] = GetPixelByName(w,"red3");
+    colors[0x45] = GetPixelByName(w,"brown1");
+    colors[0x46] = GetPixelByName(w,"brown3");
+    colors[0x47] = GetPixelByName(w,"blue4");
+    colors[0x48] = GetPixelByName(w,"DeepSkyBlue");
+    colors[0x49] = GetPixelByName(w,"DarkGreen");
+    colors[0x4a] = GetPixelByName(w,"red2");
+    colors[0x4b] = GetPixelByName(w,"green3");
+    colors[0x4c] = GetPixelByName(w,"MediumBlue");
+    colors[0x4d] = GetPixelByName(w,"white");
+    colors[0x4e] = GetPixelByName(w,"gray53");
+    colors[0x4f] = GetPixelByName(w,"gray35");
+    colors[0x50] = GetPixelByName(w,"gray27");
+    colors[0x51] = GetPixelByName(w,"black");      // ... symbols
 
-    colors[0x52] = (int)GetPixelByName(w,"LimeGreen");  // PHG, symbols
+    colors[0x52] = GetPixelByName(w,"LimeGreen");  // PHG, symbols
 
-    colors[0xfe] = (int)GetPixelByName(w,"pink");
+    colors[0xfe] = GetPixelByName(w,"pink");
 
     // map solid colors
-    colors[0x60] = (int)GetPixelByName(w,"HotPink");
-    colors[0x61] = (int)GetPixelByName(w,"RoyalBlue");
-    colors[0x62] = (int)GetPixelByName(w,"orange3");
-    colors[0x63] = (int)GetPixelByName(w,"yellow3");
-    colors[0x64] = (int)GetPixelByName(w,"ForestGreen");
-    colors[0x65] = (int)GetPixelByName(w,"DodgerBlue");
-    colors[0x66] = (int)GetPixelByName(w,"cyan2");
-    colors[0x67] = (int)GetPixelByName(w,"plum2");
-    colors[0x68] = (int)GetPixelByName(w,"MediumBlue"); // was blue3 (the same!)
-    colors[0x69] = (int)GetPixelByName(w,"gray86");
+    colors[0x60] = GetPixelByName(w,"HotPink");
+    colors[0x61] = GetPixelByName(w,"RoyalBlue");
+    colors[0x62] = GetPixelByName(w,"orange3");
+    colors[0x63] = GetPixelByName(w,"yellow3");
+    colors[0x64] = GetPixelByName(w,"ForestGreen");
+    colors[0x65] = GetPixelByName(w,"DodgerBlue");
+    colors[0x66] = GetPixelByName(w,"cyan2");
+    colors[0x67] = GetPixelByName(w,"plum2");
+    colors[0x68] = GetPixelByName(w,"MediumBlue"); // was blue3 (the same!)
+    colors[0x69] = GetPixelByName(w,"gray86");
 
     // These colors added to make it possible to color local shapefile tiger
     //  maps similar to on-line ones.
-    colors[0x70] = (int)GetPixelByName(w,"RosyBrown2");
-    colors[0x71] = (int)GetPixelByName(w,"gray81");
-    colors[0x72] = (int)GetPixelByName(w,"tgr_park_1");
-    colors[0x73] = (int)GetPixelByName(w,"tgr_city_1");
-    colors[0x74] = (int)GetPixelByName(w,"tgr_forest_1");
-    colors[0x75] = (int)GetPixelByName(w,"tgr_water_1");
+    colors[0x70] = GetPixelByName(w,"RosyBrown2");
+    colors[0x71] = GetPixelByName(w,"gray81");
+    colors[0x72] = GetPixelByName(w,"tgr_park_1");
+    colors[0x73] = GetPixelByName(w,"tgr_city_1");
+    colors[0x74] = GetPixelByName(w,"tgr_forest_1");
+    colors[0x75] = GetPixelByName(w,"tgr_water_1");
 
     // tracking trail colors
     // set color for your own station with  #define MY_TRAIL_COLOR  in db.c
-    trail_colors[0x00] = (int)GetPixelByName(w,"yellow");
-    trail_colors[0x01] = (int)GetPixelByName(w,"blue");
-    trail_colors[0x02] = (int)GetPixelByName(w,"green");
-    trail_colors[0x03] = (int)GetPixelByName(w,"red");
-    trail_colors[0x04] = (int)GetPixelByName(w,"magenta");
-    trail_colors[0x05] = (int)GetPixelByName(w,"black");
-    trail_colors[0x06] = (int)GetPixelByName(w,"white");
-    trail_colors[0x07] = (int)GetPixelByName(w,"DarkOrchid");
-    trail_colors[0x08] = (int)GetPixelByName(w,"purple");      // very similar to DarkOrchid...
-    trail_colors[0x09] = (int)GetPixelByName(w,"OrangeRed");
-    trail_colors[0x0a] = (int)GetPixelByName(w,"brown");
-    trail_colors[0x0b] = (int)GetPixelByName(w,"DarkGreen");    // was darkgreen (same)
-    trail_colors[0x0c] = (int)GetPixelByName(w,"MediumBlue");
-    trail_colors[0x0d] = (int)GetPixelByName(w,"ForestGreen");
-    trail_colors[0x0e] = (int)GetPixelByName(w,"chartreuse");
-    trail_colors[0x0f] = (int)GetPixelByName(w,"cornsilk");
-    trail_colors[0x10] = (int)GetPixelByName(w,"LightCyan");
-    trail_colors[0x11] = (int)GetPixelByName(w,"cyan");
-    trail_colors[0x12] = (int)GetPixelByName(w,"DarkSlateGray");
-    trail_colors[0x13] = (int)GetPixelByName(w,"NavyBlue");
-    trail_colors[0x14] = (int)GetPixelByName(w,"DarkOrange3");
-    trail_colors[0x15] = (int)GetPixelByName(w,"gray27");
-    trail_colors[0x16] = (int)GetPixelByName(w,"RoyalBlue");
-    trail_colors[0x17] = (int)GetPixelByName(w,"yellow2");
-    trail_colors[0x18] = (int)GetPixelByName(w,"DodgerBlue");
-    trail_colors[0x19] = (int)GetPixelByName(w,"cyan2");
-    trail_colors[0x1a] = (int)GetPixelByName(w,"MediumBlue"); // was blue3 (the same!)
-    trail_colors[0x1b] = (int)GetPixelByName(w,"gray86");
-    trail_colors[0x1c] = (int)GetPixelByName(w,"SteelBlue");
-    trail_colors[0x1d] = (int)GetPixelByName(w,"PaleGreen");
-    trail_colors[0x1e] = (int)GetPixelByName(w,"RosyBrown");
-    trail_colors[0x1f] = (int)GetPixelByName(w,"DeepSkyBlue");
+    trail_colors[0x00] = GetPixelByName(w,"yellow");
+    trail_colors[0x01] = GetPixelByName(w,"blue");
+    trail_colors[0x02] = GetPixelByName(w,"green");
+    trail_colors[0x03] = GetPixelByName(w,"red");
+    trail_colors[0x04] = GetPixelByName(w,"magenta");
+    trail_colors[0x05] = GetPixelByName(w,"black");
+    trail_colors[0x06] = GetPixelByName(w,"white");
+    trail_colors[0x07] = GetPixelByName(w,"DarkOrchid");
+    trail_colors[0x08] = GetPixelByName(w,"purple");      // very similar to DarkOrchid...
+    trail_colors[0x09] = GetPixelByName(w,"OrangeRed");
+    trail_colors[0x0a] = GetPixelByName(w,"brown");
+    trail_colors[0x0b] = GetPixelByName(w,"DarkGreen");    // was darkgreen (same)
+    trail_colors[0x0c] = GetPixelByName(w,"MediumBlue");
+    trail_colors[0x0d] = GetPixelByName(w,"ForestGreen");
+    trail_colors[0x0e] = GetPixelByName(w,"chartreuse");
+    trail_colors[0x0f] = GetPixelByName(w,"cornsilk");
+    trail_colors[0x10] = GetPixelByName(w,"LightCyan");
+    trail_colors[0x11] = GetPixelByName(w,"cyan");
+    trail_colors[0x12] = GetPixelByName(w,"DarkSlateGray");
+    trail_colors[0x13] = GetPixelByName(w,"NavyBlue");
+    trail_colors[0x14] = GetPixelByName(w,"DarkOrange3");
+    trail_colors[0x15] = GetPixelByName(w,"gray27");
+    trail_colors[0x16] = GetPixelByName(w,"RoyalBlue");
+    trail_colors[0x17] = GetPixelByName(w,"yellow2");
+    trail_colors[0x18] = GetPixelByName(w,"DodgerBlue");
+    trail_colors[0x19] = GetPixelByName(w,"cyan2");
+    trail_colors[0x1a] = GetPixelByName(w,"MediumBlue"); // was blue3 (the same!)
+    trail_colors[0x1b] = GetPixelByName(w,"gray86");
+    trail_colors[0x1c] = GetPixelByName(w,"SteelBlue");
+    trail_colors[0x1d] = GetPixelByName(w,"PaleGreen");
+    trail_colors[0x1e] = GetPixelByName(w,"RosyBrown");
+    trail_colors[0x1f] = GetPixelByName(w,"DeepSkyBlue");
 
     values.background=GetPixelByName(w,"darkgray");
 
@@ -15216,8 +15219,8 @@ void Set_Log_Indicator(void) {
             || (1==log_message_data) ) {
         XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
         XtVaSetValues(log_indicator,
-            XmNbackground,
-            (int)GetPixelByName(appshell,"RosyBrown"), NULL);
+            XmNbackground, GetPixelByName(appshell,"RosyBrown"),
+	    NULL);
     } else {
         XmTextFieldSetString(log_indicator, NULL);
         XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
