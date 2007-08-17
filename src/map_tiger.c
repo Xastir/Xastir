@@ -147,6 +147,7 @@ void get_tiger_local_file(char * local_filename, char * fileimg){
 
 #ifdef USE_MAP_CACHE 
     int map_cache_return = 1; // Default = cache miss
+    char *cache_file_id;
 #endif  // USE_MAP_CACHE
 
 
@@ -182,12 +183,14 @@ clear_dangerous();
     if (map_cache_return != 0 ) {
 
 set_dangerous("map_tiger: map_cache_fileid");
+        cache_file_id = map_cache_fileid();
         xastir_snprintf(local_filename,
             MAX_FILENAME,           // hardcoded to avoid sizeof()
             "%s/map_%s.%s",
             get_user_base_dir("map_cache"),
-            map_cache_fileid(),
+            cache_file_id,
             "gif");
+        free(cache_file_id);
 clear_dangerous();
 
 #else   // USE_MAP_CACHE
