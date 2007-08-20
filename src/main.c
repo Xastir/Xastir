@@ -9111,7 +9111,7 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
             XtAddCallback(predefined_object_menu_items[i],
                 XmNactivateCallback,
                 Create_SAR_Object,
-                predefinedObjects[i].index);
+                (int *)predefinedObjects[i].index);
 
             if (predefinedObjects[i].index_of_child > -1) {
 
@@ -9123,7 +9123,7 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
                     XtAddCallback(predefined_object_menu_items[i],
                         XmNactivateCallback,
                         Create_SAR_Object,
-                        predefinedObjects[predefinedObjects[i].index_of_child].index);
+                        (int *)predefinedObjects[predefinedObjects[i].index_of_child].index);
                 }
             }
         }
