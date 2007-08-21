@@ -79,6 +79,7 @@
 #include "track_gui.h"
 #include "xa_config.h"
 #include "x_spider.h"
+#include "db_gis.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -11429,6 +11430,7 @@ int data_add(int type,
     int object_is_mine_previous = 0;
     int new_origin_is_mine = 0;
     int num_digits = 0; // Number of digits after decimal point in NMEA string
+    int i;  // loop counter for intefaces list
 
 
     // call and path had been validated before
@@ -13035,11 +13037,24 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
             }
 #endif  // HAVE_FESTIVAL
 
-#ifdef HAVE_DB
-            // write station data to sql database
-            //ok = storeStationSimpleToGisDb(&conn, p_station);
-#endif /* HAVE_DB */
         } // end found_pos
+
+
+#ifdef HAVE_DB
+/* ************************************** */
+        // Clumsy way of doing things - needs a more elegant approach
+        // iterate through interfaces 
+        for(i = 0; i < MAX_IFACE_DEVICES; i++) {
+           if (connections[i].iface != NULL){
+               if (connections[i].conn != NULL) { 
+                   ok = storeStationSimpleToGisDb(connections[i].conn, p_station);
+               }
+               // if interface is a sql server interface 
+               // write station data to sql database
+           }
+        }
+/* ************************************** */
+#endif /* HAVE_DB */
 
     }   // valid data into database
  

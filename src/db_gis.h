@@ -65,6 +65,7 @@ extern int xastirCoordToLatLongPoint(long x, long y, char *wkt);
 
 #define MAX_DB_TYPE 3 // largest value for DB_ 
                       // used in load_data_or_default
+#define NODE_PATH_SIZE 56  // field size for node_path, for data_row.node_path_ptr 
 
 // constants to control database schema versioning
 
@@ -131,12 +132,14 @@ typedef struct {
 // linked list of database connections
 typedef struct{
    Connection *conn;  // a database connection
-   Connection *conn_next; // pointer to next element in list
+   ioparam *iface;    // interface definition for the connection
 } ConnectionList;
+
+ConnectionList connections[MAX_DB_CONNECTIONS];
 
 
 // connection management
-extern Connection openConnection (ioparam *aioparm);
+extern int openConnection (ioparam *aioparm, Connection *conn);
 extern void closeConnection (Connection *aDbConnection);
 extern int testConnection(Connection *aDbConnection);
 

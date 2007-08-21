@@ -6985,12 +6985,11 @@ void init_device_names(void) {
         langcode("IFDNL00013"));
 
 #ifdef HAVE_DB
+    // SQL Database (experimental)
     xastir_snprintf(dtype[DEVICE_SQL_DATABASE].device_name,
         sizeof(dtype[DEVICE_SQL_DATABASE].device_name),
         "%s",
         langcode("IFDNL00014"));
-
-fprintf(stderr,"Initialized sql type: %s\n",dtype[DEVICE_SQL_DATABASE].device_name);
 #endif /* HAVE_DB */
 
 }
@@ -7244,6 +7243,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
  */
 int add_device_by_ioparam(int port_avail, ioparam *device) {
     int ok;
+    int got_conn;
     int done = 0;
     DataRow *dr;
     ok = -1;
@@ -7261,12 +7261,13 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                     sizeof(port_data[port_avail].device_host_name),
                     "%s",
                     device->device_host_name);
-                conn = openConnection(device);
-                //if ( conn != NULL ) { 
+                got_conn = openConnection(device, &conn);
+                if ((got_conn == 1) && (!(conn.type==NULL))) { 
                    if (debug_level & 2)
                        fprintf(stderr, "Opened connection\n");
                    ok = 1;
-                //}
+                   connections->conn = &conn;
+                }
                 if (ok == 1) {
                     /* if connected save top of call list */
                     ok = storeStationSimpleToGisDb(&conn, n_first);

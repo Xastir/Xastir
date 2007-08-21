@@ -8493,8 +8493,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                     s='3';  // Select icon for status bar
                     break;
 
-                case DEVICE_NET_DATABASE:
                 case DEVICE_SQL_DATABASE:
+                    s='8';  // Select icon for status bar
+                    break;
+
+                case DEVICE_NET_DATABASE:
                 case DEVICE_NET_STREAM:
                 case DEVICE_NET_AGWPE:
                     s='4';  // Select icon for status bar

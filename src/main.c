@@ -10853,6 +10853,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // This implements persistent objects.
                 reload_object_item();
 
+#ifdef HAVE_DB
+                // load data from SQL database connections
+#endif /* HAVE_DB */
 
                 // Reload any CAD objects from file.  This implements
                 // persistent objects.
