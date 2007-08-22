@@ -1296,7 +1296,8 @@ void alert_build_list(Message *fill) {
                     temp_suffix[1] = '\0';
                     ptr += 1;
                 }
-                else if (temp_suffix[2] == '-' || temp_suffix[2] == '>') {
+                else if (temp_suffix[1] != '\0' && 
+                         (temp_suffix[2] == '-' || temp_suffix[2] == '>')) {
                     temp_suffix[2] = '\0';
                     ptr += 2;
                 }
