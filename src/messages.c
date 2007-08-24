@@ -217,7 +217,7 @@ void group_build_list(char *filename) {
 
 
 
-static int group_active(char *from) {
+int group_active(char *from) {
     static struct stat current_group_stat;
     struct stat group_stat;
     static char altgroup[10];

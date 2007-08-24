@@ -98,6 +98,7 @@ extern void check_delayed_transmit_queue(int curr_sec);
 //extern void output_message(char *from, char *to, char *message);
 extern int check_popup_window(char *from_call_sign, int group);
 extern int look_for_open_group_data(char *to);
+extern int group_active(char *from);
 extern void send_queued(char *to);
 extern void clear_outgoing_messages_to(char *callsign);
 extern void change_path_outgoing_messages_to(char *callsign, char *new_path);
