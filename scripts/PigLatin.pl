@@ -32,8 +32,9 @@
 #
 # If you would like, replace the language-English.sys file in the
 # destination directory (usually "/usr/local/share/xastir/config")
-# with this new file, then restart Xastir and you'll have it
-# displaying in Pig Latin!
+# with this new file (renaming it to "language-English.sys" of
+# course), then restart Xastir and you'll have it displaying in Pig
+# Latin!
 
 
 if (m/^#/) { print; next; }
