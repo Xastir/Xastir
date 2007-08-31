@@ -140,9 +140,44 @@
 #include "leak_detection.h"
 
 
-
-extern int npoints;		/* tsk tsk tsk -- globals */
-extern int mag;
+int check_interrupt( 
+#ifdef HAVE_MAGICK
+			Image *image, ImageInfo *image_info, ExceptionInfo *exception, 
+#else // HAVE_MAGICK
+			XImage *xi,
+#endif // HAVE_MAGICK
+			Widget *da, Pixmap *pixmap, 
+			GC *gc, unsigned long screen_width, unsigned long screen_height)
+{
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+#ifdef HAVE_MAGICK
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+ #else   // HAVE_MAGICK
+    if (xi)
+        XDestroyImage (xi);
+#endif // HAVE_MAGICK
+        // Update to screen
+        (void)XCopyArea(XtDisplay(*da),
+            *pixmap,
+            XtWindow(*da),
+            *gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
+#ifdef HAVE_MAGICK
+       DestroyExceptionInfo(exception);
+#endif // HAVE_MAGICK
+         return(~0);
+    } else
+	return(0);
+}
 
 void draw_geo_image_map (Widget w, char *dir, char *filenm, 
     alert_entry *alert, u_char alert_color, int destination_pixmap,
@@ -1662,26 +1697,9 @@ fprintf(stderr,"2 ");
     width = image->columns;
     height = image->rows;
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-        DestroyExceptionInfo(&exception);
-        return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     // gamma setup
     if (imagemagick_options.gamma_flag == 0 ||
@@ -1715,26 +1733,9 @@ fprintf(stderr,"2 ");
     else
         imagemagick_options.gamma_flag = 0;
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-         DestroyExceptionInfo(&exception);
-       return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (imagemagick_options.gamma_flag) {
         if (debug_level & 16)
@@ -1742,26 +1743,9 @@ fprintf(stderr,"2 ");
         GammaImage(image, gamma);
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-        DestroyExceptionInfo(&exception);
-         return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (imagemagick_options.contrast != 0) {
         if (debug_level & 16)
@@ -1769,26 +1753,9 @@ fprintf(stderr,"2 ");
         ContrastImage(image, imagemagick_options.contrast);
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-         DestroyExceptionInfo(&exception);
-       return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (imagemagick_options.negate != -1) {
         if (debug_level & 16)
@@ -1796,26 +1763,9 @@ fprintf(stderr,"2 ");
         NegateImage(image, imagemagick_options.negate);
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-        DestroyExceptionInfo(&exception);
-        return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (imagemagick_options.equalize) {
         if (debug_level & 16)
@@ -1823,26 +1773,9 @@ fprintf(stderr,"2 ");
         EqualizeImage(image);
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-        DestroyExceptionInfo(&exception);
-        return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (imagemagick_options.normalize) {
         if (debug_level & 16)
@@ -1850,26 +1783,9 @@ fprintf(stderr,"2 ");
         NormalizeImage(image);
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-        DestroyExceptionInfo(&exception);
-         return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
 #if (MagickLibVersion >= 0x0539)
     if (imagemagick_options.level[0] != '\0') {
@@ -1879,26 +1795,9 @@ fprintf(stderr,"2 ");
     }
 #endif  // MagickLibVersion >= 0x0539
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-       DestroyExceptionInfo(&exception);
-         return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (imagemagick_options.modulate[0] != '\0') {
         if (debug_level & 16)
@@ -1924,26 +1823,9 @@ fprintf(stderr,"2 ");
     }
 */
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-         DestroyExceptionInfo(&exception);
-       return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     // crop image: if we just use CropImage(), then the tiepoints will be off
     // make border pixels transparent.  
@@ -1968,7 +1850,8 @@ fprintf(stderr,"2 ");
             }
             if (!SyncImagePixels(image))
                 fprintf(stderr, "SyncImagePixels Failed....\n");
-        }
+	}
+        DestroyImagePixels(image);
     }
 
     // If were are drawing to a low bpp display (typically < 8bpp)
@@ -1992,26 +1875,9 @@ fprintf(stderr,"2 ");
         // Quantize down to 128 will go here...
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-       DestroyExceptionInfo(&exception);
-         return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
     if (!pixel_pack) {
@@ -2024,26 +1890,9 @@ fprintf(stderr,"2 ");
          return;
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-       DestroyExceptionInfo(&exception);
-         return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     index_pack = GetIndexes(image);
     if (image->storage_class == PseudoClass && !index_pack) {
@@ -2055,26 +1904,9 @@ fprintf(stderr,"2 ");
         return;
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-         DestroyExceptionInfo(&exception);
-       return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
     if (debug_level & 16)
 #ifdef HAVE_GRAPHICSMAGICK
@@ -2167,26 +1999,9 @@ fprintf(stderr,"2 ");
         }
     }
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image) 
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-       DestroyExceptionInfo(&exception);
-         return;
-    }
+    if (check_interrupt(image, image_info, 
+	&exception, &da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
 #ifdef TIMING_DEBUG
     time_mark(0);
@@ -2384,31 +2199,14 @@ fprintf(stderr,"2 ");
 #endif  // TIMING_DEBUG
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
+    if (check_interrupt(
 #ifdef HAVE_MAGICK
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-#else   // HAVE_MAGICK
-        if (xi)
-            XDestroyImage (xi);
-#endif  // HAVE_MAGICK
-        // Update to screen
-        (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-       DestroyExceptionInfo(&exception);
-         return;
-    }
+			image, image_info, &exception, 
+#else  // HAVE_MAGICK
+            		xi,
+#endif // HAVE_MAGICK
+			&da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
 
     // loop over map pixel rows
@@ -2416,31 +2214,14 @@ fprintf(stderr,"2 ");
                 (map_y_0 <= map_y_max) || (map_proj == 1 && !map_done && scr_y < screen_height);
                 map_y_0++, c_y += map_c_dy) {
 
-        HandlePendingEvents(app_context);
-        if (interrupt_drawing_now) {
+    if (check_interrupt(
 #ifdef HAVE_MAGICK
-            if (image)
-                DestroyImage(image);
-            if (image_info)
-                DestroyImageInfo(image_info);
-#else   // HAVE_MAGICK
-            if (xi)
-                XDestroyImage (xi);
+			image, image_info, &exception, 
+#else  // HAVE_MAGICK
+            		xi,
 #endif // HAVE_MAGICK
-            // Update to screen
-            (void)XCopyArea(XtDisplay(da),
-                pixmap,
-                XtWindow(da),
-                gc,
-                0,
-                0,
-                (unsigned int)screen_width,
-                (unsigned int)screen_height,
-                0,
-                0);
-            DestroyExceptionInfo(&exception);
-             return;
-        }
+			&da, &pixmap, &gc, screen_width, screen_height))
+	return;
 
         scr_y = (c_y - NW_corner_latitude) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice
