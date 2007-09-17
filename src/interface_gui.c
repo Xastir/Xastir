@@ -8083,9 +8083,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                                 fprintf(stderr,"Modify SQL DATABASE\n");
                             Config_sql_Database(w, 1, port);
                             break;
-
-                        case DEVICE_NET_AGWPE:
 #endif /* HAVE_DB */
+                        case DEVICE_NET_AGWPE:
  
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
