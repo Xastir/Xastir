@@ -413,7 +413,7 @@ end_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 static void* findu_transfer_thread(void *arg) {
     char *fileimg;
     char *log_filename;
-    char log_filename_tmp[210];
+//    char log_filename_tmp[210];
     char **ptrs;
     char sys_cmd[128];
 
