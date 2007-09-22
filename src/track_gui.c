@@ -463,25 +463,77 @@ static void* findu_transfer_thread(void *arg) {
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);
 
-    // Add three spaces before the "<br" on each line.  This is so
-    // that Base-91 compressed packets with no comment and no
+    // Add three spaces before each "<br>" and axe the "<br>".  This
+    // is so that Base-91 compressed packets with no comment and no
     // speed/course/altitude will get decoded ok.  Otherwise the
     // spaces that are critical to the Base-91 packets won't be
     // there due to findu.com filtering them out.
     //
+// "sed -i -e \"s/<br>/   <br>/\" %s",
     sprintf(sys_cmd,
-        "sed -i -e \"s/<br>/   <br>/\" %s",
+        "sed -i -e \"s/<br>/   /\" %s",
         log_filename);
     system(sys_cmd);
 //fprintf(stderr,"%s\n", sys_cmd);
 
+// Greater-than symbol '>'
+    sprintf(sys_cmd,
+        "sed -i -e \"s/&gt;/>/\" %s",
+        log_filename);
+    system(sys_cmd);
+
+// Less-than symbol '<'
+    sprintf(sys_cmd,
+        "sed -i -e \"s/&lt;/</\" %s",
+        log_filename);
+    system(sys_cmd);
+
+// Ampersand '&' (A difficult character to escape from the shell!)
+    sprintf(sys_cmd,
+        "sed -i -e \"s/&amp;/\\&/\" %s",
+        log_filename);
+    system(sys_cmd);
+
+// Double-quote symbol '"'
+    sprintf(sys_cmd,
+        "sed -i -e \"s/&quot;/""/\" %s",
+        log_filename);
+    system(sys_cmd);
+
+// Remove any blanks at the start of a line
+//    sprintf(sys_cmd,
+//        "sed -i -e \"s/^ +//\" %s",
+//        log_filename);
+//    system(sys_cmd);
+
+// Remove any tabs at the start of a line
+//    sprintf(sys_cmd,
+//        "sed -i -e \"s/^\t+//\" %s",
+//        log_filename);
+//    system(sys_cmd);
+
+// Remove any lines that start with '<'
+    sprintf(sys_cmd,
+        "sed -i -e \"s/^<.*$//\" %s",
+        log_filename);
+    system(sys_cmd);
+
+// Remove blank lines
+//    sprintf(sys_cmd,
+//        "sed -i -e \"s/^$//\" %s",
+//        log_filename);
+//    system(sys_cmd);
+
+/*
+#ifdef HAVE_HTML2TEXT
     // Create temp filename
     snprintf(log_filename_tmp, sizeof(log_filename_tmp), "%s%s",
         log_filename,
         ".tmp");
     // Create html2text command
     sprintf(sys_cmd,
-        "/usr/bin/html2text -o %s %s",
+        "%s -width 300 -o %s %s",
+        HTML2TEXT_PATH,
         log_filename_tmp,
         log_filename);
     // Convert the newly-downloaded file from html to text format
@@ -494,6 +546,8 @@ static void* findu_transfer_thread(void *arg) {
         log_filename_tmp,
         log_filename);
     system(sys_cmd);
+#endif  // HAVE_HTML2TEXT
+*/
 
     // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
     // We have the log data we're interested in within the log_filename file.
