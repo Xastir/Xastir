@@ -413,6 +413,7 @@ end_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 static void* findu_transfer_thread(void *arg) {
     char *fileimg;
     char *log_filename;
+    char log_filename_tmp[210];
     char **ptrs;
     char sys_cmd[128];
 
@@ -473,6 +474,26 @@ static void* findu_transfer_thread(void *arg) {
         log_filename);
     system(sys_cmd);
 //fprintf(stderr,"%s\n", sys_cmd);
+
+    // Create temp filename
+    snprintf(log_filename_tmp, sizeof(log_filename_tmp), "%s%s",
+        log_filename,
+        ".tmp");
+    // Create html2text command
+    sprintf(sys_cmd,
+        "/usr/bin/html2text -o %s %s",
+        log_filename_tmp,
+        log_filename);
+    // Convert the newly-downloaded file from html to text format
+    system(sys_cmd);
+    // Rename the file so that we can keep the static char* name
+    // pointing to it, needed for the read_file_ptr code in the main
+    // thread.
+    sprintf(sys_cmd,
+        "mv %s %s",
+        log_filename_tmp,
+        log_filename);
+    system(sys_cmd);
 
     // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
     // We have the log data we're interested in within the log_filename file.
