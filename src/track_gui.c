@@ -500,17 +500,12 @@ static void* findu_transfer_thread(void *arg) {
         log_filename);
     system(sys_cmd);
 
-// Remove any blanks at the start of a line
-//    sprintf(sys_cmd,
-//        "sed -i -e \"s/^ +//\" %s",
-//        log_filename);
-//    system(sys_cmd);
-
-// Remove any tabs at the start of a line
-//    sprintf(sys_cmd,
-//        "sed -i -e \"s/^\t+//\" %s",
-//        log_filename);
-//    system(sys_cmd);
+// Remove whitespace at the start of a line
+// sed 's/^[ \t]*//'
+    sprintf(sys_cmd,
+        "sed -i -e \"s/^[ \t]*//\" %s",
+        log_filename);
+    system(sys_cmd);
 
 // Remove any lines that start with '<'
     sprintf(sys_cmd,
@@ -518,11 +513,19 @@ static void* findu_transfer_thread(void *arg) {
         log_filename);
     system(sys_cmd);
 
-// Remove blank lines
-//    sprintf(sys_cmd,
-//        "sed -i -e \"s/^$//\" %s",
-//        log_filename);
-//    system(sys_cmd);
+// Remove any lines that start with '"http'
+    sprintf(sys_cmd,
+        "sed -i -e \"/^\\\"http.*$/d\" %s",
+        log_filename);
+    system(sys_cmd);
+
+// Remove any blank lines from the file
+// sed '/^$/d'
+    sprintf(sys_cmd,
+        "sed -i -e \"/^$/d\" %s",
+        log_filename);
+    system(sys_cmd);
+
 
 /*
 #ifdef HAVE_HTML2TEXT
