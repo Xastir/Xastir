@@ -772,10 +772,19 @@ Getting Maps and other Data Files for Xastir:
 
       or try a google search with "free drg maps" as the search query.
 
-      If you have no luck finding free DRG maps, go to http://www.geocomm.com/
-      and check out the "DRG Data Bundles" they have available.  You can 
-      purchase a DVD containing all the DRGs for an entire state in three
-      scales, all of them usable in xastir, for a relatively low price.
+      If you have no luck finding free DRG maps, go to
+      http://www.geocomm.com/ and check out the "DRG Data Bundles"
+      they have available.  You can purchase a DVD containing all the
+      DRGs for an entire state in three scales, all of them usable in
+      xastir, for a relatively low price.  Be warned, however, that
+      parts of the US have DRGs that are produced by an agency other
+      than the United States Geological Survey, and these DRGs are not
+      necessarily in correct GeoTIFF format.  The areas covered by the
+      Tennessee Valley Authority appear to be among those, as one
+      xastir user discovered when purchasing a DVD of DRGs for North
+      Carolina.  It is still possible to use these DRG files, but they
+      need preprocessing.  See the section below entitled "Defective
+      GeoTIFF files need even more special processing."
 
       Many useful US maps can be downloaded from the National Map Viewer: 
       http://nmviewogc.cr.usgs.gov/viewer.htm
