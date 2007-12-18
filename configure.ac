@@ -138,9 +138,17 @@ AC_CHECK_LIB([Xm], [XmTextFindString])
 
 use_curl=no
 if test "${use_lsb}" = "no"; then 
-  AC_CHECK_LIB([curl], [curl_global_init], use_curl="yes")
+  # Important: when using the three-argument version of AC_CHECK_LIB, you
+  # must do all of what is normally the default behavior in the third argument,
+  # not just the extra stuff you want to accomplish:
+  AC_CHECK_LIB([curl], [curl_global_init], 
+               [use_curl="yes"
+                LIBS="${LIBS} -lcurl"
+                AC_DEFINE(HAVE_LIBCURL, ,
+                          [Define to 1 if your `curl' library has curl_global_init.])
+                ])
 else
-  AC_DEFINE(HAVE_LIBCURL, , Define to 1 if your `shp' library has DBFGetFieldIndex. )
+  AC_DEFINE(HAVE_LIBCURL, , [Define to 1 if your `curl' library has curl_global_init.] )
   LIBS="${LIBS} -lcurl"
   use_curl=yes
 fi
