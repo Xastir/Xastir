@@ -27,6 +27,8 @@
 
 extern int xastirCoordToLatLongWKT(long x, long y, char *wkt);
 extern int xastirCoordToLatLongPoint(long x, long y, char *wkt);
+extern float xastirWKTPointToLatitude(char *wkt);
+extern float xastirWKTPointToLongitude(char *wkt);
 
 // maximum size of a well known text representation of a geometry
 // 100 should be fine for points, will need to be longer for other geometries.
@@ -47,7 +49,7 @@ extern int xastirCoordToLatLongPoint(long x, long y, char *wkt);
 // mysql error message codes
 #include <errmsg.h>
 #define DB_MYSQL 1
-#endif /* HAVE_MYSQ */
+#endif /* HAVE_MYSQL */
 
 #ifdef HAVE_SPATIAL_DB
 
@@ -129,13 +131,13 @@ typedef struct {
    char errormessage[255]; // most recent error message on this connection.
 } Connection; 
 
-// linked list of database connections
+// list of database connections
 typedef struct{
    Connection *conn;  // a database connection
    ioparam *iface;    // interface definition for the connection
 } ConnectionList;
 
-ConnectionList connections[MAX_DB_CONNECTIONS];
+ConnectionList connections[MAX_IFACE_DEVICES];
 
 
 // connection management

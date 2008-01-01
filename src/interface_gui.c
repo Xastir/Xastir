@@ -5695,6 +5695,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
     
     if (cb_selected) { 
         devices[Sql_Database_port].database_type = cb_selected;
+        // libtif doesn't appear to be recognizing selections from list.
+        fprintf(stderr,"Selected Database list item:%d\n",cb_selected);        
     } else {  
         // If no selection,
         // default to mysql non-spatial, unless postgis is available.
@@ -5747,6 +5749,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
         devices[Sql_Database_port].connect_on_startup=1;
     else
         devices[Sql_Database_port].connect_on_startup=0;
+    
+    // query on startup
+    if(XmToggleButtonGetState(Sql_Database_query_on_startup_data))
+        devices[Sql_Database_port].query_on_startup=1;
+    else
+        devices[Sql_Database_port].query_on_startup=0;
 
     // allow saving data 
     if(XmToggleButtonGetState(Sql_Database_transmit_data))
@@ -5798,6 +5806,9 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
     Atom delw;
     char temp[40];
     XmString cb_item;
+    XmString *cb_items[2];
+    int x;
+    Arg args[12];
     /*
     // configuration parameters for a sql server database 
     char   database_username[20];                 // username to use to connect to database  
@@ -5857,7 +5868,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             NULL);
 
         // DMBS
-        label_dbms = XtVaCreateManagedWidget("Database",xmLabelWidgetClass, form,
+        label_dbms = XtVaCreateManagedWidget("Database:",xmLabelWidgetClass, form,
             XmNtopAttachment,     XmATTACH_FORM,
             XmNtopOffset,         15,
             XmNbottomAttachment,  XmATTACH_NONE,
@@ -5868,6 +5879,22 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNbackground,        colors[0xff],
             NULL);
         // Combo box to pick dbms
+        cb_items [0] = (XmString *) XtMalloc ( sizeof (XmString) * 4 );
+        // mysql
+        cb_items[0][0] = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
+        // postgresql
+        cb_items[0][1] = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
+        // mysql with spatial extensions
+        cb_items[0][2] = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
+        cb_items[0][3] = NULL;
+        char *tmp;
+        XmStringGetLtoR(cb_items[0][0],XmFONTLIST_DEFAULT_TAG,&tmp);
+fprintf(stderr,"cb_items[0]=%s\n",tmp);        
+        XmStringGetLtoR(cb_items[0][1],XmFONTLIST_DEFAULT_TAG,&tmp);
+fprintf(stderr,"cb_items[1]=%s\n",tmp);        
+        XmStringGetLtoR(cb_items[0][2],XmFONTLIST_DEFAULT_TAG,&tmp);
+fprintf(stderr,"cb_items[2]=%s\n",tmp);        
+/*            
         Sql_Database_dbms_data = XtVaCreateManagedWidget("select dbms", xmComboBoxWidgetClass, form,
             XmNtopAttachment,     XmATTACH_FORM,
             XmNtopOffset,         5,
@@ -5876,37 +5903,53 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftWidget,        label_dbms,
             XmNleftOffset,        1,
             XmNrightAttachment,   XmATTACH_NONE,
+            XmNitems,             cb_items,
+            XmNitemCount,         3,
             XmNnavigationType,    XmTAB_GROUP,
             XmNcomboBoxType,      XmDROP_DOWN_LIST,
             XmNpositionMode,      XmONE_BASED, 
-            XmNvisibleItemCount,  3,
+            XmNmatchBehavior,     XmQUICK_NAVIGATE,
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
+*/
+        x=0;
+        XtSetArg (args[x], XmNtopAttachment,     XmATTACH_FORM); x++;
+        XtSetArg (args[x], XmNtopOffset,         5); x++;
+        XtSetArg (args[x], XmNbottomAttachment,  XmATTACH_NONE); x++;
+        XtSetArg (args[x], XmNleftAttachment,    XmATTACH_WIDGET); x++;
+        XtSetArg (args[x], XmNleftWidget,        label_dbms); x++;
+        XtSetArg (args[x], XmNleftOffset,        1); x++;
+        XtSetArg (args[x], XmNrightAttachment,   XmATTACH_NONE); x++;
+        XtSetArg (args[x], XmNcomboBoxType,      XmDROP_DOWN_LIST); x++;
+        XtSetArg (args[x], XmNarrowSpacing,      5); x++;
+        // libtif doesn't appear to support adding items to the list on creation through XmNitems
+        //XtSetArg (args[x], XmNitems,             cb_items[0]); x++;
+        XtSetArg (args[x], XmNitemCount,         3); x++;
+        XtSetArg (args[x], XmNpositionMode,      XmONE_BASED); x++;
+        Sql_Database_dbms_data = XmCreateDropDownList (form, (char *) "Sql_Database_dbms_data", args, x);
+        XtManageChild(Sql_Database_dbms_data);
+        XmComboBoxAddItem(Sql_Database_dbms_data,cb_items[0][0],1,1);  
+        XmComboBoxAddItem(Sql_Database_dbms_data,cb_items[0][1],2,1);  
+        XmComboBoxAddItem(Sql_Database_dbms_data,cb_items[0][2],3,1);  
+        x=0;
+        while ( cb_items[0][x] )
+            XmStringFree ( cb_items[0][x++] );
+        x=0;
+        XtFree ( (char *) cb_items[0] );
+
         // *** when localizing these strings propagate the localizations to 
         // the set default functions above and to constants for picklist 
         // selection recognition.  ***
-#ifdef HAVE_MYSQL
-        // mysql
-        //cb_item = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
-        cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL][0], XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,DB_MYSQL,1);  
-        XmStringFree(cb_item);
-#endif /* HAVE_MYSQL */
-#ifdef HAVE_POSTGIS
-        // postgresql
-        //cb_item = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
-        cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_POSTGIS][0], XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,DB_POSTGIS,1);  
-        XmStringFree(cb_item);
-#endif /* HAVE_MYSQL */
-#ifdef HAVE_MYSQL_SPATIAL
-        // mysql with spatial extensions
-        //cb_item = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
-        cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL_SPATIAL][0], XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,DB_MYSQL_SPATIAL,1);  
-        XmStringFree(cb_item);
-#endif /* HAVE_MYSQL_SPATIAL */
+        //cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL][0], XmFONTLIST_DEFAULT_TAG);
+        //XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,1,1);  
+        //XmStringFree(cb_item);
+        //cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_POSTGIS][0], XmFONTLIST_DEFAULT_TAG);
+        //XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,2,1);  
+        //XmStringFree(cb_item);
+        //cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL_SPATIAL][0], XmFONTLIST_DEFAULT_TAG);
+        //XmComboBoxAddItem(Sql_Database_dbms_data,cb_item,3,1);  
+        //XmStringFree(cb_item);
 
         // Schema Type
         label_schema_type = XtVaCreateManagedWidget("With Tables for",xmLabelWidgetClass, form,
@@ -6332,10 +6375,18 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNbackground,       colors[0xff],
             NULL);
 
+       XtSetSensitive(button_mysql_defaults,FALSE);
+#ifdef HAVE_MYSQL
+       XtSetSensitive(button_mysql_defaults,TRUE);
         XtAddCallback(button_mysql_defaults, 
             XmNactivateCallback, Sql_Database_set_defaults_mysql, config_Sql_Database_dialog);
+#endif /* HAVE_MYSQL */
+       XtSetSensitive(button_postgis_defaults,FALSE);
+#ifdef HAVE_POSTGIS
+       XtSetSensitive(button_postgis_defaults,TRUE);
         XtAddCallback(button_postgis_defaults, 
             XmNactivateCallback, Sql_Database_set_defaults_postgis, config_Sql_Database_dialog);
+#endif /* HAVE_POSTGIS */
         XtAddCallback(button_ok, 
             XmNactivateCallback, Sql_Database_change_data, config_Sql_Database_dialog);
         XtAddCallback(button_cancel, 
@@ -6371,9 +6422,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_sql_Database" );
             // *** need to look up localized string for database_type ***
             cb_item = XmStringCreateLtoR(&xastir_dbms_type[devices[Sql_Database_port].database_type][0], XmFONTLIST_DEFAULT_TAG);
             XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
+            XmComboBoxSetItem(Sql_Database_dbms_data,cb_item);
             XmStringFree(cb_item);
             cb_item = XmStringCreateLtoR(&xastir_schema_type[devices[Sql_Database_port].database_schema_type][0], XmFONTLIST_DEFAULT_TAG);
             XmComboBoxSelectItem(Sql_Database_schema_type_data,cb_item);  
+            XmComboBoxSetItem(Sql_Database_schema_type_data,cb_item);  
             XmStringFree(cb_item);
 
             if (devices[Sql_Database_port].connect_on_startup)

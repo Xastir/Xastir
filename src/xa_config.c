@@ -1584,7 +1584,8 @@ void load_data_or_default(void) {
             "%s",
             name_temp);
         strncat (name, "DATABASE_TYPE", sizeof(name) - strlen(name));
-        devices[i].database_type = get_int (name, 0,MAX_DB_TYPE,DB_MYSQL);
+        
+        devices[i].database_type = get_int (name, 0,MAX_DB_TYPE,MAX_DB_TYPE);
         
         xastir_snprintf(name,
             sizeof(name),

@@ -207,7 +207,7 @@ typedef struct {
     // device_host_name = hostname for database server 
     // sp = port on which to connect to database server 
     // device_host_pswd =  password to use to connect to database -- security issue needs to be addressed
-#endif /* HAVE_DB */
+#endif  // HAVE_DB
 } ioparam;
 
 

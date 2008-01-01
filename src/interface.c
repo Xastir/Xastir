@@ -7247,12 +7247,14 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
     int done = 0;
     DataRow *dr;
     ok = -1;
-    Connection conn;
+    Connection *conn;
 
     if (port_avail >= 0){
+        //connections[port_avail].conn = NULL;
+
         switch (device->device_type) {
             case DEVICE_SQL_DATABASE:
-                if (debug_level & 2)
+                if (debug_level & 1)
                     fprintf(stderr,"Opening a sql db connection to %s\n",device->device_host_name);
                 clear_port_data(port_avail,0);
 
@@ -7261,24 +7263,37 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                     sizeof(port_data[port_avail].device_host_name),
                     "%s",
                     device->device_host_name);
-                got_conn = openConnection(device, &conn);
-                if ((got_conn == 1) && (!(conn.type==NULL))) { 
+                if (debug_level & 1)
+                    fprintf(stderr,"Opening (in interfaces) device on port [%d] with connection [%p]\n",port_avail,&connections[port_avail].conn);
+                got_conn = 0;
+                connections[port_avail].conn = conn;
+                got_conn=openConnection(device, &connections[port_avail].conn);
+                if (debug_level & 1) {
+                    fprintf(stderr,"got_conn connections[%d] [%p]\n",got_conn,&connections[port_avail].conn);
+                    fprintf(stderr,"got_conn connection type %d\n",connections[port_avail].conn->type);
+                }
+                if ((got_conn == 1) && (!(&connections[port_avail].conn->type==NULL))) { 
                    if (debug_level & 2)
                        fprintf(stderr, "Opened connection\n");
                    ok = 1;
-                   connections->conn = &conn;
+                } else { 
+                   free(connections[port_avail].conn);
                 }
                 if (ok == 1) {
                     /* if connected save top of call list */
-                    ok = storeStationSimpleToGisDb(&conn, n_first);
+                    ok = storeStationSimpleToGisDb(&connections[port_avail].conn, n_first);
                     if (ok==1) { 
-                         if (debug_level & 2)
+                         if (debug_level & 1)
                              fprintf(stderr,"Stored station n_first\n");
                          // iterate through station_pointers and write all stations currently known
                          dr = n_first->n_next;
                          if (dr!=NULL) { 
                              while (done==0) { 
-                                 ok = storeStationSimpleToGisDb(&conn, dr);
+                                 if (debug_level & 1)
+                                      fprintf(stderr,"storing additional stations\n");
+                                 // Need to check that stations aren't from the database 
+                                 // preventing creation of duplicate round trip records.
+                                 ok = storeStationSimpleToGisDb(&connections[port_avail].conn, dr);
                                  if (ok==1) {
                                     dr = dr->n_next;
                                     if (dr==NULL) { 
@@ -8049,6 +8064,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                     break;
 #ifdef HAVE_DB
                 case DEVICE_SQL_DATABASE:
+fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
                     if (devices[i].connect_on_startup == 1 || override) {
                        (void)add_device_by_ioparam(i, &devices[i]);
                     }

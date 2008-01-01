@@ -408,6 +408,7 @@ extern void display_zoom_status(void);
 extern void Center_Zoom(Widget w, XtPointer clientData, XtPointer calldata);
 extern int center_zoom_override;
 extern void statusline(char *status_text,int update);
+extern void stderr_and_statusline(char *message);
 extern int SayTextInit(void);
 extern int SayText(char *text);
 extern Widget auto_msg_toggle;

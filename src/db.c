@@ -4803,6 +4803,10 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI011"));
             break;
 
+        case(DATA_VIA_DATABASE):
+            xastir_snprintf(temp, sizeof(temp), "last via db on interface %d",p_station->last_port_heard);
+            break;
+
         default:
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI012"));
             break;
@@ -8668,6 +8672,86 @@ void delete_station_memory(DataRow *p_del) {
 
 
 
+#ifdef HAVE_DB
+/* function add_simple_station() 
+ * adds an xastir DataRow using station and additional data from a simpleStation 
+ * record in a SQL database.  
+ * @param p_new_station Pointer to a DataRow for the new station, probably initalized as DataRow p_new_station = NULL
+ * @param station  String pointer for the callsign or object name
+ * @param origin   String pointer for the callsign for an object
+ * @param symbol   String pointer to an aprs symbol, will take the first character
+ * @param overlay  String pointer to an aprs overlay, will take the first character 
+ * @param aprs_type String pointer to an aprs type, will take the first character
+ * @param latitude
+ * @param longitude
+ * @param record_type
+ * @param node_path
+ * @param transmit_time
+ *
+ * @returns 0 if unable to add new station (p_new_station should be null)
+ * otherwise returns 1 (and p_new_station should be a pointer to the DataRow 
+ * for the new station record.
+ */
+int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time) { 
+    int returnvalue = 0;
+    unsigned long x;  // xastir coordinate for longitude
+    unsigned long y;  // xastir coordinate for latitide
+    float lat;  // latitude converted from retrieved string
+    float lon;  // longitude converted from retrieved string
+    DataRow *p_time;  // pointer to new station record  
+    DataRow *p_new_station_unused;
+    struct tm time;
+
+    // Add a datarow using the retrieved station record from the postgis database.
+    p_time = NULL;
+    p_new_station = NULL;
+
+    if (debug_level & 1) 
+        fprintf(stderr,"add_simple_station(%s)\n",station);
+
+    p_new_station = add_new_station(p_new_station,p_time,station);
+    if (!(p_new_station==NULL)) { 
+        // set values for new station based on the database row
+        xastir_snprintf(p_new_station->origin,58,"%s",origin);
+        p_new_station->aprs_symbol.aprs_symbol = symbol[0];
+        p_new_station->aprs_symbol.special_overlay = overlay[0];
+        p_new_station->aprs_symbol.aprs_type = aprs_type[0];
+        lat = strtof(latitude,NULL);
+        lon = strtof(longitude,NULL);
+        if (convert_to_xastir_coordinates (&x, &y, lon, lat)) {
+           p_new_station->coord_lon = x;
+           p_new_station->coord_lat = y;
+        }
+        p_new_station->record_type = record_type[0];
+        // free node path, Malloc, and store the new path
+        if (p_new_station->node_path_ptr != NULL) { 
+            free(p_new_station->node_path_ptr);
+        }
+        p_new_station->node_path_ptr = (char *)malloc(strlen(node_path) + 1);
+        CHECKMALLOC(p_new_station->node_path_ptr);
+        substr(p_new_station->node_path_ptr,node_path,strlen(node_path));
+ 
+        // also set flags for the station 
+        p_new_station->flag |= ST_ACTIVE;
+        if (position_on_extd_screen(p_new_station->coord_lat,p_new_station->coord_lon)) {
+            p_new_station->flag |= (ST_INVIEW);   // set   "In View" flag
+        } else {
+            p_new_station->flag &= (~ST_INVIEW);  // clear "In View" flag
+        }
+        p_new_station->data_via = DATA_VIA_DATABASE;  // treat as data from a file.
+        if (strlen(transmit_time) > 0) { 
+            strptime(transmit_time,"%Y-%m-%d %H:%M:%S",&time);
+            p_new_station->sec_heard = mktime(&time);
+        }
+        returnvalue = 1;
+    }
+    return returnvalue;
+}
+#endif /* HAVE_DB */
+
+
+
+
 
 /*
  *  Move station record before p_time in time ordered list
@@ -11521,9 +11605,10 @@ int data_add(int type,
         if (is_my_station(p_station)) {
             station_is_mine++; // Station/object/item is owned/controlled by me
         }
+        //fprintf(stderr,"checks ok\n");
     }
     else {
-//fprintf(stderr,"data_add()\n");
+        //fprintf(stderr,"data_add()\n");
 
         if (debug_level & 1)
             fprintf(stderr,"data_add: No existing station record found.\n");
@@ -13044,19 +13129,28 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
 
 
 #ifdef HAVE_DB
-/* ************************************** */
         // Clumsy way of doing things - needs a more elegant approach
         // iterate through interfaces 
-        for(ii = 0; ii < MAX_IFACE_DEVICES; ii++) {
-           if (connections[ii].iface != NULL){
-               if (connections[ii].conn != NULL) { 
-                   ok = storeStationSimpleToGisDb(connections[ii].conn, p_station);
-               }
-               // if interface is a sql server interface 
-               // write station data to sql database
-           }
+        if (p_station->data_via != DATA_VIA_DATABASE) { 
+            if (debug_level & 1) 
+                fprintf(stderr,"Trying to store station %s to database interfaces.\n",p_station->call_sign);
+            for (ii=0;ii<MAX_IFACE_DEVICES;ii++) {
+                if (&connections[ii] != NULL && connections[ii].iface != NULL){
+                    if (connections[ii].conn != NULL) { 
+                        if (debug_level & 1) 
+                            fprintf(stderr,"Trying interface %d\n",ii);
+                        // if interface is a sql server interface 
+                        // write station data to sql database
+                        ok = storeStationSimpleToGisDb(&connections[ii].conn, p_station);
+                        if (ok==1) { 
+                           if (debug_level & 1) {
+                                fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);
+                           }
+                        }
+                    }
+                }
+            }
         }
-/* ************************************** */
 #endif /* HAVE_DB */
 
     }   // valid data into database

@@ -3938,6 +3938,23 @@ void statusline(char *status_text,int update) {
 
 
 
+/*  print a message on standard error and display the same message
+ *   on the status line of the user interface.
+*/
+void stderr_and_statusline(char *message) { 
+   fprintf(stderr,"%s",message);
+   if (message[strlen(message)-1]=='\n') { 
+       // if there is a terminal new line character remove it.
+       message[strlen(message)-1]='\0';
+   }
+   statusline(message,1);
+   XmUpdateDisplay(text);      // force an immediate update
+}
+
+
+
+
+
 //
 // Check for statusline timeout and replace statusline text with a
 // station identification message.
@@ -10573,7 +10590,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     int data_length;
     int data_port;
     unsigned char data_string[MAX_LINE_SIZE];
-
+#ifdef HAVE_DB
+    Connection *conn;
+    int got_conn;   // holds result from openConnection() 
+#endif // HAVE_DB
 
     do_time = 0;
 
@@ -10861,6 +10881,20 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 #ifdef HAVE_DB
                 // load data from SQL database connections
+                // step through interface list
+                for (i = 0; i < MAX_IFACE_DEVICES; i++){
+                     // if interface is a database and is set to load on start then load
+                     if (devices[i].device_type == DEVICE_SQL_DATABASE && devices[i].query_on_startup) { 
+                          // load data
+                          connections[i].conn = conn;
+                          if (debug_level & 1) 
+                              fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,&connections[i].conn);                          
+                          got_conn = openConnection(&(devices[i]),&connections[i].conn); 
+                          if ((got_conn == 1) && (!(&connections[i].conn->type==NULL))) { 
+                              getAllSimplePositions(&connections[i].conn);
+                          }
+                     }
+                }
 #endif /* HAVE_DB */
 
                 // Reload any CAD objects from file.  This implements

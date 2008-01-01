@@ -33,8 +33,10 @@
 // mysql error library for mysql error code constants
 #ifdef HAVE_MYSQL
 #include <my_global.h>
+#include <my_sys.h>
 #include <mysql.h>
 #include <errmsg.h>
+#include <time.h>
 #endif // HAVE_MYSQL
 
 
@@ -216,7 +218,8 @@ int getAllSimplePositionsMysqlSpatialInBoundingBox(Connection *aDbConnection, ch
 #endif /* HAVE_MYSQL_SPATIAL */
 #endif /* HAVE_SPATIAL_DB */
 Connection connection_struc[MAX_DB_CONNECTIONS];
-ConnectionList connections [MAX_DB_CONNECTIONS];
+ConnectionList connections [MAX_IFACE_DEVICES];
+int connections_initialized = 0;
 #ifdef HAVE_MYSQL
 MYSQL mysql_conn_struct, *mysql_connection = &mysql_conn_struct;
 MYSQL mcs[MAX_DB_CONNECTIONS];
@@ -356,6 +359,12 @@ int storeStationTrackToGisDb(Connection *aDbConnection, DataRow *aStation) {
 int storeStationSimpleToGisDb(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
     int triedDatabase = 0;
+
+    if (debug_level & 1) {
+        fprintf(stderr,"in storeStationSimpleToGisDb() "); 
+        fprintf(stderr,"with connection->type: %d\n",aDbConnection->type);
+    }
+
     switch (aDbConnection->type) {
         #ifdef HAVE_POSTGIS
         case DB_POSTGIS :
@@ -393,6 +402,11 @@ int storeStationSimpleToGisDb(Connection *aDbConnection, DataRow *aStation) {
 int getAllSimplePositions(Connection *aDbConnection) {
     int returnvalue = 0;
     int triedDatabase = 0;
+    if (debug_level & 1) { 
+       fprintf(stderr,"in getAllSimplePositions ");    
+       fprintf(stderr,"with aDbConnection->type %d\n",aDbConnection->type);    
+    }
+
     switch (aDbConnection->type) {
         #ifdef HAVE_POSTGIS
         case DB_POSTGIS :
@@ -477,6 +491,10 @@ int getAllSimplePositionsInBoundingBox(Connection *aDbConnection, int east, int 
  * Probably want to be able to store password, request password on connect, 
  * or use configuration file (e.g. my.ini) for password) - let user tune
  * choices to environment.
+ *
+ * The existing interface code seems better suited to having a fixed number 
+ * of interfaces with zero or one database connection associated with each
+ * interface than handing an arbitrary number of connections per interface.  
  */
 
 
@@ -516,7 +534,7 @@ ioparam simpleDbTest(void) {
  * the connection descriptor.
  * @param anIface a database connection description (host username etc).
  */
-int openConnection(ioparam *anIface, Connection *conn) {
+int openConnection(ioparam *anIface, Connection *connection) {
     int returnvalue = 0;
     char connection_string[900];
     int connecting;  // connection polling loop test
@@ -524,139 +542,168 @@ int openConnection(ioparam *anIface, Connection *conn) {
     unsigned long client_flag = 0; // parameter used for mysql connection, is normally 0.
     unsigned int port;  // port to make connection on
     int i;  // loop counter for connection list
-    //Connection conn;
     int connection_made = 0;
     #ifdef HAVE_POSTGIS
     PGconn *postgres_connection;
     PostgresPollingStatusType poll;
     #endif /* HAVE_POSTGIS */
     #ifdef HAVE_MYSQL
-    //MYSQL *mysql_connection;
+    if (anIface->database_type!=DB_POSTGIS) { 
+        // instantiate the MYSQL structure for the connection
+        mysql_init(&connection->mhandle);
+    }
     #endif /* HAVE_MYSQL */
-  
-    // initialize a new generic connection 
+    if (debug_level & 1) 
+          fprintf(stderr,"Entering openConnection with anIface [%p] and conn [%p]\n",anIface,connection);
+
+    connection->type = anIface->database_type;
+    connection->descriptor = *anIface;
+
+    if (connections_initialized == 0) { 
+        connections_initialized = 1;
+    }
   
     // need some sort of connection listener to handle reconnection attempts when a connection fails...
     
     // try to open connection
-    switch (anIface->database_type) {
-        #ifdef HAVE_POSTGIS
-        case DB_POSTGIS : 
-            fprintf(stderr,"Opening Connection to a Postgresql/Postgis database.\n");
-            // If type is postgis, connect to postgis database.
-            // build connection string from parameters
-            xastir_snprintf(connection_string, sizeof(connection_string), \
-               "host=%s user=%s password=%s dbname=%s port=%d", \
-               anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, anIface->sp);
-            // Use nonblocking connection
-            postgres_connection = PQconnectStart(connection_string);
-            if (postgres_connection == NULL) {  
-                xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
-            } else {
-                connected = 0;
-                // can connect, run PQ_connect_poll loop
-                // Note: xastir needs to decide when to time out
-                while (connected==0) { 
-                   // need to add a timer to polling loop
-                   poll = PQconnectPoll(postgres_connection);
-                   if (poll == PGRES_POLLING_FAILED || poll == PGRES_POLLING_OK) { 
-                      connected = 1;
-                   } 
-                   // add connection status feedback here if desired
-                }
-                if (PQstatus(postgres_connection)==CONNECTION_OK) {
-                    fprintf(stderr,"Connected to Postgresql database on %s\n",anIface->device_host_name);
-                    // connection successfull
-                    conn->phandle = postgres_connection;
-                    conn->type=DB_POSTGIS;
-                    conn->descriptor = *anIface;
-                    xastir_snprintf(conn->errormessage, sizeof(conn->errormessage), " ");
-                    connection_made = 1;
+    if (!(anIface==NULL)) { 
+        switch (anIface->database_type) {
+            #ifdef HAVE_POSTGIS
+            case DB_POSTGIS : 
+                if (debug_level & 1)
+                    fprintf(stderr,"Opening Connection to a Postgresql/Postgis database.\n");
+                // If type is postgis, connect to postgis database.
+                // build connection string from parameters
+                xastir_snprintf(connection_string, sizeof(connection_string), \
+                   "host=%s user=%s password=%s dbname=%s port=%d", \
+                   anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, anIface->sp);
+                // Use nonblocking connection
+                connection->phandle = PQconnectStart(connection_string);
+                if (connection->phandle == NULL) {  
+                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
                 } else {
-                    // connection attempt failed
-                    fprintf(stderr,"Failed to connect to Postgresql database on %s\n",anIface->device_host_name);
-                    fprintf(stderr,"Postgres Error: %s\n", PQerrorMessage(postgres_connection));
-                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to make Postgresql connection %s. %s", PQerrorMessage(postgres_connection), connection_string); 
+                    connected = 0;
+                    // can connect, run PQ_connect_poll loop
+                    // Note: xastir needs to decide when to time out
+                    while (connected==0) { 
+                       // need to add a timer to polling loop
+                       poll = PQconnectPoll(connection->phandle);
+                       if (poll == PGRES_POLLING_FAILED || poll == PGRES_POLLING_OK) { 
+                          connected = 1;
+                       } 
+                       // add connection status feedback here if desired
+                    }
+                    if (PQstatus(connection->phandle)==CONNECTION_OK) {
+                        if (debug_level & 1)
+                            fprintf(stderr,"Connected to Postgresql database on %s\n",anIface->device_host_name);
+                        // connection successfull
+                        //connection->phandle = postgres_connection;
+                        connection->type=DB_POSTGIS;
+                        connection->descriptor = *anIface;
+                        xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
+                        connection_made = 1;
+                    } else {
+                        // connection attempt failed
+                        fprintf(stderr,"Failed to connect to Postgresql database on %s\n",anIface->device_host_name);
+                        fprintf(stderr,"Postgres Error: %s\n", PQerrorMessage(connection->phandle));
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to make Postgresql connection %s. %s", PQerrorMessage(postgres_connection), connection_string); 
+                    }
                 }
-            }
-            break;
-        #endif /* HAVE_POSTGIS */
-        #ifdef HAVE_MYSQL_SPATIAL
-        case DB_MYSQL_SPATIAL : 
-            fprintf(stderr,"Opening connection to a MySQL (spatial) database.\n");
-            mysql_connection = mysql_init(mysql_connection);
-            // if type is mysql (=>4.1), connect to mysql database
-            if (mysql_connection == NULL) { 
-                // insufficient memory to initalize a new database handle 
-                xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
-            } else { 
-                port = anIface->sp;
-                mysql_connection = mysql_real_connect(mysql_connection, anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, anIface->database_unix_socket, client_flag); 
-                if (mysql_connection == NULL) { 
-                    // unable to establish connection
-                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to establish connection: %s", mysql_error(mysql_connection));
-                    fprintf(stderr,"Failed to connect to MySQL database on %s\n",anIface->device_host_name);
-                    fprintf(stderr, "MySQL Error: %s", mysql_error(mysql_connection));
+                break;
+            #endif /* HAVE_POSTGIS */
+            #ifdef HAVE_MYSQL_SPATIAL
+            case DB_MYSQL_SPATIAL : 
+                // if type is mysql (=>4.1), connect to mysql database
+                if (debug_level & 1) 
+                     fprintf(stderr,"Opening connection to a MySQL (spatial) database.\n");
+                if (&connection->mhandle == NULL) { 
+                    // insufficient memory to initalize a new database handle 
+                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
                 } else { 
-                    // connected to database
-                    fprintf(stderr,"Connected to MySQL database on %s\n",anIface->device_host_name);
-                    // make sure error message for making connection is empty.
-                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
-                    // store connection information
-                    conn->mhandle = mysql_connection;
-                    conn->type = DB_MYSQL_SPATIAL;
-                    conn->descriptor = *anIface;
-                    xastir_snprintf(conn->errormessage, sizeof(conn->errormessage), " ");
-                    connection_made = 1;
+                    port = anIface->sp;
+                    if (debug_level & 1) 
+                        fprintf(stderr,"Opening connection to %s.\n",anIface->device_host_name);
+                    mysql_real_connect(&connection->mhandle, anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port, anIface->database_unix_socket, client_flag); 
+
+//MYSQL *mysql_real_connect(MYSQL *mysql, const char *host, const char *user, const char *passwd, const char *db, unsigned int port, const char *unix_socket, unsigned long client_flag)
+
+                    if (&connection->mhandle == NULL) { 
+                        // unable to establish connection
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to establish connection: %s", mysql_error(&connection->mhandle));
+                        fprintf(stderr,"Failed to connect to MySQL database on %s\n",anIface->device_host_name);
+                        fprintf(stderr, "MySQL Error: %s", mysql_error(&connection->mhandle));
+                    } else { 
+                        // connected to database
+                        fprintf(stderr,"Connected to MySQL database on %s\n",anIface->device_host_name);
+                        // make sure error message for making connection is empty.
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
+                        // store connection information
+                        connection->type = DB_MYSQL_SPATIAL;
+                        connection->descriptor = *anIface;
+                        xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
+                        connection_made = 1;
+
+                        // ping the server
+                        fprintf(stderr,"mysql ping %d\n",mysql_ping(&connection->mhandle));
+                    }
                 }
-            }
-            break;
-        #endif /* HAVE_MYSQL_SPATIAL */
-        #ifdef HAVE_MYSQL
-        case DB_MYSQL : 
-            fprintf(stderr,"Opening connection to a MySQL database.\n");
-            mysql_connection = mysql_init(mysql_connection);
-            // if type is mysql, connect to mysql database
-            if (mysql_connection == NULL) { 
-                // insufficient memory to initalize a new database handle 
-                xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
-            } else { 
-                client_flag = CLIENT_COMPRESS;
-                port = anIface->sp;
-                mysql_connection = mysql_real_connect(mysql_connection, anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port, anIface->database_unix_socket, client_flag); 
-                if (mysql_connection == NULL) { 
-                    fprintf(stderr,"Unable to establish connection to MySQL database\nHost: %s Schema: %s Username: %s\n",anIface->device_host_name, anIface->database_schema, anIface->database_username);
-                    // unable to establish connection
-                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to establish MySQL connection. Host: %s Username: %s Password: %s Schema %s Port: %d", anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port); 
-                    fprintf(stderr,"Failed to connect to MySQL database on %s\n",anIface->device_host_name);
+                break;
+            #endif /* HAVE_MYSQL_SPATIAL */
+            #ifdef HAVE_MYSQL
+            case DB_MYSQL : 
+                // if type is mysql (<4.1), connect to mysql database
+                if (debug_level & 1) 
+                    fprintf(stderr,"Opening connection to a MySQL database.\n");
+                if (&connection->mhandle == NULL) { 
+                    // insufficient memory to initalize a new database handle 
+                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
+                    fprintf(stderr,"Insufficient memory to open mysql connection [mysql_init(*MYSQL) returned null].\n");
                 } else { 
-                    fprintf(stderr,"Connected to MySQL database on %s\n",anIface->device_host_name);
-                    // connected to database
-                    // make sure error message for making connection is empty.
-                    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
-                    // store connection information
-                    conn->mhandle = mysql_connection;
-                    conn->type = DB_MYSQL;
-                    conn->descriptor = *anIface;
-                    xastir_snprintf(conn->errormessage, sizeof(conn->errormessage), " ");
-                    connection_made = 1;
+                    client_flag = CLIENT_COMPRESS;
+                    port = anIface->sp;
+// **** fails if database_unix_socket doesn't exist                    
+                    mysql_real_connect(&connection->mhandle, anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port, anIface->database_unix_socket, client_flag); 
+                    if (&connection->mhandle == NULL) { 
+                        fprintf(stderr,"Unable to establish connection to MySQL database\nHost: %s Schema: %s Username: %s\n",anIface->device_host_name, anIface->database_schema, anIface->database_username);
+                        // unable to establish connection
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to establish MySQL connection. Host: %s Username: %s Password: %s Schema %s Port: %d", anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port); 
+                        fprintf(stderr,"Failed to connect to MySQL database on %s\n",anIface->device_host_name);
+                        fprintf(stderr, "MySQL Error: %s", mysql_error(&connection->mhandle));
+                    } else { 
+                        fprintf(stderr,"Connected to MySQL database on %s\n",anIface->device_host_name);
+                        // connected to database
+                        // make sure error message for making connection is empty.
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
+                        // store connection information
+                        connection->type = DB_MYSQL;
+                        connection->descriptor = *anIface;
+                        xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
+                        connection_made = 1;
+                        if (debug_level & 1) 
+                            fprintf(stderr,"Connected to MySQL database, connection stored\n");
+
+                        // ping the server
+                        fprintf(stderr,"mysql ping %d\n",mysql_ping(&connection->mhandle));
+                        
+                    }
                 }
-            }
-            break;
-        #endif /* HAVE_MYSQL*/
-    }
+                break;
+            #endif /* HAVE_MYSQL*/
+        }  /* end switch */
+    }  /* end test for null interface */
+
     if (connection_made==1) { 
-        for (i=0;i<MAX_DB_CONNECTIONS;i++) {
-            if (connections[i].iface == NULL || connections[i].iface == anIface) { 
-                connections[i].conn = conn;
-                connections[i].iface = anIface;
-            }
+        if (debug_level & 1) {
+            fprintf(stderr,"Connection made: ");       
+            fprintf(stderr,"connection->type [%d]\n",connection->type);
         }
         returnvalue = 1;
     } else { 
         // Detailed error message should have been returned above, but make sure
         // there is at least a minimal failure message regardless of the problem.
-        fprintf(stderr,"Failed to make database connection.\n");       
+        fprintf(stderr,"Failed to make database connection.\n");   
+        free(connection);
+        //connection = NULL;
     }
     return returnvalue;
 }
@@ -857,7 +904,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
     char origin[(MAX_CALLSIGN*2)+1]; // temporary holding for escaped origin
     char node_path[(NODE_PATH_SIZE*2)+1];  // temporary holding for escaped node_path
     char record_type[2];  // temporary holding for escaped record_type 
-    PGconn *conn = aDbConnection->phandle;
+    //PGconn *conn = aDbConnection->phandle;
     PGresult *prepared;
     PGresult *result;
     int count;  // returned value from count query
@@ -880,37 +927,51 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
     const char *sql = "insert into simpleStation (station, transmit_time, position, symbol, overlay, aprstype, origin, record_type, node_path) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)";
     const char *StatementName = "InsertSimpleStation";
     const char *StatementExists = "select count(*) from pg_prepared_statements where name = 'InsertSimpleStation'";
+
    
     if (debug_level & 1) 
         fprintf(stderr,"In postgres simple station insert\n");
+
     // Check to see if this prepared statement exists in the current session
     // and create it if it does not.  
     // Query adds connection overhead - should probably track with a global variable, 
     // and query/recreate statment only on failure.  
     ok = 0;
-    result = PQexec(conn, StatementExists);
-    if (result==NULL) { 
-       fprintf(stderr,"Postgres Check for Prepared Query exec Failed: %s\n", PQerrorMessage(conn));
-       xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQerrorMessage(conn));
-    } else {
-        count = atoi(PQgetvalue(result,0,0));
-        if (count==0) { 
-            // Statement doesn't exist, so prepare it, let PQprepare report on any error that got us a NULL result.
-            prepared = PQprepare(conn, StatementName, sql, PARAMETERS, paramTypes);
-            if (PQresultStatus(prepared)==PGRES_COMMAND_OK) { 
+    // pg_prepared_statements system view added in postgresql 8.2  
+    if (PQserverVersion(aDbConnection->phandle)>80199) { 
+        result = PQexec(aDbConnection->phandle, "select count(*) from pg_prepared_statements where name = 'InsertSimpleStation'");
+        result = PQexec(aDbConnection->phandle, StatementExists);
+        if (result==NULL) { 
+           fprintf(stderr,"Postgres Check for Prepared Query exec Failed: %s\n", PQerrorMessage(aDbConnection->phandle));
+           xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQerrorMessage(aDbConnection->phandle));
+        } else {
+            count = 0;
+            if (PQresultStatus(result) == PGRES_TUPLES_OK) { 
+                count = atoi(PQgetvalue(result,0,0));
+            }
+            if (count==0) { 
+                // Statement doesn't exist, so prepare it, let PQprepare report on any error that got us a NULL result.
+                prepared = PQprepare(aDbConnection->phandle, StatementName, sql, PARAMETERS, paramTypes);
+                if (PQresultStatus(prepared)==PGRES_COMMAND_OK) { 
+                    ok = 1;
+                } else {
+                   // error condition - can't prepare statement
+                   fprintf(stderr,"Postgres Prepare Query Failed: %s\n", PQerrorMessage(aDbConnection->phandle));
+                   xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQerrorMessage(aDbConnection->phandle));
+                   exit(1);
+    
+                }
+            } else if (count==1) { 
+                // prepared statement exists, we can go ahead with query.
                 ok = 1;
             } else {
-               // error condition - can't prepare statement
-               fprintf(stderr,"Postgres Prepare Query Failed: %s\n", PQerrorMessage(conn));
-               xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQerrorMessage(conn));
+                fprintf(stderr,"Postgres Check for Prepared Query getvalue (count=%d) failed: %s\n",count, PQresultErrorMessage(result));
+                xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQresultErrorMessage(result));
             }
-        } else if (count==1) { 
-            // prepared statement exists, we can go ahead with query.
-            ok = 1;
-        } else {
-            fprintf(stderr,"Postgres Check for Prepared Query getvalue (count=%d) failed: %s\n",count, PQresultErrorMessage(result));
-            xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQresultErrorMessage(result));
         }
+    } else { 
+        prepared = PQprepare(aDbConnection->phandle, StatementName, sql, PARAMETERS, paramTypes);
+        ok = 1;
     }
     if (ok==1) {
         // native postgis POINT is (99.999 099.999) instead of POINT (99.999 099.999)
@@ -979,7 +1040,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             }
        
             // send query
-            result = PQexecPrepared(conn,StatementName,PARAMETERS,paramValues,NULL,NULL,POSTGRES_RESULTFORMAT_TEXT);
+            result = PQexecPrepared(aDbConnection->phandle,StatementName,PARAMETERS,paramValues,NULL,NULL,POSTGRES_RESULTFORMAT_TEXT);
             if (PQresultStatus(result)!=PGRES_COMMAND_OK) { 
                    fprintf(stderr,"Insert query failed:%s\n",PQresultErrorMessage(result));
                    // error, get error message.
@@ -993,9 +1054,79 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %ld,%ld",aStation->coord_lat,aStation->coord_lon);
         }
     }
+    PQclear(result);
+    PQclear(prepared);
     return returnvalue;
 }
 
+
+
+
+
+/* function add_simple_station() 
+ * adds an xastir DataRow using station and additional data from a simpleStation 
+ * record in a SQL database.  
+ * @param p_new_station Pointer to a DataRow for the new station, probably initalized as DataRow p_new_station = NULL
+ * @param station
+ * @param origin
+ * @param symbol
+ * @param overlay
+ * @param aprs_type
+ * @param latitude
+ * @param longitude
+ * @param record_type
+ * @param node_path
+ * @param transmit_time
+ *
+ * @returns 0 if unable to add new station (p_new_station should be null)
+ * otherwise returns 1 (and p_new_station should be a pointer to the DataRow 
+ * for the new station record.
+ */
+/*
+int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time) { 
+    int returnvalue = 0;
+    unsigned long x;  // xastir coordinate for longitude
+    unsigned long y;  // xastir coordinate for latitide
+    float lat;  // latitude converted from retrieved string
+    float lon;  // longitude converted from retrieved string
+    DataRow *p_time;  // pointer to new station record  
+    struct tm time;
+
+    // Add a datarow using the retrieved station record from the postgis database.
+    p_time = NULL;
+    p_new_station = add_new_station(p_new_station,p_time,station);
+    if (!(p_new_station==NULL)) { 
+        // set values for new station based on the database row
+        xastir_snprintf(p_new_station->origin,58,"%s",origin);
+        p_new_station->aprs_symbol.aprs_symbol = symbol[0];
+        p_new_station->aprs_symbol.special_overlay = overlay[0];
+        p_new_station->aprs_symbol.aprs_type = aprs_type[0];
+        lat = strtof(latitude,NULL);
+        lon = strtof(longitude,NULL);
+        if (convert_to_xastir_coordinates (&x, &y, lon, lat)) {
+           p_new_station->coord_lon = x;
+           p_new_station->coord_lat = y;
+        }
+        p_new_station->record_type = record_type[0];
+        p_new_station->node_path_ptr= node_path;
+        // also set flags for the station 
+        p_new_station->flag |= ST_ACTIVE;
+        if (position_on_extd_screen(p_new_station->coord_lat,p_new_station->coord_lon)) {
+            p_new_station->flag |= (ST_INVIEW);   // set   "In View" flag
+        }
+        else {
+            p_new_station->flag &= (~ST_INVIEW);  // clear "In View" flag
+        }
+        p_new_station->data_via = 'F';  // treat as data from a file.
+        if (strlen(transmit_time) > 0) { 
+            strptime(transmit_time,"%Y-%m-%d %H:%M:%S",&time);
+            p_new_station->sec_heard = mktime(&time);
+        }
+        returnvalue = 1;
+    }
+    return returnvalue;
+}
+*/
 
 
 
@@ -1021,10 +1152,94 @@ int testXastirVersionPostgis(Connection *aDbConnection) {
  * Should only be called through wrapper function.  Do not call directly.
  */
 int getAllSimplePositionsPostgis(Connection *aDbConnection) {
-    int returnvalue = 0;
-    char sql[100] = "select call, transmit_time, position from simpleStation";
+    int returnvalue = 0;  // value to return from function, 1 for success, 0 for failure
+    int row;  // row counter for result set loop
+    int station_count = 0;  // number of new stations retrieved
+    unsigned long x;  // xastir coordinate for longitude
+    unsigned long y;  // xastir coordinate for latitide
+    float lat;  // latitude converted from retrieved string
+    float lon;  // longitude converted from retrieved string
+    const char *sql = "select station, symbol, overlay, aprstype, transmit_time, AsText(position), origin, record_type, node_path, X(position), Y(position) from simpleStation order by station, transmit_time";
+    // station is column 0, symbol is column 1, etc.
     PGconn *conn = aDbConnection->phandle;
+    char *feedback[100];
+    DataRow *p_new_station;  // pointer to new station record  
+    DataRow *p_time;  // pointer to new station record  
 
+    // run query and retrieve result set
+    PGresult *result = PQexec(conn,sql);
+
+    if (result==NULL) { 
+       // PQexec probably couldn't allocate memory for the result set.
+       xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Null result: %s\n",PQerrorMessage(conn));
+       fprintf(stderr, "getAllSimplePositionsPostgis() Null result\nPostgresql Error : %s\n",PQerrorMessage(conn));
+    } else { 
+       // PQexec returned a result, but it may not be valid, check to see.
+       if (PQresultStatus(result)==PGRES_COMMAND_OK || PQresultStatus(result)==PGRES_TUPLES_OK) { 
+          // PQexec returned a valid result set.
+          xastir_snprintf(feedback,100,"Retreiving %i Postgis records\n",PQntuples(result));
+          stderr_and_statusline(feedback);
+          for (row=0; row<PQntuples(result); row++) {
+              // step through rows in result set and add each to xastir db as a minimal DataRow
+              if (PQgetisnull(result,row,0)) {
+                  // station name is null, skip.
+              } else {
+                  // check if station exists
+                  p_new_station = NULL;
+                  if (search_station_name(&p_new_station,PQgetvalue(result,row,0),1)) {  
+                       // This station allready exists as a DataRow in the xastir db.
+                       // Don't create a duplicate record, but add to the DataRow's track.
+
+                       // ? check if it is a mobile station ?       
+                       
+                       // if station doesn't have a track, allocate memory for one
+
+                       // add position and time to track
+
+                  } else { 
+                       // This station isn't in the xastir db. 
+                       add_simple_station(p_new_station,PQgetvalue(result,row,0), PQgetvalue(result,row,6), PQgetvalue(result,row,1), PQgetvalue(result,row,2), PQgetvalue(result,row,3), PQgetvalue(result,row,10), PQgetvalue(result,row,9), PQgetvalue(result,row,7), PQgetvalue(result,row,8), PQgetvalue(result,row,4));
+                    
+/*
+                       // Add a datarow using the retrieved station record from the postgis database.
+                       p_time = NULL;
+                       p_new_station = add_new_station(p_new_station,p_time,PQgetvalue(result,row,0));
+                       // set values for new station based on the database row
+                       xastir_snprintf(p_new_station->origin,58,"%s",PQgetvalue(result,row,6));
+                       p_new_station->aprs_symbol.aprs_symbol = PQgetvalue(result,row,1)[0];
+                       p_new_station->aprs_symbol.special_overlay = PQgetvalue(result,row,2)[0];
+                       p_new_station->aprs_symbol.aprs_type = PQgetvalue(result,row,3)[0];
+                       lat = strtof(PQgetvalue(result,row,9),NULL);
+                       lon = strtof(PQgetvalue(result,row,10),NULL);
+                       if (convert_to_xastir_coordinates (&x, &y, lon, lat)) {
+                          p_new_station->coord_lon = x;
+                          p_new_station->coord_lat = y;
+                       }
+                       p_new_station->record_type = PQgetvalue(result,row,7)[0];
+                       // also set flags for the station 
+                       p_new_station->flag |= ST_ACTIVE;
+                       if (position_on_extd_screen(p_new_station->coord_lat,p_new_station->coord_lon)) {
+                           p_new_station->flag |= (ST_INVIEW);   // set   "In View" flag
+                       }
+                       else {
+                           p_new_station->flag &= (~ST_INVIEW);  // clear "In View" flag
+                       }
+*/
+                       station_count ++;
+                  }  // end else, new station
+              } // end else, station is not null 
+          } // end for loop stepping through rows
+          redo_list = (int)TRUE;      // update active station lists
+          xastir_snprintf(feedback,100,"Added %d stations from Postgis\n",station_count);
+          stderr_and_statusline(feedback);
+       } else {       
+           // sql query had a problem retrieving result set.
+           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "%s %s\n",PQresStatus(PQresultStatus(result)),PQerrorMessage(conn));
+           fprintf(stderr, "getAllSimplePositionsPostgis() %s\nPostgresql Error : %s\n",PQresStatus(PQresultStatus(result)),PQerrorMessage(conn));
+       }
+       // done with result set, so free the resource.
+       PQclear(result);
+    } 
     return returnvalue;
 }
 
@@ -1072,7 +1287,6 @@ int getAllSimplePositionsPostgisInBoundingBox(Connection *aDbConnection, char* s
 int storeStationToGisDbMysql(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
     int mysqlreturn;
-    MYSQL *conn = aDbConnection->mhandle;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
     switch (aDbConnection->descriptor.database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
@@ -1105,7 +1319,6 @@ int storeStationToGisDbMysql(Connection *aDbConnection, DataRow *aStation) {
 int storeCadToGisDbMysql(Connection *aDbConnection, CADRow *aCadObject) { 
     int returnvalue = 0;
     int mysqlreturn;
-    MYSQL *conn = aDbConnection->mhandle;
    
     return returnvalue;
 }
@@ -1141,71 +1354,215 @@ int bind_mysql_parameter(MYSQL_BIND *bind, buffer, int length, int buffer_length
  */
 int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
-    int mysqlreturn;
-    int test;
+    int mysqlreturn;  // hold return value of mysql query
+    int param_count;  // check on the number of parameters present in the prepared statement
     int ok;    // variable to store results of tests preparatory to firing query
+    // temporary holding variables for bind buffers
     char wkt[MAX_WKT];  // well know text representation of latitude and longitude of point
+    char aprs_symbol[2];  // temporary holding for escaped aprs symbol
+    char aprs_type[2];    // temporary holding for escaped aprs type
+    char special_overlay[2];  // temporary holding for escaped overlay
+    char record_type[2];              // temporary holding for escaped record type
+    char origin[MAX_CALLSIGN];  // temporary holding for escaped origin
+    char node_path[NODE_PATH_SIZE];         // temporary holding for escaped node_path_ptr
+    MYSQL_STMT *statement;
+    // bind string lengths
+    int call_sign_length;
+    int wkt_length;
+    int aprs_symbol_length;
+    int aprs_type_length;
+    int special_overlay_length;
+    int origin_length;
+    int record_type_length;
+    int node_path_length;
+    // time
+    MYSQL_TIME timestamp;
     char timestring[100+1];
-    MYSQL *conn = aDbConnection->mhandle;
-    // prepare statement
-    MYSQL_BIND bind[3];
-    #define SQL "insert into simpleStation (call, transmit_time, position) values ('%1','%2',PointFromText('%3'))"
-    MYSQL_STMT *statement = mysql_stmt_prepare(conn, SQL, strlen(SQL));
+    time_t secs_now;
+    struct tm *ts;  // to convert time to component parts for bind.buffer_type MYSQL_TYPE_DATETIME
+    // define prepared statement and matching bind array
+    #define SQL "INSERT INTO simpleStationSpatial (station, transmit_time, position, symbol, overlay, aprstype, origin, record_type, node_path) VALUES (?,?,PointFromText(?),?,?,?,?,?,?)"
+    MYSQL_BIND bind[9];   // bind array for prepared query.
+    int parameters = 9;
+    // Note:
+    // bind[9], SQL "?????????", and param_count must all match value of parameters
+    // nine bound parameters, nine question marks in the statement, and param_count returned as nine.
+
+    if (debug_level & 1) 
+        fprintf(stderr,"in storeStationSimplePointToGisDbMysql\n");    
+        
+    statement = mysql_stmt_init(&aDbConnection->mhandle);
     if (!statement) { 
-        mysql_interpret_error(*mysql_error(conn),aDbConnection);
+       fprintf(stderr,"Unable to create mysql prepared statement.  May be out of memmory.\n");    
+    }
+    mysql_stmt_prepare(statement, SQL, strlen(SQL));
+    if (!statement) { 
+        mysql_interpret_error(*mysql_error(&aDbConnection->mhandle),aDbConnection);
     } else { 
-       // get call, time, and position
-       // call is required
-       if (aStation->call_sign!=NULL && strlen(aStation->call_sign)>0) { 
-           // get call, time, and position
-           bind[0].buffer =  &aStation->call_sign;
-           bind[0].length = strlen(aStation->call_sign);
+       // test to make sure that statement has the correctg number of parameters
+       param_count= mysql_stmt_param_count(statement);
+       if (param_count!=parameters) { 
+           fprintf(stderr,"Number of bound parameters %d does not match expected value %d\n",param_count,parameters);
+       } else {
+           // set up the buffers 
+           memset(bind, 0, sizeof(bind));
+
+           bind[0].buffer =  (char *)&aStation->call_sign;
+           bind[0].length = &call_sign_length;
            bind[0].buffer_length = MAX_CALLSIGN;
            bind[0].buffer_type = MYSQL_TYPE_STRING;
-           bind[0].is_null = -1;
-           // *** wrap setting of bind values into a function
-           // get time in seconds, adjust to datetime
-           // If my station or another unset sec_heard is 
-           // encountered, use current time instead, use time
-           // provided if it was invalid.
-           get_iso_datetime(aStation->sec_heard,timestring,True,False);
-           bind[1].buffer = &timestring;
-           //bind[1]->length
-           //bind[1]->buffer_length
-           //bind[1]->buffer_type
-           //bind[1]->isnull
-           ok = xastirCoordToLatLongWKT(aStation->coord_lon, aStation->coord_lat, wkt);
-           if (ok==1) { 
-               bind[2].buffer = wkt;
-               //bind[2]->length
-               //bind[2]->buffer_length
-               //bind[2]->buffer_type
-               //bind[2]->isnull
-               test = mysql_stmt_bind_param(statement, bind);
-               if (test==0) { 
-                   mysql_interpret_error(test,aDbConnection);
-               } else { 
-                   // send query
-                   mysqlreturn = mysql_stmt_execute(statement);
-                   if (mysqlreturn!=0) { 
-                       returnvalue=0;
-                       mysql_interpret_error(mysqlreturn,aDbConnection);
-                   } else {
-                       returnvalue=1;
-                   }
-               }
+           bind[0].is_null = 0;
+
+           bind[1].buffer = (char *)&timestamp;
+           bind[1].length = 0;
+           bind[1].buffer_type = MYSQL_TYPE_DATETIME;
+           bind[1].is_null = 0;
+
+           bind[2].buffer = (char *)&wkt;
+           bind[2].length = &wkt_length;
+           bind[2].buffer_length = MAX_WKT;
+           bind[2].buffer_type = MYSQL_TYPE_STRING;
+           bind[2].is_null = 0;
+
+           bind[3].buffer = (char *)&aprs_symbol;
+           bind[3].length = &aprs_symbol_length;
+           bind[3].buffer_length = 2;
+           bind[3].buffer_type = MYSQL_TYPE_STRING;
+           bind[3].is_null = 0;
+
+           bind[4].buffer = (char *)&special_overlay;
+           bind[4].length = &special_overlay_length;
+           bind[4].buffer_length = 2;
+           bind[4].buffer_type = MYSQL_TYPE_STRING;
+           bind[4].is_null = 0;
+
+           bind[5].buffer = (char *)&aprs_type;
+           bind[5].length = &aprs_type_length;
+           bind[5].buffer_length = 2;
+           bind[5].buffer_type = MYSQL_TYPE_STRING;
+           bind[5].is_null = 0;
+
+           bind[6].buffer = (char *)&origin;
+           bind[6].length = &origin_length;
+           bind[6].buffer_length = MAX_CALLSIGN;
+           bind[6].buffer_type = MYSQL_TYPE_STRING;
+           bind[6].is_null = 0;
+
+           bind[7].buffer = (char *)&record_type;
+           bind[7].length = &record_type_length;
+           bind[7].buffer_length = 2;
+           bind[7].buffer_type = MYSQL_TYPE_STRING;
+           bind[7].is_null = 0;
+
+           bind[8].buffer = (char *)&node_path;
+           bind[8].length = &node_path_length;
+           bind[8].buffer_length = NODE_PATH_SIZE;
+           bind[8].buffer_type = MYSQL_TYPE_STRING;
+           bind[8].is_null = 0;
+
+           ok = mysql_stmt_bind_param(statement,bind);
+           if (ok!=0) { 
+               fprintf(stderr,"Error binding parameters to mysql prepared statement.\n");                   
+               mysql_interpret_error(mysql_errno(&aDbConnection->mhandle),aDbConnection);
+               fprintf(stderr,mysql_stmt_error(statement));
            } else { 
-                xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
-           }
-       } else { 
-           // set call not null error message
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Station callsign is required and was blank or null.");
-       }
-       mysql_stmt_close(statement);
+
+               // get call, time, and position
+               // call is required
+               if (aStation->call_sign!=NULL && strlen(aStation->call_sign)>0) { 
+                   call_sign_length = strlen(aStation->call_sign);
+        
+                   // get time in seconds, adjust to datetime
+                   // If my station or another unset sec_heard is 
+                   // encountered, use current time instead, use time
+                   // provided if it was invalid.
+                   get_iso_datetime(aStation->sec_heard,timestring,True,False);
+                   if ((int)aStation->sec_heard==0 ) { 
+                       secs_now = sec_now();
+                       ts = localtime(&secs_now);
+                   } else { 
+                       ts = localtime(&aStation->sec_heard);
+                   }
+                   timestamp.year = ts->tm_year + 1900;  // tm_year is from 1900
+                   timestamp.month = ts->tm_mon + 1;     // tm_mon is from 0
+                   timestamp.day = ts->tm_mday;          // tm_mday is from 1
+                   timestamp.hour = ts->tm_hour;
+                   timestamp.minute = ts->tm_min;
+                   timestamp.second = ts->tm_sec;
+                   ok = xastirCoordToLatLongWKT(aStation->coord_lon, aStation->coord_lat, wkt);
+                   if (ok==1) { 
+                       wkt_length = strlen(wkt);
+
+
+                       if (aStation->aprs_symbol.aprs_symbol==NULL) { 
+                           xastir_snprintf(aprs_symbol,2,"%c",'\0');
+                       } else { 
+                           xastir_snprintf(aprs_symbol,2,"%c",aStation->aprs_symbol.aprs_symbol);
+                       }
+                       aprs_symbol_length = strlen(aprs_symbol);
+
+                       if (aStation->aprs_symbol.aprs_type==NULL) { 
+                           xastir_snprintf(aprs_type,2,"%c",'\0');
+                       } else { 
+                           xastir_snprintf(aprs_type,2,"%c",aStation->aprs_symbol.aprs_type);
+                       }
+                       aprs_type_length = strlen(aprs_type);
+
+                       if (aStation->aprs_symbol.special_overlay==NULL) { 
+                           xastir_snprintf(special_overlay,2,"%c",'\0');
+                       } else { 
+                           xastir_snprintf(special_overlay,2,"%c",aStation->aprs_symbol.special_overlay);
+                       }
+                       special_overlay_length = strlen(special_overlay);
+
+                       if (aStation->origin==NULL) { 
+                           xastir_snprintf(origin,2,"%c",'\0');
+                       } else { 
+                           xastir_snprintf(origin,strlen(aStation->origin),"%c",aStation->origin);
+                       }
+                       origin_length = strlen(origin);
+
+                       if (aStation->record_type==NULL) { 
+                           xastir_snprintf(record_type,2,"%c",'\0');
+                       } else { 
+                           xastir_snprintf(record_type,2,"%c",aStation->record_type);
+                       }
+                       record_type_length = strlen(record_type);
+                       
+                       if (aStation->node_path_ptr==NULL) { 
+                           xastir_snprintf(node_path,2,"%c",'\0');
+                       } else { 
+                           xastir_snprintf(node_path,strlen(aStation->node_path_ptr),"%c",aStation->node_path_ptr);
+                       }
+                       node_path_length = strlen(node_path);
+
+                       // all the bound parameters should be available and correct
+                       if (debug_level & 1) 
+                          fprintf(stderr,"saving station %s  %d %d %d %d:%d:%d wkt=%s \n",aStation->call_sign,ts->tm_year,ts->tm_mon,ts->tm_mday,ts->tm_hour,ts->tm_min,ts->tm_sec,wkt);
+                       // send query
+                       mysqlreturn = mysql_stmt_execute(statement);
+                       if (mysqlreturn!=0) { 
+                           returnvalue=0;
+                           fprintf(stderr,"%s\n",mysql_stmt_error(statement));
+                           mysql_interpret_error(mysqlreturn,aDbConnection);
+                       } else {
+                           returnvalue=1;
+                       }
+                   } else { 
+                        fprintf(stderr,"Unable to save station to mysql db, Error converting latitude or longitude form xastir coordinates\n");                   
+                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
+                   }
+               } else { 
+                   // set call not null error message
+                   fprintf(stderr,"Unable to save station to mysql db, Station call sign was blank or null.\n");                   
+                   xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Station callsign is required and was blank or null.");
+               }
+           } // end of bind check
+       }  // end of parameter count check
     }
-    // send query
   
-  
+    mysql_stmt_close(statement);
+
     return returnvalue;
 }
 
@@ -1217,8 +1574,66 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
 int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
     int returnvalue = 0;
     int mysqlreturn;
-    char sql[] = "select call, transmit_time, AsText(position) from simpleStation";
-    MYSQL *conn = aDbConnection->mhandle;
+    DataRow *p_new_station;
+    int station_count = 0;  // number of new stations retrieved
+    char *s_lat[13];  // string latitude
+    char *s_lon[13];  // string longitude
+    float lat;  // latitude converted from retrieved string
+    float lon;  // longitude converted from retrieved string
+    char *feedback[100];
+    struct tm time;
+    char sql[] = "select station, transmit_time, AsText(position), symbol, overlay, aprstype, origin, record_type, node_path from simpleStationSpatial order by station, transmit_time";
+    MYSQL_RES *result;
+    MYSQL_ROW *row;
+    int ok;   // to hold mysql_query return value
+    ok = mysql_query(&aDbConnection->mhandle,sql);
+    if (ok==0) { 
+        result = mysql_use_result(&aDbConnection->mhandle);
+        if (result!=NULL) { 
+            xastir_snprintf(feedback,100,"Retrieving MySQL records\n");
+            stderr_and_statusline(feedback);
+            // with mysql_use_result each call to mysql_fetch_row retrieves
+            // a row of data from the server.  Mysql_store_result might use
+            // too much memory in retrieving a large result set all at once.
+            row = mysql_fetch_row(result);
+            while (row != NULL) { 
+               // retrieve data from the row
+               // test to see if this is a valid station
+               if (row[0]==NULL) { 
+                  // station is null, skip
+               } else { 
+                  p_new_station = NULL;
+                  if (search_station_name(&p_new_station,row[0],1)) {  
+                       // This station is allready in present as a DataRow in the xastir db.
+                       // Add data to the station's track.
+                  } else { 
+                       // This station isn't in the xastir db. 
+                       // Add a datarow using the retrieved station record from the postgis database.
+                       lat = xastirWKTPointToLatitude(row[2]); 
+                       lon = xastirWKTPointToLongitude(row[2]); 
+                       xastir_snprintf(s_lat,13,"%3.6f",lat);
+                       xastir_snprintf(s_lon,13,"%3.6f",lon);
+                       add_simple_station(p_new_station, row[0], row[6], row[3], row[4], row[5], s_lat, s_lon, row[7], row[8], row[1]);
+
+                       station_count++;
+                  }
+               }
+               // try to fetch the next row
+               row = mysql_fetch_row(result);
+            }
+        } else { 
+            // error fetching the result set
+            fprintf(stderr,"mysql error: %s\n",mysql_error(&aDbConnection->mhandle));
+            mysql_interpret_error(mysql_errno(&aDbConnection->mhandle),aDbConnection);
+        }
+        xastir_snprintf(feedback,100,"Retreived %d new stations from MySQL\n",station_count);
+        stderr_and_statusline(feedback);
+        mysql_free_result(result);
+    } else { 
+       // query didn't execute correctly
+       mysql_interpret_error(ok,aDbConnection);
+    }
+
     return returnvalue;
 }
 
@@ -1337,6 +1752,10 @@ int getAllSimplePositionsMysqlSpatialInBoundingBox(Connection *aDbConnection, ch
 #ifdef HAVE_MYSQL
 // functions for MySQL database version < 4.1, or MySQL schema objects that don't 
 // include spatial indicies.  
+//
+//********* Support for MySQL < 4.1 is depreciated  *****************************
+//********* Expect MySQL support to be limited to MySQL 5+ **********************
+//
 
 
 
@@ -1366,11 +1785,15 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
     float latitude;
     int ok;
     char timestring[100+1];
+    char *to[3];  // write to value for mysql_real_escape_string 
 
-    MYSQL *conn = aDbConnection->mhandle;
+    if (debug_level & 1) 
+        fprintf(stderr,"In storestationsimpletodbmysql()\n");
+
     // prepared statements not present below MySQL version 4.1
+    // details of prepared statement support changed between versions 4.1 and 5.0.  
     // char [] sql = "insert into simpleStation (call, transmit_time, latitude, longitude) values ('%1','%2','%3','%4'))";
-    // call is required
+    // call is a required element for a simple station
     if (aStation!=NULL && aStation->call_sign!=NULL && strlen(aStation->call_sign)>0) {
         // get time in seconds, adjust to datetime
         // If my station or another unset sec_heard is 
@@ -1379,32 +1802,36 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
         get_iso_datetime(aStation->sec_heard,timestring,True,False);
         // get coord_lat, coord_long in xastir coordinates and convert to decimal degrees
         ok = convert_from_xastir_coordinates (&longitude, &latitude, aStation->coord_lon, aStation->coord_lat);
+        // latitude and longitude are required elements for a simple station record.
         if (ok==1) { 
             // build insert query with call, time, and position
             // handle special cases of null, \ and ' characters in type, symbol, and overlay.
             if (aStation->aprs_symbol.aprs_symbol==NULL) { 
                 xastir_snprintf(aprs_symbol,2,"%c",'\0');
             } else { 
-               mysql_real_escape_string(conn,&aprs_symbol,&(aStation->aprs_symbol.aprs_symbol),3);
+                xastir_snprintf(aprs_symbol,2,"%c",aStation->aprs_symbol.aprs_symbol);
+                mysql_real_escape_string(&aDbConnection->mhandle,&aprs_symbol,aprs_symbol,1);
             }
             if (aStation->aprs_symbol.aprs_type==NULL) { 
                 xastir_snprintf(aprs_type,2,"%c",'\0');
             } else { 
-                mysql_real_escape_string(conn,&aprs_type,&(aStation->aprs_symbol.aprs_type),3);
+                xastir_snprintf(aprs_type,2,"%c",aStation->aprs_symbol.aprs_type);
+                mysql_real_escape_string(&aDbConnection->mhandle,&aprs_type,aprs_type,1);
             }
             if (aStation->aprs_symbol.special_overlay==NULL) { 
                 xastir_snprintf(special_overlay,2,"%c",'\0');
             } else { 
-                mysql_real_escape_string(conn,&special_overlay,&(aStation->aprs_symbol.special_overlay),3);
+                xastir_snprintf(special_overlay,2,"%c",aStation->aprs_symbol.special_overlay);
+                mysql_real_escape_string(&aDbConnection->mhandle,&special_overlay,special_overlay,1);
             } 
   
             // Need to escape call sign - may contain special characters: 
             // insert into simpleStation (station, symbol, overlay, aprstype, transmit_time, latitude, longitude) 
             // values ('Fry's','/\0\0',' ','//\0','2007-08-07 21:55:43 -0400','47.496834','-122.198166')
-            mysql_real_escape_string(conn,&call_sign,&(aStation->call_sign),strlen(aStation->call_sign));
+            mysql_real_escape_string(&aDbConnection->mhandle,&call_sign,&(aStation->call_sign),strlen(aStation->call_sign));
 
             if (strlen(aStation->origin) > 0) { 
-                mysql_real_escape_string(conn,&origin,&(aStation->origin),strlen(aStation->origin));
+                mysql_real_escape_string(&aDbConnection->mhandle,&origin,&(aStation->origin),strlen(aStation->origin));
             } else { 
                 xastir_snprintf(origin,2,"%c",'\0');
             } 
@@ -1421,9 +1848,12 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
                 fprintf(stderr,"MySQL Query:\n%s\n",sql);
 
             // send query 
-            mysqlreturn = mysql_query(conn, sql);
+            mysql_ping(&aDbConnection->mhandle);
+            mysqlreturn = mysql_real_query(&aDbConnection->mhandle, sql, strlen(sql)+1);
             if (mysqlreturn!=0) { 
                 // get the mysql error message
+                fprintf(stderr,mysql_error(&aDbConnection->mhandle));
+                fprintf(stderr,"\n");
                 mysql_interpret_error(mysqlreturn,aDbConnection);
             } else {
                 // insert query was successfull, return value is ok.
@@ -1453,7 +1883,6 @@ int testXastirVersionMysql(Connection *aDbConnection) {
     int returnvalue = 0;
     int mysqlreturn;
     char sql[] = "select version_number from version order by version_number desc limit 1";  
-    MYSQL *conn = aDbConnection->mhandle;
     return returnvalue;
 }
 
@@ -1493,31 +1922,61 @@ int storeStationToDbMysql(Connection *aDbConnection, DataRow *aStation){
  */
 int getAllSimplePositionsMysql(Connection *aDbConnection) {
     int returnvalue = 0;
-    char sql[] = "select call, transmit_time, latitude, longitude, symbol, overlay, aprstype from simpleStation";
-    MYSQL *conn = aDbConnection->mhandle;
+    DataRow *p_new_station;
+    DataRow *p_time;
+    int station_count = 0;  // number of new stations retrieved
+    unsigned long x;  // xastir coordinate for longitude
+    unsigned long y;  // xastir coordinate for latitide
+    float lat;  // latitude converted from retrieved string
+    float lon;  // longitude converted from retrieved string
+    char *feedback[100];
+    struct tm time;
+    char sql[] = "select station, transmit_time, latitude, longitude, symbol, overlay, aprstype, origin, record_type, node_path from simpleStation order by station, transmit_time";
     MYSQL_RES *result;
     MYSQL_ROW *row;
-    if (mysql_query(conn,sql)==0) { 
-        result = mysql_use_result(conn);
+    int ok;   // to hold mysql_query return value
+    ok = mysql_query(&aDbConnection->mhandle,sql);
+    if (ok==0) { 
+        result = mysql_use_result(&aDbConnection->mhandle);
         if (result!=NULL) { 
+            xastir_snprintf(feedback,100,"Retrieving MySQL records\n");
+            stderr_and_statusline(feedback);
             // with mysql_use_result each call to mysql_fetch_row retrieves
             // a row of data from the server.  Mysql_store_result might use
             // too much memory in retrieving a large result set all at once.
             row = mysql_fetch_row(result);
             while (row != NULL) { 
                // retrieve data from the row
+               // test to see if this is a valid station
+               if (row[0]==NULL) { 
+                  // station is null, skip
+               } else { 
+                  p_new_station = NULL;
+                  if (search_station_name(&p_new_station,row[0],1)) {  
+                       // This station is allready in present as a DataRow in the xastir db.
+                       // Add data to the station's track.
+                  } else { 
+                       // This station isn't in the xastir db. 
+                       // Add a datarow using the retrieved station record from the postgis database.
+                       add_simple_station(p_new_station, row[0], row[7], row[4], row[5], row[6], row[2], row[3], row[8], row[9], row[1]);
 
+                       station_count++;
+                  }
+               }
                // try to fetch the next row
                row = mysql_fetch_row(result);
             }
         } else { 
             // error fetching the result set
-            mysql_interpret_error(conn,aDbConnection);
+            fprintf(stderr,"mysql error: %s\n",mysql_error(&aDbConnection->mhandle));
+            mysql_interpret_error(mysql_errno(&aDbConnection->mhandle),aDbConnection);
         }
+        xastir_snprintf(feedback,100,"Retreived %d new stations from MySQL\n",station_count);
+        stderr_and_statusline(feedback);
         mysql_free_result(result);
     } else { 
        // query didn't execute correctly
-       mysql_interpret_error(conn,aDbConnection);
+       mysql_interpret_error(ok,aDbConnection);
     }
     return returnvalue;
 }
@@ -1645,10 +2104,66 @@ int xastirCoordToLatLongWKT(long x, long y, char *wkt) {
     int ok;
     ok = convert_from_xastir_coordinates (&longitude,&latitude, x, y);
     if (ok>0) { 
-       xastir_snprintf(wkt, MAX_WKT, "POINT(%3.6f %3.6f)", latitude, longitude);
+       xastir_snprintf(wkt, MAX_WKT, "POINT(%3.6f %3.6f)", longitude, latitude);
        returnvalue = 1;
     } 
     return returnvalue;
 }
 
+
+
+
+
+float xastirWKTPointToLongitude(char *wkt) { 
+    float returnvalue = 0.0;
+    char temp[MAX_WKT];
+    char *space = NULL;
+    int x;
+    if (wkt[0]=='P' && wkt[1]=='O' && wkt[2]=='I' && wkt[3]=='N' && wkt[4]=='T' && wkt[5]=='(') { 
+        // this is a point
+        xastir_snprintf(temp, MAX_WKT, "%s", wkt);
+        // truncate at the space
+        space = strchr(temp,' ');
+        if (space != NULL) { 
+            *space = '\0';
+        }
+        // remove the leading "POINT("
+        for (x=0;x<6;x++) {  
+            temp[x]=' ';
+        }
+        returnvalue = atof(temp);
+    }
+    return returnvalue;
+}
+
+
+
+
+
+float xastirWKTPointToLatitude(char *wkt) { 
+    float returnvalue = 0.0;
+    char temp[MAX_WKT];
+    char *paren = NULL;
+    int x;
+    if (wkt[0]=='P' && wkt[1]=='O' && wkt[2]=='I' && wkt[3]=='N' && wkt[4]=='T' && wkt[5]=='(') { 
+        // this is a point
+        xastir_snprintf(temp, MAX_WKT, "%s", wkt);
+        // truncate at the trailing parenthesis
+        paren = strchr(temp,')');
+        if (paren != NULL) { 
+            *paren = '\0';
+        }
+        // convert all leading characters up to the space to spaces.
+        for (x=0;x<strlen(temp);x++)  {
+            if (temp[x]==' ') { 
+               x = strlen;
+           } else { 
+               temp[x] = ' ';
+           }
+        }
+        returnvalue = atof(temp);
+    }
+    return returnvalue;
+
+}
 
