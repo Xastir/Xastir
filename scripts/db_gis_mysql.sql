@@ -1,7 +1,8 @@
 -- MYSQL SPATIAL (>4.1)
 
 create database xastir;
-grant select on xastir to user xastir_user@localhost identified by password '<password>';
+-- set the password and uncomment
+--grant select on xastir to user xastir_user@localhost identified by password '<password>';
   
 use xastir;
 
@@ -12,6 +13,9 @@ create table version (
 grant select on version to xastir_user@localhost
 
 insert into version (version_number,compatable_series) values (1,1);
+
+-- MySQL spatial table using geometry POINT rather than lat/long
+-- 
 
 create table simpleStationSpatial (
      simpleStationId int primary key not null auto_increment
@@ -26,7 +30,7 @@ create table simpleStationSpatial (
      node_path varchar(56)
 );
 
-grant select, insert, update on simpleStation to xastir_user@localhost;
+grant select, insert, update on simpleStationSpatial to xastir_user@localhost;
 
 -- MYSQL (default table)
 
@@ -44,5 +48,5 @@ create table simpleStation (
      node_path varchar(56)
 );
 
-
+grant select, insert, update on simpleStation to xastir_user@localhost;
 

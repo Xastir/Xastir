@@ -52,7 +52,8 @@ libcurl or wget                 Optional  Internet images as maps
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 GDAL/OGR                        Optional  Many formats (coming soon)
 libdb (4.0 or newer)            Optional  Internet map caching (fast!)
-
+libpq                           Experimental Persistent data with Postgis
+libmysqlclient                  Experimental Persistent data with MySQL
 
 Library/Option Heirarchy:
 -------------------------
@@ -326,6 +327,8 @@ features, you can add any of the following flags to configure:
     --with-profiling
     --with-rtree
     --with-lsb
+    --with-postgis
+    --with-mysql
 
 For example, "./configure --without-ax25" will disable the AX.25
 networking code in Xastir.
@@ -974,8 +977,66 @@ First Time Install:
       Xastir should be able to connect to the db2APRS server in order to get
       the Davis weather station data.  See further instructions in the Davis
       directory.
+
+   12. OPTIONAL: Experimental.  Add GIS database support.  
+
+      Note: Database support is experimental and any aspect may change at
+      any time, including database structures.  Scripts to create database
+      tables for MySQL and Postgres/Postgis are in the scripts directory
+      as db_gis_postgis.sql and db_gis_mysql.sql.
+
+      Warning: If you are connected to internet feeds for APRS data, it
+      is possible to accumulate several million station records per day
+      which could amount to around 300 MB of database records per day.  
+
+      Postgres + Postgis:
+      Install Postgres.  Include development packages (libpq).
+      Add Postgis spatial object support to Postgres.
+
+      Compile xastir with --with-postgis
+
+      After building xastir:
+      Create a database named xastir and a user with create rights on 
+      that database.
+      Edit db_gis_postgis.sql to set username and password for an xastir
+      user with select access to the xastir database.
+      Default values are database=xastir, user=xastir_user
+      You may also need to set permissions in pg_hba.conf.
+      Run the queries in db_gis_postgis.sql.
+      Run xastir and add a SQL Database interface, start with the postgis
+      defaults, add the username and password of the xastir user. 
+
+      Other GIS applications (e.g. QGIS, Mapserver, GRASS) can access and
+      display station data directly from the postgresql/postgis database.  
+
+      You can configure the database interface to read station from the 
+      database on startup and to save stations as they are heard to the
+      database.  This provides persistance of station data between
+      xastir sessions.
+
+      MySQL:
+      Install MySQL.  Include development packages (libmysqlclient).
+
+      Compile xastir with --with-mysql
+
+      After building xastir:
+      Create a database named xastir and a user with create rights on 
+      that database.
+      Edit db_gis_mysql.sql to set username and password for an xastir
+      user with select access to the xastir database.
+      Default values are database=xastir, user=xastir_user
+      Run the queries in db_gis_mysql.sql
+         mysql xastir -p < db_gis_mysql.sql
+      Run xastir and add a SQL Database interface, start with the MySQL
+      defaults, add the username and password of the xastir user. 
+
+      You can configure the database interface to read station from the 
+      database on startup and to save stations as they are heard to the
+      database.  This provides persistance of station data between
+      xastir sessions.
+     
  
-   12. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   13. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using CVS)
@@ -1076,7 +1137,7 @@ First Time Install:
      see the notes above about /sbin/ldconfig.
 
 
-   13. Kernel AX.25 Interfaces
+   14. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -1149,7 +1210,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   14. Serially-Connected TNC's
+   15. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -1277,7 +1338,7 @@ file that are useful for debugging in case Xastir crashes.
      >    being yet another root exploit-in-waiting.
 
 
-   15. Serially-Connected Garmin RINO Radio/GPS
+   16. Serially-Connected Garmin RINO Radio/GPS
 
      If you have a Garmin RINO attached to a serial port, have GPSMan
      installed, and have support for GPSMan compiled into Xastir, then Xastir
@@ -1317,7 +1378,7 @@ file that are useful for debugging in case Xastir crashes.
      (ie kerchunk) to send a position."
 
 
-   16. Start up XASTIR and read the help files to configure it. If you have 
+   17. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in

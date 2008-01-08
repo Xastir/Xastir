@@ -594,10 +594,9 @@ int openConnection(ioparam *anIface, Connection *connection) {
                        // add connection status feedback here if desired
                     }
                     if (PQstatus(connection->phandle)==CONNECTION_OK) {
-                        if (debug_level & 1)
+                        //if (debug_level & 1)
                             fprintf(stderr,"Connected to Postgresql database on %s\n",anIface->device_host_name);
                         // connection successfull
-                        //connection->phandle = postgres_connection;
                         connection->type=DB_POSTGIS;
                         connection->descriptor = *anIface;
                         xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");

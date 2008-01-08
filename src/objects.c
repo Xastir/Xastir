@@ -6689,6 +6689,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     char *variable;
     FILE *fp_file;
     int j = 0;
+    char error_correct_location[256];
 
     xastir_snprintf(line,sizeof(line),"%s","\0");
     xastir_snprintf(predefined_object_definition_file,sizeof(predefined_object_definition_file),"config/%s",predefined_object_definition_filename);
@@ -6708,7 +6709,16 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
             fp_file = fopen(get_data_base_dir(predefined_object_definition_file),"r");
 #endif  // OBJECT_DEF_FILE_USER_BASE
     
-            fprintf(stderr,"Loading from %s \n",predefined_object_definition_file);
+            xastir_snprintf(error_correct_location,
+                sizeof(error_correct_location),
+                "Loading from %s/%s \n",
+#ifdef OBJECT_DEF_FILE_USER_BASE
+                get_user_base_dir("config"),
+#else   // OBJECT_DEF_FILE_USER_BASE
+                get_data_base_dir("config"),
+#endif  // OBJECT_DEF_FILE_USER_BASE
+                predefined_object_definition_file);
+            fprintf(stderr,error_correct_location);
             while (!feof(fp_file)) {
                 // read lines to end of file
                 (void)get_line(fp_file, line, line_max_length);
@@ -6794,7 +6804,6 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
             }
         }
         else {
-            char error_correct_location[256];
  
             fprintf(stderr,"Error: Predefined objects menu file not found.\n");
 

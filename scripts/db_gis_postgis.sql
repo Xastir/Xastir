@@ -2,7 +2,8 @@
 
 create database xastir;
 
-create user xastir_user with  encrypted password '<password>';
+--set the password and uncomment
+--create user xastir_user with encrypted password '<password>';
 
 -- edit pg_hba.conf to allow access from local host
 --local xastir xastir_user md5
@@ -49,16 +50,16 @@ select AddGeometryColumn('','simpleStation','position',4326,'POINT',2);
 
 grant select, insert, update on simpleStation to xastir_user;
 grant select, update on simpleStation_simpleStationId_seq to xastir_user;
-// the next two grants allow xastir_user to be used in other applications
-// such as qgis that need access to the spatial metadata tables
+-- the next two grants allow xastir_user to be used in other applications
+-- such as qgis that need access to the spatial metadata tables
 grant select on geometry_columns to xastir_user;
 grant select spatial_ref_sys to xastir_user;
 
-// 0 update
+-- 0 update
 alter table simpleStation add column origin varchar(9) not null default '';
 alter table simpleStation add column record_type varchar(1);
 alter table simpleStation add column node_path varchar(56);
-// note - lat/long is transposed in version 0 and version 1
+-- note - lat/long is transposed in version 0 and version 1
 
 
 

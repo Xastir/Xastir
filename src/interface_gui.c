@@ -33,6 +33,11 @@
 #include <unistd.h>
 #include <termios.h>
 #include <Xm/XmAll.h>
+#if (XmVERSION >= 2 && !defined(LESSTIF_VERSION))
+#  define USE_COMBO_BOX 1
+#else
+#  undef USE_COMBO_BOX
+#endif
 
 #include "xastir.h"
 #include "main.h"
@@ -5517,7 +5522,20 @@ Widget Sql_Database_reconnect_data;
 int    Sql_Database_port;   // xastir interface port number, not tcp/ip port
 Widget Sql_Database_username_data;
 Widget Sql_Database_schema_name_data;
+
+// lesstif combo boxes are not fully implemented.
+// replace combo box with a fake combo box made out of a menu when only lesstif is available
+#if USE_COMBO_BOX
 Widget Sql_Database_dbms_data;
+#else
+int    sddd_value;  // integer value of the currently selected item (replicating ordinal position in picklist)
+Widget sddd_button;  // button to bring up the picklist
+Widget sddd_buttons[3];
+Widget sddd_menuPane;  /// menu that acts as the picklist of dbms types
+Widget sddd_menu;  /// menu top level
+#endif // USE_COMBO_BOX
+Widget sddd_widget; // widget used to bind next control in either use combo box or not cases.
+
 Widget Sql_Database_unix_socket_data;
 Widget Sql_Database_schema_type_data;
 Widget Sql_Database_errormessage_data;   // display most recent error message on connection
@@ -5533,11 +5551,16 @@ void Sql_Database_set_defaults_mysql(/*@unused@*/ Widget widget, XtPointer clien
    XmString cb_item;
    //cb_item = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
    cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL][0], XmFONTLIST_DEFAULT_TAG);
-#ifdef HAVE_MYSQL_SPATIAL
    //cb_item = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
+#ifdef HAVE_MYSQL_SPATIAL
    cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_MYSQL_SPATIAL][0], XmFONTLIST_DEFAULT_TAG);
 #endif /* HAVE_MYSQL_SPATIAL */
+#if USE_COMBO_BOX
    XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
+#else
+   XtVaSetValues(sddd_menu, XmNmenuHistory, sddd_buttons[DB_MYSQL_SPATIAL], NULL);
+   sddd_value = DB_MYSQL_SPATIAL;
+#endif // USE_COMBO_BOX   
    XmStringFree(cb_item);
    //cb_item = XmStringCreateLtoR("Xastir - simple", XmFONTLIST_DEFAULT_TAG);
    cb_item = XmStringCreateLtoR(&xastir_schema_type[XASTIR_SCHEMA_SIMPLE][0], XmFONTLIST_DEFAULT_TAG);
@@ -5568,7 +5591,12 @@ void Sql_Database_set_defaults_postgis(/*@unused@*/ Widget widget, XtPointer cli
    XmString cb_item;
    //cb_item = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
    cb_item = XmStringCreateLtoR(&xastir_dbms_type[DB_POSTGIS][0], XmFONTLIST_DEFAULT_TAG);
+#if USE_COMBO_BOX
    XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
+#else
+   XtVaSetValues(sddd_menu, XmNmenuHistory, sddd_buttons[DB_POSTGIS], NULL);
+   sddd_value = DB_POSTGIS;
+#endif // USE_COMBO_BOX
    XmStringFree(cb_item);
    //cb_item = XmStringCreateLtoR("Xastir - simple", XmFONTLIST_DEFAULT_TAG);
    cb_item = XmStringCreateLtoR(&xastir_schema_type[XASTIR_SCHEMA_SIMPLE][0], XmFONTLIST_DEFAULT_TAG);
@@ -5620,6 +5648,8 @@ void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer cal
     int was_up;      // flag to restart connection with new parameters 
     char *temp_ptr;  // temporary variable for retrieving string data from XmTextFields
     int cb_selected; // temporary variable for retrieving combo box selections
+    int x;
+    Arg args[2];
 
     // change to use code from db_gis.c 
 
@@ -5691,11 +5721,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
 
     // database type
     cb_selected = FALSE;
+#if USE_COMBO_BOX
     XtVaGetValues(Sql_Database_dbms_data,XmNselectedPosition, &cb_selected, NULL);
+#else
+    // find out the value of the latest selection from the Sql_Databas_dbms_data_menu
+    cb_selected = sddd_value;
+#endif
     
+    fprintf(stderr,"Checking Database list item:%d\n",cb_selected);        
     if (cb_selected) { 
         devices[Sql_Database_port].database_type = cb_selected;
-        // libtif doesn't appear to be recognizing selections from list.
+        // lesstif doesn't appear to be recognizing selections from list.
         fprintf(stderr,"Selected Database list item:%d\n",cb_selected);        
     } else {  
         // If no selection,
@@ -5790,6 +5826,29 @@ end_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data" )
 
 
 
+#if USE_COMBO_BOX // USE_COMBO_BOX
+#else
+
+void sddd_menuCallback(Widget widget, XtPointer ptr, XtPointer callData) {
+    XmPushButtonCallbackStruct *data = (XmPushButtonCallbackStruct *)callData;
+    XtPointer userData;
+    double z;
+
+    XtVaGetValues(widget, XmNuserData, &userData, NULL);
+
+    //sddd_menu is zero based, constants for database types are one based.
+    sddd_value = (int)userData + 1;
+    if (debug_level & 1) 
+        fprintf(stderr,"Selected value on dbms pulldown: %d\n",sddd_value);
+
+}
+
+#endif // USE_COMBO_BOX
+
+
+
+
+
 /* dialog to obtain connection parameters for a SQL server (MySQL/Postgresql)
  * database for spatialy enabled database support 
  */
@@ -5807,8 +5866,9 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
     char temp[40];
     XmString cb_item;
     XmString *cb_items[2];
-    int x;
-    Arg args[12];
+    int i; // loop counter
+    int x; 
+    Arg args[12]; // available for XtSetArguments 
     /*
     // configuration parameters for a sql server database 
     char   database_username[20];                 // username to use to connect to database  
@@ -5894,7 +5954,7 @@ fprintf(stderr,"cb_items[0]=%s\n",tmp);
 fprintf(stderr,"cb_items[1]=%s\n",tmp);        
         XmStringGetLtoR(cb_items[0][2],XmFONTLIST_DEFAULT_TAG,&tmp);
 fprintf(stderr,"cb_items[2]=%s\n",tmp);        
-/*            
+#if USE_COMBO_BOX
         Sql_Database_dbms_data = XtVaCreateManagedWidget("select dbms", xmComboBoxWidgetClass, form,
             XmNtopAttachment,     XmATTACH_FORM,
             XmNtopOffset,         5,
@@ -5903,35 +5963,65 @@ fprintf(stderr,"cb_items[2]=%s\n",tmp);
             XmNleftWidget,        label_dbms,
             XmNleftOffset,        1,
             XmNrightAttachment,   XmATTACH_NONE,
-            XmNitems,             cb_items,
+            XmNitems,             cb_items[0],
             XmNitemCount,         3,
             XmNnavigationType,    XmTAB_GROUP,
-            XmNcomboBoxType,      XmDROP_DOWN_LIST,
+            XmNcomboBoxType,      XmDROP_DOWN_COMBO_BOX,
             XmNpositionMode,      XmONE_BASED, 
             XmNmatchBehavior,     XmQUICK_NAVIGATE,
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-*/
-        x=0;
-        XtSetArg (args[x], XmNtopAttachment,     XmATTACH_FORM); x++;
-        XtSetArg (args[x], XmNtopOffset,         5); x++;
-        XtSetArg (args[x], XmNbottomAttachment,  XmATTACH_NONE); x++;
-        XtSetArg (args[x], XmNleftAttachment,    XmATTACH_WIDGET); x++;
-        XtSetArg (args[x], XmNleftWidget,        label_dbms); x++;
-        XtSetArg (args[x], XmNleftOffset,        1); x++;
-        XtSetArg (args[x], XmNrightAttachment,   XmATTACH_NONE); x++;
-        XtSetArg (args[x], XmNcomboBoxType,      XmDROP_DOWN_LIST); x++;
-        XtSetArg (args[x], XmNarrowSpacing,      5); x++;
-        // libtif doesn't appear to support adding items to the list on creation through XmNitems
-        //XtSetArg (args[x], XmNitems,             cb_items[0]); x++;
-        XtSetArg (args[x], XmNitemCount,         3); x++;
-        XtSetArg (args[x], XmNpositionMode,      XmONE_BASED); x++;
-        Sql_Database_dbms_data = XmCreateDropDownList (form, (char *) "Sql_Database_dbms_data", args, x);
-        XtManageChild(Sql_Database_dbms_data);
-        XmComboBoxAddItem(Sql_Database_dbms_data,cb_items[0][0],1,1);  
-        XmComboBoxAddItem(Sql_Database_dbms_data,cb_items[0][1],2,1);  
-        XmComboBoxAddItem(Sql_Database_dbms_data,cb_items[0][2],3,1);  
+        sddd_widget = sddd_menu;
+#else
+        // lesstif, at least as of version 0.95 in 2008, doesn't fully support combo boxes.
+        //
+        // lesstif 0.94 doesn't support adding items to the list on creation through XmNitems
+        // lesstif 0.94 combo boxes don't have means to set currently selected value
+        // or to retrieve currently selected value.
+        //
+        // Need to replace combo boxes with a pull down menu when lesstif is used.
+        // See xpdf's  XPDFViewer.cc/XPDFViewer.h for an example.
+        //
+        // Fake a combo box with a menu, as done by xpdf in in XPDFViewer.cc
+        //
+        // create widgets and populate menu
+        // sddd_ abbreviates name of single control that is being replaced: Sql_Database_dbms_data
+        // sddd_value  // numberic value for the database dbms type
+        // sddd_button  // picklist item
+        // sddd_menu  // menu that acts as the picklist of dbms types
+        x = 0;
+        XtSetArg(args[x], XmNmarginWidth, 0); ++x;
+        XtSetArg(args[x], XmNmarginHeight, 0); ++x;
+        sddd_menuPane = XmCreatePulldownMenu(form,"sddd_menuPane", args, x);
+        char buf[18];
+        //sddd_menu is zero based, constants for database types are one based.
+        //sddd_value is set to match constants in callback.
+        for (i=0;i<3;i++) { 
+            x = 0;
+            XmStringGetLtoR(cb_items[0][i],XmFONTLIST_DEFAULT_TAG,&tmp);
+            XtSetArg(args[x], XmNlabelString, cb_items[0][i]); x++;
+            XtSetArg(args[x], XmNuserData, (XtPointer)i); x++;
+            sprintf(buf,"button%d",i);
+            sddd_button = XmCreatePushButton(sddd_menuPane, buf, args, x);
+            XtManageChild(sddd_button);
+            XtAddCallback(sddd_button, XmNactivateCallback, sddd_menuCallback, config_Sql_Database_dialog);
+            sddd_buttons[i] = sddd_button;
+        }
+        x = 0;
+        XtSetArg(args[x], XmNleftAttachment, XmATTACH_WIDGET); ++x;
+        XtSetArg(args[x], XmNleftWidget, label_dbms); ++x;
+        XtSetArg(args[x], XmNtopAttachment, XmATTACH_FORM); ++x;
+        XtSetArg(args[x], XmNmarginWidth, 0); ++x;
+        XtSetArg(args[x], XmNmarginHeight, 0); ++x;
+        XtSetArg(args[x], XmNtopOffset, 7); ++x;
+        XtSetArg(args[x], XmNleftOffset, 1); ++x;
+        XtSetArg(args[x], XmNsubMenuId, sddd_menuPane); ++x;
+        sddd_menu = XmCreateOptionMenu(form, "sddd_Menu", args, x);
+        XtManageChild(sddd_menu);
+        sddd_widget = sddd_menu;
+#endif
+        // free up the XmStrings used to create the picklist
         x=0;
         while ( cb_items[0][x] )
             XmStringFree ( cb_items[0][x++] );
@@ -5957,7 +6047,7 @@ fprintf(stderr,"cb_items[2]=%s\n",tmp);
             XmNtopOffset,        15,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNleftAttachment,   XmATTACH_WIDGET,
-            XmNleftWidget,       Sql_Database_dbms_data,
+            XmNleftWidget,       sddd_widget,
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
@@ -6010,7 +6100,7 @@ fprintf(stderr,"cb_items[2]=%s\n",tmp);
             XmNnavigationType,   XmTAB_GROUP,
             XmNtraversalOn,      TRUE,
             XmNtopAttachment,    XmATTACH_WIDGET,
-            XmNtopWidget,        Sql_Database_dbms_data,
+            XmNtopWidget,        sddd_widget,
             XmNtopOffset,        5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNleftAttachment,   XmATTACH_FORM,
@@ -6024,7 +6114,7 @@ fprintf(stderr,"cb_items[2]=%s\n",tmp);
             XmNnavigationType,   XmTAB_GROUP,
             XmNtraversalOn,      TRUE,
             XmNtopAttachment,    XmATTACH_WIDGET,
-            XmNtopWidget,        Sql_Database_dbms_data,
+            XmNtopWidget,        sddd_widget,
             XmNtopOffset,        5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNleftAttachment,   XmATTACH_WIDGET,
@@ -6419,11 +6509,20 @@ fprintf(stderr,"cb_items[2]=%s\n",tmp);
 // not changing the configuration while the interface might be in use.
 begin_critical_section(&devices_lock, "interface_gui.c:Config_sql_Database" );
 
-            // *** need to look up localized string for database_type ***
+            // *** need to look up localized string for database_type *** 
             cb_item = XmStringCreateLtoR(&xastir_dbms_type[devices[Sql_Database_port].database_type][0], XmFONTLIST_DEFAULT_TAG);
+#if USE_COMBO_BOX
             XmComboBoxSelectItem(Sql_Database_dbms_data,cb_item);
             XmComboBoxSetItem(Sql_Database_dbms_data,cb_item);
+#else
+            //sddd_menu is zero based, constants for database types are one based.
+            //sddd_value matches constants.
+            XtVaSetValues(sddd_menu, XmNmenuHistory,
+                          sddd_buttons[devices[Sql_Database_port].database_type - 1 ], NULL);
+            sddd_value = devices[Sql_Database_port].database_type;
+#endif
             XmStringFree(cb_item);
+
             cb_item = XmStringCreateLtoR(&xastir_schema_type[devices[Sql_Database_port].database_schema_type][0], XmFONTLIST_DEFAULT_TAG);
             XmComboBoxSelectItem(Sql_Database_schema_type_data,cb_item);  
             XmComboBoxSetItem(Sql_Database_schema_type_data,cb_item);  
