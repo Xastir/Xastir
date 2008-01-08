@@ -10892,6 +10892,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                           got_conn = openConnection(&(devices[i]),&connections[i].conn); 
                           if ((got_conn == 1) && (!(&connections[i].conn->type==NULL))) { 
                               getAllSimplePositions(&connections[i].conn);
+                              // if connection worked, it is a oneshot upload of data, so we don't 
+                              // need to set port_data[].active and .status values here.
+                          } else {
+                              // report error on this port
+                              port_data[i].active = DEVICE_IN_USE;
+                              port_data[i].status = DEVICE_ERROR;
+                              update_interface_list();
                           }
                      }
                 }

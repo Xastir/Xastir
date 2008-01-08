@@ -142,7 +142,7 @@ ConnectionList connections[MAX_IFACE_DEVICES];
 
 // connection management
 extern int openConnection (ioparam *aioparm, Connection *conn);
-extern void closeConnection (Connection *aDbConnection);
+extern int closeConnection (Connection *aDbConnection, int port_number);
 extern int testConnection(Connection *aDbConnection);
 
 extern char xastir_dbms_type[4][51];

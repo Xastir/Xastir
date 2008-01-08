@@ -7171,6 +7171,20 @@ end_critical_section(&devices_lock, "interface.c:del_device");
             ok = net_detach(port);
             break;
 
+#ifdef HAVE_DB
+            case DEVICE_SQL_DATABASE:
+                if (debug_level & 2)
+                    fprintf(stderr,"Close connection to database on device %d\n",port);
+                ok = closeConnection(&connections[port],port);
+                // remove the connection from the list of open connections
+                /* clear port active */
+                port_data[port].active = DEVICE_NOT_IN_USE;
+                /* clear port status */
+                port_data[port].active = DEVICE_DOWN;
+                update_interface_list();
+            break;
+#endif /* HAVE_DB */
+
         default:
             break;
     }
@@ -7276,9 +7290,15 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                    if (debug_level & 2)
                        fprintf(stderr, "Opened connection\n");
                    ok = 1;
+                   port_data[port_avail].active = DEVICE_IN_USE;
+                   port_data[port_avail].status = DEVICE_UP;
                 } else { 
                    free(connections[port_avail].conn);
+                   port_data[port_avail].active = DEVICE_IN_USE;
+                   port_data[port_avail].status = DEVICE_ERROR;
                 }
+                // Show the latest status in the interface control dialog
+                update_interface_list();
                 if (ok == 1) {
                     /* if connected save top of call list */
                     ok = storeStationSimpleToGisDb(&connections[port_avail].conn, n_first);

@@ -715,16 +715,17 @@ int openConnection(ioparam *anIface, Connection *connection) {
  * Closes the specified database connection.
  * @param aDbConnection a generic database connection handle.
  */
-void closeConnection(Connection *aDbConnection) {
+int closeConnection(Connection *aDbConnection, int port_number) {
     //ioparam db =  aDbConnection->descriptor;
     // free up connection resources
+   
     switch (aDbConnection->type) {
         #ifdef HAVE_POSTGIS
         case DB_POSTGIS : 
             // if type is postgis, close connection to postgis database
             if (aDbConnection->phandle!=NULL) { 
                 PQfinish(aDbConnection->phandle);
-                aDbConnection->phandle = NULL;
+                //free(aDbConnection->phandle);
             }
             break;
         #endif /* HAVE_POSTGIS */
@@ -732,7 +733,8 @@ void closeConnection(Connection *aDbConnection) {
         case DB_MYSQL_SPATIAL : 
              // if type is mysql, close connection to mysql database
             if (aDbConnection->mhandle!=NULL) { 
-                mysql_close(aDbConnection->mhandle);
+                mysql_close(&aDbConnection->mhandle);
+                //free(aDbConnection->mhandle);
             }
             break;
         #endif /* HAVE_MYSQL_SPATIAL */
@@ -740,14 +742,16 @@ void closeConnection(Connection *aDbConnection) {
         case DB_MYSQL : 
             // if type is mysql, close connection to mysql database
             if (aDbConnection->mhandle!=NULL) { 
-                mysql_close(aDbConnection->mhandle);
+                mysql_close(&aDbConnection->mhandle);
+                //free(aDbConnection->mhandle);
             }
             break;
         #endif /* HAVE_MYSQL*/
     }
     // clean up the aDbConnection object
-    aDbConnection=NULL;
-    // remove the connection from the list of open connections
+    //free(aDbConnection);
+
+    return 1;
 }
 
 
