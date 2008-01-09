@@ -7264,7 +7264,6 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
     Connection *conn;
 
     if (port_avail >= 0){
-        //connections[port_avail].conn = NULL;
 
         switch (device->device_type) {
             case DEVICE_SQL_DATABASE:
@@ -7280,11 +7279,11 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                 if (debug_level & 1)
                     fprintf(stderr,"Opening (in interfaces) device on port [%d] with connection [%p]\n",port_avail,&connections[port_avail].conn);
                 got_conn = 0;
-                connections[port_avail].conn = conn;
+                connections[port_avail].conn = &conn;
                 got_conn=openConnection(device, &connections[port_avail].conn);
                 if (debug_level & 1) {
-                    fprintf(stderr,"got_conn connections[%d] [%p]\n",got_conn,&connections[port_avail].conn);
-                    fprintf(stderr,"got_conn connection type %d\n",connections[port_avail].conn->type);
+                    fprintf(stderr,"got_conn connections[%d] [%p] result=%d\n",port_avail,&connections[port_avail].conn,got_conn);
+                    printf(stderr,"got_conn connection type %d\n",conn->type);
                 }
                 if ((got_conn == 1) && (!(&connections[port_avail].conn->type==NULL))) { 
                    if (debug_level & 2)
