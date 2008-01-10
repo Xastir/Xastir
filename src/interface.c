@@ -8392,7 +8392,6 @@ void output_my_aprs_data(void) {
     char my_comment_tx[MAX_COMMENT+1];
     int interfaces_ok_for_transmit = 0;
 
-
     // Check whether transmits are disabled globally
     if (transmit_disable) {
 
@@ -9277,7 +9276,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     char output_net[256];
     int ok, start, finish, port;
     int done;
-
 
     // Check whether transmits are disabled globally
     if (transmit_disable && !loopback_only) {

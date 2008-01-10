@@ -9122,8 +9122,8 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
 
             if(debug_level & 1)
                 fprintf(stderr,
-                    "Menu item with name: %s \n",
-                    predefinedObjects[i].menu_call);
+                    "Menu item with name: %s and index_of_child=%d\n",
+                    predefinedObjects[i].menu_call, predefinedObjects[i].index_of_child);
 
             predefined_object_menu_items[i]=XtCreateManagedWidget(predefinedObjects[i].menu_call,
                 xmPushButtonGadgetClass,
