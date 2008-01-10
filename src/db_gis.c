@@ -1366,7 +1366,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
     char aprs_type[2];    // temporary holding for escaped aprs type
     char special_overlay[2];  // temporary holding for escaped overlay
     char record_type[2];              // temporary holding for escaped record type
-    char origin[MAX_CALLSIGN];  // temporary holding for escaped origin
+    char origin[MAX_CALLSIGN+1];  // temporary holding for escaped origin
     char node_path[NODE_PATH_SIZE];         // temporary holding for escaped node_path_ptr
     MYSQL_STMT *statement;
     // bind string lengths
@@ -1445,7 +1445,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
            bind[5].buffer_type = MYSQL_TYPE_STRING;
            bind[5].is_null = 0;
 
-           bind[6].buffer = (char *)&origin;
+           bind[6].buffer = (char *)&origin;  // segfaults with origin of zero length, otherwise writes bad data
            bind[6].length = &origin_length;
            bind[6].buffer_length = MAX_CALLSIGN;
            bind[6].buffer_type = MYSQL_TYPE_STRING;
@@ -1457,7 +1457,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
            bind[7].buffer_type = MYSQL_TYPE_STRING;
            bind[7].is_null = 0;
 
-           bind[8].buffer = (char *)&node_path;
+           bind[8].buffer = (char *)&node_path; 
            bind[8].length = &node_path_length;
            bind[8].buffer_length = NODE_PATH_SIZE;
            bind[8].buffer_type = MYSQL_TYPE_STRING;
@@ -1519,23 +1519,26 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
                        special_overlay_length = strlen(special_overlay);
 
                        if (aStation->origin==NULL) { 
-                           xastir_snprintf(origin,2,"%c",'\0');
+                           //xastir_snprintf(origin,2,"%c",'\0');
+                           origin[0]='\0';
                        } else { 
-                           xastir_snprintf(origin,strlen(aStation->origin),"%c",aStation->origin);
+                           xastir_snprintf(origin,MAX_CALLSIGN+1,"%s",aStation->origin);
                        }
                        origin_length = strlen(origin);
 
                        if (aStation->record_type==NULL) { 
-                           xastir_snprintf(record_type,2,"%c",'\0');
+                           //xastir_snprintf(record_type,2,"%c",'\0');
+                           record_type[0]='\0';
                        } else { 
                            xastir_snprintf(record_type,2,"%c",aStation->record_type);
                        }
                        record_type_length = strlen(record_type);
                        
                        if (aStation->node_path_ptr==NULL) { 
-                           xastir_snprintf(node_path,2,"%c",'\0');
+                           //xastir_snprintf(node_path,2,"%c",'\0');
+                           node_path[0]='\0';
                        } else { 
-                           xastir_snprintf(node_path,strlen(aStation->node_path_ptr),"%c",aStation->node_path_ptr);
+                           xastir_snprintf(node_path,strlen(aStation->node_path_ptr),"%s",aStation->node_path_ptr);
                        }
                        node_path_length = strlen(node_path);
 
@@ -2157,9 +2160,9 @@ float xastirWKTPointToLatitude(char *wkt) {
             *paren = '\0';
         }
         // convert all leading characters up to the space to spaces.
-        for (x=0;x<strlen(temp);x++)  {
+        for (x=0;x<(int)(strlen(temp));x++)  {
             if (temp[x]==' ') { 
-               x = strlen;
+               x = (int)(strlen(temp));
            } else { 
                temp[x] = ' ';
            }

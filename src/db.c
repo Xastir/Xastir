@@ -11519,7 +11519,6 @@ int data_add(int type,
     int ii;  // loop counter for interfaces list
 #endif /* HAVE_DB */
 
-
     // call and path had been validated before
     // Check "data" against the max APRS length, and dump the packet if too long.
     if ( (data != NULL) && (strlen(data) > MAX_INFO_FIELD_SIZE) ) {   // Overly long packet.  Throw it away.
