@@ -8,7 +8,7 @@
 # Modified 20060321 to generalize for all maptools - N8YSZ. 
 #
 #
-# Copyright (C) 2000-2007  The Xastir Group
+# Copyright (C) 2000-2008  The Xastir Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

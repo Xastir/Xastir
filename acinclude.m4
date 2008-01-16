@@ -1,6 +1,6 @@
 # acinclude.m4 for Xastir
 #
-# Copyright (C) 2000-2007  The Xastir Group
+# Copyright (C) 2000-2008  The Xastir Group
 #
 # $Id$
 

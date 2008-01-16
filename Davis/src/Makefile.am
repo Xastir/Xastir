@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2004-2007  The Xastir Group
+# Copyright (C) 2004-2008  The Xastir Group
 #
 
 bin_PROGRAMS = db2APRS

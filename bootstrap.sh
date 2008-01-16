@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-# Copyright (C) 2000-2007  The Xastir Group
+# Copyright (C) 2000-2008  The Xastir Group
 #
 #
 # This simple routine will run autostuff in the appropriate

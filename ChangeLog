@@ -1,3 +1,813 @@
+2008-01-16 10:32  we7u
+
+	* configure.ac: Preparing for devel release, bumping revision
+	  number.
+
+2008-01-10 07:35  chicoreus
+
+	* src/: interface.c, main.c, objects.c: Fixing bug where
+	  objects/items created by the user are not displayed until Xastir
+	  is restarted.
+
+	  Adding more debugging information when loading predefined objects
+	  from a file.
+
+2008-01-09 21:06  chicoreus
+
+	* src/: db.c, db_gis.c: Fix from Curt for some compile warnings in
+	  xastirWKTPointToLatitude().
+
+	  Fix to incorrect data being written to MySQL table
+	  simpleStationSpatial in the origin and node_path fields.
+
+	  Note: When selecting data from MySQL simpleStationSpatial, use
+	  the AsText() function on position.  For example, to retrieve the
+	  10 most recently heard stations: select station, symbol, overlay,
+	  aprstype, AsText(position), transmit_time, origin,  record_type,
+	  node_path from simpleStationSpatial order by transmit_time desc
+	  limit 10 ;
+
+2008-01-08 17:22  chicoreus
+
+	* src/interface.c: Possible bug fix for the can't have two sql
+	  database interfaces open at the same time issue.
+
+	  Pointers around Connections need review.
+
+2008-01-08 07:00  chicoreus
+
+	* src/: db_gis.c, db_gis.h, interface.c, main.c: db_gis.c
+	  closeConnection now linked to stop button on interfaces.
+
+	  SQL database state (open,closed,error[on connect only]) state
+	  shown on interface list.
+
+2008-01-07 20:35  chicoreus
+
+	* INSTALL, scripts/db_gis_mysql.sql, scripts/db_gis_postgis.sql,
+	  src/db_gis.c, src/interface_gui.c, src/objects.c: Added some
+	  installation instructions for spatial database support.
+
+	  Added a workaround for lesstif not having full implementation of
+	  combo boxes (borrowed from xpdf's XPDFViewer.cc) to the dbms
+	  selection control on the spatial database interface dialog.  Fix
+	  needs to be propagated to several other places.
+
+	  Fixes to sql scripts to build mysql and postgis database tables.
+
+2008-01-01 14:58  chicoreus
+
+	* src/: database.h, db.c, db_gis.c, db_gis.h, interface.c,
+	  interface.h, interface_gui.c, main.c, main.h, xa_config.c:
+	  Significant updates to db_gis code, supporting storage of station
+	  data to both MySQL and postgis enabled Postgresql databases.
+	  Stations heard in Xastir can have the core station information
+	  logged to either a Postgres or MySQL database (Bug: currently
+	  both aren't working at the same time), and then retrieved in a
+	  subsequent Xastir session (or by a different Xastir instance, or
+	  by another GIS application (such as QGIS over a postgis database
+	  populated from Xastir)).
+
+	  Tested with MySQL 5.0.32, may not work with MySQL 4.1.  Tested
+	  with Postgres 8.1.9
+
+2008-01-01 14:50  chicoreus
+
+	* scripts/: db_gis_mysql.sql, db_gis_postgis.sql: Adding sql
+	  scripts to create tables for persistent storage of basic station
+	  data.  One script for mysql, another for postgis enabled
+	  postgresql.  Currently only supports a single simple table with
+	  the minimun station information.
+
+2007-12-18 12:56  tvrusso
+
+	* configure.ac: Fix improper probing of curl library when LSB is
+	  not being used.
+
+	  AC_CHECK_LIB can have two or three arguments.  With two arguments
+	  it tests for the presence of a function named in the second
+	  argument in the library named by the first argument, and if found
+	  defines HAVE_LIBxxxxx and adds -lxxxxx to LIBS.
+
+	  In the three-argument case, it does the probe the same way, but
+	  instead of the default "define HAVE_LIBxxxxx and add -lxxxxx to
+	  LIBS" it does what it's told in the third argument.  That means
+	  if you want to rely on HAVE_LIBxxxxx and LIBS="${LIBS} -lxxxxx"
+	  then you have to do it yourself in the third argument.
+
+	  The AC_CHECK_LIB for curl was only doing the extra thing, which
+	  was to set "use_curl" to "yes".
+
+	  I recently discovered this by trying to build and use xastir on a
+	  freshly installed system that had libcurl but no wget (most of my
+	  other systems have both).  The bug in the use of AC_CHECK_LIB
+	  meant that libcurl was found, but never linked in nor was
+	  HAVE_LIBCURL ever set in config.h.
+
+	  With this fix, curl is now both properly detected *and* the
+	  detection properly communicated to the code.
+
+2007-12-13 22:23  tvrusso
+
+	* config/tgr2shp.dbfawk: Add "P" feature class to handle
+	  "Provisional" road data in TIGER/Line shapefiles.  According to
+	  the TIGER/Line Technical Documentation for feature class "P"
+
+	     The U.S. Census Bureau has created a new CFCC type that may
+	  appear on
+	     street features only.  Some streets that normally would be
+	  classified as
+	     "A" class features may be coded with a "P" instead of the "A"
+	  to indicate
+	     that the feature is a a "provisional" feature.  Provisional
+	  features are
+	     those streets that were added from reference sources or other
+	  programs
+	     in preparation for Census 2000, but were not field verified by
+	  census staff
+	     during field operations or through the use of aerial
+	  photography or imagery.
+	     As these featues are verified in futuer operations the
+	  provisional flag
+	     will be removed for subsequent TIGER/Line releases.  The
+	  numeric portion
+	     of the CFCC still classifies the street as if an "A" were
+	  preceding it.
+
+	  So this just involves changing the matching pattern from
+	  CFCC=A... to CFCC=[AP]... in all the feature-class A rules.
+
+2007-12-05 08:40  tvrusso
+
+	* README.MAPS: Add more text to the section on Geocommuity's DRG
+	  Data Bundle deals.  Turns out that some areas have DRGs produced
+	  by some agency other than the USGS, and those agencies don't
+	  necessarily produce GeoTiff files with proper metadata.  The
+	  Tennesee Valley Authority is among those agencies that don't
+	  properly include GeoTiff tags for projection and datum.  This
+	  renders DRG data bundles for states with portions of their area
+	  covered by the TVA partially defective --- special preprocessing
+	  is necessary to get the files into a state that can be used in
+	  Xastir.
+
+2007-11-14 07:05  tvrusso
+
+	* README.MAPS: Add a pointer to a vendor of inexpensive GeoTIFF
+	  format DRGs for the US.  They're one of the USGS's data partners
+	  that is listed elsewhere in the document, but in a different
+	  context.
+
+	  Thanks to Eric, KZ5ED, for calling it to my attention.
+
+2007-11-07 13:37  tvrusso
+
+	* src/: main.c, map_WMS.c, map_geo.c, map_tiger.c, maps.c: Work
+	  around the fact that ImageMagick's api.h rudely includes their
+	  autoconf-generated config.h, which therefore defines the same
+	  PACKAGE and VERSION macros that we do.
+
+	  In most files, this produces an annoying but harmless warning
+	  message about a redefinition.  For main.c, however, it cause
+	  Magick's PACKAGE name and VERSION to be used in place of our own.
+	   That is, our About window will announce that we're ImageMagick
+	  version 6.3.x.
+
+	  For the files in which it's a harmless warning, I've done an
+	  #undef of the two macros to shut up the compiler warnings.
+
+	  In main.c, I've created two new char* variables and initialized
+	  them to PACKAGE and VERSION before including magick's api.h, and
+	  then undef'd them.  This preservs the contents of our macros by
+	  substituting them in C code right away, then gets rid of them so
+	  the warnings are shut up.
+
+	  Attempting to do:   #define XASTIR_PACKAGE PACKAGE   #undef
+	  PACKAGE   #include <magick/api.h>   #undef PACKAGE   #define
+	  PACKAGE XASTIR_PACKAGE
+
+	  doesn't help.  All that does is silence the warning.	Magick's
+	  package name is still used when we try to use the PACKAGE macro
+	  later.  Macro expansions aren't variable assignments, and the
+	  code above does nothing more than define PACKAGE to PACKAGE and
+	  thence to "ImageMagick", after briefly allowing api.h to change
+	  its meaning without warning.
+
+	  Adding an "#undef XASTIR_PACKAGE" after all that is even worse,
+	  and results in fatal compilation errors.  There's probably some
+	  preprocessor game that can be played to kludge this, but saving
+	  the string we want to keep somewhere where it's safe from
+	  preprocessor meddling seems the better choice.
+
+2007-11-06 09:10  we7u
+
+	* configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
+	  scripts/do_xastir_release_dev, scripts/do_xastir_release_stable:
+	  Preparing for 1.9.2 stable release.
+
+2007-09-24 19:41  we7u
+
+	* src/track_gui.c: Finished the regex code for converting
+	  HTML->Text for downloaded findu.com tracks.
+
+2007-09-22 03:53  we7u
+
+	* src/track_gui.c: Commenting out unused variable.
+
+2007-09-22 03:25  we7u
+
+	* configure.ac: Commenting out the html2text discovery code.
+
+2007-09-22 03:25  we7u
+
+	* configure.ac: Checking in the html2text discovery code in case we
+	  may want it in the future.
+
+2007-09-22 03:24  we7u
+
+	* src/track_gui.c: Doing the html2text via sed statements.
+
+2007-09-22 01:29  we7u
+
+	* src/track_gui.c: Converting the downloaded findu.com raw packets
+	  from HTML to text.  Still need to look for "html2text" and find
+	  out it's path in the autoconf scripts in order to integrate this
+	  properly.
+
+2007-09-16 18:31  tvrusso
+
+	* src/interface_gui.c: Fix misplaced #endif /* HAVE_DB */ that was
+	  breaking the gui for networked AGWPE.
+
+2007-09-04 13:09  we7u
+
+	* src/db.c: Changing the new variable "i" to "ii" to make it easier
+	  to search for in the sources, plus getting rid of the declaration
+	  for the case where we're not using an SQL database (to get rid of
+	  a compiler warning).
+
+2007-08-31 05:20  gstueve
+
+	* src/map_geo.c: Add subroutine to release memory consistently for
+	  exit points.
+
+2007-08-28 16:16  we7u
+
+	* scripts/PigLatin.pl: Updated one comment.
+
+2007-08-28 15:32  we7u
+
+	* scripts/PigLatin.pl: Initial commit.
+
+2007-08-24 06:44  gstueve
+
+	* src/igate.c: Push active groups through the gateway between
+	  RF<->INet.
+
+2007-08-24 06:42  gstueve
+
+	* src/: messages.c, messages.h: Export group_active for use in
+	  igate of group transmission list.
+
+2007-08-22 08:42  gstueve
+
+	* src/alert.c: Make sure to test against initialized data.
+
+2007-08-20 20:10  chicoreus
+
+	* src/db.c, src/db_gis.c, src/db_gis.h, src/interface.c,
+	  src/interface_gui.c, src/main.c, symbols/symbols.dat: Cleaning up
+	  db_gis code.
+
+	  Some cleanup of error messages.  Moved some debugging messages
+	  into debug_level & 1.
+
+	  Altered simpleStation table structure to add three more columns:
+
+	  alter table simpleStation add column origin varchar(9) not null
+	  default ''; alter table simpleStation add column record_type
+	  varchar(1); alter table simpleStation add column node_path
+	  varchar(56);
+
+	  These seem necessary for recreating DataRow records out of
+	  simpleStation database records.
+
+	  Added more testing and handling of data that is to be written to
+	  database records.  Still needs better sanitizing.  Tested saving
+	  DataRow records derived from internet feeds to MySQL (old), and
+	  Postgresql(8)/Postgis records.
+
+2007-08-20 12:22  we7u
+
+	* src/main.c: Adding two casts to (int *) back in.  They are
+	  required to get rid of compiler warnings with some versions of
+	  GCC.
+
+2007-08-17 15:08  gstueve
+
+	* src/: map_WMS.c, map_cache.c, map_geo.c, map_tiger.c: Make sure
+	  to free allocated memory after we are done playing with it.
+
+2007-08-16 12:28  gstueve
+
+	* src/main.c: Make sure colors are identified as Pixel not int
+	  types.
+
+2007-08-16 12:26  gstueve
+
+	* src/list_gui.c: Make sure SL_scroll is initialized for full
+	  operation.
+
+2007-08-16 10:36  gstueve
+
+	* src/map_geo.c: Make sure we return the exception data to free
+	  space when done. Don't leave it as unclaimed uggage.
+
+2007-08-16 10:01  gstueve
+
+	* src/list_gui.c: Make sure the station_list displays give back the
+	  memory after they are done playing with it. They are not expected
+	  to lose it.
+
+2007-08-15 10:57  gstueve
+
+	* src/draw_symbols.c: Pixel values are 'unsigned long' not 'int' on
+	  64 bit machines.
+
+2007-08-15 10:41  gstueve
+
+	* src/: main.c, main.h, xastir.h: Type of colors & trail_colors is
+	  Pixel, not int. Especially on 64 bit machines.
+
+2007-08-15 08:44  we7u
+
+	* src/map_cache.c: Backing out this change as it caused this error
+	  and Xastir to blow up when a new map image was cached to disk:
+	  "glibc detected *** double free or corruption"
+
+2007-08-14 09:41  we7u
+
+	* src/util.c: Adding a minor comment.  Thanks to Gerald Stueve for
+	  re-examining all this code.  He's doing a WONDERFUL job of
+	  finding/fixing bugs!
+
+2007-08-14 09:28  we7u
+
+	* src/: db_gis.c, db_gis.h: Adding the RCS ID tag and tweaking the
+	  copyright statements to show correct dates and attribution for
+	  these two files.
+
+2007-08-13 13:23  gstueve
+
+	* src/main.c: Clear entire block of appshell, not just first
+	  pointer space.
+
+2007-08-13 13:22  gstueve
+
+	* src/x_spider.c: No need to have extra layer of callback, go
+	  directly to exit.
+
+2007-08-13 12:55  gstueve
+
+	* src/x_spider.c: Allow the subprocesses to cleanup and exit on
+	  interrupt.
+
+2007-08-13 12:54  gstueve
+
+	* src/rac_data.c: Make sure we aren't checking against unitialized
+	  data.
+
+2007-08-13 09:17  tvrusso
+
+	* README.MAPS:
+	  Add the answer to a frequently asked question about TIGER/Line
+	  2006 SE shapefile zip files ("what's the difference between the
+	  Polylines and Polygons directory?").
+
+2007-08-11 19:00  chicoreus
+
+	* src/: db_gis.c, db_gis.h: Simple schema insert added for
+	  Postgresql/postgis.  Tested with Postgresql 8.2 and postgis
+	  1.2.1.
+
+	  Simple station records can now be written to MySQL and
+	  Postgresql/Postgis databases, but xastir can't yet extract any
+	  data back.
+
+2007-08-10 16:15  gstueve
+
+	* src/util.c: Make sure to initialize string before testing fixed
+	  offset values.  Valgrind identified the dereferences with errors.
+
+2007-08-10 16:11  gstueve
+
+	* src/map_cache.c: Valgrind again. Make sure to release memory
+	  after using it.
+
+2007-08-10 16:09  gstueve
+
+	* src/db.c: More valgrind identified errors. Make sure to
+	  initialize tested variables.
+
+2007-08-10 15:48  gstueve
+
+	* src/x_spider.c: Add clear_proc_title to clean up environment
+	  pointers.
+
+2007-08-10 07:06  gstueve
+
+	* src/x_spider.c: valgrind is our friend. Make sure not to step
+	  back too far for line end.
+
+2007-08-09 13:12  gstueve
+
+	* src/map_shp.c: Make sure to Destroy a region before overwriting
+	  the value.  Identified by valgrind.
+
+2007-08-09 07:07  gstueve
+
+	* src/wx_gui.c: change to newer function -	      item =
+	  XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG); +
+	  item = XmStringGenerate(temp, XmFONTLIST_DEFAULT_TAG,
+	  XmCHARSET_TEXT, NULL); to replace deprecated function.
+
+2007-08-08 08:29  we7u
+
+	* src/interface.c: Moving one of the SQL debug printf's inside an
+	  #ifdef block so that we won't normally see it.
+
+2007-08-07 18:55  chicoreus
+
+	* src/: db_gis.c, db_gis.h: Change to error handling in the event
+	  of an xastir coordinate for a station that doesn't translate to a
+	  valid lat/long - returns error message indicating conversion
+	  problem rather than as database problem.
+
+2007-08-07 13:33  gstueve
+
+	* src/map_pdb.c: Allow more granularity for debugging actions.
+	  Remove unneeded global definitions.
+
+2007-08-07 10:29  chicoreus
+
+	* src/interface_gui.c: Removing some unecessary debugging messages.
+
+2007-08-07 09:24  chicoreus
+
+	* src/: interface.c, interface_gui.c: Bug fix - SQL database
+	  interface definitions were always being placed as interface 0 in
+	  the interface list.
+
+2007-08-07 09:08  we7u
+
+	* src/interface.c: Adding "#ifdef HAVE_DB" around the SQL database
+	  interface type so that it doesn't appear in the list unless
+	  configure finds that we have support for it.
+
+2007-08-07 09:05  we7u
+
+	* config/: language-Dutch.sys, language-French.sys,
+	  language-German.sys, language-Italian.sys,
+	  language-Portuguese.sys, language-Spanish.sys: Adding the SQL
+	  Database string to the other language files.
+
+2007-08-07 08:31  we7u
+
+	* src/messages_gui.c: Commenting out an unused variable which
+	  causes a compiler warning.
+
+2007-08-07 08:31  we7u
+
+	* src/interface_gui.c: Adding "#ifdef HAVE_DB" around a couple of
+	  fprintf's.
+
+2007-08-06 18:06  chicoreus
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/database.h, src/db.c,
+	  src/db_gis.c, src/db_gis.h, src/interface.c, src/interface.h,
+	  src/interface_gui.c, src/main.c, src/messages_gui.c, src/util.c,
+	  src/util.h, src/xa_config.c: Further work on sql server
+	  (MySQL/Postgis) support.  Began integration of sql connection
+	  management with interface UI.  Able to create a connection to a
+	  MySQL database, and on starting it, save list of all current
+	  stations to a simple single table db.
+
+	  Code still needs substantial work before it is usable.
+
+2007-07-30 10:13  we7u
+
+	* INSTALL: Updating libgeotiff instructions for latest released
+	  version (1.2.4).
+
+2007-07-27 08:55  we7u
+
+	* README.Getting-Started: Adding another note explaining that
+	  "internal" on the Shapelib summary line is ok.
+
+2007-07-27 08:48  we7u
+
+	* README.Getting-Started, configure.ac: Getting rid of the
+	  "Building with" text on the configure summary line.  Fixing one
+	  of the README's to match.
+
+2007-07-25 08:53  we7u
+
+	* INSTALL: Revising the install instructions for the optional
+	  Shapefile utilities to correspond to the current sources.
+
+2007-07-25 08:45  we7u
+
+	* src/shapelib/contrib/: dbfcat.c, dbfinfo.c, shpcat.c,
+	  shpcentrd.c, shpdxf.c, shpfix.c, shpgeo.c, shpinfo.c, shpproj.c:
+	  Adding includes necessary for warning-free compiles.
+
+2007-07-25 08:45  we7u
+
+	* src/shapelib/contrib/.cvsignore: Adding shpproj executable to CVS
+	  ignore.
+
+2007-07-25 08:37  we7u
+
+	* src/shapelib/: Makefile_shapelib_orig, shpcreate.c, shpdump.c,
+	  shprewind.c: Added shprewind.c to the "clean" target of the
+	  original Makefile.  Added stdlib.h includes to some of the
+	  utilities to get a clean compile.
+
+2007-07-25 08:10  we7u
+
+	* INSTALL: Adding instructions for compiling some of the optional
+	  Shapelib utilities and contributed Shapelib utilities.
+
+2007-07-23 09:58  we7u
+
+	* src/db_gis.c: Moving the strtof test below the config.h include.
+
+2007-07-23 08:58  tvrusso
+
+	* configure.ac, src/db_gis.c: Fix up usage of strtof for systems
+	  that are so old they don't have this function.
+
+2007-07-18 09:20  we7u
+
+	* src/db.c: Correcting a spelling error in a debug statement.
+
+2007-07-16 07:38  chicoreus
+
+	* INSTALL: Fixing typo in install documentation.  Patch from Jim
+	  Tittsler - jtittsler Tracker: [ 1695864 ] INSTALL typo
+	  ImageMagick->GraphicsMagick
+
+2007-07-14 20:39  chicoreus
+
+	* src/main.c: [no log message]
+
+2007-07-14 20:37  chicoreus
+
+	* src/: Makefile.am, db_gis.c, db_gis.h, lclint.script: Framework
+	  for spatial database support.  Should compile, but won't do
+	  anything yet.
+
+2007-07-14 20:33  chicoreus
+
+	* acinclude.m4, configure.ac: Adding tests for MySQL, Postgresql,
+	  and Postgis for spatial database support
+
+2007-07-09 20:03  tvrusso
+
+	* README.MAPS: Fix up mistaken information about TIGER/Line data.
+	  Update pointers to geocoding files (we were still pointing users
+	  to the 2003 data, which is a poor match to recent TIGER/Line
+	  shapefiles).
+
+2007-07-06 15:43  we7u
+
+	* configure.ac: For the summary, we now refuse to display the
+	  developer section unless one of those options has been enabled.
+	  This is so normal users don't have to worry about that section.
+
+2007-07-06 15:06  we7u
+
+	* configure.ac: More additions to the summary output.
+
+2007-07-06 14:32  we7u
+
+	* configure.ac: Changing some of the summary text.
+
+2007-07-06 12:24  we7u
+
+	* src/main.c: Bumping up the size of the Help->About "Libraries
+	  Used" string.
+
+2007-07-06 12:17  we7u
+
+	* configure.ac: A few more small tweaks to the configure summary
+	  output.
+
+2007-07-06 12:04  we7u
+
+	* configure.ac: Reformatting the configure summary output.  Adding
+	  wget/libcurl to the summary as well.
+
+2007-07-02 16:43  tvrusso
+
+	* configure.ac: Remove hack to use external rtree library ---
+	  differences between GRASS's rtree library and ours make it so
+	  that we can't use them interchangably.  The difference is in the
+	  size of floating point variables used in the Rect structure (we
+	  use floats as did the original author, GRASS uses it modified to
+	  have doubles, which vastly increases memory usage for no real
+	  gain).
+
+	  This should remedy all of the Fedora users problems.	Unless it
+	  doesn't.
+
+2007-07-02 16:37  tvrusso
+
+	* src/: map_shp.c, shp_hash.c, rtree/card.c, rtree/card.h,
+	  rtree/index.c, rtree/index.h, rtree/node.c, rtree/rect.c,
+	  rtree/split_l.c, rtree/split_l.h: Turns out that putting a suffix
+	  on all symbols in the rtree library was very simple and fast, so
+	  I Just Did It.
+
+	  This should probably fix the problem for Fedora users with GDAL
+	  installed from repository, once I remove the "external rtree" bit
+	  from configure.ac.
+
+2007-07-02 15:08  we7u
+
+	* FAQ: Adding a section to the Map Problems/Solutions question
+	  about deleting the Xastir user directory and starting over when
+	  all else fails.
+
+2007-07-02 14:34  we7u
+
+	* FAQ: Added some debugging instructions for maps not working.
+
+2007-07-02 14:19  we7u
+
+	* FAQ: Updating the version number where "APX" is quoted.
+
+2007-07-02 12:34  we7u
+
+	* FAQ: Added a question/answer about how to solve the problem:
+	  station trail not displaying.
+
+2007-07-02 12:12  we7u
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/main.c: Changing the ALTNET box
+	  so that it is smaller and has a label.
+
+2007-07-02 05:55  tvrusso
+
+	* src/rtree/: split_l.c, split_l.h: Undo the
+	  CoverSplit->l_CoverSplit change made last week.
+
+	  The real issue was that some repositories have a GDAL that
+	  includes GRASS libraries including a libgrass_rtree that
+	  duplicates the rtree functionality.  Xastir's rtree library is
+	  precisely the one that GRASS uses (based on public domain (i.e.
+	  uncopyrighted) software from www.superliminal.com), and this
+	  leads to a link conflict that produces an obscure and cryptic
+	  error message at link time.
+
+	  Renaming the CoverSplit variable was just a band-aid that was
+	  suggested for a trial run while diagnosing the problem, not a
+	  recommended fix.
+
+2007-07-01 21:20  tvrusso
+
+	* configure.ac: Add a note at the end that tells whether we're
+	  using external rtree (e.g.  from GDAL) or our own internal
+	  version.
+
+2007-07-01 21:12  tvrusso
+
+	* configure.ac: Fix configure so that it checks for the presence of
+	  RTreeSearch in other libraries before it builds our own rtree
+	  library.
+
+	  This is necessary because some repositories have a GDAL that was
+	  built with GRASS support (against current recommendations), and
+	  that brings in an rtree library unbidden.  The result of trying
+	  to link our own in unconditionally is a cryptic message about
+	  CoverSplit not being relocatable.
+
+	  The only testing I've done is that this doesn't break builds with
+	  GDAL that has no GRASS support.  I am unable to test it in the
+	  case for which it is intended.  I'll have to ask that someone
+	  with an F7 system do that.
+
+2007-06-29 13:22  we7u
+
+	* src/rtree/: split_l.c, split_l.h: Trying a rename of CoverSplit
+	  to l_CoverSplit to see if this fixes the Fedora linking problem.
+
+2007-06-21 12:10  we7u
+
+	* src/interface.c: Removing stale lockfiles when it was our own
+	  process group which created them earlier.
+
+2007-06-20 09:25  we7u
+
+	* src/map_geo.c: Adding a few comments to the code for the new
+	  transparent color linked list functions.
+
+2007-06-20 09:18  we7u
+
+	* README.MAPS: Tweaking the TRANSPARENT note to state that multiple
+	  lines may be used.
+
+2007-06-20 09:11  we7u
+
+	* WMSRadar.geo, src/map_geo.c: Commenting out debug fprintf plus
+	  adding another black and a white color as transparent colors to
+	  WMSRadar.geo.
+
+2007-06-20 08:42  we7u
+
+	* src/: main.h, map_WMS.c, map_geo.c, maps.h: First attempt at
+	  multiple TRANSPARENT support for .geo files.	Not fully tested
+	  yet, but doesn't appear to fall over either.
+
+2007-06-15 11:44  we7u
+
+	* scripts/LSB-BUILD: Updating to latest rev number for release.
+
+2007-06-10 09:53  tvrusso
+
+	* scripts/get-NWSdata: Update get-NWSdata to pull down the new
+	  files instead of trying to get some old and now non-existent
+	  files.
+
+2007-05-28 16:59  chicoreus
+
+	* src/: main.c, main.h, objects.c: Disabling close polygon item on
+	  CAD menu when not in draw mode.
+
+2007-05-28 12:53  tvrusso
+
+	* src/util.c: Fix a comment about multiline length.
+
+2007-05-28 12:51  tvrusso
+
+	* src/: db.c, util.c, util.h:
+	  Make the add_comment function stop stripping leading spaces.
+	  This is to allow multiline objects with no leading text, which
+	  otherwise get broken.
+
+	  Add a makeMultiline function to util.c.  Given arrays of lat/lon
+	  pairs, will produce a multiline string representing that array
+	  and a centroid value that can be used for creating an object.
+
+	  Bunch of debugging output added to extract_multipoint that I
+	  needed to help me track down why my multilines were disappearing
+	  (it was because of the leading space stripping).
+
+	  Nobody is calling makeMultiline yet.	It could be used for
+	  transmitting CAD objects if someone wanted to hack that in.
+
+	  I've tested makeMultiline in an external program to generate
+	  strings, then created objects by pasting the strings into the
+	  comment box of the create object dialog.
+
+2007-05-21 07:51  tvrusso
+
+	* README.MAPS: Update the TIGER/Line information.
+
+2007-05-09 10:36  tvrusso
+
+	* config/: Makefile.am, tgr2shppoly_2006.dbfawk: Add a new DBFAWK
+	  file for the 2006 TIGER/Line data.
+
+	  This data has "UACU" and "URCU" fields instead of the RS_A15 and
+	  RS_A16 fields that older TIGER/Line data had.
+
+2007-05-04 13:18  we7u
+
+	* help/help-English.dat: Added a note stating that all PHG values
+	  must be specified before Xastir will transmit the values.
+
+2007-05-02 13:58  we7u
+
+	* src/interface.c: Checking the result code, providing more info on
+	  why an "open" failed.
+
+2007-05-02 12:54  we7u
+
+	* configure.ac, scripts/BUILDRPMS: Setting up for the next devel
+	  release.
+
+2007-05-02 12:14  we7u
+
+	* ChangeLog, configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
+	  scripts/do_xastir_release_dev, scripts/do_xastir_release_stable:
+	  Preparing for stable 1.9.0 release.
+
 2007-04-27 09:55  tvrusso
 
 	* src/db.c: Cast the time_t value to (long int) before passing to

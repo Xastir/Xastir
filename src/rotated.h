@@ -1,7 +1,7 @@
 
 // $Id$
 //
-// Portions Copyright (C) 2000-2007  The Xastir Group
+// Portions Copyright (C) 2000-2008  The Xastir Group
 //
 
 /* ************************************************************************ */

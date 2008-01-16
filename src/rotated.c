@@ -1,7 +1,7 @@
 
 // $Id$
 //
-// Portions Copyright (C) 2000-2007  The Xastir Group
+// Portions Copyright (C) 2000-2008  The Xastir Group
 //
 // Note that this version has been changed since xvertext 5.0 in order
 // to get rid of compiler warnings and such.  The original 5.0 notice
