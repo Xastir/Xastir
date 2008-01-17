@@ -132,6 +132,7 @@ int  delete_multipoints(DataRow *fill);
 void Station_data_destroy_track(Widget widget, XtPointer clientData, XtPointer callData);
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char speedu, char *alt, char *sats);
 void station_shortcuts_update_function(int hash_key, DataRow *p_rem);
+int position_on_extd_screen(long lat, long lon);  
 
 int  extract_speed_course(char *info, char *speed, char *course);
 int  extract_bearing_NRQ(char *info, char *bearing, char *nrq);
@@ -182,7 +183,8 @@ float emergency_range = 280.0;  // Default is 4hrs @ 70mph distance
 CADRow *CAD_list_head = NULL;   // pointer to first element in CAD objects list
 
 void draw_trail(Widget w, DataRow *fill, int solid);
-void export_trail(DataRow *p_station);
+void export_trail(DataRow *p_station);          // export trail of one or all stations to xastir export file
+void export_trail_as_kml(DataRow *p_station);   // export trail of one or all stations to kml file
 
 int decoration_offset_x = 0;
 int decoration_offset_y = 0;
@@ -3889,6 +3891,9 @@ void Station_data_store_track(Widget w, XtPointer clientData, /*@unused@*/ XtPoi
     // Save trail as a Shapefile map
     create_map_from_trail(p_station->call_sign);
 #endif  // HAVE_LIBSHP
+
+    // store trail to kml file
+    export_trail_as_kml(p_station);
 }
 
 
@@ -7961,45 +7966,67 @@ void wday2str(int wday, char *str, int str_size) {
 
 /*
  *  Export trail point to file
+ *
+ *  Don't call directly, call export_trail() or export_trail_as_kml() instead
+ *  as they need to open the file, set appropriate headers, and call export_trailstation()
+ *  to set the context for the position.
  */
-void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,long alt,int newtrk) {
+void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,long alt,int newtrk, int export_format) {
     struct tm *time;
-    char temp[12+1];
+    char lat_string[12+1];
+    char lon_string[12+1];
     char month[3+1];
     char wday[3+1];
-
-    if (newtrk)
-        fprintf(f,"\nN  New Track Start\n");
-
-    // DK7IN: The format may change in the near future !
-    //        Are there any standards? I want to be able to be compatible to
-    //        GPS data formats (e.g. G7TO) for easy interchange from/to GPS
-    //        How should we present undefined data? (speed/course/altitude)
-    convert_lat_l2s(lat, temp, sizeof(temp), CONVERT_UP_TRK);
-    fprintf(f,"T  %s",temp);
-
-    convert_lon_l2s(lon, temp, sizeof(temp), CONVERT_UP_TRK);
-    fprintf(f," %s",temp);
+    float deg;
 
     time  = gmtime(&sec);
     month2str(time->tm_mon, month, sizeof(month));
     wday2str(time->tm_wday, wday, sizeof(wday));
-    fprintf(f," %s %s %02d %02d:%02d:%02d %04d",wday,month,time->tm_mday,time->tm_hour,time->tm_min,time->tm_sec,time->tm_year+1900);
+    switch (export_format) { 
+        case EXPORT_KML_TRACK: 
+            // kml format is longitude,latitude,altitude triplets with
+            // a comma and no spaces separating elements of the triplet
+            // and a single space seperating sets of triplets in a 
+            // coordinates element.  Latitude and longitude are 
+            // both in decimal degrees.
+            deg = (float)(lon - 64800000l) / 360000.0;
+            fprintf(f,"%09.5f,",deg);
+            deg = -(float)(lat - 32400000l) / 360000.0;
+            fprintf(f,"%08.5f,",deg);
+            if (alt > -99999l)
+                fprintf(f,"%05.0f ",(float)(alt/10.0));
+            else        // undefined
+                fprintf(f,"0 ");
+            break;
+        case EXPORT_XASTIR_TRACK:
+        default:
+            if (newtrk)
+                fprintf(f,"\nN  New Track Start\n");
+            // DK7IN: The format may change in the near future !
+            //        Are there any standards? I want to be able to be compatible to
+            //        GPS data formats (e.g. G7TO) for easy interchange from/to GPS
+            //        How should we present undefined data? (speed/course/altitude)
+            convert_lat_l2s(lat, lat_string, sizeof(lat_string), CONVERT_UP_TRK);
+            convert_lon_l2s(lon, lon_string, sizeof(lon_string), CONVERT_UP_TRK);
+            fprintf(f,"T  %s",lat_string);
+            fprintf(f," %s",lon_string);
+            fprintf(f," %s %s %02d %02d:%02d:%02d %04d",wday,month,time->tm_mday,time->tm_hour,time->tm_min,time->tm_sec,time->tm_year+1900);
 
-    if (alt > -99999l)
-        fprintf(f,"  %5.0fm",(float)(alt/10.0));
-    else        // undefined
-        fprintf(f,"        ");
-
-    if (speed >= 0)
-        fprintf(f," %4.0fkm/h",(float)(speed/10.0));
-    else        // undefined
-        fprintf(f,"          ");
-
-    if (course >= 0)                    // DK7IN: is 0 undefined ?? 1..360 ?
-        fprintf(f," %3d°\n",course);
-    else        // undefined
-        fprintf(f,"     \n");
+            if (alt > -99999l)
+                fprintf(f,"  %5.0fm",(float)(alt/10.0));
+            else        // undefined
+                fprintf(f,"        ");
+        
+            if (speed >= 0)
+                fprintf(f," %4.0fkm/h",(float)(speed/10.0));
+            else        // undefined
+                fprintf(f,"          ");
+        
+            if (course >= 0)                    // DK7IN: is 0 undefined ?? 1..360 ?
+                fprintf(f," %3d°\n",course);
+            else        // undefined
+                fprintf(f,"     \n");
+    }
 }
 
 
@@ -8007,9 +8034,16 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
 
 
 /*
- *  Export trail for one station to file
+ *  Export trail for one station to file.
+ *  Don't call directly, call export_trail() or export_trail_as_kml() instead
+ *  as they need to open the file and set appropriate headers.
+ *
+ *  @param f handle of file to write to
+ *  @param p_station pointer to station to write
+ *  @param export_format file format to use (xastir tracklog or kml).
  */
-void exp_trailstation(FILE *f, DataRow *p_station) {
+void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
+    char timestring[101];  // string representation of the time heard or the current time
     long lat0, lon0;
     int newtrk;
     time_t sec;
@@ -8018,14 +8052,61 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
     long alt;           // 0.1m
     TrackRow *current;
 
-    if (p_station->origin == NULL || p_station->origin[0] == '\0')
-        fprintf(f,"\n#C %s\n",p_station->call_sign);
-    else
-        fprintf(f,"\n#O %s %s\n",p_station->call_sign,p_station->origin);
-
     newtrk = 1;
 
     current = p_station->oldest_trackpoint;
+
+    switch (export_format) { 
+
+        case EXPORT_KML_TRACK: 
+           if (current != NULL) {  
+               // We have trail points, create both a [set of] time stamp labled point placemark[s]
+               // and a linestring placemark to draw the trail.  [TODO: expand to handle timeseries
+               // by drawing a set of placemarks for all the trail points with timestamps].
+
+               // This placemark is for the most recent position of a trail and is a <Point/> to show up
+               // as a labeled pushpin point.
+               fprintf(f,"<Placemark>");
+               get_iso_datetime(p_station->sec_heard,timestring,True,True);
+               if (p_station->origin == NULL || p_station->origin[0] == '\0') { 
+                   fprintf(f,"<name>%s</name>\n",p_station->call_sign);
+                   fprintf(f,"<description>Heard at: %s</description>",timestring);
+               } else { 
+                   fprintf(f,"<name>%s</name>\n<description>Object from %s Heard at: %s</description>\n" ,p_station->call_sign,p_station->origin ,timestring);
+               }
+               fprintf(f,"<Point>\n<coordinates>");
+               if (p_station->altitude[0] != '\0')
+                   alt = atoi(p_station->altitude)*10;
+               else            
+                   alt = -99999l;
+               if (p_station->speed[0] != '\0')
+                   speed = (long)(atof(p_station->speed)*18.52);
+               else
+                   speed = -1;
+               if (p_station->course[0] != '\0')
+                   course = atoi(p_station->course);
+               else
+                   course = -1;
+               exp_trailpos(f,p_station->coord_lat,p_station->coord_lon,p_station->sec_heard,speed,course,alt,newtrk, export_format);
+               fprintf(f,"</coordinates></Point>");
+               fprintf(f,"</Placemark>\n");
+               
+           } 
+           // This placemark is for either a single position (as a <Point/>) or for a trail (as a <LineString/>).
+           fprintf(f,"<Placemark>");
+           if (p_station->origin == NULL || p_station->origin[0] == '\0')
+               fprintf(f,"<name>%s (trail)</name>\n",p_station->call_sign);
+           else
+               fprintf(f,"<name>%s (trail)</name>\n<description>Object from %s</description>\n",p_station->call_sign,p_station->origin);
+           break;
+
+        case EXPORT_XASTIR_TRACK:
+        default:
+           if (p_station->origin == NULL || p_station->origin[0] == '\0')
+               fprintf(f,"\n#C %s\n",p_station->call_sign);
+           else
+               fprintf(f,"\n#O %s %s\n",p_station->call_sign,p_station->origin);
+    }
 
     // A trail must have at least two points:  One in the struct,
     // and one in the tracklog.  If the station only has one point,
@@ -8037,6 +8118,13 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
                             // because it is included in the
                             // tracklog (if we have a tracklog!).
 
+        switch (export_format) { 
+            case EXPORT_KML_TRACK: 
+                fprintf(f,"<LineString>\n<coordinates>");
+                break;
+            //default:
+                // no heading for set of points
+        }
         while (current != NULL) {
             lon0   = current->trail_long_pos;                   // Trail segment start
             lat0   = current->trail_lat_pos;
@@ -8047,13 +8135,28 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
             if ((current->flag & TR_NEWTRK) != '\0')
                 newtrk = 1;
  
-            exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk);
+            // identical for kml and xastir tracks, but could be different for other formats
+            switch (export_format) { 
+                case EXPORT_KML_TRACK: 
+                    exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk, export_format);
+                    break;
+                case EXPORT_XASTIR_TRACK:
+                default:
+                    exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk, export_format);
+            }
 
             newtrk = 0;
 
             // Advance to the next point
             current = current->next;
         }
+        switch (export_format) { 
+            case EXPORT_KML_TRACK: 
+                fprintf(f,"</coordinates>\n</LineString>\n");
+                break;
+            //default:
+                // no close for set of points
+       }
     }
     else {  // We don't have any tracklog, so write out the most
             // current position only.
@@ -8073,12 +8176,28 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
         else
             course = -1;
 
-        exp_trailpos(f,p_station->coord_lat,p_station->coord_lon,p_station->sec_heard,speed,course,alt,newtrk);
+        switch (export_format) { 
+            case EXPORT_KML_TRACK: 
+                fprintf(f,"<Point>\n\t<coordinates>");
+                exp_trailpos(f,p_station->coord_lat,p_station->coord_lon,p_station->sec_heard,speed,course,alt,newtrk, export_format);
+                fprintf(f,"</coordinates>\n\t</Point>\n");
+                break;
+            case EXPORT_XASTIR_TRACK:
+            default:
+                exp_trailpos(f,p_station->coord_lat,p_station->coord_lon,p_station->sec_heard,speed,course,alt,newtrk, export_format);
+        }
     }
 
-    fprintf(f,"\n");
+    
+    switch (export_format) { 
+        case (EXPORT_KML_TRACK): 
+            fprintf(f,"</Placemark>\n");
+            break;
+        case (EXPORT_XASTIR_TRACK):
+        default:
+            fprintf(f,"\n");
+    }
 }
-
 
 
 
@@ -8139,12 +8258,12 @@ void export_trail(DataRow *p_station) {
         if (storeall) {
             p_station = n_first;
             while (p_station != NULL) {
-                exp_trailstation(f,p_station);
+                exp_trailstation(f,p_station, EXPORT_XASTIR_TRACK);
                 p_station = p_station->n_next;
             }
         }
         else {
-            exp_trailstation(f,p_station);
+            exp_trailstation(f,p_station, EXPORT_XASTIR_TRACK);
         }
         (void)fclose(f);
     }
@@ -8152,6 +8271,96 @@ void export_trail(DataRow *p_station) {
         fprintf(stderr,"Couldn't create or open tracklog file %s\n",file);
 }
 
+
+
+
+
+//
+// Export trail data for one or all stations to a klm file suitable for 
+// loading into google earth/google maps/NASA worldwind etc.
+// For documentation of the KML (Keyhole Markup Language) format,
+// see: http://
+//
+// @param p_station pointer to datarow containing station to export
+// If p_station == NULL, store all stations, else store only one
+// station.
+//
+void export_trail_as_kml(DataRow *p_station) {
+    char file[420];
+    FILE *f;
+    time_t sec;
+    struct tm *time;
+    int storeall;
+
+    sec = sec_now();
+    time  = gmtime(&sec);
+
+    if (p_station == NULL)
+        storeall = 1;
+    else
+        storeall = 0;
+
+    if (storeall) {
+        // define filename for storing all station
+        xastir_snprintf(file, sizeof(file),
+            "%s/%04d%02d%02d-%02d%02d%02d.kml",
+            get_user_base_dir("tracklogs"),
+            time->tm_year+1900,
+            time->tm_mon+1,
+            time->tm_mday,
+            time->tm_hour,
+            time->tm_min,
+            time->tm_sec);
+    }
+    else {
+        // define filename for current station, call + current time.
+        xastir_snprintf(file, sizeof(file), 
+            "%s/%s_%04d%02d%02d-%02d%02d%02d.kml",
+            get_user_base_dir("tracklogs"),
+            p_station->call_sign,
+            time->tm_year+1900,
+            time->tm_mon+1,
+            time->tm_mday,
+            time->tm_hour,
+            time->tm_min,
+            time->tm_sec);
+    }
+
+    // create or open file
+    (void)filecreate(file);     // create empty file if it doesn't exist
+    // DK7IN: owner should better be set to user, it is now root with kernel AX.25!
+
+    f=fopen(file,"w+");          // open file for writing
+    if (f != NULL) {
+ 
+        fprintf(f,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml xmlns=\"http://earth.google.com/kml/2.2\">\n<Document>\n<name>APRS Data</name>\n<open>1</open>\n");
+
+        fprintf(f,
+            "<description>WGS-84 tracklog created by Xastir %04d/%02d/%02d %02d:%02d</description>\n",
+            time->tm_year+1900,
+            time->tm_mon+1,
+            time->tm_mday,
+            time->tm_hour,
+            time->tm_min);
+
+        if (storeall) {
+            p_station = n_first;
+            while (p_station != NULL) {
+                exp_trailstation(f,p_station,EXPORT_KML_TRACK);
+                p_station = p_station->n_next;
+            }
+        }
+        else {
+            exp_trailstation(f,p_station,EXPORT_KML_TRACK);
+        }
+
+        fprintf(f,"</Document>\n</kml>");
+
+        (void)fclose(f);
+    }
+    else
+        fprintf(stderr,"Couldn't create or open tracklog file %s\n",file);
+}
 
 
 
@@ -8699,7 +8908,7 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
     float lat;  // latitude converted from retrieved string
     float lon;  // longitude converted from retrieved string
     DataRow *p_time;  // pointer to new station record  
-    DataRow *p_new_station_unused;
+    //DataRow *p_new_station_unused;
     struct tm time;
 
     // Add a datarow using the retrieved station record from the postgis database.
@@ -13135,16 +13344,18 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                 fprintf(stderr,"Trying to store station %s to database interfaces.\n",p_station->call_sign);
             for (ii=0;ii<MAX_IFACE_DEVICES;ii++) {
                 if (&connections[ii] != NULL && connections[ii].iface != NULL){
-                    if (connections[ii].conn != NULL) { 
-                        if (debug_level & 1) 
-                            fprintf(stderr,"Trying interface %d\n",ii);
-                        // if interface is a sql server interface 
-                        // write station data to sql database
-                        ok = storeStationSimpleToGisDb(&connections[ii].conn, p_station);
-                        if (ok==1) { 
-                           if (debug_level & 1) {
-                                fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);
-                           }
+                    if (port_data[ii].status == DEVICE_UP) { 
+                        if (connections[ii].conn != NULL) { 
+                            if (debug_level & 1) 
+                                fprintf(stderr,"Trying interface %d\n",ii);
+                            // if interface is a sql server interface 
+                            // write station data to sql database
+                            ok = storeStationSimpleToGisDb(&connections[ii].conn, p_station);
+                            if (ok==1) { 
+                               if (debug_level & 1) {
+                                    fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);
+                               }
+                            }
                         }
                     }
                 }

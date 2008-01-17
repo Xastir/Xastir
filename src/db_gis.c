@@ -1538,7 +1538,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
                            //xastir_snprintf(node_path,2,"%c",'\0');
                            node_path[0]='\0';
                        } else { 
-                           xastir_snprintf(node_path,strlen(aStation->node_path_ptr),"%s",aStation->node_path_ptr);
+                           xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
                        }
                        node_path_length = strlen(node_path);
 
@@ -1588,6 +1588,7 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
     float lon;  // longitude converted from retrieved string
     char *feedback[100];
     struct tm time;
+    int skip; // used in identifying mobile stations
     char sql[] = "select station, transmit_time, AsText(position), symbol, overlay, aprstype, origin, record_type, node_path from simpleStationSpatial order by station, transmit_time";
     MYSQL_RES *result;
     MYSQL_ROW *row;
@@ -1611,6 +1612,20 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
                   p_new_station = NULL;
                   if (search_station_name(&p_new_station,row[0],1)) {  
                        // This station is allready in present as a DataRow in the xastir db.
+                       // check to see if this is likely to be a mobile station 
+
+                       // can't easily work off of position becaue of rounding errors, exclude stations that are likely to be fixed
+                       // _/ = wx
+                       skip = 0;
+                       if ((row[3]=='_') && (row[5]=='/')) { 
+                           skip = 1;   // wx
+                       }
+
+
+                       if (skip==0) { 
+                           // add to track
+                       }
+
                        // Add data to the station's track.
                   } else { 
                        // This station isn't in the xastir db. 
@@ -1884,11 +1899,45 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
  * version range supported by the running copy of xastir.
  * @param aDbConnection pointer to a Connection struct describing the connection
  * @returns 0 if incompatable, 1 if compatable, -1 on connection failure.
+ *
+ * db       program
+ * v  cs    v   cs    compatable
+ * 1  1     1   1     1    identical 
+ * 2  1     1   1     1    database newer than program (added fields, not queried)
+ * 1  1     2   1     0    program newer than database (added fields, queries fail).
+ * 3  2     2   1     0    different series
+ * 2  1     3   2     0    different series
+ *
+ * TODO: Needs to include schema 
  */
 int testXastirVersionMysql(Connection *aDbConnection) {
-    int returnvalue = 0;
-    int mysqlreturn;
+    int returnvalue = -1;
+    MYSQL_RES *result;
+    MYSQL_ROW *row;
     char sql[] = "select version_number from version order by version_number desc limit 1";  
+    int ok;   // to hold mysql_query return value
+    ok = mysql_query(&aDbConnection->mhandle,sql);
+    if (ok==0) { 
+        result = mysql_use_result(&aDbConnection->mhandle);
+        if (result!=NULL) { 
+            row = mysql_fetch_row(result);
+            if (row != NULL) { 
+                (int)row[0];
+                if (row[0] == XASTIR_SPATIAL_DB_VERSION) { 
+                   returnvalue = 1;
+                } else { 
+                    if (row[1] < XASTIR_SPATIAL_DB_VERSION && row[1] == XASTIR_SPATIAL_DB_COMPATABLE_SERIES) {
+                        returnvalue = 1;
+                    } else { 
+                        returnvalue = 0;
+                    }
+                }
+            } else {
+                // result returned, but no rows = incompatable
+                returnvalue = 0;
+            }
+        }
+    } 
     return returnvalue;
 }
 

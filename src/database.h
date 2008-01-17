@@ -134,6 +134,9 @@ enum APRS_Types {
 #define MAX_MESSAGE_LENGTH  100
 #define MAX_MESSAGE_ORDER    10
 
+// track export file formats
+#define EXPORT_XASTIR_TRACK 0
+#define EXPORT_KML_TRACK 1
 
 extern char *get_most_recent_ack(char *callsign);
  
