@@ -13350,7 +13350,7 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                                 fprintf(stderr,"Trying interface %d\n",ii);
                             // if interface is a sql server interface 
                             // write station data to sql database
-                            ok = storeStationSimpleToGisDb(&connections[ii].conn, p_station);
+                            ok = storeStationSimpleToGisDb((Connection*)&connections[ii].conn, p_station);
                             if (ok==1) { 
                                if (debug_level & 1) {
                                     fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);

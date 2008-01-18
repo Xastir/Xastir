@@ -10886,10 +10886,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                      // if interface is a database and is set to load on start then load
                      if (devices[i].device_type == DEVICE_SQL_DATABASE && devices[i].query_on_startup) { 
                           // load data
-                          connections[i].conn = conn;
+                          connections[i].conn = &conn;
                           if (debug_level & 1) 
                               fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,&connections[i].conn);                          
-                          got_conn = openConnection(&(devices[i]),&connections[i].conn); 
+                          got_conn = openConnection(&devices[i],&connections[i].conn); 
                           if ((got_conn == 1) && (!(&connections[i].conn->type==NULL))) { 
                               getAllSimplePositions(&connections[i].conn);
                               // if connection worked, it is a oneshot upload of data, so we don't 
