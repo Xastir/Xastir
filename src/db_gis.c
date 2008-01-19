@@ -954,8 +954,15 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
     const char *StatementExists = "select count(*) from pg_prepared_statements where name = 'InsertSimpleStation'";
 
    
-    if (debug_level & 1) 
+    if (debug_level & 1) {
         fprintf(stderr,"In postgres simple station insert\n");
+        fprintf(stderr,"Postgresql version=%d\n",PQserverVersion(aDbConnection->phandle));
+    }
+    if (PQserverVersion(aDbConnection->phandle)==0) {
+       // no connection to server
+       fprintf(stderr,"Trying to save station on closed postgresql connection\n");
+       return returnvalue;
+    }
 
     // Check to see if this prepared statement exists in the current session
     // and create it if it does not.  
@@ -1061,13 +1068,13 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             paramValues[8]=node_path;
 
             if (debug_level & 1)  {
-                 fprintf(stderr,"Inserting: Call: %s, Time: %s, Position: %s, Symbol:%s,%s,%s Origin:%s, Node_path:%s, Record type:%s\n",call_sign,timestring,wkt,paramValues[3],paramValues[4],paramValues[5],paramValues[6],paramValues[8],paramValues[7]);
+                 fprintf(stderr,"Inserting: Call: %s, Time: %s, Position: %s, Symbol:%s,%s,%s Origin:%s, Node_path:%s, Record type:%s\n",paramValues[0],paramValues[1],paramValues[2],paramValues[3],paramValues[4],paramValues[5],paramValues[6],paramValues[8],paramValues[7]);
             }
        
             // send query
             result = PQexecPrepared(aDbConnection->phandle,StatementName,PARAMETERS,paramValues,NULL,NULL,POSTGRES_RESULTFORMAT_TEXT);
             if (PQresultStatus(result)!=PGRES_COMMAND_OK) { 
-                   fprintf(stderr,"Insert query failed:%s\n",PQresultErrorMessage(result));
+                   fprintf(stderr,"Postgres Insert query failed:%s\n",PQresultErrorMessage(result));
                    // error, get error message.
                    xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQresultErrorMessage(result));
             } else { 
@@ -1355,9 +1362,6 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
     if (!statement) { 
        fprintf(stderr,"Unable to create mysql prepared statement.  May be out of memmory.\n");    
     }
-fprintf(stderr,"1\n");    
-    mysql_stmt_prepare(statement, SQL, strlen(SQL));
-fprintf(stderr,"2\n");    
     mysql_stmt_prepare(statement, SQL, strlen(SQL));
     if (!statement) { 
         mysql_interpret_error(*mysql_error((MYSQL*)&aDbConnection->mhandle),aDbConnection);
@@ -1766,7 +1770,6 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
     float latitude;
     int ok;
     char timestring[100+1];
-    char *to[3];  // write to value for mysql_real_escape_string 
 
     if (debug_level & 1) 
         fprintf(stderr,"In storestationsimpletodbmysql()\n");
@@ -1810,6 +1813,12 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
             // insert into simpleStation (station, symbol, overlay, aprstype, transmit_time, latitude, longitude) 
             // values ('Fry's','/\0\0',' ','//\0','2007-08-07 21:55:43 -0400','47.496834','-122.198166')
             mysql_real_escape_string((MYSQL*)&aDbConnection->mhandle,&call_sign,&(aStation->call_sign),strlen(aStation->call_sign));
+            // just in case, set a default value for record_type and escape it.
+            if (aStation->record_type==NULL) { 
+                xastir_snprintf(record_type,2,"%c",NORMAL_APRS);
+            } else { 
+                mysql_real_escape_string((MYSQL*)&aDbConnection->mhandle,&record_type,&(aStation->record_type),strlen(aStation->record_type));
+            }
 
             if (strlen(aStation->origin) > 0) { 
                 mysql_real_escape_string((MYSQL*)&aDbConnection->mhandle,&origin,&(aStation->origin),strlen(aStation->origin));
@@ -1823,7 +1832,7 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
                 xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
             } 
             
-            xastir_snprintf(sql,sizeof(sql),"insert into simpleStation (station, symbol, overlay, aprstype, transmit_time, latitude, longitude, origin, record_type, node_path) values ('%s','%s','%s','%s','%s','%3.6f','%3.6f','%s','%c','%s')", aStation->call_sign, aprs_symbol, special_overlay, aprs_type,timestring,latitude,longitude,origin,aStation->record_type,node_path);
+            xastir_snprintf(sql,sizeof(sql),"insert into simpleStation (station, symbol, overlay, aprstype, transmit_time, latitude, longitude, origin, record_type, node_path) values ('%s','%s','%s','%s','%s','%3.6f','%3.6f','%s','%c','%s')", call_sign, aprs_symbol, special_overlay, aprs_type,timestring,latitude,longitude,origin,record_type,node_path);
 
             if (debug_level & 1) 
                 fprintf(stderr,"MySQL Query:\n%s\n",sql);
