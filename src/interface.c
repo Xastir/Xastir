@@ -1341,6 +1341,10 @@ int get_device_status(int port) {
 // this reason, and the size of the buffer must be MAX_LINE_SIZE
 // for this reason also.
 //***********************************************************
+
+// Can add "volatile" to "length" variable to get rid of "argument
+// might be clobbered by 'longjmp' or 'vfork'" warning.  Is this
+// what we want?
 void channel_data(int port, unsigned char *string, int length) {
     int max;
     struct timeval tmv;
@@ -4819,7 +4823,12 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
 //**************************************************************
 static void* net_connect_thread(void *arg) {
     int port;
+
+    // Can add "volatile" to "ok" variable to get rid of "argument
+    // might be clobbered by 'longjmp' or 'vfork'" warning.  Is this
+    // what we want?
     int ok;
+
     int len;
     int result;
     int flag;
