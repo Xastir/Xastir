@@ -406,6 +406,15 @@ end_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 /***** DOWNLOAD FINDU TRAILS *****/
 
 
+
+// Struct used for passing two parameters to findu_transfer_thread
+typedef struct {
+    char *download_client_ptrs[2];
+} track_ptrs_struct;
+track_ptrs_struct track_ptrs;
+
+
+
 // This is the separate execution thread that fetches the track from
 // findu.  The thread is started up by the Download_trail_now()
 // function below.
@@ -599,7 +608,6 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char *temp_ptr;
     pthread_t download_trail_thread;
     static XtPointer download_client_data = NULL;
-    static char *download_client_ptrs[2];
 
 
     // If we're already fetching a trail, we shouldn't be calling
@@ -607,13 +615,10 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     if (fetching_findu_trail_now)
         return;
 
-// NOTE:  Below we're stuffing two pieces of data into an XtPointer
-// variable in order to pass two items to the pthread_create call.
-// This is probably very machine-dependent, and so may break on
-// different processors!
-    download_client_ptrs[0] = log_filename;
-    download_client_ptrs[1] = fileimg;
-    download_client_data = (XtPointer *)download_client_ptrs;
+    // Pass two parameters to findu_transfer_thread via a struct
+    track_ptrs.download_client_ptrs[0] = log_filename;
+    track_ptrs.download_client_ptrs[1] = fileimg;
+    download_client_data = &track_ptrs;
 
     // Check whether it's ok to do a download currently.
     if (read_file) {
