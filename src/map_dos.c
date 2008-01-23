@@ -354,7 +354,7 @@ void draw_dos_map(Widget w,
     char file_name[33];
 //    char *ext;
     char map_title[33];
-    char map_creator[8];
+    char map_creator[9];
     unsigned long creation_date;
     unsigned long left_boundary;
     unsigned long right_boundary;
