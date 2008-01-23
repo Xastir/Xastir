@@ -1349,6 +1349,11 @@ file that are useful for debugging in case Xastir crashes.
      them, turn off Object/Item transmit or global transmit in the interface
      menu.  Another option is to turn off the transmit enable per interface.
 
+     Please note that Xastir cannot cause the attached RINO to poll the other
+     RINO units on the air.  Xastir can only download the waypoints that the
+     attached RINO has collected from the other RINO units that it is passively
+     monitoring.
+
      Here's a blurb from Wes Johnston about the RINO's:
 
      "Lets say I have three RINO radios... two in the hands of the SAR teams on
