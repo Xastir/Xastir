@@ -1601,8 +1601,10 @@ fprintf(stderr,"1 ");
         } // end if is cached
 #endif // MAP_CACHE
 
-        (debug_level & 512) && fprintf (stderr, "Fetch or query took %d seconds\n", 
-                            (int) (time(&query_end_time) - query_start_time)); 
+        if (debug_level & 512) {
+            fprintf (stderr, "Fetch or query took %d seconds\n", 
+                (int) (time(&query_end_time) - query_start_time)); 
+        }
 
         // Set permissions on the file so that any user can overwrite it.
         chmod(local_filename, 0666);
