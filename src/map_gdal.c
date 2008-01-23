@@ -1090,7 +1090,9 @@ void Draw_OGR_Labels( Widget w,
     // draw labels for more minor objects as we zoom out is another
     // problem that must be solved.
     //
-    if (label && map_labels /* && !skip_label */ ) {
+    // Here "label" will always evaluate as true:  It's an address!
+    //if (label && map_labels /* && !skip_label */ ) {
+    if (map_labels /* && !skip_label */ ) {
 
         // Check that we're not trying to draw the label out of
         // bounds for the X11 calls.
