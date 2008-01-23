@@ -243,9 +243,12 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
 // mc_ret is assigned here but not used.  Commented it out for now.
     if (((/* mc_ret = */ dbp->get(dbp, NULL, &mc_key, &mc_data, 0)) == 0) &&  ( mc_data.data != NULL ) ) {
-        ( debug_level & 512 ) && fprintf(stderr, "map_cache_put: %s: key retrieved: data was %s.\n",
-            (mc_key.data == NULL) ? "(null)" : (char *)mc_key.data,
-            (mc_data.data == NULL) ? "(null)" : (char *)mc_data.data);
+
+        if ( debug_level & 512 ) {
+            fprintf(stderr, "map_cache_put: %s: key retrieved: data was %s.\n",
+                (mc_key.data == NULL) ? "(null)" : (char *)mc_key.data,
+                (mc_data.data == NULL) ? "(null)" : (char *)mc_data.data);
+        }
 
         if (mc_data.data == NULL)
             mc_space_used = 0;
