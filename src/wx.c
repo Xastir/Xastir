@@ -2741,7 +2741,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     sizeof(weather->wx_station),
                     "%s",
                     temp_conv+1);
-                weather->wx_station[MAX_WXSTATION] = '\0';
+                weather->wx_station[MAX_WXSTATION-1] = '\0';
             }
 
             // now compute wind chill
