@@ -1341,11 +1341,7 @@ int get_device_status(int port) {
 // this reason, and the size of the buffer must be MAX_LINE_SIZE
 // for this reason also.
 //***********************************************************
-
-// Can add "volatile" to "length" variable to get rid of "argument
-// might be clobbered by 'longjmp' or 'vfork'" warning.  Is this
-// what we want?
-void channel_data(int port, unsigned char *string, int length) {
+void channel_data(int port, unsigned char *string, volatile int length) {
     int max;
     struct timeval tmv;
     // Some messiness necessary because we're using xastir_mutex's
@@ -4823,12 +4819,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
 //**************************************************************
 static void* net_connect_thread(void *arg) {
     int port;
-
-    // Can add "volatile" to "ok" variable to get rid of "argument
-    // might be clobbered by 'longjmp' or 'vfork'" warning.  Is this
-    // what we want?
-    int ok;
-
+    volatile int ok = -1;
     int len;
     int result;
     int flag;
@@ -4847,7 +4838,6 @@ static void* net_connect_thread(void *arg) {
     // This call means we don't care about the return code and won't
     // use pthread_join() later.  Makes threading more efficient.
     (void)pthread_detach(pthread_self());
-    ok = -1;
 
 //if (begin_critical_section(&port_data_lock, "interface.c:net_connect_thread(1)" ) > 0)
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -4886,6 +4876,7 @@ static void* net_connect_thread(void *arg) {
         result = connect(port_data[port].channel, (struct sockaddr *)&address, len);
         if (debug_level & 2)
             fprintf(stderr,"connect result was: %d\n", result);
+        ok = 0;
         pthread_testcancel();  // Check for thread termination request
         if (result != -1){
             /* connection up */
