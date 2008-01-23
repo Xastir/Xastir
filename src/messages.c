@@ -228,8 +228,12 @@ int group_active(char *from) {
     if ((!stat( get_user_base_dir(group_data_file), &group_stat )
             && (current_group_stat.st_size != group_stat.st_size
                 || current_group_stat.st_mtime != group_stat.st_mtime
-                || current_group_stat.st_ctime != group_stat.st_ctime))
-                || (altgroup && strcasecmp(altgroup, VERSIONFRM))) {
+                || current_group_stat.st_ctime != group_stat.st_ctime))) {
+
+// altgroup equates to "address of altgroup" which always evaluates
+// as true.  Commenting it out of the conditional.  --we7u.
+//                || (altgroup && strcasecmp(altgroup, VERSIONFRM))) {
+
         group_build_list( get_user_base_dir(group_data_file) );
         current_group_stat = group_stat;
         xastir_snprintf(altgroup,sizeof(altgroup),"%s",VERSIONFRM);
