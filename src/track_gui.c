@@ -607,6 +607,10 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     if (fetching_findu_trail_now)
         return;
 
+// NOTE:  Below we're stuffing two pieces of data into an XtPointer
+// variable in order to pass two items to the pthread_create call.
+// This is probably very machine-dependent, and so may break on
+// different processors!
     download_client_ptrs[0] = log_filename;
     download_client_ptrs[1] = fileimg;
     download_client_data = (XtPointer *)download_client_ptrs;
