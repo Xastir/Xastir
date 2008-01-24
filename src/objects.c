@@ -178,6 +178,13 @@
 // Must be last include file
 #include "leak_detection.h"
 
+// lesstif (at least as of version 0.94 in 2008), doesn't
+// have full implementation of combo boxes.
+#ifndef USE_COMBO_BOX
+#if (XmVERSION >= 2 && !defined(LESSTIF_VERSION))
+#  define USE_COMBO_BOX 1
+#endif
+#endif  // USE_COMBO_BOX
 
 
 // ---------------------------- object -------------------------------
@@ -253,6 +260,9 @@ int CAD_show_comment = TRUE;
 int CAD_show_area = TRUE; 
 void Draw_CAD_Objects_erase_dialog_close(Widget w, XtPointer clientData, XtPointer callData);
 void Draw_CAD_Objects_list_dialog_close(Widget w, XtPointer clientData, XtPointer callData);
+#ifndef USE_COMBO_BOX
+int clsd_value;  // replacement value for cad line type combo box
+#endif // !USE_COMBO_BOX
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2371,10 +2381,14 @@ void Set_CAD_object_parameters (Widget widget,
     // Use the selected line type, default is dashed
     cb_selected = FALSE;
 
+#ifdef USE_COMBO_BOX
     XtVaGetValues(cad_line_style_data, 
         XmNselectedPosition,
         &cb_selected,
         NULL);
+#else
+    cb_selected = clsd_value;
+#endif // USE_COMBO_BOX        
 
     if (cb_selected) {
         target_object->line_type = cb_selected;
@@ -2484,6 +2498,19 @@ void close_object_params_dialog(Widget widget, XtPointer clientData, XtPointer c
 }
 
 
+#ifndef USE_COMBO_BOX
+void clsd_menuCallback(Widget widget, XtPointer ptr, XtPointer callData) {
+    //XmPushButtonCallbackStruct *data = (XmPushButtonCallbackStruct *)callData;    
+    XtPointer userData;
+
+    XtVaGetValues(widget, XmNuserData, &userData, NULL);
+
+    //clsd_menu is zero based, cad_line_style_data constants are one based. 
+    clsd_value = (int)userData + 1;
+    if (debug_level & 1)
+        fprintf(stderr,"Selected value on cad line type pulldown: %d\n",clsd_value);
+}
+#endif  // !USE_COMBO_BOX
 
 
 
@@ -2505,7 +2532,20 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
            button_done,
            button_cancel;
     char   probability_string[5];
-    XmString cb_item;
+    int i;  // loop counters
+    //XmString cb_item;  // used to create picklist of line styles
+    XmString cb_items[3]; 
+#ifndef USE_COMBO_BOX
+    Widget clsd_menuPane;  
+    Widget clsd_button;
+    Widget clsd_buttons[3];
+    Widget clsd_menu;
+    char buf[18];   
+    int x;
+    Arg args[12]; // available for XtSetArguments
+#endif // !USE_COMBO_BOX
+    Widget clsd_widget;
+
                                                                                                                         
     if (cad_dialog) {
         (void)XRaiseWindow(XtDisplay(cad_dialog), XtWindow(cad_dialog));
@@ -2661,7 +2701,17 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
         // 
         // Need to replace combo boxes with a pull down menu when lesstif is used.
         // See xpdf's  XPDFViewer.cc/XPDFViewer.h for an example.
+        //cb_items = (XmString *) XtMalloc ( sizeof (XmString) * 4 );
+        // Solid
+        cb_items[0] = XmStringCreateLtoR( langcode("CADPUD012"), XmFONTLIST_DEFAULT_TAG);
+        // Dashed
+        cb_items[1] = XmStringCreateLtoR( langcode("CADPUD013"), XmFONTLIST_DEFAULT_TAG);
+        // Double Dash
+        cb_items[2] = XmStringCreateLtoR( langcode("CADPUD014"), XmFONTLIST_DEFAULT_TAG);
 
+        clsd_widget = cad_line_style_data;
+
+#ifdef USE_COMBO_BOX
         // Combo box to pick line style
         cad_line_style_data = XtVaCreateManagedWidget("select line style",
                 xmComboBoxWidgetClass,
@@ -2681,28 +2731,56 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmComboBoxAddItem(cad_line_style_data,cb_items[0],1,1);  
+        XmComboBoxAddItem(cad_line_style_data,cb_items[1],2,1);  
+        XmComboBoxAddItem(cad_line_style_data,cb_items[2],3,1);  
 
-        // Solid
-        cb_item = XmStringCreateLtoR( langcode("CADPUD012"), XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(cad_line_style_data,cb_item,1,1);  
-        XmStringFree(cb_item);
+        clsd_widget = cad_line_style_data;
+#else
+        // menu replacement for combo box when using lesstif
+        x = 0;
+        XtSetArg(args[x], XmNmarginWidth, 0); ++x;
+        XtSetArg(args[x], XmNmarginHeight, 0); ++x;
+        clsd_menuPane = XmCreatePulldownMenu(cad_form,"sddd_menuPane", args, x);
+        //sddd_menu is zero based, constants for database types are one based.
+        //sddd_value is set to match constants in callback.
+        for (i=0;i<3;i++) { 
+            x = 0;
+            XtSetArg(args[x], XmNlabelString, cb_items[i]); x++;
+            XtSetArg(args[x], XmNuserData, (XtPointer)i); x++;
+            sprintf(buf,"button%d",i);
+            clsd_button = XmCreatePushButton(clsd_menuPane, buf, args, x);
+            XtManageChild(clsd_button);
+            XtAddCallback(clsd_button, XmNactivateCallback, clsd_menuCallback, Set_CAD_object_parameters_dialog);
+            clsd_buttons[i] = clsd_button;
+        }
+        x = 0;
+        XtSetArg(args[x], XmNleftAttachment, XmATTACH_WIDGET); ++x;
+        XtSetArg(args[x], XmNleftWidget, cad_line_style); ++x;
+        XtSetArg(args[x], XmNtopAttachment, XmATTACH_WIDGET); ++x;
+        XtSetArg(args[x], XmNtopWidget, cad_probability_data); ++x;
+        XtSetArg(args[x], XmNmarginWidth, 0); ++x;
+        XtSetArg(args[x], XmNmarginHeight, 0); ++x;
+        XtSetArg(args[x], XmNtopOffset, 5); ++x;
+        XtSetArg(args[x], XmNleftOffset, 10); ++x;
+        XtSetArg(args[x], XmNsubMenuId, clsd_menuPane); ++x;
+        clsd_menu = XmCreateOptionMenu(cad_form, "sddd_Menu", args, x);
+        XtManageChild(clsd_menu);
+        clsd_value = 2;   // set a default value (line on off dash)
+        clsd_widget = clsd_menu;
+#endif  // USE_COMBO_BOX
+        // free up space from combo box strings 
+        for (i=0;i<3;i++) {
+           XmStringFree(cb_items[i]);
+        }
 
-        // Dashed
-        cb_item = XmStringCreateLtoR( langcode("CADPUD013"), XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(cad_line_style_data,cb_item,2,1);  
-        XmStringFree(cb_item);
-
-        // Double Dash
-        cb_item = XmStringCreateLtoR( langcode("CADPUD014"), XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(cad_line_style_data,cb_item,3,1);  
-        XmStringFree(cb_item);
 
        // "OK"
         button_done = XtVaCreateManagedWidget(langcode("CADPUD005"),
                 xmPushButtonGadgetClass,
                 cad_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
-                XmNtopWidget,         cad_line_style_data,
+                XmNtopWidget,         clsd_widget,
                 XmNtopOffset,         5,
                 XmNbottomAttachment,  XmATTACH_FORM,
                 XmNbottomOffset,      5,
@@ -2720,7 +2798,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 xmPushButtonGadgetClass,
                 cad_form,
                 XmNtopAttachment,     XmATTACH_WIDGET,
-                XmNtopWidget,         cad_line_style_data,
+                XmNtopWidget,         clsd_widget,
                 XmNtopOffset,         5,
                 XmNbottomAttachment,  XmATTACH_FORM,
                 XmNbottomOffset,      5,
@@ -2773,27 +2851,46 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
         switch(CAD_object->line_type) {
 
             case 1: // Solid
+#ifndef USE_COMBO_BOX
+                i = 0;
+#endif // !USE_COMBO_BOX
                 tempSelection = XmStringCreateLtoR( langcode("CADPUD012"),
                     XmFONTLIST_DEFAULT_TAG);
                 break;
 
             case 2: // Dashed
+#ifndef USE_COMBO_BOX
+                i = 1;
+#endif // !USE_COMBO_BOX
                 tempSelection = XmStringCreateLtoR( langcode("CADPUD013"),
                     XmFONTLIST_DEFAULT_TAG);
                 break;
 
             case 3: // Double Dash
+#ifndef USE_COMBO_BOX
+                i = 2;
+#endif // !USE_COMBO_BOX
                 tempSelection = XmStringCreateLtoR( langcode("CADPUD014"),
                     XmFONTLIST_DEFAULT_TAG);
                 break;
 
             default:
+#ifndef USE_COMBO_BOX
+                i = 1;
+#endif // !USE_COMBO_BOX
                 tempSelection = XmStringCreateLtoR( langcode("CADPUD013"),
                     XmFONTLIST_DEFAULT_TAG);
                 break;
-        }
+        }        
+#ifdef USE_COMBO_BOX
         XmComboBoxSelectItem(cad_line_style_data, tempSelection);
-        XmStringFree(tempSelection);
+#else
+        clsd_value = i+1;
+        //clsd_menu is zero based, line types are one based.
+        //clsd_value matches line types (1-3).
+        XtVaSetValues(clsd_menu, XmNmenuHistory, clsd_buttons[i], NULL);
+#endif // USE_COMBO_BOX
+       XmStringFree(tempSelection);
     } 
 }
 

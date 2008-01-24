@@ -288,6 +288,13 @@ char *xastir_version=VERSION;
 // Define the ICON, created with the "bitmap" editor:
 #include "icon.xbm"
 
+// lesstif (at least as of version 0.94 in 2008), doesn't
+// have full implementation of combo boxes.
+#ifndef USE_COMBO_BOX
+#if (XmVERSION >= 2 && !defined(LESSTIF_VERSION))
+#  define USE_COMBO_BOX 1
+#endif
+#endif  // USE_COMBO_BOX
 
 int geometry_x, geometry_y;
 unsigned int geometry_width, geometry_height;
@@ -402,6 +409,7 @@ static char coordinate_calc_lon_deg[5];
 static char coordinate_calc_lon_min[15];
 static char coordinate_calc_lon_dir[5];
 coordinate_calc_array_type coordinate_calc_array;
+
 
 
 // --------------------------- help menu -----------------------------
@@ -843,7 +851,11 @@ Widget zero_bulletin_popup_enable;
 Widget warn_about_mouse_modifiers_enable;
 Widget my_trail_diff_color_enable;
 Widget load_predefined_objects_menu_from_file_enable;
-Widget load_predefined_objects_menu_from_file;
+#ifdef USE_COMBO_BOX
+Widget load_predefined_objects_menu_from_file; // combo box widget
+#else
+int lpomff_value;  // replacement value for predefined menu file combo box
+#endif // USE_COMBO_BOX
 int pop_up_new_bulletins = 0;
 int view_zero_distance_bulletins = 0;
 int warn_about_mouse_modifiers = 1;
@@ -21378,12 +21390,14 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     // Use the file specified on the picklist if one is selected.
     load_predefined_cb_selected = 0;
-
+#ifdef USE_COMBO_BOX
     XtVaGetValues(load_predefined_objects_menu_from_file, 
         XmNselectedPosition,
         &load_predefined_cb_selected,
         NULL);
-
+#else
+    load_predefined_cb_selected = lpomff_value;
+#endif //USE_COMBO_BOX
 
     // Use the file specified on the picklist if one is selected.
     if (load_predefined_cb_selected > 0) {
@@ -21393,10 +21407,29 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
         //
         load_predefined_cb_selection = (XmString)malloc(MAX_FILENAME);
 
+#ifdef USE_COMBO_BOX
         XtVaGetValues(load_predefined_objects_menu_from_file, 
             XmNselectedItem,
             &load_predefined_cb_selection,
             NULL);
+#else
+        switch (load_predefined_cb_selected) { 
+           case 1:
+               load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+              break;
+           case 2:
+               load_predefined_cb_selection = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
+               break;
+           case 3:
+               load_predefined_cb_selection = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
+               break;
+           case 4:
+               load_predefined_cb_selection = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
+               break;
+           default:
+               load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+        }
+#endif //USE_COMBO_BOX
     }
     else {
 
@@ -21492,6 +21525,19 @@ void igate_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 }
 
 
+#ifndef USE_COMBO_BOX
+void lpomff_menuCallback(Widget widget, XtPointer ptr, XtPointer callData) {
+    XtPointer userData;
+
+    XtVaGetValues(widget, XmNuserData, &userData, NULL);
+    //clsd_menu is zero based, cad_line_style_data constants are one based. 
+    lpomff_value = (int)userData + 1;
+    if (debug_level & 1)
+        fprintf(stderr,"Selected value on cad line type pulldown: %d\n",lpomff_value);
+}
+#endif  // !USE_COMBO_BOX
+
+
 
 
 
@@ -21505,10 +21551,22 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     Atom delw;
     Arg al[50];                      /* Arg List */
     register unsigned int ac = 0;   /* Arg Count */
+#ifndef USE_COMBO_BOX
+    Widget lpomff_menuPane;  
+    Widget lpomff_button;
+    Widget lpomff_buttons[4];
+    Widget lpomff_menu;
+    char buf[18];   
+    int x;
+#endif // !USE_COMBO_BOX
+    Widget lpomff_widget;
+    int i;
+    XmString cb_items[4];
+
+                                                                                                                        
 
     if (!configure_defaults_dialog) {
         char loadfrom[300];
-        XmString cb_item;
 
         // Set args for color
         ac = 0;
@@ -21787,14 +21845,17 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         // Need to replace combo boxes with a pull down menu when lesstif is used.
         // See xpdf's  XPDFViewer.cc/XPDFViewer.h for an example.
 
-
+        cb_items[0] = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+        cb_items[1] = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
+        cb_items[2] = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
+#ifdef USE_COMBO_BOX
         // Combo box to pick file from which to load predefined objects menu
         load_predefined_objects_menu_from_file = XtVaCreateManagedWidget("Load objects menu filename ComboBox",
                 xmComboBoxWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, zero_bulletin_popup_enable,
-		XmNtopOffset, 5,
+                XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, load_predefined_objects_menu_from_file_enable,
@@ -21807,25 +21868,58 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_items[0],1,1);  
+        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_items[1],2,1);  
+        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_items[2],3,1);  
 
-        cb_item = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,1,1);  
-        XmStringFree(cb_item);
+        lpomff_widget = load_predefined_objects_menu_from_file;
+#else
+        // Menu replacement for combo box when using lesstif.
+        // Not a full replacemtn, as combo box in motif can have editable values, 
+        // not just selection from predefined list as is the case here.
+        ac = 0;
+        XtSetArg(al[ac], XmNmarginWidth, 0); ac++;
+        XtSetArg(al[ac], XmNmarginHeight, 0); ac++;
+        lpomff_menuPane = XmCreatePulldownMenu(my_form,"lpomff_menuPane", al, ac);
+        //lpomff_menu is zero based, constants for filenames are one based
+        //lpomff_value is set to match constants in callback.
+        for (i=0;i<3;i++) { 
+            ac = 0;
+            XtSetArg(al[ac], XmNlabelString, cb_items[i]); ac++;
+            XtSetArg(al[ac], XmNuserData, (XtPointer)i); ac++;
+            sprintf(buf,"button%d",i);
+            lpomff_button = XmCreatePushButton(lpomff_menuPane, buf, al, ac);
+            XtManageChild(lpomff_button);
+            XtAddCallback(lpomff_button, XmNactivateCallback, lpomff_menuCallback, Configure_defaults);
+            lpomff_buttons[i] = lpomff_button;
+        }
+        ac = 0;
+        XtSetArg(al[ac], XmNleftAttachment, XmATTACH_WIDGET); ++ac;
+        XtSetArg(al[ac], XmNleftWidget, load_predefined_objects_menu_from_file_enable); ++ac;
+        XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ++ac;
+        XtSetArg(al[ac], XmNtopWidget, zero_bulletin_popup_enable); ++ac;
+        XtSetArg(al[ac], XmNmarginWidth, 0); ++ac;
+        XtSetArg(al[ac], XmNmarginHeight, 0); ++ac;
+        XtSetArg(al[ac], XmNtopOffset, 5); ++ac;
+        XtSetArg(al[ac], XmNleftOffset, 10); ++ac;
+        XtSetArg(al[ac], XmNsubMenuId, lpomff_menuPane); ++ac;
+        lpomff_menu = XmCreateOptionMenu(my_form, "sddd_Menu", al, ac);
+        XtManageChild(lpomff_menu);
+        lpomff_value = 2;   // set a default value (line on off dash)
+        lpomff_widget = lpomff_menu;
+#endif  // USE_COMBO_BOX
+        // free up space from combo box strings 
+        for (i=0;i<3;i++) {
+           XmStringFree(cb_items[i]);
+        }
 
-        cb_item = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,2,1);  
-        XmStringFree(cb_item);
-
-        cb_item = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
-        XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_item,3,1);  
-        XmStringFree(cb_item);
 
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),
                 xmToggleButtonWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, load_predefined_objects_menu_from_file,
+                XmNtopWidget, lpomff_widget,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 10,
@@ -21909,7 +22003,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
 #else   // TRANSMIT_RAW_WX
-                XmNtopWidget, load_predefined_objects_menu_from_file,
+                XmNtopWidget, lpomff_widget,
 #endif  // TRANSMIT_RAW_WX
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
@@ -21931,7 +22025,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
 #else   // TRANSMIT_RAW_WX
-                XmNtopWidget, load_predefined_objects_menu_from_file,
+                XmNtopWidget, lpomff_widget,
 #endif  // TRANSMIT_RAW_WX
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
@@ -22023,10 +22117,40 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         if(predefined_menu_from_file) {
             // Option to load the predefined SAR objects menu items from a file.
             // Display the filename if one is currently selected and option is enabled.
-            if (predefined_object_definition_filename != NULL ) {
+            if (predefined_object_definition_filename != NULL ) { 
+
+#ifdef USE_COMBO_BOX            
                 XmString tempSelection = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
                 XmComboBoxSelectItem(load_predefined_objects_menu_from_file, tempSelection);
                 XmStringFree(tempSelection);
+#else
+                x = -1;
+                if (predefined_object_definition_filename=="predefined_SAR.sys") 
+                    x = 0;
+                if (predefined_object_definition_filename=="predefined_EVENT.sys")
+                    x = 1;
+                if (predefined_object_definition_filename=="predefined_USER.sys")
+                    x = 2;
+                i = 3;
+                // allow display of another filename from the config file.
+                // user won't be able to edit it, but they will see it.
+                if (x==-1) { 
+                    ac = 0;
+                    cb_items[i] = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
+                    XtSetArg(al[ac], XmNlabelString, cb_items[i]); ac++;
+                    XtSetArg(al[ac], XmNuserData, (XtPointer)i); ac++;
+                    sprintf(buf,"button%d",i);
+                    lpomff_button = XmCreatePushButton(lpomff_menuPane, buf, al, ac);
+                    XtManageChild(lpomff_button);
+                    XtAddCallback(lpomff_button, XmNactivateCallback, lpomff_menuCallback, Configure_defaults);
+                    lpomff_buttons[i] = lpomff_button;
+                    XmStringFree(cb_items[i]);
+                    x = i;
+                }
+                XtVaSetValues(lpomff_menu, XmNmenuHistory, lpomff_buttons[x], NULL);
+                lpomff_value = x+1;
+#endif // USE_COMBO_BOX
+
             }
             XmToggleButtonSetState(load_predefined_objects_menu_from_file_enable,TRUE,FALSE);
         } else {
