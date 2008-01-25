@@ -1441,6 +1441,19 @@ slider to 48 hours (start time of two days ago) and the second slider to 24
 hours to snag exactly one day's worth of data, from the start until 24 hours
 later.
 
+
+Export all
+This sub-menu allows saving data for all stations to files [or databases]
+
+    Export to KML file
+      Saves all stations and their trails to a Keyhole Markup Language
+      file in ~/.xastir/tracklogs.  The filename will be the current
+      date and time with a .kml extension, e.g. 20080125-033045.kml
+     
+    Store to open databases [Not yet implemented]
+      [Store to database interfaces is currently only implemented through 
+      individual SQL database interface dialogs]
+
 Filter Data
 This sub-menu allows filtering of the displayed symbols:
 
@@ -1852,7 +1865,14 @@ might be changed (enhanced) in future versions. There is currently no
 way to read that track data back in, but it is planned for the future.
 The goal is to also read and display GPS track-logs in a similar manner.
 These track-log files will be placed in the directory ~/.xastir/tracklogs
-with a name equal to the stations call with ".trk" as extension.
+with a name equal to the stations call with ".trk" as extension.  Store 
+Track will similaneously save the station's track as a Keyhole Markup
+Language (.kml) file with a filename equal to the station's call, the
+current date and time and .kml as extension.  If shapefile support has
+been included, the station's track will also be saved as a set of four 
+files (.dbf,.prj,.shp,.shx).  Subsequent presses of Store Track for the
+same station will write additional lines into the .trk file, and create
+new .kml (and shapefile) files.  
 
 Modify Object/Item will bring up the Object Modify window.
 
@@ -2079,6 +2099,11 @@ This similar script downloads the waypoints from a Garmin GPS, and creates a
 log in the ~/.xastir/logs directory containing the waypoints as objects. It
 also requires the GPS::Garmin module.
 
+db_gis_mysql.sql  db_gis_postgis.sql
+These will create tables for storing station data in a mysql or postgresql/
+postgis database.  SQL Server database support is experimental.  See the
+"OPTIONAL: Experimental.  Add GIS database support" section in INSTALL
+
 HELP-INDEX>Configuring Interfaces
 
                            Configuring Interfaces
@@ -2103,6 +2128,7 @@ Serial KISS TNC
 Networked Database (Not Implemented Yet)
 Networked AGWPE
 Serial Multi-Port KISS TNC
+SQL Databases [MySQL,Postgis] (Experimental)
 
 To add a device, click on the add button. A "Choose Interface Type" box will
 appear. Click on the type of device you would like to add. Then click the Add
@@ -2117,6 +2143,9 @@ then click the properties button. The properties for that device will appear.
 Change the information you want and click OK.
 
 More specific help is available under the help topics of each interface type.
+
+SQL Databases will only appear as an option if you have MySQL or Postgis 
+support compiled.  
 
 HELP-INDEX>Configure Serial TNC Devices 
 
@@ -2439,6 +2468,74 @@ letters.  For instance: "AB7CD".
 The other options are described in the sections for Serial TNC and for
 Network interfaces.
 
+HELP-INDEX>Configure a SQL Database Connection
+
+                Configure a SQL Database Connection
+                         [Experimental]
+
+Xastir can experimentally store and retrieve station data from either
+a MySQL database or a Postgresql + Postgis database.  See the 
+"OPTIONAL: Experimental.  Add GIS database support." section in the
+INSTALL file for more information.  Station and object data are stored
+as spatial data, and can be retrieved from other GIS applications, for example
+Xastir can write station locations into a Postgis database from which they
+can also be viewed using QGIS.  SQL database connections also allow for the
+persistence of data between Xastir sessions.  All aspects of spatial database
+support, including database structures, are currently experimental and may 
+change at any time.  You may configure multiple SQL database connections, 
+but you should only have one active at a time.  
+
+Before creating a database connection in Xastir, you will need to create a 
+database to connect to, create an appropriate set of tables 
+(see the db_gis_xxxxx.sql scripts in the scripts directory), and add a user 
+with a password and rights to access the database.  For postgis databases
+you may also need to appropriately configure the user in pg_hba.conf
+
+Configuration options on the SQL database dialog include:
+Database: MySQL (lat/long) for very old MySQL databases, 
+          Postgis for postgresql + postgis, and 
+          MySQL (Spatial) for current MySQL databases.
+With tables for: Currently only the Xastir simple schema - a very basic
+          flat table holding minimal information about stations.
+Host: IP address or hostname for the database server, default is localhost.
+Port: Default is 3306 for MySQL and 5432 for Postgresql.  The database can
+          be on a remote server, but the appropriate port will need to be
+          open in any firewalls.  
+Username: Can be unique to your database, e.g. xastir_user
+Password: Unique to your database.  
+Schema name: Your database name. e.g. xastir
+MySQL Socket: check my.cnf, or mysql --help | grep socket
+          Leave blank for postgis databases.
+Reconnect on Net Failure: [Not yet implemented]
+MySQL defaults and Postgis defaults provided by the buttons may
+or may not be correct for your database.  
+
+Three options control the behavior of the SQL Database interface:
+Activate on Startup:  Try to connect to this database and begin storing heard 
+station data as soon as Xastir starts (if store incoming data is also selected).
+
+Store incoming data: Stores each station (including objects and items) report
+as a record in the database.  All stations heard on all interfaces will be 
+stored to the database - if you are connected to internet feeds and leave 
+xastir running this can easily be a million records per day.
+
+Load data on startup: Retrieve all station data from the database
+when restaring Xastir.  Currently the only way to retrieve persistent 
+data from a database.  Will attempt to connect to database and retrieve data 
+independent of the settings of either activate on startup or store incoming
+data.  Due to rounding and conversion errors, non-mobile stations may move 
+slightly.  
+
+The "Most Recent Error" box may or may not contain an error message to help
+identify connection problems.  When Xastir fails to connect to a database, 
+the interface will show ERROR on the interface list, and the most recent error 
+may be shown here.   Running xastir from the console and observing error 
+messages there, or running xastir from the console with xastir -v1 may help
+identify the cause of connection problems, as may examination of the 
+database's error logs.  
+
+You will only be able to configure a SQL Database interface if you have 
+compiled Xastir with support for that DBMS (--with-mysql or --with-postgis).
 
 HELP-INDEX>Symbol Table
 

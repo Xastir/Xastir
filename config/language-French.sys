@@ -228,6 +228,8 @@ PULDNDP049|Effacer indicatifs tactiques||
 PULDNDP050|Effacer historique des indicatifs tactiques||
 PULDNDP051|Choisir seulement les indicatifs tactiques||
 PULDNDP052|- Annoter les points de piste||
+PULDNDP055|Export all|E|
+PULDNDP056|Export to KML File||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||

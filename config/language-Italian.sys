@@ -227,6 +227,8 @@ PULDNDP049|Cancella tutte le chiamate tattiche||
 PULDNDP050|Cancella lo storico delle chiamate tattiche||
 PULDNDP051|Seleziona solo chiamate tattiche||
 PULDNDP052|- Etichetta i punti percorso||
+PULDNDP055|Export all|E|
+PULDNDP056|Export to KML File||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||

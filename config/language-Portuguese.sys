@@ -231,6 +231,8 @@ PULDNDP049|Limpar todos os indicativos tacticos||
 PULDNDP050|Limpar a historia dos indicativos tacticos||
 PULDNDP051|Seleccionar unicamente indicativos tacticos||
 PULDNDP052|- Etiquetas de pontos de pista||
+PULDNDP055|Export all|E|
+PULDNDP056|Export to KML File||
 #
 # Inglesa/metrica
 PULDNUT001|Activar unidades Inglesas||

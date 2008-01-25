@@ -235,6 +235,8 @@ PULDNDP049|Löschen aller taktischen Calls||
 PULDNDP050|Löschen Verlauf taktische Calls||
 PULDNDP051|Nur taktische Calls wählen||
 PULDNDP052|- Wegpunkte bezeichnen||
+PULDNDP055|Export all|E|
+PULDNDP056|Export to KML File||
 #
 # Maßeinheiten
 PULDNUT001|Englische Maße||

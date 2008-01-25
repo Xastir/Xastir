@@ -114,12 +114,20 @@ Library/Option Heirarchy:
     Berkeley DB
 
 
-    MySQL
+    MySQL --------> MySQL database interfaces (Experimental)
       |
       `-+---------> db2APRS (Xastir connects to this server)
        /
       |
     Meteo
+
+    Postgresql
+      |
+      `-+--------> Postgis database interfaces (Experimental)
+        |                      +
+       /        QGIS [station data in another GIS application]
+      |
+    Postgis
 
 ---------------------------------
 
@@ -1034,6 +1042,22 @@ First Time Install:
       database on startup and to save stations as they are heard to the
       database.  This provides persistance of station data between
       xastir sessions.
+
+      If you have one or more spatial database interfaces set to activate on 
+      startup, and this produces a situation that won't let you start xastir
+      normally [e.g. Station data with unusual characters could concevable 
+      cause xastir to segfault when retrieved from the database, and 
+      interactions between multiple databases that are both writing are 
+      reading station data at the same time from each other could potentally 
+      be unstable], you should be able to start xastir by editing the 
+      device configuration in ~/.xastir/config/xastir.cnf
+      Look for DEVICEn_TYPE:14 lines (where n is the interface number, between 0
+      and 14, TYPE:14 devices are sql database interfaces), and edit the
+      device to set both query on startup and on startup values to 0.
+      DEVICEn_QUERY_ON_STARTUP:0
+      DEVICEn_ONSTARTUP:0
+      If the cause is problematic data in your database, you may need to
+      run a delete query to eliminate the problematic row(s).  
      
  
    13. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
