@@ -529,6 +529,7 @@ extern void copy_data(DataRow *to, DataRow *from);
 
 
 extern void db_init(void);
+extern void export_trail_as_kml(DataRow *p_station);   // export trail of one or all stations to kml file
 
 //
 extern int is_my_call(char *call, int exact);

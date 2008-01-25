@@ -4998,6 +4998,14 @@ void menu_link_for_mouse_menu(Widget w, XtPointer clientData, XtPointer callData
 
 
 
+void store_all_kml_callback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    export_trail_as_kml(NULL);
+}
+
+
+
+
+
 void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -5112,12 +5120,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         General_q_button, IGate_q_button, WX_q_button,
         filter_data_button, filter_display_button,
         draw_CAD_objects_menu,
-
+        store_data_pane, store_data_button, store_all_kml_button,
+#ifdef HAVE_DB        
+        store_all_db_button,
+#endif  // HAVE_DB
 #ifdef ARROWS
         pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
         zoom_in_menu, zoom_out_menu, 
 #endif // ARROWS
-
         help_button, help_about, help_help;
 
 
@@ -6673,6 +6683,55 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback(download_trail_button, XmNactivateCallback,Download_findu_trail,NULL);
 
+ 
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+
+
+    // Store Data pulldown/tearoff
+    store_data_pane = XmCreatePulldownMenu(stationspane,
+            "store_data_pane",
+            al,
+            ac);
+
+    // Export all > 
+    store_data_button = XtVaCreateManagedWidget(langcode("PULDNDP055"),
+            xmCascadeButtonGadgetClass,
+            stationspane,
+            XmNsubMenuId, store_data_pane,
+            XmNmnemonic, langcode_hotkey("PULDNDP055"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // Export to KML file
+    store_all_kml_button = XtVaCreateManagedWidget(langcode("PULDNDP056"),
+            xmPushButtonGadgetClass,
+            store_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(store_all_kml_button, XmNactivateCallback, store_all_kml_callback, NULL);
+    
+#ifdef HAVE_DB
+    // store to  open databases
+    store_all_db_button = XtVaCreateManagedWidget("Store to open databases",
+            xmPushButtonGadgetClass,
+            store_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    //XtAddCallback(store_all_db_button, XmNvalueChangedCallback, store_all_db_button_callback, "1");
+    XtSetSensitive(store_all_db_button,FALSE);
+#endif // HAVE_DB
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep3",

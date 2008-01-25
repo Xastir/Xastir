@@ -184,7 +184,7 @@ CADRow *CAD_list_head = NULL;   // pointer to first element in CAD objects list
 
 void draw_trail(Widget w, DataRow *fill, int solid);
 void export_trail(DataRow *p_station);          // export trail of one or all stations to xastir export file
-void export_trail_as_kml(DataRow *p_station);   // export trail of one or all stations to kml file
+//void export_trail_as_kml(DataRow *p_station);   // export trail of one or all stations to kml file
 
 int decoration_offset_x = 0;
 int decoration_offset_y = 0;
