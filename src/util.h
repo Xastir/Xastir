@@ -71,6 +71,7 @@ extern void stop_timer(void);
 extern void print_timer_results(void);
 extern void get_timestamp(char *timestring);
 extern int get_iso_datetime(time_t aTime, char *timestring, int nowIfNotSet, int nowIfInvalid);
+extern int get_w3cdtf_datetime(time_t aTime, char *timestring,int nowIfNotSet, int nowIfInvalid);
 extern int get_hours(void);
 extern int get_minutes(void);
 extern int get_seconds(void);

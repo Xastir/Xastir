@@ -8059,21 +8059,35 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
     switch (export_format) { 
 
         case EXPORT_KML_TRACK: 
-           if (current != NULL) {  
-               // We have trail points, create both a [set of] time stamp labled point placemark[s]
-               // and a linestring placemark to draw the trail.  [TODO: expand to handle timeseries
-               // by drawing a set of placemarks for all the trail points with timestamps].
+           // This placemark is for a single position
+           // or for the most recent position of a trail 
+           // in either case represented as a <Point/> 
+           // and will show up as a labeled pushpin point.
+           fprintf(f,"<Placemark>");
+           get_iso_datetime(p_station->sec_heard,timestring,True,True);
 
-               // This placemark is for the most recent position of a trail and is a <Point/> to show up
-               // as a labeled pushpin point.
-               fprintf(f,"<Placemark>");
-               get_iso_datetime(p_station->sec_heard,timestring,True,True);
-               if (p_station->origin == NULL || p_station->origin[0] == '\0') { 
-                   fprintf(f,"<name>%s</name>\n",p_station->call_sign);
-                   fprintf(f,"<description>Heard at: %s</description>",timestring);
-               } else { 
-                   fprintf(f,"<name>%s</name>\n<description>Object from %s Heard at: %s</description>\n" ,p_station->call_sign,p_station->origin ,timestring);
-               }
+           if (p_station->origin == NULL || p_station->origin[0] == '\0') { 
+               fprintf(f,"<name>%s</name>\n",p_station->call_sign);
+               fprintf(f,"<description>");
+           } else { 
+               fprintf(f,"<name>%s</name>\n<description>Object from %s. \n",p_station->call_sign,p_station->origin);
+           }
+           // packets recieved %d last heard %s
+           fprintf(f,langcode("WPUPSTI005"),p_station->num_packets, timestring);
+           if (p_station->tactical_call_sign && p_station->tactical_call_sign[0] != '\0') { 
+                // tactical call %s 
+                fprintf(f, langcode("WPUPSTI065"), p_station->tactical_call_sign);
+           }
+           fprintf(f,"</description>\n");
+
+           // kml specifies w3c's date time format for timestamps
+           if (get_w3cdtf_datetime(p_station->sec_heard, timestring, False, False))
+              if (strlen(timestring) > 0) 
+                  fprintf(f,"<TimeStamp><when>%s</when></TimeStamp>",timestring);
+
+           if (current != NULL) {  
+               // We have trail points, create both a set of time stamp labled point placemarks
+               // and a linestring placemark to draw the trail.
                fprintf(f,"<Point>\n<coordinates>");
                if (p_station->altitude[0] != '\0')
                    alt = atoi(p_station->altitude)*10;
@@ -8089,15 +8103,38 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
                    course = -1;
                exp_trailpos(f,p_station->coord_lat,p_station->coord_lon,p_station->sec_heard,speed,course,alt,newtrk, export_format);
                fprintf(f,"</coordinates></Point>");
+
                fprintf(f,"</Placemark>\n");
-               
-           } 
-           // This placemark is for either a single position (as a <Point/>) or for a trail (as a <LineString/>).
-           fprintf(f,"<Placemark>");
-           if (p_station->origin == NULL || p_station->origin[0] == '\0')
-               fprintf(f,"<name>%s (trail)</name>\n",p_station->call_sign);
-           else
-               fprintf(f,"<name>%s (trail)</name>\n<description>Object from %s</description>\n",p_station->call_sign,p_station->origin);
+
+               // folow with a set of timestamped placemarks for each point on trail
+               while (current != NULL) {
+                   lon0   = current->trail_long_pos;                   // Trail segment start
+                   lat0   = current->trail_lat_pos;
+                   sec    = current->sec;
+                   speed  = current->speed;
+                   course = current->course;
+                   alt    = current->altitude;
+                   // kml specifies w3c's date time format for timestamps
+                   if (get_w3cdtf_datetime(sec,timestring,False,False) && (int)sec>0) { 
+                       // point has valid timestamp, write it
+                       fprintf(f,"<Placemark>");
+                       fprintf(f,"<name>%s at %s</name>\n",p_station->call_sign, timestring);
+                       fprintf(f,"<TimeStamp><when>%s</when></TimeStamp>",timestring);
+                       fprintf(f,"<Point><coordinates>");
+                       exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk, export_format);
+                       fprintf(f,"</coordinates></Point>");
+                       fprintf(f,"</Placemark>\n");
+                   }
+                   // Advance to the next point
+                   current = current->next;
+               }
+               // Prepare to follow with  a trail (as a <LineString/>).
+               fprintf(f,"<Placemark>");
+               if (p_station->origin == NULL || p_station->origin[0] == '\0')
+                   fprintf(f,"<name>%s (trail)</name>\n",p_station->call_sign);
+               else
+                   fprintf(f,"<name>%s (trail)</name>\n<description>Object from %s</description>\n",p_station->call_sign,p_station->origin);
+           }
            break;
 
         case EXPORT_XASTIR_TRACK:
@@ -8112,6 +8149,10 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
     // and one in the tracklog.  If the station only has one point,
     // there won't be a tracklog.  If the station has moved, then
     // it'll have both.
+
+    // reset current, as we may have moved it past the last trackpoint
+    // while generating kml above.
+    current = p_station->oldest_trackpoint;
 
     if (current != NULL) {  // We have trail points, loop through
                             // them.  Skip the most current position
