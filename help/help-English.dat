@@ -1859,29 +1859,30 @@ Query               Query      Query
 The Clear Track button will clear any line tracking for this station that is
 currently stored or on the map display.
 
-Store Track will save that station's track to a file on disk. The used
+"Store Track" will save the track of the station to a file on disk. The 
 format is similar to that used by GPS receivers but its specification
 might be changed (enhanced) in future versions. There is currently no
 way to read that track data back in, but it is planned for the future.
 The goal is to also read and display GPS track-logs in a similar manner.
 These track-log files will be placed in the directory ~/.xastir/tracklogs
-with a name equal to the stations call with ".trk" as extension.  Store 
-Track will similaneously save the station's track as a Keyhole Markup
+with a name equal to the stations call with ".trk" as extension.  "Store 
+Track" will simultaneously save the station's track as a Keyhole Markup
 Language (.kml) file with a filename equal to the station's call, the
 current date and time and .kml as extension.  If shapefile support has
 been included, the station's track will also be saved as a set of four 
 files (.dbf,.prj,.shp,.shx).  Subsequent presses of Store Track for the
 same station will write additional lines into the .trk file, and create
-new .kml (and shapefile) files.  
+new .kml (and shapefile) files (each containing all positions in the 
+station's track.  
 
-Modify Object/Item will bring up the Object Modify window.
+"Modify Object/Item" will bring up the Object Modify window.
 
-Send message will open up the message window and allow you to send a message
+"Send message" will open up the message window and allow you to send a message
 to this station. It will fill in the call sign for you.
 
 If the FCC (U.S. Federal Communications Commission) or RAC (Radio Amateurs of
 Canada) database is installed and the callsign appears to be a Canadian or
-U.S. callsign, the Search FCC/RAC Database button will become active,
+U.S. callsign, the "Search FCC/RAC Database" button will become active,
 otherwise this button will be inactive.  The FCC and RAC files should be
 placed in the /usr/local/share/xastir/fcc directory, and case is important!
 Pressing this button adds the station's name and address into the Station
