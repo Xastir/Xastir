@@ -36,6 +36,7 @@ PULDNFI012|Accesso al Gateway Internet|G|
 PULDNFI013|Registro dati meteo|G|
 PULDNFI014|Cattura schermo in PNG||
 PULDNFI015|Stampa|P|
+PULDNFI016|KML Snapshots||
 #
 # Menù Visualizza
 PULDNVI001|Bollettini|B|

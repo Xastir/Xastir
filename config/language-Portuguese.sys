@@ -36,6 +36,7 @@ PULDNFI012|Abre o log da I-Gate|G|
 PULDNFI013|Abre o log do tempo|W|
 PULDNFI014|Activa PNG instantanea||
 PULDNFI015|Imprimir mapa|P|
+PULDNFI016|KML Snapshots||
 #
 # Menu visor
 PULDNVI001|Boletins|B|

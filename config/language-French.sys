@@ -39,6 +39,7 @@ PULDNFI012|Activer archivage IGate|I|
 PULDNFI013|Activer archivage météo|m|
 PULDNFI014|Activer copie d'écran PNG||
 PULDNFI015|Imprimer carte|p|
+PULDNFI016|KML Snapshots||
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|
