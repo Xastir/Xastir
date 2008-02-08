@@ -481,6 +481,9 @@ New Track Interval (degrees) specifies distance in lat/long degrees at which
 a new track segment is started.   Caution: setting new track interval to 0
 degreees will turn off the display of all tracks.
 
+Snapshot Interval (minutes) specifies how often snapshot files will be
+written if either File->PNG Snapshots or File->KML Snapshots are selected.
+
 HELP-INDEX>Configure Audio Alarms
 
                            Configure Audio Alarms
@@ -1449,10 +1452,14 @@ This sub-menu allows saving data for all stations to files [or databases]
       Saves all stations and their trails to a Keyhole Markup Language
       file in ~/.xastir/tracklogs.  The filename will be the current
       date and time with a .kml extension, e.g. 20080125-033045.kml
+      KML files can also be written on a regular basis using KML
+      Snapshots on the file menu.
      
     Store to open databases [Not yet implemented]
       [Store to database interfaces is currently only implemented through 
       individual SQL database interface dialogs]
+
+    To save a png snapshot of the current map, use File->PNG Snapshots
 
 Filter Data
 This sub-menu allows filtering of the displayed symbols:
@@ -2016,14 +2023,32 @@ HELP-INDEX>Creating Snapshots
                      Creating Automatic Snapshots
 
 Xastir has the capability to create automatic snapshots of the map screen
-on a recurring basis.  This time period is currently set at once per five
+on a recurring basis.  The default time period is set at once per five
 minutes.  Assuming that you have "convert" from the ImageMagick tools
 installed, Xastir will create an XPM format file in ~/.xastir/tmp/, then
 convert it to the PNG file ~/.xastir/tmp/snapshot.png. This file is useful for
 embedding in web pages to show a "live" image of what is on your Xastir
 screen.  Enable this feature via the "File->PNG Snapshots" toggle-button. 
-The rate is once every five minutes, or every time the button is toggled from
-off to on. A .geo is created to allow you to use the snapshot as a map.
+The rate is once every five minutes (configurable from the Configure 
+Timing dialog from "File->Configure->Timing"), or every time the button is 
+toggled from off to on. A .geo is created to allow you to use the snapshot 
+as a map.  A .kml file is also written to allow you to use the snapshot as
+a graphic overlay on terrain in applications capable of reading kml.  See
+kml_snapshot_to_web.sh and kml_snapshot_feed.kml in the scripts directory 
+for more information on using the snapshot.png and snapshot.kml file to
+produce a kml feed using the snapshots.
+
+                    Creating Automatic KML Snapshots
+
+Xastir is capable of writing all current stations and tracks to a kml file
+on a recurring basis.  Enable this feature via the "File->KML Snapshots" 
+toggle button.  The rate at which these snapshots are generated is the same
+as that of PNG snapshots, configured from "File->Configure->Timing" by 
+setting the snapshot time interval.  Each snapshot is written to a .kml
+file in ~/.xastir/tracklogs, with a filename based on the date and time
+of the snapshot, e.g. 20080206-000720.kml  This behavior may change to 
+make KML snapshots write to a single file like PNG snapshots.
+                    
 
 HELP-INDEX>Included Scripts
 
