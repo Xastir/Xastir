@@ -273,6 +273,7 @@ extern int log_message_data;
 extern int log_wx_alert_data;
 extern int log_wx;
 extern int snapshots_enabled;
+extern int kmlsnapshots_enabled;
 extern char user_dir[];
 extern char lang_to_use[30];
 extern char my_group;

@@ -1155,6 +1155,7 @@ int log_wx_alert_data;          /* toggle to allow wx alert logging */
 
 
 int snapshots_enabled = 0;      // toggle to allow creating .png snapshots on a regular basis
+int kmlsnapshots_enabled = 0;   // toggle to allow creating .kml snapshots on a regular basis 
 
 time_t WX_ALERTS_REFRESH_TIME;  /* Minimum WX alert map refresh time in seconds */
 
@@ -5000,6 +5001,25 @@ void menu_link_for_mouse_menu(Widget w, XtPointer clientData, XtPointer callData
 
 void store_all_kml_callback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     export_trail_as_kml(NULL);
+    last_kmlsnapshot = sec_now();
+}
+
+
+
+
+void KML_Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    // Whether we're setting or unsetting it, set the timer such
+    // that a snapshot will occur immediately once the button is set
+    // again.
+    last_kmlsnapshot = 0;
+
+    if(state->set)
+        kmlsnapshots_enabled = atoi(which);
+    else
+        kmlsnapshots_enabled = 0;
 }
 
 
@@ -5115,7 +5135,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         smart_beacon_button, map_indexer_button,
         map_all_indexer_button, auto_msg_set_button,
         message_button, send_message_to_button,
-        show_pending_messages_button,
+        show_pending_messages_button, enable_kmlsnapshots,
         open_messages_group_button, clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
         filter_data_button, filter_display_button,
@@ -5549,6 +5569,18 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     if (snapshots_enabled)
         XmToggleButtonSetState(enable_snapshots,TRUE,FALSE);
 
+    // enable kml snapshots
+    enable_kmlsnapshots = XtVaCreateManagedWidget(langcode("PULDNFI016"),
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(enable_kmlsnapshots,XmNvalueChangedCallback,KML_Snapshots_toggle,"1");
+    if (kmlsnapshots_enabled)
+        XmToggleButtonSetState(enable_kmlsnapshots,TRUE,FALSE);
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep1a",
@@ -11354,6 +11386,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Is it time to create a JPG snapshot?
             if (snapshots_enabled)
                 (void)Snapshot();
+            
+            // Is it time to create a kml dump of all current stations
+            if (kmlsnapshots_enabled) { 
+                 if (sec_now() > (last_kmlsnapshot + (snapshot_interval * 60)) ) { 
+                    last_kmlsnapshot = sec_now(); // Set up timer for next time
+                    export_trail_as_kml(NULL);
+                 }
+            }
 
             // Is it time to refresh maps? 
             if ( map_refresh_interval && (current_time > map_refresh_time) ) {

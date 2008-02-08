@@ -945,6 +945,9 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         // SNAPSHOTS
         store_int (fout, "SNAPSHOTS_ENABLED", snapshots_enabled);
 
+        // KML SNAPSHOTS
+        store_int (fout, "KMLSNAPSHOTS_ENABLED", kmlsnapshots_enabled);
+
         /* WX ALERTS */
         store_long (fout, "WX_ALERTS_REFRESH_TIME", (long)WX_ALERTS_REFRESH_TIME);
 
@@ -1959,6 +1962,9 @@ void load_data_or_default(void) {
   
     // SNAPSHOTS
     snapshots_enabled = get_int ("SNAPSHOTS_ENABLED", 0,1,0);
+
+    // KML SNAPSHOTS
+    kmlsnapshots_enabled = get_int ("KMLSNAPSHOTS_ENABLED", 0,1,0);
 
     /* WX ALERTS */
     WX_ALERTS_REFRESH_TIME = (time_t) get_long ("WX_ALERTS_REFRESH_TIME", 10l, 86400l, 60l);

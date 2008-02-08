@@ -191,6 +191,7 @@ char printer_program[MAX_FILENAME+1];
 char previewer_program[MAX_FILENAME+1];
 
 time_t last_snapshot = 0;               // Used to determine when to take next snapshot
+time_t last_kmlsnapshot = 0;               // Used to determine when to take next kml snapshot
 int doing_snapshot = 0;
 int snapshot_interval = 0;
 
@@ -5099,7 +5100,11 @@ static void* snapshot_thread(void *arg) {
     char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
     char geo_filename[MAX_FILENAME];
+    char kml_filename[MAX_FILENAME];   // filename for kml file that describes the png file in keyhole markup language
+    char timestring[101];  // string representation of the time heard or the current time
     FILE *f;
+    FILE *fk;  // file handle for kml file
+    time_t expire_time;  
 #ifdef HAVE_CONVERT
     char command[MAX_FILENAME*2];
 #endif  // HAVE_CONVERT
@@ -5126,13 +5131,24 @@ static void* snapshot_thread(void *arg) {
         "%s/snapshot.geo",
         get_user_base_dir("tmp"));
 
+    // Same for the .kml filename
+    xastir_snprintf(kml_filename,
+        sizeof(kml_filename),
+        "%s/snapshot.kml",
+        get_user_base_dir("tmp"));
+
 
     // Create a .geo file to match the new png image
-    //
+    // Likewise for a matching .kml file
     f = fopen(geo_filename,"w");    // Overwrite whatever file
                                         // is there.
-    if (f == NULL) {
-        fprintf(stderr,"Couldn't open %s\n",geo_filename);
+    fk = fopen(kml_filename,"w"); 
+
+    if (f == NULL || fk == NULL) {
+        if (f==NULL) 
+           fprintf(stderr,"Couldn't open %s\n",geo_filename);
+        if (fk==NULL) 
+           fprintf(stderr,"Couldn't open %s\n",kml_filename);
     }
     else {
         float lat1, long1, lat2, long2;
@@ -5160,9 +5176,86 @@ static void* snapshot_thread(void *arg) {
         fprintf(f,"IMAGESIZE    %-4d    %-4d\n",
             (int)screen_width, (int)screen_height);
         fprintf(f,"REFRESH      250\n");
-        fclose(f); 
+        fclose(f);
+
+        // Write a matching kml file that describes the location of the snapshot on
+        // the Earth's surface.
+        // Another kml file pointing to the location of this file with a networklinkcontrol element
+        // and an update element loaded into a kml application should be able to reload this file
+        // at regular intervals.
+        // See kml documentation of:
+        // <kml><NetworkLinkControl><linkName/><refreshMode/>
+        //
+        // <?xml version="1.0" encoding="UTF-8"?>
+        // <kml xmlns="http://earth.google.com/kml/2.1">
+        // <Document>
+        //   <NetworkLink>
+        //      <Link>
+        //        <href>http://www.example.com/cgi-bin/screenshot.kml</href>
+        //        <refreshMode>onExpire</refreshMode>
+        //      </Link>
+        //  </NetworkLink>
+        // </Document>
+        // </kml>
+        // 
+        // TODO: Calculate a suitable range and tilt for viewing the snapshot draped on the 
+        // underlying terrain.
+
+        fprintf(fk,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        fprintf(fk,"<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
+        // Add an expire time matching the time when the next snapshot should
+        // be produced, so that a network link with an onExpire refresh mode
+        // will check for the next snapshot. 
+        expire_time = sec_now() + (time_t)(snapshot_interval * 60); 
+        if (get_w3cdtf_datetime(expire_time, timestring, False, False)) {  
+              if (strlen(timestring) > 0) {
+                  fprintf(fk,"  <NetworkLinkControl>\n");
+                  fprintf(fk,"     <expires>%s</expires>\n",timestring);
+                  fprintf(fk,"  </NetworkLinkControl>\n");
+              }
+        }
+        fprintf(fk,"  <Document>\n");
+        fprintf(fk,"    <name>XASTIR Snapshot from %s</name>\n",my_callsign);
+        fprintf(fk,"    <open>1</open>\n");
+        fprintf(fk,"    <GroundOverlay>\n");
+        fprintf(fk,"      <name>Xastir snapshot</name>\n");
+        fprintf(fk,"      <visibility>1</visibility>\n");
+        // timestamp the overlay with the current time
+        if (get_w3cdtf_datetime(sec_now(), timestring, True, True)) {  
+              if (strlen(timestring) > 0) {
+                  fprintf(fk,"      <TimeStamp><when>%s</when></TimeStamp>\n",timestring);
+                  fprintf(fk,"      <description>Overlay shows screen visible for %s in Xastir at %s.</description>\n",my_callsign,timestring);
+              }
+        } else { 
+           fprintf(fk,"      <description>Overlay shows screen visible for %s in Xastir.</description>\n",my_callsign);
+        }
+        fprintf(fk,"      <LookAt>\n");
+        fprintf(fk,"        <longitude>%8.5f</longitude>\n",f_center_longitude);
+        fprintf(fk,"        <latitude>%8.5f</latitude>\n",f_center_latitude);
+        fprintf(fk,"        <altitude>0</altitude>\n");
+        fprintf(fk,"        <range>30350.36838438907</range>\n");  // range in meters from viewer to lookat point
+        fprintf(fk,"        <tilt>0</tilt>\n");  // 0 is looking straight down
+        fprintf(fk,"        <altitudeMode>clampToGround</altitudeMode>\n");  
+        fprintf(fk,"        <heading>0</heading>\n");  // 0 is north at top, 90 east at top
+        fprintf(fk,"      </LookAt>\n");
+        fprintf(fk,"      <Icon>\n");
+        fprintf(fk,"        <href>snapshot.png</href>\n");
+        fprintf(fk,"      </Icon>\n");
+        fprintf(fk,"      <LatLonBox>\n");
+        fprintf(fk,"        <north>%8.5f</north>\n",lat1);
+        fprintf(fk,"        <south>%8.5f</south>\n",lat2);
+        fprintf(fk,"        <east>%8.5f</east>\n",long2);
+        fprintf(fk,"        <west>%8.5f</west>\n",long1);
+        fprintf(fk,"        <rotation>0</rotation>\n");
+        fprintf(fk,"      </LatLonBox>\n");
+        fprintf(fk,"    </GroundOverlay>\n");
+        fprintf(fk,"  </Document>\n");
+        fprintf(fk,"</kml>\n");
+
+        fclose(fk);
 
         chmod( geo_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+        chmod( kml_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
     }
 
 
