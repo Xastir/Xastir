@@ -197,7 +197,7 @@ char *xastir_version=VERSION;
 // lines and we could update the years in the Help->About message
 // each time.  Otherwise it often gets missed when we're updating
 // the years.
-#define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\nhttp://www.xastir.org\n\n1999-2008, The Xastir Group"
+#define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\n        http://www.xastir.org\n\nCopyright (C) 1999-2000  Frank Giannandrea\nCopyright (C) 1999-2008  The Xastir Group\nSee the \"LICENSE\" file for other applicable copyrights"
 
 
 // Define this if you want an xastir.pid file created in the
@@ -14343,7 +14343,6 @@ void process_RINO_waypoints(void) {
                 else
                     lon_dir = 'E';
 
-/*
                 // Non-Compressed version
                 xastir_snprintf(line2,
                     sizeof(line2),
@@ -14360,8 +14359,8 @@ void process_RINO_waypoints(void) {
                     lon_min,    // Minutes
                     lon_dir,    // E/W
                     '[');       // Hiker symbol
-*/
 
+/*
                 // Compressed version.  Gives us more of the
                 // resolution inherent in the RINO waypoints.
                 // Doesn't have an affect on whether we transmit
@@ -14405,6 +14404,7 @@ void process_RINO_waypoints(void) {
                     hour,
                     minute,
                     compressed_string);
+*/
 
 /*
                 fprintf(stderr,
@@ -16666,11 +16666,11 @@ void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget d;
     XmString xms, xa, xb;
-    Arg al[200];
+    Arg al[400];
     unsigned int ac;
     float version;
-    char string1[100];
-    char string2[100];
+    char string1[200];
+    char string2[200];
     extern char compiledate[];
    
     xastir_snprintf(string2, sizeof(string2),"\nXastir V%s \n",xastir_version);
@@ -16681,7 +16681,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmStringFree(xb);
     //xms is still defined
 
-    xa = XmStringCreateLtoR("\n\n" ABOUT_MSG "\n\n\nLibraries used: " XASTIR_INSTALLED_LIBS, XmFONTLIST_DEFAULT_TAG);  // Add some newlines
+    xa = XmStringCreateLtoR("\n\n" ABOUT_MSG "\n\nLibraries used: " XASTIR_INSTALLED_LIBS, XmFONTLIST_DEFAULT_TAG);  // Add some newlines
     xb = XmStringConcat(xms, xa);
     XmStringFree(xa);
     XmStringFree(xms);
