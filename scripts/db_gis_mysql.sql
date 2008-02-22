@@ -50,3 +50,6 @@ create table simpleStation (
 
 grant select, insert, update on simpleStation to xastir_user@localhost;
 
+-- example query to retieve symbol as aprsworld icon filename
+-- select count(*), concat(lpad(ascii(aprstype),3,'0'), '_', lpad(ascii(symbol),3,'0'), '.png') from simpleStationSpatial group by aprstype,symbol;
+

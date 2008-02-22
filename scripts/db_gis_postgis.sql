@@ -21,7 +21,7 @@ create table version (
      version_number int,
      compatable_series int
 );
-grant select on version to xastir_user
+grant select on version to xastir_user;
 
 insert into version (version_number,compatable_series) values (1,1);
 
@@ -36,6 +36,12 @@ create table simpleStation (
      record_type varchar(1),
      node_path varchar(56),
 );
+create index ssstation on simplestation(station);
+create index sssymbol on simplestation(symbol);
+create index sstype on simplestation(aprstype);
+create index sstransmittime on simplestation(transmit_time);
+
+create index ssstationtime on simplestation(station,transmit_time);
 
 --select AddGeometryColumn('','simpleStation','position',-1,'POINT',2);
 
@@ -53,7 +59,7 @@ grant select, update on simpleStation_simpleStationId_seq to xastir_user;
 -- the next two grants allow xastir_user to be used in other applications
 -- such as qgis that need access to the spatial metadata tables
 grant select on geometry_columns to xastir_user;
-grant select spatial_ref_sys to xastir_user;
+grant select on spatial_ref_sys to xastir_user;
 
 -- 0 update
 alter table simpleStation add column origin varchar(9) not null default '';
@@ -61,5 +67,9 @@ alter table simpleStation add column record_type varchar(1);
 alter table simpleStation add column node_path varchar(56);
 -- note - lat/long is transposed in version 0 and version 1
 
+-- example query to list symbols by aprsworld icon filenames
+-- select count(*), lpad(ascii(aprstype),3,'0') || '_' || lpad(ascii(symbol),3,'0') || '.png' from simpleStation group by aprstype, symbol;
 
+-- view to add icon filenames
+create view simplestationicons as select *, lpad(ascii(aprstype),3,'0') || '_' || lpad(ascii(symbol),3,'0') || '.png' as icon from simpleStation;
 
