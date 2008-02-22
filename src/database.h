@@ -647,6 +647,8 @@ int comp_by_dist(const void *,const void *);// used only for qsort
 DataRow * sanity_check_time_list(time_t); // used only for debugging
 void dump_time_sorted_list(void);
 
+extern int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *alt, char *speed, char *course, short stn_flag);
+
 #ifdef HAVE_DB
 extern int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time);
 

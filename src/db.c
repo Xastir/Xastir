@@ -8952,7 +8952,7 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
     //DataRow *p_new_station_unused;
     struct tm time;
 
-    // Add a datarow using the retrieved station record from the postgis database.
+    // Add a datarow using the retrieved station record from the postgis/mysql database.
     p_time = NULL;
     p_new_station = NULL;
 

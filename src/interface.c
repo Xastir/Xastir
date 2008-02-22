@@ -7283,7 +7283,8 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                 got_conn=openConnection(device, &connections[port_avail].conn);
                 if (debug_level & 1) {
                     fprintf(stderr,"got_conn connections[%d] [%p] result=%d\n",port_avail,&connections[port_avail].conn,got_conn);
-                    printf(stderr,"got_conn connection type %d\n",conn->type);
+                    if (got_conn==1) 
+                        printf(stderr,"got_conn connection type %d\n",conn->type);
                 }
                 if ((got_conn == 1) && (!(&connections[port_avail].conn->type==NULL))) { 
                    if (debug_level & 2)
@@ -7292,7 +7293,7 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                    port_data[port_avail].active = DEVICE_IN_USE;
                    port_data[port_avail].status = DEVICE_UP;
                 } else { 
-                   free(connections[port_avail].conn);
+                   //free(connections[port_avail].conn);  // segfaults - passsing wrong thing? 
                    port_data[port_avail].active = DEVICE_IN_USE;
                    port_data[port_avail].status = DEVICE_ERROR;
                 }

@@ -542,11 +542,14 @@ ioparam simpleDbTest(void) {
 */
 
 /* Function openConnection()
- * Opens the specified database connection and returns a
- * generic handle to that connection.
- * On connection failure, returns null and sets error message in 
- * the connection descriptor.
+ * Opens the specified database connection.
  * @param anIface a database connection description (host username etc).
+ * @param connection a generic database connection for which the 
+ * appropriate MySQL or Postgresql connection handle will be used
+ * for the open connection on success.
+ * @returns 0 on any error, 1 for successful connection
+ * on connection failure, returns 0 and sets error message in 
+ * the connection descriptor.
  */
 int openConnection(ioparam *anIface, Connection *connection) {
     int returnvalue = 0;
@@ -554,6 +557,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
     int connected;   // status of connection polling loop
     unsigned long client_flag = 0; // parameter used for mysql connection, is normally 0.
     unsigned int port;  // port to make connection on
+    time_t start_time;
     int connection_made = 0;
     #ifdef HAVE_POSTGIS
     PGconn *postgres_connection;
@@ -567,6 +571,8 @@ int openConnection(ioparam *anIface, Connection *connection) {
         mysql_init((MYSQL*)&connection->mhandle);
     }
     #endif /* HAVE_MYSQL */
+    // clear any existing error message
+    xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " "); 
     if (debug_level & 1) 
           fprintf(stderr,"Entering openConnection with anIface [%p] and conn [%p]\n",anIface,connection);
 
@@ -577,7 +583,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
         connections_initialized = 1;
     }
   
-    // need some sort of connection listener to handle reconnection attempts when a connection fails...
+    // TODO: need some sort of connection listener to handle reconnection attempts when a connection fails...
     
     // try to open connection
     if (!(anIface==NULL)) { 
@@ -599,7 +605,9 @@ int openConnection(ioparam *anIface, Connection *connection) {
                     connected = 0;
                     // can connect, run PQ_connect_poll loop
                     // Note: xastir needs to decide when to time out
-                    while (connected==0) { 
+                    start_time = sec_now();
+                    statusline("Connecting to Postgresql database",1);
+                    while (connected==0 & (sec_now<(start_time+30))) { 
                        // need to add a timer to polling loop
                        poll = PQconnectPoll(connection->phandle);
                        if (poll == PGRES_POLLING_FAILED || poll == PGRES_POLLING_OK) { 
@@ -608,7 +616,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
                        // add connection status feedback here if desired
                     }
                     if (PQstatus(connection->phandle)==CONNECTION_OK) {
-                        //if (debug_level & 1)
+                        if (debug_level & 1)
                             fprintf(stderr,"Connected to Postgresql database on %s\n",anIface->device_host_name);
                         // connection successfull
                         connection->type=DB_POSTGIS;
@@ -619,7 +627,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
                         // connection attempt failed
                         fprintf(stderr,"Failed to connect to Postgresql database on %s\n",anIface->device_host_name);
                         fprintf(stderr,"Postgres Error: %s\n", PQerrorMessage(connection->phandle));
-                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to make Postgresql connection %s. %s", PQerrorMessage(postgres_connection), connection_string); 
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to make Postgresql connection %s. %s", PQerrorMessage(connection->phandle), connection_string); 
                     }
                 }
                 break;
@@ -634,6 +642,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
                     xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
                 } else { 
                     port = anIface->sp;
+                    statusline("Connecting to MySQL database",1);
                     if (debug_level & 1) 
                         fprintf(stderr,"Opening connection to %s.\n",anIface->device_host_name);
                     mysql_real_connect((MYSQL*)&connection->mhandle, anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port, anIface->database_unix_socket, client_flag); 
@@ -646,21 +655,27 @@ int openConnection(ioparam *anIface, Connection *connection) {
                         fprintf(stderr,"Failed to connect to MySQL database on %s\n",anIface->device_host_name);
                         fprintf(stderr, "MySQL Error: %s", mysql_error((MYSQL*)&connection->mhandle));
                     } else { 
+
+// mysql_real_connect is coming back with non-null failed connection.
+
                         // connected to database
-                        fprintf(stderr,"Connected to MySQL database on %s\n",anIface->device_host_name);
                         // make sure error message for making connection is empty.
                         xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
-                        // store connection information
-                        connection->type = DB_MYSQL_SPATIAL;
-                        connection->descriptor = *anIface;
                         xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
-                        connection_made = 1;
 
                         // ping the server
                         if (mysql_ping((MYSQL*)&connection->mhandle)==0) { 
                             fprintf(stderr,"mysql ping ok [0]\n");
+                            connection_made = 1;
+                            // store connection information
+                            connection->type = DB_MYSQL_SPATIAL;
+                            connection->descriptor = *anIface;
+                            if (debug_level & 1) 
+                                fprintf(stderr,"Connected to MySQL database, connection stored\n");
                         } else {
                             fprintf(stderr,"mysql ping failed [1]\n");
+                            fprintf(stderr,"Can't connect to MySQL database: Can't ping server.\n");
+                            xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to ping MySQL server.  Server may be down. Check connection paramenters.");
                         }
                     }
                 }
@@ -691,19 +706,21 @@ int openConnection(ioparam *anIface, Connection *connection) {
                         // connected to database
                         // make sure error message for making connection is empty.
                         xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
-                        // store connection information
-                        connection->type = DB_MYSQL;
-                        connection->descriptor = *anIface;
                         xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
-                        connection_made = 1;
-                        if (debug_level & 1) 
-                            fprintf(stderr,"Connected to MySQL database, connection stored\n");
 
                         // ping the server
                         if (mysql_ping((MYSQL*)&connection->mhandle)==0) { 
                             fprintf(stderr,"mysql ping ok [0]\n");
+                            connection_made = 1;
+                            // store connection information
+                            connection->type = DB_MYSQL;
+                            connection->descriptor = *anIface;
+                            if (debug_level & 1) 
+                                fprintf(stderr,"Connected to MySQL database, connection stored\n");
                         } else {
                             fprintf(stderr,"mysql ping failed [1]\n");
+                            xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to ping MySQL server.  Server may be down. Check connection paramenters.");
+                            fprintf(stderr,"Can't connect to MySQL database: Can't ping server.\n");
                         }
                     }
                 }
@@ -717,13 +734,22 @@ int openConnection(ioparam *anIface, Connection *connection) {
             fprintf(stderr,"Connection made: ");       
             fprintf(stderr,"connection->type [%d]\n",connection->type);
         }
-        returnvalue = 1;
+        if (testConnection((Connection*)connection)==True) { 
+            returnvalue = 1;
+            statusline("Connected to database",1);
+        } else { 
+            statusline("Incompatable database schema",1);
+            fprintf(stderr,"Connection OK, but incompatable schema. [%s]\n",connection->errormessage);
+            xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "%s",connection->errormessage);
+            closeConnection(connection,-1);
+            //free(connection);
+        }
     } else { 
         // Detailed error message should have been returned above, but make sure
         // there is at least a minimal failure message regardless of the problem.
+        statusline("Failed to connect to database",1);
         fprintf(stderr,"Failed to make database connection.\n");   
-        free(connection);
-        //connection = NULL;
+        //free(connection);   // not pointing to the right thing ??
     }
     return returnvalue;
 }
@@ -785,47 +811,115 @@ int closeConnection(Connection *aDbConnection, int port_number) {
  * this version of the code, and to see what permissions are 
  * available */ 
 int testConnection(Connection *aDbConnection){
-    int returnvalue = 0;
+    int returnvalue = True;
     int dbreturn;
+    int major_version;
+    int minor_version;
+    char *warning[100];
+    ConnStatusType psql_status;
+    PGresult *result;
+    const char *postgis_sql = "SELECT COUNT(*) FROM geometry_columns";  // test to see if schema used in connection has postgis support added
     if (aDbConnection==NULL)
        return 0;
+    xastir_snprintf(warning, 100, " ");  // make sure warning is empty
     switch (aDbConnection->type) {
        #ifdef HAVE_POSTGIS
        case DB_POSTGIS: 
+           returnvalue = False;
            // is the connection open  [required]
            if (aDbConnection->phandle!=NULL) { 
-               // is the database spatially enabled [required]
-               // are the needed tables present [required]
-                    // check schema type (simple, simple+cad, full, aprsworld)
-                    // check version of database schema for compatability
-               testXastirVersionPostgis(aDbConnection);
-               // does the user have select privileges [required]
-               // does the user have update privileges [optional] 
-               // does the user have inesrt privileges [optional]
-               // does the user have delete privileges [optional]
+                psql_status = PQstatus(aDbConnection->phandle);
+                if (psql_status!=CONNECTION_OK) { 
+                    xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Postgresql connection failed");
+                    fprintf(stderr, "PQstatus returned CONNECTION_BAD, probably unable to connect to server.\n");
+
+                } else { 
+                    fprintf(stderr, "PQstatus returned CONNECTION_OK.\n");
+                    // which version of postgresql are we running
+                    dbreturn = PQserverVersion(aDbConnection->phandle);
+                    major_version = dbreturn / 10000;
+                    minor_version =  (dbreturn - (major_version*10000)) / 100;
+                    fprintf(stderr,"Postgresql version [%d] %d.%d\n",dbreturn,major_version,minor_version);
+    
+                    // is the database spatially enabled [required]
+                    result = PQexec(aDbConnection->phandle,postgis_sql);
+                    if (result==NULL) { 
+                        // PQexec probably couldn't allocate memory for the result set.
+                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Null result: %s\n",PQerrorMessage(aDbConnection->phandle));
+                        fprintf(stderr, "testConnection() Null result\nPostgresql Error : %s\n",PQerrorMessage(aDbConnection->phandle));
+                    } else { 
+                        // PQexec returned a result, but it may not be valid, check to see.
+                        if (PQresultStatus(result)==PGRES_COMMAND_OK || PQresultStatus(result)==PGRES_TUPLES_OK) { 
+                            // PQexec returned a valid result set, meaning that a geometry_types table exists.
+                            
+    
+                            // are the needed tables present [required] 
+                            // check schema type (simple, simple+cad, full, aprsworld)
+                            // check version of database schema for compatability
+                            if (testXastirVersionPostgis(aDbConnection)==1) { 
+                                returnvalue = True;
+                            }
+                            // does the user have select privileges [required]
+                            // does the user have update privileges [optional] 
+                            // does the user have inesrt privileges [optional]
+                            // does the user have delete privileges [optional]
+                        } else { 
+                            // schema lacks a geometry_columns table, either schema or database lacks postgis support
+                            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "No geometry_columns table found.  Is PostGIS installed and added to this schema?\n");
+                            xastir_snprintf(warning, 100, "No geometry_columns table found. PostGIS may not be installed, or the schema may not have PostGIS support added.");
+                            fprintf(stderr, "No geometry_columns table found.\nPostGIS may not be installed, or the schema may not have PostGIS support added.\n");
+                            fprintf(stderr, "Postgresql Error : %s\n",PQerrorMessage(aDbConnection->phandle));
+                        }
+                    }
+                }
            }
            break;
        #endif /* HAVE_POSTGIS */
        #ifdef HAVE_MYSQL_SPATIAL
        case DB_MYSQL_SPATIAL: 
+           returnvalue = False;
            // is the connection open  [required]
            if (aDbConnection->mhandle!=NULL) { 
+               // can we ping the server [required]
                dbreturn = mysql_ping((MYSQL*)&aDbConnection->mhandle);
                if (dbreturn>0) { 
                     mysql_interpret_error(dbreturn, aDbConnection);
                } else { 
                    // is the database spatially enabled [required]
-                   // determine from db version >= 4.1
-                   // mysql_server_version is new to mysql 4.1
+                   // determine from db version >= 4.2
+                   // MySQL 4.1 is past end of life, 4.2 at end of life but still in widespread use, e.g. RHEL4 (in early 2008).
+                   // mysql_server_version is new to mysql 4.1, prepared queries stabilized in 4.2
                    dbreturn = mysql_get_server_version((MYSQL*)&aDbConnection->mhandle);
-                   // are the needed tables present [required]
-                     // check schema type (simple, simple+cad, full, aprsworld)
-                     // check version of database schema for compatability
-                     dbreturn = testXastirVersionMysql(aDbConnection);
-                   // does the user have select privileges [required]
-                   // does the user have update privileges [optional] 
-                   // does the user have insert privileges [optional]
-                   // does the user have delete privileges [optional]
+                   if (dbreturn>0) { 
+                       major_version = dbreturn / 10000;
+                       minor_version =  (dbreturn - (major_version*10000)) / 100;
+                       if (major_version>=5 || (major_version==4 && minor_version >=2)) {  
+                            fprintf(stderr,"MySQL Server version %d.%d OK.\n",major_version,minor_version);
+                            // check version of database schema for compatability
+                            dbreturn = testXastirVersionMysql(aDbConnection);
+                            if (dbreturn==1) {  
+                                fprintf(stderr,"Compatible Xastir database version found on server.\n");
+                           
+                                // are the needed tables present [required]
+                                // check schema type (simple, simple+cad, full, aprsworld)
+                                // does the user have select privileges [required]
+                                // does the user have update privileges [optional] 
+                                // does the user have insert privileges [optional]
+                                // does the user have delete privileges [optional] 
+                                returnvalue = True;
+                            } else { 
+                                 fprintf(stderr,"Xastir database version on server is not compatable with this version of Xastir.\n");
+                                 // aDbConnection->errormessage should have been set in testXastirVersionMysql
+                                 xastir_snprintf(warning, 100, "%s",aDbConnection->errormessage);
+                            }
+                        } else { 
+                            // version too low
+                            fprintf(stderr,"MySQL Server version %d.%d is too low and is not supported in Xastir.\n",major_version,minor_version);
+                            xastir_snprintf(warning, 100, "MySQL Server version %d.%d is too low and is not supported in Xastir.",major_version,minor_version);
+                        }
+                   } else {
+                      // ? mysql<4.1
+                   }
                }
            }
            break;
@@ -857,6 +951,14 @@ int testConnection(Connection *aDbConnection){
            }
            break;
        #endif /* HAVE_MYSQL*/
+    }
+    if (returnvalue==0) { 
+       fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
+       xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Incompatable schema: %s",warning); 
+       fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
+       // Note: Don't close connection here, we haven't handed the error to the user yet.
+       //closeConnection(aDbConnection,-1);
+       fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
     }
     return returnvalue;
 }
@@ -1101,9 +1203,45 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
  */
 int testXastirVersionPostgis(Connection *aDbConnection) {
     int returnvalue = 0;
-    char sql[100] = "select version_number from version order by version_number desc limit 1";  
+    int version_number;
+    int compatable_series;
+    const char sql[100] = "select version_number, compatable_series from version order by version_number desc limit 1";  
+    PGresult *result;
     PGconn *conn = aDbConnection->phandle;
+    
+    result = PQexec(conn,sql);
+    if (result==NULL) { 
+        // PQexec probably couldn't allocate memory for the result set.
+        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Null result: %s\n",PQerrorMessage(conn));
+        fprintf(stderr, "testXastirVersionPostgis() Null result\nPostgresql Error : %s\n",PQerrorMessage(conn));
+    } else { 
+        // PQexec returned a result, but it may not be valid, check to see.
+        if (PQresultStatus(result)==PGRES_COMMAND_OK || PQresultStatus(result)==PGRES_TUPLES_OK) { 
+            if (PQntuples(result)!=1) { 
+                fprintf(stderr,"Version table doesn't appear to contain any rows.\n");
+                xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version table doesn't appear to contain any rows.");
+            } else { 
+                version_number = atoi(PQgetvalue(result,0,0));
+                compatable_series = atoi(PQgetvalue(result,0,1));
+                if (version_number == XASTIR_SPATIAL_DB_VERSION) { 
+                    returnvalue = 1;
+                } else { 
+                    if (version_number < XASTIR_SPATIAL_DB_VERSION && compatable_series == XASTIR_SPATIAL_DB_COMPATABLE_SERIES) {
+                        returnvalue = 1;
+                        fprintf(stderr,"Version in schema (%d) is compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
+                    } else { 
+                        fprintf(stderr,"Version in schema (%d) is not compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
+                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version in schema (%d) is not compatible with this version of xastir (%d).",version_number,XASTIR_SPATIAL_DB_VERSION);
+                        fprintf(stderr,"%s",aDbConnection->errormessage);
+                        returnvalue = 0;
+                    }
 
+                }
+            }
+
+        }
+        PQclear(result);
+    }
     return returnvalue;
 }
 
@@ -1123,12 +1261,19 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
     unsigned long y;  // xastir coordinate for latitide
     float lat;  // latitude converted from retrieved string
     float lon;  // longitude converted from retrieved string
-    const char *sql = "select station, symbol, overlay, aprstype, transmit_time, AsText(position), origin, record_type, node_path, X(position), Y(position) from simpleStation order by station, transmit_time";
+    const char *sql = "select station, symbol, overlay, aprstype, transmit_time, AsText(position), origin, record_type, node_path, X(position), Y(position) from simpleStation order by station, transmit_time desc";
     // station is column 0, symbol is column 1, etc.
     PGconn *conn = aDbConnection->phandle;
     char *feedback[100];
+    char lastcall[MAX_CALLSIGN+1];  //holds last retrieved callsign
+    int  exists;            //shortcut to skip db check if currently retrieved callsign equals last retrieved callsign
     DataRow *p_new_station;  // pointer to new station record  
     DataRow *p_time;  // pointer to new station record  
+   int skip;
+   char empty[MAX_ALTITUDE];
+   struct tm time;
+   time_t sec;
+   empty[0]='\0';
 
     // run query and retrieve result set
     PGresult *result = PQexec(conn,sql);
@@ -1143,6 +1288,7 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
           // PQexec returned a valid result set.
           xastir_snprintf(feedback,100,"Retreiving %i Postgis records\n",PQntuples(result));
           stderr_and_statusline(feedback);
+          xastir_snprintf(lastcall,MAX_CALLSIGN+1," ");
           for (row=0; row<PQntuples(result); row++) {
               // step through rows in result set and add each to xastir db as a minimal DataRow
               if (PQgetisnull(result,row,0)) {
@@ -1150,15 +1296,43 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
               } else {
                   // check if station exists
                   p_new_station = NULL;
-                  if (search_station_name(&p_new_station,PQgetvalue(result,row,0),1)) {  
+                  exists = 0;
+                  // Shortcut check to see if this station has been loaded already
+                  // works as returned rows are ordered by station.
+                  // TODO: add_simple_station may not be updating the linked list of station properly, as search_station_name often fails to locate 
+                  // existing stations and treats them as new (may just apply to objects).
+                  if (strcmp(PQgetvalue(result,row,0),lastcall)==0) { 
+                      exists = 1;
+                  } else {  
+                      if (search_station_name(&p_new_station,PQgetvalue(result,row,0),1)) {  
+                          exists = 1;
+                      }
+                  }
+                  xastir_snprintf(lastcall,MAX_CALLSIGN+1,PQgetvalue(result,row,0));
+                  if (exists==1) {
                        // This station allready exists as a DataRow in the xastir db.
                        // Don't create a duplicate record, but add to the DataRow's track.
 
-                       // ? check if it is a mobile station ?       
-                       
-                       // if station doesn't have a track, allocate memory for one
+                       //  check if it is a mobile station        
+                       // We can't easily identify mobile stations from position position
+                       // becaue of rounding errors, therefore exclude stations that are likely to be fixed.
+                       // _/ = wx
+                       skip = 0;
+                       if ((PQgetvalue(result,row,1)=='_') && (PQgetvalue(result,row,3)=='/')) { 
+                           skip = 1;   // wx
+                       }
 
-                       // add position and time to track
+
+                       if (skip==0) { 
+                           // add to track
+                           if (search_station_name(&p_new_station,PQgetvalue(result,row,0),1)) { 
+                               lat = atol(PQgetvalue(result,row,10)); 
+                               lon = atol(PQgetvalue(result,row,9)); 
+                               strptime(PQgetvalue(result,row,4), "%F %H:%M:%S %z", &time);
+                               sec = localtime(&time);
+                               (void)store_trail_point(p_new_station, lon, lat, sec, empty, empty, empty, 0);
+                           }    
+                       }
 
                   } else { 
                        // This station isn't in the xastir db. 
@@ -1293,12 +1467,12 @@ int storeCadToGisDbMysql(Connection *aDbConnection, CADRow *aCadObject) {
 
 
 /* support function for prepared statements
-int bind_mysql_parameter(MYSQL_BIND *bind, buffer, int length, int buffer_length, my_bool is_null) {
-       bind[0]->buffer =  &station->call_sign;
-       bind[0]->length = strlen(station->call_sign);
-       bind[0]->buffer_length = MAX_CALL;
-       bind[0]->buffer_type = MYSQL_TYPE_STRING
-       bind[0]->is_null = false;
+int bind_mysql_string_parameter(MYSQL_BIND *bind, int bind_number, char* buffer, int provided_length, int buffer_length, my_bool is_null) {
+       bind[bind_number]->buffer = buffer;
+       bind[bind_number]->length = provided_length;
+       bind[bind_number]->buffer_length = buffer_length;
+       bind[bind_number]->buffer_type = MYSQL_TYPE_STRING
+       bind[bind_number]->is_null = is_null;
 }
 */
 
@@ -1366,10 +1540,11 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
     if (!statement) { 
         mysql_interpret_error(*mysql_error((MYSQL*)&aDbConnection->mhandle),aDbConnection);
     } else { 
-       // test to make sure that statement has the correctg number of parameters
-       param_count= mysql_stmt_param_count(statement);
+       // test to make sure that statement has the correct number of parameters
+       param_count=mysql_stmt_param_count(statement);
        if (param_count!=parameters) { 
-           fprintf(stderr,"Number of bound parameters %d does not match expected value %d\n",param_count,parameters);
+           fprintf(stderr,"Number of bound parameters %d does not match expected value %d\nFor query[%s]",param_count,parameters,SQL);
+           fprintf(stderr, " %s\n", mysql_stmt_error(statement));
        } else {
            // set up the buffers 
            memset(bind, 0, sizeof(bind));
@@ -1530,7 +1705,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
            } // end of bind check
        }  // end of parameter count check
     }
-  
+    mysql_stmt_free_result(statement); 
     mysql_stmt_close(statement);
 
     return returnvalue;
@@ -1553,10 +1728,14 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
     char *feedback[100];
     struct tm time;
     int skip; // used in identifying mobile stations
-    char sql[] = "select station, transmit_time, AsText(position), symbol, overlay, aprstype, origin, record_type, node_path from simpleStationSpatial order by station, transmit_time";
+    char sql[] = "select station, transmit_time, AsText(position), symbol, overlay, aprstype, origin, record_type, node_path from simpleStationSpatial order by station, transmit_time desc";
+    char lastcall[MAX_CALLSIGN+1];  //holds last retrieved callsign
+    int  exists;            //shortcut to skip db check if currently retrieved callsign equals last retrieved callsign
     MYSQL_RES *result;
     MYSQL_ROW *row;
+    char empty[MAX_ALTITUDE];
     int ok;   // to hold mysql_query return value
+    empty[0]='\0';
     ok = mysql_query((MYSQL*)&aDbConnection->mhandle,sql);
     if (ok==0) { 
         result = mysql_use_result((MYSQL*)&aDbConnection->mhandle);
@@ -1567,6 +1746,7 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
             // a row of data from the server.  Mysql_store_result might use
             // too much memory in retrieving a large result set all at once.
             row = mysql_fetch_row(result);
+            xastir_snprintf(lastcall,MAX_CALLSIGN+1," ");
             while (row != NULL) { 
                // retrieve data from the row
                // test to see if this is a valid station
@@ -1574,11 +1754,23 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
                   // station is null, skip
                } else { 
                   p_new_station = NULL;
-                  if (search_station_name(&p_new_station,row[0],1)) {  
+                  exists = 0;
+                  // Shortcut check to see if station has allready been heard
+                  // works as query is ordered by station.
+                  if (strcmp(lastcall,row[0])==1) { 
+                      exists = 1;
+                  } else { 
+                      if (search_station_name(&p_new_station,row[0],1)) {  
+                          exists = 1;
+                      }
+                  }
+                  xastir_snprintf(lastcall,MAX_CALLSIGN+1,row[0]);
+                  if (exists==1) {
                        // This station is allready in present as a DataRow in the xastir db.
                        // check to see if this is likely to be a mobile station 
 
-                       // can't easily work off of position becaue of rounding errors, exclude stations that are likely to be fixed
+                       // We can't easily identify mobile stations from position position
+                       // becaue of rounding errors, therefore exclude stations that are likely to be fixed.
                        // _/ = wx
                        skip = 0;
                        if ((row[3]=='_') && (row[5]=='/')) { 
@@ -1588,6 +1780,13 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
 
                        if (skip==0) { 
                            // add to track
+                           if (search_station_name(&p_new_station,row[0],1)) { 
+                               lat = xastirWKTPointToLatitude(row[2]); 
+                               lon = xastirWKTPointToLongitude(row[2]); 
+                               strptime(row[1], "%F %H:%M:%S %z", &time);
+                               time_t sec = localtime(&time);
+                               (void)store_trail_point(p_new_station, lon, lat, sec, empty, empty, empty, 0);
+                           }    
                        }
 
                        // Add data to the station's track.
@@ -1877,7 +2076,7 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
  * 3  2     2   1     0    different series
  * 2  1     3   2     0    different series
  *
- * TODO: Needs to include schema 
+ * TODO: Need function to test for available schemas with mysql_list_tables()
  */
 int testXastirVersionMysql(Connection *aDbConnection) {
     int returnvalue = -1;
@@ -1885,7 +2084,7 @@ int testXastirVersionMysql(Connection *aDbConnection) {
     MYSQL_ROW *row;
     int version_number;
     int compatible_series;
-    char sql[] = "select version_number, compatible_series from version order by version_number desc limit 1";  
+    char sql[] = "select version_number, compatable_series from version order by version_number desc limit 1";  
     int ok;   // to hold mysql_query return value
     ok = mysql_query((MYSQL*)&aDbConnection->mhandle,sql);
     if (ok==0) { 
@@ -1893,22 +2092,37 @@ int testXastirVersionMysql(Connection *aDbConnection) {
         if (result!=NULL) { 
             row = mysql_fetch_row(result);
             if (row != NULL) { 
-                version_number = (int)row[0];
+                version_number = atoi(row[0]);
                 if (version_number == XASTIR_SPATIAL_DB_VERSION) { 
                    returnvalue = 1;
+                   fprintf(stderr,"Version in schema (%d) is the same as this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
                 } else { 
-                    if (row[1] < XASTIR_SPATIAL_DB_VERSION && row[1] == XASTIR_SPATIAL_DB_COMPATABLE_SERIES) {
+                    compatible_series = atoi(row[1]);
+                    if (version_number < XASTIR_SPATIAL_DB_VERSION && compatible_series == XASTIR_SPATIAL_DB_COMPATABLE_SERIES) {
                         returnvalue = 1;
+                        fprintf(stderr,"Version in schema (%d) is compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
                     } else { 
+                        fprintf(stderr,"Version in schema (%d) is not compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
+                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version in schema (%d) is not compatible with this version of xastir (%d).",version_number,XASTIR_SPATIAL_DB_VERSION);
+                        fprintf(stderr,"%s",aDbConnection->errormessage);
                         returnvalue = 0;
                     }
                 }
             } else {
                 // result returned, but no rows = incompatable
                 returnvalue = 0;
+                fprintf(stderr,"Version table doesn't appear to contain any rows.\n");
+                xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version table doesn't appear to contain any rows.");
             }
-        }
-    } 
+        } else { 
+            fprintf(stderr,"Schema doesn't appear to contain a version table.\n");
+            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Schema doesn't appear to contain a version table.");
+        } 
+        mysql_free_result(result);
+    } else { 
+         fprintf(stderr,"Query failed, Schema doesn't appear to contain a version table.\n");
+         xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Query for version table failed.");
+    }
     return returnvalue;
 }
 
