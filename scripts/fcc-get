@@ -21,7 +21,8 @@ echo "*********************************"
 echo "*** Fetching the FCC database ***"
 echo "*********************************"
 #wget -c --passive-ftp ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
-wget -c http://www.fcc.gov/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+#wget -c http://www.fcc.gov/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+wget -c http://wireless.fcc.gov/uls/data/complete/l_amat.zip
 #
 # Get rid of characters "^M^M^J" which are sometimes present, sort
 # the file by callsign.
