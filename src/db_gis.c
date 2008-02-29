@@ -170,6 +170,9 @@
 char xastir_dbms_type[4][XASTIR_DB_DESCRIPTOR_MAX_SIZE+1] = {"","MySQL (lat/long)","Postgresql/Postgis","MySQL Spatial"} ;
 char xastir_schema_type[5][XASTIR_SCHEMA_DESCRIPTOR_MAX_SIZE+1] = {"","Xastir Simple","Xastir CAD","Xastir Full","APRSWorld"} ;
 
+const char *POSTGIS_TIMEFORMAT = "%Y-%m-%d %H:%M:%S%z";
+const char *MYSQL_TIMEFORMAT = "%Y-%m-%d %H:%M:%S";
+
 /*
 // store integer values for picklist items, but use localized strings on picklists
 char xastir_dbms_type[3][XASTIR_DB_DESCRIPTOR_MAX_SIZE+1];   // array of xastir database type strings
@@ -372,6 +375,12 @@ int storeStationSimpleToGisDb(Connection *aDbConnection, DataRow *aStation) {
         fprintf(stderr,"in storeStationSimpleToGisDb() "); 
     if (aDbConnection==NULL || aStation==NULL) 
         return returnvalue;
+    if (aStation->data_via == DATA_VIA_DATABASE) { 
+        if (debug_level & 1) 
+            fprintf(stderr,"skipping station heard from Database\n"); 
+        returnvalue = 1;
+        return returnvalue;
+    }
     if (debug_level & 1) 
         fprintf(stderr,"with connection->type: %d\n",aDbConnection->type);
 
@@ -1058,12 +1067,14 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
    
     if (debug_level & 1) {
         fprintf(stderr,"In postgres simple station insert\n");
-        fprintf(stderr,"Postgresql version=%d\n",PQserverVersion(aDbConnection->phandle));
     }
     if (PQserverVersion(aDbConnection->phandle)==0) {
        // no connection to server
        fprintf(stderr,"Trying to save station on closed postgresql connection\n");
        return returnvalue;
+    }
+    if (debug_level & 1) {
+        fprintf(stderr,"Postgresql version=%d\n",PQserverVersion(aDbConnection->phandle));
     }
 
     // Check to see if this prepared statement exists in the current session
@@ -1259,9 +1270,13 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
     int station_count = 0;  // number of new stations retrieved
     unsigned long x;  // xastir coordinate for longitude
     unsigned long y;  // xastir coordinate for latitide
+    unsigned long u_long;
+    unsigned long u_lat;
+    char *s_lat[13];  // string latitude
+    char *s_lon[13];  // string longitude
     float lat;  // latitude converted from retrieved string
     float lon;  // longitude converted from retrieved string
-    const char *sql = "select station, symbol, overlay, aprstype, transmit_time, AsText(position), origin, record_type, node_path, X(position), Y(position) from simpleStation order by station, transmit_time desc";
+    const char *sql = "select station, symbol, overlay, aprstype, transmit_time, AsText(position), origin, record_type, node_path, X(position), Y(position) from simpleStation order by station, transmit_time asc";
     // station is column 0, symbol is column 1, etc.
     PGconn *conn = aDbConnection->phandle;
     char *feedback[100];
@@ -1269,11 +1284,14 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
     int  exists;            //shortcut to skip db check if currently retrieved callsign equals last retrieved callsign
     DataRow *p_new_station;  // pointer to new station record  
     DataRow *p_time;  // pointer to new station record  
-   int skip;
-   char empty[MAX_ALTITUDE];
-   struct tm time;
-   time_t sec;
-   empty[0]='\0';
+    int skip;
+    int points_this_station;  // number of times this station has been heard.
+    char empty[MAX_ALTITUDE];
+    struct tm time;
+    time_t sec;
+    empty[0]='\0';
+    xastir_snprintf(feedback,100,"Retrieving Postgis records\n");
+    stderr_and_statusline(feedback);
 
     // run query and retrieve result set
     PGresult *result = PQexec(conn,sql);
@@ -1286,9 +1304,10 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
        // PQexec returned a result, but it may not be valid, check to see.
        if (PQresultStatus(result)==PGRES_COMMAND_OK || PQresultStatus(result)==PGRES_TUPLES_OK) { 
           // PQexec returned a valid result set.
-          xastir_snprintf(feedback,100,"Retreiving %i Postgis records\n",PQntuples(result));
+          xastir_snprintf(feedback,100,"Retrieving %i Postgis records\n",PQntuples(result));
           stderr_and_statusline(feedback);
           xastir_snprintf(lastcall,MAX_CALLSIGN+1," ");
+          points_this_station = 0;
           for (row=0; row<PQntuples(result); row++) {
               // step through rows in result set and add each to xastir db as a minimal DataRow
               if (PQgetisnull(result,row,0)) {
@@ -1299,13 +1318,24 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
                   exists = 0;
                   // Shortcut check to see if this station has been loaded already
                   // works as returned rows are ordered by station.
-                  // TODO: add_simple_station may not be updating the linked list of station properly, as search_station_name often fails to locate 
-                  // existing stations and treats them as new (may just apply to objects).
+                  // TODO: add_simple_station will not update the linked list of station properly, 
+                  // when data from more than one database for the same station is loaded
+                  // and a more recently loaded database contains station data with timestamps
+                  // older than the timestamp from a previously loaded database.
+                  // This shows up as search_station_name failing to locate 
+                  // existing stations and stations not being found on station info 
+                  // (because they have expired from the list).
+                  // This will also be a problem if old data for stations heard live are
+                  // retrieved from a database while xastir is running.   
                   if (strcmp(PQgetvalue(result,row,0),lastcall)==0) { 
+                      points_this_station++;
                       exists = 1;
                   } else {  
                       if (search_station_name(&p_new_station,PQgetvalue(result,row,0),1)) {  
+                          points_this_station++;
                           exists = 1;
+                      } else { 
+                          points_this_station=1;
                       }
                   }
                   xastir_snprintf(lastcall,MAX_CALLSIGN+1,PQgetvalue(result,row,0));
@@ -1318,51 +1348,49 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
                        // becaue of rounding errors, therefore exclude stations that are likely to be fixed.
                        // _/ = wx
                        skip = 0;
-                       if ((PQgetvalue(result,row,1)=='_') && (PQgetvalue(result,row,3)=='/')) { 
+                       if ((PQgetvalue(result,row,1)[0]=='_') && (PQgetvalue(result,row,3)[0]=='/')) { 
                            skip = 1;   // wx
+                       }
+                       if ((PQgetvalue(result,row,1)[0]=='-') && (PQgetvalue(result,row,3)[0]=='/')) { 
+                           skip = 1;   // house
                        }
 
 
                        if (skip==0) { 
                            // add to track
                            if (search_station_name(&p_new_station,PQgetvalue(result,row,0),1)) { 
-                               lat = atol(PQgetvalue(result,row,10)); 
-                               lon = atol(PQgetvalue(result,row,9)); 
-                               strptime(PQgetvalue(result,row,4), "%F %H:%M:%S %z", &time);
-                               sec = localtime(&time);
-                               (void)store_trail_point(p_new_station, lon, lat, sec, empty, empty, empty, 0);
+                               if (points_this_station<3) { 
+                                   //existing station record needs to be added as a trailpoint
+                                   (void)store_trail_point(p_new_station, p_new_station->coord_lon, p_new_station->coord_lat, p_new_station->sec_heard, empty, empty, empty, 0);
+                               }
+
+                               // store this trail point
+                               lat = atof(PQgetvalue(result,row,10)); 
+                               lon = atof(PQgetvalue(result,row,9)); 
+                               if (strlen(PQgetvalue(result,row,4)) > 0) {
+                                   strptime(PQgetvalue(result,row,4), "%Y-%m-%d %H:%M:%S%z", &time);
+                                   sec = mktime(&time);
+                               }
+                               if(convert_to_xastir_coordinates( &u_long, &u_lat, lon, lat)) 
+                                   (void)store_trail_point(p_new_station, u_long, u_lat, sec, empty, empty, empty, 0);
+
+                               if (p_new_station->sec_heard < sec) { 
+                                   // update the station record to this position
+                                   if(convert_to_xastir_coordinates(&u_long, &u_lat, lon, lat)) { 
+                                       p_new_station->coord_lat = u_lat;
+                                       p_new_station->coord_lon = u_long;
+                                       p_new_station->sec_heard = sec;
+                                   }
+                               }
                            }    
                        }
 
                   } else { 
                        // This station isn't in the xastir db. 
-                       add_simple_station(p_new_station,PQgetvalue(result,row,0), PQgetvalue(result,row,6), PQgetvalue(result,row,1), PQgetvalue(result,row,2), PQgetvalue(result,row,3), PQgetvalue(result,row,10), PQgetvalue(result,row,9), PQgetvalue(result,row,7), PQgetvalue(result,row,8), PQgetvalue(result,row,4));
+                       //int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time) { 
+                       //const char *sql = "select station, symbol, overlay, aprstype, transmit_time, AsText(position), origin, record_type, node_path, X(position), Y(position) from simpleStation order by station, transmit_time asc";
+                       add_simple_station(p_new_station,PQgetvalue(result,row,0), PQgetvalue(result,row,6), PQgetvalue(result,row,1), PQgetvalue(result,row,2), PQgetvalue(result,row,3), PQgetvalue(result,row,10), PQgetvalue(result,row,9), PQgetvalue(result,row,7), PQgetvalue(result,row,8), PQgetvalue(result,row,4), POSTGIS_TIMEFORMAT);
                     
-/*
-                       // Add a datarow using the retrieved station record from the postgis database.
-                       p_time = NULL;
-                       p_new_station = add_new_station(p_new_station,p_time,PQgetvalue(result,row,0));
-                       // set values for new station based on the database row
-                       xastir_snprintf(p_new_station->origin,58,"%s",PQgetvalue(result,row,6));
-                       p_new_station->aprs_symbol.aprs_symbol = PQgetvalue(result,row,1)[0];
-                       p_new_station->aprs_symbol.special_overlay = PQgetvalue(result,row,2)[0];
-                       p_new_station->aprs_symbol.aprs_type = PQgetvalue(result,row,3)[0];
-                       lat = strtof(PQgetvalue(result,row,9),NULL);
-                       lon = strtof(PQgetvalue(result,row,10),NULL);
-                       if (convert_to_xastir_coordinates (&x, &y, lon, lat)) {
-                          p_new_station->coord_lon = x;
-                          p_new_station->coord_lat = y;
-                       }
-                       p_new_station->record_type = PQgetvalue(result,row,7)[0];
-                       // also set flags for the station 
-                       p_new_station->flag |= ST_ACTIVE;
-                       if (position_on_extd_screen(p_new_station->coord_lat,p_new_station->coord_lon)) {
-                           p_new_station->flag |= (ST_INVIEW);   // set   "In View" flag
-                       }
-                       else {
-                           p_new_station->flag &= (~ST_INVIEW);  // clear "In View" flag
-                       }
-*/
                        station_count ++;
                   }  // end else, new station
               } // end else, station is not null 
@@ -1683,7 +1711,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
 
                        // all the bound parameters should be available and correct
                        if (debug_level & 1) 
-                          fprintf(stderr,"saving station %s  %d %d %d %d:%d:%d wkt=%s \n",aStation->call_sign,ts->tm_year,ts->tm_mon,ts->tm_mday,ts->tm_hour,ts->tm_min,ts->tm_sec,wkt);
+                          fprintf(stderr,"saving station %s  %d %d %d %d:%d:%d wkt=%s [%s][%s][%s] \n",aStation->call_sign,ts->tm_year,ts->tm_mon,ts->tm_mday,ts->tm_hour,ts->tm_min,ts->tm_sec,wkt,aprs_type,aprs_symbol,record_type);
                        // send query
                        mysqlreturn = mysql_stmt_execute(statement);
                        if (mysqlreturn!=0) { 
@@ -1725,10 +1753,14 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
     char *s_lon[13];  // string longitude
     float lat;  // latitude converted from retrieved string
     float lon;  // longitude converted from retrieved string
+    unsigned long u_lat;
+    unsigned long u_long;
+    int points_this_station;
     char *feedback[100];
     struct tm time;
+    time_t sec;
     int skip; // used in identifying mobile stations
-    char sql[] = "select station, transmit_time, AsText(position), symbol, overlay, aprstype, origin, record_type, node_path from simpleStationSpatial order by station, transmit_time desc";
+    char sql[] = "select station, transmit_time, AsText(position), symbol, overlay, aprstype, origin, record_type, node_path from simpleStationSpatial order by station, transmit_time asc";
     char lastcall[MAX_CALLSIGN+1];  //holds last retrieved callsign
     int  exists;            //shortcut to skip db check if currently retrieved callsign equals last retrieved callsign
     MYSQL_RES *result;
@@ -1747,6 +1779,7 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
             // too much memory in retrieving a large result set all at once.
             row = mysql_fetch_row(result);
             xastir_snprintf(lastcall,MAX_CALLSIGN+1," ");
+            points_this_station=0;
             while (row != NULL) { 
                // retrieve data from the row
                // test to see if this is a valid station
@@ -1759,9 +1792,13 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
                   // works as query is ordered by station.
                   if (strcmp(lastcall,row[0])==1) { 
                       exists = 1;
+                          points_this_station++;
                   } else { 
                       if (search_station_name(&p_new_station,row[0],1)) {  
                           exists = 1;
+                          points_this_station++;
+                      } else {
+                          points_this_station=1;
                       }
                   }
                   xastir_snprintf(lastcall,MAX_CALLSIGN+1,row[0]);
@@ -1773,23 +1810,42 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
                        // becaue of rounding errors, therefore exclude stations that are likely to be fixed.
                        // _/ = wx
                        skip = 0;
-                       if ((row[3]=='_') && (row[5]=='/')) { 
+                       if (strcmp(row[3],"_")==0 & strcmp(row[5],"/")==0) { 
                            skip = 1;   // wx
+                       }
+                       if (strcmp(row[3],"-")==0 & strcmp(row[5],"/")==0) { 
+                           skip = 1;   // house
                        }
 
 
                        if (skip==0) { 
                            // add to track
                            if (search_station_name(&p_new_station,row[0],1)) { 
+                               if (points_this_station<3) { 
+                                   //existing station record needs to be added as a trailpoint
+                                   (void)store_trail_point(p_new_station, p_new_station->coord_lon, p_new_station->coord_lat, p_new_station->sec_heard, empty, empty, empty, 0);
+                               }
+                               // store this trail point
                                lat = xastirWKTPointToLatitude(row[2]); 
                                lon = xastirWKTPointToLongitude(row[2]); 
-                               strptime(row[1], "%F %H:%M:%S %z", &time);
-                               time_t sec = localtime(&time);
-                               (void)store_trail_point(p_new_station, lon, lat, sec, empty, empty, empty, 0);
-                           }    
-                       }
-
-                       // Add data to the station's track.
+                               if (strlen(row[1]) > 0) {
+                                   strptime(row[1], "%Y-%m-%d %H:%M:%S", &time);
+                                   sec = mktime(&time);
+                                   //fprintf(stderr,"trailpoint time:  %ld  [%s]\n", sec, row[1]);      
+                               }
+                               if(convert_to_xastir_coordinates( &u_long, &u_lat, lon, lat)) {
+                                   (void)store_trail_point(p_new_station, u_long, u_lat, sec, empty, empty, empty, 0);
+                               }
+                               if (p_new_station->sec_heard < sec) { 
+                                   // update the station record to this position
+                                   if(convert_to_xastir_coordinates(&u_long, &u_lat, lon, lat)) { 
+                                       p_new_station->coord_lat = u_lat;
+                                       p_new_station->coord_lon = u_long;
+                                       p_new_station->sec_heard = sec;
+                                   }
+                               } 
+                           } // search_station_name    
+                       }  // !skip
                   } else { 
                        // This station isn't in the xastir db. 
                        // Add a datarow using the retrieved station record from the postgis database.
@@ -1797,7 +1853,7 @@ int getAllSimplePositionsMysqlSpatial(Connection *aDbConnection) {
                        lon = xastirWKTPointToLongitude(row[2]); 
                        xastir_snprintf(s_lat,13,"%3.6f",lat);
                        xastir_snprintf(s_lon,13,"%3.6f",lon);
-                       add_simple_station(p_new_station, row[0], row[6], row[3], row[4], row[5], s_lat, s_lon, row[7], row[8], row[1]);
+                       add_simple_station(p_new_station, row[0], row[6], row[3], row[4], row[5], s_lat, s_lon, row[7], row[8], row[1],MYSQL_TIMEFORMAT);
 
                        station_count++;
                   }
@@ -2198,7 +2254,7 @@ int getAllSimplePositionsMysql(Connection *aDbConnection) {
                   } else { 
                        // This station isn't in the xastir db. 
                        // Add a datarow using the retrieved station record from the postgis database.
-                       add_simple_station(p_new_station, row[0], row[7], row[4], row[5], row[6], row[2], row[3], row[8], row[9], row[1]);
+                       add_simple_station(p_new_station, row[0], row[7], row[4], row[5], row[6], row[2], row[3], row[8], row[9], row[1],MYSQL_TIMEFORMAT);
 
                        station_count++;
                   }

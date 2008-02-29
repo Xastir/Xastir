@@ -5666,6 +5666,8 @@ void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer cal
         was_up=1;
 
         // close connection
+        // TODO: Unstable if more than one database interface is open.
+        //(void)closeConnection((Connection*)&connections[Sql_Database_port].conn,Sql_Database_port); 
 
     }
 
@@ -5728,11 +5730,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
     cb_selected = sddd_value;
 #endif
     
-    fprintf(stderr,"Checking Database list item:%d\n",cb_selected);        
     if (cb_selected) { 
         devices[Sql_Database_port].database_type = cb_selected;
-        // lesstif doesn't appear to be recognizing selections from list.
-        fprintf(stderr,"Selected Database list item:%d\n",cb_selected);        
     } else {  
         // If no selection,
         // default to mysql non-spatial, unless postgis is available.
@@ -5807,6 +5806,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
     if (was_up) {
         // If the connection was allready open when we started then reconnect
         // and reopen the database connection with the new parameters.
+        // TODO: Unstable if more than one database interface is open
+        //(void)openConnection(&devices[Sql_Database_port],(Connection*)&connections[Sql_Database_port].conn); 
 
     }
 

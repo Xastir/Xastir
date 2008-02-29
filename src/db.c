@@ -8932,17 +8932,18 @@ void delete_station_memory(DataRow *p_del) {
  * @param symbol   String pointer to an aprs symbol, will take the first character
  * @param overlay  String pointer to an aprs overlay, will take the first character 
  * @param aprs_type String pointer to an aprs type, will take the first character
- * @param latitude
- * @param longitude
+ * @param latitude  in decimal degrees
+ * @param longitude in decimal degrees
  * @param record_type
  * @param node_path
- * @param transmit_time
+ * @param transmit_time Time at which the station position was transmitted in a string pointer with format described by timeformat
+ * @param timeformat Format for the transmit_time, e.g. "%Y-%M-%D %h:%d:%m" see documentation for strptime
  *
  * @returns 0 if unable to add new station (p_new_station should be null)
  * otherwise returns 1 (and p_new_station should be a pointer to the DataRow 
  * for the new station record.
  */
-int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time) { 
+int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time, char *timeformat) { 
     int returnvalue = 0;
     unsigned long x;  // xastir coordinate for longitude
     unsigned long y;  // xastir coordinate for latitide
@@ -8951,6 +8952,10 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
     DataRow *p_time;  // pointer to new station record  
     //DataRow *p_new_station_unused;
     struct tm time;
+    time_t sec;
+    char timestring[100+1];
+    char empty[MAX_ALTITUDE];  // for storing trailpoint data (altitude, course, speed) we don't know here.
+    empty[0]='\0';
 
     // Add a datarow using the retrieved station record from the postgis/mysql database.
     p_time = NULL;
@@ -8959,41 +8964,85 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
     if (debug_level & 1) 
         fprintf(stderr,"add_simple_station(%s)\n",station);
 
-    p_new_station = add_new_station(p_new_station,p_time,station);
-    if (!(p_new_station==NULL)) { 
-        // set values for new station based on the database row
-        xastir_snprintf(p_new_station->origin,58,"%s",origin);
-        p_new_station->aprs_symbol.aprs_symbol = symbol[0];
-        p_new_station->aprs_symbol.special_overlay = overlay[0];
-        p_new_station->aprs_symbol.aprs_type = aprs_type[0];
-        lat = strtof(latitude,NULL);
-        lon = strtof(longitude,NULL);
-        if (convert_to_xastir_coordinates (&x, &y, lon, lat)) {
-           p_new_station->coord_lon = x;
-           p_new_station->coord_lat = y;
+    if (search_station_name(&p_new_station,station,1)) { 
+        // A datarow for this station exists, find out if the new record
+        // is older or younger than the existing DataRow for this station
+        strptime(transmit_time,timeformat,&time);
+        p_new_station->sec_heard = mktime(&time);
+        if(p_new_station->sec_heard > mktime(&time)) { 
+             // Add the new record as a trailpoint.
+             if (strlen(transmit_time) > 0) {
+                 strptime(transmit_time, timeformat, &time);
+                 sec = mktime(&time);
+             }
+             lat = strtof(latitude,NULL);
+             lon = strtof(longitude,NULL);
+             if (convert_to_xastir_coordinates (&x, &y, lon, lat))
+                 (void)store_trail_point(p_new_station, x, y, sec, empty, empty, empty, 0);
+
+             // all done
+             returnvalue = 1;
+        } else { 
+             // Append the position of the existing record as a trailpoint
+             // and set the station DataRow to the new values.
+             (void)store_trail_point(p_new_station, p_new_station->coord_lon, p_new_station->coord_lat, p_new_station->sec_heard, empty, empty, empty, 0);
         }
-        p_new_station->record_type = record_type[0];
-        // free node path, Malloc, and store the new path
-        if (p_new_station->node_path_ptr != NULL) { 
-            free(p_new_station->node_path_ptr);
+    } else {
+        // add a new station
+        p_new_station = add_new_station(p_new_station,p_time,station);
+    }
+    if(returnvalue==0) { 
+        // Set the values for the p_new_station DataRow based on the
+        // supplied parameters.  At this point p_new_station might
+        // be either a brand new station record, or an existing 
+        // station record for the callsign that we were passed.
+        if (!(p_new_station==NULL)) { 
+            // set values for new station based on the database row
+            xastir_snprintf(p_new_station->origin,58,"%s",origin);
+            p_new_station->aprs_symbol.aprs_symbol = symbol[0];
+            p_new_station->aprs_symbol.special_overlay = overlay[0];
+            p_new_station->aprs_symbol.aprs_type = aprs_type[0];
+            lat = strtof(latitude,NULL);
+            lon = strtof(longitude,NULL);
+            if (convert_to_xastir_coordinates (&x, &y, lon, lat)) {
+               p_new_station->coord_lon = x;
+               p_new_station->coord_lat = y;
+            }
+            p_new_station->record_type = record_type[0];
+            // free node path, Malloc, and store the new path
+            if (p_new_station->node_path_ptr != NULL) { 
+                free(p_new_station->node_path_ptr);
+            }
+            p_new_station->node_path_ptr = (char *)malloc(strlen(node_path) + 1);
+            CHECKMALLOC(p_new_station->node_path_ptr);
+            substr(p_new_station->node_path_ptr,node_path,strlen(node_path));
+     
+            // also set flags for the station 
+            p_new_station->flag |= ST_ACTIVE;
+            if (position_on_extd_screen(p_new_station->coord_lat,p_new_station->coord_lon)) {
+                p_new_station->flag |= (ST_INVIEW);   // set   "In View" flag
+            } else {
+                p_new_station->flag &= (~ST_INVIEW);  // clear "In View" flag
+            }
+            p_new_station->data_via = DATA_VIA_DATABASE;  // treat as data from a file.
+            if (strlen(transmit_time) > 0) { 
+                //strptime(transmit_time,"%Y-%m-%d %H:%M:%S",&time);
+                strptime(transmit_time,timeformat,&time);
+                p_new_station->sec_heard = mktime(&time);
+                if (debug_level & 1) {
+                    get_iso_datetime(p_new_station->sec_heard,timestring,False,False);
+                    fprintf(stderr,"time %s to [%s] using [%s]\n",transmit_time,timestring,timeformat);
+                }
+                if (p_new_station->sec_heard > sec_now()) 
+                    p_new_station->sec_heard = sec_now();
+                (void)strftime(timestring,MAX_TIME,"%m%d%Y%H%M%S",&time);
+                xastir_snprintf(p_new_station->pos_time,
+                     sizeof(p_new_station->pos_time),
+                     "%s",
+                     timestring);
+                }
+            returnvalue = 1;
         }
-        p_new_station->node_path_ptr = (char *)malloc(strlen(node_path) + 1);
-        CHECKMALLOC(p_new_station->node_path_ptr);
-        substr(p_new_station->node_path_ptr,node_path,strlen(node_path));
- 
-        // also set flags for the station 
-        p_new_station->flag |= ST_ACTIVE;
-        if (position_on_extd_screen(p_new_station->coord_lat,p_new_station->coord_lon)) {
-            p_new_station->flag |= (ST_INVIEW);   // set   "In View" flag
-        } else {
-            p_new_station->flag &= (~ST_INVIEW);  // clear "In View" flag
-        }
-        p_new_station->data_via = DATA_VIA_DATABASE;  // treat as data from a file.
-        if (strlen(transmit_time) > 0) { 
-            strptime(transmit_time,"%Y-%m-%d %H:%M:%S",&time);
-            p_new_station->sec_heard = mktime(&time);
-        }
-        returnvalue = 1;
     }
     return returnvalue;
 }
