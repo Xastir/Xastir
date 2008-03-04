@@ -789,13 +789,21 @@ Getting Maps and other Data Files for Xastir:
       Many useful US maps can be downloaded from the National Map Viewer: 
       http://nmviewogc.cr.usgs.gov/viewer.htm
 
-      FAA sectional charts can be downloaded from
+      Free FAA sectional charts can be downloaded from
         http://aviationtoolbox.org/raw_data/FAA_sectionals/current/
       This site was set up by someone who had a subscription to the FAA
       DVD collection and made them available on the web (this is legal per
       FAA's terms of use).  They are no longer being updated as of mid 2005.
       These charts are in Lambert Conformal Conic projection, though, and
       need to be converted with gdalwarp to be usable in xastir (see below).
+
+      Current, valid-for-navigation FAA sectional charts may be purchased
+      from the FAA at
+ 	https://naco.faa.gov/ecomp/Catalog.aspx?a=AERO+NOS+DIGITAL
+      for about $1.50US each.  These files are also in GeoTIFF and are the
+      same type as those that are available on aviationtoolbox, but these are
+      updated every 6 months and are kept current.  You will have to process
+      them before viewing in xastir.
 
       The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
       the .fgd files side-by-side into the map directories. Without the .fgd
