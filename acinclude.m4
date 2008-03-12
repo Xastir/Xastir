@@ -1018,7 +1018,7 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 	    AC_TRY_LINK(
             [#include <db.h>],
 	    [db_create(NULL, NULL, 0);],
-	    [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; dbname=db;
+	    [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; 
                 BDB_LIB_FOUND="-l$dbname"],
             dblib="no")
 #         STOP if we find one.  Otherwise we'll keep stepping through the 
