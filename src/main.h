@@ -27,7 +27,6 @@
 
 #include <X11/Intrinsic.h>
 
-
 // For mutex debugging with Linux threads only
 #ifdef __linux__
   #define MUTEX_DEBUG 1

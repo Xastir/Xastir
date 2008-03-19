@@ -8961,7 +8961,7 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
     p_time = NULL;
     p_new_station = NULL;
 
-    if (debug_level & 1) 
+    if (debug_level & 4096)  
         fprintf(stderr,"add_simple_station(%s)\n",station);
 
     if (search_station_name(&p_new_station,station,1)) { 
@@ -8974,11 +8974,11 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
              if (strlen(transmit_time) > 0) {
                  strptime(transmit_time, timeformat, &time);
                  sec = mktime(&time);
+                 lat = strtof(latitude,NULL);
+                 lon = strtof(longitude,NULL);
+                 if (convert_to_xastir_coordinates (&x, &y, lon, lat))
+                     (void)store_trail_point(p_new_station, x, y, sec, empty, empty, empty, 0);
              }
-             lat = strtof(latitude,NULL);
-             lon = strtof(longitude,NULL);
-             if (convert_to_xastir_coordinates (&x, &y, lon, lat))
-                 (void)store_trail_point(p_new_station, x, y, sec, empty, empty, empty, 0);
 
              // all done
              returnvalue = 1;
@@ -9029,7 +9029,7 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
                 //strptime(transmit_time,"%Y-%m-%d %H:%M:%S",&time);
                 strptime(transmit_time,timeformat,&time);
                 p_new_station->sec_heard = mktime(&time);
-                if (debug_level & 1) {
+                if (debug_level & 4096) {
                     get_iso_datetime(p_new_station->sec_heard,timestring,False,False);
                     fprintf(stderr,"time %s to [%s] using [%s]\n",transmit_time,timestring,timeformat);
                 }
@@ -13430,21 +13430,30 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
         // Clumsy way of doing things - needs a more elegant approach
         // iterate through interfaces 
         if (p_station->data_via != DATA_VIA_DATABASE) { 
-            if (debug_level & 1) 
+            if (debug_level & 4096) 
                 fprintf(stderr,"Trying to store station %s to database interfaces.\n",p_station->call_sign);
             for (ii=0;ii<MAX_IFACE_DEVICES;ii++) {
-                if (&connections[ii] != NULL && connections[ii].iface != NULL){
-                    if (port_data[ii].status == DEVICE_UP) { 
-                        if (connections[ii].conn != NULL) { 
-                            if (debug_level & 1) 
-                                fprintf(stderr,"Trying interface %d\n",ii);
-                            // if interface is a sql server interface 
-                            // write station data to sql database
-                            ok = storeStationSimpleToGisDb((Connection*)&connections[ii].conn, p_station);
-                            if (ok==1) { 
-                               if (debug_level & 1) {
-                                    fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);
-                               }
+                if (debug_level & 4096) {
+                   fprintf(stderr,"Trying interface [%d] ",ii);
+                   fprintf(stderr,"connection [%p]\n",connections[ii]);
+                }
+                if (connections[ii] != NULL){
+                    //TODO: Something needs fixing: connections[ii]->type isn't 0 for non-database connections
+                    if (connections[ii]->type > 0 && connections[ii]->type < 4){
+                        if (debug_level & 4096) 
+                            fprintf(stderr,"type=[%d]\n",connections[ii]->type);                
+                        if (port_data[ii].status == DEVICE_UP) { 
+                            if (connections[ii]->descriptor->device_type==DEVICE_SQL_DATABASE) { 
+                                if (debug_level & 4096) 
+                                    fprintf(stderr,"Trying interface %d\n",ii);
+                                // if interface is a sql server interface 
+                                // write station data to sql database
+                                ok = storeStationSimpleToGisDb(connections[ii], p_station);
+                                if (ok==1) { 
+                                   if (debug_level & 4096) {
+                                       fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);
+                                   }
+                                }
                             }
                         }
                     }

@@ -5667,7 +5667,7 @@ void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
         // close connection
         // TODO: Unstable if more than one database interface is open.
-        //(void)closeConnection((Connection*)&connections[Sql_Database_port].conn,Sql_Database_port); 
+        (void)closeConnection((Connection*)connections[Sql_Database_port],Sql_Database_port); 
 
     }
 
@@ -5807,7 +5807,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
         // If the connection was allready open when we started then reconnect
         // and reopen the database connection with the new parameters.
         // TODO: Unstable if more than one database interface is open
-        //(void)openConnection(&devices[Sql_Database_port],(Connection*)&connections[Sql_Database_port].conn); 
+        (void)openConnection(&devices[Sql_Database_port],(Connection*)connections[Sql_Database_port]); 
 
     }
 
@@ -5834,7 +5834,7 @@ void sddd_menuCallback(Widget widget, XtPointer ptr, XtPointer callData) {
     XtVaGetValues(widget, XmNuserData, &userData, NULL);
     //sddd_menu is zero based, constants for database types are one based.
     sddd_value = (int)userData + 1;
-    if (debug_level & 1) 
+    if (debug_level & 4096) 
         fprintf(stderr,"Selected value on dbms pulldown: %d\n",sddd_value);
 }
 #endif // USE_COMBO_BOX

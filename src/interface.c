@@ -7175,7 +7175,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
             case DEVICE_SQL_DATABASE:
                 if (debug_level & 2)
                     fprintf(stderr,"Close connection to database on device %d\n",port);
-                ok = closeConnection(&connections[port],port);
+                ok = closeConnection(connections[port],port);
                 // remove the connection from the list of open connections
                 /* clear port active */
                 port_data[port].active = DEVICE_NOT_IN_USE;
@@ -7261,13 +7261,14 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
     int done = 0;
     DataRow *dr;
     ok = -1;
-    Connection *conn;
+    //Connection *conn;
 
+fprintf(stderr,"Opening a sql db with device type %d\n",device->device_type);
     if (port_avail >= 0){
 
         switch (device->device_type) {
             case DEVICE_SQL_DATABASE:
-                if (debug_level & 1)
+                if (debug_level & 4096)
                     fprintf(stderr,"Opening a sql db connection to %s\n",device->device_host_name);
                 clear_port_data(port_avail,0);
 
@@ -7276,24 +7277,27 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                     sizeof(port_data[port_avail].device_host_name),
                     "%s",
                     device->device_host_name);
-                if (debug_level & 1)
-                    fprintf(stderr,"Opening (in interfaces) device on port [%d] with connection [%p]\n",port_avail,&connections[port_avail].conn);
-                got_conn = 0;
-                connections[port_avail].conn = &conn;
-                got_conn=openConnection(device, &connections[port_avail].conn);
-                if (debug_level & 1) {
-                    fprintf(stderr,"got_conn connections[%d] [%p] result=%d\n",port_avail,&connections[port_avail].conn,got_conn);
-                    if (got_conn==1) 
-                        printf(stderr,"got_conn connection type %d\n",conn->type);
+                if (connections[port_avail]==NULL) { 
+                   connections_initialized = initConnections();
                 }
-                if ((got_conn == 1) && (!(&connections[port_avail].conn->type==NULL))) { 
-                   if (debug_level & 2)
-                       fprintf(stderr, "Opened connection\n");
+                if (debug_level & 4096) { 
+                    fprintf(stderr,"Opening (in interfaces) device on port [%d] with connection [%p]\n",port_avail,connections[port_avail]);
+                    fprintf(stderr,"device [%p][%p] device_type=%d\n",device,&device,device->device_type);
+                }
+                got_conn = 0;
+                got_conn=openConnection(device, connections[port_avail]);
+                if (debug_level & 4096) {
+                    fprintf(stderr,"got_conn connections[%d] [%p] result=%d\n",port_avail,connections[port_avail],got_conn);
+                    if (got_conn==1) 
+                        fprintf(stderr,"got_conn connection type %d\n",connections[port_avail]->type);
+                }
+                if ((got_conn == 1) && (!(connections[port_avail]->type==NULL))) { 
+                   if (debug_level & 4096)
+                       fprintf(stderr, "Opened connection [%d] type=[%d]\n",port_avail,connections[port_avail]->type);
                    ok = 1;
                    port_data[port_avail].active = DEVICE_IN_USE;
                    port_data[port_avail].status = DEVICE_UP;
                 } else { 
-                   //free(connections[port_avail].conn);  // segfaults - passsing wrong thing? 
                    port_data[port_avail].active = DEVICE_IN_USE;
                    port_data[port_avail].status = DEVICE_ERROR;
                 }
@@ -7301,19 +7305,19 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                 update_interface_list();
                 if (ok == 1) {
                     /* if connected save top of call list */
-                    ok = storeStationSimpleToGisDb(&connections[port_avail].conn, n_first);
+                    ok = storeStationSimpleToGisDb(connections[port_avail], n_first);
                     if (ok==1) { 
-                         if (debug_level & 1)
+                         if (debug_level & 4096)
                              fprintf(stderr,"Stored station n_first\n");
                          // iterate through station_pointers and write all stations currently known
                          dr = n_first->n_next;
                          if (dr!=NULL) { 
                              while (done==0) { 
-                                 if (debug_level & 1)
+                                 if (debug_level & 4096)
                                       fprintf(stderr,"storing additional stations\n");
                                  // Need to check that stations aren't from the database 
                                  // preventing creation of duplicate round trip records.
-                                 ok = storeStationSimpleToGisDb(&connections[port_avail].conn, dr);
+                                 ok = storeStationSimpleToGisDb(connections[port_avail], dr);
                                  if (ok==1) {
                                     dr = dr->n_next;
                                     if (dr==NULL) { 
@@ -8086,7 +8090,11 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                 case DEVICE_SQL_DATABASE:
 fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
                     if (devices[i].connect_on_startup == 1 || override) {
+                       fprintf(stderr, "ready to add device by ioparam [%d]\n",i);
+                       ioparam *d = &devices[i];
+fprintf(stderr,"Opening a sql db with device type %d\n",d->device_type);
                        (void)add_device_by_ioparam(i, &devices[i]);
+                       fprintf(stderr, "added device by ioparam [%d] type=[%d]\n",i,connections[i]->type);
                     }
                     break;
 #endif /* HAVE_DB */

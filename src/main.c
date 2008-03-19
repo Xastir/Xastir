@@ -1249,6 +1249,7 @@ int moving_object = 0;
 
 
 
+
 /////////////////////////////////////////////////////////////////////////
 
 
@@ -10991,18 +10992,23 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                           // load data
                           if (devices[i].connect_on_startup == 1) { 
                               // there should be an open connection already
-                              if (debug_level & 1) 
-                                  fprintf(stderr,"Opening (in main) connection [%d] with existing connection [%p]",i,&connections[i].conn); 
-                              // TODO: Replace with a connection status test
-                              got_conn = 1;
+                              if (debug_level & 4096) 
+                                  fprintf(stderr,"Opening (in main) connection [%d] with existing connection [%p]",i,connections[i]); 
+                              if (pingConnection(connections[i])==True) { 
+                                  got_conn = 1;
+                              } else { 
+                                // if (debug_level & 4096) 
+                                     fprintf(stderr,"Ping failed opening new connection [%p]",connections[i]);                          
+                                 //Connection *conn = connections[i];
+                                 got_conn = openConnection(&devices[i],connections[i]); 
+                              }
                           } else { 
-                              connections[i].conn = &conn;
-                              if (debug_level & 1) 
-                                  fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,&connections[i].conn);                          
-                              got_conn = openConnection(&devices[i],&connections[i].conn); 
+                              if (debug_level & 4096) 
+                                  fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,connections[i]);                          
+                              got_conn = openConnection(&devices[i],connections[i]); 
                           }
-                          if ((got_conn == 1) && (!(&connections[i].conn->type==NULL))) { 
-                              getAllSimplePositions(&connections[i].conn);
+                          if ((got_conn == 1) && (!(connections[i]->type==NULL))) { 
+                              getAllSimplePositions(connections[i]);
                               // if connection worked, it is a oneshot upload of data, so we don't 
                               // need to set port_data[].active and .status values here.
                           } else {

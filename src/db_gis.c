@@ -221,7 +221,7 @@ int getAllSimplePositionsMysqlSpatialInBoundingBox(Connection *aDbConnection, ch
 #endif /* HAVE_MYSQL_SPATIAL */
 #endif /* HAVE_SPATIAL_DB */
 Connection connection_struc[MAX_DB_CONNECTIONS];
-ConnectionList connections [MAX_IFACE_DEVICES];
+Connection* connections[MAX_IFACE_DEVICES];
 int connections_initialized = 0;
 #ifdef HAVE_MYSQL
 MYSQL mysql_conn_struct, *mysql_connection = &mysql_conn_struct;
@@ -371,17 +371,17 @@ int storeStationTrackToGisDb(Connection *aDbConnection, DataRow *aStation) {
 int storeStationSimpleToGisDb(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
     int triedDatabase = 0;
-    if (debug_level & 1) 
+    if (debug_level & 4096) 
         fprintf(stderr,"in storeStationSimpleToGisDb() "); 
     if (aDbConnection==NULL || aStation==NULL) 
         return returnvalue;
     if (aStation->data_via == DATA_VIA_DATABASE) { 
-        if (debug_level & 1) 
+        if (debug_level & 4096) 
             fprintf(stderr,"skipping station heard from Database\n"); 
         returnvalue = 1;
         return returnvalue;
     }
-    if (debug_level & 1) 
+    if (debug_level & 4096) 
         fprintf(stderr,"with connection->type: %d\n",aDbConnection->type);
 
     switch (aDbConnection->type) {
@@ -423,7 +423,7 @@ int getAllSimplePositions(Connection *aDbConnection) {
     int triedDatabase = 0;
     if (aDbConnection==NULL) 
         return returnvalue;
-    if (debug_level & 1) { 
+    if (debug_level & 4096) { 
        fprintf(stderr,"in getAllSimplePositions ");    
        fprintf(stderr,"with aDbConnection->type %d\n",aDbConnection->type);    
     }
@@ -431,6 +431,8 @@ int getAllSimplePositions(Connection *aDbConnection) {
     switch (aDbConnection->type) {
         #ifdef HAVE_POSTGIS
         case DB_POSTGIS :
+            //fprintf(stderr,"connection [%p]\n",aDbConnection);        
+            //fprintf(stderr,"connection->phandle [%p]\n",aDbConnection->phandle);        
             returnvalue = getAllSimplePositionsPostgis(aDbConnection);
             triedDatabase++;
         break; 
@@ -550,6 +552,25 @@ ioparam simpleDbTest(void) {
 }
 */
 
+
+int initConnections() {
+   int x;
+   fprintf(stderr,"initConnections()\n");
+   for (x=0;x<MAX_IFACE_DEVICES;x++) {
+      connections[x] = (Connection*)malloc(sizeof(Connection*));
+      connections[x]->descriptor = &devices[x];
+      connections[x]->type = 0;
+      // malloc for the PGconn will cause segfault on trying to 
+      // open the connection
+      //connections[x]->phandle = (PGconn*)malloc(sizeof(PGconn*));
+      connections[x]->mhandle = (MYSQL*)malloc(sizeof(MYSQL*));
+   }
+   for (x=0;x<MAX_IFACE_DEVICES;x++) {
+      fprintf(stderr,"Initialized connection %d [%p] type=%d phandle=[%p]\n",x,connections[x],connections[x]->type,connections[x]->phandle);
+   }
+   return 1;
+}
+
 /* Function openConnection()
  * Opens the specified database connection.
  * @param anIface a database connection description (host username etc).
@@ -568,12 +589,19 @@ int openConnection(ioparam *anIface, Connection *connection) {
     unsigned int port;  // port to make connection on
     time_t start_time;
     int connection_made = 0;
+    Connection *c;
     #ifdef HAVE_POSTGIS
     PGconn *postgres_connection;
     PostgresPollingStatusType poll;
     #endif /* HAVE_POSTGIS */
-    if (anIface==NULL || connection==NULL) 
+    if (anIface==NULL) {
+        fprintf(stderr,"Null iface\n");
         return returnvalue;
+    }
+    if (anIface==NULL || connection==NULL) {
+        fprintf(stderr,"Null connection\n");
+        return returnvalue;
+    }
     #ifdef HAVE_MYSQL
     if (anIface->database_type!=DB_POSTGIS) { 
         // instantiate the MYSQL structure for the connection
@@ -582,13 +610,14 @@ int openConnection(ioparam *anIface, Connection *connection) {
     #endif /* HAVE_MYSQL */
     // clear any existing error message
     xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " "); 
-    if (debug_level & 1) 
+    if (debug_level & 4096) 
           fprintf(stderr,"Entering openConnection with anIface [%p] and conn [%p]\n",anIface,connection);
 
     connection->type = anIface->database_type;
-    connection->descriptor = *anIface;
+    //connection->descriptor = anIface;
 
     if (connections_initialized == 0) { 
+        connections_initialized = initConnections();
         connections_initialized = 1;
     }
   
@@ -599,16 +628,18 @@ int openConnection(ioparam *anIface, Connection *connection) {
         switch (anIface->database_type) {
             #ifdef HAVE_POSTGIS
             case DB_POSTGIS : 
-                if (debug_level & 1)
+                if (debug_level & 4096)
                     fprintf(stderr,"Opening Connection to a Postgresql/Postgis database.\n");
                 // If type is postgis, connect to postgis database.
                 // build connection string from parameters
                 xastir_snprintf(connection_string, sizeof(connection_string), \
                    "host=%s user=%s password=%s dbname=%s port=%d", \
                    anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, anIface->sp);
-                // Use nonblocking connection
-                connection->phandle = PQconnectStart(connection_string);
-                if (connection->phandle == NULL) {  
+                // Use nonblocking connection (connectStart and connectPoll)
+                //connection->phandle = PQconnectStart(connection_string);
+                postgres_connection = PQconnectStart(connection_string);
+                //if (connection->phandle == NULL) {  
+                if (postgres_connection == NULL) {  
                     xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Insufficient memory to open connection.");
                 } else {
                     connected = 0;
@@ -616,20 +647,23 @@ int openConnection(ioparam *anIface, Connection *connection) {
                     // Note: xastir needs to decide when to time out
                     start_time = sec_now();
                     statusline("Connecting to Postgresql database",1);
-                    while (connected==0 & (sec_now<(start_time+30))) { 
+                    while ((connected==0) & (sec_now()<(start_time+30))) { 
                        // need to add a timer to polling loop
-                       poll = PQconnectPoll(connection->phandle);
+                       //poll = PQconnectPoll(connection->phandle);
+                       poll = PQconnectPoll(postgres_connection);
                        if (poll == PGRES_POLLING_FAILED || poll == PGRES_POLLING_OK) { 
                           connected = 1;
                        } 
                        // add connection status feedback here if desired
                     }
-                    if (PQstatus(connection->phandle)==CONNECTION_OK) {
-                        if (debug_level & 1)
+                    //if (PQstatus(connection->phandle)==CONNECTION_OK) {
+                    if (PQstatus(postgres_connection)==CONNECTION_OK) {
+                        if (debug_level & 4096)
                             fprintf(stderr,"Connected to Postgresql database on %s\n",anIface->device_host_name);
                         // connection successfull
+                        connection->phandle = postgres_connection;
                         connection->type=DB_POSTGIS;
-                        connection->descriptor = *anIface;
+                        //connection->descriptor = anIface;
                         xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
                         connection_made = 1;
                     } else {
@@ -644,7 +678,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
             #ifdef HAVE_MYSQL_SPATIAL
             case DB_MYSQL_SPATIAL : 
                 // if type is mysql (=>4.1), connect to mysql database
-                if (debug_level & 1) 
+                if (debug_level & 4096) 
                      fprintf(stderr,"Opening connection to a MySQL (spatial) database.\n");
                 if (&connection->mhandle == NULL) { 
                     // insufficient memory to initalize a new database handle 
@@ -652,7 +686,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
                 } else { 
                     port = anIface->sp;
                     statusline("Connecting to MySQL database",1);
-                    if (debug_level & 1) 
+                    if (debug_level & 4096) 
                         fprintf(stderr,"Opening connection to %s.\n",anIface->device_host_name);
                     mysql_real_connect((MYSQL*)&connection->mhandle, anIface->device_host_name, anIface->database_username, anIface->device_host_pswd, anIface->database_schema, port, anIface->database_unix_socket, client_flag); 
 
@@ -678,8 +712,8 @@ int openConnection(ioparam *anIface, Connection *connection) {
                             connection_made = 1;
                             // store connection information
                             connection->type = DB_MYSQL_SPATIAL;
-                            connection->descriptor = *anIface;
-                            if (debug_level & 1) 
+                            //connection->descriptor = anIface;
+                            if (debug_level & 4096) 
                                 fprintf(stderr,"Connected to MySQL database, connection stored\n");
                         } else {
                             fprintf(stderr,"mysql ping failed [1]\n");
@@ -693,7 +727,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
             #ifdef HAVE_MYSQL
             case DB_MYSQL : 
                 // if type is mysql (<4.1), connect to mysql database
-                if (debug_level & 1) 
+                if (debug_level & 4096) 
                     fprintf(stderr,"Opening connection to a MySQL database.\n");
                 if (&connection->mhandle == NULL) { 
                     // insufficient memory to initalize a new database handle 
@@ -723,8 +757,8 @@ int openConnection(ioparam *anIface, Connection *connection) {
                             connection_made = 1;
                             // store connection information
                             connection->type = DB_MYSQL;
-                            connection->descriptor = *anIface;
-                            if (debug_level & 1) 
+                            //connection->descriptor = anIface;
+                            if (debug_level & 4096) 
                                 fprintf(stderr,"Connected to MySQL database, connection stored\n");
                         } else {
                             fprintf(stderr,"mysql ping failed [1]\n");
@@ -739,7 +773,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
     }  /* end test for null interface */
 
     if (connection_made==1) { 
-        if (debug_level & 1) {
+        if (debug_level & 4096) {
             fprintf(stderr,"Connection made: ");       
             fprintf(stderr,"connection->type [%d]\n",connection->type);
         }
@@ -809,6 +843,75 @@ int closeConnection(Connection *aDbConnection, int port_number) {
     //free(aDbConnection);
 
     return 1;
+}
+
+
+
+
+
+/* Tests a database connection to see if the server is responding.
+ * @param aDbConnection pointer to a generic connection handle.
+ * @returns 0 on any error, 1 for successful ping.
+ */
+int pingConnection(Connection *aDbConnection) { 
+    int returnvalue = True;
+    int dbreturn;
+    ConnStatusType psql_status;
+
+    if (aDbConnection==NULL)
+       return 0;
+
+    switch (aDbConnection->type) {
+       #ifdef HAVE_POSTGIS
+       case DB_POSTGIS: 
+           returnvalue = False;
+           // is the connection open  [required]
+           if (aDbConnection->phandle!=NULL) { 
+                psql_status = PQstatus(aDbConnection->phandle);
+                if (psql_status!=CONNECTION_OK) { 
+                    xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Postgresql connection failed");
+                    fprintf(stderr, "PQstatus returned CONNECTION_BAD, probably unable to connect to server.\n");
+
+                } else { 
+                    fprintf(stderr, "PQstatus returned CONNECTION_OK.\n");
+                    returnvalue = True;
+                }
+           }
+           break;
+       #endif /* HAVE_POSTGIS */
+       #ifdef HAVE_MYSQL_SPATIAL
+       case DB_MYSQL_SPATIAL: 
+           returnvalue = False;
+           // is the connection open  [required]
+           if (aDbConnection->mhandle!=NULL) { 
+               // can we ping the server [required]
+               dbreturn = mysql_ping((MYSQL*)&aDbConnection->mhandle);
+               if (dbreturn>0) { 
+                    mysql_interpret_error(dbreturn, aDbConnection);
+               } else {
+                    returnvalue = True;
+               }
+           }
+           break;
+       #endif /* HAVE_MYSQL_SPATIAL */
+       #ifdef HAVE_MYSQL
+       case DB_MYSQL: 
+           // is the connection open  [required]
+           if (aDbConnection->mhandle != NULL) { 
+               dbreturn = mysql_ping((MYSQL*)&aDbConnection->mhandle);
+               if (dbreturn>0) { 
+                    mysql_interpret_error(dbreturn, aDbConnection);
+               } else {
+                   returnvalue = True;
+               }  
+           }
+           break;
+       #endif /* HAVE_MYSQL*/
+    }
+    if (returnvalue==0) {
+       fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
+    }
+    return returnvalue;
 }
 
 
@@ -995,8 +1098,9 @@ int testConnection(Connection *aDbConnection){
 /* postgresql+postgis implementation of storeStationToGisDb().  */
 int storeStationToGisDbPostgis(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
+    ioparam *device = aDbConnection->descriptor;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
-    switch (aDbConnection->descriptor.database_schema_type) {
+    switch (device->database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
             returnvalue = storeStationSimplePointToGisDbPostgis(aDbConnection,aStation);
             break;
@@ -1065,15 +1169,21 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
     const char *StatementExists = "select count(*) from pg_prepared_statements where name = 'InsertSimpleStation'";
 
    
-    if (debug_level & 1) {
+    if (debug_level & 4096) {
         fprintf(stderr,"In postgres simple station insert\n");
+        fprintf(stderr,"with connection [%p] \n",aDbConnection);
+        fprintf(stderr,"connection->phandle [%p]\n",aDbConnection->phandle);        
+    }
+    if (aDbConnection->phandle==NULL) { 
+       fprintf(stderr,"Trying to save station on null postgresql connection\n");
+       return returnvalue;
     }
     if (PQserverVersion(aDbConnection->phandle)==0) {
        // no connection to server
        fprintf(stderr,"Trying to save station on closed postgresql connection\n");
        return returnvalue;
     }
-    if (debug_level & 1) {
+    if (debug_level & 4096) {
         fprintf(stderr,"Postgresql version=%d\n",PQserverVersion(aDbConnection->phandle));
     }
 
@@ -1180,7 +1290,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             paramValues[7]=record_type;
             paramValues[8]=node_path;
 
-            if (debug_level & 1)  {
+            if (debug_level & 4096)  {
                  fprintf(stderr,"Inserting: Call: %s, Time: %s, Position: %s, Symbol:%s,%s,%s Origin:%s, Node_path:%s, Record type:%s\n",paramValues[0],paramValues[1],paramValues[2],paramValues[3],paramValues[4],paramValues[5],paramValues[6],paramValues[8],paramValues[7]);
             }
        
@@ -1292,7 +1402,7 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
     empty[0]='\0';
     xastir_snprintf(feedback,100,"Retrieving Postgis records\n");
     stderr_and_statusline(feedback);
-
+    //fprintf(stderr,"connection->phandle [%p]\n",aDbConnection->phandle);        
     // run query and retrieve result set
     PGresult *result = PQexec(conn,sql);
 
@@ -1453,8 +1563,9 @@ int getAllSimplePositionsPostgisInBoundingBox(Connection *aDbConnection, char* s
 int storeStationToGisDbMysql(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
     int mysqlreturn;
+    ioparam *device = aDbConnection->descriptor;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
-    switch (aDbConnection->descriptor.database_schema_type) {
+    switch (device->database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
             returnvalue = storeStationSimplePointToGisDbMysql(aDbConnection,aStation);
             break;
@@ -1554,8 +1665,10 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
     // bind[9], SQL "?????????", and param_count must all match value of parameters
     // nine bound parameters, nine question marks in the statement, and param_count returned as nine.
 
-    if (debug_level & 1) 
+    if (debug_level & 4096) {
         fprintf(stderr,"in storeStationSimplePointToGisDbMysql\n");    
+        fprintf(stderr,"with connection [%p] \n",aDbConnection);
+    }
     
     if (aDbConnection->mhandle==NULL) 
        return returnvalue;
@@ -1710,7 +1823,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
                        node_path_length = strlen(node_path);
 
                        // all the bound parameters should be available and correct
-                       if (debug_level & 1) 
+                       if (debug_level & 4096) 
                           fprintf(stderr,"saving station %s  %d %d %d %d:%d:%d wkt=%s [%s][%s][%s] \n",aStation->call_sign,ts->tm_year,ts->tm_mon,ts->tm_mday,ts->tm_hour,ts->tm_min,ts->tm_sec,wkt,aprs_type,aprs_symbol,record_type);
                        // send query
                        mysqlreturn = mysql_stmt_execute(statement);
@@ -2026,7 +2139,7 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
     int ok;
     char timestring[100+1];
 
-    if (debug_level & 1) 
+    if (debug_level & 4096) 
         fprintf(stderr,"In storestationsimpletodbmysql()\n");
 
     // prepared statements not present below MySQL version 4.1
@@ -2089,7 +2202,7 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
             
             xastir_snprintf(sql,sizeof(sql),"insert into simpleStation (station, symbol, overlay, aprstype, transmit_time, latitude, longitude, origin, record_type, node_path) values ('%s','%s','%s','%s','%s','%3.6f','%3.6f','%s','%c','%s')", call_sign, aprs_symbol, special_overlay, aprs_type,timestring,latitude,longitude,origin,record_type,node_path);
 
-            if (debug_level & 1) 
+            if (debug_level & 4096) 
                 fprintf(stderr,"MySQL Query:\n%s\n",sql);
 
             // send query 
@@ -2190,8 +2303,9 @@ int testXastirVersionMysql(Connection *aDbConnection) {
  */
 int storeStationToDbMysql(Connection *aDbConnection, DataRow *aStation){
     int returnvalue = 0;
+    ioparam *device = aDbConnection->descriptor;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
-    switch (aDbConnection->descriptor.database_schema_type) {
+    switch (device->database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
             returnvalue = storeStationSimplePointToDbMysql(aDbConnection,aStation);
             break;
