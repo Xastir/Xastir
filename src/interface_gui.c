@@ -5666,7 +5666,6 @@ void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer cal
         was_up=1;
 
         // close connection
-        // TODO: Unstable if more than one database interface is open.
         (void)closeConnection((Connection*)connections[Sql_Database_port],Sql_Database_port); 
 
     }

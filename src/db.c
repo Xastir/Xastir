@@ -13438,7 +13438,8 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                    fprintf(stderr,"connection [%p]\n",connections[ii]);
                 }
                 if (connections[ii] != NULL){
-                    //TODO: Something needs fixing: connections[ii]->type isn't 0 for non-database connections
+                    // Note < 4 is an artificial upper limit that may catch cases where the memmory 
+                    // for the connection has been overwritten.  
                     if (connections[ii]->type > 0 && connections[ii]->type < 4){
                         if (debug_level & 4096) 
                             fprintf(stderr,"type=[%d]\n",connections[ii]->type);                
