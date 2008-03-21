@@ -10988,7 +10988,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // step through interface list
                 for (i = 0; i < MAX_IFACE_DEVICES; i++){
                      // if interface is a database and is set to load on start then load
-                     if (devices[i].device_type == DEVICE_SQL_DATABASE && devices[i].query_on_startup) { 
+                     if (connections_initialized==0) { 
+                           connections_initialized = initConnections();
+                     }
+                     if (devices[i].device_type == DEVICE_SQL_DATABASE && devices[i].query_on_startup && port_data[i].status==DEVICE_UP) { 
                           // load data
                           if (devices[i].connect_on_startup == 1) { 
                               // there should be an open connection already
@@ -26760,6 +26763,10 @@ int main(int argc, char *argv[], char *envp[]) {
 // We should probably protect redraw_on_new_data, alert_redraw_on_update, and
 // redraw_on_new_packet_data variables as well?
 // Also need to protect dialogs.
+
+#ifdef HAVE_DB
+   connections_initialized = 0;
+#endif // HAVE_DB
 
 #ifdef USE_MAP_CACHE
     map_cache_init();

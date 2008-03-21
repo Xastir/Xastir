@@ -13453,6 +13453,8 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                                    if (debug_level & 4096) {
                                        fprintf(stderr,"Stored station %s to database interface %d.\n",p_station->call_sign,ii);
                                    }
+                                } else {
+                                   pingConnection(connections[ii]);
                                 }
                             }
                         }

@@ -5806,9 +5806,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
     if (was_up) {
         // If the connection was allready open when we started then reconnect
         // and reopen the database connection with the new parameters.
-        // TODO: Unstable if more than one database interface is open
-        (void)openConnection(&devices[Sql_Database_port],(Connection*)connections[Sql_Database_port]); 
-
+        if (openConnection(&devices[Sql_Database_port],(Connection*)connections[Sql_Database_port])==1) { 
+           port_data[Sql_Database_port].status = DEVICE_UP;
+        } else { 
+           port_data[Sql_Database_port].status = DEVICE_ERROR;
+        }
     }
 
     /* add device type */

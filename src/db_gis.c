@@ -555,18 +555,29 @@ ioparam simpleDbTest(void) {
 
 int initConnections() {
    int x;
-   fprintf(stderr,"initConnections()\n");
+   int y;
+   if (debug_level & 4096) 
+       fprintf(stderr,"initConnections()\n");
    for (x=0;x<MAX_IFACE_DEVICES;x++) {
-      connections[x] = (Connection*)malloc(sizeof(Connection*));
+      connections[x] = malloc(sizeof(Connection));
       connections[x]->descriptor = &devices[x];
-      connections[x]->type = 0;
+      connections[x]->type = 0;              // assign no type by default
+      connections[x]->interface_number = x;  // so we can reference port_data[] from a connection
+                                             // without knowing the connection's position in 
+                                             // connections[] 
       // malloc for the PGconn will cause segfault on trying to 
       // open the connection
       //connections[x]->phandle = (PGconn*)malloc(sizeof(PGconn*));
       connections[x]->mhandle = (MYSQL*)malloc(sizeof(MYSQL*));
+      for(y=0;y<MAX_CONNECTION_ERROR_MESSAGE;y++) { 
+          connections[x]->errormessage[y]=' '; 
+      }
+      connections[x]->errormessage[MAX_CONNECTION_ERROR_MESSAGE]='\0'; 
    }
-   for (x=0;x<MAX_IFACE_DEVICES;x++) {
-      fprintf(stderr,"Initialized connection %d [%p] type=%d phandle=[%p]\n",x,connections[x],connections[x]->type,connections[x]->phandle);
+   if (debug_level & 4096) { 
+       for (x=0;x<MAX_IFACE_DEVICES;x++) {
+           fprintf(stderr,"Initialized connection %d [%p] type=%d phandle=[%p]\n",x,connections[x],connections[x]->type,connections[x]->phandle);
+       }
    }
    return 1;
 }
@@ -664,13 +675,13 @@ int openConnection(ioparam *anIface, Connection *connection) {
                         connection->phandle = postgres_connection;
                         connection->type=DB_POSTGIS;
                         //connection->descriptor = anIface;
-                        xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
+                        xastir_snprintf(connection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, " ");
                         connection_made = 1;
                     } else {
                         // connection attempt failed
                         fprintf(stderr,"Failed to connect to Postgresql database on %s\n",anIface->device_host_name);
-                        fprintf(stderr,"Postgres Error: %s\n", PQerrorMessage(connection->phandle));
-                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to make Postgresql connection %s. %s", PQerrorMessage(connection->phandle), connection_string); 
+                        fprintf(stderr,"Postgres Error: %s\n", PQerrorMessage(postgres_connection));
+                        xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), "Unable to make Postgresql connection %s. %s", PQerrorMessage(postgres_connection), connection_string); 
                     }
                 }
                 break;
@@ -704,7 +715,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
                         // connected to database
                         // make sure error message for making connection is empty.
                         xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
-                        xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
+                        xastir_snprintf(connection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, " ");
 
                         // ping the server
                         if (mysql_ping((MYSQL*)&connection->mhandle)==0) { 
@@ -749,7 +760,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
                         // connected to database
                         // make sure error message for making connection is empty.
                         xastir_snprintf(anIface->database_errormessage, sizeof(anIface->database_errormessage), " ");
-                        xastir_snprintf(connection->errormessage, sizeof(connection->errormessage), " ");
+                        xastir_snprintf(connection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, " ");
 
                         // ping the server
                         if (mysql_ping((MYSQL*)&connection->mhandle)==0) { 
@@ -793,6 +804,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
         statusline("Failed to connect to database",1);
         fprintf(stderr,"Failed to make database connection.\n");   
         //free(connection);   // not pointing to the right thing ??
+        port_data[connection->interface_number].status = DEVICE_ERROR;
     }
     return returnvalue;
 }
@@ -815,7 +827,9 @@ int closeConnection(Connection *aDbConnection, int port_number) {
         case DB_POSTGIS : 
             // if type is postgis, close connection to postgis database
             if (aDbConnection->phandle!=NULL) { 
-                PQfinish(aDbConnection->phandle);
+                if (port_data[port_number].status==DEVICE_UP) { 
+                   PQfinish(aDbConnection->phandle);
+                }
                 //free(aDbConnection->phandle);
             }
             break;
@@ -861,6 +875,12 @@ int pingConnection(Connection *aDbConnection) {
     if (aDbConnection==NULL)
        return 0;
 
+    if (debug_level & 4096) { 
+        fprintf(stderr,"Pinging database server type=[%d]\n",aDbConnection->type);
+    } else {
+        fprintf(stderr,"Pinging database server.\n");
+    } 
+
     switch (aDbConnection->type) {
        #ifdef HAVE_POSTGIS
        case DB_POSTGIS: 
@@ -869,7 +889,7 @@ int pingConnection(Connection *aDbConnection) {
            if (aDbConnection->phandle!=NULL) { 
                 psql_status = PQstatus(aDbConnection->phandle);
                 if (psql_status!=CONNECTION_OK) { 
-                    xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Postgresql connection failed");
+                    xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Postgresql connection failed");
                     fprintf(stderr, "PQstatus returned CONNECTION_BAD, probably unable to connect to server.\n");
 
                 } else { 
@@ -888,6 +908,7 @@ int pingConnection(Connection *aDbConnection) {
                dbreturn = mysql_ping((MYSQL*)&aDbConnection->mhandle);
                if (dbreturn>0) { 
                     mysql_interpret_error(dbreturn, aDbConnection);
+                    fprintf(stderr, "MySQL Ping failed, probably unabel to connect to server.\n");
                } else {
                     returnvalue = True;
                }
@@ -910,6 +931,8 @@ int pingConnection(Connection *aDbConnection) {
     }
     if (returnvalue==0) {
        fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
+       statusline("Database Ping Failed",1);
+       port_data[aDbConnection->interface_number].status = DEVICE_ERROR;
     }
     return returnvalue;
 }
@@ -942,7 +965,7 @@ int testConnection(Connection *aDbConnection){
            if (aDbConnection->phandle!=NULL) { 
                 psql_status = PQstatus(aDbConnection->phandle);
                 if (psql_status!=CONNECTION_OK) { 
-                    xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Postgresql connection failed");
+                    xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Postgresql connection failed");
                     fprintf(stderr, "PQstatus returned CONNECTION_BAD, probably unable to connect to server.\n");
 
                 } else { 
@@ -957,7 +980,7 @@ int testConnection(Connection *aDbConnection){
                     result = PQexec(aDbConnection->phandle,postgis_sql);
                     if (result==NULL) { 
                         // PQexec probably couldn't allocate memory for the result set.
-                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Null result: %s\n",PQerrorMessage(aDbConnection->phandle));
+                        xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Null result: %s\n",PQerrorMessage(aDbConnection->phandle));
                         fprintf(stderr, "testConnection() Null result\nPostgresql Error : %s\n",PQerrorMessage(aDbConnection->phandle));
                     } else { 
                         // PQexec returned a result, but it may not be valid, check to see.
@@ -977,7 +1000,7 @@ int testConnection(Connection *aDbConnection){
                             // does the user have delete privileges [optional]
                         } else { 
                             // schema lacks a geometry_columns table, either schema or database lacks postgis support
-                            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "No geometry_columns table found.  Is PostGIS installed and added to this schema?\n");
+                            xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "No geometry_columns table found.  Is PostGIS installed and added to this schema?\n");
                             xastir_snprintf(warning, 100, "No geometry_columns table found. PostGIS may not be installed, or the schema may not have PostGIS support added.");
                             fprintf(stderr, "No geometry_columns table found.\nPostGIS may not be installed, or the schema may not have PostGIS support added.\n");
                             fprintf(stderr, "Postgresql Error : %s\n",PQerrorMessage(aDbConnection->phandle));
@@ -996,6 +1019,9 @@ int testConnection(Connection *aDbConnection){
                dbreturn = mysql_ping((MYSQL*)&aDbConnection->mhandle);
                if (dbreturn>0) { 
                     mysql_interpret_error(dbreturn, aDbConnection);
+                    fprintf(stderr,"Ping of mysql server failed.\n");
+                    xastir_snprintf(warning, 100, "%s",aDbConnection->errormessage);
+
                } else { 
                    // is the database spatially enabled [required]
                    // determine from db version >= 4.2
@@ -1066,7 +1092,7 @@ int testConnection(Connection *aDbConnection){
     }
     if (returnvalue==0) { 
        fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
-       xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Incompatable schema: %s",warning); 
+       xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Incompatable schema: %s",warning); 
        fprintf(stderr,"\n[%s]\n",aDbConnection->errormessage);
        // Note: Don't close connection here, we haven't handed the error to the user yet.
        //closeConnection(aDbConnection,-1);
@@ -1098,9 +1124,9 @@ int testConnection(Connection *aDbConnection){
 /* postgresql+postgis implementation of storeStationToGisDb().  */
 int storeStationToGisDbPostgis(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
-    ioparam *device = aDbConnection->descriptor;
+    //ioparam *device = aDbConnection->descriptor;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
-    switch (device->database_schema_type) {
+    switch (devices[aDbConnection->interface_number].database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
             returnvalue = storeStationSimplePointToGisDbPostgis(aDbConnection,aStation);
             break;
@@ -1198,7 +1224,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
         result = PQexec(aDbConnection->phandle, StatementExists);
         if (result==NULL) { 
            fprintf(stderr,"Postgres Check for Prepared Query exec Failed: %s\n", PQerrorMessage(aDbConnection->phandle));
-           xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQerrorMessage(aDbConnection->phandle));
+           xastir_snprintf(aDbConnection->errormessage,MAX_CONNECTION_ERROR_MESSAGE,PQerrorMessage(aDbConnection->phandle));
         } else {
             count = 0;
             if (PQresultStatus(result) == PGRES_TUPLES_OK) { 
@@ -1212,7 +1238,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
                 } else {
                    // error condition - can't prepare statement
                    fprintf(stderr,"Postgres Prepare Query Failed: %s\n", PQerrorMessage(aDbConnection->phandle));
-                   xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQerrorMessage(aDbConnection->phandle));
+                   xastir_snprintf(aDbConnection->errormessage,MAX_CONNECTION_ERROR_MESSAGE,PQerrorMessage(aDbConnection->phandle));
                    exit(1);
     
                 }
@@ -1221,7 +1247,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
                 ok = 1;
             } else {
                 fprintf(stderr,"Postgres Check for Prepared Query getvalue (count=%d) failed: %s\n",count, PQresultErrorMessage(result));
-                xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQresultErrorMessage(result));
+                xastir_snprintf(aDbConnection->errormessage,MAX_CONNECTION_ERROR_MESSAGE,PQresultErrorMessage(result));
             }
         }
     } else { 
@@ -1299,14 +1325,14 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             if (PQresultStatus(result)!=PGRES_COMMAND_OK) { 
                    fprintf(stderr,"Postgres Insert query failed:%s\n",PQresultErrorMessage(result));
                    // error, get error message.
-                   xastir_snprintf(aDbConnection->errormessage,sizeof(aDbConnection->errormessage),PQresultErrorMessage(result));
+                   xastir_snprintf(aDbConnection->errormessage,MAX_CONNECTION_ERROR_MESSAGE,PQresultErrorMessage(result));
             } else { 
                  // query was successfull
                 returnvalue=1;
             }    
         } else { 
             // problem with coordinates of station 
-            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %ld,%ld",aStation->coord_lat,aStation->coord_lon);
+            xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Error converting latitude or longitude from xastir coordinates: %ld,%ld",aStation->coord_lat,aStation->coord_lon);
         }
     }
     PQclear(result);
@@ -1333,14 +1359,14 @@ int testXastirVersionPostgis(Connection *aDbConnection) {
     result = PQexec(conn,sql);
     if (result==NULL) { 
         // PQexec probably couldn't allocate memory for the result set.
-        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Null result: %s\n",PQerrorMessage(conn));
+        xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Null result: %s\n",PQerrorMessage(conn));
         fprintf(stderr, "testXastirVersionPostgis() Null result\nPostgresql Error : %s\n",PQerrorMessage(conn));
     } else { 
         // PQexec returned a result, but it may not be valid, check to see.
         if (PQresultStatus(result)==PGRES_COMMAND_OK || PQresultStatus(result)==PGRES_TUPLES_OK) { 
             if (PQntuples(result)!=1) { 
                 fprintf(stderr,"Version table doesn't appear to contain any rows.\n");
-                xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version table doesn't appear to contain any rows.");
+                xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Version table doesn't appear to contain any rows.");
             } else { 
                 version_number = atoi(PQgetvalue(result,0,0));
                 compatable_series = atoi(PQgetvalue(result,0,1));
@@ -1352,7 +1378,7 @@ int testXastirVersionPostgis(Connection *aDbConnection) {
                         fprintf(stderr,"Version in schema (%d) is compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
                     } else { 
                         fprintf(stderr,"Version in schema (%d) is not compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
-                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version in schema (%d) is not compatible with this version of xastir (%d).",version_number,XASTIR_SPATIAL_DB_VERSION);
+                        xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Version in schema (%d) is not compatible with this version of xastir (%d).",version_number,XASTIR_SPATIAL_DB_VERSION);
                         fprintf(stderr,"%s",aDbConnection->errormessage);
                         returnvalue = 0;
                     }
@@ -1408,7 +1434,7 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
 
     if (result==NULL) { 
        // PQexec probably couldn't allocate memory for the result set.
-       xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Null result: %s\n",PQerrorMessage(conn));
+       xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Null result: %s\n",PQerrorMessage(conn));
        fprintf(stderr, "getAllSimplePositionsPostgis() Null result\nPostgresql Error : %s\n",PQerrorMessage(conn));
     } else { 
        // PQexec returned a result, but it may not be valid, check to see.
@@ -1510,7 +1536,7 @@ int getAllSimplePositionsPostgis(Connection *aDbConnection) {
           stderr_and_statusline(feedback);
        } else {       
            // sql query had a problem retrieving result set.
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "%s %s\n",PQresStatus(PQresultStatus(result)),PQerrorMessage(conn));
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "%s %s\n",PQresStatus(PQresultStatus(result)),PQerrorMessage(conn));
            fprintf(stderr, "getAllSimplePositionsPostgis() %s\nPostgresql Error : %s\n",PQresStatus(PQresultStatus(result)),PQerrorMessage(conn));
        }
        // done with result set, so free the resource.
@@ -1563,9 +1589,9 @@ int getAllSimplePositionsPostgisInBoundingBox(Connection *aDbConnection, char* s
 int storeStationToGisDbMysql(Connection *aDbConnection, DataRow *aStation) { 
     int returnvalue = 0;
     int mysqlreturn;
-    ioparam *device = aDbConnection->descriptor;
+    //ioparam *device = aDbConnection->descriptor;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
-    switch (device->database_schema_type) {
+    switch (devices[aDbConnection->interface_number].database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
             returnvalue = storeStationSimplePointToGisDbMysql(aDbConnection,aStation);
             break;
@@ -1836,18 +1862,21 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
                        }
                    } else { 
                         fprintf(stderr,"Unable to save station to mysql db, Error converting latitude or longitude form xastir coordinates\n");                   
-                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
+                        xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Error converting latitude or longitude from xastir coordinates: %d,%d",aStation->coord_lat,aStation->coord_lon);
                    }
                } else { 
                    // set call not null error message
                    fprintf(stderr,"Unable to save station to mysql db, Station call sign was blank or null.\n");                   
-                   xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Station callsign is required and was blank or null.");
+                   xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Station callsign is required and was blank or null.");
                }
            } // end of bind check
        }  // end of parameter count check
     }
     mysql_stmt_free_result(statement); 
     mysql_stmt_close(statement);
+    if (returnvalue==0) { 
+        pingConnection(aDbConnection);
+    }
 
     return returnvalue;
 }
@@ -2218,11 +2247,11 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
                 returnvalue=1;
             }
         } else { 
-            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Error converting latitude or longitude from xastir coordinates: %ld,%ld",aStation->coord_lat,aStation->coord_lon);
+            xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Error converting latitude or longitude from xastir coordinates: %ld,%ld",aStation->coord_lat,aStation->coord_lon);
         } 
     } else { 
         // set call not null error message
-        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Station callsign is required and was blank or null.");
+        xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Station callsign is required and was blank or null.");
     }
     return returnvalue;
 }
@@ -2272,7 +2301,7 @@ int testXastirVersionMysql(Connection *aDbConnection) {
                         fprintf(stderr,"Version in schema (%d) is compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
                     } else { 
                         fprintf(stderr,"Version in schema (%d) is not compatible with this version of xastir (%d).\n",version_number,XASTIR_SPATIAL_DB_VERSION);
-                        xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version in schema (%d) is not compatible with this version of xastir (%d).",version_number,XASTIR_SPATIAL_DB_VERSION);
+                        xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Version in schema (%d) is not compatible with this version of xastir (%d).",version_number,XASTIR_SPATIAL_DB_VERSION);
                         fprintf(stderr,"%s",aDbConnection->errormessage);
                         returnvalue = 0;
                     }
@@ -2281,16 +2310,16 @@ int testXastirVersionMysql(Connection *aDbConnection) {
                 // result returned, but no rows = incompatable
                 returnvalue = 0;
                 fprintf(stderr,"Version table doesn't appear to contain any rows.\n");
-                xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Version table doesn't appear to contain any rows.");
+                xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Version table doesn't appear to contain any rows.");
             }
         } else { 
             fprintf(stderr,"Schema doesn't appear to contain a version table.\n");
-            xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Schema doesn't appear to contain a version table.");
+            xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Schema doesn't appear to contain a version table.");
         } 
         mysql_free_result(result);
     } else { 
          fprintf(stderr,"Query failed, Schema doesn't appear to contain a version table.\n");
-         xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "Query for version table failed.");
+         xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "Query for version table failed.");
     }
     return returnvalue;
 }
@@ -2303,9 +2332,9 @@ int testXastirVersionMysql(Connection *aDbConnection) {
  */
 int storeStationToDbMysql(Connection *aDbConnection, DataRow *aStation){
     int returnvalue = 0;
-    ioparam *device = aDbConnection->descriptor;
+    //ioparam *device = aDbConnection->descriptor;
     // check type of schema to use (XASTIR simple, full or APRSWorld) 
-    switch (device->database_schema_type) {
+    switch (devices[aDbConnection->interface_number].database_schema_type) {
         case XASTIR_SCHEMA_SIMPLE : 
             returnvalue = storeStationSimplePointToDbMysql(aDbConnection,aStation);
             break;
@@ -2419,29 +2448,29 @@ void mysql_interpret_error(int errorcode, Connection *aDbConnection) {
     switch (errorcode) {
        case CR_OUT_OF_MEMORY :
            // insufficient memory for query
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "MySQL: Out of Memory");
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "MySQL: Out of Memory");
            // notify the connection status listener
            break;
        // mysql_query errors
        case CR_COMMANDS_OUT_OF_SYNC :
            // commands in improper order
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "MySQL: Commands out of sync");
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "MySQL: Commands out of sync");
            break;
        case CR_SERVER_GONE_ERROR :
            // mysql server has gone away
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "MySQL: Connection to server lost");
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "MySQL: Connection to server lost");
            // notify the connection status listener
            break;
        case CR_SERVER_LOST :
            // server connection was lost during query
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "MySQL: Connection to server lost during query");
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "MySQL: Connection to server lost during query");
            // notify the connection status listener
            break;
        case CR_UNKNOWN_ERROR :
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "MySQL: Unknown Error");
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "MySQL: Unknown Error");
            break;
        default:
-           xastir_snprintf(aDbConnection->errormessage, sizeof(aDbConnection->errormessage), "MySQL: Unrecognized error Code [%d]", errorcode);
+           xastir_snprintf(aDbConnection->errormessage, MAX_CONNECTION_ERROR_MESSAGE, "MySQL: Unrecognized error Code [%d]", errorcode);
     }
     fprintf(stderr,"%s\n",aDbConnection->errormessage);
 }

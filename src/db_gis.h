@@ -116,6 +116,7 @@ typedef struct {
    //connection_list open_connections // list of open connections to this database
 } DbDescriptor;
 */
+#define MAX_CONNECTION_ERROR_MESSAGE 255
 // a database connection 
 typedef struct {
    int type;          // type of dbms (postgresql, mysql, etc, redundant from descriptor->type)
@@ -127,8 +128,10 @@ typedef struct {
 #ifdef HAVE_POSTGIS
    PGconn  *phandle;  // postgres connection
 #endif /* HAVE_POSTGIS */
-   char errormessage[255]; // most recent error message on this connection.
+   char errormessage[MAX_CONNECTION_ERROR_MESSAGE]; // most recent error message on this connection.
+   int interface_number;  // number of the interface on which this connection is managed
 } Connection; 
+
 
 // list of database connections
 //typedef struct{

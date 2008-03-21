@@ -7175,7 +7175,9 @@ end_critical_section(&devices_lock, "interface.c:del_device");
             case DEVICE_SQL_DATABASE:
                 if (debug_level & 2)
                     fprintf(stderr,"Close connection to database on device %d\n",port);
-                ok = closeConnection(connections[port],port);
+                if (port_data[port].status==DEVICE_UP) { 
+                   ok = closeConnection(connections[port],port);
+                }
                 // remove the connection from the list of open connections
                 /* clear port active */
                 port_data[port].active = DEVICE_NOT_IN_USE;
@@ -7261,9 +7263,7 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
     int done = 0;
     DataRow *dr;
     ok = -1;
-    //Connection *conn;
 
-fprintf(stderr,"Opening a sql db with device type %d\n",device->device_type);
     if (port_avail >= 0){
 
         switch (device->device_type) {
@@ -7277,7 +7277,7 @@ fprintf(stderr,"Opening a sql db with device type %d\n",device->device_type);
                     sizeof(port_data[port_avail].device_host_name),
                     "%s",
                     device->device_host_name);
-                if (connections[port_avail]==NULL) { 
+                if (connections_initialized==0) { 
                    connections_initialized = initConnections();
                 }
                 if (debug_level & 4096) { 
@@ -8088,13 +8088,15 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                     break;
 #ifdef HAVE_DB
                 case DEVICE_SQL_DATABASE:
-fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
+                    if (debug_level & 4096) 
+                        fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
                     if (devices[i].connect_on_startup == 1 || override) {
-                       fprintf(stderr, "ready to add device by ioparam [%d]\n",i);
-                       ioparam *d = &devices[i];
-fprintf(stderr,"Opening a sql db with device type %d\n",d->device_type);
-                       (void)add_device_by_ioparam(i, &devices[i]);
-                       fprintf(stderr, "added device by ioparam [%d] type=[%d]\n",i,connections[i]->type);
+                        ioparam *d = &devices[i];
+                        if (debug_level & 4096) 
+                            fprintf(stderr,"Opening a sql db with device type %d\n",d->device_type);
+                        (void)add_device_by_ioparam(i, &devices[i]);
+                        if (debug_level & 4096) 
+                            fprintf(stderr, "added device by ioparam [%d] type=[%d]\n",i,connections[i]->type);
                     }
                     break;
 #endif /* HAVE_DB */
