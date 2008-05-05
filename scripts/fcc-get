@@ -8,32 +8,27 @@
 # N0VH
 #
 # Note: Run this script as root in order to write the files into the
-# destination directory listed below.
+# destination directory listed below or change directory write access.
 #
 XASTIR_BASE=/usr/local/share/xastir
 cd /var/tmp
 #
 #
 # Get the FCC database, process it.
-#   Download size:  ~71MB
+#   Download size:  ~84MB
 # Final file size: ~101MB
 echo "*********************************"
 echo "*** Fetching the FCC database ***"
 echo "*********************************"
-#wget -c --passive-ftp ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
-#wget -c http://www.fcc.gov/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
 wget -c http://wireless.fcc.gov/uls/data/complete/l_amat.zip
 #
 # Get rid of characters "^M^M^J" which are sometimes present, sort
-# the file by callsign.
+# the file by callsign & remove old entries for vanity call access.
 echo "*****************************************************"
 echo "*** Filtering/sorting/installing the FCC database ***"
 echo "*****************************************************"
 if [ -r l_amat.zip ]; then unzip -p l_amat.zip EN.dat \
-    | /usr/bin/perl -pe 's/\r\r\n//g;s/\r//g' \
-    | sort -k 5,5 -t \| >$XASTIR_BASE/fcc/EN.dat; fi
-#    | sort +4 -t \| >$XASTIR_BASE/fcc/EN.dat; fi
-#
+    | /usr/bin/perl -w $0.pl >$XASTIR_BASE/fcc/EN.dat; fi
 #
 #
 # Get the RAC database, process it.

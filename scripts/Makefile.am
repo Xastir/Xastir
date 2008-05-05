@@ -7,6 +7,7 @@ pkglib_SCRIPTS = \
     Coordinate.pm \
     coord-convert.pl \
     fcc-get \
+    fcc-get.pl \
     get-gnis \
     get-maptools.sh \
     get-NWSdata \
