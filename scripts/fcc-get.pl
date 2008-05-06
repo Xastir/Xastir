@@ -8,6 +8,8 @@ while( <FILE> ) {
     if (/^EN\|(\d+)\|\|\|(\w+)\|.*/) {
 	$x = $1;
 	$z = $2;
+	chop;
+	chop;
 	$y = $_;
 	if (defined $from{$2}) {
 	    if ($from{$z} =~ /^EN\|(\d+)\|\|\|(\w+)\|.*/) {
@@ -24,8 +26,9 @@ while( <FILE> ) {
 close FILE;
  
 for my $callsign ( sort keys %from ) {
-    print "$from{$callsign}";
+    $total++;
+    print "$from{$callsign}\n";
 }
 
-print STDERR "Total callsigns:  " . keys( %from ) . ".\n";
+print STDERR "Total callsigns:  " . $total . ".\n";
 print STDERR " Replaced callsigns:  " . $replaced . ".\n";
