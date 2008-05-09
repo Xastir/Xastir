@@ -8712,7 +8712,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case(1):
                 /* APRS_MOBILE LOCAL TIME */
 
-                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0)) {
+                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
+		   (strlen(output_alt) > 0)) {
                     xastir_snprintf(output_brk,
                         sizeof(output_brk),
                         "/");
@@ -8760,7 +8761,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case(2):
                 /* APRS_MOBILE ZULU DATE-TIME */
 
-                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0)) {
+                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
+                   (strlen(output_alt) > 0)) {
                     xastir_snprintf(output_brk,
                         sizeof(output_brk),
                         "/");
@@ -8808,7 +8810,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case(3):
                 /* APRS_MOBILE ZULU TIME w/SEC */
 
-                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0)) {
+                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
+                   (strlen(output_alt) > 0)) {
                     xastir_snprintf(output_brk,
                         sizeof(output_brk),
                         "/");
@@ -8899,7 +8902,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 else {
                     /* default to APRS FIXED if no wx data. No timestamp */
 
-                    if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0)) {
+                    if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
+                        (strlen(output_alt) > 0)) {
                         xastir_snprintf(output_brk,
                             sizeof(output_brk),
                             "/");
@@ -8982,7 +8986,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 else {
                     /* default to APRS FIXED if no wx data */
 
-                    if((strlen(output_phg) < 6) && (my_last_altitude_time > 0)) {
+                    if((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
+                       (strlen(output_alt) > 0)) {
                         xastir_snprintf(output_brk,
                             sizeof(output_brk),
                             "/");
@@ -9029,7 +9034,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             default:
                 /* APRS_FIXED */
 
-                if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0)) {
+                if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
+                    (strlen(output_alt) > 0)) {
                     xastir_snprintf(output_brk,
                         sizeof(output_brk),
                         "/");
