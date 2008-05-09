@@ -529,21 +529,20 @@ char *remove_leading_spaces(char *data) {
 
 
 char *remove_trailing_spaces(char *data) {
-    int i;
+    int datalen;
 
-    if (data == NULL)
-        return NULL;
+    if (data != NULL) {
 
-    if (strlen(data) == 0)
-        return NULL;
+        datalen=strlen(data);
+        for(datalen--;datalen>=0;datalen--)
+            if(data[datalen] == ' ')
+                data[datalen] = '\0';
+            else
+                break;
+    }
 
-    for(i=strlen(data)-1;i>=0;i--)
-        if(data[i] == ' ')
-            data[i] = '\0';
-        else
-            break;
-
-        return(data);
+    // May end up with nothing left.
+    return(data);
 }
 
 
@@ -551,19 +550,19 @@ char *remove_trailing_spaces(char *data) {
 
 
 char *remove_trailing_asterisk(char *data) {
-    int i;
+    int datalen;
 
-    if (data == NULL)
-        return NULL;
+    if (data != NULL) {
 
-    if (strlen(data) == 0)
-        return NULL;
-
-// Should the test here be i>=0 ??
-    for(i=strlen(data)-1;i>0;i--) {
-        if(data[i] == '*')
-            data[i] = '\0';
+        datalen=strlen(data);
+        for(datalen--;datalen>0;datalen--) {
+            if(data[datalen] == '*')
+                data[datalen] = '\0';
+            else
+                break;
+        }
     }
+    // May end up with nothing left.
     return(data);
 }
 
@@ -1755,7 +1754,7 @@ time_t time_from_aprsstring(char *aprs_time) {
 // 4722.938N  12244.177W
 //
 char *compress_posit(const char *input_lat, const char group, const char *input_lon, const char symbol,
-            const int last_course, const int last_speed, const char *phg) {
+            const unsigned int last_course, const unsigned int last_speed, const char *phg) {
     static char pos[100];
     char lat[5], lon[5];
     char c, s, t, ext;
@@ -1854,8 +1853,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
         else
             c = (char)(last_course/4 + 33);
 
-        s = (char)(log(last_speed + 1.0) / log(1.08) + 0.5);  // Poor man's rounding
-        s = (char)(s + 33); // Convert to ASCII
+        s = (char)(log(last_speed + 1.0) / log(1.08) + 33.5);  // Poor man's rounding + ASCII
         t = 'C';
     }
     // Else set up csT bytes for PHG if within parameters

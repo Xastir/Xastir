@@ -85,7 +85,7 @@ extern void bearing_decode(const char *langstr, const char *bearing_str, const c
 extern char *get_line(FILE *f, char *linedata, int maxline);
 extern time_t time_from_aprsstring(char *timestamp);
 extern char *compress_posit(const char *lat, const char group, const char *lon, const char symbol,
-                const int course, const int speed, const char *phg);
+                const unsigned int course, const unsigned int speed, const char *phg);
 
 extern int  position_defined(long lat, long lon, int strict);
 extern void convert_screen_to_xastir_coordinates(int x, int y, long *lat, long *lon);
