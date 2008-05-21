@@ -5812,7 +5812,14 @@ char * makeMultiline(int numPairs, double *lon, double *lat, char colorStyle,
                 
                 for ( iPair=0; iPair<numPairs; ++iPair) {
                     double latOffset=lat[iPair]-*latCentr;
-                    double lonOffset=lon[iPair]-*lonCentr;
+                    // the wxsvr protocol is Western Hemisphere-Centric,
+                    // and treats positive offsets in longitude as being
+                    // west of the reference point.  So have to reverse
+                    // the sense of direction here.
+                    // This will yield positive offsets if lonCenter is
+                    // negative (west) and lon[iPair] is more negative 
+                    // (more west)
+                    double lonOffset=*lonCentr-lon[iPair];
                     
                     returnString[stringOffset++]=
                         (char)((int)(latOffset/scale)+78);
