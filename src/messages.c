@@ -577,8 +577,9 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_messa
 // sending the sequence number in Base-?? format in order to get
 // more range from the 2-character variable.
 //
-void bump_message_counter(void) {
+int bump_message_counter(char *message_counter) {
 
+    int bump_warning = 0;
     message_counter[2] = '\0';  // Terminate at 2 chars
 
     // Increment the least significant digit
@@ -605,8 +606,9 @@ void bump_message_counter(void) {
 
     if (message_counter[0] == '{') {
         message_counter[0] = '0';
-        message_counter[0]++;
+        bump_warning = 1;
     }
+    return bump_warning;
 }
 
 
@@ -708,7 +710,8 @@ void output_message(char *from, char *to, char *message, char *path) {
                 ok=1;
 
                 // Increment the message sequence ID variable
-                bump_message_counter();
+                if (bump_message_counter(message_counter)) 
+		   fprintf(stderr, "!WARNING!: Wrap around Message Counter");
 
 
 // Note that Xastir's messaging can lock up if we do a rollover and
