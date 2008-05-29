@@ -1067,11 +1067,13 @@ The Answers
     then select the interface, click Properties, then select the Setup
     and Shutdown files at the bottom of that dialog.  When an interface
     is brought up the Setup file will be downloaded to the TNC.
-    "myalias RELAY" is the command most TNC's accept for defining a
-    RELAY alias.  That command or similar should be in the Setup file
-    that you use.  Correction:  Use "myalias WIDE1-1" with the new
-    path scheme discussed on APRSSIG during early April, 2005.
-    RELAY/WIDE/TRACE/TRACEn-n are all deprecated now.
+    "myalias WIDE1-1" is the command most TNC's accept for defining a
+    digipeating alias.  That command or similar should be in the Setup file
+    that you use.
+
+    Use "myalias WIDE1-1" with the new path scheme discussed on
+    APRSSIG during early April, 2005:  RELAY/WIDE/TRACE/TRACEn-n are
+    deprecated (should not be used).
 
     If you're running kernel AX.25 interfaces, then you'll need to run
     another package to handle digipeating on these interfaces, perhaps
