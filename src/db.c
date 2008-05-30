@@ -6096,6 +6096,8 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info_select_destroy
         // DK7IN ?? should we not first close the PopUp, then call Station_data ??
         if (found) {
             xastir_snprintf(temp2, sizeof(temp2), "%s", temp);
+            // Only keep the station info, remove Tactical Call Sign
+            temp2[strcspn(temp2, " ")] = '\0';
 
             // Call it with the global parameter at the last, so we
             // can pass special parameters down that we couldn't
@@ -6152,6 +6154,7 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
     static Widget pane, form, button_ok, button_cancel;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
+    char tactical_string[50];
 
 
     busy_cursor(appshell);
@@ -6326,8 +6329,15 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                             // bounding box, count it.
                             if ((diff_y < min_diff_y) && (diff_x < min_diff_x)) {
                                 /*fprintf(stderr,"Station %s\n",p_station->call_sign);*/
+				if (p_station->tactical_call_sign) {
+                                    xastir_snprintf(tactical_string, sizeof(tactical_string), "%s (%s)", p_station->call_sign,
+                                                    p_station->tactical_call_sign);
+                                    XmListAddItem(station_list, str_ptr = XmStringCreateLtoR(tactical_string,
+                                        XmFONTLIST_DEFAULT_TAG), (int)n++);
+				} else {
                                 XmListAddItem(station_list, str_ptr = XmStringCreateLtoR(p_station->call_sign,
                                     XmFONTLIST_DEFAULT_TAG), (int)n++);
+				}
                                 XmStringFree(str_ptr);
                             }
                         }
