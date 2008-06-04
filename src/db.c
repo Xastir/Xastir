@@ -6097,7 +6097,8 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info_select_destroy
         if (found) {
             xastir_snprintf(temp2, sizeof(temp2), "%s", temp);
             // Only keep the station info, remove Tactical Call Sign
-            temp2[strcspn(temp2, " ")] = '\0';
+            temp2[strcspn(temp2, "(")] = '\0';
+            remove_trailing_spaces(temp2);
 
             // Call it with the global parameter at the last, so we
             // can pass special parameters down that we couldn't
