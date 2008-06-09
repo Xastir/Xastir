@@ -1,3 +1,470 @@
+2008-06-04 04:23  gstueve
+
+	* src/db.c: Allow Objects that have space in name to work with
+	  Tactical Call Sign addition.
+
+2008-05-30 08:32  gstueve
+
+	* src/db.c: Add tactical call sign to station pick list when
+	  multiple stations under cursor.
+
+2008-05-29 10:15  we7u
+
+	* FAQ, README.Getting-Started: Updating some of the PATH wording.
+
+2008-05-27 12:04  gstueve
+
+	* src/messages.c: Start fixing elements to allow Group & Bulletin
+	  messages to go unacknowledged.
+
+2008-05-21 09:08  tvrusso
+
+	* src/util.c: Fix makeMultiline (an unused function) so that it
+	  produces offsets in the same sense that xastir decodes them ---
+	  i.e. that positive longitude offsets are west of the reference
+	  point.
+
+2008-05-09 11:20  gstueve
+
+	* src/interface.c: Make sure not to add break character if no
+	  altitude to be reported.
+
+2008-05-09 11:18  gstueve
+
+	* src/: util.c, util.h: Make sure course and speed are treated as
+	  non-negative numbers only.
+
+2008-05-06 04:05  gstueve
+
+	* scripts/fcc-get.pl: Remove extra CR at end of each line and deal
+	  with full list only once.
+
+2008-05-05 13:00  gstueve
+
+	* scripts/: Makefile.am, fcc-get, fcc-get.pl: Adjust fcc file
+	  processing to deal with vanity call update.
+
+2008-05-02 09:58  tvrusso
+
+	* acinclude.m4: Change "AC_CHECK_LIB" to "AC_SEARCH_LIBS" for
+	  ImageMagick.
+
+	  A recent update to ImageMagick stuffs the "WriteImage" function
+	  into libMagickCore instead of libMagick, and the older probe was
+	  missing it.
+
+	  With this change, I see that WriteImage gets found without adding
+	  anything to LIBS, because "Magick-config" already stuffed the
+	  right thing into LIBS.
+
+2008-04-13 22:31  we7u
+
+	* src/util.c: Fixing a bug found with latest wget:  --timestamping
+	  and -O options can't be used together.  Getting rid of the
+	  timestamping option which we can live without.
+
+2008-04-13 21:31  we7u
+
+	* src/util.c: Updating wget and libcurl fetches to specify "Xastir"
+	  as the user-agent string in the request.  This is to support the
+	  new restrictions that findu.com has implemented.
+
+2008-03-20 21:11  chicoreus
+
+	* src/: db.c, interface_gui.c, main.c: Minor cleanup of comments
+	  and un-needed code from testing problems with database
+	  connections.
+
+2008-03-20 21:00  chicoreus
+
+	* src/: db.c, db_gis.c, db_gis.h, interface.c, interface_gui.c,
+	  main.c: Identified and fixed problem underlying stability of
+	  multiple database connections (space for connection structures
+	  was incorrectly allocated so that writing an error message into
+	  one connection overwrote memory used by another connection).
+	  Fixed additional problems related to connection failures and
+	  added more resilience to database connection problems.
+
+2008-03-18 19:10  chicoreus
+
+	* src/: db.c, db_gis.c, db_gis.h, interface.c, interface_gui.c,
+	  main.c, main.h: Overhaul of the way sql database connections are
+	  handled, reducing the complexity by eliminating the
+	  ConnectionList struct, and creating an array of Connections, one
+	  for each interface.  More than one database connection can now be
+	  run at once, though there is still an issue with pointers or
+	  memory handling somewhere and instabilites can be produced by
+	  stopping and starting database connections.
+
+	  Moved all the db_gis related debug_level tests from 1 to 4096.
+
+2008-03-11 20:27  tvrusso
+
+	* acinclude.m4: Fix a fairly dumb thing in the probe for Berkeley
+	  DB --- it was always resetting the result (BDB_LIB_FOUND) to
+	  "-ldb" even if the actual library found was something else.  This
+	  variable was used only to report to the user what library was
+	  found, never as the actual "-l" flag.  This could have led to
+	  confusion, but not improper operation.
+
+2008-03-06 12:47  we7u
+
+	* scripts/BUILDRPMS: Updating to SuSE-10.3 for generation of RPM's.
+
+2008-03-03 20:00  tvrusso
+
+	* README.MAPS: Add link to FAA digital data products web site.	You
+	  can purchase FAA sectionals in GeoTIFF format there.
+
+2008-02-29 08:54  chicoreus
+
+	* src/: database.h, db.c, db_gis.c, interface_gui.c: Added trails
+	  to db_gis code. Multiple points from one station retrieved from a
+	  database query are added as trailpoints.  Existing stations heard
+	  from other sources and retrieved from a database query aren't
+	  duplicated as DataRows, but have appropriate trail points added
+	  (if the existing position is older than the database data, the
+	  existing position becomes as trailpoint; if the database data is
+	  older, it gets added as trailpoints).
+
+	  Added timeformat to add_simple_station, as Postgresql and MySQL
+	  timestamps don't both include the local timezone "%z" in the
+	  current simple station query formats.
+
+	  Added APRS_WXn character constants as a workaround, since
+	  AprsTypes and Record Type character constants are used
+	  inconsistently in DataRow.record_type, and AprsTypes without
+	  character constants don't write cleanly into MySQL or Postgresql
+	  database records.
+
+	  Added and commented out lines to start database connections from
+	  interfaces Left commented out as multiple open database
+	  connections are still unstable and segfault.
+
+2008-02-27 20:02  gstueve
+
+	* scripts/fcc-get: FCC moved the database again. Look for it in new
+	  place.
+
+2008-02-21 20:57  chicoreus
+
+	* src/: database.h, db.c, db_gis.c, interface.c: Improvements to
+	  the tollerance of the db_gis code to problems with connections to
+	  databases and improved reporting of problems in making
+	  connections.
+
+	  Added code to add tracks for stations retrieved from the
+	  database.  Still needs work, as the existing db.c code for adding
+	  stations and points to the tracks of stations makes different
+	  assumptions about the order in which positions are recieved than
+	  the order of records queried in db_gis.c.
+
+2008-02-21 20:51  chicoreus
+
+	* scripts/: db_gis_mysql.sql, db_gis_postgis.sql: Adding some
+	  indexes to speed up retrieval of station records.  Adding a view
+	  that could be used with mapserver to return icon files for each
+	  station.
+
+2008-02-16 08:15  we7u
+
+	* src/main.c: Switching the Garmin RINO processing to use
+	  uncompressed packets for now as there is a problem with either
+	  this section of code or the Compressed encoding code for
+	  particular positions.  Change the ABOUT message to include
+	  additional copyright information.
+
+2008-02-07 18:47  chicoreus
+
+	* src/: main.c, main.h, maps.c, maps.h, xa_config.c: Adding two new
+	  KML export features:
+
+	  1) KML Snapshots - on a regular basis (using the same timing as
+	  PNG snapshots), write all currently known stations to a kml file.
+
+	  2) KML file to accompany PNG snapshots.  After converting
+	  snapshot.png to snapshot.jpg, the accompanying snapshot.kml file
+	  can be used to layer the snapshot.jpg image on the landscape in a
+	  kml application.
+
+	  The KML produced is valid and appears to work, but hasn't been
+	  extensively tested.
+
+	  This (along with the allready committed export a single station
+	  track to kml feeature) should complete the feature request for
+	  KML export:
+	  http://sourceforge.net/tracker/index.php?func=detail&aid=1863377&group_id=45562&atid=443274
+
+2008-02-07 18:35  chicoreus
+
+	* help/help-English.dat: Added help text describing KML export and
+	  snapshot features.
+
+2008-02-07 18:33  chicoreus
+
+	* config/: language-Dutch.sys, language-English.sys,
+	  language-French.sys, language-German.sys, language-Italian.sys,
+	  language-Portuguese.sys, language-Spanish.sys: Adding menu item
+	  for regular snapshots of all heard stations to a kml file,
+	  analogus to png snapshots.
+
+2008-02-07 18:29  chicoreus
+
+	* scripts/: kml_snapshot_feed.kml, kml_snapshot_to_web.sh: An
+	  example kml file and a shell script to allow png snapshots with
+	  their accompanying snapshot.kml file to be used as a regularly
+	  updated kml feed on a webserver (allowing the current snapshot
+	  from xastir to be draped over the landscape in a kml application
+	  remotely subscribing to the feed.)
+
+2008-01-29 19:08  chicoreus
+
+	* help/help-English.dat: Correcting a spelling error (found by
+	  Curt).
+
+	  Placing more references to button titles in quotes to make the
+	  description of the station info dialog more consistent.
+
+	  Clarifying (hopefully) some of the description of saving tracks
+	  from the station info dialog.
+
+2008-01-25 21:45  chicoreus
+
+	* src/: db.c, util.c, util.h: Added a utility function to return a
+	  date/time in w3c timestamp format, required for valid timestamps
+	  in kml files.
+
+	  Rearranged the log station to kml code, and added timestamped
+	  placemarks for each location of a station in a track.  This
+	  produces kml output that validates, and should behave like the
+	  "Shroeder" whale shark example file (moving a station location
+	  along its track as a time slider control is moved in Google
+	  Earth).  This has not yet been tested to see if the behavior is
+	  as desired.
+
+2008-01-24 22:21  chicoreus
+
+	* INSTALL, config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, help/help-English.dat: Localization
+	  for Station->Export All->Export kml menu items.
+
+	  User documentation of KML export.
+
+	  User documentation for spatial database support.
+
+	  Added some fault recovery comments to spatial database
+	  configuration section of INSTALL.
+
+2008-01-24 22:18  chicoreus
+
+	* src/: database.h, db.c, main.c: Adding Station->Export all menu,
+	  with option to export all station records to a single kml file.
+
+2008-01-24 14:36  chicoreus
+
+	* src/: interface_gui.c, main.c, objects.c: Fix for bug 1863228.
+	  Lesstif doesn't yet fully support combo boxes, which are used in
+	  4 places in Xastir (for user configurable predefined objects file
+	  in defaults dialog, cad object line type in the cad object
+	  details dialog, and twice in the interface properties dialog when
+	  defining a sql database interface.
+
+	  An alternate lesstif menu that mimics a combo box control
+	  (modified from xpdf's XPDFViewer.cc), is applied in three of
+	  these four cases (the fourth currently only has a single option,
+	  and might not be the best control for the situation, picking
+	  database schema type[s]).
+
+	  This has been tested on lesstif 0.94.4 and openmotif 2.3.0.
+
+2008-01-23 00:23  we7u
+
+	* src/interface.c: Added "volatile" keyword to a couple of
+	  variables to assure they don't get overwritten by longjmp.
+
+2008-01-22 23:34  we7u
+
+	* src/track_gui.c: Converting from mucking with pointers to pass to
+	  variables to a thread, to passing a pointer to a struct instead.
+	  This last method should avoid architecture-dependent problems in
+	  the download findu trail processing.
+
+2008-01-22 23:08  we7u
+
+	* src/track_gui.c: Added a comment regarding a section of code
+	  which does type-punning and may be architecture-dependent.
+
+2008-01-22 23:07  we7u
+
+	* src/messages.c: Commented out "altgroup" section of conditional
+	  which always equates to true ('cuz it's an address).
+
+2008-01-22 23:05  we7u
+
+	* src/interface.c: Added a couple of comments.
+
+2008-01-22 22:00  we7u
+
+	* src/map_cache.c: Reformatting debug statement so that it won't
+	  generate compiler warnings.
+
+2008-01-22 20:49  we7u
+
+	* src/wx.c: Fixing a buffer overrun.  Found via a compiler warning
+	  on OpenSuSE-10.3
+
+2008-01-22 20:48  we7u
+
+	* src/map_geo.c: Reformatting a debug statement so it won't cause
+	  compiler warnings.
+
+2008-01-22 20:47  we7u
+
+	* src/map_gdal.c: Getting rid of a conditional that always
+	  evaluates as true:  The address of "label".
+
+2008-01-22 20:46  we7u
+
+	* src/map_dos.c: Fixing an array overflow condition that has
+	  existed for a LONG time.  Found via a compiler warning on
+	  OpenSuSE-10.3
+
+2008-01-22 20:45  we7u
+
+	* src/map_WMS.c: Changing debug statement format so it won't cause
+	  a compiler warning to be issued.
+
+2008-01-22 20:43  we7u
+
+	* INSTALL: Adding a note about RINO's:	That Xastir cannot cause a
+	  poll of the remote RINO units over the air.
+
+2008-01-18 18:49  chicoreus
+
+	* src/db_gis.c: More cleanup of db_gis code.
+
+2008-01-18 18:48  chicoreus
+
+	* src/main.c: Adding test in UpdateTime to avoid opening the same
+	  database interface twice during startup if it is marked to both
+	  activate on startup and load stations on startup.
+
+2008-01-17 19:21  chicoreus
+
+	* src/: db.c, db_gis.c, main.c: Minor stability improvements to
+	  db_gis code.	Adding some sanity checks for null database
+	  connections when running queries to reduce segfaults.
+
+	  Begining cleanup of the db_gis code.	Removing some leftover
+	  unused variables and code.  Explicit type casting of some
+	  pointers in function calls to suppress compiler warnings.
+
+2008-01-16 20:33  chicoreus
+
+	* src/: database.h, db.c, db_gis.c, main.c, objects.c: First pass
+	  at exporting station tracks as kml files.  On clicking store
+	  track on the station information dialog, both an xastir format
+	  file and a kml file for the selected station will be written to
+	  ~/.xastir/tracklogs
+
+	  Added more comments on how database schema version and series
+	  compatability should work.
+
+	  Fixed (superficially) a bug where station data would be written
+	  to a non-open database connection causing a segfault.  Connection
+	  handling in db_gis is fragile and needs review.
+
+2008-01-16 11:38  we7u
+
+	* scripts/: BUILDRPMS, LSB-BUILD: Updating to 1.9.3 release number.
+
+2008-01-16 11:33  we7u
+
+	* AUTHORS, ChangeLog, DEBUG_LEVELS, FAQ, INSTALL, LICENSE,
+	  Makefile.am, NEWS, README, README.CVS, README.Contributing,
+	  README.Getting-Started, README.MAPS, README.win32,
+	  REGRESSION_TESTS, UPGRADE, acinclude.m4, bootstrap.sh,
+	  changes.txt, configure.ac, install-xastir, update-xastir,
+	  xastir.1, Davis/Makefile.am, Davis/README, Davis/bootstrap.sh,
+	  Davis/configure.ac, Davis/src/Makefile.am, Davis/src/db2APRS.c,
+	  Davis/src/defs.h, LaCrosse/Makefile.am, LaCrosse/README,
+	  LaCrosse/bootstrap.sh, LaCrosse/configure.ac,
+	  LaCrosse/src/Makefile.am, LaCrosse/src/defs.h,
+	  LaCrosse/src/open2300db2APRS.c, callpass/Makefile.am,
+	  callpass/callpass.c, config/24kgrid.dbfawk, config/Makefile.am,
+	  config/gps_wpt.dbfawk, config/language-Dutch.sys,
+	  config/language-English.sys, config/language-French.sys,
+	  config/language-German.sys, config/language-Italian.sys,
+	  config/language-Portuguese.sys, config/language-Spanish.sys,
+	  config/nwsc_ddmmyy.dbfawk, config/nwsmzddmmyy.dbfawk,
+	  config/nwsmzoddmmyy.dbfawk, config/nwsozddmmyy.dbfawk,
+	  config/nwsw_ddmmyy.dbfawk, config/nwsz_ddmmyy.dbfawk,
+	  config/nwszoddmmyy.dbfawk, config/predefined_EVENT.sys,
+	  config/predefined_SAR.sys, config/tgr2shp.dbfawk,
+	  config/tgr2shppoly.dbfawk, config/tgr2shppoly_2006.dbfawk,
+	  config/tgrcty.dbfawk, config/tgrkgl.dbfawk, config/tgrlk.dbfawk,
+	  config/tgrlpt.dbfawk, config/tgrlpy.dbfawk,
+	  config/tgrplc00.dbfawk, config/tgrwat.dbfawk,
+	  config/tnc-startup.aea, config/tnc-startup.d700,
+	  config/tnc-startup.kam, config/tnc-startup.kpc2,
+	  config/tnc-startup.kpc3, config/tnc-startup.paccomm,
+	  config/tnc-startup.pico, config/tnc-startup.sys,
+	  config/tnc-startup.thd7, config/tnc-startup.tnc2,
+	  config/tnc-startup.tnc2-ui, config/tnc-stop.d700,
+	  config/tnc-stop.sys, config/tnc-stop.thd7,
+	  config/tnc-stop.tnc2-ui, help/Makefile.am, help/help-Dutch.dat,
+	  help/help-English.dat, help/help-French.dat,
+	  help/help-German.dat, help/help-Italian.dat,
+	  help/help-Portuguese.dat, help/help-Spanish.dat, m4/Makefile.am,
+	  scripts/LSB-BUILD, scripts/LSB-BUILD-ALL, scripts/LSB-BUILD-CURL,
+	  scripts/LSB-BUILD-DB, scripts/LSB-BUILD-GDAL,
+	  scripts/LSB-BUILD-GRAPHICSMAGICK, scripts/LSB-BUILD-JASPER,
+	  scripts/LSB-BUILD-JPEG, scripts/LSB-BUILD-LESSTIF,
+	  scripts/LSB-BUILD-PCRE, scripts/LSB-BUILD-PNG,
+	  scripts/LSB-BUILD-ZLIB, scripts/Makefile.am, scripts/PigLatin.pl,
+	  scripts/Xastir_tigerpoly.py, scripts/example_objects.log,
+	  scripts/fcc-get, scripts/get-NWSdata, scripts/get-gnis,
+	  scripts/get-maptools.sh, scripts/get_shapelib.sh,
+	  scripts/toporama250k.pl, scripts/toporama50k.pl,
+	  scripts/xastir-fixcfg.sh, scripts/xastir-migrate.sh,
+	  src/Makefile.am, src/alert.c, src/alert.h, src/awk.c, src/awk.h,
+	  src/bulletin_gui.c, src/bulletin_gui.h, src/color.c, src/color.h,
+	  src/database.h, src/datum.c, src/datum.h, src/db.c, src/db_gis.c,
+	  src/db_gis.h, src/dbfawk.c, src/dbfawk.h, src/draw_symbols.c,
+	  src/draw_symbols.h, src/fcc_data.c, src/fcc_data.h,
+	  src/festival.c, src/festival.h, src/geo-client.c, src/geo-find.c,
+	  src/geo.h, src/geocoder_gui.c, src/gps.c, src/gps.h,
+	  src/hashtable.c, src/hashtable.h, src/hashtable_itr.c,
+	  src/hashtable_itr.h, src/hashtable_private.h, src/hostname.c,
+	  src/hostname.h, src/igate.c, src/igate.h, src/interface.c,
+	  src/interface.h, src/interface_gui.c, src/io-common.c,
+	  src/io-mmap.c, src/io.h, src/lang.c, src/lang.h,
+	  src/leak_detection.h, src/list_gui.c, src/list_gui.h,
+	  src/locate_gui.c, src/location.c, src/location_gui.c,
+	  src/macspeech.c, src/main.c, src/main.h, src/map_WMS.c,
+	  src/map_cache.c, src/map_cache.h, src/map_dos.c, src/map_gdal.c,
+	  src/map_geo.c, src/map_gnis.c, src/map_pdb.c, src/map_shp.c,
+	  src/map_tif.c, src/map_tiger.c, src/maps.c, src/maps.h,
+	  src/messages.c, src/messages.h, src/messages_gui.c,
+	  src/objects.c, src/objects.h, src/popup.h, src/popup_gui.c,
+	  src/rac_data.c, src/rac_data.h, src/rotated.c, src/rotated.h,
+	  src/rpl_malloc.c, src/rpl_malloc.h, src/shp_hash.c,
+	  src/shp_hash.h, src/snprintf.c, src/snprintf.h, src/sound.c,
+	  src/symbols.h, src/testawk.c, src/track_gui.c, src/track_gui.h,
+	  src/util.c, src/util.h, src/view_message_gui.c, src/wx.c,
+	  src/wx.h, src/wx_gui.c, src/x_spider.c, src/x_spider.h,
+	  src/xa_config.c, src/xa_config.h, src/xastir.h,
+	  src/xastir_udp_client.c, src/rtree/Makefile.am, src/rtree/card.c,
+	  src/rtree/card.h, src/rtree/gammavol.c, src/rtree/index.c,
+	  src/rtree/index.h, src/rtree/node.c, src/rtree/rect.c,
+	  src/rtree/sphvol.c, src/rtree/split_l.c, src/rtree/split_l.h,
+	  src/rtree/split_q.c, src/rtree/split_q.h,
+	  src/shapelib/Makefile.am, src/shapelib/contrib/Makefile.am,
+	  symbols/Makefile.am, symbols/symbols.dat: Updating the copyright
+	  notices for 2008.
+
 2008-01-16 10:32  we7u
 
 	* configure.ac: Preparing for devel release, bumping revision
