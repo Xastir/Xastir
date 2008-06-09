@@ -67,7 +67,13 @@ printf("\n*** Renaming file\n");
 printf("\n*** Uploading $filename to SourceForge\n");
 &Proceed;
 
-`ncftpput upload.sourceforge.net incoming $filename`;
+
+# Old Method using FTP:
+#`ncftpput upload.sourceforge.net incoming $filename`;
+#
+# New Method using RSYNC-over-SSH:
+`rsync -P -t -vv --progress -e ssh $filename we7u\@frs.sourceforge.net:uploads/`;
+
 
 printf("\n*** Tagging repository using $file_prefix tag\n");
 &Proceed;
