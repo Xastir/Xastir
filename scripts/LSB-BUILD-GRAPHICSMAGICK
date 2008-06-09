@@ -41,6 +41,11 @@ export LSBCC_WARN=1
 # Change freetype2 to LSB include directory in configure.
 sed -i -e 's@{freetype_prefix}/include/freetype2@/opt/lsb/include@g' configure
 
+# Remove "-std=gnu99 -c99" from configure else we'll get a some
+# libraries compiled in that we don't wish 'cuz the lsbcc compiler
+# won't get used.
+sed -i -e 's/-std=gnu99 -c99//g' configure
+
 CC=lsbcc CXX=lsbc++ ./configure \
     --prefix=/opt/lsb-tmp \
     --exec_prefix=/opt/lsb-tmp \
@@ -56,8 +61,7 @@ CC=lsbcc CXX=lsbc++ ./configure \
     --without-freetype2 \
     --without-gslib \
     --with-quantum-depth=16
-#
-    --disable-installed
+# --disable-installed
 
 make clean
 

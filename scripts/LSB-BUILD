@@ -147,15 +147,20 @@ sudo /bin/rm -rf /opt/Xastir
 # Copy GraphicsMagick "gm" binary to the Xastir area
 sudo /bin/cp /opt/lsb-tmp/bin/gm /opt/Xastir/bin/.
 
-(lsbappchk -nA /opt/Xastir/bin/xastir 2>&1) | grep -v SHT_NOTE
-(lsbappchk -nA /opt/Xastir/bin/callpass 2>&1) | grep -v SHT_NOTE
-(lsbappchk -nA /opt/Xastir/bin/xastir_udp_client 2>&1) | grep -v SHT_NOTE
-(lsbappchk -nA /opt/Xastir/bin/gm 2>&1) | grep -v SHT_NOTE
+#(lsbappchk -nA /opt/Xastir/bin/xastir 2>&1) | grep -v SHT_NOTE
+#(lsbappchk -nA /opt/Xastir/bin/callpass 2>&1) | grep -v SHT_NOTE
+#(lsbappchk -nA /opt/Xastir/bin/xastir_udp_client 2>&1) | grep -v SHT_NOTE
+#(lsbappchk -nA /opt/Xastir/bin/gm 2>&1) | grep -v SHT_NOTE
+(lsbappchk -n /opt/Xastir/bin/xastir 2>&1) | grep -v SHT_NOTE
+(lsbappchk -n /opt/Xastir/bin/callpass 2>&1) | grep -v SHT_NOTE
+(lsbappchk -n /opt/Xastir/bin/xastir_udp_client 2>&1) | grep -v SHT_NOTE
+(lsbappchk -n /opt/Xastir/bin/gm 2>&1) | grep -v SHT_NOTE
+
 
 tar cjf $FILENAME /opt/Xastir
 
 # Remove old versions of the package from the ftp site
-ssh eskimo rm ftp/aprs/xastir/LSB/xastir-lsb*
+#ssh eskimo rm ftp/aprs/xastir/LSB/xastir-lsb*
 
 # Upload the latest version
 scp xastir-lsb-$REV-* eskimo:ftp/aprs/xastir/LSB/.
