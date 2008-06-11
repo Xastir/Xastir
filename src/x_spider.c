@@ -541,6 +541,7 @@ int pipe_check(char *client_address) {
                     q->next = p->next;
             }
             free(p);    // Free the malloc'd memory.
+	    p = NULL;
 
             wait(NULL); // Reap the status of the dead process
         }
@@ -855,6 +856,7 @@ void clear_proc_title(void)
     free(environ[i]);
   }
   free(environ);
+  environ = NULL;
 }
 
 void set_proc_title(char *fmt,...) {
@@ -1057,6 +1059,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         if (pipe(p->to_child) < 0 || pipe(p->to_parent) < 0) {
             fprintf(stderr,"x_spider: Can't create pipes\n");
             free(p);    // Free the malloc'd memory.
+	    p = NULL;
             close(newsockfd);
             goto finis;
         }
@@ -1081,6 +1084,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             close(p->to_parent[0]);
             close(p->to_parent[1]);
             free(p);    // Free the malloc'd memory.
+	    p = NULL;
             close(newsockfd);
             goto finis;
         }
@@ -1456,6 +1460,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
     if (pipe(xastir_tcp_pipe->to_child) < 0 || pipe(xastir_tcp_pipe->to_parent) < 0) {
         fprintf(stderr,"x_spider: Can't create pipes\n");
         free(xastir_tcp_pipe);    // Free the malloc'd memory.
+	xastir_tcp_pipe = NULL;
         return(0);
     }
  
@@ -1471,6 +1476,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         close(xastir_tcp_pipe->to_parent[0]);
         close(xastir_tcp_pipe->to_parent[1]);
         free(xastir_tcp_pipe);    // Free the malloc'd memory.
+	xastir_tcp_pipe = NULL;
         return(0);
     }
     else if (childpid == 0) {
@@ -1573,6 +1579,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
     if (pipe(xastir_udp_pipe->to_child) < 0 || pipe(xastir_udp_pipe->to_parent) < 0) {
         fprintf(stderr,"x_spider: Can't create pipes\n");
         free(xastir_udp_pipe);    // Free the malloc'd memory.
+	xastir_udp_pipe = NULL;
         return(0);
     }
  
@@ -1588,6 +1595,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
         close(xastir_udp_pipe->to_parent[0]);
         close(xastir_udp_pipe->to_parent[1]);
         free(xastir_udp_pipe);    // Free the malloc'd memory.
+	xastir_udp_pipe = NULL;
         return(0);
     }
     else if (childpid == 0) {
