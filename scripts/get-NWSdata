@@ -37,9 +37,8 @@ FILE2="w_16mr06"  # NWSM Libraries: County Warning Area Boundaries
 FILE3="mz03jn08"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE4="oz02jn08"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE5="hz28au04"  # NWSM Libraries: Coastal and Offshore Marine Zones
-FILE6="c_16mr06"  # County Libraries: AWIPS Counties
-FILE7="fz25jn08"  # NWSM Libraries: Fire Weather Zone Boundaries
-
+FILE6="fz25jn08"  # NWSM Libraries: Fire Weather Zone Boundaries
+FILE7="c_11mr07"  # County Libraries: AWIPS Counties
 
 cd /usr/local/share/xastir/Counties
 
@@ -52,7 +51,8 @@ rm -f *.zip 2>&1 >/dev/null
 # Fetch new copies, unzip into place, delete archive.
 #
 #
-for d in $FILE{1,2,3,4,5,6,7}; do
+DIR=wsom
+for d in $FILE{1,2,3,4,5,6}; do
 if [ -e $d.shp ]
   then
     echo "Already have $d shapefile, skipping..."
@@ -60,7 +60,22 @@ if [ -e $d.shp ]
     # Remove possible older copies
     cut=`echo $d|cut -c1-2 -`
     rm -f $cut*.shx $cut*.shp $cut*.dbf $cut*.prj $cut*.zip 2>&1 >/dev/null
-    wget http://www.weather.gov/geodata/catalog/wsom/data/$d.zip
+    wget http://www.weather.gov/geodata/catalog/$DIR/data/$d.zip
+    unzip $d.zip
+    rm -f *.zip
+fi
+done
+
+DIR=county
+for d in $FILE7; do
+if [ -e $d.shp ]
+  then
+    echo "Already have $d shapefile, skipping..."
+  else
+    # Remove possible older copies
+    cut=`echo $d|cut -c1-2 -`
+    rm -f $cut*.shx $cut*.shp $cut*.dbf $cut*.prj $cut*.zip 2>&1 >/dev/null
+    wget http://www.weather.gov/geodata/catalog/$DIR/data/$d.zip
     unzip $d.zip
     rm -f *.zip
 fi
