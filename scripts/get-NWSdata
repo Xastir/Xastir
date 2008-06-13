@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # $Id$
 #
@@ -52,7 +52,7 @@ rm -f *.zip 2>&1 >/dev/null
 #
 #
 DIR=wsom
-for d in $FILE{1,2,3,4,5,6}; do
+for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6; do
 if [ -e $d.shp ]
   then
     echo "Already have $d shapefile, skipping..."
