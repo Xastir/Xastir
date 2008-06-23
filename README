@@ -340,7 +340,7 @@ README
 
             Software->Installation Source
 
-        Two sites that I use are:
+        For OpenSuSE 10.0:
 
         ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.0-OSS/inst-source/suse
         ftp://ftp.suse.com/pub/projects/ham/10.0-i386
@@ -349,6 +349,10 @@ README
 
         ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.1/inst-source/suse
         http://dg7gt.osth.de/suse-10.1-ham/
+
+        For OpenSuSE 11.0:
+
+        http://download.opensuse.org/repositories/hamradio/openSUSE_11.0/
 
         Adding these sites will allow you to find and install the ax25
         libraries/devel headers, the OpenMotif development headers, and the
