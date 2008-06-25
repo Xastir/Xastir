@@ -215,8 +215,13 @@ char *xastir_version=VERSION;
 #define REDRAW_WAIT        3    /* delay between consecutive redraws in seconds (file load) */
 
 
-#define XmFONTLIST_DEFAULT_MY "fixed"
 
+// FONTS FONTS FONTS FONTS FONTS
+// NOTE:  See the main() function at the bottom of this module for
+// the actual font definitions.
+
+// This one is not used anymore:
+//#define XmFONTLIST_DEFAULT_MY "fixed"
 
 // If next line uncommented, Xastir will use larger fonts nearly
 // everywhere, including menus and status bar.
@@ -241,7 +246,6 @@ char *xastir_version=VERSION;
 //
 //#define SWAP_MOUSE_BUTTONS
  
-
 // If next line uncommented, Xastir will use a large font for the
 // station text in the drawing area.
 //#define USE_LARGE_STATION_FONT
@@ -26254,13 +26258,19 @@ int main(int argc, char *argv[], char *envp[]) {
 
         "*initialResourcesPersistent: False\n",
 
-#ifdef USE_LARGE_SYSTEM_FONT
-        "*.fontList: -*-*-*-*-*-*-20-*-*-*-*-*-*-*\n",
-#endif  // USE_LARGE_SYSTEM_FONT
 
+#if (!defined(USE_SMALL_SYSTEM_FONT) && !defined(USE_LARGE_SYSTEM_FONT))
+//        "*.fontList: -*-courier-*-r-*-*-12-*-*-*-*-*-*-*\n",
+//          "*.fontList: -misc-fixed-*-r-*-*-12-*-*-*-*-*-*-*\n",
+        "*.fontList: -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*\n",
+#endif  // Use standard system font
+#ifdef USE_LARGE_SYSTEM_FONT
+        "*.fontList: -misc-fixed-*-r-*-*-20-*-*-*-*-*-*-*\n",
+#endif  // USE_LARGE_SYSTEM_FONT
 #ifdef USE_SMALL_SYSTEM_FONT
-        "*.fontList: -*-*-*-*-*-*-7-*-*-*-*-*-*-*\n",
+        "*.fontList: -misc-fixed-*-r-*-*-7-*-*-*-*-*-*-*\n",
 #endif  // USE_SMALL_SYSTEM_FONT
+
 
         "*List.Translations: #override \n\
         <Key>Return:    Select(children)\n\
