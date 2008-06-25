@@ -2056,10 +2056,9 @@ HELP-INDEX>Included Scripts
 
 Xastir includes several Perl scripts and a shell script that may be useful:
 
-fcc-get
+get-fcc-rac.pl
 This shell script automates retrieving and installing the FCC and the RAC
-callsign databases. Note that these databases are large; the two downloads are
-60MB total!
+callsign databases. Note that these databases are very large!
 
 icontable.pl
 This script generates an xpm bitmap of all Xastir's primary and secondary
