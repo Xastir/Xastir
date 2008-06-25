@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -W
 
 
 # $Id$
@@ -28,12 +28,22 @@
 # map files for the whole of Canada!
 #
 #
-# * cd /usr/local/share/xastir/maps
-# * Run this script from there.  Make sure that you have write
-#   privileges there.
-# * Move the directories and contents to whereever makes sense.
-# * Reindex the maps in Xastir in order to have them appear in the
-#   Map Chooser.
+# - "cd /usr/local/share/xastir/maps"
+#
+# - Assure you have write privileges in the directory above either
+#   by becoming root using the "su" command, using "sudo", or
+#   temporarily changing ownership and/or privileges on the
+#   "maps" directory.
+#
+# - "/usr/local/lib/xastir/toporama250k.pl"
+#
+# - The script will create/populate this directory heirarchy:
+#   .../maps/toporama/images/
+#   .../maps/toporama/images/b250k/
+#
+# - Move/rename directories/contents as you wish.
+#
+# - In Xastir:  "Map->Configure->Index: Reindex ALL Maps!"
 #
 #
 # Note that the same map files are also available from Steve Dimse's
