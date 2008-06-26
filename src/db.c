@@ -2554,9 +2554,22 @@ int ok_to_draw_station(DataRow *p_station) {
         if (p_station->weather_data) {
             // We have weather data
 
-            // Check whether it is a citizen's weather station
-            if (strncasecmp(p_station->call_sign,"CW",2) == 0) {
-                return(Select_.weather_stations && Select_.CWOP_wx_stations);
+            // Check whether it is a citizen's weather station.
+            // Note that a "CW" prefix is Uruguay and "DW" prefix is
+            // Phillipines, so let's be careful how we filter here.
+            // All Cititzen's weather stations seen to date have had
+            // CW or DW and then four digits.
+            if ( (strncasecmp(p_station->call_sign,"CW",2) == 0)
+               || (strncasecmp(p_station->call_sign,"DW",2) == 0) ) {
+                if ( is_num_chr(p_station->call_sign[2])
+                     && is_num_chr(p_station->call_sign[3])
+                     && is_num_chr(p_station->call_sign[4])
+                     && is_num_chr(p_station->call_sign[5]) ) {
+                    return(Select_.weather_stations && Select_.CWOP_wx_stations);
+                }
+                else {
+                    return Select_.weather_stations;
+                }
             }
             else {
                 return Select_.weather_stations;
