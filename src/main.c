@@ -9277,7 +9277,7 @@ void create_gc(Widget w) {
 
 #ifdef USE_LARGE_STATION_FONT
     XFontStruct *font = NULL;
-    char fonttext[40] = "-*-*-*-*-*-*-20-*-*-*-*-*-*-*";
+    char fonttext[40] = "-misc-fixed-*-*-*-*-20-*-*-*-*-*-*-*";
 #endif  // USE_LARGE_STATION_FONT
 
 
