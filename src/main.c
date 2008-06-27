@@ -5148,8 +5148,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif // ARROWS
         help_button, help_about, help_help;
 
-    XmFontList fontlist1;
     XFontStruct *font1;
+    XmFontList fontlist1;
     char *title, *t;
     int t_size;
 //    XWMHints *wm_hints; // Used for window manager hints
@@ -5353,14 +5353,16 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
-    XtSetArg(al[ac],XmNshadowThickness, 1);                     ac++;
-    XtSetArg(al[ac],XmNalignment,       XmALIGNMENT_BEGINNING); ac++;
-    XtSetArg(al[ac],XmNleftAttachment,  XmATTACH_FORM);         ac++;
-    XtSetArg(al[ac],XmNtopAttachment,   XmATTACH_FORM);         ac++;
-    XtSetArg(al[ac],XmNrightAttachment, XmATTACH_NONE);         ac++;
-    XtSetArg(al[ac],XmNbottomAttachment,XmATTACH_NONE);         ac++;
-    XtSetArg(al[ac],XmNforeground,      MY_FG_COLOR);           ac++;
-    XtSetArg(al[ac],XmNbackground,      MY_BG_COLOR);           ac++;
+    XtSetArg(al[ac], XmNshadowThickness, 1);                     ac++;
+    XtSetArg(al[ac], XmNalignment,       XmALIGNMENT_BEGINNING); ac++;
+    XtSetArg(al[ac], XmNleftAttachment,  XmATTACH_FORM);         ac++;
+    XtSetArg(al[ac], XmNtopAttachment,   XmATTACH_FORM);         ac++;
+    XtSetArg(al[ac], XmNrightAttachment, XmATTACH_NONE);         ac++;
+    XtSetArg(al[ac], XmNbottomAttachment,XmATTACH_NONE);         ac++;
+    XtSetArg(al[ac], XmNforeground,      MY_FG_COLOR);           ac++;
+    XtSetArg(al[ac], XmNbackground,      MY_BG_COLOR);           ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     menubar = XmCreateMenuBar(form,
             "create_appshell menubar",
@@ -5369,9 +5371,11 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     /*set args for color */
     ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR);          ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR);          ac++;
+    XtSetArg(al[ac], XmNforeground,   MY_FG_COLOR);        ac++;
+    XtSetArg(al[ac], XmNbackground,   MY_BG_COLOR);        ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,     fontlist1);          ac++;
+
 
     /* menu bar */
     filepane    = XmCreatePulldownMenu(menubar,"filepane",    al, ac);
@@ -5454,6 +5458,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,     fontlist1);          ac++;
+
 
     configpane  = XmCreatePulldownMenu(filepane,
             "configpane",
@@ -6003,6 +6009,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     CAD_sub=XmCreatePulldownMenu(mappane,
             "create_appshell CAD sub",
@@ -6026,6 +6034,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
+
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA031")); ac++;
 
     // "Close Polygon"
@@ -6047,6 +6058,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     // "Erase CAD Polygons"
     CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
@@ -6305,6 +6318,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     map_config_pane  = XmCreatePulldownMenu(mappane,
             "map_config_pane",
@@ -6327,6 +6342,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     // These go into the map config submenu
     Map_background_color_Pane = XmCreatePulldownMenu(map_config_pane,
@@ -6461,6 +6478,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     Raster_intensity_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell raster_intensity",
@@ -6610,6 +6629,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     Map_station_label_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_station_label",
@@ -6659,6 +6680,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     Map_icon_outline_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_icon_outline",
@@ -6860,6 +6883,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
 
     // Store Data pulldown/tearoff
@@ -6921,6 +6946,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     // Filter Data pulldown/tearoff
     filter_data_pane = XmCreatePulldownMenu(stationspane,
@@ -7237,6 +7264,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     // Displayed Info Filtering
     filter_display_pane = XmCreatePulldownMenu(stationspane,
@@ -7722,6 +7751,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     station_config_pane  = XmCreatePulldownMenu(stationspane,
             "stations_config_pane",
@@ -8113,6 +8144,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     help_emergency_pane = XmCreatePulldownMenu(helppane,
             "help_emergency_pane",
@@ -8754,6 +8787,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
 
 #ifdef SWAP_MOUSE_BUTTONS
@@ -8794,6 +8829,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
+
 
     // "Options"
     (void)XtCreateManagedWidget(langcode("POPUPMA001"),
@@ -8814,6 +8851,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA00c")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     pan_ctr=XtCreateManagedWidget(langcode("POPUPMA00c"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -8828,6 +8866,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA015")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     station_info=XtCreateManagedWidget(langcode("POPUPMA015"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -8842,6 +8881,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("PULDNMG001")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     send_message_to=XtCreateManagedWidget(langcode("PULDNMG001"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -8856,6 +8896,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("PULDNMP012")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     jump_button2=XtCreateManagedWidget(langcode("PULDNMP012"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -8870,6 +8911,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zoom_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell zoom sub",
@@ -8894,6 +8936,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA002")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zoom_in=XtCreateManagedWidget(langcode("POPUPMA002"),
             xmPushButtonGadgetClass,
@@ -8909,6 +8952,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA003")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zoom_out=XtCreateManagedWidget(langcode("POPUPMA003"),
             xmPushButtonGadgetClass,
@@ -8924,6 +8968,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA005")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl1=XtCreateManagedWidget(langcode("POPUPMA005"),
             xmPushButtonGadgetClass,
@@ -8939,6 +8984,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA006")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl2=XtCreateManagedWidget(langcode("POPUPMA006"),
             xmPushButtonGadgetClass,
@@ -8954,6 +9000,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA007")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl3=XtCreateManagedWidget(langcode("POPUPMA007"),
             xmPushButtonGadgetClass,
@@ -8969,6 +9016,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA008")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl4=XtCreateManagedWidget(langcode("POPUPMA008"),
             xmPushButtonGadgetClass,
@@ -8984,6 +9032,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA009")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl5=XtCreateManagedWidget(langcode("POPUPMA009"),
             xmPushButtonGadgetClass,
@@ -8999,6 +9048,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA010")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl6=XtCreateManagedWidget(langcode("POPUPMA010"),
             xmPushButtonGadgetClass,
@@ -9014,6 +9064,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA017")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl7=XtCreateManagedWidget(langcode("POPUPMA017"),
             xmPushButtonGadgetClass,
@@ -9029,6 +9080,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'o'); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl8=XtCreateManagedWidget(langcode("POPUPMA035"),   // 10% out
             xmPushButtonGadgetClass,
@@ -9044,6 +9096,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zl9=XtCreateManagedWidget(langcode("POPUPMA036"),   // 10% in
             xmPushButtonGadgetClass,
@@ -9059,6 +9112,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     zlC=XtCreateManagedWidget(langcode("POPUPMA034"),
             xmPushButtonGadgetClass,
@@ -9074,6 +9128,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA016")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     last_loc=XtCreateManagedWidget(langcode("POPUPMA016"),
             xmPushButtonGadgetClass,
@@ -9095,6 +9150,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA018")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     set_object=XtCreateManagedWidget(langcode("POPUPMA018"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -9109,6 +9165,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
             xmPushButtonGadgetClass,
             right_menu_popup,
@@ -9122,6 +9179,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     // Display a list of predefined SAR or Public service event objects.
     sar_object_sub=XmCreatePulldownMenu(right_menu_popup,
@@ -9147,6 +9205,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     XtCreateManagedWidget("create_appshell sep7b",
             xmSeparatorWidgetClass,
@@ -9166,6 +9225,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
 
     pan_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell pan sub",
@@ -9191,6 +9251,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA011")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     pan_up=XtCreateManagedWidget(langcode("POPUPMA011"),
             xmPushButtonGadgetClass,
             pan_sub,
@@ -9210,6 +9271,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA013")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     pan_left=XtCreateManagedWidget(langcode("POPUPMA013"),
             xmPushButtonGadgetClass,
             pan_sub,
@@ -9229,6 +9291,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA014")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     pan_right=XtCreateManagedWidget(langcode("POPUPMA014"),
             xmPushButtonGadgetClass,
             pan_sub,
@@ -9248,6 +9311,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA012")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     pan_down=XtCreateManagedWidget(langcode("POPUPMA012"),
             xmPushButtonGadgetClass,
             pan_sub,
@@ -9288,6 +9352,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA025")); ac++;
+    XtSetArg(al[ac], XmNfontList,        fontlist1);             ac++;
     setmyposition=XtCreateManagedWidget(langcode("POPUPMA025"),
             xmPushButtonGadgetClass,
             move_my_sub,
