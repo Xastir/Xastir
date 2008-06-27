@@ -161,7 +161,11 @@ extern int index_maps_on_startup;
 #define FONT_BORDER 5
 #define FONT_MAX 6
 #define FONT_DEFAULT FONT_MEDIUM
+#define MAX_FONTNAME 256
 extern char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
+extern char default_system_fontname[MAX_FONTNAME];
+extern char station_label_fontname[MAX_FONTNAME];
+extern char atv_id_fontname[MAX_FONTNAME];
 
 #ifdef HAVE_MAGICK  //N0VH
 extern int tiger_show_grid;

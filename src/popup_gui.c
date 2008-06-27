@@ -285,17 +285,6 @@ void popup_message(char *banner, char *message) {
 // leak"?
 //
 static XFontStruct *id_font=NULL;
-char *id_fontname=
-    //"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
-    //"-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
-    //"-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
-    //"-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
-    //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
-    //"-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
-    //"-*-helvetica-*-*-*-*-*-240-100-100-*-*-*-*";
-    "-*-helvetica-*-*-*-*-*-240-*-*-*-*-*-*";
-    //"-*-fixed-*-r-*-*-*-*-*-*-*-200-*-*";
-    //"-*-helvetica-bold-r-*-*-12-240-1075-1075-*-80-*-*";    // Test for bad font
 
 
 
@@ -325,10 +314,11 @@ void popup_ID_message(char *banner, char *message) {
 
         /* load font */
         if(!id_font) {
-            id_font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), id_fontname);
+            id_font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), atv_id_fontname);
+ 
             if (id_font == NULL) {    // Couldn't get the font!!!
                 fprintf(stderr,"popup_ID_message: Couldn't get font %s\n",
-                    id_fontname);
+                    atv_id_fontname);
                 pending_ID_message = 0;
                 return;
             }
