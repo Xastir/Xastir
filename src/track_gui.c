@@ -480,58 +480,67 @@ static void* findu_transfer_thread(void *arg) {
     //
 // "sed -i -e \"s/<br>/   <br>/\" %s",
     sprintf(sys_cmd,
-        "sed -i -e \"s/<br>/   /\" %s",
+        "%s -i -e \"s/<br>/   /\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 //fprintf(stderr,"%s\n", sys_cmd);
 
 // Greater-than symbol '>'
     sprintf(sys_cmd,
-        "sed -i -e \"s/&gt;/>/\" %s",
+        "%s -i -e \"s/&gt;/>/\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Less-than symbol '<'
     sprintf(sys_cmd,
-        "sed -i -e \"s/&lt;/</\" %s",
+        "%s -i -e \"s/&lt;/</\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Ampersand '&' (A difficult character to escape from the shell!)
     sprintf(sys_cmd,
-        "sed -i -e \"s/&amp;/\\&/\" %s",
+        "%s -i -e \"s/&amp;/\\&/\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Double-quote symbol '"'
     sprintf(sys_cmd,
-        "sed -i -e \"s/&quot;/""/\" %s",
+        "%s -i -e \"s/&quot;/""/\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Remove whitespace at the start of a line
 // sed 's/^[ \t]*//'
     sprintf(sys_cmd,
-        "sed -i -e \"s/^[ \t]*//\" %s",
+        "%s -i -e \"s/^[ \t]*//\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Remove any lines that start with '<'
     sprintf(sys_cmd,
-        "sed -i -e \"s/^<.*$//\" %s",
+        "%s -i -e \"s/^<.*$//\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Remove any lines that start with '"http'
     sprintf(sys_cmd,
-        "sed -i -e \"/^\\\"http.*$/d\" %s",
+        "%s -i -e \"/^\\\"http.*$/d\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
 // Remove any blank lines from the file
 // sed '/^$/d'
     sprintf(sys_cmd,
-        "sed -i -e \"/^$/d\" %s",
+        "%s -i -e \"/^$/d\" %s",
+        SED_PATH,
         log_filename);
     system(sys_cmd);
 
@@ -554,7 +563,8 @@ static void* findu_transfer_thread(void *arg) {
     // pointing to it, needed for the read_file_ptr code in the main
     // thread.
     sprintf(sys_cmd,
-        "mv %s %s",
+        "%s %s %s",
+        MV_PATH,
         log_filename_tmp,
         log_filename);
     system(sys_cmd);

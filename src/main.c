@@ -4514,7 +4514,10 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
 
 
     /* invoke xfontsel -print and stick into map_font_text */
-    sprintf(xfontsel,"xfontsel -print -title \"xfontsel %d\"",fontsize);
+    sprintf(xfontsel,
+        "%s -print -title \"xfontsel %d\"",
+        XFONTSEL_PATH,
+        fontsize);
     if ((f_xfontsel_pipe[fontsize] = popen(xfontsel,"r"))) {
 
         // Request UpdateTime to keep checking the pipe periodically
@@ -14958,7 +14961,8 @@ void check_for_new_gps_map(int curr_sec) {
             // map.
             xastir_snprintf(temp,
                 sizeof(temp),
-                "mv %s/%s %s/%s",
+                "%s %s/%s %s/%s",
+                MV_PATH,
                 get_user_base_dir("gps"),
                 gps_temp_map_filename,
                 get_user_base_dir("gps"),
@@ -14975,7 +14979,8 @@ void check_for_new_gps_map(int curr_sec) {
             // ".dbf" files.
             xastir_snprintf(temp,
                 sizeof(temp),
-                "mv %s/%s.shx %s/%s.shx",
+                "%s %s/%s.shx %s/%s.shx",
+                MV_PATH,
                 get_user_base_dir("gps"),
                 gps_temp_map_filename_base,
                 get_user_base_dir("gps"),
@@ -14990,7 +14995,8 @@ void check_for_new_gps_map(int curr_sec) {
             }
             xastir_snprintf(temp,
                 sizeof(temp),
-                "mv %s/%s.dbf %s/%s.dbf",
+                "%s %s/%s.dbf %s/%s.dbf",
+                MV_PATH,
                 get_user_base_dir("gps"),
                 gps_temp_map_filename_base,
                 get_user_base_dir("gps"),
