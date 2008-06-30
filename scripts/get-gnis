@@ -26,7 +26,7 @@
 # Look at the README for more information on the program.
 #
 
-
+GNIS_SITE=http://geonames.usgs.gov/docs/stategaz/
 
 if [ $# -lt 1 ]
 then
@@ -44,19 +44,19 @@ do
 
     printf "Retrieving GNIS file for %s\n" ${MYSTATE}
 
-    rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.TXT
-    if (wget http://geonames.usgs.gov/stategaz/${MYSTATE}_DECI.zip)
+    rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.txt
+    if (wget ${GNIS_SITE}/${MYSTATE}_DECI.zip)
     then
         unzip ${MYSTATE}_DECI.zip 
     else 
-        rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.TXT
-        wget http://geonames.usgs.gov/stategaz/${MYSTATE}_DECI.TXT
+        rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.txt
+        wget ${GNIS_SITE}/${MYSTATE}_DECI.txt
     fi
 
-    if ( [ -f ${MYSTATE}_DECI.TXT ] )
+    if ( [ -f ${MYSTATE}_DECI.txt ] )
     then 
         printf "File successfully downloaded. Moving to /usr/local/share/xastir/GNIS\n" 
-        sudo mv ${MYSTATE}_DECI.TXT /usr/local/share/xastir/GNIS/${MYSTATE}.gnis
+        sudo mv ${MYSTATE}_DECI.txt /usr/local/share/xastir/GNIS/${MYSTATE}.gnis
     else 
         printf "File for %s not successfully downloaded.\n" ${MYSTATE}
     fi 
