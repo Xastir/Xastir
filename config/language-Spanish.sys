@@ -85,7 +85,7 @@ PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
 PULDNMP023|Indice: Agregar Nuevos Mapas|A|
 PULDNMP024|Indice: Reindezar TODOS los Mapas|T|
-PULDNMP025|Map labels font||
+PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
@@ -1208,14 +1208,17 @@ GAMMA001|Ajuste Corrección de Gamma||
 GAMMA002|Corrección Gamma||
 #
 # Map labels font Dialog
-MAPFONT001|Change Map Labels Font||
-MAPFONT002|Map Labels Font||
-MAPFONT003|Minúsculo||
-MAPFONT004|Pequeño||
-MAPFONT005|Medio||
-MAPFONT006|Grande||
-MAPFONT007|Enorme||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Minúsculo||
+MAPFONT004|Map Font Pequeño||
+MAPFONT005|Map Font Medio||
+MAPFONT006|Map Font Grande||
+MAPFONT007|Map Font Enorme||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
 #
 # Distancia/Orientación en línea de estado
 PULDNDB001|Estado de Distancia/Orientación||

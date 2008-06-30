@@ -86,7 +86,7 @@ PULDNMP021|Auto Map - Disable Raster Maps||
 PULDNMP022|Index New Maps on Startup||
 PULDNMP023|Index: Add New Maps|N|
 PULDNMP024|Index: Reindex ALL Maps!|R|
-PULDNMP025|Map labels font||
+PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
@@ -1216,14 +1216,17 @@ GAMMA002|Gamma Correction||
 #
 # 
 # Map labels font Dialog
-MAPFONT001|Change Map Labels Font||
-MAPFONT002|Map Labels Font||
-MAPFONT003|Tiny||
-MAPFONT004|Small||
-MAPFONT005|Medium||
-MAPFONT006|Large||
-MAPFONT007|Huge||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Tiny||
+MAPFONT004|Map Font Small||
+MAPFONT005|Map Font Medium||
+MAPFONT006|Map Font Large||
+MAPFONT007|Map Font Huge||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
 #
 #
 #

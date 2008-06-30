@@ -88,7 +88,7 @@ PULDNMP021|Cartographie automatique - désactiver cartes tramées||
 PULDNMP022|Indexer nouvelles cartes au démarrage||
 PULDNMP023|Index: Ajouter nouvelles cartes|R|
 PULDNMP024|Index: Re-indexer toutes cartes|A|
-PULDNMP025|Police d'annotation des cartes||
+PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Recharger les cartes (pas à partir du cache)||
 PULDNMP028|Vider le cache des cartes||
@@ -1218,14 +1218,17 @@ GAMMA002|Correction de gamma||
 #
 # 
 # Map labels font Dialog
-MAPFONT001|Changer police d'annotation des cartes||
-MAPFONT002|Police d'annotation des cartes||
-MAPFONT003|Minusc||
-MAPFONT004|Petite||
-MAPFONT005|Moyenne||
-MAPFONT006|Large||
-MAPFONT007|Enorme||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Minusc||
+MAPFONT004|Map Font Petite||
+MAPFONT005|Map Font Moyenne||
+MAPFONT006|Map Font Large||
+MAPFONT007|Map Font Enorme||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
 #
 #
 #

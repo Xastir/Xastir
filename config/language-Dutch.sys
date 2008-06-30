@@ -98,7 +98,7 @@ PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
 PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
 PULDNMP024|Index: Herindexeer ALLE kaarten|H|
-PULDNMP025|Kaart label font||
+PULDNMP025|Fonts||
 PULDNMP015|Xfont selectie||
 PULDNMP027|Download Kaarten opnieuw (niet uit cache)||
 PULDNMP028|Leeg de gehele kaarten cache!||
@@ -1224,14 +1224,17 @@ GAMMA002|Gamma Correctie||
 #
 # 
 # Map labels font Dialog
-MAPFONT001|Verander Kaart Labels Font||
-MAPFONT002|Kaart Labels Font||
-MAPFONT003|Miniem||
-MAPFONT004|Klein||
-MAPFONT005|Gemiddeld||
-MAPFONT006|Groot||
-MAPFONT007|Enorm||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Miniem||
+MAPFONT004|Map Font Klein||
+MAPFONT005|Map Font Gemiddeld||
+MAPFONT006|Map Font Groot||
+MAPFONT007|Map Font Enorm||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV Font ID||
 #
 #
 #

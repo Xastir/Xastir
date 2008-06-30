@@ -85,7 +85,7 @@ PULDNMP021|Auto Map - desactivar raster mapas||
 PULDNMP022|Indexar mapas no comeco||
 PULDNMP023|Index: Acrescentar mapas novos|A|
 PULDNMP024|Index: Reindexar os mapas TODOS|R|
-PULDNMP025|Fonte das etiquetas do mapa||
+PULDNMP025|Fonts||
 PULDNMP015|Seleccionar a fonte do X||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
@@ -1213,14 +1213,17 @@ GAMMA002|Correccao gamma||
 #
 #
 # Dialogo das fontes de etiquetas dos mapas
-MAPFONT001|Alterar fonte de etiquetas dos mapas||
-MAPFONT002|Fonte de etiquetas dos mapas||
-MAPFONT003|Muito pequeno||
-MAPFONT004|Pequeno||
-MAPFONT005|Medio||
-MAPFONT006|Grande||
-MAPFONT007|Enorme||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Muito pequeno Font||
+MAPFONT004|Map Font Pequeno||
+MAPFONT005|Map Font Medio||
+MAPFONT006|Map Font Grande||
+MAPFONT007|Map Font Enorme||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
 #
 # Distancia/rumo na linha de estados
 PULDNDB001|Estado dist/rumo||

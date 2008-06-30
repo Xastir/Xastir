@@ -85,7 +85,7 @@ PULDNMP021|Mappe Automatche - Disabilita Mappe Raster||
 PULDNMP022|Indicizza Mappe all' Avvio||
 PULDNMP023|Indice: Aggiungi Nuove Mappe|N|
 PULDNMP024|Indice: Riordina Tutte le Mappe|R|
-PULDNMP025|Carattere etichette||
+PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
@@ -1209,14 +1209,17 @@ GAMMA002|Correzione Gamma||
 #
 #
 # Map labels font Dialog
-MAPFONT001|Cambia il Carattere delle Etichette||
-MAPFONT002|Carattere delle Etichette||
-MAPFONT003|Minuscolo||
-MAPFONT004|Piccolo||
-MAPFONT005|Medio||
-MAPFONT006|Grande||
-MAPFONT007|Enorme||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Minuscolo||
+MAPFONT004|Map Font Piccolo||
+MAPFONT005|Map Font Medio||
+MAPFONT006|Map Font Grande||
+MAPFONT007|Map Font Enorme||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
 #
 # Distance/Bearing on status line
 PULDNDB001|Stato Distanza/Puntamento||

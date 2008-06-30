@@ -93,7 +93,7 @@ PULDNMP021|Autom. Karten - PixelKarten aus||
 PULDNMP022|Neue Karten beim Start indizieren||
 PULDNMP023|Index: Neue Karten hinzufügen|N|
 PULDNMP024|Index: ALLE Karten reindizieren|r|
-PULDNMP025|Font Kartenbeschriftung||
+PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Karten neu laden (nicht vom Cache)||
 PULDNMP028|Lösche gesamten Karten-Cache!||
@@ -1217,14 +1217,17 @@ GAMMA002|Gammakorrektur||
 #
 #
 # Map labels font Dialog
-MAPFONT001|Font für Kartenbeschriftung ändern||
-MAPFONT002|Font für Kartenbeschriftung||
-MAPFONT003|Winzig||
-MAPFONT004|Klein||
-MAPFONT005|Mittel||
-MAPFONT006|Groß||
-MAPFONT007|Riesig||
-MAPFONT008|Border Labels||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Winzig||
+MAPFONT004|Map Font Klein||
+MAPFONT005|Map Font Mittel||
+MAPFONT006|Map Font Groß||
+MAPFONT007|Map Font Riesig||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
 #
 # Entfernung/Richtung auf der Statuszeile
 PULDNDB001|Entf./Richtung in Status||
