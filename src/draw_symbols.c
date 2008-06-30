@@ -147,7 +147,11 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 //            font_width = xfs_ptr->max_bounds.width
 //                + xfs_ptr->max_bounds.rbearing
 //                - xfs_ptr->max_bounds.lbearing;
-            font_width = xfs_ptr->max_bounds.width;
+//            font_width = xfs_ptr->max_bounds.width;
+            font_width = (int)((xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->min_bounds.width) / 4);
 
             font_height = xfs_ptr->max_bounds.ascent
                 + xfs_ptr->max_bounds.descent;
@@ -178,8 +182,8 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                 gc,
                 x-2,                    // X
                 y-font_height,          // Y
-                length*font_width+3,    // width
-                font_height+3);         // height
+                (length*font_width)+3,  // width
+                font_height+2);         // height
 
             break;
 

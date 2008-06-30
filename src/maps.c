@@ -3575,10 +3575,10 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
 // takes a big chunk of memory each time.  Can you say "memory
 // leak"?
 
-XFontStruct *rotated_label_font[FONT_MAX]={NULL,NULL,NULL,NULL,NULL,NULL};
+XFontStruct *rotated_label_font[FONT_MAX]={NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
 static char
-current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontname)] = {"","","","","",""};
+current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontname)] = {"","","","","","","","",""};
 
 /**********************************************************
  * draw_rotated_label_text_common()

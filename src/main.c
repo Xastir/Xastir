@@ -221,9 +221,6 @@ char *xastir_version=VERSION;
 // NOTE:  See the main() function at the bottom of this module for
 // the default font definition.  xa_config.c is where fonts get
 // saved/restored for user-defined fonts.
-char default_system_fontname[MAX_FONTNAME];
-char station_label_fontname[MAX_FONTNAME];
-char atv_id_fontname[MAX_FONTNAME];
 // This one is not used anymore:
 //#define XmFONTLIST_DEFAULT_MY "-misc-fixed-*-r-*-*-10-*-*-*-*-*-*-*"
 
@@ -4598,8 +4595,9 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
 
         for (i = 0; i < FONT_MAX; i++) {
-            char *fonttitle[FONT_MAX] = {"MAPFONT003","MAPFONT004","MAPFONT005",
-                                         "MAPFONT006","MAPFONT007","MAPFONT008"};
+            char *fonttitle[FONT_MAX] = {"MAPFONT009","MAPFONT010","MAPFONT003",
+                                         "MAPFONT004","MAPFONT005","MAPFONT006",
+                                         "MAPFONT007","MAPFONT008","MAPFONT011"};
             ac = 0;
             if (i == 0) {
                 XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
@@ -5119,7 +5117,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         drg_config_button,
 #endif  // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
-        map_font_button,
+        font_button,
         Map_station_label_Pane, map_station_label_button,
         Map_icon_outline_Pane, map_icon_outline_button,
         map_wx_alerts_button, index_maps_on_startup_button,
@@ -5272,7 +5270,30 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 // Set up default font
-    font1 = XLoadQueryFont(display, default_system_fontname);
+    font1 = XLoadQueryFont(display, rotated_label_fontname[FONT_SYSTEM]);
+
+    if (font1 == NULL) {    // Couldn't get the font!!!
+        fprintf(stderr,"create_appshell: Couldn't load system font %s.  ",
+            rotated_label_fontname[FONT_SYSTEM]);
+        fprintf(stderr,"Loading default system font instead.\n");
+        font1 = XLoadQueryFont(display, "-misc-fixed-*-r-*-*-10-*-*-*-*-*-*-*");
+        if (font1 == NULL) {    // Couldn't get the font!!!
+            fprintf(stderr,"create_appshell: Couldn't load default system font, exiting.\n");
+            exit(1);
+        }
+        else {
+            // _Now_ we can do a popup message about the first error
+            // as we have a font to work with!
+            char tempy[100];
+
+            xastir_snprintf(tempy,
+                sizeof(tempy),
+                "Couldn't get font %s.  Loading default font instead.",
+                rotated_label_fontname[FONT_SYSTEM]);
+            popup_message_always(langcode("POPEM00035"), tempy);
+        }
+    }
+
     fontlist1 = XmFontListCreate(font1, "chset1");
     XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
@@ -5880,6 +5901,16 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
 
+    // map label font select
+    font_button = XtVaCreateManagedWidget(langcode("PULDNMP025"),
+            xmPushButtonWidgetClass, configpane,
+            XmNmnemonic,langcode_hotkey("PULDNMP025"),
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(font_button, XmNactivateCallback, Map_font, NULL);
+
     test_button = XtVaCreateManagedWidget(langcode("PULDNFI003"),
             xmPushButtonWidgetClass,
             configpane,
@@ -5910,7 +5941,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(units_choice_button,XmNvalueChangedCallback,Units_choice_toggle,"1");
     if (english_units)
         XmToggleButtonSetState(units_choice_button,TRUE,FALSE);
-
 
     dbstatus_choice_button = XtVaCreateManagedWidget(langcode("PULDNDB001"),
             xmToggleButtonGadgetClass,
@@ -6612,16 +6642,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
 #endif  // HAVE_MAGICK
 #endif  // NO_GRAPHICS
-
-    // map label font select
-    map_font_button = XtVaCreateManagedWidget(langcode("PULDNMP025"),
-            xmPushButtonWidgetClass, map_config_pane,
-            XmNmnemonic,langcode_hotkey("PULDNMP025"),
-            XmNfontList, fontlist1,
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-    XtAddCallback(map_font_button, XmNactivateCallback, Map_font, NULL);
 
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
@@ -9583,6 +9603,11 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
 
 
 
+// Global variable, so we can set it up once check it from then on,
+// preventing memory leaks from repeatedly setting up the same
+// XFontStruct.
+XFontStruct *station_font = NULL;
+
 
 void create_gc(Widget w) {
     XGCValues values;
@@ -9593,7 +9618,6 @@ void create_gc(Widget w) {
     int _xh, _yh;
     char xbm_path[500];
     int ret_val;
-    XFontStruct *font = NULL;
 
 
     if (debug_level & 8)
@@ -9740,8 +9764,32 @@ void create_gc(Widget w) {
     gc = XCreateGC(my_display, XtWindow(w), mask, &values);
 
     // Assign a different font to this gc
-    font = (XFontStruct *)XLoadQueryFont(XtDisplay(w), station_label_fontname);
-    XSetFont(XtDisplay(w), gc, font->fid);
+    if (station_font == NULL) {
+        station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(w), rotated_label_fontname[FONT_STATION]);
+        if (station_font == NULL) {    // Couldn't get the font!!!
+            fprintf(stderr,"create_gc: Couldn't load station font %s.  ",
+                rotated_label_fontname[FONT_STATION]);
+            fprintf(stderr,"Loading default station font instead.\n");
+            station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(w), "-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*");
+            if (station_font == NULL) {    // Couldn't get the font!!!
+                fprintf(stderr,"create_gc: Couldn't load default station font, exiting.\n");
+                exit(1);
+            }
+            else {
+                // _Now_ we can do a popup message about the first error
+                // as we have a font to work with!
+                char tempy[100];
+
+                xastir_snprintf(tempy,
+                    sizeof(tempy),
+                    "Couldn't get font %s.  Loading default font instead.",
+                    rotated_label_fontname[FONT_STATION]);
+                popup_message_always(langcode("POPEM00035"), tempy);
+            }
+        }
+    }
+
+    XSetFont(XtDisplay(w), gc, station_font->fid);
 
     gc_tint = XCreateGC(my_display, XtWindow(w), mask, &values);
 
@@ -14573,9 +14621,12 @@ void process_RINO_waypoints(void) {
                 int date;
                 int hour;
                 int minute;
-                char *compressed_string;
-                char lat_s[50];
-                char lon_s[50];
+// Three variables used for Base-91 compressed strings.  We have a
+// bug in this code at the moment so the Base-91 compressed code in
+// this routine is commented out.
+//                char *compressed_string;
+//                char lat_s[50];
+//                char lon_s[50];
 
 
                 // Strip off the "APRS" at the beginning of the
