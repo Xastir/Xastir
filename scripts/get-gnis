@@ -26,7 +26,7 @@
 # Look at the README for more information on the program.
 #
 
-GNIS_SITE=http://geonames.usgs.gov/docs/stategaz/
+GNIS_SITE=http://geonames.usgs.gov/docs/stategaz
 
 if [ $# -lt 1 ]
 then
