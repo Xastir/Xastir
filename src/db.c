@@ -3352,7 +3352,7 @@ void draw_ruler_text(Widget w, char * text, long ofs) {
         y = y - 15;
         x = x - 10;
     }
-    draw_nice_string(w,pixmap_final,0,x,y,text,0x10,0x20,len);
+    draw_nice_string(w,pixmap_final,letter_style,x,y,text,0x10,0x20,len);
 }
 
 
@@ -3526,11 +3526,11 @@ void draw_range_scale(Widget w) {
     if ((draw_labeled_grid_border==TRUE) && long_lat_grid) {
         border_offset = get_rotated_label_text_length_pixels(w, "0", FONT_BORDER) + 3;
         // don't draw range scale right on top of labeled border, move into map
-        draw_nice_string(w,pixmap_final,0,x_screen+border_offset,y_screen-border_offset-3,text,0x10,0x20,len);
+        draw_nice_string(w,pixmap_final,letter_style,x_screen+border_offset,y_screen-border_offset-3,text,0x10,0x20,len);
     } 
     else { 
         // draw range scale in lower left corder of map
-        draw_nice_string(w,pixmap_final,0,x_screen,y_screen,text,0x10,0x20,len);
+        draw_nice_string(w,pixmap_final,letter_style,x_screen,y_screen,text,0x10,0x20,len);
     }
 
 }
