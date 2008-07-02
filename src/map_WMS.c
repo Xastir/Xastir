@@ -137,13 +137,6 @@
 
 
 
-extern int npoints;		/* tsk tsk tsk -- globals */
-extern int mag;
-
-
-
-
-
 /**********************************************************
  * draw_WMS_map()
  **********************************************************/
@@ -936,7 +929,6 @@ void draw_WMS_map (Widget w,
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
-            (void)fclose (f);
             if (image)
                 DestroyImage(image);
             if (image_info)
