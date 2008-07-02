@@ -9844,6 +9844,121 @@ void delete_object(char *name) {
 
 ///////////////////////////////////////  APRS Decoding  ////////////////////////////////////////////
 
+/*
+ * Try to find a !DAO! format datum and extra precision string from the
+ * comment field of an APRS location packet (incl. objects and items).
+ * If !DAO! is found, it is removed from the comment.
+ * See http://web.ew.usna.edu/~bruninga/aprs/datum.txt
+ *
+ * lat and lon will contain the thousandth and ten thousandth
+ * minute digits of the location, if valid (see below).
+ * For example, if the final location is 70 deg 12.3456 minutes,
+ * lat or lon will contain 56. If the final location is
+ * 50 deg 56.2104 minutes, lat or lon will contain 4. So remember
+ * to zero pad! The range for lat/lon, when valid, is 0-99.
+ * datumch will contain the datum character, if found.
+ *
+ * daocomment must be null-terminated and must contain the comment field
+ *
+ * returns 3 if dao was found and contained a base-91 position
+ *   (= datumch, lat, and lon contents are all valid)
+ * returns 2 if dao was found and contained a human readable position
+ *   (= datumch, lat, and lon contents are all valid)
+ * returns 1 if dao was found but only included datum information
+ *   (= only datumch is valid)
+ * returns 0 if no valid dao was found
+ *   (= datumch, lat, and lon contents are all invalid, daocomment is unmodified)
+ *
+ * Tapio Sokura OH2KKU <tapio.sokura@iki.fi> 2007-11-15
+ */
+int decode_dao (int *lat, int *lon, char *datumch, char *daocomment) {
+	char *searchval, *rval;
+	size_t slen;
+
+	// Loop around searching for !DAO!, return the first valid match.
+	// The first '!' is found using strchr, the rest of the
+	// string is validated more manually.
+	searchval = daocomment;
+	rval = strchr(searchval, '!');
+	while (rval != NULL) {
+
+		// Check the remaining string length so we don't
+		// run past string end
+		slen = strlen(rval);
+		if (slen < 5) {
+			break;
+		}
+
+		if (rval[4] == '!' && rval[1] >= '!' && rval[1] <= '{') {
+			// found the !DAO! terminator and datum char is
+			// within the allowable range
+
+			if (rval[1] >= 'A' && rval[1] <= 'Z') {
+				// looks like human readable format
+
+				if (rval[2] == ' ' && rval[3] == ' ') {
+					// only datum information present
+					*datumch = rval[1];
+					memmove(rval, rval + 5, slen - 4);
+					return 1;
+
+				} else if (rval[2] >= '0' && rval[2] <= '9' &&
+					   rval[3] >= '0' && rval[3] <= '9') {
+					// human readable format 0-9 lat/lon ok
+
+					// ASCII - 48 = the integer digit we want.
+					// Multiply by 10, because we only get
+					// thousandths of a minute with human
+					// readable format.
+					*lat = ((int)rval[2] - 48) * 10;
+					*lon = ((int)rval[3] - 48) * 10;
+					*datumch = rval[1];
+					memmove(rval, rval + 5, slen - 4);
+					return 2;
+				}
+				// not ok for human readable format, continue searching
+
+			} else if (rval[1] >= 'a' && rval[1] <= 'z') {
+				// looks like base-91 format
+
+				if (rval[2] == ' ' && rval[3] == ' ') {
+					// only datum information present
+					*datumch = rval[1];
+					memmove(rval, rval + 5, slen - 4);
+					return 1;
+
+				} else if (rval[2] >= '!' && rval[2] <= '{' &&
+					   rval[3] >= '!' && rval[3] <= '{') {
+					// base-91 lat/lon ok
+					unsigned int lats, lons;
+					float latval, lonval;
+					lats = rval[2] - 33; // get base91 values
+					lons = rval[3] - 33;
+					latval = lats / 91.0 * 100; // do proper scaling
+					lonval = lons / 91.0 * 100;
+					*lat = (int)(latval + 0.5); // round and store
+					*lon = (int)(lonval + 0.5);
+					*datumch = rval[1];
+					memmove(rval, rval + 5, slen - 4);
+					return 3;
+				}
+				// not ok for base91 format, continue searching
+			}
+			// Datum chars outside A-Z and a-z are not
+			// handled (here at least).
+		}
+		
+		// If we end up here, we didn't find a match.
+		// Search for the next '!' char.
+		searchval = rval + 1;
+		rval = strchr(searchval, '!');
+	}
+
+	// No more string left to search and no match.
+	return 0;
+}
+
+
 
 /*
  *  Extract Uncompressed Position Report from begin of line
@@ -9851,11 +9966,12 @@ void delete_object(char *name) {
  * If a position is found, it is deleted from the data.
  */
 int extract_position(DataRow *p_station, char **info, int type) {
-    int ok;
-    char temp_lat[8+1];
-    char temp_lon[9+1];
+    int ok, dao_lat, dao_lon, dao_rval;
+    char temp_lat[10+1];
+    char temp_lon[11+1];
     char temp_grid[8+1];
     char *my_data;
+    char dao_datumch;
     float gridlat;
     float gridlon;
     my_data = (*info);
@@ -9914,15 +10030,40 @@ int extract_position(DataRow *p_station, char **info, int type) {
                 sizeof(temp_lat),
                 "%s",
                 my_data);
-            temp_lat[7] = toupper(my_data[7]);
-            temp_lat[8] = '\0';
+            temp_lat[9] = toupper(my_data[7]);
+            temp_lat[10] = '\0';
 
             xastir_snprintf(temp_lon,
                 sizeof(temp_lon),
                 "%s",
                 my_data+9);
-            temp_lon[8] = toupper(my_data[17]);
-            temp_lon[9] = '\0';
+            temp_lon[10] = toupper(my_data[17]);
+            temp_lon[11] = '\0';
+
+            // Check for !DAO!, beginning from the comment field.
+            // Datum is not used for the time being.
+            // Note: error/precision information (the white box on the map) is
+            // not updated here, because changes to p_station->lat/lon_precision
+            // are overridden in the calling function.
+            dao_rval = decode_dao(&dao_lat, &dao_lon, &dao_datumch, my_data + 19);
+            if (dao_rval == 2 || dao_rval == 3) {
+            	// 48 is the magic number to add to a single digit integer to
+            	// get the same digit in ASCII.
+            	temp_lat[7] = (char)(dao_lat / 10 + 48);
+            	temp_lat[8] = (char)(dao_lat % 10 + 48);
+            	temp_lon[8] = (char)(dao_lon / 10 + 48);
+            	temp_lon[9] = (char)(dao_lon % 10 + 48);
+            	// Signal that this is an accuracy-enhanced !DAO! position,
+            	// so the calling function can set the error boxes accordingly
+            	// (once somebody implements it).
+            	ok = dao_rval;
+            } else {
+            	// no valid !DAO! _location_ found, pad with zeroes instead
+            	temp_lat[7] = '0';
+            	temp_lat[8] = '0';
+            	temp_lon[8] = '0';
+            	temp_lon[9] = '0';
+            }
 
             // Callsign check here also checks SSID for an exact
             // match
