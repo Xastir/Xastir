@@ -63,7 +63,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
-
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 #define SL_MAX 20
 
@@ -1284,6 +1284,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
             XmNmaxHeight,           610,
             XmNminHeight,           95,
 //          XmNheight,             230,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Station_List pane",xmPanedWindowWidgetClass, station_list_dialog[type],
@@ -1314,6 +1315,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                 XmNleftOffset,          3,
                                 XmNrightAttachment,     XmATTACH_NONE,
                                 XmNbackground,          colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
         XmTextFieldSetString(numl,langcode("LHPUPNI010"));              // #
 
@@ -1335,6 +1337,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                 XmNleftOffset,          23,     // 22,
                                 XmNrightAttachment,     XmATTACH_NONE,
                                 XmNbackground,          colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
         XmTextFieldSetString(call,langcode("LHPUPNI011"));              // Call Sign
 
@@ -1361,6 +1364,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset,                 1,
                                  XmNrightAttachment,            XmATTACH_NONE,
                                  XmNbackground,                 colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
                 XmTextFieldSetString(it1,langcode("LHPUPNI012"));       // #Pack
 
@@ -1380,6 +1384,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset,                 0,      // 1,
                                  XmNrightAttachment,            XmATTACH_NONE,
                                  XmNbackground,                 colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
                 XmTextFieldSetString(it2,langcode("LHPUPNI013"));       // Last Position Time
 
@@ -1399,6 +1404,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset,                 0,      // 1,
                                  XmNrightAttachment,            XmATTACH_NONE,
                                  XmNbackground,                 colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
                 XmTextFieldSetString(it3,langcode("LHPUPNI014"));       // Path
 
@@ -1418,6 +1424,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset,                 0,      // 1,
                                  XmNrightAttachment,            XmATTACH_NONE,
                                  XmNbackground,                 colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
                 XmTextFieldSetString(it4,langcode("LHPUPNI015"));       // PHG
 
@@ -1437,6 +1444,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset,                 0,      // 1,
                                  XmNrightAttachment,            XmATTACH_NONE,
                                  XmNbackground,                 colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
                 XmTextFieldSetString(it5,langcode("LHPUPNI016"));       // Comments
                 break;
@@ -1457,6 +1465,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it1,langcode("LHPUPNI100"));       // CSE
@@ -1476,6 +1485,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it2,langcode("LHPUPNI101"));       // SPD
@@ -1495,6 +1505,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it3,langcode("LHPUPNI102"));       // ALT.
@@ -1514,6 +1525,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it4,langcode("LHPUPNI209")); // Lat/Lon or UTM
@@ -1533,6 +1545,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it6,langcode("LHPUPNI105"));       // #Pack
@@ -1552,6 +1565,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it7,langcode("LHPUPNI106"));       // LSV
@@ -1571,6 +1585,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it8,langcode("LHPUPNI107"));       // CFMS
@@ -1590,6 +1605,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it9,langcode("LHPUPNI108"));       // DFMS
@@ -1612,6 +1628,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it1,langcode("LHPUPNI200"));       // CSE
@@ -1631,6 +1648,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it2,langcode("LHPUPNI201"));       // SPD
@@ -1650,6 +1668,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it3,langcode("LHPUPNI202"));       // GST
@@ -1669,6 +1688,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it4,langcode("LHPUPNI203"));       // Temp
@@ -1688,6 +1708,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it5,langcode("LHPUPNI204"));       // Hum
@@ -1707,6 +1728,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it6,langcode("LHPUPNI205"));       // Baro
@@ -1726,6 +1748,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it7,langcode("LHPUPNI206"));       // RN-H
@@ -1746,6 +1769,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it8,langcode("LHPUPNI207"));       // RNSM
@@ -1765,6 +1789,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
                                  NULL);
 
                 XmTextFieldSetString(it9,langcode("LHPUPNI208"));       // RN24
@@ -1783,6 +1808,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNbottomAttachment,        XmATTACH_NONE,
                                     XmNleftAttachment,          XmATTACH_FORM,
                                     XmNrightAttachment,         XmATTACH_FORM,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         SL_scroll[type] = XtVaCreateManagedWidget("Station_List SL_scroll", xmScrollBarWidgetClass,form,
@@ -1804,6 +1830,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNleftAttachment,          XmATTACH_NONE,
                                     XmNrightAttachment,         XmATTACH_FORM,
                                     XmNbackground,              colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
         XtAddEventHandler(SL_scroll[type], ButtonReleaseMask, FALSE,
                           (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1819,6 +1846,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNrightAttachment,         XmATTACH_WIDGET,
                                     XmNrightWidget,             SL_scroll[type],
                                     XmNbackground,              colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
         XtAddEventHandler(win_list, ButtonReleaseMask, FALSE,
                           (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1833,6 +1861,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNtopAttachment,         XmATTACH_WIDGET,
                                       XmNtopWidget,             SL_list[type][i-1],
                                       XmNbackground,            colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
                 // line
                 SL_list[type][i]= XtVaCreateManagedWidget("Station_List line data", xmTextFieldWidgetClass, win_list,
@@ -1850,6 +1879,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       XmNbackground,            colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
             } else {            // all except first row
@@ -1868,6 +1898,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       XmNbackground,            colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
             }
             XtAddEventHandler(SL_list[type][i], ButtonReleaseMask, FALSE,
@@ -1885,6 +1916,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNlabelType,             XmPIXMAP,
                                       XmNlabelPixmap,           SL_icon[type][i],
                                       XmNbackground,            colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
             //XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
             //                  (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1905,6 +1937,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNtopWidget,             SL_list[type][i],
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
             XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
                              (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1932,6 +1965,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNtopWidget,             SL_list[type][i],
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
                     XtAddEventHandler(SL_packets[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1953,6 +1987,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNtopWidget,             SL_list[type][i],
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
                     XtAddEventHandler(SL_pos_time[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1974,6 +2009,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNtopWidget,             SL_list[type][i],
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
                     XtAddEventHandler(SL_node_path[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -1995,6 +2031,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNtopWidget,               SL_list[type][i],
                                     XmNbottomAttachment,        XmATTACH_NONE,
                                     XmNrightAttachment,         XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
                     XtAddEventHandler(SL_power_gain[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2016,6 +2053,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNtopWidget,               SL_list[type][i],
                                     XmNbottomAttachment,        XmATTACH_NONE,
                                     XmNrightAttachment,         XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
                     XtAddEventHandler(SL_comments[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2038,6 +2076,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_course[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2058,6 +2097,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_speed[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2078,6 +2118,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_alt[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2098,6 +2139,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_lat_long[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2118,6 +2160,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_packets[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2138,6 +2181,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_sats[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2158,6 +2202,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_my_course[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2178,6 +2223,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_my_distance[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2201,6 +2247,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_wind_course[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2221,6 +2268,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_wind_speed[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2242,6 +2290,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_wind_gust[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2262,6 +2311,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_temp[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2282,6 +2332,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_hum[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2302,6 +2353,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_baro[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2322,6 +2374,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_rain_h[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2342,6 +2395,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_rain_00[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2362,6 +2416,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNtopWidget, SL_list[type][i],
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
+                                        XmNfontList, fontlist1,
                                         NULL);
                     XtAddEventHandler(SL_wx_rain_24[type][i], ButtonReleaseMask, FALSE,
                                       (XtEventHandler)mouseScrollHandler, (char*)clientData);
@@ -2390,6 +2445,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNrightAttachment,         XmATTACH_FORM,
                                     XmNleftAttachment,          XmATTACH_FORM,
                                     XmNbackground,              colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass,form2,
@@ -2403,6 +2459,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNrightAttachment,         XmATTACH_POSITION,
                                     XmNrightPosition,           3,
                                     XmNbackground,              colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         pos_dialog(station_list_dialog[type]);  // calculate position

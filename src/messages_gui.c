@@ -41,6 +41,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 #if defined(__LSB__) || defined(LESSTIF_VERSION)
   #define NO_DYNAMIC_WIDGETS 1
@@ -444,6 +445,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNtitleString,"Change Path",
+                XmNfontList, fontlist1,
                 NULL);
 
     pane = XtVaCreateWidget("Send_message_change_path pane",
@@ -475,6 +477,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     current_path = XtVaCreateManagedWidget("Send_message_change_path path", 
@@ -496,6 +499,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
     // "Reverse Path:"
@@ -511,6 +515,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     reverse_path = XtVaCreateManagedWidget("Send_message_change_path reverse path", 
@@ -535,6 +540,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     button_wide11 = XtVaCreateManagedWidget("WIDE1-1",
@@ -552,6 +558,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     button_wide21 = XtVaCreateManagedWidget("WIDE2-1",
@@ -569,6 +576,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     button_wide22 = XtVaCreateManagedWidget("WIDE2-2",
@@ -586,6 +594,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
      button_nogate = XtVaCreateManagedWidget("NOGATE",
@@ -603,6 +612,7 @@ void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer ca
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 XtSetSensitive(button_wide11, FALSE);
@@ -627,6 +637,7 @@ XtSetSensitive(button_nogate, FALSE);
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     // "Direct (No path)"
@@ -646,6 +657,7 @@ XtSetSensitive(button_nogate, FALSE);
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     // "Apply"
@@ -665,6 +677,7 @@ XtSetSensitive(button_nogate, FALSE);
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     // "Close"
@@ -684,6 +697,7 @@ XtSetSensitive(button_nogate, FALSE);
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
     XtAddCallback(button_default, XmNactivateCallback, Send_message_change_path_default, (XtPointer)mw[ii].send_message_path);
@@ -1390,6 +1404,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
 // HamHUD will display all 67 chars, but only stores the first 20,
@@ -1418,6 +1433,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 */
     }
@@ -1447,6 +1463,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
         // Draw another textfield widget of size 22
@@ -1471,6 +1488,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
         // Draw another textfield widget of size 20
@@ -1495,6 +1513,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
     }
 
@@ -1523,6 +1542,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
         // Draw a textfield widget of size 12
@@ -1547,6 +1567,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
 // Separate the next two from the previous two for a bit, to help
@@ -1575,6 +1596,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
         // Draw a textfield widget of size 9
@@ -1599,6 +1621,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
    }
 
@@ -1630,6 +1653,7 @@ void build_send_message_input_boxes(int i, int hamhud, int d700, int d7) {
             XmNrightAttachment,XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, TRUE,
+            XmNfontList, fontlist1,
             NULL);
     }
 
@@ -1972,6 +1996,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNtitleString,"Send Message",
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].pane = XtVaCreateWidget("Send_message pane",
@@ -1979,6 +2004,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 mw[i].send_message_dialog,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].form =  XtVaCreateWidget("Send_message form",
@@ -1989,6 +2015,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Row 1 (bottom)
@@ -2006,6 +2033,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].button_clear_pending_msgs = XtVaCreateManagedWidget(langcode("WPUPMSB011"),
@@ -2022,6 +2050,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].button_kick_timer = XtVaCreateManagedWidget(langcode("WPUPMSB012"),
@@ -2038,6 +2067,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].button_ok = XtVaCreateManagedWidget(langcode("WPUPMSB009"),
@@ -2054,6 +2084,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
@@ -2070,6 +2101,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Row 2 (1 up from bottom row)
@@ -2106,6 +2138,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 #ifndef NO_DYNAMIC_WIDGETS
         XtAddCallback(mw[i].D7_mode,XmNvalueChangedCallback,D7_Msg,(XtPointer)i);
@@ -2129,6 +2162,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
             NULL);
 
 #ifndef NO_DYNAMIC_WIDGETS
@@ -2153,6 +2187,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
             NULL);
 
 #ifndef NO_DYNAMIC_WIDGETS
@@ -2174,6 +2209,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -2197,6 +2233,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].send_message_call_data = XtVaCreateManagedWidget("Send_message smcd", 
@@ -2220,6 +2257,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode(groupon == 0 ? "WPUPMSB005": "WPUPMSB006"));
@@ -2239,6 +2277,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].path = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
@@ -2253,6 +2292,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].send_message_change_path = XtVaCreateManagedWidget(langcode("WPUPMSB019"),
@@ -2269,6 +2309,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         mw[i].send_message_path = XtVaCreateManagedWidget("Send_message path", 
@@ -2296,6 +2337,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Row 4 (3 up from bottom row).  Message area.
@@ -2321,6 +2363,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtSetArg(args[n], XmNrightOffset,5); n++;
         XtSetArg(args[n], XmNautoShowCursorPosition, FALSE); n++;
         XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
 
 // This one causes segfaults, why?  Answer: args[] was set to 20
 // (too small)
@@ -2401,6 +2444,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 //
 void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int ii;
+    int msgs_found = 0;
 
 
     // Look through the outgoing message queue.  Find all callsigns
@@ -2411,12 +2455,18 @@ void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
         // If it matches the callsign we're talking to
         if (message_pool[ii].active==MESSAGE_ACTIVE) {
 
+            msgs_found++;
+
             // Bring up a Send Message box for each callsign found.
             Send_message_call(NULL, message_pool[ii].to_call_sign, NULL);
 
             // Fill in the old data in case it doesn't auto-fill
             Check_new_call_messages(NULL, (XtPointer)ii, NULL);
         }
+    }
+
+    if (msgs_found == 0) {
+        fprintf(stderr, "No Pending Messages.\n");
     }
 }
 
@@ -2489,6 +2539,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Auto_msg_set pane",
@@ -2496,6 +2547,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 auto_msg_dialog,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         my_form =  XtVaCreateWidget("Auto_msg_set my_form",
@@ -2506,6 +2558,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         reply = XtVaCreateManagedWidget(langcode("WPUPARM002"),
@@ -2519,6 +2572,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         auto_msg_set_data = XtVaCreateManagedWidget("Auto_msg_set auto_msg_set_data", 
@@ -2542,6 +2596,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 XmNrightOffset, 5,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -2560,6 +2615,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -2578,6 +2634,7 @@ begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Auto_msg_set_now, auto_msg_dialog);

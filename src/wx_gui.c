@@ -67,6 +67,7 @@
 #include "leak_detection.h"
 
 
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 /************ Weather Alerts ****************/
 Widget wx_alert_shell = (Widget)NULL;
@@ -140,6 +141,7 @@ begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
             XmNminWidth, 600,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("wx_alert_double_click_action pane",xmPanedWindowWidgetClass, wx_detailed_alert_shell,
@@ -164,7 +166,8 @@ begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_
                         XmNleftOffset, 5,
                         XmNrightAttachment, XmATTACH_FORM,
                         XmNrightOffset, 5,
-                        XmNbackground, colors[0xff], 
+                        XmNbackground, colors[0xff],
+                        XmNfontList, fontlist1,
                         NULL);
 
 
@@ -191,6 +194,7 @@ begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         wx_detailed_alert_list = XmCreateScrolledList(my_form, "wx_alert_double_click_action wx_detailed_alert_list", al, ac);
 
@@ -204,6 +208,7 @@ begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_
                         XmNrightPosition, 3,
                         XmNbackground, colors[0xff], 
                         XmNnavigationType, XmTAB_GROUP,
+                        XmNfontList, fontlist1,
                         NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, wx_detailed_alert_destroy_shell, wx_detailed_alert_shell);
@@ -595,6 +600,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
             XmNminWidth, 600,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Display_Wx_Alert pane",xmPanedWindowWidgetClass, wx_alert_shell,
@@ -620,6 +626,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
                         XmNrightAttachment, XmATTACH_FORM,
                         XmNrightOffset, 5,
                         XmNbackground, colors[0xff], 
+                        XmNfontList, fontlist1,
                         NULL);
 
 
@@ -649,6 +656,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         wx_alert_list = XmCreateScrolledList(my_form, "Display_Wx_Alert wx_alert_list", al, ac);
 
@@ -667,6 +675,7 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
                         XmNrightPosition, 3,
                         XmNbackground, colors[0xff], 
                         XmNnavigationType, XmTAB_GROUP,
+                        XmNfontList, fontlist1,
                         NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, wx_alert_destroy_shell, wx_alert_shell);
@@ -798,6 +807,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:WX_station" );
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("WX_station pane",xmPanedWindowWidgetClass, wx_station_dialog,
@@ -819,7 +829,8 @@ XmNtraversalOn, FALSE,
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
+                                      XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -839,6 +850,7 @@ XmNtraversalOn, FALSE,
                                       XmNbottomAttachment,XmATTACH_NONE,                                
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 30,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         frame = XtVaCreateManagedWidget("WX_station frame", xmFrameWidgetClass, my_form,
@@ -857,6 +869,7 @@ XmNtraversalOn, FALSE,
 XmNtraversalOn, FALSE,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff], 
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         form1 =  XtVaCreateWidget("WX_station form1",xmFormWidgetClass, frame,
@@ -867,6 +880,7 @@ XmNtraversalOn, FALSE,
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNleftAttachment, XmATTACH_FORM,
                             XmNrightAttachment, XmATTACH_FORM,
+                            XmNfontList, fontlist1,
                             NULL);
 
 
@@ -878,6 +892,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -895,6 +910,7 @@ XmNtraversalOn, FALSE,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNtopAttachment,XmATTACH_FORM,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         wind_deg = XtVaCreateManagedWidget(langcode("UNIOP00024"),xmLabelWidgetClass, form1,
@@ -906,6 +922,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         wind_spd = XtVaCreateManagedWidget(langcode("WXPUPSI004"),xmLabelWidgetClass, form1,
@@ -917,6 +934,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -935,6 +953,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, wind_cse,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
          WX_speed_label= XtVaCreateManagedWidget("WX_station speed label",xmTextFieldWidgetClass, form1,
@@ -952,6 +971,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         wind_gst = XtVaCreateManagedWidget(langcode("WXPUPSI005"),xmLabelWidgetClass, form1,
@@ -963,6 +983,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -981,6 +1002,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, wind_spd,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_gust_label= XtVaCreateManagedWidget("WX_station gust label",xmTextFieldWidgetClass, form1,
@@ -998,6 +1020,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         temp = XtVaCreateManagedWidget(langcode("WXPUPSI006"),xmLabelWidgetClass, form1,
@@ -1009,6 +1032,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1027,6 +1051,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, wind_gst,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
          WX_temp_label= XtVaCreateManagedWidget("WX_station temp label",xmTextFieldWidgetClass, form1,
@@ -1044,6 +1069,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         my_rain = XtVaCreateManagedWidget(langcode("WXPUPSI007"),xmLabelWidgetClass, form1,
@@ -1055,6 +1081,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1073,6 +1100,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, temp,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
          WX_rain_label= XtVaCreateManagedWidget("WX_station rain label",xmTextFieldWidgetClass, form1,
@@ -1090,6 +1118,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         to_rain = XtVaCreateManagedWidget(langcode("WXPUPSI008"),xmLabelWidgetClass, form1,
@@ -1101,6 +1130,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1119,6 +1149,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, my_rain,
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1137,6 +1168,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         rain_h = XtVaCreateManagedWidget(langcode("WXPUPSI014"),xmLabelWidgetClass, form1,
@@ -1148,6 +1180,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1166,6 +1199,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, to_rain,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1184,6 +1218,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         my_rain_24 = XtVaCreateManagedWidget(langcode("WXPUPSI015"),xmLabelWidgetClass, form1,
@@ -1195,6 +1230,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1213,6 +1249,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, rain_h,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1231,6 +1268,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 0,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         humidity = XtVaCreateManagedWidget(langcode("WXPUPSI010"),xmLabelWidgetClass, form1,
@@ -1242,6 +1280,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1260,6 +1299,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
                                       XmNtopWidget, my_rain_24,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         humidity_n = XtVaCreateManagedWidget(langcode("UNIOP00026"),xmLabelWidgetClass, form1,
@@ -1272,6 +1312,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1283,6 +1324,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_dew_point_data = XtVaCreateManagedWidget("WX_station dew point", xmTextFieldWidgetClass, form1,
@@ -1298,6 +1340,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0x0f],    
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_dew_point_label = XtVaCreateManagedWidget("WX_station dew label" ,xmTextFieldWidgetClass, form1,
@@ -1313,6 +1356,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         high_wind = XtVaCreateManagedWidget(langcode("WXPUPSI019"),xmLabelWidgetClass, form1,
@@ -1324,6 +1368,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_high_wind_data = XtVaCreateManagedWidget("WX_station High Wind", xmTextFieldWidgetClass, form1,
@@ -1340,6 +1385,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_high_wind_label = XtVaCreateManagedWidget("WX_station high wind label",xmTextFieldWidgetClass, form1,
@@ -1355,7 +1401,8 @@ XmNtraversalOn, FALSE,
                                       XmNleftWidget, WX_high_wind_data,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
+                                      XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         wind_chill = XtVaCreateManagedWidget(langcode("WXPUPSI020"),xmLabelWidgetClass, form1,
@@ -1367,6 +1414,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_wind_chill_data = XtVaCreateManagedWidget("WX_station Wind Chill", xmTextFieldWidgetClass, form1,
@@ -1383,6 +1431,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_wind_chill_label = XtVaCreateManagedWidget("WX_station wind label",xmTextFieldWidgetClass, form1,
@@ -1399,6 +1448,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         heat_index = XtVaCreateManagedWidget(langcode("WXPUPSI021"),xmLabelWidgetClass, form1,
@@ -1410,6 +1460,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_heat_index_data = XtVaCreateManagedWidget("WX_station Heat Index", xmTextFieldWidgetClass, form1,
@@ -1426,6 +1477,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_heat_index_label = XtVaCreateManagedWidget("WX_station heat label",xmTextFieldWidgetClass, form1,
@@ -1442,6 +1494,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         baro = XtVaCreateManagedWidget(langcode("WXPUPSI009"),xmLabelWidgetClass, form1,
@@ -1453,6 +1506,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_baro_data = XtVaCreateManagedWidget("WX_station Baro", xmTextFieldWidgetClass, form1,
@@ -1469,6 +1523,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_baro_label = XtVaCreateManagedWidget("WX_Station baro unit label",xmTextFieldWidgetClass, form1,
@@ -1485,6 +1540,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1497,6 +1553,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_three_hour_baro_data = XtVaCreateManagedWidget("WX_station 3-Hr Baro", xmTextFieldWidgetClass, form1,
@@ -1513,6 +1570,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_three_hour_baro_label = XtVaCreateManagedWidget("WX_station 3hr baro unit label",xmTextFieldWidgetClass, form1,
@@ -1529,6 +1587,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         hi_temp = XtVaCreateManagedWidget(langcode("WXPUPSI023"),xmLabelWidgetClass, form1,
@@ -1540,6 +1599,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_hi_temp_data = XtVaCreateManagedWidget("WX_station Today's High Temp", xmTextFieldWidgetClass, form1,
@@ -1556,6 +1616,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_hi_temp_label = XtVaCreateManagedWidget("WX_station high temp label",xmTextFieldWidgetClass, form1,
@@ -1572,6 +1633,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         low_temp = XtVaCreateManagedWidget(langcode("WXPUPSI024"),xmLabelWidgetClass, form1,
@@ -1583,6 +1645,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 4,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_low_temp_data = XtVaCreateManagedWidget("WX_station Today's Low Temp", xmTextFieldWidgetClass, form1,
@@ -1599,6 +1662,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 7,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_low_temp_label = XtVaCreateManagedWidget("WX_station low temp label",xmTextFieldWidgetClass, form1,
@@ -1615,6 +1679,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -1630,6 +1695,7 @@ XmNtraversalOn, TRUE,
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff], 
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_close, XmNactivateCallback, WX_station_destroy_shell, wx_station_dialog);

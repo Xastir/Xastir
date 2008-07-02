@@ -1921,7 +1921,7 @@ fprintf(stderr,"2 ");
 
     if (debug_level & 16)
 #ifdef HAVE_GRAPHICSMAGICK
-        fprintf(stderr,"Colors = %d\n", image->colors);
+        fprintf(stderr,"Colors = %d\n", (int)image->colors);
 #else   // HAVE_GRAPHICSMAGICK
         fprintf(stderr,"Colors = %ld\n", image->colors);
 #endif  // HAVE_GRAPHICSMAGICK

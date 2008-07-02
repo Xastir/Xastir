@@ -178,6 +178,9 @@
 // Must be last include file
 #include "leak_detection.h"
 
+
+extern XmFontList fontlist1;    // Menu/System fontlist
+
 // lesstif (at least as of version 0.94 in 2008), doesn't
 // have full implementation of combo boxes.
 #ifndef USE_COMBO_BOX
@@ -2558,6 +2561,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
+                XmNfontList, fontlist1,
                 NULL);
                                                                                                                         
         cad_pane = XtVaCreateWidget("Set_Del_Object pane",
@@ -2588,6 +2592,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // "Area Label:"
         cad_label = XtVaCreateManagedWidget(langcode("CADPUD002"),
@@ -2601,6 +2606,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // label text field
         cad_label_data = XtVaCreateManagedWidget("Set_Del_Object name_data",
@@ -2619,6 +2625,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNleftWidget,              cad_label,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "Comment"
         cad_comment = XtVaCreateManagedWidget(langcode("CADPUD003"),
@@ -2632,6 +2639,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // comment text field
         cad_comment_data = XtVaCreateManagedWidget("Set_Del_Object name_data",
@@ -2650,6 +2658,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNleftWidget,              cad_comment,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "Probability (as %)"
         cad_probability = XtVaCreateManagedWidget(langcode("CADPUD004"),
@@ -2663,6 +2672,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // probability field
         cad_probability_data = XtVaCreateManagedWidget("Set_Del_Object name_data",
@@ -2681,6 +2691,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNleftWidget,              cad_probability,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                  NULL);
         // Boundary Line Type
         cad_line_style = XtVaCreateManagedWidget("Line Type:",
@@ -2695,6 +2706,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // lesstif as of 0.95 in 2008 doesn't fully support combo boxes
@@ -2730,6 +2742,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNvisibleItemCount,        3,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmComboBoxAddItem(cad_line_style_data,cb_items[0],1,1);  
         XmComboBoxAddItem(cad_line_style_data,cb_items[1],2,1);  
@@ -2741,6 +2754,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
         x = 0;
         XtSetArg(args[x], XmNmarginWidth, 0); ++x;
         XtSetArg(args[x], XmNmarginHeight, 0); ++x;
+        XtSetArg(args[x], XmNfontList, fontlist1); ++x;
         clsd_menuPane = XmCreatePulldownMenu(cad_form,"sddd_menuPane", args, x);
         //sddd_menu is zero based, constants for database types are one based.
         //sddd_value is set to match constants in callback.
@@ -2748,6 +2762,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
             x = 0;
             XtSetArg(args[x], XmNlabelString, cb_items[i]); x++;
             XtSetArg(args[x], XmNuserData, (XtPointer)i); x++;
+            XtSetArg(args[x], XmNfontList, fontlist1); ++x;
             sprintf(buf,"button%d",i);
             clsd_button = XmCreatePushButton(clsd_menuPane, buf, args, x);
             XtManageChild(clsd_button);
@@ -2764,6 +2779,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
         XtSetArg(args[x], XmNtopOffset, 5); ++x;
         XtSetArg(args[x], XmNleftOffset, 10); ++x;
         XtSetArg(args[x], XmNsubMenuId, clsd_menuPane); ++x;
+        XtSetArg(args[x], XmNfontList, fontlist1); ++x;
         clsd_menu = XmCreateOptionMenu(cad_form, "sddd_Menu", args, x);
         XtManageChild(clsd_menu);
         clsd_value = 2;   // set a default value (line on off dash)
@@ -2791,6 +2807,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Cancel"
@@ -2809,6 +2826,7 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -3299,6 +3317,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
                 appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
+                XmNfontList, fontlist1,
                 NULL);
                                                                                                                         
         cad_erase_pane = XtVaCreateWidget("CAD erase Object pane",
@@ -3330,6 +3349,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // *** need to handle the special case of no CAD objects ? ***
@@ -3353,6 +3373,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         //XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, colors[0x0f]); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         list_of_existing_CAD_objects = XmCreateScrolledList(cad_erase_form,
                 "CAD objects for deletion scrolled list",
@@ -3393,6 +3414,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_delete_all, XmNactivateCallback, Draw_CAD_Objects_erase, Draw_CAD_Objects_erase_dialog);
 
@@ -3411,6 +3433,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_delete_selected, XmNactivateCallback, Draw_CAD_Objects_erase_selected, Draw_CAD_Objects_erase_dialog);
 
@@ -3429,6 +3452,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Draw_CAD_Objects_erase_dialog_close, Draw_CAD_Objects_erase_dialog);                        
         pos_dialog(cad_erase_dialog);
@@ -3565,6 +3589,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
+                XmNfontList, fontlist1,
                 NULL);
                                                                                                                         
         cad_list_pane = XtVaCreateWidget("CAD list Object pane",
@@ -3572,6 +3597,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 cad_list_dialog,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
                                                                                                                         
         cad_list_form =  XtVaCreateWidget("Cad list Object form",
@@ -3582,6 +3608,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 XmNshadowThickness,         1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // heading: CAD Objects 
@@ -3596,6 +3623,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // *** need to handle the special case of no CAD objects ? ***
@@ -3619,6 +3647,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         //XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, colors[0x0f]); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         list_of_existing_CAD_objects_edit = XmCreateScrolledList(cad_list_form,
                 "CAD objects for deletion scrolled list",
@@ -3658,6 +3687,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_list_selected, XmNactivateCallback, Show_selected_CAD_object_details, Draw_CAD_Objects_list_dialog);
 
@@ -3676,6 +3706,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
                 XmNnavigationType,    XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_close, XmNactivateCallback, Draw_CAD_Objects_list_dialog_close, Draw_CAD_Objects_erase_dialog);                        
         pos_dialog(cad_list_dialog);
@@ -7508,6 +7539,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 xmDialogShellWidgetClass,   appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_pane = XtVaCreateWidget("Set_Del_Object pane",
@@ -7515,6 +7547,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 object_dialog,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_form =  XtVaCreateWidget("Set_Del_Object ob_form",
@@ -7525,6 +7558,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNshadowThickness,         1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Name"
@@ -7539,6 +7573,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // object name
         object_name_data = XtVaCreateManagedWidget("Set_Del_Object name_data", 
@@ -7557,6 +7592,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNleftWidget,              ob_name,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -7573,6 +7609,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // "Station Symbol"
         ob_ts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),
@@ -7581,6 +7618,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_form1 =  XtVaCreateWidget("Set_Del_Object form1",
@@ -7589,6 +7627,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNfractionBase,            5,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Group/overlay"
@@ -7604,6 +7643,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // table
         object_group_data = XtVaCreateManagedWidget("Set_Del_Object group", 
@@ -7623,6 +7663,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Symbol"
@@ -7638,6 +7679,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // symbol
         object_symbol_data = XtVaCreateManagedWidget("Set_Del_Object symbol", 
@@ -7657,6 +7699,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // icon
@@ -7684,6 +7727,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),
@@ -7700,6 +7744,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ob_button_symbol, XmNactivateCallback, Ob_change_symbol, object_dialog);
  
@@ -7726,6 +7771,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_latlon_form =  XtVaCreateWidget("Set_Del_Object ob_latlon_form",
@@ -7734,6 +7780,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNfractionBase,            5,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "LAT"
@@ -7748,6 +7795,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // lat deg
         object_lat_data_deg = XtVaCreateManagedWidget("Set_Del_Object lat_deg", 
@@ -7766,6 +7814,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNleftWidget,              ob_lat,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "deg"
         ob_lat_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
@@ -7779,6 +7828,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // lat min
         object_lat_data_min = XtVaCreateManagedWidget("Set_Del_Object lat_min", 
@@ -7798,6 +7848,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "min"
         ob_lat_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
@@ -7811,6 +7862,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // N/S
         object_lat_data_ns = XtVaCreateManagedWidget("Set_Del_Object lat_ns", 
@@ -7830,6 +7882,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "(N/S)"
         ob_lat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),
@@ -7843,6 +7896,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "LONG"
@@ -7858,6 +7912,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // long
         object_lon_data_deg = XtVaCreateManagedWidget("Set_Del_Object long_deg", 
@@ -7877,6 +7932,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNleftWidget,              ob_lon,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "deg"
         ob_lon_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
@@ -7891,6 +7947,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // min
         object_lon_data_min = XtVaCreateManagedWidget("Set_Del_Object long_min", 
@@ -7911,6 +7968,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "min"
         ob_lon_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
@@ -7925,6 +7983,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // E/W
         object_lon_data_ew = XtVaCreateManagedWidget("Set_Del_Object long_ew", 
@@ -7945,6 +8004,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
         // "(E/W)"
         ob_lon_ew = XtVaCreateManagedWidget(langcode("WPUPCFS008"),
@@ -7959,6 +8019,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         compute_button = XtVaCreateManagedWidget(langcode("COORD002"),
@@ -7975,6 +8036,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Fill in the pointers to our input textfields so that the coordinate
@@ -8004,6 +8066,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightOffset,             10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // "Generic Options"
         ob_option_ts  = XtVaCreateManagedWidget(langcode("POPUPOB027"),
@@ -8012,6 +8075,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_option_form =  XtVaCreateWidget("Set_Del_Object ob_option_form",
@@ -8020,6 +8084,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNfractionBase,            5,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Speed"
@@ -8035,6 +8100,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_speed_data = XtVaCreateManagedWidget("Set_Del_Object ob_speed_data", 
@@ -8053,6 +8119,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Course"
@@ -8069,6 +8136,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_course_data = XtVaCreateManagedWidget("Set_Del_Object ob_course_data", 
@@ -8087,6 +8155,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Altitude"
@@ -8103,6 +8172,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_altitude_data = XtVaCreateManagedWidget("Set_Del_Object ob_altitude_data", 
@@ -8121,6 +8191,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -8138,6 +8209,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         object_comment_data = XtVaCreateManagedWidget("Set_Del_Object comment", 
@@ -8158,6 +8230,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNtopWidget,               ob_option_frame,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -8176,6 +8249,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(probabilities_toggle,XmNvalueChangedCallback,Probability_circle_toggle,(XtPointer)p_station);
 
@@ -8195,6 +8269,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(signpost_toggle,XmNvalueChangedCallback,Signpost_object_toggle,(XtPointer)p_station);
 
@@ -8214,6 +8289,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(area_toggle,XmNvalueChangedCallback,Area_object_toggle,(XtPointer)p_station);
 
@@ -8234,6 +8310,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(df_bearing_toggle,XmNvalueChangedCallback,DF_bearing_object_toggle,(XtPointer)p_station);
 
@@ -8254,6 +8331,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(map_view_toggle,XmNvalueChangedCallback,Map_View_object_toggle,(XtPointer)p_station);
 
@@ -8277,6 +8355,7 @@ if (Probability_circles_enabled) {
                 XmNrightOffset,             10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Probability Circles"
@@ -8286,6 +8365,7 @@ if (Probability_circles_enabled) {
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         probability_form =  XtVaCreateWidget("Set_Del_Object probability_form",
@@ -8295,6 +8375,7 @@ if (Probability_circles_enabled) {
                 XmNautoUnmanage,            FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Min (mi):"
@@ -8309,6 +8390,7 @@ if (Probability_circles_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         probability_data_min = XtVaCreateManagedWidget("Set_Del_Object probability_data_min", 
@@ -8327,6 +8409,7 @@ if (Probability_circles_enabled) {
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Max (mi):"
@@ -8343,6 +8426,7 @@ if (Probability_circles_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         probability_data_max = XtVaCreateManagedWidget("Set_Del_Object probability_data_max", 
@@ -8362,6 +8446,7 @@ if (Probability_circles_enabled) {
                 XmNtopWidget,               probability_label_min,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -8378,6 +8463,7 @@ if (Probability_circles_enabled) {
                 XmNrightAttachment,         XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 }
 
@@ -8410,6 +8496,7 @@ else if (Signpost_object_enabled) {
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         signpost_form =  XtVaCreateWidget("Set_Del_Object signpost_form",
@@ -8419,6 +8506,7 @@ else if (Signpost_object_enabled) {
                 XmNautoUnmanage,            FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Signpost Data"
@@ -8434,6 +8522,7 @@ else if (Signpost_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         signpost_data = XtVaCreateManagedWidget("Set_Del_Object signpost_data", 
@@ -8452,6 +8541,7 @@ else if (Signpost_object_enabled) {
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
@@ -8466,6 +8556,7 @@ else if (Signpost_object_enabled) {
                 XmNrightAttachment,         XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 }
 
@@ -8498,6 +8589,7 @@ else if (Area_object_enabled) {
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         area_form =  XtVaCreateWidget("Set_Del_Object area_form",
@@ -8522,6 +8614,7 @@ else if (Area_object_enabled) {
                 XmNset,                     FALSE,   // Select default to be OFF
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(bright_dim_toggle,XmNvalueChangedCallback,Area_bright_dim_toggle,"1");
         Area_bright = 0;    // Set to default each time dialog is created
@@ -8540,6 +8633,7 @@ else if (Area_object_enabled) {
                 XmNset,                     FALSE,   // Select default to be OFF
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(open_filled_toggle,XmNvalueChangedCallback,Area_open_filled_toggle,"1");
         Area_filled = 0;    // Set to default each time dialog is created
@@ -8575,6 +8669,7 @@ else if (Area_object_enabled) {
                 shape_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(toption1,XmNvalueChangedCallback,Area_type_toggle,"0");
 
@@ -8584,6 +8679,7 @@ else if (Area_object_enabled) {
                 shape_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(toption2,XmNvalueChangedCallback,Area_type_toggle,"1");
 
@@ -8593,6 +8689,7 @@ else if (Area_object_enabled) {
                 shape_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(toption3,XmNvalueChangedCallback,Area_type_toggle,"6");
 
@@ -8602,6 +8699,7 @@ else if (Area_object_enabled) {
                 shape_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(toption4,XmNvalueChangedCallback,Area_type_toggle,"3");
 
@@ -8611,6 +8709,7 @@ else if (Area_object_enabled) {
                 shape_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(toption5,XmNvalueChangedCallback,Area_type_toggle,"4");
 
@@ -8644,6 +8743,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption1,XmNvalueChangedCallback,Area_color_toggle,"/0");
 
@@ -8653,6 +8753,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption2,XmNvalueChangedCallback,Area_color_toggle,"/1");
 
@@ -8662,6 +8763,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption3,XmNvalueChangedCallback,Area_color_toggle,"/2");
 
@@ -8671,6 +8773,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption4,XmNvalueChangedCallback,Area_color_toggle,"/3");
 
@@ -8680,6 +8783,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption5,XmNvalueChangedCallback,Area_color_toggle,"/4");
 
@@ -8689,6 +8793,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption6,XmNvalueChangedCallback,Area_color_toggle,"/5");
 
@@ -8698,6 +8803,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption7,XmNvalueChangedCallback,Area_color_toggle,"/6");
 
@@ -8707,6 +8813,7 @@ else if (Area_object_enabled) {
                 color_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coption8,XmNvalueChangedCallback,Area_color_toggle,"/7");
 
@@ -8725,6 +8832,7 @@ else if (Area_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_lat_offset_data = XtVaCreateManagedWidget("Set_Del_Object lat offset", 
@@ -8744,6 +8852,7 @@ else if (Area_object_enabled) {
                 XmNtopWidget,               color_box,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Longitude offset
@@ -8762,6 +8871,7 @@ else if (Area_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_lon_offset_data = XtVaCreateManagedWidget("Set_Del_Object long offset", 
@@ -8781,6 +8891,7 @@ else if (Area_object_enabled) {
                 XmNtopWidget,               color_box,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Corridor (Lines only)"
@@ -8798,6 +8909,7 @@ else if (Area_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         ob_corridor_data = XtVaCreateManagedWidget("Set_Del_Object lat offset", 
@@ -8817,6 +8929,7 @@ else if (Area_object_enabled) {
                 XmNtopWidget,               color_box,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Miles"
@@ -8833,6 +8946,7 @@ else if (Area_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtSetSensitive(ob_corridor,FALSE);
         XtSetSensitive(ob_corridor_data,FALSE);
@@ -8851,6 +8965,7 @@ else if (Area_object_enabled) {
                 XmNrightAttachment,         XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 }
 
@@ -8876,6 +8991,7 @@ else if (DF_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(omni_antenna_toggle,XmNvalueChangedCallback,Omni_antenna_toggle,(XtPointer)p_station);
 
@@ -8895,6 +9011,7 @@ else if (DF_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(beam_antenna_toggle,XmNvalueChangedCallback,Beam_antenna_toggle,(XtPointer)p_station);
 
@@ -8920,6 +9037,7 @@ else if (DF_object_enabled) {
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         formomni =  XtVaCreateWidget("Set_Del_Object formomni",
@@ -8928,6 +9046,7 @@ else if (DF_object_enabled) {
                 XmNfractionBase,            5,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -8960,6 +9079,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption0,XmNvalueChangedCallback,Ob_signal_toggle,"0");
 
@@ -8969,6 +9089,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption1,XmNvalueChangedCallback,Ob_signal_toggle,"1");
 
@@ -8978,6 +9099,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption2,XmNvalueChangedCallback,Ob_signal_toggle,"2");
 
@@ -8987,6 +9109,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption3,XmNvalueChangedCallback,Ob_signal_toggle,"3");
 
@@ -8996,6 +9119,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption4,XmNvalueChangedCallback,Ob_signal_toggle,"4");
 
@@ -9005,6 +9129,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption5,XmNvalueChangedCallback,Ob_signal_toggle,"5");
 
@@ -9014,6 +9139,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption6,XmNvalueChangedCallback,Ob_signal_toggle,"6");
 
@@ -9023,6 +9149,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption7,XmNvalueChangedCallback,Ob_signal_toggle,"7");
 
@@ -9032,6 +9159,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption8,XmNvalueChangedCallback,Ob_signal_toggle,"8");
 
@@ -9041,6 +9169,7 @@ else if (DF_object_enabled) {
                 signal_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(soption9,XmNvalueChangedCallback,Ob_signal_toggle,"9");
 
@@ -9072,6 +9201,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption0,XmNvalueChangedCallback,Ob_height_toggle,"0");
 
@@ -9082,6 +9212,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption1,XmNvalueChangedCallback,Ob_height_toggle,"1");
 
@@ -9092,6 +9223,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption2,XmNvalueChangedCallback,Ob_height_toggle,"2");
 
@@ -9102,6 +9234,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption3,XmNvalueChangedCallback,Ob_height_toggle,"3");
 
@@ -9112,6 +9245,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption4,XmNvalueChangedCallback,Ob_height_toggle,"4");
 
@@ -9122,6 +9256,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption5,XmNvalueChangedCallback,Ob_height_toggle,"5");
 
@@ -9132,6 +9267,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption6,XmNvalueChangedCallback,Ob_height_toggle,"6");
 
@@ -9142,6 +9278,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption7,XmNvalueChangedCallback,Ob_height_toggle,"7");
 
@@ -9152,6 +9289,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption8,XmNvalueChangedCallback,Ob_height_toggle,"8");
 
@@ -9162,6 +9300,7 @@ else if (DF_object_enabled) {
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption9,XmNvalueChangedCallback,Ob_height_toggle,"9");
 
@@ -9192,6 +9331,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption0,XmNvalueChangedCallback,Ob_gain_toggle,"0");
 
@@ -9201,6 +9341,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption1,XmNvalueChangedCallback,Ob_gain_toggle,"1");
 
@@ -9210,6 +9351,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption2,XmNvalueChangedCallback,Ob_gain_toggle,"2");
 
@@ -9219,6 +9361,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption3,XmNvalueChangedCallback,Ob_gain_toggle,"3");
 
@@ -9228,6 +9371,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption4,XmNvalueChangedCallback,Ob_gain_toggle,"4");
 
@@ -9237,6 +9381,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption5,XmNvalueChangedCallback,Ob_gain_toggle,"5");
 
@@ -9246,6 +9391,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption6,XmNvalueChangedCallback,Ob_gain_toggle,"6");
 
@@ -9255,6 +9401,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption7,XmNvalueChangedCallback,Ob_gain_toggle,"7");
 
@@ -9264,6 +9411,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption8,XmNvalueChangedCallback,Ob_gain_toggle,"8");
 
@@ -9273,6 +9421,7 @@ else if (DF_object_enabled) {
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption9,XmNvalueChangedCallback,Ob_gain_toggle,"9");
 
@@ -9303,6 +9452,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption0,XmNvalueChangedCallback,Ob_directivity_toggle,"0");
 
@@ -9312,6 +9462,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption1,XmNvalueChangedCallback,Ob_directivity_toggle,"1");
 
@@ -9321,6 +9472,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption2,XmNvalueChangedCallback,Ob_directivity_toggle,"2");
 
@@ -9330,6 +9482,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption3,XmNvalueChangedCallback,Ob_directivity_toggle,"3");
 
@@ -9339,6 +9492,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption4,XmNvalueChangedCallback,Ob_directivity_toggle,"4");
 
@@ -9348,6 +9502,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption5,XmNvalueChangedCallback,Ob_directivity_toggle,"5");
 
@@ -9357,6 +9512,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption6,XmNvalueChangedCallback,Ob_directivity_toggle,"6");
 
@@ -9366,6 +9522,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption7,XmNvalueChangedCallback,Ob_directivity_toggle,"7");
 
@@ -9375,6 +9532,7 @@ else if (DF_object_enabled) {
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption8,XmNvalueChangedCallback,Ob_directivity_toggle,"8");
 
@@ -9401,6 +9559,7 @@ else if (DF_object_enabled) {
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         formbeam =  XtVaCreateWidget("Set_Del_Object formbeam",
@@ -9441,6 +9600,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption0,XmNvalueChangedCallback,Ob_width_toggle,"0");
 
@@ -9450,6 +9610,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption1,XmNvalueChangedCallback,Ob_width_toggle,"1");
 
@@ -9459,6 +9620,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption2,XmNvalueChangedCallback,Ob_width_toggle,"2");
 
@@ -9468,6 +9630,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption3,XmNvalueChangedCallback,Ob_width_toggle,"3");
 
@@ -9477,6 +9640,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption4,XmNvalueChangedCallback,Ob_width_toggle,"4");
 
@@ -9486,6 +9650,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption5,XmNvalueChangedCallback,Ob_width_toggle,"5");
 
@@ -9495,6 +9660,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption6,XmNvalueChangedCallback,Ob_width_toggle,"6");
 
@@ -9504,6 +9670,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption7,XmNvalueChangedCallback,Ob_width_toggle,"7");
 
@@ -9513,6 +9680,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption8,XmNvalueChangedCallback,Ob_width_toggle,"8");
 
@@ -9522,6 +9690,7 @@ else if (DF_object_enabled) {
                 width_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(woption9,XmNvalueChangedCallback,Ob_width_toggle,"9");
 
@@ -9539,6 +9708,7 @@ else if (DF_object_enabled) {
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // Bearing data
         ob_bearing_data = XtVaCreateManagedWidget("Set_Del_Object ob_bearing_data", 
@@ -9558,6 +9728,7 @@ else if (DF_object_enabled) {
                 XmNleftWidget,              ob_bearing,
                 XmNrightAttachment,         XmATTACH_NONE,
                 XmNbackground,              colors[0x0f],
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -9579,6 +9750,7 @@ else if (DF_object_enabled) {
                 XmNrightAttachment,         XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 }
 // End of DF-specific widgets
@@ -9605,6 +9777,7 @@ else if (DF_object_enabled) {
                     XmNrightAttachment,         XmATTACH_FORM,
                     MY_FOREGROUND_COLOR,
                     MY_BACKGROUND_COLOR,
+                    XmNfontList, fontlist1,
                     NULL);
         }
 
@@ -9631,6 +9804,7 @@ else if (DF_object_enabled) {
                         XmNnavigationType,          XmTAB_GROUP,
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
+                        XmNfontList, fontlist1,
                         NULL);
                 XtAddCallback(ob_button_set, XmNactivateCallback, Item_change_data_set, object_dialog);
 
@@ -9654,6 +9828,7 @@ else if (DF_object_enabled) {
                         XmNnavigationType,          XmTAB_GROUP,
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
+                        XmNfontList, fontlist1,
                         NULL);
                     XtAddCallback(ob_button_del, XmNactivateCallback, Item_change_data_del, object_dialog);
                 }
@@ -9676,6 +9851,7 @@ else if (DF_object_enabled) {
                         XmNnavigationType,          XmTAB_GROUP,
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
+                        XmNfontList, fontlist1,
                         NULL);
                     XtAddCallback(ob_button_del, XmNactivateCallback, Item_change_data_set, object_dialog);
                 }
@@ -9697,6 +9873,7 @@ else if (DF_object_enabled) {
                         XmNnavigationType,          XmTAB_GROUP,
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
+                        XmNfontList, fontlist1,
                         NULL);
                 XtAddCallback(ob_button_set, XmNactivateCallback, Object_change_data_set, object_dialog);
  
@@ -9720,6 +9897,7 @@ else if (DF_object_enabled) {
                         XmNnavigationType,          XmTAB_GROUP,
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
+                        XmNfontList, fontlist1,
                         NULL);
                XtAddCallback(ob_button_del, XmNactivateCallback, Object_change_data_del, object_dialog);
                 }
@@ -9742,6 +9920,7 @@ else if (DF_object_enabled) {
                         XmNnavigationType,          XmTAB_GROUP,
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
+                        XmNfontList, fontlist1,
                         NULL);
                     XtAddCallback(ob_button_del, XmNactivateCallback, Object_change_data_set, object_dialog);
                 }
@@ -9761,6 +9940,7 @@ else if (DF_object_enabled) {
                     XmNnavigationType,          XmTAB_GROUP,
                     MY_FOREGROUND_COLOR,
                     MY_BACKGROUND_COLOR,
+                    XmNfontList, fontlist1,
                     NULL);
 
             it_button_set = XtVaCreateManagedWidget(langcode("POPUPOB006"),xmPushButtonGadgetClass, ob_form,
@@ -9776,6 +9956,7 @@ else if (DF_object_enabled) {
                     XmNnavigationType,          XmTAB_GROUP,
                     MY_FOREGROUND_COLOR,
                     MY_BACKGROUND_COLOR,
+                    XmNfontList, fontlist1,
                     NULL);
 
 
@@ -9818,6 +9999,7 @@ else if (DF_object_enabled) {
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ob_button_cancel, XmNactivateCallback, Object_destroy_shell,   object_dialog);
 

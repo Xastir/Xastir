@@ -80,7 +80,7 @@
 #include "leak_detection.h"
 
 
-
+extern XmFontList fontlist1;    // Menu/System fontlist
 Widget Display_bulletins_dialog = NULL;
 Widget Display_bulletins_text = NULL;
 Widget dist_data = NULL;
@@ -599,6 +599,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Bulletins pane",
@@ -629,6 +630,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         dist_data = XtVaCreateManagedWidget("dist_data", 
@@ -650,6 +652,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNleftOffset, 10,
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         dist_units = XtVaCreateManagedWidget((english_units?langcode("UNIOP00004"):langcode("UNIOP00005")),
@@ -664,6 +667,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),
@@ -679,6 +683,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         zero_bulletin_data = XtVaCreateManagedWidget(langcode("WPUPCFD029"),
@@ -694,6 +699,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(zero_bulletin_data,XmNvalueChangedCallback,Zero_Bulletin_Data_toggle,"1");
         if (view_zero_distance_bulletins)
@@ -722,6 +728,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         XtSetArg(args[n], XmNrightOffset, 5); n++;
         XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
         XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
 
 
         Display_bulletins_text = XmCreateScrolledText(form,
@@ -741,6 +748,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNrightPosition, 3,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_range, XmNactivateCallback, Display_bulletins_change_range, Display_bulletins_dialog);

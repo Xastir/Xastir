@@ -47,7 +47,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
-
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 Widget geocoder_place_dialog = (Widget)NULL;
 Widget geocoder_zip_data = (Widget)NULL;
@@ -279,6 +279,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Geocoder_place pane",xmPanedWindowWidgetClass, geocoder_place_dialog,
@@ -301,6 +302,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         geocoder_address_data = XtVaCreateManagedWidget("Geocoder_address_data", xmTextFieldWidgetClass, form,
@@ -322,6 +324,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // City:
@@ -334,6 +337,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         geocoder_locality_data = XtVaCreateManagedWidget("Geocoder_address_data", xmTextFieldWidgetClass, form,
@@ -356,6 +360,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // State/Province:
@@ -368,6 +373,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         geocoder_state_data = XtVaCreateManagedWidget("Geocoder_state_data", xmTextFieldWidgetClass, form,
@@ -390,6 +396,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Mark Destination
@@ -407,6 +414,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNbackground, colors[0xff],
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(show_dest_toggle,XmNvalueChangedCallback,Show_dest_toggle,"1");
@@ -424,6 +432,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         geocoder_zip_data = XtVaCreateManagedWidget("Geocoder_zip_data", xmTextFieldWidgetClass, form,
@@ -445,6 +454,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Geocoding File:
@@ -457,6 +467,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         geocoder_map_file_data = XtVaCreateManagedWidget("geocoder_map_file_data", xmTextFieldWidgetClass, form,
@@ -479,6 +490,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -491,6 +503,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPLSP005"),xmPushButtonGadgetClass, form,
@@ -507,6 +520,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNbackground, colors[0xff],
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -523,6 +537,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNbackground, colors[0xff],
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Geocoder_place_now, geocoder_place_dialog);

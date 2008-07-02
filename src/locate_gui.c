@@ -43,7 +43,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
-
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 Widget locate_station_dialog = (Widget)NULL;
 Widget locate_station_data = (Widget)NULL;
@@ -314,6 +314,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
         }
         else {  // Non-emergency locate
@@ -321,6 +322,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
         }
 
@@ -344,6 +346,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         locate_station_data = XtVaCreateManagedWidget("Locate_station data", xmTextFieldWidgetClass, form,
@@ -365,6 +368,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNrightOffset, 10,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         locate_case_data  = XtVaCreateManagedWidget(langcode("WPUPLSP003"),xmToggleButtonWidgetClass,form,
@@ -378,6 +382,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         locate_match_data  = XtVaCreateManagedWidget(langcode("WPUPLSP004"),xmToggleButtonWidgetClass,form,
@@ -392,6 +397,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         sep = XtVaCreateManagedWidget("Locate_station sep", xmSeparatorGadgetClass,form,
@@ -403,6 +409,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_lookup = XtVaCreateManagedWidget(langcode("WPUPLSP007"),xmPushButtonGadgetClass, form,
@@ -419,6 +426,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_locate = XtVaCreateManagedWidget(langcode("WPUPLSP005"),xmPushButtonGadgetClass, form,
@@ -435,6 +443,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -451,6 +460,7 @@ begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_lookup, XmNactivateCallback, fcc_rac_lookup, locate_station_dialog);
@@ -592,6 +602,7 @@ begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_ch
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Locate_place_chooser pane",xmPanedWindowWidgetClass, locate_place_chooser,
@@ -619,6 +630,7 @@ begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_ch
             XmNrightAttachment, XmATTACH_POSITION,
             XmNrightPosition, 2,
             XmNnavigationType, XmTAB_GROUP,
+            XmNfontList, fontlist1,
             NULL);
 
         XtAddCallback(button_ok,
@@ -635,6 +647,7 @@ begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_ch
             XmNrightAttachment, XmATTACH_POSITION,
             XmNrightPosition, 4,
             XmNnavigationType, XmTAB_GROUP,
+            XmNfontList, fontlist1,
             NULL);
 
         XtAddCallback(button_cancel,
@@ -659,6 +672,7 @@ begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_ch
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         locate_place_list = XmCreateScrolledList(form,"Locate_place_chooser list",al,ac);
 
@@ -864,6 +878,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Locate_place pane",xmPanedWindowWidgetClass, locate_place_dialog,
@@ -885,6 +900,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_place_data = XtVaCreateManagedWidget("Locate_place_data", xmTextFieldWidgetClass, form,
@@ -906,6 +922,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         state = XtVaCreateManagedWidget(langcode("FEATURE002"),xmLabelWidgetClass, form,
@@ -917,6 +934,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_state_data = XtVaCreateManagedWidget("Locate_state_data", xmTextFieldWidgetClass, form,
@@ -939,6 +957,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         county = XtVaCreateManagedWidget(langcode("FEATURE003"),xmLabelWidgetClass, form,
@@ -950,6 +969,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_county_data = XtVaCreateManagedWidget("Locate_county_data", xmTextFieldWidgetClass, form,
@@ -972,6 +992,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         quad = XtVaCreateManagedWidget(langcode("FEATURE004"),xmLabelWidgetClass, form,
@@ -983,6 +1004,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_quad_data = XtVaCreateManagedWidget("Locate_quad_data", xmTextFieldWidgetClass, form,
@@ -1005,6 +1027,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         place_type = XtVaCreateManagedWidget(langcode("FEATURE005"),xmLabelWidgetClass, form,
@@ -1016,6 +1039,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_type_data = XtVaCreateManagedWidget("Locate_type_data", xmTextFieldWidgetClass, form,
@@ -1038,6 +1062,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         gnis_file = XtVaCreateManagedWidget(langcode("FEATURE006"),xmLabelWidgetClass, form,
@@ -1049,6 +1074,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_gnis_file_data = XtVaCreateManagedWidget("locate_gnis_file_data", xmTextFieldWidgetClass, form,
@@ -1071,6 +1097,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -1085,6 +1112,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNbackground, colors[0xff],
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         locate_place_match_data  = XtVaCreateManagedWidget(langcode("WPUPLSP004"),xmToggleButtonWidgetClass,form,
@@ -1099,6 +1127,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNbackground, colors[0xff],
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         sep = XtVaCreateManagedWidget("Locate_place sep", xmSeparatorGadgetClass,form,
@@ -1110,6 +1139,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNbackground, colors[0xff],
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPLSP005"),xmPushButtonGadgetClass, form,
@@ -1126,6 +1156,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNbackground, colors[0xff],
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -1142,6 +1173,7 @@ begin_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
                 XmNbackground, colors[0xff],
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Locate_place_now, locate_place_dialog);

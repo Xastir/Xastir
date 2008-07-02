@@ -47,6 +47,7 @@
 #include "leak_detection.h"
 
 
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 Widget track_station_dialog = (Widget)NULL;
 Widget track_station_data = (Widget)NULL;
@@ -208,6 +209,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Track_station pane",
@@ -238,6 +240,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         track_station_data = XtVaCreateManagedWidget("Track_station track locate data", 
@@ -260,6 +263,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         track_case_data  = XtVaCreateManagedWidget(langcode("WPUPTSP003"),
@@ -276,6 +280,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         track_match_data  = XtVaCreateManagedWidget(langcode("WPUPTSP004"),
@@ -293,6 +298,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sep = XtVaCreateManagedWidget("Track_station sep", 
@@ -307,6 +313,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPTSP005"),
@@ -326,6 +333,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_clear = XtVaCreateManagedWidget(langcode("WPUPTSP006"),
@@ -344,6 +352,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
@@ -363,6 +372,7 @@ begin_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" )
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Track_station_now, track_station_dialog);
@@ -775,6 +785,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Download_findu_trail pane",
@@ -805,6 +816,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         download_trail_station_data = XtVaCreateManagedWidget("download_trail_station_data", 
@@ -827,6 +839,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
+                XmNfontList, fontlist1,
                 NULL);
 
         x_str = XmStringCreateLocalized(langcode("WPUPTSP009"));
@@ -859,6 +872,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -892,6 +906,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -907,6 +922,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPTSP007"),
@@ -926,6 +942,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         if (fetching_findu_trail_now)
             XtSetSensitive(button_ok, FALSE);
@@ -947,6 +964,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Download_trail_now, download_findu_dialog);

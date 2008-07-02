@@ -86,7 +86,6 @@ extern Pixmap  pixmap_25pct_stipple;
 extern Pixmap  pixmap_13pct_stipple;
 extern Pixmap  pixmap_wx_stipple;
 
-
 extern Widget appshell;
 
 

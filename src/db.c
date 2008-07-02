@@ -104,6 +104,7 @@
 char GUARD_BAND_THREE[GUARD_SIZE];
 /////////////////////////////////////
 
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 // Station Info
 Widget  db_station_popup = (Widget)NULL;
@@ -4213,6 +4214,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Change Tactical pane",
@@ -4237,6 +4239,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
         ac=0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         // Display the callsign or object/item name we're working on
         // in a label at the top of the dialog.  Otherwise we don't
@@ -4253,6 +4256,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tactical_text = XtVaCreateManagedWidget("Change_Tactical text",
@@ -4273,6 +4277,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Fill in the current value of tactical callsign
@@ -4293,6 +4298,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -4311,6 +4317,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok,
@@ -5523,6 +5530,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Station Data pane",
@@ -5555,6 +5563,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 1,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
             XtAddCallback(button_clear_track, XmNactivateCallback, Station_data_destroy_track ,(XtPointer)p_station);
 
@@ -5574,6 +5583,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 1,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
             XtAddCallback(button_version, XmNactivateCallback, Station_query_version ,(XtPointer)p_station->call_sign);
         }            
@@ -5589,6 +5599,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNrightPosition, 2,
                                 XmNbackground, colors[0xff],
                                 XmNnavigationType, XmTAB_GROUP,
+                                XmNfontList, fontlist1,
                                 NULL);
         XtAddCallback(button_trace, XmNactivateCallback, Station_query_trace ,(XtPointer)p_station->call_sign);
 
@@ -5603,6 +5614,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNrightPosition, 3,
                                 XmNbackground, colors[0xff],
                                 XmNnavigationType, XmTAB_GROUP,
+                                XmNfontList, fontlist1,
                                 NULL);
         XtAddCallback(button_messages, XmNactivateCallback, Station_query_messages ,(XtPointer)p_station->call_sign);
 
@@ -5617,6 +5629,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNrightPosition, 4,
                                 XmNbackground, colors[0xff],
                                 XmNnavigationType, XmTAB_GROUP,
+                                XmNfontList, fontlist1,
                                 NULL);
         XtAddCallback(button_direct, XmNactivateCallback, Station_query_direct ,(XtPointer)p_station->call_sign);
 
@@ -5637,6 +5650,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 1,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
         XtAddCallback(button_store_track,   XmNactivateCallback, Station_data_store_track ,(XtPointer)p_station);
 
@@ -5654,6 +5668,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 2,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
             XtAddCallback(button_message, XmNactivateCallback, Send_message_call ,(XtPointer)p_station->call_sign);
         }
@@ -5670,6 +5685,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 2,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
             XtAddCallback(button_object_modify,
                 XmNactivateCallback,
@@ -5736,6 +5752,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 3,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
 
             // We need to contruct the "special" finger address.
@@ -5780,6 +5797,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 3,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
             XtAddCallback(button_fcc,
                 XmNactivateCallback,
@@ -5804,6 +5822,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightPosition, 3,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
             XtAddCallback(button_rac,
                 XmNactivateCallback,
@@ -5826,6 +5845,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNrightOffset, 5,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Station_data_destroy_shell, db_station_info);
 
@@ -5850,6 +5870,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNlabelType, XmPIXMAP,
                                 XmNlabelPixmap,icon,
                                 XmNbackground, colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
 
         station_type = XtVaCreateManagedWidget("Station Data type", xmTextFieldWidgetClass, form,
@@ -5867,6 +5888,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNleftWidget,station_icon,
                                 XmNleftOffset,10,
                                 XmNrightAttachment,XmATTACH_NONE,
+                                XmNfontList, fontlist1,
                                 NULL);
 
         xastir_snprintf(temp, sizeof(temp), "%c%c%c", p_station->aprs_symbol.aprs_type,
@@ -5891,6 +5913,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNleftWidget, station_type,
                                 XmNleftOffset,10,
                                 XmNrightAttachment,XmATTACH_NONE,
+                                XmNfontList, fontlist1,
                                 NULL);
 
         XmTextFieldSetString(station_call,p_station->call_sign);
@@ -5906,6 +5929,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNleftOffset,10,
                                 XmNrightAttachment,XmATTACH_NONE,
                                 XmNbackground,colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
         XtAddCallback(station_data_auto_update_w,XmNvalueChangedCallback,station_data_auto_update_toggle,"1");
 
@@ -5921,6 +5945,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
             XmNnavigationType, XmTAB_GROUP,
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(button_tactical,
             XmNactivateCallback,
@@ -5945,6 +5970,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
             XmNnavigationType, XmTAB_GROUP,
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(button_change_trail_color,
             XmNactivateCallback,
@@ -5971,6 +5997,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset, 5); n++;
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
 
         si_text = NULL;
         si_text = XmCreateScrolledText(form,"Station_data",args,n);
@@ -6259,6 +6286,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                     XmNdeleteResponse, XmDESTROY,
                     XmNdefaultPosition, FALSE,
                     XmNbackground, colors[0xff],
+                    XmNfontList, fontlist1,
                     NULL);
 
                 pane = XtVaCreateWidget("Station_info pane",xmPanedWindowWidgetClass, db_station_popup,
@@ -6285,6 +6313,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                                 XmNrightAttachment, XmATTACH_POSITION,
                                 XmNrightPosition, 2,
                                 XmNnavigationType, XmTAB_GROUP,
+                                XmNfontList, fontlist1,
                                 NULL);
 
                 button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
@@ -6296,6 +6325,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                                     XmNrightAttachment, XmATTACH_POSITION,
                                     XmNrightPosition, 4,
                                     XmNnavigationType, XmTAB_GROUP,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 XtAddCallback(button_cancel, XmNactivateCallback, Station_info_destroy_shell, db_station_popup);
@@ -6319,6 +6349,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                 XtSetArg(al[ac], XmNrightOffset, 5); ac++;
                 XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
                 XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+                XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
                 station_list = XmCreateScrolledList(form,"Station_info list",al,ac);
 

@@ -955,6 +955,13 @@ Pixmap  pixmap;
 Pixmap  pixmap_alerts;
 Pixmap  pixmap_final;
 
+// Global variable, so we can set it up once check it from then on,
+// preventing memory leaks from repeatedly setting up the same
+// XFontStruct.
+XFontStruct *station_font = NULL;   // Station font
+XFontStruct *font1;                 // Menu/System font
+XmFontList fontlist1;               // Menu/System fontlist
+
 Pixmap  pixmap_50pct_stipple; // 50% pixels used for position ambiguity, DF circle, etc.
 Pixmap  pixmap_25pct_stipple; // 25% pixels used for large position ambiguity
 Pixmap  pixmap_13pct_stipple; // 12.5% pixels used for larger position ambiguity
@@ -1380,6 +1387,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Smart_Beacon pane",
@@ -1410,6 +1418,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label1 = XtVaCreateManagedWidget(langcode("SMARTB002"),
@@ -1425,6 +1434,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_hi_rate_data = XtVaCreateManagedWidget("Smart_Beacon hi_rate_data",
@@ -1447,6 +1457,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         switch (english_units) {
@@ -1478,6 +1489,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_hi_mph_data = XtVaCreateManagedWidget("Smart_Beacon hi_mph_data",
@@ -1500,6 +1512,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         label3 = XtVaCreateManagedWidget(langcode("SMARTB005"),
@@ -1515,6 +1528,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_lo_rate_data = XtVaCreateManagedWidget("Smart_Beacon lo_rate_data",
@@ -1537,6 +1551,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         switch (english_units) {
@@ -1568,6 +1583,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_lo_mph_data = XtVaCreateManagedWidget("Smart_Beacon lo_mph_data",
@@ -1590,6 +1606,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         label5 = XtVaCreateManagedWidget(langcode("SMARTB008"),
@@ -1605,6 +1622,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_min_turn_data = XtVaCreateManagedWidget("Smart_Beacon min_turn_data",
@@ -1627,6 +1645,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         label6 = XtVaCreateManagedWidget(langcode("SMARTB009"),
@@ -1642,6 +1661,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_turn_slope_data = XtVaCreateManagedWidget("Smart_Beacon turn_slope_data",
@@ -1664,6 +1684,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         label7 = XtVaCreateManagedWidget(langcode("SMARTB010"),
@@ -1679,6 +1700,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sb_wait_time_data = XtVaCreateManagedWidget("Smart_Beacon wait_time_data",
@@ -1701,6 +1723,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -1718,6 +1741,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_ok, XmNactivateCallback, Smart_Beacon_change_data, smart_beacon_dialog);
 
@@ -1736,6 +1760,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Smart_Beacon_destroy_shell, smart_beacon_dialog);
 
@@ -2808,6 +2833,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label2 = XtVaCreateManagedWidget(langcode("COORD006"),
@@ -2821,6 +2847,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label3 = XtVaCreateManagedWidget(langcode("COORD007"),
@@ -2834,6 +2861,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label4 = XtVaCreateManagedWidget(langcode("COORD008"),
@@ -2848,6 +2876,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label5 = XtVaCreateManagedWidget(langcode("COORD009"),
@@ -2862,6 +2891,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label6 = XtVaCreateManagedWidget(langcode("COORD010"),
@@ -2876,6 +2906,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -2904,6 +2935,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNleftOffset, 5,
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
        coordinate_calc_latitude_easting = XtVaCreateManagedWidget("Coordinate_calc lat",
@@ -2925,6 +2957,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNleftOffset, 65,
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         coordinate_calc_longitude_northing = XtVaCreateManagedWidget("Coordinate_calc lon",
@@ -2946,6 +2979,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNleftOffset, 195,
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
 //        xastir_snprintf(temp_string, sizeof(temp_string), "%d", temp);
@@ -2974,6 +3008,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightOffset, 5,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_clear = XtVaCreateManagedWidget(langcode("COORD004"),
@@ -2991,6 +3026,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_clear, XmNactivateCallback, Coordinate_calc_clear_data, coordinate_calc_dialog);
 
@@ -3009,6 +3045,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_calculate, XmNactivateCallback, Coordinate_calc_compute, coordinate_calc_dialog);
 
@@ -3027,6 +3064,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coordinate_calc_button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
         XtSetSensitive(coordinate_calc_button_ok,FALSE);
@@ -3046,6 +3084,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Coordinate_calc_destroy_shell, coordinate_calc_dialog);
 
@@ -4161,6 +4200,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,XmATTACH_POSITION,
                 XmNrightPosition, 2,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Fill in the current value of debug_level
@@ -4182,6 +4222,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -4199,6 +4240,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -4217,6 +4259,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_reset, XmNactivateCallback, Change_debug_level_reset, change_debug_level_dialog);
@@ -4298,8 +4341,6 @@ void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer cal
 void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_close;
     Atom delw;
-    Arg al[50];
-    register unsigned int ac = 0;
     char temp_string[10];
 
     if (!gamma_adjust_dialog) {
@@ -4325,11 +4366,6 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        ac=0;
-        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
-
         gamma_adjust_text = XtVaCreateManagedWidget("Adjust Gamma text",
                 xmTextWidgetClass,        my_form,
                 XmNeditable,              TRUE,
@@ -4348,6 +4384,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNrightAttachment,       XmATTACH_POSITION,
                 XmNrightPosition,         3,
                 XmNnavigationType,        XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         xastir_snprintf(temp_string, sizeof(temp_string), "%+.1f", imagemagick_gamma_adjust);
@@ -4367,6 +4404,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType,       XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
@@ -4383,6 +4421,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType,       XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok,
@@ -4413,6 +4452,51 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
         (void)XRaiseWindow(XtDisplay(gamma_adjust_dialog), XtWindow(gamma_adjust_dialog));
 }
 #endif  // NO_GRAPHICS && HAVE_MAGICK
+
+
+
+
+
+void Load_station_font(void) {
+    // Assign a font (or a different font) to the GC
+
+    // Free any old font first.  If we fail to assign a new font in
+    // the code here, can we get in a sitation where we are trying
+    // to draw without a font?
+    if (station_font != NULL) {
+        XFreeFont(XtDisplay(da), station_font);
+    }
+
+    // Load the new font from the FONT_STATION string
+    station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(da), rotated_label_fontname[FONT_STATION]);
+
+    if (station_font == NULL) {    // Couldn't get the font!!!
+        char tempy[100];
+
+        fprintf(stderr,"Map_font_change_data: Couldn't load station font %s.  ",
+            rotated_label_fontname[FONT_STATION]);
+        fprintf(stderr,"Loading default station font instead.\n");
+
+        xastir_snprintf(tempy,
+            sizeof(tempy),
+            "Couldn't get font %s.  Loading default font instead.",
+            rotated_label_fontname[FONT_STATION]);
+        popup_message_always(langcode("POPEM00035"), tempy);
+
+        station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(da), "-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*");
+        if (station_font == NULL) {    // Couldn't get the font!!!
+            fprintf(stderr,"Map_font_change_data: Couldn't load default station font.\n");
+
+            popup_message_always(langcode("POPEM00035"),
+                "Couldn't load default station font.");
+        }
+    }
+
+    // Assign the font to the GC.
+    if (station_font != NULL) {
+        XSetFont(XtDisplay(da), gc, station_font->fid);
+    }
+}
 
 
 
@@ -4541,6 +4625,9 @@ void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callDat
         XmTextSetString(map_font_text[i], rotated_label_fontname[i]);
     }
 
+    // Load a new font into the GC for the station font
+    Load_station_font();
+
     // Set interrupt_drawing_now because conditions have changed
     // (new map center).
     interrupt_drawing_now++;
@@ -4572,6 +4659,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,        XmDESTROY,
                 XmNdefaultPosition,       FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Choose map labels font",
@@ -4609,11 +4697,12 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
             XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
             XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
             XtSetArg(al[ac], XmNleftOffset, 5); ac++;
-            XtSetArg(al[ac], XmNwidth, 100); ac++;
-            XtSetArg(al[ac], XmNheight, 30); ac++;
+            XtSetArg(al[ac], XmNwidth, 150); ac++;
+            XtSetArg(al[ac], XmNheight, 40); ac++;
             XtSetArg(al[ac], XmNrightAttachment, XmATTACH_NONE); ac++;
             XtSetArg(al[ac], XmNforeground,colors[0x08]); ac++;
             XtSetArg(al[ac], XmNbackground,colors[0xff]); ac++;
+            XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
             fontname[i] = XtCreateManagedWidget(langcode(fonttitle[i]),
                                                 xmLabelWidgetClass, 
                                                 my_form,
@@ -4638,10 +4727,11 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
             XtSetArg(al[ac], XmNleftAttachment, XmATTACH_WIDGET); ac++;
             XtSetArg(al[ac], XmNleftWidget, fontname[i]); ac++;
             XtSetArg(al[ac], XmNleftOffset, 10); ac++;
-            XtSetArg(al[ac], XmNheight, 30); ac++;
+            XtSetArg(al[ac], XmNheight, 40); ac++;
             XtSetArg(al[ac], XmNrightAttachment,XmATTACH_NONE); ac++;
             XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
             XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+            XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
             map_font_text[i] = XtCreateManagedWidget("Map font text",
                                                        xmTextFieldWidgetClass, my_form,
                                                        al, ac);
@@ -4662,10 +4752,11 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
             XtSetArg(al[ac], XmNleftWidget, map_font_text[i]); ac++;
             XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
             XtSetArg(al[ac], XmNrightOffset, 10); ac++;
-            XtSetArg(al[ac], XmNheight, 30); ac++;
+            XtSetArg(al[ac], XmNheight, 40); ac++;
             XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
             XtSetArg(al[ac], XmNforeground,colors[0x08]); ac++;
             XtSetArg(al[ac], XmNbackground,colors[0xff]); ac++;
+            XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
             button_xfontsel[i] = XtCreateManagedWidget(langcode("PULDNMP015"),
                                                          xmPushButtonGadgetClass, my_form,
                                                          al,ac);
@@ -4690,6 +4781,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType,       XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -4707,6 +4799,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok,
@@ -5146,8 +5239,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif // ARROWS
         help_button, help_about, help_help;
 
-    XFontStruct *font1;
-    XmFontList fontlist1;
     char *title, *t;
     int t_size;
 //    XWMHints *wm_hints; // Used for window manager hints
@@ -5343,11 +5434,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         XtSetArg(al[ac], XmNtitle,        title);           ac++;
  
     XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
-
+    XtSetArg(al[ac], XmNfontList,         fontlist1);       ac++;
     XtSetArg(al[ac], XmNforeground,       MY_FG_COLOR);     ac++;
     XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
-
-
     //
     // Set the above values into the appshell widget
     //
@@ -5371,9 +5460,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     /* Menu Bar */
     ac = 0;
-
-    XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
-
     XtSetArg(al[ac], XmNshadowThickness, 1);                     ac++;
     XtSetArg(al[ac], XmNalignment,       XmALIGNMENT_BEGINNING); ac++;
     XtSetArg(al[ac], XmNleftAttachment,  XmATTACH_FORM);         ac++;
@@ -9523,8 +9609,6 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     // Free the allocated struct.  We won't need it again.
 //    XFree(wm_hints);    // We're not currently using this struct
 
-    XmFontListFree(fontlist1);
- 
     if(debug_level & 8)
         fprintf(stderr,"Create appshell stop\n");
 }   // end of create_appshell()
@@ -9545,6 +9629,7 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
     // Before building menu, make sure that any existing menu items are removed
     // this allows the menu to be changed on the fly while the program is running.
@@ -9602,11 +9687,6 @@ void BuildPredefinedSARMenu_UI(Widget *parent_menu) {
 
 
 
-
-// Global variable, so we can set it up once check it from then on,
-// preventing memory leaks from repeatedly setting up the same
-// XFontStruct.
-XFontStruct *station_font = NULL;
 
 
 void create_gc(Widget w) {
@@ -9763,33 +9843,8 @@ void create_gc(Widget w) {
 
     gc = XCreateGC(my_display, XtWindow(w), mask, &values);
 
-    // Assign a different font to this gc
-    if (station_font == NULL) {
-        station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(w), rotated_label_fontname[FONT_STATION]);
-        if (station_font == NULL) {    // Couldn't get the font!!!
-            fprintf(stderr,"create_gc: Couldn't load station font %s.  ",
-                rotated_label_fontname[FONT_STATION]);
-            fprintf(stderr,"Loading default station font instead.\n");
-            station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(w), "-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*");
-            if (station_font == NULL) {    // Couldn't get the font!!!
-                fprintf(stderr,"create_gc: Couldn't load default station font, exiting.\n");
-                exit(1);
-            }
-            else {
-                // _Now_ we can do a popup message about the first error
-                // as we have a font to work with!
-                char tempy[100];
-
-                xastir_snprintf(tempy,
-                    sizeof(tempy),
-                    "Couldn't get font %s.  Loading default font instead.",
-                    rotated_label_fontname[FONT_STATION]);
-                popup_message_always(langcode("POPEM00035"), tempy);
-            }
-        }
-    }
-
-    XSetFont(XtDisplay(w), gc, station_font->fid);
+    // Load a new font into the GC for the station font
+    Load_station_font();
 
     gc_tint = XCreateGC(my_display, XtWindow(w), mask, &values);
 
@@ -13071,6 +13126,7 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNresize, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Jump_location pane",
@@ -13102,6 +13158,7 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         custom_zoom_zoom_level = XtVaCreateManagedWidget("Custom_Zoom zoom_level",
@@ -13122,6 +13179,7 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNleftOffset, 10,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 5,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("JMLPO00002"),
@@ -13138,6 +13196,7 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 1,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
@@ -13154,6 +13213,7 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightPosition, 2,
                 XmNrightOffset, 3,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, Custom_Zoom_destroy_shell, custom_zoom_dialog);
@@ -13529,6 +13589,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNresize, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Jump_location pane",
@@ -13560,6 +13621,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         center_zoom_latitude = XtVaCreateManagedWidget("Center_Zoom latitude",
@@ -13580,6 +13642,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNleftOffset, 10,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 5,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Longitude"
@@ -13595,6 +13658,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         center_zoom_longitude = XtVaCreateManagedWidget("Center_Zoom longitude",
@@ -13616,6 +13680,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNleftOffset, 10,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 5,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Zoom Level"
@@ -13631,6 +13696,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         center_zoom_zoom_level = XtVaCreateManagedWidget("Center_Zoom zoom_level",
@@ -13652,6 +13718,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNleftOffset, 10,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 5,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("JMLPO00002"),
@@ -13668,6 +13735,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 1,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
@@ -13684,6 +13752,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightPosition, 2,
                 XmNrightOffset, 3,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, Center_Zoom_destroy_shell, center_zoom_dialog);
@@ -15009,12 +15078,14 @@ void GPS_transfer_select( void ) {
         ac = 0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         GPS_operations_dialog = XtVaCreatePopupShell(
                 langcode("GPS001"),
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget(
@@ -15044,6 +15115,7 @@ void GPS_transfer_select( void ) {
                 XmNchildType, XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         gpsfilename_text = XtVaCreateManagedWidget(
@@ -15066,6 +15138,7 @@ void GPS_transfer_select( void ) {
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         frame = XtVaCreateManagedWidget(
@@ -15082,6 +15155,7 @@ void GPS_transfer_select( void ) {
                 XmNrightOffset, 10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         color_type  = XtVaCreateManagedWidget(  // Select Color
@@ -15091,6 +15165,7 @@ void GPS_transfer_select( void ) {
                 XmNchildType, XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         type_box = XmCreateRadioBox(
@@ -15109,6 +15184,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp0,XmNvalueChangedCallback,GPS_operations_color_toggle,"0");
 
@@ -15118,6 +15194,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp1,XmNvalueChangedCallback,GPS_operations_color_toggle,"1");
 
@@ -15127,6 +15204,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp2,XmNvalueChangedCallback,GPS_operations_color_toggle,"2");
 
@@ -15136,6 +15214,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp3,XmNvalueChangedCallback,GPS_operations_color_toggle,"3");
 
@@ -15145,6 +15224,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp4,XmNvalueChangedCallback,GPS_operations_color_toggle,"4");
 
@@ -15154,6 +15234,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp5,XmNvalueChangedCallback,GPS_operations_color_toggle,"5");
 
@@ -15163,6 +15244,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp6,XmNvalueChangedCallback,GPS_operations_color_toggle,"6");
 
@@ -15172,6 +15254,7 @@ void GPS_transfer_select( void ) {
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(ctyp7,XmNvalueChangedCallback,GPS_operations_color_toggle,"7");
 
@@ -15192,6 +15275,7 @@ void GPS_transfer_select( void ) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -15211,6 +15295,7 @@ void GPS_transfer_select( void ) {
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_select,
@@ -17043,6 +17128,7 @@ void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 
 void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget d;
+    Widget child;
     XmString xms, xa, xb;
     Arg al[400];
     unsigned int ac;
@@ -17127,12 +17213,17 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XtSetArg(al[ac], XmNtitle, langcode("PULDNHEL05") ); ac++;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
     // "About Xastir" 
     d = XmCreateInformationDialog(appshell, langcode("PULDNHEL05"), al, ac);
     XmStringFree(xms);
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_CANCEL_BUTTON));
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_HELP_BUTTON));
+
+    child = XmMessageBoxGetChild(d, XmDIALOG_MESSAGE_LABEL);
+    XtVaSetValues(child, XmNfontList, fontlist1, NULL);
+
     XtManageChild(d);
     pos_dialog(d);
     fix_dialog_size(d);
@@ -17227,6 +17318,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Display_data pane",
@@ -17257,6 +17349,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
  
         option_box = XmCreateRadioBox(my_form,
                 "Display_data option box",
@@ -17273,6 +17366,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(tnc_data,XmNvalueChangedCallback,Display_packet_toggle,"1");
@@ -17282,6 +17376,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(net_data,XmNvalueChangedCallback,Display_packet_toggle,"2");
@@ -17291,6 +17386,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(tnc_net_data,XmNvalueChangedCallback,Display_packet_toggle,"0");
@@ -17309,6 +17405,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(capabilities_button, XmNvalueChangedCallback,Capabilities_toggle,"1");
@@ -17327,6 +17424,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(mine_only_button, XmNvalueChangedCallback,Display_packet_mine_only_toggle,"1");
@@ -17352,6 +17450,8 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset, 5); n++;
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
+
  
 //        XtSetArg(args[n], XmNnavigationType, XmTAB_GROUP); n++;
         Display_data_text=NULL;
@@ -17373,6 +17473,7 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_close, XmNactivateCallback, Display_data_destroy_shell, Display_data_dialog);
@@ -17532,6 +17633,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                     xmDialogShellWidgetClass, appshell,
                     XmNdeleteResponse,XmDESTROY,
                     XmNdefaultPosition, FALSE,
+                    XmNfontList, fontlist1,
                     NULL);
             pane = XtVaCreateWidget("help_view pane",
                     xmPanedWindowWidgetClass, 
@@ -17567,6 +17669,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
             XtSetArg(args[n], XmNrightOffset, 5); n++;
             XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
             XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+            XtSetArg(args[n], XmNfontList, fontlist1); n++;
 
             help_text=NULL;
             help_text = XmCreateScrolledText(my_form,
@@ -17609,6 +17712,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                     XmNleftPosition, 2,
                     XmNrightAttachment, XmATTACH_POSITION,
                     XmNrightPosition, 3,
+                    XmNfontList, fontlist1,
                     NULL);
 
             XtAddCallback(button_close, XmNactivateCallback, help_view_destroy_shell, help_view_dialog);
@@ -17656,6 +17760,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
                 XmNresize, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Help_Index pane",
@@ -17692,7 +17797,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         help_list = XmCreateScrolledList(my_form,
                 "Help_Index list",
@@ -17727,6 +17832,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 2,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
@@ -17742,6 +17848,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 4,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, help_index_destroy_shell, help_index_dialog);
@@ -19017,6 +19124,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Map_properties pane",
@@ -19044,7 +19152,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         map_properties_list = XmCreateScrolledList(my_form,
                 "Map_properties list",
@@ -19069,6 +19177,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNkeyboardFocusPolicy, XmEXPLICIT,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Attach a rowcolumn manager widget to my_form to handle
@@ -19085,6 +19194,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNkeyboardFocusPolicy, XmEXPLICIT,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Attach a rowcolumn manager widget to my_form to handle
@@ -19101,6 +19211,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNkeyboardFocusPolicy, XmEXPLICIT,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label1  = XtVaCreateManagedWidget(langcode("MAPP002"),
@@ -19115,6 +19226,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         label2  = XtVaCreateManagedWidget(langcode("MAPP003"),
@@ -19131,6 +19243,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtVaSetValues(XtParent(map_properties_list),
@@ -19144,6 +19257,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNrightOffset, 5,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 5,
+                XmNfontList, fontlist1,
                 NULL);
 
         // JMT -- this is a guess
@@ -19154,6 +19268,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         new_max_zoom_text = XtVaCreateManagedWidget("Map Properties max zoom number",
@@ -19169,6 +19284,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNbackground, colors[0x0f],
                 XmNrightOffset, 1,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Min Zoom" stolen from "Change Layer"
@@ -19178,6 +19294,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         new_min_zoom_text = XtVaCreateManagedWidget("Map Properties min zoom number",
@@ -19193,6 +19310,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNbackground, colors[0x0f],
                 XmNrightOffset, 1,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -19203,6 +19321,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         new_map_layer_text = XtVaCreateManagedWidget("Map Properties new layer number",
@@ -19218,6 +19337,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNbackground, colors[0x0f],
                 XmNrightOffset, 1,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         label3  = XtVaCreateManagedWidget(langcode("MAPP005"),
@@ -19225,6 +19345,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 rowcol2,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Filled-Auto"
@@ -19234,6 +19355,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Filled-Yes"
@@ -19243,6 +19365,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Filled-No"
@@ -19252,6 +19375,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Automaps
@@ -19260,6 +19384,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 rowcol2,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Automaps-Yes"
@@ -19269,6 +19394,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Automaps-No"
@@ -19278,6 +19404,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // USGS DRG->
@@ -19286,6 +19413,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 rowcol2,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "USGS DRG Auto"
@@ -19295,6 +19423,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "USGS DRG Yes"
@@ -19304,6 +19433,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "USGS DRG No"
@@ -19313,6 +19443,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Select All"
@@ -19322,6 +19453,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Clear"
@@ -19331,6 +19463,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Close"
@@ -19340,6 +19473,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_close, XmNactivateCallback, map_properties_destroy_shell, map_properties_dialog);
@@ -20257,6 +20391,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_pane = XtVaCreateWidget("Configure_tiger pane",
@@ -20289,6 +20424,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_grid  = XtVaCreateManagedWidget(langcode("MPUPTGR001"),
@@ -20305,6 +20441,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_counties  = XtVaCreateManagedWidget(langcode("MPUPTGR002"),
@@ -20320,6 +20457,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),
@@ -20335,6 +20473,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_cities  = XtVaCreateManagedWidget(langcode("MPUPTGR003"),
@@ -20351,6 +20490,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_places  = XtVaCreateManagedWidget(langcode("MPUPTGR004"),
@@ -20366,6 +20506,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),
@@ -20381,6 +20522,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_majroads  = XtVaCreateManagedWidget(langcode("MPUPTGR005"),
@@ -20397,6 +20539,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_streets  = XtVaCreateManagedWidget(langcode("MPUPTGR006"),
@@ -20412,6 +20555,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),
@@ -20427,6 +20571,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_railroad  = XtVaCreateManagedWidget(langcode("MPUPTGR007"),
@@ -20443,6 +20588,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_water  = XtVaCreateManagedWidget(langcode("MPUPTGR013"),
@@ -20458,6 +20604,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),
@@ -20473,6 +20620,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
        tiger_lakes  = XtVaCreateManagedWidget(langcode("MPUPTGR014"),
@@ -20489,6 +20637,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
        tiger_misc  = XtVaCreateManagedWidget(langcode("MPUPTGR015"),
@@ -20504,6 +20653,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sep = XtVaCreateManagedWidget("Config Tigermap sep", 
@@ -20518,6 +20668,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -20537,6 +20688,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -20556,6 +20708,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_tiger_change_data, configure_tiger_dialog);
@@ -20827,6 +20980,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         DRG_pane = XtVaCreateWidget("Configure_DRG pane",
@@ -20859,6 +21013,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sep1 = XtVaCreateManagedWidget("Config Tigermap sep1", 
@@ -20873,6 +21028,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         DRG_label1  = XtVaCreateManagedWidget(langcode("MPUPDRG001"),
@@ -20889,6 +21045,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -20908,6 +21065,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Blue
@@ -20925,6 +21083,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Red
@@ -20942,6 +21101,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Brown
@@ -20959,6 +21119,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Purple
@@ -20976,6 +21137,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Column 2
@@ -20993,6 +21155,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Light Blue
@@ -21009,6 +21172,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Light Red
@@ -21025,6 +21189,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Light Brown
@@ -21041,6 +21206,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Light Purple
@@ -21057,6 +21223,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // Column 3
@@ -21075,6 +21242,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Green
@@ -21092,6 +21260,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Yellow
@@ -21109,6 +21278,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         sep2 = XtVaCreateManagedWidget("Config Tigermap sep2", 
@@ -21123,6 +21293,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_all = XtVaCreateManagedWidget(langcode("PULDNMMC09"),
@@ -21140,6 +21311,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_none = XtVaCreateManagedWidget(langcode("PULDNDP040"),
@@ -21156,6 +21328,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -21173,6 +21346,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -21191,6 +21365,7 @@ void Config_DRG( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_all,
@@ -21352,6 +21527,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse,XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Map_chooser pane",
@@ -21379,7 +21555,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         map_list = XmCreateScrolledList(my_form,
                 "Map_chooser list",
@@ -21402,6 +21578,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(expand_dirs_button,XmNvalueChangedCallback,Expand_Dirs_toggle,"1");
         if(map_chooser_expand_dirs)
@@ -21421,6 +21598,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         map_chooser_maps_selected_data = XtVaCreateManagedWidget("0/0",
@@ -21435,6 +21613,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Button for configuring properties
@@ -21451,6 +21630,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(button_properties, XmNactivateCallback, map_properties, map_chooser_dialog);
  
@@ -21466,6 +21646,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNkeyboardFocusPolicy, XmEXPLICIT,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtVaSetValues(XtParent(map_list),
@@ -21479,6 +21660,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNrightOffset, 5,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 5,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Clear"
@@ -21489,6 +21671,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         }
         else {  // "Clear Dirs"
@@ -21498,6 +21681,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         }
 
@@ -21509,6 +21693,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "250k Topos"
@@ -21521,6 +21706,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 #endif /* HAVE_LIBGEOTIFF */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "100k Topos"
@@ -21533,6 +21719,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 #endif /* HAVE_LIBGEOTIFF */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "24k Topos"
@@ -21545,6 +21732,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 #endif /* HAVE_LIBGEOTIFF */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Apply"
@@ -21554,6 +21742,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "OK"
@@ -21563,6 +21752,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 // "Cancel"
@@ -21572,6 +21762,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_apply, XmNactivateCallback, map_chooser_apply_maps, map_chooser_dialog);
@@ -21673,6 +21864,8 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
     Widget fs;
+    Widget child;
+
 
     if (read_selection_dialog!=NULL)
         read_file_selection_destroy_shell(read_selection_dialog, read_selection_dialog, NULL);
@@ -21689,7 +21882,7 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
         //XtSetArg(al[ac], XmNdirMask, "/home/hacker/.xastir/logs/*"); ac++;
         //XtSetArg(al[ac], XmNdirectory, "/home/hacker/.xastir/logs/"); ac++;
         //XtSetArg(al[ac], XmNpattern, "*"); ac++;
@@ -21704,17 +21897,45 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
 
         fs=XmFileSelectionBoxGetChild(read_selection_dialog,(unsigned char)XmDIALOG_TEXT);
         XtVaSetValues(fs,XmNbackground, colors[0x0f],NULL);
+        XtVaSetValues(fs,XmNfontList,fontlist1,NULL);
 
         fs=XmFileSelectionBoxGetChild(read_selection_dialog,(unsigned char)XmDIALOG_FILTER_TEXT);
         XtVaSetValues(fs,XmNbackground, colors[0x0f],NULL);
+        XtVaSetValues(fs,XmNfontList,fontlist1,NULL);
 
         fs=XmFileSelectionBoxGetChild(read_selection_dialog,(unsigned char)XmDIALOG_DIR_LIST);
         XtVaSetValues(fs,XmNbackground, colors[0x0f],NULL);
+        XtVaSetValues(fs,XmNfontList,fontlist1,NULL);
 
         fs=XmFileSelectionBoxGetChild(read_selection_dialog,(unsigned char)XmDIALOG_LIST);
         XtVaSetValues(fs,XmNbackground, colors[0x0f],NULL);
+        XtVaSetValues(fs,XmNfontList,fontlist1,NULL);
 
         //XtVaSetValues(read_selection_dialog, XmNdirMask, "/home/hacker/.xastir/logs/*", NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_FILTER_LABEL);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_DIR_LIST_LABEL);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_LIST_LABEL);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_SELECTION_LABEL);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_OK_BUTTON);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_APPLY_BUTTON);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_CANCEL_BUTTON);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
+
+        child = XmFileSelectionBoxGetChild(read_selection_dialog, XmDIALOG_HELP_BUTTON);
+        XtVaSetValues(child,XmNfontList,fontlist1,NULL);
 
         XtAddCallback(read_selection_dialog, XmNcancelCallback,read_file_selection_destroy_shell,read_selection_dialog);
         XtAddCallback(read_selection_dialog, XmNokCallback,read_file_selection_now,read_selection_dialog);
@@ -22049,11 +22270,13 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         ac = 0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         configure_defaults_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Configure_defaults pane",
@@ -22094,6 +22317,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNchildType, XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         type_box = XmCreateRadioBox(frame4,
@@ -22110,6 +22334,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(styp1,XmNvalueChangedCallback,station_type_toggle,"0");
 
@@ -22118,6 +22343,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(styp2,XmNvalueChangedCallback,station_type_toggle,"1");
 
@@ -22126,6 +22352,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(styp3,XmNvalueChangedCallback,station_type_toggle,"2");
 
@@ -22134,6 +22361,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(styp4,XmNvalueChangedCallback,station_type_toggle,"3");
 
@@ -22142,6 +22370,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(styp5,XmNvalueChangedCallback,station_type_toggle,"4");
 
@@ -22150,6 +22379,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 type_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(styp6,XmNvalueChangedCallback,station_type_toggle,"5");
 
@@ -22176,6 +22406,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNchildType, XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         igate_box = XmCreateRadioBox(frame5,
@@ -22192,6 +22423,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 igate_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(igtyp0,XmNvalueChangedCallback,igate_type_toggle,"0");
@@ -22201,6 +22433,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 igate_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(igtyp1,XmNvalueChangedCallback,igate_type_toggle ,"1");
@@ -22210,6 +22443,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 igate_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(igtyp2,XmNvalueChangedCallback,igate_type_toggle,"2");
@@ -22229,6 +22463,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         new_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD027"),
@@ -22243,6 +22478,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         zero_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD029"),
@@ -22257,6 +22493,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         warn_about_mouse_modifiers_enable = XtVaCreateManagedWidget(langcode("WPUPCFD028"),
@@ -22272,6 +22509,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Show all My trails in one color
@@ -22288,6 +22526,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
        
        
@@ -22315,6 +22554,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
          
         // lesstif as of 0.95 in 2008 doesn't fully support combo boxes
@@ -22344,6 +22584,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNvisibleItemCount, 3,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_items[0],1,1);  
         XmComboBoxAddItem(load_predefined_objects_menu_from_file,cb_items[1],2,1);  
@@ -22352,11 +22593,12 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         lpomff_widget = load_predefined_objects_menu_from_file;
 #else
         // Menu replacement for combo box when using lesstif.
-        // Not a full replacemtn, as combo box in motif can have editable values, 
+        // Not a full replacement, as combo box in motif can have editable values, 
         // not just selection from predefined list as is the case here.
         ac = 0;
         XtSetArg(al[ac], XmNmarginWidth, 0); ac++;
         XtSetArg(al[ac], XmNmarginHeight, 0); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
         lpomff_menuPane = XmCreatePulldownMenu(my_form,"lpomff_menuPane", al, ac);
         //lpomff_menu is zero based, constants for filenames are one based
         //lpomff_value is set to match constants in callback.
@@ -22380,6 +22622,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         XtSetArg(al[ac], XmNtopOffset, 5); ++ac;
         XtSetArg(al[ac], XmNleftOffset, 10); ++ac;
         XtSetArg(al[ac], XmNsubMenuId, lpomff_menuPane); ++ac;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
         lpomff_menu = XmCreateOptionMenu(my_form, "sddd_Menu", al, ac);
         XtManageChild(lpomff_menu);
         lpomff_value = 2;   // set a default value (line on off dash)
@@ -22404,6 +22647,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 #endif  // TRANSMIT_RAW_WX
 
@@ -22420,6 +22664,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "ALTNET:"
@@ -22436,6 +22681,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, compressed_objects_items_tx,
                 XmNrightAttachment, XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", 
@@ -22456,6 +22702,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNleftWidget, altnet_label,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
+                XmNfontList, fontlist1,
                 NULL);
 
         disable_dupe_check = XtVaCreateManagedWidget(langcode("WPUPCFD030"),
@@ -22471,6 +22718,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -22492,6 +22740,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -22514,6 +22763,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_defaults_change_data, configure_defaults_dialog);
@@ -22616,6 +22866,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                     cb_items[i] = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
                     XtSetArg(al[ac], XmNlabelString, cb_items[i]); ac++;
                     XtSetArg(al[ac], XmNuserData, (XtPointer)i); ac++;
+                    XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
                     sprintf(buf,"button%d",i);
                     lpomff_button = XmCreatePushButton(lpomff_menuPane, buf, al, ac);
                     XtManageChild(lpomff_button);
@@ -22778,6 +23029,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Configure_timing pane",
@@ -22827,6 +23079,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -22860,6 +23113,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -22893,6 +23147,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -22926,6 +23181,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -22959,6 +23215,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -22992,6 +23249,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23025,6 +23283,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23058,6 +23317,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23091,6 +23351,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23124,6 +23385,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23157,6 +23419,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23193,6 +23456,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23226,6 +23490,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
 
@@ -23244,6 +23509,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -23262,6 +23528,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_timing_change_data, configure_timing_dialog);
@@ -23338,6 +23605,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Configure_coordinates pane",
@@ -23379,12 +23647,13 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 XmNchildType, XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         coord_box = XmCreateRadioBox(frame,"Configure_coordinates coord_box",
                 al,
@@ -23402,6 +23671,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coord_0,XmNvalueChangedCallback,coordinates_toggle,"0");
 
@@ -23411,6 +23681,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coord_1,XmNvalueChangedCallback,coordinates_toggle,"1");
 
@@ -23420,6 +23691,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coord_2,XmNvalueChangedCallback,coordinates_toggle,"2");
 
@@ -23429,6 +23701,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coord_3,XmNvalueChangedCallback,coordinates_toggle,"3");
 
@@ -23438,6 +23711,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coord_4,XmNvalueChangedCallback,coordinates_toggle,"4");
 
@@ -23447,6 +23721,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(coord_5,XmNvalueChangedCallback,coordinates_toggle,"5");
 
@@ -23466,6 +23741,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -23484,6 +23760,7 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_coordinates_destroy_shell, configure_coordinates_dialog);
@@ -23697,6 +23974,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Configure_audio_alarms pane",
@@ -23728,6 +24006,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command", 
@@ -23748,6 +24027,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -23764,6 +24044,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         file2 = XtVaCreateManagedWidget(langcode("WPUPCFA004"),
@@ -23779,6 +24060,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightOffset, 10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_on_new_station = XtVaCreateManagedWidget(langcode("WPUPCFA005"),
@@ -23794,6 +24076,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_ons_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command NS", 
@@ -23816,6 +24099,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftWidget, audio_alarm_config_play_on_new_station,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_on_new_message  = XtVaCreateManagedWidget(langcode("WPUPCFA006"),
@@ -23831,6 +24115,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_onm_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command NM", 
@@ -23852,6 +24137,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_on_prox  = XtVaCreateManagedWidget(langcode("WPUPCFA007"),
@@ -23867,6 +24153,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_onpx_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command PROX", 
@@ -23888,6 +24175,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
+                XmNfontList, fontlist1,
                 NULL);
 
         min1 = XtVaCreateManagedWidget(langcode("WPUPCFA009"),
@@ -23903,6 +24191,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         prox_min_data = XtVaCreateManagedWidget("Configure_audio_alarms prox min", 
@@ -23924,6 +24213,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_POSITION,
                 XmNrightPosition, 2,
+                XmNfontList, fontlist1,
                 NULL);
 
         min2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
@@ -23939,6 +24229,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightOffset, 10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         max1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),
@@ -23954,6 +24245,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         prox_max_data = XtVaCreateManagedWidget("Configure_audio_alarms prox max", 
@@ -23975,6 +24267,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_POSITION,
                 XmNrightPosition, 2,
+                XmNfontList, fontlist1,
                 NULL);
 
         max2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
@@ -23990,6 +24283,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightOffset, 10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFA008"),
@@ -24005,6 +24299,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_onbo_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command BAND", 
@@ -24026,6 +24321,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_FORM,
                 XmNrightOffset, 10,
+                XmNfontList, fontlist1,
                 NULL);
 
         minb1 = XtVaCreateManagedWidget(langcode("WPUPCFA009"),
@@ -24041,6 +24337,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         bando_min_data = XtVaCreateManagedWidget("Configure_audio_alarms bando min", 
@@ -24062,6 +24359,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_POSITION,
                 XmNrightPosition, 2,
+                XmNfontList, fontlist1,
                 NULL);
 
         minb2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
@@ -24077,6 +24375,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightOffset, 10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         maxb1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),
@@ -24092,6 +24391,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         bando_max_data = XtVaCreateManagedWidget("Configure_audio_alarms bando max", 
@@ -24113,6 +24413,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment,XmATTACH_POSITION,
                 XmNrightPosition, 2,
+                XmNfontList, fontlist1,
                 NULL);
 
         maxb2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
@@ -24128,6 +24429,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightOffset, 10,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_play_on_wx_alert  = XtVaCreateManagedWidget(langcode("WPUPCFA011"),
@@ -24143,6 +24445,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         audio_alarm_config_wx_alert_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command WxAlert", 
@@ -24164,6 +24467,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNleftPosition, 1,
                 XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 10,
+                XmNfontList, fontlist1,
                 NULL);
 
         sep = XtVaCreateManagedWidget("Configure_audio_alarms sep", 
@@ -24178,6 +24482,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -24195,6 +24500,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -24212,6 +24518,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_audio_alarm_change_data, configure_audio_alarm_dialog);
@@ -24361,6 +24668,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Configure_speech pane",
@@ -24391,6 +24699,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_new_station  = XtVaCreateManagedWidget(langcode("WPUPCFSP03"),
@@ -24408,6 +24717,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_new_message_alert  = XtVaCreateManagedWidget(langcode("WPUPCFSP04"),
@@ -24426,6 +24736,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_new_message_body  = XtVaCreateManagedWidget(langcode("WPUPCFSP05"),
@@ -24444,6 +24755,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_prox  = XtVaCreateManagedWidget(langcode("WPUPCFSP06"),
@@ -24462,6 +24774,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_trak  = XtVaCreateManagedWidget(langcode("WPUPCFSP09"),
@@ -24480,6 +24793,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFSP07"),
@@ -24498,6 +24812,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         speech_config_play_on_new_wx_alert  = XtVaCreateManagedWidget(langcode("WPUPCFSP08"),
@@ -24516,6 +24831,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -24531,6 +24847,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNrightAttachment,XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_test = XtVaCreateManagedWidget(langcode("PULDNFI003"),
@@ -24548,6 +24865,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -24565,6 +24883,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -24582,6 +24901,7 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_test, XmNactivateCallback, Test_speech, configure_speech_dialog);
@@ -25164,6 +25484,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 xmDialogShellWidgetClass,   appshell,
                 XmNdeleteResponse,          XmDESTROY,
                 XmNdefaultPosition,         FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("Configure_station pane",
@@ -25194,6 +25515,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_call_data = XtVaCreateManagedWidget("Configure_station call_data", 
@@ -25213,6 +25535,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNleftAttachment,          XmATTACH_POSITION,
                 XmNleftPosition,            1,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         compressed_posit_tx = XtVaCreateManagedWidget(langcode("WPUPCFS029"),
@@ -25227,6 +25550,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(compressed_posit_tx,XmNvalueChangedCallback,Posit_compressed_toggle,"1");
@@ -25243,6 +25567,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_slat_data_deg = XtVaCreateManagedWidget("Configure_station lat_deg", 
@@ -25262,6 +25587,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNleftAttachment,          XmATTACH_POSITION,
                 XmNleftPosition,            1,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         slat_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
@@ -25276,6 +25602,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_slat_data_min = XtVaCreateManagedWidget("Configure_station lat_min", 
@@ -25296,6 +25623,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget,               call,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         slat_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
@@ -25310,6 +25638,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_slat_data_ns = XtVaCreateManagedWidget("Configure_station lat_ns", 
@@ -25330,6 +25659,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget,               call,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         slat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),
@@ -25344,6 +25674,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         slong = XtVaCreateManagedWidget(langcode("WPUPCFS007"),
@@ -25358,6 +25689,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_slong_data_deg = XtVaCreateManagedWidget("Configure_station long_deg", 
@@ -25377,6 +25709,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNleftAttachment,          XmATTACH_POSITION,
                 XmNleftPosition,            1,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         slong_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
@@ -25391,6 +25724,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_slong_data_min = XtVaCreateManagedWidget("Configure_station long_min", 
@@ -25411,6 +25745,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget,               slat,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         slong_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
@@ -25425,6 +25760,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         station_config_slong_data_ew = XtVaCreateManagedWidget("Configure_station long_ew", 
@@ -25445,6 +25781,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget,               slat,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         slong_ew = XtVaCreateManagedWidget(langcode("WPUPCFS008"),
@@ -25459,6 +25796,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         compute_button = XtVaCreateManagedWidget(langcode("COORD002"),
@@ -25475,6 +25813,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // Fill in the pointers to our input textfields so that the
@@ -25515,6 +25854,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         cs_form1 =  XtVaCreateWidget("Configure_station cs_form1",
@@ -25523,6 +25863,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNfractionBase,            5,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Group/overlay"
@@ -25538,6 +25879,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         // table
         station_config_group_data = XtVaCreateManagedWidget("Configure_station group", 
@@ -25557,6 +25899,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // "Symbol"
@@ -25572,6 +25915,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         // symbol
@@ -25592,6 +25936,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment,           XmATTACH_FORM,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         // icon
@@ -25619,6 +25964,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         configure_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),
@@ -25634,6 +25980,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(configure_button_symbol, XmNactivateCallback, Configure_change_symbol, configure_station_dialog);
 
@@ -25660,6 +26007,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         formphg =  XtVaCreateWidget("Configure_station power_form",
@@ -25674,6 +26022,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         ac = 0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         power_box = XmCreateRadioBox(formphg,
                 "Configure_station Power Radio Box",
@@ -25697,6 +26046,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption0,XmNvalueChangedCallback,Power_toggle,"x");
 
@@ -25706,6 +26056,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption1,XmNvalueChangedCallback,Power_toggle,"0");
 
@@ -25715,6 +26066,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption2,XmNvalueChangedCallback,Power_toggle,"1");
 
@@ -25724,6 +26076,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption3,XmNvalueChangedCallback,Power_toggle,"2");
 
@@ -25733,6 +26086,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption4,XmNvalueChangedCallback,Power_toggle,"3");
 
@@ -25742,6 +26096,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption5,XmNvalueChangedCallback,Power_toggle,"4");
 
@@ -25751,6 +26106,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption6,XmNvalueChangedCallback,Power_toggle,"5");
 
@@ -25760,6 +26116,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption7,XmNvalueChangedCallback,Power_toggle,"6");
 
@@ -25769,6 +26126,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption8,XmNvalueChangedCallback,Power_toggle,"7");
 
@@ -25778,6 +26136,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption9,XmNvalueChangedCallback,Power_toggle,"8");
 
@@ -25787,6 +26146,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 power_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(poption10,XmNvalueChangedCallback,Power_toggle,"9");
 
@@ -25818,6 +26178,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption1,XmNvalueChangedCallback,Height_toggle,"0");
 
@@ -25828,6 +26189,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption2,XmNvalueChangedCallback,Height_toggle,"1");
 
@@ -25838,6 +26200,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption3,XmNvalueChangedCallback,Height_toggle,"2");
 
@@ -25848,6 +26211,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption4,XmNvalueChangedCallback,Height_toggle,"3");
 
@@ -25858,6 +26222,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption5,XmNvalueChangedCallback,Height_toggle,"4");
 
@@ -25868,6 +26233,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption6,XmNvalueChangedCallback,Height_toggle,"5");
 
@@ -25878,6 +26244,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption7,XmNvalueChangedCallback,Height_toggle,"6");
 
@@ -25888,6 +26255,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption8,XmNvalueChangedCallback,Height_toggle,"7");
 
@@ -25898,6 +26266,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption9,XmNvalueChangedCallback,Height_toggle,"8");
 
@@ -25908,6 +26277,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 height_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(hoption10,XmNvalueChangedCallback,Height_toggle,"9");
 
@@ -25938,6 +26308,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption1,XmNvalueChangedCallback,Gain_toggle,"0");
 
@@ -25947,6 +26318,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption2,XmNvalueChangedCallback,Gain_toggle,"1");
 
@@ -25956,6 +26328,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption3,XmNvalueChangedCallback,Gain_toggle,"2");
 
@@ -25965,6 +26338,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption4,XmNvalueChangedCallback,Gain_toggle,"3");
 
@@ -25974,6 +26348,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption5,XmNvalueChangedCallback,Gain_toggle,"4");
 
@@ -25983,6 +26358,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption6,XmNvalueChangedCallback,Gain_toggle,"5");
 
@@ -25992,6 +26368,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption7,XmNvalueChangedCallback,Gain_toggle,"6");
 
@@ -26001,6 +26378,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption8,XmNvalueChangedCallback,Gain_toggle,"7");
 
@@ -26010,6 +26388,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption9,XmNvalueChangedCallback,Gain_toggle,"8");
 
@@ -26019,6 +26398,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 gain_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(goption10,XmNvalueChangedCallback,Gain_toggle,"9");
 
@@ -26049,6 +26429,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption1,XmNvalueChangedCallback,Directivity_toggle,"0");
 
@@ -26058,6 +26439,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption2,XmNvalueChangedCallback,Directivity_toggle,"1");
 
@@ -26067,6 +26449,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption3,XmNvalueChangedCallback,Directivity_toggle,"2");
 
@@ -26076,6 +26459,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption4,XmNvalueChangedCallback,Directivity_toggle,"3");
 
@@ -26085,6 +26469,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption5,XmNvalueChangedCallback,Directivity_toggle,"4");
 
@@ -26094,6 +26479,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption6,XmNvalueChangedCallback,Directivity_toggle,"5");
 
@@ -26103,6 +26489,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption7,XmNvalueChangedCallback,Directivity_toggle,"6");
 
@@ -26112,6 +26499,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption8,XmNvalueChangedCallback,Directivity_toggle,"7");
 
@@ -26121,6 +26509,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 directivity_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(doption9,XmNvalueChangedCallback,Directivity_toggle,"8");
 
@@ -26138,6 +26527,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -26160,6 +26550,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNtopWidget,               framephg,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNrightAttachment,         XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
 
@@ -26185,12 +26576,14 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNchildType,               XmFRAME_TITLE_CHILD,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
         XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
         option_box = XmCreateRadioBox(frame2,
                 "Configure_station Option box",
@@ -26206,6 +26599,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(posamb0,XmNvalueChangedCallback,Configure_station_toggle,"0");
 
@@ -26214,6 +26608,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(posamb1,XmNvalueChangedCallback,Configure_station_toggle,"1");
 
@@ -26223,6 +26618,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(posamb2,XmNvalueChangedCallback,Configure_station_toggle,"2");
 
@@ -26231,6 +26627,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(posamb3,XmNvalueChangedCallback,Configure_station_toggle,"3");
 
@@ -26239,6 +26636,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
         XtAddCallback(posamb4,XmNvalueChangedCallback,Configure_station_toggle,"4");
 
@@ -26254,6 +26652,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNrightAttachment,         XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -26271,6 +26670,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
@@ -26288,6 +26688,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType,          XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_station_change_data, configure_station_dialog);

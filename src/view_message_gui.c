@@ -65,6 +65,7 @@
 #include "leak_detection.h"
 
 
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 Widget All_messages_dialog = NULL;
 Widget view_messages_text = NULL;
@@ -436,7 +437,7 @@ void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
     Widget option_box, tnc_data, net_data, tnc_net_data,
         read_mine_only_button;
     unsigned int n;
-#define NCNT 21
+#define NCNT 50
 #define IncN(n) if (n< NCNT) n++; else fprintf(stderr, "Oops, too many arguments for array!\a")
     Arg args[NCNT];
     Atom delw;
@@ -450,6 +451,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 xmDialogShellWidgetClass, appshell,
                 XmNdeleteResponse, XmDESTROY,
                 XmNdefaultPosition, FALSE,
+                XmNfontList, fontlist1,
                 NULL);
 
         pane = XtVaCreateWidget("view_all_messages pane",
@@ -481,6 +483,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         vm_dist_data = XtVaCreateManagedWidget("view_all_messages dist_data", 
@@ -501,6 +504,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNleftWidget, dist,
                 XmNleftOffset, 10,
                 XmNrightAttachment,XmATTACH_NONE,
+                XmNfontList, fontlist1,
                 NULL);
 
         dist_units = XtVaCreateManagedWidget((english_units?langcode("UNIOP00004"):langcode("UNIOP00005")),
@@ -516,6 +520,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNtraversalOn, FALSE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),
@@ -531,6 +536,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_range, XmNactivateCallback, All_messages_change_range, All_messages_dialog);
@@ -548,6 +554,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(button_close, XmNactivateCallback, All_messages_destroy_shell, All_messages_dialog);
@@ -562,6 +569,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
 
         option_box = XmCreateRadioBox(my_form,
                 "Vew Messages option box",
@@ -578,6 +586,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(tnc_data,XmNvalueChangedCallback,Read_messages_packet_toggle,"1");
@@ -587,6 +596,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(net_data,XmNvalueChangedCallback,Read_messages_packet_toggle,"2");
@@ -596,6 +606,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 option_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
 
         XtAddCallback(tnc_net_data,XmNvalueChangedCallback,Read_messages_packet_toggle,"0");
@@ -615,6 +626,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
                 NULL);
  
         XtAddCallback(read_mine_only_button,XmNvalueChangedCallback,Read_messages_mine_only_toggle,"1");
@@ -642,6 +654,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNrightOffset, 5); IncN(n);
         XtSetArg(args[n], XmNforeground, MY_FG_COLOR); IncN(n);
         XtSetArg(args[n], XmNbackground, MY_BG_COLOR); IncN(n);
+        XtSetArg(args[n], XmNfontList, fontlist1); n++;
  
         view_messages_text = XmCreateScrolledText(my_form,
                 "view_all_messages text",

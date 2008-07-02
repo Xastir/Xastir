@@ -46,6 +46,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 // lesstif (at least as of version 0.94 in 2008), doesn't
 // have full implementation of combo boxes.
@@ -639,6 +640,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                             xmDialogShellWidgetClass, appshell,
                             XmNdeleteResponse,XmDESTROY,
                             XmNdefaultPosition, FALSE,
+                            XmNfontList, fontlist1,
                             NULL);
 
         pane = XtVaCreateWidget("Config_TNC pane",xmPanedWindowWidgetClass, config_TNC_dialog,
@@ -662,6 +664,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_transmit_data = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
@@ -675,6 +678,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         switch(device_type) {
@@ -691,6 +695,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 // We can only set the time properly on Linux systems
@@ -716,6 +721,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 #ifdef SERIAL_KISS_RELAY_DIGI
@@ -740,6 +746,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_device_name_data = XtVaCreateManagedWidget("Config_TNC device_data", xmTextFieldWidgetClass, form,
@@ -761,6 +768,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftWidget, device,
                                       XmNleftOffset, 12,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -773,6 +781,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_comment = XtVaCreateManagedWidget("Config_TNC comment", xmTextFieldWidgetClass, form,
@@ -794,6 +803,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftWidget, comment,
                                       XmNleftOffset, 12,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         if (device_type ==  DEVICE_SERIAL_MKISS_TNC) {
@@ -810,6 +820,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
             TNC_radio_port_data = XtVaCreateManagedWidget("Config_TNC device_data",
@@ -832,6 +843,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftWidget, radio_port_label,
                                       XmNleftOffset, 12,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
         }
 
@@ -850,6 +862,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         /*set args for color */
@@ -862,6 +875,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         speed_300 = XtVaCreateManagedWidget(langcode("WPUPCFT005"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
 
         XtAddCallback(speed_300,XmNvalueChangedCallback,speed_toggle,"1");
@@ -869,6 +883,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         speed_1200 = XtVaCreateManagedWidget(langcode("WPUPCFT006"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_1200,XmNvalueChangedCallback,speed_toggle,"2");
 
@@ -876,6 +891,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         speed_2400 = XtVaCreateManagedWidget(langcode("WPUPCFT007"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_2400,XmNvalueChangedCallback,speed_toggle,"3");
 
@@ -883,24 +899,28 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         speed_4800 = XtVaCreateManagedWidget(langcode("WPUPCFT008"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_4800,XmNvalueChangedCallback,speed_toggle,"4");
 
         speed_9600 = XtVaCreateManagedWidget(langcode("WPUPCFT009"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_9600,XmNvalueChangedCallback,speed_toggle,"5");
 
         speed_19200 = XtVaCreateManagedWidget(langcode("WPUPCFT010"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_19200,XmNvalueChangedCallback,speed_toggle,"6");
 
         speed_38400 = XtVaCreateManagedWidget(langcode("WPUPCFT019"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
@@ -908,18 +928,21 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_57600,XmNvalueChangedCallback,speed_toggle,"8");
 
         speed_115200 = XtVaCreateManagedWidget(langcode("WPUPCFT021"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_115200,XmNvalueChangedCallback,speed_toggle,"9");
 
         speed_230400 = XtVaCreateManagedWidget(langcode("WPUPCFT022"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
 #endif  // __LSB__
@@ -944,6 +967,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
 
@@ -954,18 +978,21 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 style_8n1 = XtVaCreateManagedWidget(langcode("WPUPCFT016"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
                 XtAddCallback(style_8n1,XmNvalueChangedCallback,style_toggle,"0");
 
                 style_7e1 = XtVaCreateManagedWidget(langcode("WPUPCFT017"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
                 XtAddCallback(style_7e1,XmNvalueChangedCallback,style_toggle,"1");
 
                 style_7o1 = XtVaCreateManagedWidget(langcode("WPUPCFT018"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
                 XtAddCallback(style_7o1,XmNvalueChangedCallback,style_toggle,"2");
             break;
@@ -981,11 +1008,13 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                      XmNrightAttachment, XmATTACH_FORM,
                                      XmNrightOffset, 10,
                                      XmNbackground, colors[0xff],
+                                     XmNfontList, fontlist1,
                                      NULL);
 
         igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame4,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         igate_box = XmCreateRadioBox(frame4,"Config_TNC IGate box",al,ac);
@@ -995,18 +1024,21 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
         igate_o_0 = XtVaCreateManagedWidget(langcode("IGPUPCF001"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(igate_o_0,XmNvalueChangedCallback,igate_toggle,"0");
 
         igate_o_1 = XtVaCreateManagedWidget(langcode("IGPUPCF002"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(igate_o_1,XmNvalueChangedCallback,igate_toggle,"1");
 
         igate_o_2 = XtVaCreateManagedWidget(langcode("IGPUPCF003"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(igate_o_2,XmNvalueChangedCallback,igate_toggle,"2");
 
@@ -1021,6 +1053,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT012"), VERSIONFRM);
@@ -1035,6 +1068,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_unproto1_data = XtVaCreateManagedWidget("Config_TNC protopath1", xmTextFieldWidgetClass, form,
@@ -1056,6 +1090,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftWidget, proto1,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT013"), VERSIONFRM);
@@ -1070,6 +1105,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_unproto2_data = XtVaCreateManagedWidget("Config_TNC protopath2", xmTextFieldWidgetClass, form,
@@ -1091,6 +1127,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftWidget, proto2,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT014"), VERSIONFRM);
@@ -1105,6 +1142,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_unproto3_data = XtVaCreateManagedWidget("Config_TNC protopath3", xmTextFieldWidgetClass, form,
@@ -1126,6 +1164,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftWidget, proto3,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
@@ -1139,6 +1178,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         TNC_igate_data = XtVaCreateManagedWidget("Config_TNC igate_data", xmTextFieldWidgetClass, form,
@@ -1160,6 +1200,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNleftWidget, igate_label,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 // Draw a different frame3 for Serial KISS/MKISS TNC interfaces
@@ -1182,6 +1223,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                 setup = XtVaCreateManagedWidget(langcode("WPUPCFT034"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 form2 =  XtVaCreateWidget("Config_TNC form2",xmFormWidgetClass, frame3,
@@ -1198,6 +1240,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftOffset, 10,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 TNC_txdelay = XtVaCreateManagedWidget("Config_TNC TNC_txdelay", xmTextFieldWidgetClass, form2,
@@ -1217,6 +1260,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 2,
                                     XmNrightAttachment,XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 // Persistence (0 to 255)
@@ -1229,6 +1273,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftOffset, 10,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 TNC_persistence = XtVaCreateManagedWidget("Config_TNC persistence", xmTextFieldWidgetClass, form2,
@@ -1249,6 +1294,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 2,
                                     XmNrightAttachment,XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 // SlotTime (10 ms units)
@@ -1260,6 +1306,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftPosition, 3,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 TNC_slottime = XtVaCreateManagedWidget("Config_TNC slottime", xmTextFieldWidgetClass, form2,
@@ -1279,6 +1326,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 5,
                                     XmNrightAttachment,XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 // TxTail (10 ms units)
@@ -1291,6 +1339,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftPosition, 3,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 TNC_txtail = XtVaCreateManagedWidget("Config_TNC TxTail", xmTextFieldWidgetClass, form2,
@@ -1311,6 +1360,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 5,
                                     XmNrightAttachment,XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 // Full Duplex
@@ -1326,6 +1376,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftOffset, 10,
                                     XmNrightAttachment, XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 // Button to enable KISS-mode at startup
@@ -1341,6 +1392,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftOffset, 135,
                                     XmNrightAttachment, XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
                 break;
             default:
@@ -1359,6 +1411,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                 setup = XtVaCreateManagedWidget(langcode("WPUPCFT031"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 form2 =  XtVaCreateWidget("Config_TNC form2",xmFormWidgetClass, frame3,
@@ -1373,6 +1426,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment, XmATTACH_FORM,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 TNC_up_file_data = XtVaCreateManagedWidget("Config_TNC up_file", xmTextFieldWidgetClass, form2,
@@ -1392,6 +1446,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 2,
                                     XmNrightAttachment,XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 setup2 = XtVaCreateManagedWidget(langcode("WPUPCFT033"), xmLabelWidgetClass, form2,
@@ -1402,6 +1457,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment, XmATTACH_FORM,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 TNC_down_file_data = XtVaCreateManagedWidget("Config_TNC down_file", xmTextFieldWidgetClass, form2,
@@ -1422,6 +1478,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 2,
                                     XmNrightAttachment,XmATTACH_NONE,
+                                    XmNfontList, fontlist1,
                                     NULL);
 
                 break;
@@ -1443,6 +1500,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -1458,6 +1516,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Config_TNC_change_data, config_TNC_dialog);
@@ -1905,6 +1964,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse,XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_GPS pane",xmPanedWindowWidgetClass, config_GPS_dialog,
@@ -1926,6 +1986,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset, 10,
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         GPS_device_name_data = XtVaCreateManagedWidget("Config_GPS device_data", xmTextFieldWidgetClass, form,
@@ -1947,6 +2008,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset, 10,
             XmNrightAttachment,XmATTACH_FORM,
             XmNrightOffset, 5,
+            XmNfontList, fontlist1,
             NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -1958,6 +2020,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset, 15,
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         GPS_comment = XtVaCreateManagedWidget("Config_GPS comment", xmTextFieldWidgetClass, form,
@@ -1980,6 +2043,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset, 10,
             XmNrightAttachment,XmATTACH_FORM,
             XmNrightOffset, 5,
+            XmNfontList, fontlist1,
             NULL);
 
         GPS_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
@@ -1993,6 +2057,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset ,10,
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
@@ -2006,6 +2071,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset ,10,
             XmNrightAttachment, XmATTACH_NONE,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
 // We can only set the time properly on Linux systems
@@ -2033,6 +2099,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
             XmNchildType, XmFRAME_TITLE_CHILD,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         /*set args for color */
@@ -2047,42 +2114,49 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         speed_300 = XtVaCreateManagedWidget(langcode("WPUPCFT005"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_300,XmNvalueChangedCallback,speed_toggle,"1");
 
         speed_1200 = XtVaCreateManagedWidget(langcode("WPUPCFT006"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_1200,XmNvalueChangedCallback,speed_toggle,"2");
 
         speed_2400 = XtVaCreateManagedWidget(langcode("WPUPCFT007"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_2400,XmNvalueChangedCallback,speed_toggle,"3");
 
         speed_4800 = XtVaCreateManagedWidget(langcode("WPUPCFT008"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_4800,XmNvalueChangedCallback,speed_toggle,"4");
 
         speed_9600 = XtVaCreateManagedWidget(langcode("WPUPCFT009"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_9600,XmNvalueChangedCallback,speed_toggle,"5");
 
         speed_19200 = XtVaCreateManagedWidget(langcode("WPUPCFT010"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_19200,XmNvalueChangedCallback,speed_toggle,"6");
 
         speed_38400 = XtVaCreateManagedWidget(langcode("WPUPCFT019"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
@@ -2090,18 +2164,21 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_57600,XmNvalueChangedCallback,speed_toggle,"8");
 
         speed_115200 = XtVaCreateManagedWidget(langcode("WPUPCFT021"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_115200,XmNvalueChangedCallback,speed_toggle,"9");
 
         speed_230400 = XtVaCreateManagedWidget(langcode("WPUPCFT022"),xmToggleButtonGadgetClass,
             speed_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
 #endif  // __LSB__
@@ -2121,6 +2198,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
             XmNchildType, XmFRAME_TITLE_CHILD,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         style_box = XmCreateRadioBox(frame2,"Config_GPS Style box",al,ac);
@@ -2132,18 +2210,21 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         style_8n1 = XtVaCreateManagedWidget(langcode("WPUPCFT016"),xmToggleButtonGadgetClass,
             style_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(style_8n1,XmNvalueChangedCallback,style_toggle,"0");
 
         style_7e1 = XtVaCreateManagedWidget(langcode("WPUPCFT017"),xmToggleButtonGadgetClass,
             style_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(style_7e1,XmNvalueChangedCallback,style_toggle,"1");
 
         style_7o1 = XtVaCreateManagedWidget(langcode("WPUPCFT018"),xmToggleButtonGadgetClass,
             style_box,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         XtAddCallback(style_7o1,XmNvalueChangedCallback,style_toggle,"2");
 
@@ -2156,6 +2237,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftAttachment, XmATTACH_FORM,
             XmNrightAttachment,XmATTACH_FORM,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -2171,6 +2253,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment, XmATTACH_POSITION,
             XmNrightPosition, 2,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -2186,6 +2269,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment, XmATTACH_POSITION,
             XmNrightPosition, 4,
             XmNbackground, colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Config_GPS_change_data, config_GPS_dialog);
@@ -2464,6 +2548,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_WX pane",xmPanedWindowWidgetClass, config_WX_dialog,
@@ -2485,6 +2570,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_device_name_data = XtVaCreateManagedWidget("Config_WX device_data", xmTextFieldWidgetClass, form,
@@ -2506,6 +2592,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -2517,6 +2604,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_comment = XtVaCreateManagedWidget("Config_WX comment", xmTextFieldWidgetClass, form,
@@ -2539,6 +2627,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         WX_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
@@ -2552,6 +2641,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         frame = XtVaCreateManagedWidget("Config_WX frame", xmFrameWidgetClass, form,
@@ -2564,11 +2654,13 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                     XmNrightAttachment,XmATTACH_FORM,
                                     XmNrightOffset, 10,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         /*set args for color */
@@ -2585,42 +2677,49 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         speed_300 = XtVaCreateManagedWidget(langcode("WPUPCFT005"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_300,XmNvalueChangedCallback,speed_toggle,"1");
 
         speed_1200 = XtVaCreateManagedWidget(langcode("WPUPCFT006"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_1200,XmNvalueChangedCallback,speed_toggle,"2");
 
         speed_2400 = XtVaCreateManagedWidget(langcode("WPUPCFT007"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_2400,XmNvalueChangedCallback,speed_toggle,"3");
 
         speed_4800 = XtVaCreateManagedWidget(langcode("WPUPCFT008"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_4800,XmNvalueChangedCallback,speed_toggle,"4");
 
         speed_9600 = XtVaCreateManagedWidget(langcode("WPUPCFT009"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_9600,XmNvalueChangedCallback,speed_toggle,"5");
 
         speed_19200 = XtVaCreateManagedWidget(langcode("WPUPCFT010"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_19200,XmNvalueChangedCallback,speed_toggle,"6");
 
         speed_38400 = XtVaCreateManagedWidget(langcode("WPUPCFT019"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_38400,XmNvalueChangedCallback,speed_toggle,"7");
 
@@ -2628,18 +2727,21 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         speed_57600 = XtVaCreateManagedWidget(langcode("WPUPCFT020"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_57600,XmNvalueChangedCallback,speed_toggle,"8");
 
         speed_115200 = XtVaCreateManagedWidget(langcode("WPUPCFT021"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_115200,XmNvalueChangedCallback,speed_toggle,"9");
 
         speed_230400 = XtVaCreateManagedWidget(langcode("WPUPCFT022"),xmToggleButtonGadgetClass,
                                         speed_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
 #endif  // __LSB__
@@ -2659,6 +2761,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         style_box = XmCreateRadioBox(frame2,"Config_WX Style box",al,ac);
@@ -2670,18 +2773,21 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         style_8n1 = XtVaCreateManagedWidget(langcode("WPUPCFT016"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(style_8n1,XmNvalueChangedCallback,style_toggle,"0");
 
         style_7e1 = XtVaCreateManagedWidget(langcode("WPUPCFT017"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(style_7e1,XmNvalueChangedCallback,style_toggle,"1");
 
         style_7o1 = XtVaCreateManagedWidget(langcode("WPUPCFT018"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(style_7o1,XmNvalueChangedCallback,style_toggle,"2");
 
@@ -2700,6 +2806,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         data_type= XtVaCreateManagedWidget(langcode("WPUPCFT024"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         data_box = XmCreateRadioBox(frame3,"Config_WX data box",al,ac);
@@ -2711,18 +2818,21 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         data_auto = XtVaCreateManagedWidget(langcode("WPUPCFT025"),xmToggleButtonGadgetClass,
                                         data_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(data_auto,XmNvalueChangedCallback,data_toggle,"0");
 
         data_bin = XtVaCreateManagedWidget(langcode("WPUPCFT026"),xmToggleButtonGadgetClass,
                                         data_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(data_bin,XmNvalueChangedCallback,data_toggle,"1");
 
         data_ascii = XtVaCreateManagedWidget(langcode("WPUPCFT027"),xmToggleButtonGadgetClass,
                                         data_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(data_ascii,XmNvalueChangedCallback,data_toggle,"2");
 
@@ -2742,6 +2852,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         gauge_type= XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
                                         XmNchildType, XmFRAME_TITLE_CHILD,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
 
         gauge_box = XmCreateRadioBox(frame4,"Config_WX gauge box",al,ac);
@@ -2753,18 +2864,22 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         WX_none = XtVaCreateManagedWidget(langcode("WPUPCFWX07"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
         WX_tenths = XtVaCreateManagedWidget(langcode("WPUPCFWX04"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
         WX_hundredths = XtVaCreateManagedWidget(langcode("WPUPCFWX05"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
         WX_millimeters = XtVaCreateManagedWidget(langcode("WPUPCFWX06"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(WX_none,XmNvalueChangedCallback,rain_gauge_toggle,"0");
@@ -2781,6 +2896,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -2796,6 +2912,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -2811,6 +2928,7 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Config_WX_change_data, config_WX_dialog);
@@ -3124,6 +3242,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_NWX pane",xmPanedWindowWidgetClass, config_NWX_dialog,
@@ -3145,6 +3264,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NWX_host_name_data = XtVaCreateManagedWidget("Config_NWX host_data", xmTextFieldWidgetClass, form,
@@ -3166,6 +3286,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         portn = XtVaCreateManagedWidget(langcode("WPUPCFG023"),xmLabelWidgetClass, form,
@@ -3177,6 +3298,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NWX_host_port_data = XtVaCreateManagedWidget("Config_NWX port_data", xmTextFieldWidgetClass, form,
@@ -3199,6 +3321,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -3210,6 +3333,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NWX_comment = XtVaCreateManagedWidget("Config_NWX comment", xmTextFieldWidgetClass, form,
@@ -3232,6 +3356,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NWX_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
@@ -3245,6 +3370,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NWX_host_reconnect_data  = XtVaCreateManagedWidget(langcode("WPUPCFG020"),xmToggleButtonWidgetClass,form,
@@ -3258,6 +3384,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         /*set args for color */
@@ -3280,6 +3407,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         data_type= XtVaCreateManagedWidget(langcode("WPUPCFT024"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         data_box = XmCreateRadioBox(frame3,"Config_NWX data box",al,ac);
@@ -3291,18 +3419,21 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         data_auto = XtVaCreateManagedWidget(langcode("WPUPCFT025"),xmToggleButtonGadgetClass,
                                         data_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(data_auto,XmNvalueChangedCallback,data_toggle,"0");
 
         data_bin = XtVaCreateManagedWidget(langcode("WPUPCFT026"),xmToggleButtonGadgetClass,
                                         data_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(data_bin,XmNvalueChangedCallback,data_toggle,"1");
 
         data_ascii = XtVaCreateManagedWidget(langcode("WPUPCFT027"),xmToggleButtonGadgetClass,
                                         data_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(data_ascii,XmNvalueChangedCallback,data_toggle,"2");
 
@@ -3322,6 +3453,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         gauge_type= XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
                                         XmNchildType, XmFRAME_TITLE_CHILD,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
 
         gauge_box = XmCreateRadioBox(frame4,"Config_WX gauge box",al,ac);
@@ -3333,18 +3465,22 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         WX_none = XtVaCreateManagedWidget(langcode("WPUPCFWX07"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
         WX_tenths = XtVaCreateManagedWidget(langcode("WPUPCFWX04"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
         WX_hundredths = XtVaCreateManagedWidget(langcode("WPUPCFWX05"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
         WX_millimeters = XtVaCreateManagedWidget(langcode("WPUPCFWX06"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(WX_none,XmNvalueChangedCallback,rain_gauge_toggle,"0");
@@ -3362,6 +3498,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -3377,6 +3514,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -3392,6 +3530,7 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Config_NWX_change_data, config_NWX_dialog);
@@ -3630,6 +3769,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_NGPS pane",xmPanedWindowWidgetClass, config_NGPS_dialog,
@@ -3651,6 +3791,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NGPS_host_name_data = XtVaCreateManagedWidget("Config_NGPS host_data", xmTextFieldWidgetClass, form,
@@ -3672,6 +3813,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         portn = XtVaCreateManagedWidget(langcode("WPUPCFG018"),xmLabelWidgetClass, form,
@@ -3683,6 +3825,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NGPS_host_port_data = XtVaCreateManagedWidget("Config_NGPS port_data", xmTextFieldWidgetClass, form,
@@ -3705,6 +3848,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -3716,6 +3860,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NGPS_comment = XtVaCreateManagedWidget("Config_NGPS comment", xmTextFieldWidgetClass, form,
@@ -3738,6 +3883,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NGPS_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
@@ -3751,6 +3897,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NGPS_host_reconnect_data  = XtVaCreateManagedWidget(langcode("WPUPCFG020"),xmToggleButtonWidgetClass,form,
@@ -3764,6 +3911,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         NGPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
@@ -3777,6 +3925,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 // We can only set the time properly on Linux systems
@@ -3798,6 +3947,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -3813,6 +3963,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -3828,6 +3979,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Config_NGPS_change_data, config_NGPS_dialog);
@@ -4096,6 +4248,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_AX25 pane",xmPanedWindowWidgetClass, config_AX25_dialog,
@@ -4119,6 +4272,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_transmit_data = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
@@ -4132,6 +4286,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
@@ -4145,6 +4300,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         devn = XtVaCreateManagedWidget(langcode("WPUPCAX002"),xmLabelWidgetClass, form,
@@ -4156,6 +4312,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_device_name_data = XtVaCreateManagedWidget("Config_AX25 device_data", xmTextFieldWidgetClass, form,
@@ -4177,6 +4334,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, devn,
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -4189,6 +4347,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_comment = XtVaCreateManagedWidget("Config_AX25 comment", xmTextFieldWidgetClass, form,
@@ -4210,6 +4369,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, comment,
                                       XmNleftOffset, 10,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         frame = XtVaCreateManagedWidget("Config_AX25 frame", xmFrameWidgetClass, form,
@@ -4227,6 +4387,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
         igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                    XmNfontList, fontlist1,
                                     NULL);
 
         /* set args for color */
@@ -4244,6 +4405,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
         igate_o_0 = XtVaCreateManagedWidget(langcode("IGPUPCF001"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
 
         XtAddCallback(igate_o_0,XmNvalueChangedCallback,igate_toggle,"0");
@@ -4251,6 +4413,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
         igate_o_1 = XtVaCreateManagedWidget(langcode("IGPUPCF002"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
 
         XtAddCallback(igate_o_1,XmNvalueChangedCallback,igate_toggle,"1");
@@ -4258,6 +4421,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
         igate_o_2 = XtVaCreateManagedWidget(langcode("IGPUPCF003"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
 
         XtAddCallback(igate_o_2,XmNvalueChangedCallback,igate_toggle,"2");
@@ -4273,6 +4437,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset,5,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT012"), VERSIONFRM);
@@ -4287,6 +4452,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 60,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_unproto1_data = XtVaCreateManagedWidget("Config_AX25 protopath1", xmTextFieldWidgetClass, form,
@@ -4308,6 +4474,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, proto1,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT013"), VERSIONFRM);
@@ -4322,6 +4489,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 60,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_unproto2_data = XtVaCreateManagedWidget("Config_AX25 protopath2", xmTextFieldWidgetClass, form,
@@ -4343,6 +4511,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, proto2,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT014"), VERSIONFRM);
@@ -4357,6 +4526,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 60,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_unproto3_data = XtVaCreateManagedWidget("Config_AX25 protopath3", xmTextFieldWidgetClass, form,
@@ -4378,6 +4548,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, proto3,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
@@ -4391,6 +4562,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 60,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AX25_igate_data = XtVaCreateManagedWidget("Config_TNC igate_data", xmTextFieldWidgetClass, form,
@@ -4412,6 +4584,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, igate_label,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         sep = XtVaCreateManagedWidget("Config_AX25 sep", xmSeparatorGadgetClass,form,
@@ -4423,6 +4596,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -4438,6 +4612,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -4453,6 +4628,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 #ifdef HAVE_LIBAX25
@@ -4703,6 +4879,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_Inet pane",xmPanedWindowWidgetClass, config_Inet_dialog,
@@ -4726,6 +4903,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
@@ -4739,6 +4917,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         ihost = XtVaCreateManagedWidget(langcode("WPUPCFI002"),xmLabelWidgetClass, form,
@@ -4750,6 +4929,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_host_data = XtVaCreateManagedWidget("Config_Inet host_data", xmTextFieldWidgetClass, form,
@@ -4769,6 +4949,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, ihost,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         iport = XtVaCreateManagedWidget(langcode("WPUPCFI003"),xmLabelWidgetClass, form,
@@ -4781,6 +4962,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_port_data = XtVaCreateManagedWidget("Config_Inet port_data", xmTextFieldWidgetClass, form,
@@ -4800,6 +4982,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, iport,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset,10,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         password = XtVaCreateManagedWidget(langcode("WPUPCFI009"),xmLabelWidgetClass, form,
@@ -4811,6 +4994,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_password_data = XtVaCreateManagedWidget("Config_Inet password_data", xmTextFieldWidgetClass, form,
@@ -4831,6 +5015,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         password_fl = XtVaCreateManagedWidget(langcode("WPUPCFI010"),xmLabelWidgetClass, form,
@@ -4843,6 +5028,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         filter = XtVaCreateManagedWidget(langcode("WPUPCFI015"),xmLabelWidgetClass, form,
@@ -4854,6 +5040,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_filter_data = XtVaCreateManagedWidget("Config_Inet filter_data", xmTextFieldWidgetClass, form,
@@ -4874,6 +5061,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -4885,6 +5073,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_comment = XtVaCreateManagedWidget("Config_Inet comment", xmTextFieldWidgetClass, form,
@@ -4904,6 +5093,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, comment,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Inet_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFI011"),xmToggleButtonWidgetClass,form,
@@ -4917,6 +5107,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         sep = XtVaCreateManagedWidget("Config_Inet sep", xmSeparatorGadgetClass,form,
@@ -4928,6 +5119,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -4943,6 +5135,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -4958,6 +5151,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Inet_change_data, config_Inet_dialog);
@@ -5188,6 +5382,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_Database pane",xmPanedWindowWidgetClass, config_Database_dialog,
@@ -5211,6 +5406,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
@@ -5224,6 +5420,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         ihost = XtVaCreateManagedWidget(langcode("WPUPCFID02"),xmLabelWidgetClass, form,
@@ -5235,6 +5432,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_host_data = XtVaCreateManagedWidget("Config_Database host_data", xmTextFieldWidgetClass, form,
@@ -5254,6 +5452,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, ihost,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         iport = XtVaCreateManagedWidget(langcode("WPUPCFID03"),xmLabelWidgetClass, form,
@@ -5266,6 +5465,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_port_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
@@ -5285,6 +5485,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, iport,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset,10,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         password = XtVaCreateManagedWidget(langcode("WPUPCFID09"),xmLabelWidgetClass, form,
@@ -5296,6 +5497,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_password_data = XtVaCreateManagedWidget("Config_Database password_data", xmTextFieldWidgetClass, form,
@@ -5316,6 +5518,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         password_fl = XtVaCreateManagedWidget(langcode("WPUPCFID10"),xmLabelWidgetClass, form,
@@ -5328,6 +5531,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset,20,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         filter = XtVaCreateManagedWidget(langcode("WPUPCFID15"),xmLabelWidgetClass, form,
@@ -5339,6 +5543,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_filter_data = XtVaCreateManagedWidget("Config_Database filter_data", xmTextFieldWidgetClass, form,
@@ -5359,6 +5564,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -5370,6 +5576,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_comment = XtVaCreateManagedWidget("Config_Database comment", xmTextFieldWidgetClass, form,
@@ -5390,6 +5597,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, comment,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         Database_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFID11"),xmToggleButtonWidgetClass,form,
@@ -5403,6 +5611,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         sep = XtVaCreateManagedWidget("Config_Database sep", xmSeparatorGadgetClass,form,
@@ -5414,6 +5623,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -5429,6 +5639,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -5444,6 +5655,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Database_change_data, config_Database_dialog);
@@ -5900,6 +6112,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse,        XmDESTROY,
             XmNdefaultPosition,       FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_Database pane",xmPanedWindowWidgetClass, config_Sql_Database_dialog,
@@ -5924,6 +6137,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         // DMBS
@@ -5936,6 +6150,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,        10,
             XmNrightAttachment,   XmATTACH_NONE,
             XmNbackground,        colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         // Combo box to pick dbms
         cb_items [0] = (XmString *) XtMalloc ( sizeof (XmString) * 4 );
@@ -5963,6 +6178,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNmatchBehavior,     XmQUICK_NAVIGATE,
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
+            XmNfontList, fontlist1,
             NULL);
         sddd_widget = Sql_Database_dbms_data;
 #else
@@ -5993,6 +6209,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmStringGetLtoR(cb_items[0][i],XmFONTLIST_DEFAULT_TAG,&tmp);
             XtSetArg(args[x], XmNlabelString, cb_items[0][i]); x++;
             XtSetArg(args[x], XmNuserData, (XtPointer)i); x++;
+            XtSetArg(args[x], XmNfontList, fontlist1); x++;
             sprintf(buf,"button%d",i);
             sddd_button = XmCreatePushButton(sddd_menuPane, buf, args, x);
             XtManageChild(sddd_button);
@@ -6042,6 +6259,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         // Combo box to pick schema
         Sql_Database_schema_type_data = XtVaCreateManagedWidget("Tables to use", xmComboBoxWidgetClass, form,
@@ -6058,6 +6276,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNvisibleItemCount, 3,
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
+            XmNfontList, fontlist1,
             NULL);
         // *** need to add constants for order and localization *** 
         // ? use an array - schm_typ[XASTIR_SCHEMA_SIMPLE]=langcode("codeforxastirsimple").... ? 
@@ -6098,6 +6317,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         // Retrieve data on start
@@ -6113,6 +6333,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       15,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         // put retieve now button here.
@@ -6127,6 +6348,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         Sql_Database_host_data = XtVaCreateManagedWidget("Config_Database host_data", xmTextFieldWidgetClass, form,
             XmNnavigationType,   XmTAB_GROUP,
@@ -6145,6 +6367,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftWidget,       ihost,
             XmNleftOffset,       1,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
 
         // tcp port for server, not xastir interface port
@@ -6159,6 +6382,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         
         Sql_Database_iport_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
@@ -6178,6 +6402,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftWidget,       iport,
             XmNleftOffset,       1,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
         
         // Username 
@@ -6190,6 +6415,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         
         Sql_Database_username_data = XtVaCreateManagedWidget("Config_Database username_data", xmTextFieldWidgetClass, form,
@@ -6209,6 +6435,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftWidget,       username,
             XmNleftOffset,       1,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
         // Password
         password = XtVaCreateManagedWidget("Password",xmLabelWidgetClass, form,
@@ -6221,6 +6448,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         Sql_Database_password_data = XtVaCreateManagedWidget("Config_Database password_data", xmTextFieldWidgetClass, form,
@@ -6240,6 +6468,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNtopWidget,        Sql_Database_host_data,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
         //  Schema/Database name
         schema_name = XtVaCreateManagedWidget("Schema/Database name",xmLabelWidgetClass, form,
@@ -6251,6 +6480,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         Sql_Database_schema_name_data= XtVaCreateManagedWidget("Config_Database schema_name_data", xmTextFieldWidgetClass, form,
@@ -6271,6 +6501,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNtopOffset,        5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
 
         // MySQL unix socket
@@ -6284,6 +6515,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         Sql_Database_unix_socket_data = XtVaCreateManagedWidget("Config_Database unix_socket_data", xmTextFieldWidgetClass, form,
@@ -6304,6 +6536,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNtopOffset,        5,
             XmNbottomAttachment, XmATTACH_NONE,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
 
         // comment
@@ -6316,6 +6549,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         Sql_Database_comment = XtVaCreateManagedWidget("Config_Database comment", xmTextFieldWidgetClass, form,
             XmNnavigationType,   XmTAB_GROUP,
@@ -6335,6 +6569,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftAttachment,   XmATTACH_WIDGET,
             XmNleftWidget,       comment,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
 
         // reconnect on network failure
@@ -6349,6 +6584,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         // most recent error 
@@ -6361,6 +6597,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftOffset,       10,
             XmNrightAttachment,  XmATTACH_NONE,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         // error message isn't editable and isn't saved
         Sql_Database_errormessage_data = XtVaCreateManagedWidget("Config_Database error_message", xmTextFieldWidgetClass, form,
@@ -6381,6 +6618,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftAttachment,   XmATTACH_WIDGET,
             XmNleftWidget,       error_message,
             XmNrightAttachment,  XmATTACH_NONE,
+            XmNfontList, fontlist1,
             NULL);
 
         // separator line 
@@ -6393,6 +6631,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNleftAttachment,   XmATTACH_FORM,
             XmNrightAttachment,  XmATTACH_FORM,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
         // button: MySQL Defaults
@@ -6409,6 +6648,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment,  XmATTACH_POSITION,
             XmNrightPosition,    3,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         // button: Postgis Defaults
         button_postgis_defaults = XtVaCreateManagedWidget("Postgis Defaults",xmPushButtonGadgetClass, form,
@@ -6424,6 +6664,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment,  XmATTACH_POSITION,
             XmNrightPosition,    6,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         // button: OK
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -6439,6 +6680,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment,  XmATTACH_POSITION,
             XmNrightPosition,    9,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
         // button: Cancel
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -6454,6 +6696,7 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             XmNrightAttachment,  XmATTACH_POSITION,
             XmNrightPosition,    12,
             XmNbackground,       colors[0xff],
+            XmNfontList, fontlist1,
             NULL);
 
        XtSetSensitive(button_mysql_defaults,FALSE);
@@ -6799,6 +7042,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
         pane = XtVaCreateWidget("Config_AGWPE pane",xmPanedWindowWidgetClass, config_AGWPE_dialog,
@@ -6822,6 +7066,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
@@ -6835,6 +7080,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
@@ -6848,6 +7094,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         ihost = XtVaCreateManagedWidget(langcode("WPUPCFIA02"),xmLabelWidgetClass, form,
@@ -6859,6 +7106,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_host_data = XtVaCreateManagedWidget("Config_AGWPE host_data", xmTextFieldWidgetClass, form,
@@ -6878,6 +7126,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, ihost,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         iport = XtVaCreateManagedWidget(langcode("WPUPCFIA03"),xmLabelWidgetClass, form,
@@ -6890,6 +7139,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_port_data = XtVaCreateManagedWidget("Config_AGWPE port_data", xmTextFieldWidgetClass, form,
@@ -6909,6 +7159,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, iport,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
@@ -6921,6 +7172,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_comment = XtVaCreateManagedWidget("Config_AGWPE comment", xmTextFieldWidgetClass, form,
@@ -6940,6 +7192,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, comment,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         password = XtVaCreateManagedWidget(langcode("WPUPCFIA09"),xmLabelWidgetClass, form,
@@ -6951,6 +7204,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_password_data = XtVaCreateManagedWidget("Config_AGWPE password_data", xmTextFieldWidgetClass, form,
@@ -6971,6 +7225,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 15,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         password_fl = XtVaCreateManagedWidget(langcode("WPUPCFIA10"),xmLabelWidgetClass, form,
@@ -6996,6 +7251,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         radioport_label = XtVaCreateManagedWidget(langcode("WPUPCFIA15"),xmLabelWidgetClass, form,
@@ -7008,6 +7264,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 50,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_radioport_data = XtVaCreateManagedWidget("Config_AGWPE radioport_data", xmTextFieldWidgetClass, form,
@@ -7028,6 +7285,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         frame = XtVaCreateManagedWidget("Config_AGWPE frame", xmFrameWidgetClass, form,
@@ -7045,6 +7303,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
         igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                     NULL);
 
         // Set args for color
@@ -7059,18 +7318,21 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
         igate_o_0 = XtVaCreateManagedWidget(langcode("IGPUPCF001"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(igate_o_0,XmNvalueChangedCallback,igate_toggle,"0");
 
         igate_o_1 = XtVaCreateManagedWidget(langcode("IGPUPCF002"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(igate_o_1,XmNvalueChangedCallback,igate_toggle,"1");
 
         igate_o_2 = XtVaCreateManagedWidget(langcode("IGPUPCF003"),xmToggleButtonGadgetClass,
                                         igate_box,
                                         XmNbackground, colors[0xff],
+                                        XmNfontList, fontlist1,
                                         NULL);
         XtAddCallback(igate_o_2,XmNvalueChangedCallback,igate_toggle,"2");
 
@@ -7085,6 +7347,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNrightOffset, 5,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT012"), VERSIONFRM);
@@ -7099,6 +7362,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_unproto1_data = XtVaCreateManagedWidget("Config_AGWPE protopath1", xmTextFieldWidgetClass, form,
@@ -7120,6 +7384,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, proto1,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT013"), VERSIONFRM);
@@ -7134,6 +7399,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_unproto2_data = XtVaCreateManagedWidget("Config_AGWPE protopath2", xmTextFieldWidgetClass, form,
@@ -7155,6 +7421,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, proto2,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT014"), VERSIONFRM);
@@ -7169,6 +7436,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -7191,6 +7459,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, proto3,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -7205,6 +7474,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftOffset, 45,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         AGWPE_igate_data = XtVaCreateManagedWidget("Config_AGWPE igate_data", xmTextFieldWidgetClass, form,
@@ -7226,6 +7496,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftWidget, igate_label,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -7238,6 +7509,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
@@ -7253,6 +7525,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
@@ -7268,6 +7541,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 4,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, AGWPE_change_data, config_AGWPE_dialog);
@@ -7926,6 +8200,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                     XmNdeleteResponse, XmDESTROY,
                     XmNdefaultPosition, FALSE,
                     XmNresize, FALSE,
+                    XmNfontList, fontlist1,
                     NULL);
 
                 pane = XtVaCreateWidget("interface_option pane",xmPanedWindowWidgetClass, choose_interface_dialog,
@@ -7947,6 +8222,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                                 XmNleftOffset, 5,
                                 XmNrightAttachment, XmATTACH_NONE,
                                 XmNbackground, colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
 
                 /*set args for color */
@@ -7965,6 +8241,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 XtSetArg(al[ac], XmNrightOffset, 5); ac++;
                 XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
                 XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+                XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
                 interface_type_list = XmCreateScrolledList(form,"interface_option list",al,ac);
                 n=1;
@@ -7985,6 +8262,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                                 XmNrightAttachment, XmATTACH_POSITION,
                                 XmNrightPosition, 2,
                                 XmNbackground, colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
 
                 button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
@@ -8000,6 +8278,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                                 XmNrightAttachment, XmATTACH_POSITION,
                                 XmNrightPosition, 4,
                                 XmNbackground, colors[0xff],
+                                XmNfontList, fontlist1,
                                 NULL);
 
                 XtAddCallback(button_cancel, XmNactivateCallback, Choose_interface_destroy_shell, choose_interface_dialog);
@@ -8404,6 +8683,7 @@ begin_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
             XmNresize, TRUE,
+            XmNfontList, fontlist1,
             NULL);
 
         rowcol =  XtVaCreateWidget("control_interface rowcol",xmRowColumnWidgetClass, control_interface_dialog,
@@ -8433,6 +8713,7 @@ begin_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
         control_iface_list = XmCreateScrolledList(rowcol,"control_interface list",al,ac);
 
         /* build device list */
@@ -8459,6 +8740,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNbottomAttachment, XmATTACH_NONE,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_start_all = XtVaCreateManagedWidget(langcode("IFPUPCT003"),xmPushButtonGadgetClass, form,
@@ -8473,6 +8755,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNbottomAttachment, XmATTACH_NONE,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),xmPushButtonGadgetClass, form,
@@ -8486,6 +8769,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNrightAttachment, XmATTACH_POSITION,
                             XmNrightPosition, 3,
                             XmNbackground, colors[0xff],
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_delete = XtVaCreateManagedWidget(langcode("UNIOP00008"),xmPushButtonGadgetClass, form,
@@ -8499,6 +8783,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNrightAttachment, XmATTACH_POSITION,
                             XmNrightPosition, 4,
                             XmNbackground, colors[0xff],
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_stop = XtVaCreateManagedWidget(langcode("IFPUPCT002"),xmPushButtonGadgetClass, form,
@@ -8513,6 +8798,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_stop_all = XtVaCreateManagedWidget(langcode("IFPUPCT004"),xmPushButtonGadgetClass, form,
@@ -8527,6 +8813,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_properties = XtVaCreateManagedWidget(langcode("UNIOP00009"),xmPushButtonGadgetClass, form,
@@ -8540,6 +8827,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNrightAttachment, XmATTACH_POSITION,
                             XmNrightPosition, 3,
                             XmNbackground, colors[0xff],
+                            XmNfontList, fontlist1,
                             NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
@@ -8553,6 +8841,7 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
                             NULL);
 
         XtAddCallback(button_add, XmNactivateCallback, interface_option, "0");

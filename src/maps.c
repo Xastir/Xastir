@@ -134,7 +134,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
-
+extern XmFontList fontlist1;    // Menu/System fontlist
 
 #define GRID_MORE 5000
 
@@ -4505,6 +4505,7 @@ begin_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" 
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
 
@@ -4530,6 +4531,7 @@ begin_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" 
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(paper_size,FALSE);
 
@@ -4553,6 +4555,7 @@ XtSetSensitive(paper_size,FALSE);
                                       XmNrightOffset, 10,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(paper_size_data,FALSE);
 */
@@ -4571,6 +4574,7 @@ XtSetSensitive(paper_size_data,FALSE);
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtAddCallback(auto_rotate,XmNvalueChangedCallback,Auto_rotate,"1");
 
@@ -4590,6 +4594,7 @@ XtAddCallback(auto_rotate,XmNvalueChangedCallback,Auto_rotate,"1");
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtAddCallback(rotate_90,XmNvalueChangedCallback,Rotate_90,"1");
 
@@ -4605,6 +4610,7 @@ XtAddCallback(rotate_90,XmNvalueChangedCallback,Rotate_90,"1");
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtAddCallback(auto_scale,XmNvalueChangedCallback,Auto_scale,"1");
 
@@ -4620,6 +4626,7 @@ XtAddCallback(auto_scale,XmNvalueChangedCallback,Auto_scale,"1");
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(scale,FALSE);
 
@@ -4644,6 +4651,7 @@ XtSetSensitive(scale,FALSE);
                                       XmNrightOffset, 10,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(scale_data,FALSE);
 */
@@ -4662,6 +4670,7 @@ XtSetSensitive(scale_data,FALSE);
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(blank_background,FALSE);
 */
@@ -4679,6 +4688,7 @@ XtSetSensitive(blank_background,FALSE);
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtAddCallback(monochrome,XmNvalueChangedCallback,Monochrome,"1");
 
@@ -4694,6 +4704,7 @@ XtAddCallback(monochrome,XmNvalueChangedCallback,Monochrome,"1");
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtAddCallback(invert,XmNvalueChangedCallback,Invert,"1");
 
@@ -4708,6 +4719,7 @@ XtAddCallback(invert,XmNvalueChangedCallback,Invert,"1");
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(res_label1,FALSE);
 
@@ -4731,6 +4743,7 @@ XtSetSensitive(res_label1,FALSE);
                                       XmNrightAttachment,XmATTACH_NONE,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(res_x,FALSE);
 
@@ -4745,6 +4758,7 @@ XtSetSensitive(res_x,FALSE);
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(res_label2,FALSE);
 
@@ -4769,6 +4783,7 @@ XtSetSensitive(res_label2,FALSE);
                                       XmNrightOffset, 10,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 XtSetSensitive(res_y,FALSE);
 */
@@ -4784,6 +4799,7 @@ XtSetSensitive(res_y,FALSE);
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -4803,6 +4819,7 @@ XtSetSensitive(res_y,FALSE);
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -4821,6 +4838,7 @@ XtSetSensitive(res_y,FALSE);
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -4922,6 +4940,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
             xmDialogShellWidgetClass, appshell,
             XmNdeleteResponse, XmDESTROY,
             XmNdefaultPosition, FALSE,
+            XmNfontList, fontlist1,
             NULL);
 
 
@@ -4949,6 +4968,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -4971,6 +4991,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNrightOffset, 5,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -4986,6 +5007,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
  
@@ -5009,6 +5031,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNrightOffset, 5,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -5021,6 +5044,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNrightAttachment,XmATTACH_FORM,
                                       XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
@@ -5037,6 +5061,7 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" 
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
+                                      XmNfontList, fontlist1,
                                       NULL);
 
 
