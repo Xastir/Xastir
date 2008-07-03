@@ -1039,9 +1039,10 @@ int alert_on_screen(void) {
 // We'll create and fill in "entry", then copy various "titles" into
 // is such as "ID_C001", then insert that alert into the system.
 //
+#define TITLE_SIZE 64
 void alert_build_list(Message *fill) {
     alert_entry entry, *list_ptr;
-    char title[5][33];  // Storage place for zone/county titles
+    char title[5][TITLE_SIZE+1];  // Storage place for zone/county titles
     int ii, jj;
     char *ptr;
     DataRow *p_station;
@@ -1202,11 +1203,11 @@ void alert_build_list(Message *fill) {
         // Force a termination for each
         entry.activity[20]  = '\0';
         entry.alert_tag[20] = '\0';
-        title[0][32]        = '\0';
-        title[1][32]        = '\0';
-        title[2][32]        = '\0';
-        title[3][32]        = '\0';
-        title[4][32]        = '\0';
+        title[0][TITLE_SIZE]        = '\0';
+        title[1][TITLE_SIZE]        = '\0';
+        title[2][TITLE_SIZE]        = '\0';
+        title[3][TITLE_SIZE]        = '\0';
+        title[4][TITLE_SIZE]        = '\0';
 
         // Check for "NWS_" in the call_sign field.  Underline
         // signifies compressed alert format.  Dash signifies
