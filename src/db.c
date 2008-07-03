@@ -3616,6 +3616,21 @@ void draw_ruler(Widget w) {
             dx = dx - border_offset - 3;
         }
 
+        // If text on black background style selected, draw a black
+        // rectangle in that corner of the map first so that the
+        // scale lines show up well.
+        //
+        // If first time through and text-on-black style
+        if ( (i == 8) && (letter_style == 2) ) {
+            XSetForeground(XtDisplay(w),gc,colors[0x10]);   // black
+            (void)XSetLineAttributes(XtDisplay(w),gc,20,LineSolid,CapProjecting,JoinMiter);
+            draw_test_line(w, dx, dy+5, ruler_pix, 0, ruler_pix);
+
+            // Reset to needed parameters for drawing the scale
+            (void)XSetLineAttributes(XtDisplay(w),gc,1,LineSolid,CapRound,JoinRound);
+            (void)XSetForeground(XtDisplay(w),gc,colors[0x20]);         // white
+        }
+
         if (i == 0)
             (void)XSetForeground(XtDisplay(w),gc,colors[0x10]);         // black
 
