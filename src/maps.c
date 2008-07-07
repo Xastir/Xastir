@@ -1373,8 +1373,8 @@ void draw_complete_lat_lon_grid(Widget w) {
  
         // Put metadata in top border.
         // find location of upper left corner of map, convert to Lat/Long
-        convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
-        convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
+        convert_lon_l2s(xx, grid_label1, sizeof(grid_label1), coordinate_format);
+        convert_lat_l2s(yy, grid_label2, sizeof(grid_label2), coordinate_format);
         xastir_snprintf(grid_label,
             sizeof(grid_label),
             "%s %s",
