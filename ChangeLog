@@ -1,3 +1,205 @@
+2008-07-03 07:55  gstueve
+
+	* src/alert.c: Increase size of titles for alerts to allow for
+	  large area alerts to be processed w/o loss of compressed info.
+
+2008-07-03 06:12  we7u
+
+	* src/db.c: If text on black background style selected, draw a
+	  black rectangle in that corner of the map first so that the scale
+	  lines show up well.
+
+2008-07-02 17:12  gstueve
+
+	* AUTHORS, src/main.h: Update current callsign for K4INT.
+
+2008-07-02 12:06  gstueve
+
+	* src/map_WMS.c: Remove extra fclose(f) of already closed file.
+	  Keep everyone happy.
+
+2008-07-02 11:03  we7u
+
+	* src/db.c: Decode DAO patch by Tapio Sokura, OH2KKU.  This doesn't
+	  do anything with any datum transmitted, but does give us the
+	  extra precision sent via the DAO extension.  We still need to
+	  change the white precision rectangle for the station on our map
+	  to make it smaller (not included in this change).
+
+2008-07-02 06:54  we7u
+
+	* src/db.c: Feature request 756236:  Have Range Scale and Ruler
+	  text at bottom of map screen follow the same text style selection
+	  as the station text, to make them easier to read.
+
+2008-07-01 20:04  we7u
+
+	* src/: bulletin_gui.c, db.c, draw_symbols.c, geocoder_gui.c,
+	  interface_gui.c, list_gui.c, locate_gui.c, location_gui.c,
+	  main.c, map_geo.c, maps.c, messages_gui.c, objects.c,
+	  popup_gui.c, track_gui.c, view_message_gui.c, wx_gui.c, xastir.h:
+	  The remaining major updates to allow changing the "system" or
+	  "menu" font throughout the applicaton.
+
+2008-06-30 18:47  gstueve
+
+	* scripts/get-gnis: Remove extra path separator.
+
+2008-06-30 16:40  we7u
+
+	* src/: draw_symbols.c, main.c, maps.c, popup_gui.c, xa_config.c,
+	  xastir.h: Patches to implement a GUI interface for changing
+	  fonts, plus added error-checking to some of the font code.
+
+2008-06-30 16:39  we7u
+
+	* config/: language-Dutch.sys, language-English.sys,
+	  language-French.sys, language-German.sys, language-Italian.sys,
+	  language-Portuguese.sys, language-Spanish.sys: The first of two
+	  commits adding a GUI interface for changing system/
+	  station/atv_id fonts.
+
+2008-06-30 07:02  gstueve
+
+	* scripts/get-gnis: Update path for file from USGS and adjust
+	  suffix for current file layout.
+
+2008-06-27 13:10  we7u
+
+	* src/main.c: More menus converted to allow using user-specified
+	  fonts.
+
+2008-06-27 12:48  we7u
+
+	* src/: main.c, popup_gui.c, xa_config.c, xastir.h: Adding the
+	  capability for users to specify the fonts used for the system
+	  fonts, station fonts (on map screen), and the ATV_ID font.
+	  Currently the users will have to edit the fonts in xastir.cnf,
+	  but later a GUI access method for editing can be added.
+
+2008-06-27 12:45  we7u
+
+	* src/maps.c: Fixing the initialization of arrays for map labels.
+
+2008-06-27 06:41  we7u
+
+	* configure.ac, src/main.c, src/track_gui.c: Adding path tests for
+	  "mv", "sed", and "xfontsel", plus the correct bits of code in the
+	  .c files to use those paths.
+
+2008-06-26 12:10  we7u
+
+	* src/main.c: Specifying more of the font characteristics for the
+	  font used when USE_LARGE_STATION_FONT is defined.
+
+2008-06-26 07:41  we7u
+
+	* src/db.c: A fix for the Citizen's Weather filter to get rid of
+	  the new "DW" prefixed stations, plus more strict filtering so
+	  that we don't also get rid of Uruguay and Phillipines weather
+	  stations with this same filter.
+
+2008-06-25 16:30  we7u
+
+	* src/main.c: Fixing the system fonts so that they work on more
+	  systems.
+
+2008-06-25 06:41  we7u
+
+	* scripts/toporama250k.pl: Updated the instructions for running the
+	  script plus got rid of DOS line-end characters that had somehow
+	  crept in.  Those line-end characters prevented the Perl
+	  interpreter from running on Linux.
+
+2008-06-25 06:39  we7u
+
+	* scripts/toporama50k.pl: Updated the instructions for running the
+	  script.
+
+2008-06-25 06:38  we7u
+
+	* help/help-English.dat: Changed the name of the fcc-get script to
+	  get-fcc-rac.pl
+
+2008-06-25 06:37  we7u
+
+	* src/db.c: Station Info:  Special-case check for objects sent by
+	  "WINLINK".  We keep the object name as the "origin" in this case
+	  instead of "WINLINK".  This solves the "FCC" instead of "RAC"
+	  button problem for objects with Canadian callsigns, allowing us
+	  to look of RAC licensing information.
+
+2008-06-24 08:52  we7u
+
+	* README.Getting-Started, README.MAPS: Updating the name of the
+	  get-fcc-rac.pl script in the docs.
+
+2008-06-24 08:48  we7u
+
+	* scripts/: Makefile.am, fcc-get, fcc-get.pl, get-fcc-rac.pl:
+	  Combined fcc-get and fcc-get.pl into one script called
+	  get-fcc-rac.pl
+
+2008-06-23 15:42  we7u
+
+	* README: Adding the SuSE-11.0 Ham Radio repository URL.
+
+2008-06-13 06:43  gstueve
+
+	* scripts/get-NWSdata: Remove the bashism to keep people happy.
+
+2008-06-13 00:37  gstueve
+
+	* config/nwsz_ddmmyy.dbfawk: Actually get the signature template
+	  right for Watches.
+
+2008-06-13 00:25  gstueve
+
+	* config/: nwsmzddmmyy.dbfawk, nwsz_ddmmyy.dbfawk: Actually get the
+	  template to match the available dataset.
+
+2008-06-12 20:27  gstueve
+
+	* scripts/get-NWSdata: Missed that one of the files was in a
+	  different directory.
+
+2008-06-12 18:49  gstueve
+
+	* scripts/get-NWSdata: Introduced bashism to reduce size & improve
+	  consistency for all files.
+
+2008-06-12 12:30  gstueve
+
+	* config/Makefile.am, config/nwsz1ddmmyy.dbfawk,
+	  config/nwsz_ddmmyy.dbfawk, scripts/get-NWSdata: Adjust script and
+	  dbfawk for current set of files from NWS.  There are newer sets
+	  of files for upcoming dates.
+
+2008-06-11 06:39  gstueve
+
+	* src/x_spider.c: Reduce side effects of free memory by clearing
+	  pointer after deallocation.
+
+2008-06-09 12:28  we7u
+
+	* scripts/: LSB-BUILD, LSB-BUILD-ALL, LSB-BUILD-GRAPHICSMAGICK:
+	  Committing latest changes for LSB build.  Am not done yet getting
+	  LSB to build properly on OpenSUSE-10.3, but this is a good start.
+
+2008-06-09 12:25  we7u
+
+	* ChangeLog: Keeping it up to date with CVS commits.
+
+2008-06-09 12:23  we7u
+
+	* scripts/do_xastir_release_stable: Changed SF upload process to
+	  match what they currently allow.
+
+2008-06-09 12:23  we7u
+
+	* scripts/do_xastir_release_dev: Change SF upload process to match
+	  what they currently allow.
+
 2008-06-04 04:23  gstueve
 
 	* src/db.c: Allow Objects that have space in name to work with
