@@ -568,7 +568,9 @@ int initConnections() {
       // malloc for the PGconn will cause segfault on trying to 
       // open the connection
       //connections[x]->phandle = (PGconn*)malloc(sizeof(PGconn*));
+#ifdef HAVE_MYSQL
       connections[x]->mhandle = (MYSQL*)malloc(sizeof(MYSQL*));
+#endif /* HAVE_MYSQL */
       for(y=0;y<MAX_CONNECTION_ERROR_MESSAGE;y++) { 
           connections[x]->errormessage[y]=' '; 
       }
@@ -1280,7 +1282,6 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             } else {  
                 xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
             }   
- 
             // Get time in seconds, adjust to datetime
             // If aStation is my station or another unset sec_heard is 
             // encountered, use current time instead. Conversely, use time
