@@ -489,7 +489,7 @@ if test "${use_imagemagick}" = "yes"; then
   if test "${use_imagemagick}" = "no"; then
     AC_MSG_WARN(*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***)
   else
-    AC_SEARCH_LIBS([WriteImage],[Magick MagicCore], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
+    AC_SEARCH_LIBS([WriteImage],[Magick MagickCore], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
     if test "${use_imagemagick}" = "no"; then
       AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
     fi
