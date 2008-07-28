@@ -15523,9 +15523,21 @@ void shorten_path( char *path, char *short_path, int short_path_size ) {
 
 
 
+// TODO:
+// Use valid_call(call)?
+//
 int fill_in_tactical_callsign(char *call, char *tactical_call) {
     DataRow *p_station;
 
+
+    // Convert callsign to upper-case
+    (void)to_upper(call);
+
+    // Get rid of white space on either end
+    (void)remove_leading_spaces(call);
+    (void)remove_trailing_spaces(call);
+    (void)remove_leading_spaces(tactical_call);
+    (void)remove_trailing_spaces(tactical_call);
  
     // Find the station record.
     if (!search_station_name(&p_station, call, 1)) {
