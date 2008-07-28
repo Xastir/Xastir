@@ -5286,6 +5286,47 @@ void split_string( char *data, char *cptr[], int max ) {
 
 
 
+// Breaks up a string into substrings using an arbitrary character as the delimiter.
+// Makes each entry in the array of char ptrs point to one
+// substring.  Modifies incoming string and cptr[] array.  Send a
+// character constant string to it and you'll get an instant
+// segfault (the function can't modify a char constant string).
+//
+void split_string_char( char *data, char *cptr[], int max, char search_char ) {
+  int ii;
+  char *temp;
+  char *current = data;
+
+
+  // NULL each char pointer
+  for (ii = 0; ii < max; ii++) {
+    cptr[ii] = NULL;
+  }
+
+  // Save the beginning substring address
+  cptr[0] = current;
+
+  for (ii = 1; ii < max; ii++) {
+    temp = strchr(current,search_char);  // Find next search character
+
+    if(!temp) { // No search characters found 
+      return; // All done with string
+    }
+
+    // Store pointer to next substring in array
+    cptr[ii] = &temp[1];
+    current  = &temp[1];
+
+    // Overwrite search character  with end-of-string char and bump
+    // pointer by one.
+    temp[0] = '\0';
+  }
+}
+
+
+
+
+
 // Function to check for proper relations between the n-N
 // numbers.  Called from check_unproto_path() function below.
 //
