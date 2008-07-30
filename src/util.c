@@ -3942,7 +3942,8 @@ void log_data(char *file, char *line) {
 // Tactical callsign logging
 //
 // Logging function called from the Assign Tactical Call right-click
-// menu option.  Each tactical assignment is logged as one line.
+// menu option and also from db.c:fill_in_tactical_call.  Each
+// tactical assignment is logged as one line.
 //
 // We need to check for identical callsigns in the file, deleting
 // lines that have the same name and adding new records to the end.

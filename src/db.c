@@ -4185,7 +4185,7 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
         }
         else {
             xastir_snprintf(tactical_pointer->tactical_call_sign,
-                MAX_TACTICAL_CALL,
+                MAX_TACTICAL_CALL+1,
                 "%s",
                 temp);
         }
@@ -15524,7 +15524,35 @@ void shorten_path( char *path, char *short_path, int short_path_size ) {
 
 
 // TODO:
-// Use valid_call(call)?
+// *) Use the valid_call(call) function here?
+// *) Add a "Tactical Call Disable" togglebutton.  Default =
+//    disabled.
+// *) Send out TAC assignments as they are created via an APRS
+//    message?
+// *) Add "Send All Tactical Calls" menu entry.  Another entry to
+//    send them out repetitively?
+// *) Create a public/private distinction for TAC calls?
+// *) Add public/private toggle to the Tactical Callsign box, and
+//    have it send an APRS Message if public when changed?
+// *) Add a method to list the public/private TAC calls we currently
+//    have assigned.
+// *) Create an easier method to remove one or more TAC calls?
+//    Currently we have to send a blank assignment ("we7u-12=").
+// *) Log TAC calls and date/time for each assignment, including
+//    NULL assignments.
+//
+// From Bob:
+// *) Range filter - won't accept tactical assignments without a
+//    position within X miles of source.
+// *) Change filter - won't accept changes from others for locally
+//    created tac assignment.  Kind of implies two tables - local
+//    and remote Button/menu item to send local, or send all - each
+//    a manual operation, as we discussed.
+// *) Perhaps repeat messages fewer times if sent to TACTICAL than
+//    for a normal message?  This is so that more than one
+//    controller can manipulate them without having to wait for the
+//    timeout of the first message.
+//
 //
 int fill_in_tactical_callsign(char *call, char *tactical_call) {
     DataRow *p_station;
@@ -15543,39 +15571,46 @@ int fill_in_tactical_callsign(char *call, char *tactical_call) {
     if (!search_station_name(&p_station, call, 1)) {
         // Station not found.
 
-// TODO:
-// Should we create a new record for this callsign and assign the
-// tactical call?  Probably.
-
-//      redraw_on_new_data = 2;  // redraw now
-    }
-    else {
-        // Found it!  Assign the new tactical call.
-        // Code here borrowed from
-        // db.c:Change_tactical_change_data()
-
-        if (p_station->tactical_call_sign == NULL) {
-            // Malloc some memory to hold it.
-            p_station->tactical_call_sign = (char *)malloc(MAX_TACTICAL_CALL+1);
-        }
-        if (p_station->tactical_call_sign == NULL) {
-            fprintf(stderr,
-                "Couldn't malloc space for tactical callsign\n");
-            return -1;
-        }
-
-        xastir_snprintf(p_station->tactical_call_sign,
-            MAX_TACTICAL_CALL,
-            "%s",
-            tactical_call);
-
-        // Log the change in the tactical_calls.log file.
-        // Also adds it to the tactical callsign hash here.
-        log_tactical_call(call,
-            p_station->tactical_call_sign);
+        // Add the TAC call to the tactical hash for future
+        // application to a callsign via the log_tactical_call()
+        // function call below...
     }
 
-    redraw_on_new_data = 2;  // redraw now
+    else {  // Found it!  Assign the new tactical call.  Some code
+            // here borrowed from db.c:Change_tactical_change_data()
+
+        // Check for blank incoming tactical call.
+        if (tactical_call[0] == '\0') {
+            // Blank tactical call string.  Free space and null
+            // pointer.
+            free(p_station->tactical_call_sign);
+            p_station->tactical_call_sign = NULL;
+        }
+
+        else {  // Non-blank incoming tactical call string
+
+            if (p_station->tactical_call_sign == NULL) {
+                // Malloc some memory to hold it.
+                p_station->tactical_call_sign = (char *)malloc(MAX_TACTICAL_CALL+1);
+            }
+            if (p_station->tactical_call_sign == NULL) {
+                fprintf(stderr,
+                    "Couldn't malloc space for tactical callsign\n");
+                return -1;
+            }
+
+            xastir_snprintf(p_station->tactical_call_sign,
+                MAX_TACTICAL_CALL+1,
+                "%s",
+                tactical_call);
+        }
+        redraw_on_new_data = 2;  // redraw now
+    }
+
+    // Log the change in the tactical_calls.log file.  Also adds it
+    // to the tactical callsign hash.
+    log_tactical_call(call, tactical_call);
+
     return(0);
 }
 
@@ -15614,7 +15649,7 @@ int tactical_data_add(char *call, char *message, char from) {
         // tactical call and assign it to the station data record
         // for the station.
 
-//fprintf(stderr, "One tactical assignment.\n");
+fprintf(stderr, "One tactical assignment.\n");
 
         fill_in_tactical_callsign(call, message);
     }
@@ -15626,7 +15661,7 @@ int tactical_data_add(char *call, char *message, char from) {
         char *Call_Tac[2];
 
 
-//fprintf(stderr, "Possibly multiple tactical assignments.\n");
+fprintf(stderr, "Possibly multiple tactical assignments.\n");
 
         // Split the message first on ';' characters to get the
         // callsign=tactical pairs separated from each other.
@@ -15637,7 +15672,7 @@ int tactical_data_add(char *call, char *message, char from) {
             // We might still have a single tactical definition in
             // the message.  Assign "message" to Substring[0] for
             // further processing below.
-//fprintf(stderr, "No semicolons found.\n");
+fprintf(stderr, "No semicolons found.\n");
 
             Substring[0] = message;
         }
@@ -15654,9 +15689,9 @@ int tactical_data_add(char *call, char *message, char from) {
 
             if (Call_Tac[0] != NULL) { // Found '=' char.
 
-//fprintf(stderr, "Found a tactical pair:  %s->%s\n",
-//    Call_Tac[0],
-//    Call_Tac[1]);
+fprintf(stderr, "Found a tactical pair:  %s->%s\n",
+    Call_Tac[0],
+    Call_Tac[1]);
 
                 fill_in_tactical_callsign(Call_Tac[0], Call_Tac[1]);
             }
