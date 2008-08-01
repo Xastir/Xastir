@@ -578,6 +578,9 @@ void draw_tiger_map (Widget w,
         }
 #endif
          
+        if (image_info)
+            DestroyImageInfo(image_info);
+	DestroyExceptionInfo(&exception);
         return;
     }
     (void)fclose (f);
@@ -598,6 +601,9 @@ void draw_tiger_map (Widget w,
         }
 #endif
 
+        if (image_info)
+            DestroyImageInfo(image_info);
+	DestroyExceptionInfo(&exception);
         return;
     }
 

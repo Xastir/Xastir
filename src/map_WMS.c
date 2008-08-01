@@ -633,6 +633,9 @@ void draw_WMS_map (Widget w,
         }
 #endif
          
+        if (image_info)
+            DestroyImageInfo(image_info);
+	DestroyExceptionInfo(&exception);
         return;
     }
     (void)fclose (f);
@@ -653,6 +656,9 @@ void draw_WMS_map (Widget w,
         }
 #endif
 
+        if (image_info)
+            DestroyImageInfo(image_info);
+	DestroyExceptionInfo(&exception);
         return;
     }
 
