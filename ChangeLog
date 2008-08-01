@@ -1,3 +1,101 @@
+2008-08-01 05:42  gstueve
+
+	* src/: map_geo.c, map_WMS.c, map_tiger.c: Make sure that error
+	  returns are covered by ImageMagick release code.
+
+2008-07-31 23:21  gstueve
+
+	* src/map_gdal.c: Give GDAL a chance to release data from
+	  GDALAllRegister at end of run.
+
+2008-07-31 20:24  gstueve
+
+	* src/map_WMS.c: Make sure to deal with cleaning up ExceptionInfo
+	  when finished with map.
+
+2008-07-31 20:20  gstueve
+
+	* src/map_tiger.c: Make sure to cleanup allocated space before
+	  returning to caller.	ImageMagick exceptionInfo needed to be
+	  destroyed when finished.
+
+2008-07-31 17:09  we7u
+
+	* src/: main.c, xa_config.c: Reverting to "fixed" font as the
+	  default for the SYSTEM and STATION fonts.
+
+2008-07-30 08:24  we7u
+
+	* src/: database.h, db.c, util.c: More Tactical Call changes:
+	  Assignments before a station shows up work.  Clearing an
+	  assignment causes the string to be freed and the pointer nulled.
+	  Max tactical call length is now 57.
+
+2008-07-28 02:10  we7u
+
+	* src/db.c: Cleaning up the input parameters for one of the new
+	  tactical call helper routines.  Leading/trailing spaces on
+	  callsign or tac-callsign affect the results little now.
+	  Lower-case callsigns are converted to upper case now.  One minor
+	  annoyance:  Blanking out callsigns using messages to TACTICAL
+	  results in this being displayed in the station chooser when there
+	  are more than one station under the mouse:  "()".  The proper
+	  display should be the callsign in that case, so perhaps spaces
+	  are still getting saved in the tactical callsign slot -or- the
+	  tactical callsign string isn't getting free'd and the pointer
+	  NULLed out (the latter is most likely).
+
+2008-07-28 01:37  we7u
+
+	* src/: db.c, util.c, util.h: The beginnings of being able to share
+	  Tactical Call data with others over the air.	This code works,
+	  decoding messages sent to "TACTICAL" which are in one of these
+	  four formats:     My Home	WE7U-3=My Home	   WE7U-3=My
+	  Home;WE7U-12=Curt's Jeep;WE7U-15=I Don't Know
+	  WE7U-3=;WE7U-12=;WE7U-15= In the first case it'll assign "My
+	  Home" as the tactical callsign for the station that sent the
+	  message.  In the last case it'll remove tactical callsigns for
+	  the listed stations.	For testing remember that you can't send a
+	  new message to TACTICAL until the previous message has either
+	  timed-out or been cancelled.
+
+2008-07-18 08:26  gstueve
+
+	* scripts/get-NWSdata: Update to current Marine Zone. There are
+	  changes due in September for a few of the zone files. Need to
+	  watch for implementation date.
+
+2008-07-11 15:03  tvrusso
+
+	* acinclude.m4: Fix spelling error in AC_SEARCH_LIBS line for
+	  Magick/MagickCore.  This is mostly irrelevant, because LIBS
+	  already has the right stuff in it if Magick-config --libs isn't
+	  lying, and for most users this test will be a no-op.
+
+2008-07-10 08:46  chicoreus
+
+	* src/db_gis.c: Issue: 2015173 Missing #ifdef for MySQL causes
+	  xastir to segfault when built with only --with-postgis. Found by
+	  Jeffrey Johnson.
+
+2008-07-07 15:26  tvrusso
+
+	* src/maps.c: Fix map metadata for upper left corner.
+
+	  Previously, the code was using the same coordinate pair to
+	  compute the upper left and lower right corner strings.  For some
+	  reason, this ultimately made somewhat correct labels for UTM, but
+	  completely wrong labels for Lat/Lon.
+
+	  Since this simple change makes the code produce correct labels
+	  for all coordinate systems, and the other shouldn't have worked
+	  for any, I feel safe committing it.  But I would have liked to
+	  understand why it worked at all for UTM.
+
+2008-07-07 09:53  we7u
+
+	* ChangeLog: [no log message]
+
 2008-07-03 07:55  gstueve
 
 	* src/alert.c: Increase size of titles for alerts to allow for
