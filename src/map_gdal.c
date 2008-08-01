@@ -240,6 +240,7 @@ void map_gdal_init(void) {
     }
     fprintf(stderr,"\n");
 
+    atexit(GDALDestroyDriverManager);
 #endif  // HAVE_LIBGDAL
 
 }
