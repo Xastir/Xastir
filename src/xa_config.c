@@ -1463,7 +1463,7 @@ void load_data_or_default(void) {
             || rotated_label_fontname[FONT_SYSTEM][0] == '\0') {
         xastir_snprintf(rotated_label_fontname[FONT_SYSTEM],
             sizeof(rotated_label_fontname[FONT_SYSTEM]),
-            "-misc-fixed-*-r-*-*-10-*-*-*-*-*-*-*");
+            "fixed");
             // NOTE:  This same default font is hard-coded into
             // main.c, to be used for the case when the user enters
             // an invalid font (so the program won't crash).
@@ -1473,7 +1473,7 @@ void load_data_or_default(void) {
             || rotated_label_fontname[FONT_STATION][0] == '\0') {
         xastir_snprintf(rotated_label_fontname[FONT_STATION],
             sizeof(rotated_label_fontname[FONT_STATION]),
-            "-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*");
+            "fixed");
             // NOTE:  This same default font is hard-coded into
             // main.c, to be used for the case when the user enters
             // an invalid font (so the program won't crash).

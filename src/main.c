@@ -4483,7 +4483,7 @@ void Load_station_font(void) {
             rotated_label_fontname[FONT_STATION]);
         popup_message_always(langcode("POPEM00035"), tempy);
 
-        station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(da), "-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*");
+        station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(da), "fixed");
         if (station_font == NULL) {    // Couldn't get the font!!!
             fprintf(stderr,"Map_font_change_data: Couldn't load default station font.\n");
 
@@ -5367,7 +5367,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         fprintf(stderr,"create_appshell: Couldn't load system font %s.  ",
             rotated_label_fontname[FONT_SYSTEM]);
         fprintf(stderr,"Loading default system font instead.\n");
-        font1 = XLoadQueryFont(display, "-misc-fixed-*-r-*-*-10-*-*-*-*-*-*-*");
+        font1 = XLoadQueryFont(display, "fixed");
         if (font1 == NULL) {    // Couldn't get the font!!!
             fprintf(stderr,"create_appshell: Couldn't load default system font, exiting.\n");
             exit(1);
@@ -27027,7 +27027,7 @@ int main(int argc, char *argv[], char *envp[]) {
         "*initialResourcesPersistent: False\n",
 
 // Default font if nothing else overrides it:
-        "*.fontList: -misc-fixed-*-r-*-*-10-*-*-*-*-*-*-*\n",
+        "*.fontList:    fixed\n",
 
         "*List.Translations: #override \n\
         <Key>Return:    Select(children)\n\
