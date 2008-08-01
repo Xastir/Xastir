@@ -666,6 +666,7 @@ void draw_WMS_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -718,6 +719,7 @@ void draw_WMS_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -729,6 +731,7 @@ void draw_WMS_map (Widget w,
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
@@ -1009,5 +1012,6 @@ void draw_WMS_map (Widget w,
        DestroyImage(image);
     if (image_info)
        DestroyImageInfo(image_info);
+    DestroyExceptionInfo(&exception);
 }
 #endif //HAVE_MAGICK
