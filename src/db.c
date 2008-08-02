@@ -15649,8 +15649,9 @@ int tactical_data_add(char *call, char *message, char from) {
         // tactical call and assign it to the station data record
         // for the station.
 
-fprintf(stderr, "One tactical assignment.\n");
-
+        if (debug_level & 2)
+            fprintf(stderr, "One tactical assignment.\n");
+ 
         fill_in_tactical_callsign(call, message);
     }
 
@@ -15661,7 +15662,8 @@ fprintf(stderr, "One tactical assignment.\n");
         char *Call_Tac[2];
 
 
-fprintf(stderr, "Possibly multiple tactical assignments.\n");
+        if (debug_level & 2)
+            fprintf(stderr, "Possibly multiple tactical assignments.\n");
 
         // Split the message first on ';' characters to get the
         // callsign=tactical pairs separated from each other.
@@ -15672,7 +15674,9 @@ fprintf(stderr, "Possibly multiple tactical assignments.\n");
             // We might still have a single tactical definition in
             // the message.  Assign "message" to Substring[0] for
             // further processing below.
-fprintf(stderr, "No semicolons found.\n");
+
+            if (debug_level & 2)
+                fprintf(stderr, "No semicolons found.\n");
 
             Substring[0] = message;
         }
@@ -15689,9 +15693,11 @@ fprintf(stderr, "No semicolons found.\n");
 
             if (Call_Tac[0] != NULL) { // Found '=' char.
 
-fprintf(stderr, "Found a tactical pair:  %s->%s\n",
-    Call_Tac[0],
-    Call_Tac[1]);
+                if (debug_level & 2) {
+                    fprintf(stderr, "Found a tactical pair:  %s->%s\n",
+                        Call_Tac[0],
+                        Call_Tac[1]);
+                }
 
                 fill_in_tactical_callsign(Call_Tac[0], Call_Tac[1]);
             }
@@ -16067,18 +16073,10 @@ if (reply_ack) { // For debugging, so we only have reply-ack
         fprintf(stderr,"3\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"TACTICAL",8) == 0) {                  // Tactical definition
-    //  *) To set your own tactical callsign and send it to others,
-    //     send an APRS message to "TACTICAL" with your callsign in
-    //     the message text.
-    //
-    //  *) To send multiple tactical calls to others, send an APRS
-    //     message to "TACTICAL" and enter:
-    //     "CALL1=TAC1;CALL2=TAC2;CALL3=TAC3" in the message text.
-    //
-    //  '=' or ';' characters can not be in the TAC callsign.
-    //
-    //
-fprintf(stderr,"found TACTICAL: |%s| |%s|\n",call,message);
+
+        if (debug_level & 2)
+            fprintf(stderr,"found TACTICAL: |%s| |%s|\n",call,message);
+
         tactical_data_add(call,message,from);
         done = 1;
     }
