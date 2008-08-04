@@ -10,7 +10,7 @@ Packager  : n2ygk@weca.org
 Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 URL       : http://www.xastir.org
 BuildRoot : %{_tmppath}/%{name}-buildroot
-Requires  : /usr/include/Xm/Xm.h
+#Requires  :
 
 %description
 Xastir is a graphical application that interfaces HAM radio
