@@ -1927,6 +1927,7 @@ fprintf(stderr,"2 ");
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
+        DestroyExceptionInfo(&exception);
         return;
     }
 
