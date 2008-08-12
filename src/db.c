@@ -4809,7 +4809,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI065"), p_station->tactical_call_sign);
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
-        xastir_snprintf(temp, sizeof(temp), "\t");
+        xastir_snprintf(temp, sizeof(temp), "\n");
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
     }
