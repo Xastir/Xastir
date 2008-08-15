@@ -1,3 +1,58 @@
+2008-08-15 12:50  we7u
+
+	* configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
+	  scripts/do_xastir_release_dev, scripts/do_xastir_release_stable:
+	  Updating version numbers for upcoming stable release.
+
+2008-08-15 12:41  we7u
+
+	* configure.ac: Checking for curl/curl.h include file in the
+	  libcurl test to make sure we can actually compile with it.  Also
+	  only check for wget if the libcurl tests fail.
+
+2008-08-14 21:39  we7u
+
+	* configure.ac: Adding a "--without-libcurl" option to configure.
+
+2008-08-14 21:36  we7u
+
+	* acinclude.m4: Slight reformatting of help text (added spaces).
+
+2008-08-12 12:16  we7u
+
+	* src/db.c: Changing a tab to a newline at the end of Tactical Call
+	  in Station Info box.	This prepares us for longer tactical calls.
+
+2008-08-05 20:03  gstueve
+
+	* src/map_geo.c: Found one more place to release ExceptionInfo for
+	  ImageMagick, hopefully last needed to minimize unbalanced memory
+	  usage in maps.
+
+2008-08-04 07:27  we7u
+
+	* xastir-min.spec.in, xastir.spec.in, scripts/BUILDRPMS: Getting
+	  rid of include/Xm/Xm.h requirement in RPM build spec files.
+	  Uncommenting a few print statements in the BUILDRPMS script that
+	  were commented out by mistake.
+
+2008-08-03 10:26  we7u
+
+	* xastir-min.spec.in, xastir.spec.in: Updating to new path for
+	  Motif include files.
+
+2008-08-03 09:18  we7u
+
+	* scripts/BUILDRPMS: Preparing for creation of SuSE-11.0 RPM's.
+
+2008-08-01 19:14  we7u
+
+	* src/db.c: Adding debug_level filtering to the TACTICAL code.
+
+2008-08-01 07:55  we7u
+
+	* ChangeLog: Updating ChangeLog before doing -dev release.
+
 2008-08-01 05:42  gstueve
 
 	* src/: map_geo.c, map_WMS.c, map_tiger.c: Make sure that error
