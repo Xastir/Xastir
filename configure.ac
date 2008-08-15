@@ -168,14 +168,14 @@ fi
 
 use_curl=no
 curl_desired=yes
+# Note: Had to move AC_CHECK_HEADER here instead of inside the first
+# "if" statement:  It corrupted later tests, don't know why.  The
+# only downside is that we check for the libcurl headers even if
+# --without-libcurl was specified on the command-line.
+AC_CHECK_HEADER(curl/curl.h, CURL_INC="yes", CURL_INC="no")
 AC_ARG_WITH(libcurl,[  --without-libcurl         Disable libcurl features.],curl_desired=$withval)
 if test "${curl_desired}" = "yes"; then
-#
-# TODO: Check for curl.h.  The below statement corrupts something
-# later in the scripts, don't know why yet.
-#  AC_CHECK_HEADERS([curl/curl.h],CURL_INC="yes",CURL_INC="no")
-#  if test "${CURL_INC}" = "yes"; then
-
+  if test "${CURL_INC}" = "yes"; then
     if test "${use_lsb}" = "no"; then 
       # Important: when using the three-argument version of AC_CHECK_LIB, you
       # must do all of what is normally the default behavior in the third argument,
@@ -191,17 +191,17 @@ if test "${curl_desired}" = "yes"; then
       LIBS="${LIBS} -lcurl"
       use_curl=yes
     fi
-#  fi
+  fi
 fi
-
-
-
+# Test for wget only if above libcurl tests fail
 use_wget=no
-AC_PATH_PROG(wget, [wget --version], no, $BINPATH)
-if test "$wget" != "no"; then
-  AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
-  AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}", [Path to wget]) 
-  use_wget=yes
+if test "${use_curl}" = "no"; then
+  AC_PATH_PROG(wget, [wget --version], no, $BINPATH)
+  if test "$wget" != "no"; then
+    AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
+    AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}", [Path to wget]) 
+    use_wget=yes
+  fi
 fi
 
 
