@@ -72,13 +72,13 @@ use_lsb=no
 use_spatial_db=no
 use_postgis=no
 use_mysql_spatial=no
-AC_ARG_WITH(festival,[  --without-festival      Disable festival features.],use_festival=$withval)
+AC_ARG_WITH(festival,[  --without-festival        Disable festival features.],use_festival=$withval)
 
-AC_ARG_WITH(gpsman,[  --without-gpsman        Disable gpsman features.],use_gpsman=$withval)
+AC_ARG_WITH(gpsman,[  --without-gpsman          Disable gpsman features.],use_gpsman=$withval)
 
-AC_ARG_WITH(errorpopups,[  --with-errorpopups      Send error popups to stderr.],use_err_popups=$withval)
+AC_ARG_WITH(errorpopups,[  --with-errorpopups        Send error popups to stderr.],use_err_popups=$withval)
 
-AC_ARG_WITH(lsb, [  --with-lsb              Enable Linux Standard Base.],use_lsb=$withval)
+AC_ARG_WITH(lsb, [  --with-lsb                Enable Linux Standard Base.],use_lsb=$withval)
 
 
 # Now that all the various "use_" variables are set, probe for binaries.
@@ -167,20 +167,31 @@ fi
 
 
 use_curl=no
-if test "${use_lsb}" = "no"; then 
-  # Important: when using the three-argument version of AC_CHECK_LIB, you
-  # must do all of what is normally the default behavior in the third argument,
-  # not just the extra stuff you want to accomplish:
-  AC_CHECK_LIB([curl], [curl_global_init], 
-               [use_curl="yes"
-                LIBS="${LIBS} -lcurl"
-                AC_DEFINE(HAVE_LIBCURL, ,
-                          [Define to 1 if your `curl' library has curl_global_init.])
-                ])
-else
-  AC_DEFINE(HAVE_LIBCURL, , [Define to 1 if your `curl' library has curl_global_init.] )
-  LIBS="${LIBS} -lcurl"
-  use_curl=yes
+curl_desired=yes
+AC_ARG_WITH(libcurl,[  --without-libcurl         Disable libcurl features.],curl_desired=$withval)
+if test "${curl_desired}" = "yes"; then
+#
+# TODO: Check for curl.h.  The below statement corrupts something
+# later in the scripts, don't know why yet.
+#  AC_CHECK_HEADERS([curl/curl.h],CURL_INC="yes",CURL_INC="no")
+#  if test "${CURL_INC}" = "yes"; then
+
+    if test "${use_lsb}" = "no"; then 
+      # Important: when using the three-argument version of AC_CHECK_LIB, you
+      # must do all of what is normally the default behavior in the third argument,
+      # not just the extra stuff you want to accomplish:
+      AC_CHECK_LIB([curl], [curl_global_init], 
+                   [use_curl="yes"
+                    LIBS="${LIBS} -lcurl"
+                    AC_DEFINE(HAVE_LIBCURL, ,
+                              [Define to 1 if your `curl' library has curl_global_init.])
+                    ])
+    else
+      AC_DEFINE(HAVE_LIBCURL, , [Define to 1 if your `curl' library has curl_global_init.] )
+      LIBS="${LIBS} -lcurl"
+      use_curl=yes
+    fi
+#  fi
 fi
 
 
@@ -318,7 +329,7 @@ shapelib_desired=yes
 LIBSHP=""
 SUBSHP=""
 AC_ARG_WITH(internal-shapelib,[  --with-internal-shapelib  Force use of internal shapelib library.],force_internal_shapelib=$withval)
-AC_ARG_WITH(shapelib,[  --without-shapelib      Disable shapelib features.],shapelib_desired=$withval)
+AC_ARG_WITH(shapelib,[  --without-shapelib        Disable shapelib features.],shapelib_desired=$withval)
 if test "${shapelib_desired}" = "no"; then
   use_shapelib=no
   force_internal_shapelib=no
@@ -360,7 +371,7 @@ AC_SUBST(LIBSHP)
 
 # Check for pcre
 use_pcre=yes
-AC_ARG_WITH(pcre,[  --without-pcre          Disable pcre features.],use_pcre=$withval)
+AC_ARG_WITH(pcre,[  --without-pcre            Disable pcre features.],use_pcre=$withval)
 if test "${use_pcre}" = "yes"; then
   use_pcre=no
   AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
@@ -383,7 +394,7 @@ fi
  
 # Check for libproj
 use_proj=yes
-AC_ARG_WITH(libproj,[  --without-libproj       Disable libproj features.],use_proj=$withval)
+AC_ARG_WITH(libproj,[  --without-libproj         Disable libproj features.],use_proj=$withval)
 if test "${use_proj}" = "yes"; then
   use_proj=no
   AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
@@ -396,7 +407,7 @@ fi
 # libjpeg.a and libz.a need to be compiled under LSB
 
 use_geotiff=yes
-AC_ARG_WITH(geotiff, [  --without-geotiff       Disable geotiff features.], use_geotiff=$withval)
+AC_ARG_WITH(geotiff, [  --without-geotiff         Disable geotiff features.], use_geotiff=$withval)
 if test "${use_geotiff}" = "yes"; then
     if test "${use_proj}" = "yes" ; then
         if test "${use_lsb}" = "yes" ; then
@@ -427,12 +438,12 @@ fi
 
 # Check for spatial database support
 use_postgis=no
-AC_ARG_WITH(postgis, [  --with-postgis          Enable Postgresql with PostGIS.],use_postgis=$withval)
+AC_ARG_WITH(postgis, [  --with-postgis            Enable Postgresql with PostGIS.],use_postgis=$withval)
 if test "${use_postgis}" != "no"; then
   XASTIR_CHECK_POSTGIS
 fi
 use_mysql=no
-AC_ARG_WITH(mysql, [  --with-mysql	Enable MySQL, with spatial support if available.],use_mysql=$withval)
+AC_ARG_WITH(mysql, [  --with-mysql	            Enable MySQL, with spatial support if available.],use_mysql=$withval)
 if test "${use_mysql}" != "no"; then
   XASTIR_CHECK_MYSQL
 fi
@@ -452,7 +463,7 @@ fi
 
 # Check for AX.25 library 
 use_ax25=yes
-AC_ARG_WITH(ax25,[  --without-ax25          Disable ax25 features.],use_ax25=$withval)
+AC_ARG_WITH(ax25,[  --without-ax25            Disable ax25 features.],use_ax25=$withval)
 if test "${use_ax25}" = "yes"; then
   use_ax25=no
   AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, use_ax25=yes
@@ -464,7 +475,7 @@ fi
 
 # use dbfawk
 use_dbfawk=yes
-AC_ARG_WITH(dbfawk,[  --without-dbfawk        Disable dbfawk features.],use_dbfawk=$withval)
+AC_ARG_WITH(dbfawk,[  --without-dbfawk          Disable dbfawk features.],use_dbfawk=$withval)
 # dbfawk requires shapelib and pcre.  Make sure:
 if test "${use_dbfawk}" = "yes"; then
   if test "${use_pcre}" = "yes" -a "${use_shapelib}" = "yes"; then
@@ -479,7 +490,7 @@ fi
 # Check for GDAL.  Make sure that the GDAL check is towards the
 # last, as it can mess up shapelib and libgeotiff currently.
 use_gdal=yes
-AC_ARG_WITH(gdal,[  --without-gdal          Disable gdal features.],use_gdal=$withval)
+AC_ARG_WITH(gdal,[  --without-gdal            Disable gdal features.],use_gdal=$withval)
 if test "${use_gdal}" = "yes"; then
   if test "${use_lsb}" = "no"; then 
     XASTIR_CHECK_GDAL
@@ -494,7 +505,7 @@ fi
 use_rtree=yes
 LIBRTREE=""
 SUBRTREE=""
-AC_ARG_WITH(rtree,[  --without-rtree            disable spatial indexing of shapefiles.],[use_rtree=$withval])
+AC_ARG_WITH(rtree,[  --without-rtree           Disable spatial indexing of shapefiles.],[use_rtree=$withval])
 if test "${use_rtree}" = "yes" ; then
   if test "${use_shapelib}" = "yes"; then
     AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
@@ -532,7 +543,7 @@ fi
 # linking it with Xastir, but require the "--with-libgc" flag to
 # enable it.
 use_libgc=no
-AC_ARG_WITH(libgc,[  --with-libgc            Enable libgc features.],use_libgc=$withval)
+AC_ARG_WITH(libgc,[  --with-libgc              Enable libgc features.],use_libgc=$withval)
 if test "${use_libgc}" = "yes"; then
     AC_CHECK_HEADERS([gc.h], LIBGC_INC="yes", use_libgc=no)
     AC_CHECK_LIB([gc], [GC_init], , use_libgc=no)
@@ -545,7 +556,7 @@ fi
 # Check whether profiling was requested.  If so, add the "-pg" flag
 # to CFLAGS.  Require "--with-profiling" flag to enable it.
 use_profiling=no
-AC_ARG_WITH(profiling,[  --with-profiling        Enable profiling features.],use_profiling=$withval)
+AC_ARG_WITH(profiling,[  --with-profiling          Enable profiling features.],use_profiling=$withval)
 if test "${use_profiling}" = "yes"; then
     CFLAGS="$CFLAGS -pg"
 fi
@@ -556,7 +567,7 @@ fi
 
 # Check for Berkeley DB.
 use_map_cache=yes
-AC_ARG_WITH(map_cache,[  --without-map-cache     Disable Map Caching.],use_map_cache=$withval)
+AC_ARG_WITH(map_cache,[  --without-map-cache       Disable Map Caching.],use_map_cache=$withval)
 if test "${use_map_cache}" = "yes"; then
   XASTIR_BERKELEY_DB_CHK
 fi
@@ -571,7 +582,7 @@ fi
 #
 use_graphicsmagick=yes
 use_imagemagick=no
-AC_ARG_WITH(graphicsmagick,[  --without-graphicsmagick   Disable graphicsmagick features.],use_graphicsmagick=$withval)
+AC_ARG_WITH(graphicsmagick,[  --without-graphicsmagick  Disable graphicsmagick features.],use_graphicsmagick=$withval)
 if test "${use_graphicsmagick}" = "yes"; then
   if test "${use_lsb}" = "no"; then
     XASTIR_CHECK_GRAPHICSMAGICK
@@ -590,7 +601,7 @@ fi
 #
 if test "${use_graphicsmagick}" = "no"; then
   use_imagemagick=yes
-  AC_ARG_WITH(imagemagick,[  --without-imagemagick   Disable imagemagick features.],use_imagemagick=$withval)
+  AC_ARG_WITH(imagemagick,[  --without-imagemagick     Disable imagemagick features.],use_imagemagick=$withval)
   if test "${use_imagemagick}" = "yes"; then
     XASTIR_CHECK_IMAGEMAGICK
   fi
