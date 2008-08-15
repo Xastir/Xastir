@@ -17,7 +17,7 @@
 #   Admin
 #   Edit/Add File Releases
 #   Edit Releases (xastir-stable)
-#   Edit This Release (xastir-1.9.2)
+#   Edit This Release (xastir-1.9.4)
 #
 
 
@@ -110,7 +110,7 @@ printf("\n*** Removing xastir/ directory\n");
 
 
 sub Get_release {
-  printf("\nRelease number (i.e. 1.9.2)?\n");
+  printf("\nRelease number (i.e. 1.9.4)?\n");
   $release = <>;
   chomp($release);
 }
