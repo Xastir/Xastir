@@ -792,13 +792,13 @@ AC_DEFUN([XASTIR_PATH_MOTIF], [
 
 # Allow "--with-motif-includes" and "--with-motif-libs" so user can 
 # force a specific set of includes.
-AC_ARG_WITH(motif-includes, [  --with-motif-includes   set path for motif includes (default none)],[with_motif_includes=$withval], [with_motif_includes=])
+AC_ARG_WITH(motif-includes, [  --with-motif-includes     Set path for motif includes (default none)],[with_motif_includes=$withval], [with_motif_includes=])
 if test "$with_motif_includes" != "yes" && test -z "$with_motif_includes"
 then
         with_motif_includes=
 fi
 
-AC_ARG_WITH(motif-libs, [  --with-motif-libs       set path for motif libraries (default none)],[with_motif_libs=$withval], [with_motif_libs=])
+AC_ARG_WITH(motif-libs, [  --with-motif-libs         Set path for motif libraries (default none)],[with_motif_libs=$withval], [with_motif_libs=])
 if test "$with_motif_libs" != "yes" && test -z "$with_motif_libs"
 then
   with_motif_libs=
@@ -1047,11 +1047,11 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 AC_DEFUN([XASTIR_BERKELEY_DB_OPTS],
 [
 AC_ARG_WITH(bdb-libdir,
-	[  --with-bdb-libdir=DIR   Berkeley DB lib files are in DIR],
+	[  --with-bdb-libdir=DIR     Berkeley DB lib files are in DIR],
 	with_bdb_lib=$withval,
 	[ test "${with_bdb_lib+set}" = set || with_bdb_lib=none])
 AC_ARG_WITH(bdb-incdir,
-	[  --with-bdb-incdir=DIR   Berkeley DB include files are in DIR],
+	[  --with-bdb-incdir=DIR     Berkeley DB include files are in DIR],
 	with_bdb_inc=$withval,
 	[ test "${with_bdb_inc+set}" = set || with_bdb_inc=none ])
 ])
