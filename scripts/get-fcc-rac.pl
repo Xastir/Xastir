@@ -41,11 +41,9 @@ if (-e $file && -r $file && -f $file) {
   print STDERR "*** Filtering/sorting/installing the FCC database ***\n";
   print STDERR "*****************************************************\n";
 
-  `unzip $file $file2`;
-
   my %from = ();
  
-  open FILE, "< $file2" or die "Can't open $file2 : $!";
+  open FILE, "unzip -p $file $file2|" or die "Can't open $file2 in $file : $!";
   while( <FILE> ) {
     if (/^EN\|(\d+)\|\|\|(\w+)\|.*/) {
       $x = $1;
@@ -80,7 +78,7 @@ if (-e $file && -r $file && -f $file) {
 }
 
 # Remove the FCC download files
-unlink $file, $file2;
+unlink $file;
 
 
 
