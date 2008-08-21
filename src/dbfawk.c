@@ -232,6 +232,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
             if (symtbl)
                 awk_free_symtab(symtbl);
             fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+	    closedir(d);
             return NULL;
         }
  
@@ -243,6 +244,9 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
                 if (!i) {
                     fprintf(stderr,"failed to malloc in dbfawk.c!\n");
                     free(path);
+                    if (symtbl)
+                      awk_free_symtab(symtbl);
+		    closedir(d);
                     return NULL;
                 }
             } else {
@@ -251,7 +255,10 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
                 if (!i->next) {
                     fprintf(stderr,"failed to malloc in dbfawk.c!\n");
                     free(path);
-                    return NULL;
+                    if (symtbl)
+                      awk_free_symtab(symtbl);
+		    closedir(d);
+                    return head; // Return what we were able to gather.
                 }
 
                 i = i->next;
