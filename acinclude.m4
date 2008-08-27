@@ -1130,7 +1130,7 @@ AC_DEFUN([XASTIR_ADD_LIBPATH_TO], [
 dnl runpath initialization
 AC_DEFUN([XASTIR_GUESS_RUNPATH_SWITCH], [
    # XASTIR GUESS RUNPATH SWITCH
-  AC_CACHE_CHECK(for runpath switch, xastir_cv_runpath_switch, [
+  AC_CACHE_CHECK([for runpath switch], [xastir_cv_runpath_switch], [
     # first, try -R
     SAVE_LDFLAGS="${LDFLAGS}"
     LDFLAGS="-R /usr/lib"
