@@ -1108,10 +1108,10 @@ dnl (so the runpath for shared libraries is set).
 AC_DEFUN([XASTIR_ADD_LIBPATH], [
   AC_REQUIRE([XASTIR_GUESS_RUNPATH_SWITCH])
   # this is XASTIR ADD LIBPATH
-  if test "$xastir_runpath_switch" = "none" ; then
+  if test "$xastir_cv_runpath_switch" = "none" ; then
         LDFLAGS="-L$1 ${LDFLAGS}"
   else
-        LDFLAGS="-L$1 $xastir_runpath_switch$1 ${LDFLAGS}"
+        LDFLAGS="-L$1 $xastir_cv_runpath_switch$1 ${LDFLAGS}"
   fi
 ])
 
@@ -1120,24 +1120,24 @@ dnl (so the runpath for shared libraries is set).
 AC_DEFUN([XASTIR_ADD_LIBPATH_TO], [
   AC_REQUIRE([XASTIR_GUESS_RUNPATH_SWITCH])
   # this is XASTIR ADD LIBPATH TO
-  if test "$xastir_runpath_switch" = "none" ; then
+  if test "$xastir_cv_runpath_switch" = "none" ; then
         $2="-L$1 ${$2}"
   else
-        $2="-L$1 ${$2} $xastir_runpath_switch$1"
+        $2="-L$1 ${$2} $xastir_cv_runpath_switch$1"
   fi
 ])
 
 dnl runpath initialization
 AC_DEFUN([XASTIR_GUESS_RUNPATH_SWITCH], [
    # XASTIR GUESS RUNPATH SWITCH
-  AC_CACHE_CHECK(for runpath switch, xastir_runpath_switch, [
+  AC_CACHE_CHECK(for runpath switch, xastir_cv_runpath_switch, [
     # first, try -R
     SAVE_LDFLAGS="${LDFLAGS}"
     LDFLAGS="-R /usr/lib"
-    AC_TRY_LINK([],[],[xastir_runpath_switch="-R"], [
+    AC_TRY_LINK([],[],[xastir_cv_runpath_switch="-R"], [
         LDFLAGS="-Wl,-rpath,/usr/lib"
-    AC_TRY_LINK([],[],[xastir_runpath_switch="-Wl,-rpath,"],
-    [xastir_runpath_switch="none"])
+    AC_TRY_LINK([],[],[xastir_cv_runpath_switch="-Wl,-rpath,"],
+    [xastir_cv_runpath_switch="none"])
     ])
   LDFLAGS="${SAVE_LDFLAGS}"
   ])])
