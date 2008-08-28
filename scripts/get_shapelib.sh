@@ -80,7 +80,7 @@ fi
 
 if [ ! -d $XASTIR_TMP ]
 then
-    printf "ERROR: %s Doesn't appear to exsit.\n" $XASTIR_TMP
+    printf "ERROR: %s Doesn't appear to exist.\n" $XASTIR_TMP
     printf "Please create dir and/or edit script. Exiting\n"
     exit 
 else 
@@ -138,16 +138,29 @@ else
 
     printf "Checking /etc/ld.so.conf"
 
-    if (! grep /usr/local/lib /etc/ld.so.conf 2>&1 > /dev/null) 
-    then
-        printf "Warning: /usr/local/lib not in /etc/ld.so.conf - adding it\n"
-        cp /etc/ld.so.conf /tmp
-        printf "/usr/local/lib\n" >> /tmp/ld.so.conf
-        $SUDO cp /etc/ld.so.conf /etc/ld.so.conf.save 
-        $SUDO cp /tmp/ld.so.conf /etc/ld.so.conf
+    if [ -d /etc/ld.so.conf.d ]
+    then 
+	LDCONF_FILE=/etc/ld.so.conf.d/xastir.conf 
+    else
+	LDCONF_FILE=/etc/ld.so.conf
     fi
 
-    if ( grep /usr/local/lib /etc/ld.so.conf ) 
+    if [ ! -f $LDCONF_FILE ]
+    then 
+	sudo touch $LDCONF_FILE
+    fi
+
+    if (! grep /usr/local/lib $LDCONF_FILE 2>&1 > /dev/null) 
+    then
+        printf "Warning: /usr/local/lib not in %s - adding it\n" $LDCONF_FILE
+	$SUDO rm -f /tmp/ld.so.conf
+        cp $LDCONF_FILE /tmp/ld.so.conf
+        printf "/usr/local/lib\n" >> /tmp/ld.so.conf
+        $SUDO cp $LDCONF_FILE $LDCONF_FILE.save 
+        $SUDO cp /tmp/ld.so.conf $LDCONF_FILE
+    fi
+
+    if ( grep /usr/local/lib $LDCONF_FILE ) 
     then
         printf "Running ldconfig\n" 
         if ($SUDO ldconfig ) 
@@ -157,7 +170,7 @@ else
             printf "ldconfig had errors - you may need to run ldconfig manually.\n" 
         fi
     else
-        printf "ERROR: could not add /usr/local/lib to /etc/ld.so.conf - aborting\n"
+        printf "ERROR: could not add /usr/local/lib to $LDCONF_FILE - aborting\n"
         exit
     fi
 fi
