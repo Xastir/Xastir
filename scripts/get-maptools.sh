@@ -168,6 +168,7 @@ else
         printf "Warning: /usr/local/lib not in %s - adding it\n" $LDCONF_FILE
 	if [ -f $LDCONF_FILE ]
 	then
+	        $SUDO rm -f /tmp/ldconfig.tmp
 	        cp $LDCONF_FILE /tmp/ldconfig.tmp
 	        $SUDO cp $LDCONF_FILE $LDCONF_FILE.orig.$$
 	fi
