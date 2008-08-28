@@ -87,8 +87,12 @@ XASDIR=$HOME/src/xastir
 XASTIR_TMP=$XASDIR/tmp
 XASTIR_LIB=$XASDIR/lib
 
-# Make sure this exists!
-mkdir -p $XASTIR_TMP
+if [ ! -d $XASTIR_TMP ]
+then
+    printf "WARNING: %s Doesn't appear to exist. Creating temporary directory\n" $XASTIR_TMP
+    # Make sure this exists!
+    mkdir -p $XASTIR_TMP
+fi
 
 printf "Checking MACHTYPE found: %s\n" $MACHTYPE
 
@@ -166,14 +170,18 @@ else
     if (! grep /usr/local/lib $LDCONF_FILE 2>&1 > /dev/null) 
     then
         printf "Warning: /usr/local/lib not in %s - adding it\n" $LDCONF_FILE
-	if [ -f $LDCONF_FILE ]
+	if MKTEMP=`which mktemp`
 	then
-	        $SUDO rm -f /tmp/ldconfig.tmp
-	        cp $LDCONF_FILE /tmp/ldconfig.tmp
-	        $SUDO cp $LDCONF_FILE $LDCONF_FILE.orig.$$
+	    TMPFILE=`mktemp -t ld.so.conf.XXXXXXXXXX`
+	else
+	    TMPFILE='/tmp/ld.so.conf.XXXXXXXXXX'
+	    $SUDO rm -f $TMPFILE
+	    touch $TMPFILE
 	fi
-        printf "/usr/local/lib\n" >> /tmp/ldconf.tmp
-        $SUDO cp /tmp/ldconf.tmp $LDCONF_FILE
+	cp $LDCONF_FILE $TMPFILE
+	$SUDO cp $LDCONF_FILE $LDCONF_FILE.orig.$$
+        printf "/usr/local/lib\n" >> $TMPFILE
+        $SUDO cp $TMPFILE $LDCONF_FILE
 
     fi
 

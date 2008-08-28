@@ -33,26 +33,25 @@ SHAPELIB_URL=http://dl.maptools.org/dl/shapelib/${SHAPELIB_FILE}
 
 XASDIR=$HOME/src/xastir
 XASTIR_TMP=$XASDIR/tmp
-
-XASTIR_LIB=$HOME/src/xastir/lib
+XASTIR_LIB=$XASDIR/lib
 
 
 UNAME=`uname -o`
 
 if [ $UNAME = 'Cygwin' ]
 then
-    printf "Os is %s. Skipping sudo tests.\n" $UNAME 
+    printf "OS is %s. Skipping sudo tests.\n" $UNAME 
 else 
     printf "Checking for sudo\n" 
 
     if  SUDO=`which sudo` 
     then 
-        printf "$SUDO found - validating $SUDO privilages\n" 
+        printf "$SUDO found - validating $SUDO privileges\n" 
         if $SUDO -v 
         then
             printf "Ok, we can continue\n"
         else
-            printf "ERROR: %s needs $SUDO privilages - aborting \n" $0
+            printf "ERROR: %s needs $SUDO privileges - aborting \n" $0
             exit 
         fi 
     else
@@ -80,12 +79,11 @@ fi
 
 if [ ! -d $XASTIR_TMP ]
 then
-    printf "ERROR: %s Doesn't appear to exist.\n" $XASTIR_TMP
-    printf "Please create dir and/or edit script. Exiting\n"
-    exit 
-else 
-    cd $XASTIR_TMP
+    printf "WARNING: %s Doesn't appear to exist. Creating temporary directory\n" $XASTIR_TMP
+    # Make sure this exists!
+    mkdir -p $XASTIR_TMP
 fi
+cd $XASTIR_TMP
 
 if [ -e $SHAPELIB_FILE -o -e $SHAPELIB ]
 then
@@ -153,11 +151,18 @@ else
     if (! grep /usr/local/lib $LDCONF_FILE 2>&1 > /dev/null) 
     then
         printf "Warning: /usr/local/lib not in %s - adding it\n" $LDCONF_FILE
-	$SUDO rm -f /tmp/ld.so.conf
-        cp $LDCONF_FILE /tmp/ld.so.conf
-        printf "/usr/local/lib\n" >> /tmp/ld.so.conf
+	if MKTEMP=`which mktemp`
+	then
+	    TMPFILE=`mktemp -t ld.so.conf.XXXXXXXXXX`
+	else
+	    TMPFILE='/tmp/ld.so.conf.XXXXXXXXXX'
+	    $SUDO rm -f $TMPFILE
+	    touch $TMPFILE
+	fi
+        cp $LDCONF_FILE $TMPFILE
+        printf "/usr/local/lib\n" >> $TMPFILE
         $SUDO cp $LDCONF_FILE $LDCONF_FILE.save 
-        $SUDO cp /tmp/ld.so.conf $LDCONF_FILE
+        $SUDO cp $TMPFILE $LDCONF_FILE
     fi
 
     if ( grep /usr/local/lib $LDCONF_FILE ) 
