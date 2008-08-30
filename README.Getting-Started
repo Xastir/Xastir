@@ -557,6 +557,11 @@ you'll see this:
   -l Italian         Set the language to Italian
   -l Portuguese      Set the language to Portuguese
   -l Spanish         Set the language to Spanish
+  -l ElmerFudd       Set the language to ElmerFudd
+  -l MuppetsChef     Set the language to MuppetsChef
+  -l OldeEnglish     Set the language to OldeEnglish
+  -l PigLatin        Set the language to PigLatin
+  -l PirateEnglish   Set the language to PirateEnglish
   -m                 Deselect Maps
   -p                 Disable popups
   -t                 Internal SIGSEGV handler enabled

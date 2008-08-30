@@ -255,11 +255,16 @@ Sie können beim Aufruf auch gleich die Sprache wählen. Um die Sprache zu
     xastir -lGerman
 
 Weitere Möglichkeiten sind: 
-    xastir -lDutch 
-    xastir -lEnglish 
-    xastir -lFrench 
-    xastir -lItalian
-    xastir -lSpanish 
+    xastir -l Dutch 
+    xastir -l English 
+    xastir -l French 
+    xastir -l Italian
+    xastir -l Spanish
+    xastir -l ElmerFudd
+    xastir -l MuppetsSwedishChef
+    xastir -l OldeEnglish
+    xastir -l PigLatin
+    xastir -l PirateEnglish
 
 Die so gewählte Sprache wird in der Konfigurationsdatei des Benutzers
 gespeichert und auch beim nächsten Aufruf ohne diese Option verwendet.

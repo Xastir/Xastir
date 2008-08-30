@@ -145,11 +145,16 @@ change the current language choice, call Xastir with the option '-l':
     xastir -lEnglish
 
 Other language options are:
-    xastir -lDutch
-    xastir -lFrench
-    xastir -lGerman
-    xastir -lItalian
-    xastir -lSpanish
+    xastir -l Dutch
+    xastir -l French
+    xastir -l German
+    xastir -l Italian
+    xastir -l Spanish
+    xastir -l ElmerFudd
+    xastir -l MuppetsSwedishChef
+    xastir -l OldeEnglish
+    xastir -l PigLatin
+    xastir -l PirateEnglish
 
 The chosen language will be stored in your config file, so it is
 preserved for the next time you call Xastir without this option.

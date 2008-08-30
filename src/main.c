@@ -27317,6 +27317,16 @@ int main(int argc, char *argv[], char *envp[]) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Italian");
                     } else if (strncasecmp(optarg,"PORTUGUESE",10) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Portuguese");
+                    } else if (strncasecmp(optarg,"ELMERFUDD",10) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "ElmerFudd");
+                    } else if (strncasecmp(optarg,"MUPPETSCHEF",10) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "MuppetsChef");
+                    } else if (strncasecmp(optarg,"OLDEENGLISH",10) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "OldeEnglish");
+                    } else if (strncasecmp(optarg,"PIGLATIN",10) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "PigLatin");
+                    } else if (strncasecmp(optarg,"PIRATEENGLISH",10) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "PirateEnglish");
                     } else {
                         ag_error++;
                         fprintf(stderr," INVALID");
@@ -27367,6 +27377,11 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"-l Italian         Set the language to Italian\n");
         fprintf(stderr,"-l Portuguese      Set the language to Portuguese\n");
         fprintf(stderr,"-l Spanish         Set the language to Spanish\n");
+        fprintf(stderr,"-l ElmerFudd       Set the language to ElmerFudd\n");
+        fprintf(stderr,"-l MuppetsChef     Set the language to MuppetsChef\n");
+        fprintf(stderr,"-l OldeEnglish     Set the language to OldeEnglish\n");
+        fprintf(stderr,"-l PigLatin        Set the language to PigLatin\n");
+        fprintf(stderr,"-l PirateEnglish   Set the language to PirateEnglish\n");
         fprintf(stderr,"-m                 Deselect Maps\n");
         fprintf(stderr,"-p                 Disable popups\n");
         fprintf(stderr,"-t                 Internal SIGSEGV handler enabled\n");

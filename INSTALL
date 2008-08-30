@@ -1430,6 +1430,7 @@ file that are useful for debugging in case Xastir crashes.
      Current choices are:
 
             Dutch English French German Italian Portuguese Spanish
+            ElmerFudd MuppetsChef OldeEnglish PigLatin PirateEnglish
 
      This option will be stored in the users config file for the next time
      Xastir is run. On new installs Xastir will default to English unless

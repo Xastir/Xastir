@@ -249,13 +249,18 @@ change the current language choice, call Xastir with the option '-l':
     xastir -lEnglish
 
 Language options are:
-    xastir -lDutch
-    xastir -lEnglish
-    xastir -lFrench
-    xastir -lGerman
-    xastir -lItalian
-    xastir -lPortuguese
-    xastir -lSpanish
+    xastir -l Dutch
+    xastir -l English
+    xastir -l French
+    xastir -l German
+    xastir -l Italian
+    xastir -l Portuguese
+    xastir -l Spanish
+    xastir -l ElmerFudd
+    xastir -l MuppetsSwedishChef
+    xastir -l OldeEnglish
+    xastir -l PigLatin
+    xastir -l PirateEnglish
 
 The chosen language will be stored in your config file, so it is preserved
 for the next time you call Xastir.  For new installs Xastir will default to

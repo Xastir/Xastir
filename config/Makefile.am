@@ -13,6 +13,11 @@ EXTRA_DIST = \
     language-Italian.sys \
     language-Portuguese.sys \
     language-Spanish.sys \
+    language-ElmerFudd.sys \
+    language-MuppetsChef.sys \
+    language-OldeEnglish.sys \
+    language-PigLatin.sys \
+    language-PirateEnglish.sys \
     xastir.rgb \
     gps_wpt.dbfawk \
     24kgrid.dbfawk \
