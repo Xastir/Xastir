@@ -38,7 +38,7 @@
 # http://www.perlmonks.org/?node_id=3586
 
 
-# Change the "$Id$" RCS tag to show that we translated the file.
+# Change the "Id:" RCS tag to show that we translated the file.
 if (m/^#.*\$Id:/) {
     print "# language-PigLatin.sys, translated from language-English.sys\n";
     print "# Please do not edit this derived file.\n";
