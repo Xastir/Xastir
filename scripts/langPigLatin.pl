@@ -67,14 +67,17 @@ while ( <> ) {
     @pieces = split /\|/;
 
     # Translate the second portion of each line only
-    $pieces[1] =~ s/\b(qu|y(?=[^t])|[^\W\daeiouy]*)([a-z']+)/$2.($1||"w")."ay"/eg;
+    $_ = $pieces[1];
+  }
 
+  s/\b(qu|y(?=[^t])|[^\W\daeiouy]*)([a-z']+)/$2.($1||"w")."ay"/eg;
+
+  if ($do_split) {
     # Combine the line again for output to STDOUT
+    $pieces[1] = $_;
     print join '|', @pieces;
   }
   else {
-    # Translate the entire line of text
-    s/\b(qu|y(?=[^t])|[^\W\daeiouy]*)([a-z']+)/$2.($1||"w")."ay"/eg;
     print;
   }
 }

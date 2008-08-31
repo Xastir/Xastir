@@ -38,417 +38,461 @@
 # http://dougal.gunters.org/blog/2004/08/30/text-filter-suite
 
 
-my @regexs = (
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
+}
+
+while ( <> ) {
+
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
+      print "# language-PirateEnglish.sys, translated from language-English.sys\n";
+      print "# Please do not edit this derived file.\n";
+      next;
+  }
+  # Skip other comment lines
+  if (m/^#/) {
+    next;
+  }
+
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+
+    # Translate the second portion of each line only
+    $_ = $pieces[1];
+  }
 
   # Custom for Xastir:
-  "\\bham\\b:matey",
-  "\\bhi hi\\b:it be a joke, matey",
-  "\\bk7gps\\b:Th\' Good Cap\'n", 
-  "\\bDave Dobbins\\b:Th\' Good Cap\'n", 
-  "\\bAPRS\'er\\b:Fellow Pirate",  
-  "\\b[Aa]prs\'er\\b:fellow pirate", 
-  "\\bHerb Gerhardt\\b:scurvy dog",
-  "\\bkb7uvc\\b:scurvy dog",
-  "\\bwa7nwp\\b:cabin boy",
-  "\\b[Mm]ap\\b:Treasure Map",
-  "\\bXastir\\b:HMS Xastir",
-  "\\bxastir\\b:HMS xastir",
-  "\\bXASTIR\\b:HMS XASTIR",
-  "\\bStation:Ship",
-  "\\bstation:ship",
-  "\\bView:Gander",
-  "\\bview:gander",
-  "\\bFile:Scroll",
-  "\\bfile:scroll",
-#  "\\bFile:Parchment",
-#  "\\bfile:parchment",
-  "\\bMessage:Dispatch",
-  "\\bmessage:dispatch",
-  "\\bLogging:Scribblin'",
-  "\\blogging:scribblin'",
-  "\\bLog:Scribble",
-  "\\blog:scribble",
-  "\\bPrint:Affix to parchment",
-  "\\bprint:affix to parchment",
-  "\\bCancel:Nay",
-  "\\bcancel:nay",
-  "Close:Nay",
-  "close:nay",
-  "\\bOK:Aye",
-  "\\bOk:Aye",
-  "\\bok:aye",
-  "\\bQuit:Nay",
-  "\\bquit:nay",
-  "\\bExit:Run Away!",
-  "\\bexit:run away!",
-  "\\bSelect:Choose 'yer Weapon!",
-  "\\bselect:choose 'yer weapon!",
-  "\\bCompressed:Scrawny",
-  "\\bcompressed:scrawny",
-  "\\bAudio:Racket",
-  "\\baudio:racket",
-  "\\bFont:Scribble",
-  "\\bfont:scribble",
-  "\\bSatellite:Heavenly Body",
-  "\\bsatellite:heavenly body",
-  "\\bSnapshot:Etching",
-  "\\bsnapshot:etching",
-#  "\\bObject:",
-#  "\\bobject:",
-#  "\\bItem:",
-#  "\\bitem:",
-  "\\bInterface:Grapple",
-  "\\binterface:grapple",
-  "\\bConfigure:Provision me' ship",
-  "\\bconfigure:provision me' ship",
+  s/\bham\b/matey/g;
+  s/\bhi hi\b/it be a joke, matey/g;
+  s/\bk7gps\b/Th\' Good Cap\'n/g; 
+  s/\bDave Dobbins\b/Th\' Good Cap\'n/g; 
+  s/\bAPRS\'er\b/Fellow Pirate/g;  
+  s/\b[Aa]prs\'er\b/fellow pirate/g; 
+  s/\bHerb Gerhardt\b/scurvy dog/g;
+  s/\bkb7uvc\b/scurvy dog/g;
+  s/\bwa7nwp\b/cabin boy/g;
+  s/\b[Mm]ap\b/Treasure Map/g;
+  s/\bXastir\b/HMS Xastir/g;
+  s/\bxastir\b/HMS xastir/g;
+  s/\bXASTIR\b/HMS XASTIR/g;
+  s/\bStation/Ship/g;
+  s/\bstation/ship/g;
+  s/\bView/Gander/g;
+  s/\bview/gander/g;
+  s/\bFile/Scroll/g;
+  s/\bfile/scroll/g;
+  #s/\bFile/Parchment/g;
+  #s/\bfile/parchment/g;
+  s/\bMessage/Dispatch/g;
+  s/\bmessage/dispatch/g;
+  s/\bLogging/Scribblin'/g;
+  s/\blogging/scribblin'/g;
+  s/\bLog/Scribble/g;
+  s/\blog/scribble/g;
+  s/\bPrint/Affix to parchment/g;
+  s/\bprint/affix to parchment/g;
+  s/\bCancel/Nay/g;
+  s/\bcancel/nay/g;
+  s/Close/Nay/g;
+  s/close/nay/g;
+  s/\bOK/Aye/g;
+  s/\bOk/Aye/g;
+  s/\bok/aye/g;
+  s/\bQuit/Nay/g;
+  s/\bquit/nay/g;
+  s/\bExit/Run Away!/g;
+  s/\bexit/run away!/g;
+  s/\bSelect/Choose 'yer Weapon!/g;
+  s/\bselect/choose 'yer weapon!/g;
+  s/\bCompressed/Scrawny/g;
+  s/\bcompressed/scrawny/g;
+  s/\bAudio/Racket/g;
+  s/\baudio/racket/g;
+  s/\bFont/Scribble/g;
+  s/\bfont/scribble/g;
+  s/\bSatellite/Heavenly Body/g;
+  s/\bsatellite/heavenly body/g;
+  s/\bSnapshot/Etching/g;
+  s/\bsnapshot/etching/g;
+  #s/\bObject//g;
+  #s/\bobject//g;
+  #s/\bItem//g;
+  #s/\bitem//g;
+  s/\bInterface/Grapple/g;
+  s/\binterface/grapple/g;
+  s/\bConfigure/Provision me' ship/g;
+  s/\bconfigure/provision me' ship/g;
 
   # From userscripts:
-  "About:\'bout",
-  "\\babout\\b:\'bout",
-  "\\ba lot\\b:mightily",
-  "\\bam\\b:be",
-  "\\bamputee\\b:peg leg",
-  "\\bafraid\\b:lily-livered",
-  "\\band\\b:an\'",
-  "\\baround\\b:\'round",
-  "\\battack\\b:pillage",
-  "\\battacked\\b:raped and pillaged",
-  "\\barrest\\b:keelhaul",
-  "\\bAIDS\\b:scurvy",
-  "\\baids\\b:scurvy",
-  "\\bATTN\\b:AVAST",
+  s/About/\'bout/g;
+  s/\babout\b/\'bout/g;
+  s/\ba lot\b/mightily/g;
+  s/\bam\b/be/g;
+  s/\bamputee\b/peg leg/g;
+  s/\bafraid\b/lily-livered/g;
+  s/\band\b/an\'/g;
+  s/\baround\b/\'round/g;
+  s/\battack\b/pillage/g;
+  s/\battacked\b/raped and pillaged/g;
+  s/\barrest\b/keelhaul/g;
+  s/\bAIDS\b/scurvy/g;
+  s/\baids\b/scurvy/g;
+  s/\bATTN\b/AVAST/g;
 
-  "\\bbad\\b:scurvy",
-  "\\bbeer\\b:grog",
-  "\\bvodka\\b:grog",
-  "\\bban him\\b:make him walk the plank",
-  "\\bcar\\b:ship",
-  "\\bBAN HIM\\b:Make him walk the plank!",
-  "\\bBan him\\b:Make him walk the plank",
+  s/\bbad\b/scurvy/g;
+  s/\bbeer\b/grog/g;
+  s/\bvodka\b/grog/g;
+  s/\bban him\b/make him walk the plank/g;
+  s/\bcar\b/ship/g;
+  s/\bBAN HIM\b/Make him walk the plank!/g;
+  s/\bBan him\b/Make him walk the plank/g;
 
-  "\\bale\\b:grog",
-  "\\bbetween\\b:betwixt",
-  "\\bwhiskey\\b:grog",
-  "\\bbeauty\\b:gov\'nor\'s daughter",
-  "\\bbefore\\b:\'ere",
-  "\\bbanned\\b:forced t\' walk the plank",
-  "\\bbetween\\b:\'tween",
-  "\\bboy\\b:jim lad",
-  "\\bboys\\b:jim lads",
-  "\\bbought\\b:pilfered",
-  "\\b4chan\\b:House o\' Bilge Rats",
+  s/\bale\b/grog/g;
+  s/\bbetween\b/betwixt/g;
+  s/\bwhiskey\b/grog/g;
+  s/\bbeauty\b/gov\'nor\'s daughter/g;
+  s/\bbefore\b/\'ere/g;
+  s/\bbanned\b/forced t\' walk the plank/g;
+  s/\bbetween\b/\'tween/g;
+  s/\bboy\b/jim lad/g;
+  s/\bboys\b/jim lads/g;
+  s/\bbought\b/pilfered/g;
+  s/\b4chan\b/House o\' Bilge Rats/g;
 
-  "\\bAsia\\b:Th\' Mystic East",
-  "\\bJapan\\b:Th\' Mystic East",
-  "\\bChina\\b:Th\' Mystic East",
-  "\\bKorea\\b:Th\' Mystic East",
-  "\\basia\\b:Th\' Mystic East",
-  "\\bjapan\\b:Th\' Mystic East",
-  "\\bchina\\b:Th\' Mystic East",
-  "\\bkorea\\b:Th\' Mystic East",
-  "\\bIndia\\b:Hindustan",
-  "\\bIsrael\\b:Th\' Holy Lands",
-  "\\bindia\\b:Hindustan",
-  "\\bisrael\\b:Th\' Holy Lands",
-  "\\bIraq\\b:Th\' Ottoman Empire",
-  "\\bIran\\b:Th\' Ottoman Empire",
-  "\\bPakistan\\b:Th\' Ottoman Empire",
-  "\\bAfghanistan\\b:Th\' Ottoman Empire",
-  "\\biraq\\b:Th\' Ottoman Empire",
-  "\\biran\\b:Th\' Ottoman Empire",
-  "\\bpakistan\\b:Th\' Ottoman Empire",
-  "\\bafghanistan\\b:Th\' Ottoman Empire",
-  "\\bAfrica\\b:Th\' Dark Continent",
-  "\\bafrica\\b:Th\' Dark Continent",
+  s/\bAsia\b/Th\' Mystic East/g;
+  s/\bJapan\b/Th\' Mystic East/g;
+  s/\bChina\b/Th\' Mystic East/g;
+  s/\bKorea\b/Th\' Mystic East/g;
+  s/\basia\b/Th\' Mystic East/g;
+  s/\bjapan\b/Th\' Mystic East/g;
+  s/\bchina\b/Th\' Mystic East/g;
+  s/\bkorea\b/Th\' Mystic East/g;
+  s/\bIndia\b/Hindustan/g;
+  s/\bIsrael\b/Th\' Holy Lands/g;
+  s/\bindia\b/Hindustan/g;
+  s/\bisrael\b/Th\' Holy Lands/g;
+  s/\bIraq\b/Th\' Ottoman Empire/g;
+  s/\bIran\b/Th\' Ottoman Empire/g;
+  s/\bPakistan\b/Th\' Ottoman Empire/g;
+  s/\bAfghanistan\b/Th\' Ottoman Empire/g;
+  s/\biraq\b/Th\' Ottoman Empire/g;
+  s/\biran\b/Th\' Ottoman Empire/g;
+  s/\bpakistan\b/Th\' Ottoman Empire/g;
+  s/\bafghanistan\b/Th\' Ottoman Empire/g;
+  s/\bAfrica\b/Th\' Dark Continent/g;
+  s/\bafrica\b/Th\' Dark Continent/g;
 
-  "\\bcheat\\b:hornswaggle",
-  "\\bchild\\b:wee one",
-  "\\bchildren\\b:wee ones",
-  "\\bcoffee\\b:grog",
-  "\\bcondemn\\b:keelhaul",
+  s/\bcheat\b/hornswaggle/g;
+  s/\bchild\b/wee one/g;
+  s/\bchildren\b/wee ones/g;
+  s/\bcoffee\b/grog/g;
+  s/\bcondemn\b/keelhaul/g;
 
-  "\\bconference\\b:parlay",
-  "\\bcrazy\\b:addled",
-  "\\bjapanophile\\b:scurvy mutt",
-  "\\bweeaboo\\b:scurvy mutt",
-  "\\boh crap\\b:shiver me timbers!",
-  "\\bover\\b:o\'er", 
-  "\\bThe Token Shop\\b:Honest Jack\'s Swag Shop", 
-  "\\bToken Shop\\b:Honest Jack\'s Swag Shop", 
+  s/\bconference\b/parlay/g;
+  s/\bcrazy\b/addled/g;
+  s/\bjapanophile\b/scurvy mutt/g;
+  s/\bweeaboo\b/scurvy mutt/g;
+  s/\boh crap\b/shiver me timbers!/g;
+  s/\bover\b/o\'er/g; 
+  s/\bThe Token Shop\b/Honest Jack\'s Swag Shop/g; 
+  s/\bToken Shop\b/Honest Jack\'s Swag Shop/g; 
 
-  "\\bdamn\\b:damn\'ed",    
-  "\\bdevil\\b:Davy Jones",    
-  "\\bdie\\b:head to Davy Jones\' Locker",  
-  "\\bdead\\b:\'n Davy Jones\' Locker",
-  "\\bdoesn\'t\\b:don\'t",
-  "\\bdollars\\b:pieces o\' eight",
-  "\\beveryone\\b:all hands",
-  "\\beyewear\\b:eye patch",
-  "\\bglasses\\b:eye patches",
-  "\\bfight\\b:duel",
-  "\\bgreatly\\b:mightily",
-  "\\bgold\\b:dubloons",
-  "\\bha\\b:har har",
-  "\\bhaha\\b:har har",
-  "\\bbase\\b:port",
-  "\\bfort\\b:port",
-  "\\bhah\\b:har har",
-  "\\bheh\\b:har har",
-  "\\bHa\\b:Har har",
-  "\\bflag\\b:Jolly Roger",
-  "\\bhouse\\b:shanty",
-  "\\bidiot\\b:bilge rat",
+  s/\bdamn\b/damn\'ed/g;    
+  s/\bdevil\b/Davy Jones/g;    
+  s/\bdie\b/head to Davy Jones\' Locker/g;  
+  s/\bdead\b/\'n Davy Jones\' Locker/g;
+  s/\bdoesn\'t\b/don\'t/g;
+  s/\bdollars\b/pieces o\' eight/g;
+  s/\beveryone\b/all hands/g;
+  s/\beyewear\b/eye patch/g;
+  s/\bglasses\b/eye patches/g;
+  s/\bfight\b/duel/g;
+  s/\bgreatly\b/mightily/g;
+  s/\bgold\b/dubloons/g;
+  s/\bha\b/har har/g;
+  s/\bhaha\b/har har/g;
+  s/\bbase\b/port/g;
+  s/\bfort\b/port/g;
+  s/\bhah\b/har har/g;
+  s/\bheh\b/har har/g;
+  s/\bHa\b/Har har/g;
+  s/\bflag\b/Jolly Roger/g;
+  s/\bhouse\b/shanty/g;
+  s/\bidiot\b/bilge rat/g;
 
-  "\\bhit\\b:flog",
-  "\\btorrents\\b:Blackbeard\'s treasure ",
-  "\\btorrent\\b:Blackbeard\'s treasure",
+  s/\bhit\b/flog/g;
+  s/\btorrents\b/Blackbeard\'s treasure /g;
+  s/\btorrent\b/Blackbeard\'s treasure/g;
 
-  "\\bn00b\\b:landlubber", 
-  "\\bnoob\\b:landlubber", 
-  "\\btroll\\b:blowhard",
-  "\\bdrive\\b:sail",
-  "\\bcoins\\b:pieces o\' eight",
-  "\\bcorrect\\b:right an\' true",
+  s/\bn00b\b/landlubber/g; 
+  s/\bnoob\b/landlubber/g; 
+  s/\btroll\b/blowhard/g;
+  s/\bdrive\b/sail/g;
+  s/\bcoins\b/pieces o\' eight/g;
+  s/\bcorrect\b/right an\' true/g;
 
-  "\\bfly\\b:sail",
-  "\\bfool\\b:squiffy",
-  "\\bfoolish\\b:addled",
-  "\\bfor\\b:fer",
-  "\\bFor\\b:Fer",
-  "\\bfriend\\b:matey",
-  "\\bfriends\\b:hearties",
-  "\\bgirl\\b:lass",
-  "\\bex-girlfriend\\b:festerin\' harlot",
-  "\\bex girlfriend\\b:festerin\' harlot",
-  "\\bgood\\b:worthy",
-  "\\byou\'re\\b:yer",  
-  "\\byour\\b:yer", 
+  s/\bfly\b/sail/g;
+  s/\bfool\b/squiffy/g;
+  s/\bfoolish\b/addled/g;
+  s/\bfor\b/fer/g;
+  s/\bFor\b/Fer/g;
+  s/\bfriend\b/matey/g;
+  s/\bfriends\b/hearties/g;
+  s/\bgirl\b/lass/g;
+  s/\bex-girlfriend\b/festerin\' harlot/g;
+  s/\bex girlfriend\b/festerin\' harlot/g;
+  s/\bgood\b/worthy/g;
+  s/\byou\'re\b/yer/g;  
+  s/\byour\b/yer/g; 
 
-  "\\bhello\\b:ahoy",
-  "\\bHello\\b:Ahoy",
-  "\\bhey\\b:avast!",
-  "\\bHey\\b:Avast",
-  "\\bhey\\b:avast!",
-  "\\bhi\\b:ahoy", 
-  "\\bHi\\b:Ahoy", 
-  "\\bHiya\\b:Ahoy",   
-  "\\bhiya\\b:ahoy",   
-  "\\bmoney\\b:booty", 
-  "\\bguy\\b:feller",  
-  "\\bfellow\\b:feller",
-  "\\bidiot\\b:scalawag",
-  "ing\\b:in\'",
-  "\\bin\\b:\'n",
-  "\\bis\\b:be",
-  "\\bit\'s\\b:\'tis",
-  "\\bit is\\b:\'tis",
-  "\\bkid\\b:wee one",
-  "\\bkids\\b:wee ones",
-  "\\bkill\\b:keelhaul",
+  s/\bhello\b/ahoy/g;
+  s/\bHello\b/Ahoy/g;
+  s/\bhey\b/avast!/g;
+  s/\bHey\b/Avast/g;
+  s/\bhey\b/avast!/g;
+  s/\bhi\b/ahoy/g; 
+  s/\bHi\b/Ahoy/g; 
+  s/\bHiya\b/Ahoy/g;   
+  s/\bhiya\b/ahoy/g;   
+  s/\bmoney\b/booty/g; 
+  s/\bguy\b/feller/g;  
+  s/\bfellow\b/feller/g;
+  s/\bidiot\b/scalawag/g;
+  s/ing\b/in\'/g;
+  s/\bin\b/\'n/g;
+  s/\bis\b/be/g;
+  s/\bit\'s\b/\'tis/g;
+  s/\bit is\b/\'tis/g;
+  s/\bkid\b/wee one/g;
+  s/\bkids\b/wee ones/g;
+  s/\bkill\b/keelhaul/g;
 
-  "\\bis not\\b:be not",
-  "\\baren\'t\\b:be not",
-  "\\bare\\b:be",
-  "\\bam\\b:be",
-  "\\bAre\\b:Be",
-  "\\blol\\b:yo ho ho!",
-  "\\blolol\\b:Me sides be splittin\'!",
-  "\\bodd\\b:addled",
-  "\\bof\\b:o\'",
-  "\\bohmigod\\b:begad!",
-  "\\bomigod\\b:begad!",
-  "\\bomg\\b:begad!",
-  "\\bOMG\\b:BEGAD!",
-  "\\bo rly\\b:be that right, sailor?",
-  "\\borly\\b:be that right, sailor?",
-  "\\bya rly\\b:Sailor, \'tis true",
-  "\\byarly\\b:Sailor, \'tis true",
-  "\\bwhoamg\\b:shiver me timbers!",
+  s/\bis not\b/be not/g;
+  s/\baren\'t\b/be not/g;
+  s/\bare\b/be/g;
+  s/\bam\b/be/g;
+  s/\bAre\b/Be/g;
+  s/\blol\b/yo ho ho!/g;
+  s/\blolol\b/Me sides be splittin\'!/g;
+  s/\bodd\b/addled/g;
+  s/\bof\b/o\'/g;
+  s/\bohmigod\b/begad!/g;
+  s/\bomigod\b/begad!/g;
+  s/\bomg\b/begad!/g;
+  s/\bOMG\b/BEGAD!/g;
+  s/\bo rly\b/be that right, sailor?/g;
+  s/\borly\b/be that right, sailor?/g;
+  s/\bya rly\b/Sailor, \'tis true/g;
+  s/\byarly\b/Sailor, \'tis true/g;
+  s/\bwhoamg\b/shiver me timbers!/g;
 
-  "\\bmoney\\b:booty",
-  "\\bmy\\b:me",
-  "\\bprosecute\\b:keelhaul",
-  "\\bpants\\b:britches",
-  "\\bHello\\b:Ahoy!", 
-  "\\bquick\\b:smart",
-  "\\bquickly\\b:smartly",
-  "\\bthe rules\\b:the Pirate\'s Code",
-  "\\bnice\\b:fine",
-  "\\bthe Internet\\b:The Seven Seas",
-  "\\bThe Internet\\b:The Seven Seas",
-  "\\binternet\\b:Seven Seas",
-  "\\bInternet\\b:Seven Seas",
+  s/\bmoney\b/booty/g;
+  s/\bmy\b/me/g;
+  s/\bprosecute\b/keelhaul/g;
+  s/\bpants\b/britches/g;
+  s/\bHello\b/Ahoy!/g; 
+  s/\bquick\b/smart/g;
+  s/\bquickly\b/smartly/g;
+  s/\bthe rules\b/the Pirate\'s Code/g;
+  s/\bnice\b/fine/g;
+  s/\bthe Internet\b/The Seven Seas/g;
+  s/\bThe Internet\b/The Seven Seas/g;
+  s/\binternet\b/Seven Seas/g;
+  s/\bInternet\b/Seven Seas/g;
 
-  "\\bsilly\\b:addled",
-  "\\bsword\\b:cutlass",
-  "\\bshe\\b:the lass",
-  "\\bshut up\\b:pipe down",
-#  "\\bspeech:parlance",
-#  "\\bSpeech:Parlance",
-  "\\bspeech:parley",
-  "\\bSpeech:Parley",
-  "\\bsteal\\b:commandeer",
-  "\\bdownload\\b:plunder",
-  "\\bDownload\\b:Plunder",
+  s/\bsilly\b/addled/g;
+  s/\bsword\b/cutlass/g;
+  s/\bshe\b/the lass/g;
+  s/\bshut up\b/pipe down/g;
+  #s/\bspeech/parlance/g;
+  #s/\bSpeech/Parlance/g;
+  s/\bspeech/parley/g;
+  s/\bSpeech/Parley/g;
+  s/\bsteal\b/commandeer/g;
+  s/\bdownload\b/plunder/g;
+  s/\bDownload\b/Plunder/g;
 
-  "\\bsexy\\b:saucy",
-  "\\btelescope\\b:spyglass",
-  "\\bterrorist\\b:scourge o\' the seven seas",
-  "\\bterrorists\\b:scalawags",
-  "tion\\b:tin\'",
-  "\\bthere\\b:thar",
-  "tions\\b:tin\'s",
-  "\\bto\\b:t\'",
-  "\\btomorrow\\b:the morrow",
-  "\\btruck\\b:vessel",
+  s/\bsexy\b/saucy/g;
+  s/\btelescope\b/spyglass/g;
+  s/\bterrorist\b/scourge o\' the seven seas/g;
+  s/\bterrorists\b/scalawags/g;
+  s/tion\b/tin\'/g;
+  s/\bthere\b/thar/g;
+  s/tions\b/tin\'s/g;
+  s/\bto\b/t\'/g;
+  s/\btomorrow\b/the morrow/g;
+  s/\btruck\b/vessel/g;
     
-  "\\bwasn\'t\\b:weren\'t",
-  "\\bwant to\\b:wish t\'",
-  "\\bwanna\\b:wish t\'",
-  "\\bYep\\b:Aye", 
-  "\\byep\\b:aye", 
-  "\\bwoman\\b:buxom beauty",
-  "\\bwomen\\b:wenches",
-  "\\bwin\\b:triumph",
-  "\\bwins\\b:triumphs",
-  "\\bwork\\b:deck swabbing",
-  "\\bwine\\b:grog",
-  "\\byes\\b:aye",
-  "\\bYes\\b:Aye",
-  "\\bno\\b:nay",
-  "\\bNo\\b:Nay",
-  "\\bnah\\b:nay",
-  "\\bNah\\b:Nay",
-  "\\bYeah\\b:Aye",
-  "\\byeah\\b:Aye",
+  s/\bwasn\'t\b/weren\'t/g;
+  s/\bwant to\b/wish t\'/g;
+  s/\bwanna\b/wish t\'/g;
+  s/\bYep\b/Aye/g; 
+  s/\byep\b/aye/g; 
+  s/\bwoman\b/buxom beauty/g;
+  s/\bwomen\b/wenches/g;
+  s/\bwin\b/triumph/g;
+  s/\bwins\b/triumphs/g;
+  s/\bwork\b/deck swabbing/g;
+  s/\bwine\b/grog/g;
+  s/\byes\b/aye/g;
+  s/\bYes\b/Aye/g;
+  s/\bno\b/nay/g;
+  s/\bNo\b/Nay/g;
+  s/\bnah\b/nay/g;
+  s/\bNah\b/Nay/g;
+  s/\bYeah\b/Aye/g;
+  s/\byeah\b/Aye/g;
 
-  "\\byou\\b:ye",
-  "\\byour\\b:yer",
-  "\\bwtf\\b:what devilry!",
-  "\\bWTF\\b:Begad, what devilry be is?!",
-  "\\bFacebook\\b:PirateBook",
-  "\\bThis message was deleted at the request of the original poster\\b:This here message be taken back by a yellow-bellied pirate",
-  "\\bThis message has been deleted by a moderator\\b:This poor soul had a run-in with the authorities",
-  "\\bGood Tokens\\b:Pieces o\' Eight",
-  "\\bBad Tokens\\b:Black Marks",
-  "\\byou\'re\\b:yer",
-  "\\bYou\'re\\b:Yer",
-  "\\bwins\\b:triumphs",   
+  s/\byou\b/ye/g;
+  s/\byour\b/yer/g;
+  s/\bwtf\b/what devilry!/g;
+  s/\bWTF\b/Begad, what devilry be is?!/g;
+  s/\bFacebook\b/PirateBook/g;
+  s/\bThis message was deleted at the request of the original poster\b/This here message be taken back by a yellow-bellied pirate/g;
+  s/\bThis message has been deleted by a moderator\b/This poor soul had a run-in with the authorities/g;
+  s/\bGood Tokens\b/Pieces o\' Eight/g;
+  s/\bBad Tokens\b/Black Marks/g;
+  s/\byou\'re\b/yer/g;
+  s/\bYou\'re\b/Yer/g;
+  s/\bwins\b/triumphs/g;   
 
-  "\\bHome|/ \\b:Haven",
-  "\\bAdd a link|/ \\b:Add plunder",
-  "\\bRandom link|/ \\b:Who needs maps?",
-  "\\bTop rated links|/ \\b:Quality grog",
-  "\\bLinks o\' the week|/ \\b:Modern fashions",
-  "\\bWiki|/ \\b:Wikis",
-  "\\bAll links|/ \\b:All th\' plunder",
-  "\\bFavorites|/ \\b:Treasures",
-  "\\bSearch|/ \\b:Scour",
-  "\\bStats|/ \\b:Specs",
-  "\\bBoards|/ \\b:Th\' Tavern",
-  "\\bUser List|/ \\b:Roster",
-  "\\bLogout|/ \\b:Retreat",
-  "\\bHelp|/ \\b:Aid",
-  "\\bBoard List|/ \\b:Port",
-  "\\bCreate New Topic|/ \\b:Parley",
-  "\\bPost New Message|/ \\b:Parley",
-  "\\bNext Page|/ \\b:Next Map",
-  "\\bTagged|/ \\b:X\'d",
-  "\\bTag|/ \\b:X",
+  s/\bHome\b/Haven/g;
+  s/\bAdd a link\b/Add plunder/g;
+  s/\bRandom link\b/Who needs maps?/g;
+  s/\bTop rated links\b/Quality grog/g;
+  s/\bLinks o\' the week\b/Modern fashions/g;
+  s/\bWiki\b/Wikis/g;
+  s/\bAll links\b/All th\' plunder/g;
+  s/\bFavorites\b/Treasures/g;
+  s/\bSearch\b/Scour/g;
+  s/\bStats\b/Specs/g;
+  s/\bBoards\b/Th\' Tavern/g;
+  s/\bUser List\b/Roster/g;
+  s/\bLogout\b/Retreat/g;
+  s/\bHelp\b/Aid/g;
+  s/\bBoard List\b/Port/g;
+  s/\bCreate New Topic\b/Parley/g;
+  s/\bPost New Message\b/Parley/g;
+  s/\bNext Page\b/Next Map/g;
+  s/\bTagged\b/X\'d/g;
+  s/\bTag\b/X/g;
 
-  # From text-filter-suite:
-  "\\bmy\\b:me",
-  "\\bboss\\b:admiral",
-  "\\bmanager\\b:admiral",
-  "\\b[Cc]aptain\\b:Cap\'n",
-  "\\bmyself\\b:meself",
-  "\\byour\\b:yer",
-  "\\byou\\b:ye",
-  "\\bfriend\\b:matey",
-  "\\bfriends\\b:maties",
-  "\\bco[-]?worker\\b:shipmate",
-  "\\bco[-]?workers\\b:shipmates",
-  "\\bpeople\\b:scallywags",
-  "\\bearlier\\b:afore",
-  "\\bold\\b:auld",
-  "\\bthe\\b:th\'",
-  "\\bof\\b:o'",
-  "\\bdon\'t\\b:dern\'t",
-  "\\bdo not\\b:dern\'t",
-  "\\bnever\\b:ne\'er",
-  "\\bever\\b:e\'er",
-  "\\bover\\b:o\'er",
-  "\\bYes\\b:Aye",
-  "\\bNo\\b:Nay",
-  "\\bYeah\\b:Aye",
-  "\\byeah\\b:aye",
-  "\\bdon\'t know\\b:dinna",
-  "\\bdidn\'t know\\b:did nay know",
-  "\\bhadn\'t\\b:ha\'nae",
-  "\\bdidn\'t\\b:di\'nae",
-  "\\bwasn\'t\\b:weren\'t",
-  "\\bhaven\'t\\b:ha\'nae",
-  "\\bfor\\b:fer",
-  "\\bbetween\\b:betwixt",
-  "\\baround\\b:aroun\'",
-  "\\bto\\b:t\'",
-  "\\bit\'s\\b:\'tis",
-  "\\bwoman\\b:wench",
-  "\\bwomen\\b:wenches",
-  "\\blady\\b:wench",
-  "\\bwife\\b:lady",
-  "\\bgirl\\b:lass",
-  "\\bgirls\\b:lassies",
-  "\\bguy\\b:lubber",
-  "\\bman\\b:lubber",
-  "\\bfellow\\b:lubber",
-  "\\bdude\\b:lubber",
-  "\\bboy\\b:lad",
-  "\\bboys\\b:laddies",
-  "\\bchildren\\b:little sandcrabs",
-  "\\bkids\\b:minnows",
-  "\\bhim\\b:that scurvey dog",
-  "\\bher\\b:that comely wench",
-  "\\bhim\.\\b:that drunken sailor",
-  "\\bHe\\b:The ornery cuss",
-  "\\bShe\\b:The winsome lass",
-  "\\bhe\'s\\b:he be",
-  "\\bshe\'s\\b:she be",
-  "\\bwas\\b:were bein\'",
-  "\\bHey\\b:Avast",
-  "\\bher\.\\b:that lovely lass",
-  "\\bfood\\b:chow",
-  "\\bmoney\\b:dubloons",
-  "\\bdollars\\b:pieces of eight",
-  "\\bcents\\b:shillings",
-  "\\broad\\b:sea",
-  "\\broads\\b:seas",
-  "\\bstreet\\b:river",
-  "\\bstreets\\b:rivers",
-  "\\bhighway\\b:ocean",
-  "\\bhighways\\b:oceans",
-  "\\binterstate\\b:high sea",
-  "\\bprobably\\b:likely",
-  "\\bidea\\b:notion",
-  "\\bcar\\b:boat",
-  "\\bcars\\b:boats",
-  "\\btruck\\b:schooner",
-  "\\btrucks\\b:schooners",
-  "\\bSUV\\b:ship",
-  "\\bairplane\\b:flying machine",
-  "\\bjet\\b:flying machine",
-  "\\bmachine\\b:contraption",
-  "\\bdriving\\b:sailing",
-  "\\bunderstand\\b:reckon",
-  "\\bdrive\\b:sail",
-  "\\bdied\\b:snuffed it",
-  "ing\\b/:in\'",
-  "ings\\b/:in\'s",
-#
-# These next two do cool random substitutions
-#  "(\.\s)/e:avast("$0",3)",
-#  "([!\?]\s)/e:avast("$0",2)" # Greater chance after exclamation
-);
+  # From text-filter-suite/
+  s/\bmy\b/me/g;
+  s/\bboss\b/admiral/g;
+  s/\bmanager\b/admiral/g;
+  s/\b[Cc]aptain\b/Cap\'n/g;
+  s/\bmyself\b/meself/g;
+  s/\byour\b/yer/g;
+  s/\byou\b/ye/g;
+  s/\bfriend\b/matey/g;
+  s/\bfriends\b/maties/g;
+  s/\bco[-]?worker\b/shipmate/g;
+  s/\bco[-]?workers\b/shipmates/g;
+  s/\bpeople\b/scallywags/g;
+  s/\bearlier\b/afore/g;
+  s/\bold\b/auld/g;
+  s/\bthe\b/th\'/g;
+  s/\bof\b/o'/g;
+  s/\bdon\'t\b/dern\'t/g;
+  s/\bdo not\b/dern\'t/g;
+  s/\bnever\b/ne\'er/g;
+  s/\bever\b/e\'er/g;
+  s/\bover\b/o\'er/g;
+  s/\bYes\b/Aye/g;
+  s/\bNo\b/Nay/g;
+  s/\bYeah\b/Aye/g;
+  s/\byeah\b/aye/g;
+  s/\bdon\'t know\b/dinna/g;
+  s/\bdidn\'t know\b/did nay know/g;
+  s/\bhadn\'t\b/ha\'nae/g;
+  s/\bdidn\'t\b/di\'nae/g;
+  s/\bwasn\'t\b/weren\'t/g;
+  s/\bhaven\'t\b/ha\'nae/g;
+  s/\bfor\b/fer/g;
+  s/\bbetween\b/betwixt/g;
+  s/\baround\b/aroun\'/g;
+  s/\bto\b/t\'/g;
+  s/\bit\'s\b/\'tis/g;
+  s/\bwoman\b/wench/g;
+  s/\bwomen\b/wenches/g;
+  s/\blady\b/wench/g;
+  s/\bwife\b/lady/g;
+  s/\bgirl\b/lass/g;
+  s/\bgirls\b/lassies/g;
+  s/\bguy\b/lubber/g;
+  s/\bman\b/lubber/g;
+  s/\bfellow\b/lubber/g;
+  s/\bdude\b/lubber/g;
+  s/\bboy\b/lad/g;
+  s/\bboys\b/laddies/g;
+  s/\bchildren\b/little sandcrabs/g;
+  s/\bkids\b/minnows/g;
+  s/\bhim\b/that scurvey dog/g;
+  s/\bher\b/that comely wench/g;
+  s/\bhim\.\b/that drunken sailor/g;
+  s/\bHe\b/The ornery cuss/g;
+  s/\bShe\b/The winsome lass/g;
+  s/\bhe\'s\b/he be/g;
+  s/\bshe\'s\b/she be/g;
+  s/\bwas\b/were bein\'/g;
+  s/\bHey\b/Avast/g;
+  s/\bher\.\b/that lovely lass/g;
+  s/\bfood\b/chow/g;
+  s/\bmoney\b/dubloons/g;
+  s/\bdollars\b/pieces of eight/g;
+  s/\bcents\b/shillings/g;
+  s/\broad\b/sea/g;
+  s/\broads\b/seas/g;
+  s/\bstreet\b/river/g;
+  s/\bstreets\b/rivers/g;
+  s/\bhighway\b/ocean/g;
+  s/\bhighways\b/oceans/g;
+  s/\binterstate\b/high sea/g;
+  s/\bprobably\b/likely/g;
+  s/\bidea\b/notion/g;
+  s/\bcar\b/boat/g;
+  s/\bcars\b/boats/g;
+  s/\btruck\b/schooner/g;
+  s/\btrucks\b/schooners/g;
+  s/\bSUV\b/ship/g;
+  s/\bairplane\b/flying machine/g;
+  s/\bjet\b/flying machine/g;
+  s/\bmachine\b/contraption/g;
+  s/\bdriving\b/sailing/g;
+  s/\bunderstand\b/reckon/g;
+  s/\bdrive\b/sail/g;
+  s/\bdied\b/snuffed it/g;
+  s/ing\b/in\'/g;
+  s/ings\b/in\'s/g;
+
+  # These next two do cool random substitutions
+  #s/(\.\s)/e/avast("$0",3)/g;
+  #s/([!\?]\s)/e/avast("$0",2)/g; # Greater chance after exclamation
+
+
+# Add an opening phrase to each line randomly (see below)?
+
+
+  if ($do_split) {
+    # Combine the line again for output to STDOUT
+    $pieces[1] = $_;
+    print join '|', @pieces;
+  }
+  else {
+    print;
+  }
+}
 
 
 # Randomize use of this array, both in order and in frequency of
@@ -484,6 +528,7 @@ my @regexs = (
 #  "$stub Fetch me spyglass!",
 # );
 
+
 # Randomize use of this array both in order and frequency of use.
 # Not currently used at all.
 my @openings = (
@@ -496,61 +541,5 @@ my @openings = (
   'Shiver me timbers! ',
   'Arrrr! '
 );
-
-
-# Check whether we're translating an Xastir language file or plain
-# text:
-#   "-split" present:  Translate the 2nd piece of each line.
-#   "-split" absent:   Translate the entire text.
-my $a;
-if ($#ARGV < 0) { $a = ""; }
-else            { $a = shift; }
-$do_split = 0;
-if (length($a) > 0 && $a =~ m/-split/) {
-  $do_split = 1;
-}
-
-while ( <> ) {
-
-  # Change the "Id:" RCS tag to show that we translated the file.
-  if (m/^#.*\$Id:/) {
-      print "# language-PirateEnglish.sys, translated from language-English.sys\n";
-      print "# Please do not edit this derived file.\n";
-      next;
-  }
-  # Skip other comment lines
-  if (m/^#/) {
-    next;
-  }
-
-  if ($do_split) {
-    # Split each incoming line by the '|' character
-    @pieces = split /\|/;
-  }
-
-  foreach my $test (@regexs) {
-
-      @reg_parts = split /\:/, $test;
-
-      if ($do_split) {
-        # Translate the second portion of each line only
-        $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
-      }
-      else {
-        # Translate the entire line of text
-        s/$reg_parts[0]/$reg_parts[1]/g;
-      }
-  }
-
-  # Add an opening phrase to each line randomly?
-
-  if ($do_split) {
-    # Combine the line again for output to STDOUT
-    print join '|', @pieces;
-  }
-  else {
-    print;
-  }
-}
 
 

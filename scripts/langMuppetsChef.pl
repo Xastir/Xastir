@@ -39,41 +39,67 @@
 # http://dougal.gunters.org/blog/2004/08/30/text-filter-suite
 
 
-my @regexs = (
-  "An:Un",
-  "an:un",
-  "Au:Uu",
-  "au:uu",
-  "a\\b:e",
-  "A\\b:E",
-  "en\\b:ee",
-  "\\bew:oo",
-  "\\be\\b:e-a",
-  "\\be:i",
-  "\\bE:I",
-  "\\bf:ff",
-  "\\bir:ur",
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
+}
 
-# Can't get substitutions in the s/// portion below correct.
-# Changing the below to compensate (somewhat).
-#  "(\\w*?)i(\\w*?)\$:$1ee$2",
-  "i:ee",
-  "I:Ee",
+while ( <> ) {
 
-  "\\bow:oo",
-  "\\bo:oo",
-  "\\bO:Oo",
-  "the:zee",
-  "The:Zee",
-  "th\\b:t",
-  "\\btion:shun",
-  "\\bu:oo",
-  "\\bU:Oo",
-  "v:f",
-  "V:F",
-  "w:w",
-  "W:W",
-  "([a-z])[.]:\$&.  Bork Bork Bork!"
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
+    print "# language-MuppetsChef.sys, translated from language-English.sys\n";
+    print "# Please do not edit this derived file.\n";
+    next;
+  }
+  # Skip other comment lines
+  if (m/^#/) {
+    next;
+  }
+
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+
+    # Translate the second portion of each line only
+    $_ = $pieces[1];
+  }
+
+  s/An/Un/g;
+  s/an/un/g;
+  s/Au/Uu/g;
+  s/au/uu/g;
+  s/a\b/e/g;
+  s/A\b/E/g;
+  s/en\b/ee/g;
+  s/\bew/oo/g;
+  s/\be\b/e-a/g;
+  s/\be/i/g;
+  s/\bE/I/g;
+  s/\bf/ff/g;
+  s/\bir/ur/g;
+  s/(\w*?)i(\w*?)$/$1ee$2/g;
+  s/\bow/oo/g;
+  s/\bo/oo/g;
+  s/\bO/Oo/g;
+  s/the/zee/g;
+  s/The/Zee/g;
+  s/th\b/t/g;
+  s/\btion/shun/g;
+  s/\bu/oo/g;
+  s/\bU/Oo/g;
+  s/v/f/g;
+  s/V/F/g;
+  s/w/w/g;
+  s/W/W/g;
+  s/([a-z])[.]/$&.  Bork Bork Bork!/g;
 
 # From the text-filter-suite:
 # '%an%' => 'un',
@@ -119,55 +145,10 @@ my @regexs = (
 #
 # '%([\.!\?])\\s*(</[^>]+>)?\\s*$%' => '$1 Bork Bork Bork!$2',
 
-);
-
-
-# Check whether we're translating an Xastir language file or plain
-# text:
-#   "-split" present:  Translate the 2nd piece of each line.
-#   "-split" absent:   Translate the entire text.
-my $a;
-if ($#ARGV < 0) { $a = ""; }
-else            { $a = shift; }
-$do_split = 0;
-if (length($a) > 0 && $a =~ m/-split/) {
-  $do_split = 1;
-}
-
-while ( <> ) {
-
-  # Change the "Id:" RCS tag to show that we translated the file.
-  if (m/^#.*\$Id:/) {
-    print "# language-MuppetsChef.sys, translated from language-English.sys\n";
-    print "# Please do not edit this derived file.\n";
-    next;
-  }
-  # Skip other comment lines
-  if (m/^#/) {
-    next;
-  }
-
-  if ($do_split) {
-    # Split each incoming line by the '|' character
-    @pieces = split /\|/;
-  }
-
-  foreach my $test (@regexs) {
-
-    @reg_parts = split /\:/, $test;
-
-    if ($do_split) {
-      # Translate the second portion of each line only
-      $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
-    }
-    else {
-      # Translate the entire line of text
-      s/$reg_parts[0]/$reg_parts[1]/g;
-    }
-  }
 
   if ($do_split) {
     # Combine the line again for output to STDOUT
+    $pieces[1] = $_;
     print join '|', @pieces;
   }
   else {

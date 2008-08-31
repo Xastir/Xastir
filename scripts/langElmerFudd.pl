@@ -39,20 +39,6 @@
 # http://dougal.gunters.org/blog/2004/08/30/text-filter-suite
 
 
-my @regexs = (
-  "[rl]:w",
-  "[RL]:W",
-  "Qu:Qw",
-  "qu:qw",
-  "th(\b):f",
-  "TH(\b):F",
-  "th:d",
-  "Th:D",
-  "N[.]:N, uh-hah-hah-hah.",
-  "n[.]:n, uh-hah-hah-hah."
-);
-
-
 # Check whether we're translating an Xastir language file or plain
 # text:
 #   "-split" present:  Translate the 2nd piece of each line.
@@ -81,24 +67,23 @@ while ( <> ) {
   if ($do_split) {
     # Split each incoming line by the '|' character
     @pieces = split /\|/;
+
+    # Translate the second portion of each line only
+    $_ = $pieces[1];
   }
 
-  foreach my $test (@regexs) {
-
-    @reg_parts = split /\:/, $test;
-
-    if ($do_split) {
-      # Translate the second portion of each line only
-      $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
-    }
-    else {
-      # Translate the entire line of text
-      s/$reg_parts[0]/$reg_parts[1]/g;
-    }
-  }
+  s/[rl]/w/g;
+  s/[RL]/W/g;
+  s/([Qq])u/$1w/g;
+  s/th(\b)/f/g;
+  s/TH(\b)/F/g;
+  s/th/d/g;
+  s/Th/D/g;
+  s/([Nn])[.]/$1, uh-hah-hah-hah./g;
 
   if ($do_split) {
     # Combine the line again for output to STDOUT
+    $pieces[1] = $_;
     print join '|', @pieces;
   }
   else {
