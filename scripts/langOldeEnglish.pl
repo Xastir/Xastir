@@ -1,5 +1,4 @@
-#!/usr/bin/perl
-##!/usr/bin/perl -W
+#!/usr/bin/perl -W
 
 # $Id$
 
@@ -39,57 +38,6 @@
 # http://www.siafoo.net/snippet/133
 
 
-# NOTE:  The $1/$2 substitutions are working at the point the regex
-# is used, so those portions of the original string disappear.  Need
-# to fix this!
-my @regexs = (
-  "i([bcdfghjklmnpqrstvwxyz])e\b:y$1",
-  "i([bcdfghjklmnpqrstvwxyz])e:y$1$1e",
-  "ick\b:yk",
-  "ia([bcdfghjklmnpqrstvwxyz]):e$1e",
-  "e[ea]([bcdfghjklmnpqrstvwxyz]):e$1e",
-  "([bcdfghjklmnpqrstvwxyz])y:$1ee",
-  "([bcdfghjklmnpqrstvwxyz])er:$1re",
-  "([aeiou])re\b:$1r",
-  "ia([bcdfghjklmnpqrstvwxyz]):i$1e",
-  "tion\b:cioun",
-  "ion\b:ioun",
-  "aid:ayde",
-  "ai:ey",
-  "ay\b:y",
-  "ay:ey",
-  "ant:aunt",
-  "ea:ee",
-  "oa:oo",
-  "ue:e",
-  "oe:o",
-  "ou:ow",
-  "ow:ou",
-  "\bhe:hi",
-  "ve\b:veth",
-  "se\b:e",
-  "\'s\b:es",
-  "ic\b:ick",
-  "ics\b:icc",
-  "ical\b:ick",
-  "tle\b:til",
-  "ll\b:l",
-  "ould\b:olde",
-  "own\b:oune",
-  "un\b:onne",
-  "rry\b:rye",
-  "est\b:este",
-  "pt\b:pte",
-  "th\b:the",
-  "ch\b:che",
-  "ss\b:sse",
-  "([wybdp])\b:$1e",
-  "([rnt])\b:$1$1e",
-  "from:fro",
-  "when:whan"
-);
-
-
 # Check whether we're translating an Xastir language file or plain
 # text:
 #   "-split" present:  Translate the 2nd piece of each line.
@@ -103,7 +51,6 @@ if (length($a) > 0 && $a =~ m/-split/) {
 }
 
 while ( <> ) {
-
 
   # Change the "Id:" RCS tag to show that we translated the file.
   if (m/^#.*\$Id:/) {
@@ -119,24 +66,59 @@ while ( <> ) {
   if ($do_split) {
     # Split each incoming line by the '|' character
     @pieces = split /\|/;
+
+    # Translate the second portion of each line only
+    $_ = $pieces[1];
   }
 
-  foreach my $test (@regexs) {
-
-    @reg_parts = split /\:/, $test;
-
-    if ($do_split) {
-      # Translate the second portion of each line only
-      $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
-    }
-    else {
-      # Translate the entire line of text
-      s/$reg_parts[0]/$reg_parts[1]/g;
-    }
-  }
+  s/i([bcdfghjklmnpqrstvwxyz])e\b/y$1/g;
+  s/i([bcdfghjklmnpqrstvwxyz])e/y$1$1e/g;
+  s/ick\b/yk/g;
+  s/ia([bcdfghjklmnpqrstvwxyz])/e$1e/g;
+  s/e[ea]([bcdfghjklmnpqrstvwxyz])/e$1e/g;
+  s/([bcdfghjklmnpqrstvwxyz])y/$1ee/g;
+  s/([bcdfghjklmnpqrstvwxyz])er/$1re/g;
+  s/([aeiou])re\b/$1r/g;
+  s/ia([bcdfghjklmnpqrstvwxyz])/i$1e/g;
+  s/tion\b/cioun/g;
+  s/ion\b/ioun/g;
+  s/aid/ayde/g;
+  s/ai/ey/g;
+  s/ay\b/y/g;
+  s/ay/ey/g;
+  s/ant/aunt/g;
+  s/ea/ee/g;
+  s/oa/oo/g;
+  s/ue/e/g;
+  s/oe/o/g;
+  s/ou/ow/g;
+  s/ow/ou/g;
+  s/\bhe/hi/g;
+  s/ve\b/veth/g;
+  s/se\b/e/g;
+  s/\'s\b/es/g;
+  s/ic\b/ick/g;
+  s/ics\b/icc/g;
+  s/ical\b/ick/g;
+  s/tle\b/til/g;
+  s/ll\b/l/g;
+  s/ould\b/olde/g;
+  s/own\b/oune/g;
+  s/un\b/onne/g;
+  s/rry\b/rye/g;
+  s/est\b/este/g;
+  s/pt\b/pte/g;
+  s/th\b/the/g;
+  s/ch\b/che/g;
+  s/ss\b/sse/g;
+  s/([wybdp])\b/$1e/g;
+  s/([rnt])\b/$1$1e/g;
+  s/from/fro/g;
+  s/when/whan/g;
 
   if ($do_split) {
     # Combine the line again for output to STDOUT
+    $pieces[1] = $_;
     print join '|', @pieces;
   }
   else {
