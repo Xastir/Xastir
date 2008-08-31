@@ -74,8 +74,8 @@ while ( <> ) {
 
   s/An/Un/g;
   s/an/un/g;
-  s/Au/Uu/g;
-  s/au/uu/g;
+  s/Au/Oo/g;
+  s/au/oo/g;
   s/a\b/e/g;
   s/A\b/E/g;
   s/en\b/ee/g;
@@ -101,50 +101,36 @@ while ( <> ) {
   s/W/W/g;
   s/([a-z])[.]/$&.  Bork Bork Bork!/g;
 
-# From the text-filter-suite:
-# '%an%' => 'un',
-# '%An%' => 'Un',
-#
-# '%au%' => 'oo',
-# '%Au%' => 'Oo',
-# '%(\\w)ew%' => '$1oo',
-# '%(\\w)ow%' => '$1oo',
-# '%(\\W)o%' => '$1oo',
-# '%(\\W)O%' => '$1Oo',
-# '%(\\w)u%' => '$1oo',
-# '%(\\w)U%' => '$1Oo',
-#
-# '%a(\\w)%' => 'e$1',
-# '%A(\\w)%' => 'E$1',
-# '%en(\\W)%' => 'ee$1',
-#
-# '%(\\w)e(\\W)%' => '$1e-a$2',
-# '%(\\W)e%' => '$1i',
-# '%(\\W)E%' => '$1I',
-#
-# '%(\\w)f%' => '$1ff',
-#
-# '%(\\w)ir%' => '$1ur',
-#
-# '%([a-m])i%' => '$1ee',
-# '%([A-M])i%' => '$1EE',
-#
-# '%(\\w)o%' => '$1u',
-# '%the%' => 'zee',
-# '%The%' => 'Zee',
-# '%th(\\W)%' => 't$1',
-# '%(\\w)tion%' => '$1shun',
-# '%v%' => 'f',
-# '%V%' => 'F',
-# '%w%' => 'v',
-# '%W%' => 'V',
-#
-# '%f{2,}%' => 'ff',
-# '%o{2,}%' => 'oo',
-# '%e{2,}%' => 'ee',
-#
-# '%([\.!\?])\\s*(</[^>]+>)?\\s*$%' => '$1 Bork Bork Bork!$2',
-
+  # From the text-filter-suite:
+  s/(\w)ew/$1oo/g;
+  s/(\w)ow/$1oo/g;
+  s/(\W)o/$1oo/g;
+  s/(\W)O/$1Oo/g;
+  s/(\w)u/$1oo/g;
+  s/(\w)U/$1Oo/g;
+  s/a(\w)/e$1/g;
+  s/A(\w)/E$1/g;
+  s/en(\W)/ee$1/g;
+  s/(\w)e(\W)/$1e-a$2/g;
+  s/(\W)e/$1i/g;
+  s/(\W)E/$1I/g;
+  s/(\w)f/$1ff/g;
+  s/(\w)ir/$1ur/g;
+  s/([a-m])i/$1ee/g;
+  s/([A-M])i/$1EE/g;
+  s/(\w)o/$1u/g;
+  s/the/zee/g;
+  s/The/Zee/g;
+  s/th(\W)/t$1/g;
+  s/(\w)tion/$1shun/g;
+  s/v/f/g;
+  s/V/F/g;
+  s/w/v/g;
+  s/W/V/g;
+  s/f{2,}/ff/g;
+  s/o{2,}/oo/g;
+  s/e{2,}/ee/g;
+#  s/([\.!\?])\s*(</[^>]+>)?\s*$/$1 Bork Bork Bork!$2/g;
 
   if ($do_split) {
     # Combine the line again for output to STDOUT
