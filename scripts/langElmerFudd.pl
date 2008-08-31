@@ -1,4 +1,4 @@
-#!/usr/bin/perl -n
+#!/usr/bin/perl -W
 
 # $Id$
 
@@ -25,13 +25,12 @@
 # Run it like this:
 #
 #   cd xastir/config
-#   ../scripts/langElmerFudd.pl <language-English.sys >language-ElmerFudd.sys
+#   ../scripts/langElmerFudd.pl -split  <language-English.sys >language-ElmerFudd.sys
+# or
+#   ../scripts/langElmerFudd.pl <some-input-file >some-output-file
 #
-# If you would like, replace the language-English.sys file in the
-# destination directory (usually "/usr/local/share/xastir/config")
-# with this new file (renaming it to "language-English.sys" of
-# course), then restart Xastir and you'll have it displaying in
-# ElmerFudd-speak!
+# "-split": Translate 2nd part of line only (Xastir language file).
+# Without it:  Translate entire text.
 
 
 # Regex strings derived from:
@@ -43,35 +42,68 @@
 my @regexs = (
   "[rl]:w",
   "[RL]:W",
-  "([qQ])u:$1w",
-  "th(\b):f$1",
-  "TH(\b):F$1",
+  "Qu:Qw",
+  "qu:qw",
+  "th(\b):f",
+  "TH(\b):F",
   "th:d",
   "Th:D",
-  "([nN])[.]:$1, uh-hah-hah-hah."
+  "N[.]:N, uh-hah-hah-hah.",
+  "n[.]:n, uh-hah-hah-hah."
 );
 
-# Change the "Id:" RCS tag to show that we translated the file.
-if (m/^#.*\$Id:/) {
-    print "# language-ElmerFudd.sys, translated from language-English.sys\n";
-    print "# Please do not edit this derived file.\n";
-    next;
+
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
 }
-# Skip other comment lines
-if (m/^#/) { next; }
 
-# Split each incoming line by the '|' character
-@pieces = split /\|/;
+while ( <> ) {
 
-foreach my $test (@regexs) {
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
+      print "# language-ElmerFudd.sys, translated from language-English.sys\n";
+      print "# Please do not edit this derived file.\n";
+      next;
+  }
+  # Skip other comment lines
+  if (m/^#/) {
+    next;
+  }
+
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+  }
+
+  foreach my $test (@regexs) {
 
     @reg_parts = split /\:/, $test;
 
-    # Modify the second portion of each line only
-    $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/;
-}
+    if ($do_split) {
+      # Translate the second portion of each line only
+      $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
+    }
+    else {
+      # Translate the entire line of text
+      s/$reg_parts[0]/$reg_parts[1]/g;
+    }
+  }
 
-# Combine the line again for output to STDOUT
-print join '|', @pieces;
+  if ($do_split) {
+    # Combine the line again for output to STDOUT
+    print join '|', @pieces;
+  }
+  else {
+    print;
+  }
+}
 
 

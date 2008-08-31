@@ -53,15 +53,15 @@ fi
 
 # Generate derived language files
 echo -n "    1) Generating derived language files"
-(cd config; ../scripts/langPigLatin.pl <language-English.sys >language-PigLatin.sys) 
+(cd config; ../scripts/langPigLatin.pl -split <language-English.sys >language-PigLatin.sys) 
 echo -n "."
-(cd config; ../scripts/langElmerFudd.pl <language-English.sys >language-ElmerFudd.sys) 
+(cd config; ../scripts/langElmerFudd.pl -split <language-English.sys >language-ElmerFudd.sys) 
 echo -n "."
-(cd config; ../scripts/langMuppetsChef.pl <language-English.sys >language-MuppetsChef.sys) 
+(cd config; ../scripts/langMuppetsChef.pl -split <language-English.sys >language-MuppetsChef.sys) 
 echo -n "."
-(cd config; ../scripts/langOldeEnglish.pl <language-English.sys >language-OldeEnglish.sys) 
+(cd config; ../scripts/langOldeEnglish.pl -split <language-English.sys >language-OldeEnglish.sys) 
 echo -n "."
-(cd config; ../scripts/langPirateEnglish.pl <language-English.sys >language-PirateEnglish.sys) 
+(cd config; ../scripts/langPirateEnglish.pl -split <language-English.sys >language-PirateEnglish.sys) 
 echo "."
 
 echo "Bootstrap complete."

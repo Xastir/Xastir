@@ -1,4 +1,5 @@
-#!/usr/bin/perl -n
+#!/usr/bin/perl
+##!/usr/bin/perl -W
 
 # $Id$
 
@@ -25,13 +26,12 @@
 # Run it like this:
 #
 #   cd xastir/config
-#   ../scripts/langOldeEnglish.pl <language-English.sys >language-OldeEnglish.sys
+#   ../scripts/langOldeEnglish.pl -split <language-English.sys >language-OldeEnglish.sys
+# or
+#   ../scripts/langOldeEnglish.pl <some-input-file >some-output-file
 #
-# If you would like, replace the language-English.sys file in the
-# destination directory (usually "/usr/local/share/xastir/config")
-# with this new file (renaming it to "language-English.sys" of
-# course), then restart Xastir and you'll have it displaying in
-# OldeEnglish!
+# "-split": Translate 2nd part of line only (Xastir language file).
+# Without it:  Translate entire text.
 
 
 # Regex strings derived from:
@@ -39,6 +39,9 @@
 # http://www.siafoo.net/snippet/133
 
 
+# NOTE:  The $1/$2 substitutions are working at the point the regex
+# is used, so those portions of the original string disappear.  Need
+# to fix this!
 my @regexs = (
   "i([bcdfghjklmnpqrstvwxyz])e\b:y$1",
   "i([bcdfghjklmnpqrstvwxyz])e:y$1$1e",
@@ -86,27 +89,59 @@ my @regexs = (
   "when:whan"
 );
 
-# Change the "Id:" RCS tag to show that we translated the file.
-if (m/^#.*\$Id:/) {
+
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
+}
+
+while ( <> ) {
+
+
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
     print "# language-OldeEnglish.sys, translated from language-English.sys\n";
     print "# Please do not edit this derived file.\n";
     next;
-}
-# Skip other comment lines
-if (m/^#/) { next; }
+  }
+  # Skip other comment lines
+  if (m/^#/) {
+    next;
+  }
 
-# Split each incoming line by the '|' character
-@pieces = split /\|/;
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+  }
 
-foreach my $test (@regexs) {
+  foreach my $test (@regexs) {
 
     @reg_parts = split /\:/, $test;
 
-    # Modify the second portion of each line only
-    $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/;
-}
+    if ($do_split) {
+      # Translate the second portion of each line only
+      $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
+    }
+    else {
+      # Translate the entire line of text
+      s/$reg_parts[0]/$reg_parts[1]/g;
+    }
+  }
 
-# Combine the line again for output to STDOUT
-print join '|', @pieces;
+  if ($do_split) {
+    # Combine the line again for output to STDOUT
+    print join '|', @pieces;
+  }
+  else {
+    print;
+  }
+}
 
 

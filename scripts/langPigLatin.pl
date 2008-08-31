@@ -1,4 +1,4 @@
-#!/usr/bin/perl -n
+#!/usr/bin/perl -W
 
 # $Id$
 
@@ -25,35 +25,58 @@
 # Run it like this:
 #
 #   cd xastir/config
-#   ../scripts/langPigLatin.pl <language-English.sys >language-PigLatin.sys
+#   ../scripts/langPigLatin.pl -split <language-English.sys >language-PigLatin.sys
+# or
+#   ../scripts/langPigLatin.pl <some-input-file >some-output-file
 #
-# If you would like, replace the language-English.sys file in the
-# destination directory (usually "/usr/local/share/xastir/config")
-# with this new file (renaming it to "language-English.sys" of
-# course), then restart Xastir and you'll have it displaying in Pig
-# Latin!
+# "-split": Translate 2nd part of line only (Xastir language file).
+# Without it:  Translate entire text.
 
 
 # Regex strings derived from:
 # http://www.perlmonks.org/?node_id=3586
 
 
-# Change the "Id:" RCS tag to show that we translated the file.
-if (m/^#.*\$Id:/) {
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
+}
+
+while ( <> ) {
+
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
     print "# language-PigLatin.sys, translated from language-English.sys\n";
     print "# Please do not edit this derived file.\n";
     next;
+  }
+  # Skip other comment lines
+  if (m/^#/) {
+    next;
+  }
+
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+
+    # Translate the second portion of each line only
+    $pieces[1] =~ s/\b(qu|y(?=[^t])|[^\W\daeiouy]*)([a-z']+)/$2.($1||"w")."ay"/eg;
+
+    # Combine the line again for output to STDOUT
+    print join '|', @pieces;
+  }
+  else {
+    # Translate the entire line of text
+    s/\b(qu|y(?=[^t])|[^\W\daeiouy]*)([a-z']+)/$2.($1||"w")."ay"/eg;
+    print;
+  }
 }
-# Skip other comment lines
-if (m/^#/) { next; }
-
-# Split each line by the '|' character
-@pieces = split /\|/;
-
-# Modify the second portion of each line only
-$pieces[1] =~ s/\b(qu|y(?=[^t])|[^\W\daeiouy]*)([a-z']+)/$2.($1||w).ay/eg;
-
-# Combine the line again for output to STDOUT
-print join '|', @pieces;
 
 

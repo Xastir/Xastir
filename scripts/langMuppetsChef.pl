@@ -1,4 +1,4 @@
-#!/usr/bin/perl -n
+#!/usr/bin/perl -W
 
 # $Id$
 
@@ -25,13 +25,12 @@
 # Run it like this:
 #
 #   cd xastir/config
-#   ../scripts/langMuppetsChef.pl <language-English.sys >language-MuppetsChef.sys
+#   ../scripts/langMuppetsChef.pl -split <language-English.sys >language-MuppetsChef.sys
+# or
+#   ../scripts/langMuppetsChef.pl <some-input-file >some-output-file
 #
-# If you would like, replace the language-English.sys file in the
-# destination directory (usually "/usr/local/share/xastir/config")
-# with this new file (renaming it to "language-English.sys" of
-# course), then restart Xastir and you'll have it displaying in
-# Muppets Chef-speak!
+# "-split": Translate 2nd part of line only (Xastir language file).
+# Without it:  Translate entire text.
 
 
 # Regex strings derived from:
@@ -41,32 +40,40 @@
 
 
 my @regexs = (
-  "a([nu]):u$1",
-  "A([nu]):U$1",
-  "a\B:e",
-  "A\B:E",
-  "en\b:ee",
-  "\Bew:oo",
-  "\Be\b:e-a",
-  "\be:i",
-  "\bE:I",
-  "\Bf:ff",
-  "\Bir:ur",
-  "(\w*?)i(\w*?)$:$1ee$2",
-  "\bow:oo",
-  "\bo:oo",
-  "\bO:Oo",
+  "An:Un",
+  "an:un",
+  "Au:Uu",
+  "au:uu",
+  "a\\b:e",
+  "A\\b:E",
+  "en\\b:ee",
+  "\\bew:oo",
+  "\\be\\b:e-a",
+  "\\be:i",
+  "\\bE:I",
+  "\\bf:ff",
+  "\\bir:ur",
+
+# Can't get substitutions in the s/// portion below correct.
+# Changing the below to compensate (somewhat).
+#  "(\\w*?)i(\\w*?)\$:$1ee$2",
+  "i:ee",
+  "I:Ee",
+
+  "\\bow:oo",
+  "\\bo:oo",
+  "\\bO:Oo",
   "the:zee",
   "The:Zee",
-  "th\b:t",
-  "\Btion:shun",
-  "\Bu:oo",
-  "\BU:Oo",
+  "th\\b:t",
+  "\\btion:shun",
+  "\\bu:oo",
+  "\\bU:Oo",
   "v:f",
   "V:F",
   "w:w",
   "W:W",
-  "([a-z])[.]:$&.  Bork Bork Bork!"
+  "([a-z])[.]:\$&.  Bork Bork Bork!"
 
 # From the text-filter-suite:
 # '%an%' => 'un',
@@ -74,33 +81,33 @@ my @regexs = (
 #
 # '%au%' => 'oo',
 # '%Au%' => 'Oo',
-# '%(\w)ew%' => '$1oo',
-# '%(\w)ow%' => '$1oo',
-# '%(\W)o%' => '$1oo',
-# '%(\W)O%' => '$1Oo',
-# '%(\w)u%' => '$1oo',
-# '%(\w)U%' => '$1Oo',
+# '%(\\w)ew%' => '$1oo',
+# '%(\\w)ow%' => '$1oo',
+# '%(\\W)o%' => '$1oo',
+# '%(\\W)O%' => '$1Oo',
+# '%(\\w)u%' => '$1oo',
+# '%(\\w)U%' => '$1Oo',
 #
-# '%a(\w)%' => 'e$1',
-# '%A(\w)%' => 'E$1',
-# '%en(\W)%' => 'ee$1',
+# '%a(\\w)%' => 'e$1',
+# '%A(\\w)%' => 'E$1',
+# '%en(\\W)%' => 'ee$1',
 #
-# '%(\w)e(\W)%' => '$1e-a$2',
-# '%(\W)e%' => '$1i',
-# '%(\W)E%' => '$1I',
+# '%(\\w)e(\\W)%' => '$1e-a$2',
+# '%(\\W)e%' => '$1i',
+# '%(\\W)E%' => '$1I',
 #
-# '%(\w)f%' => '$1ff',
+# '%(\\w)f%' => '$1ff',
 #
-# '%(\w)ir%' => '$1ur',
+# '%(\\w)ir%' => '$1ur',
 #
 # '%([a-m])i%' => '$1ee',
 # '%([A-M])i%' => '$1EE',
 #
-# '%(\w)o%' => '$1u',
+# '%(\\w)o%' => '$1u',
 # '%the%' => 'zee',
 # '%The%' => 'Zee',
-# '%th(\W)%' => 't$1',
-# '%(\w)tion%' => '$1shun',
+# '%th(\\W)%' => 't$1',
+# '%(\\w)tion%' => '$1shun',
 # '%v%' => 'f',
 # '%V%' => 'F',
 # '%w%' => 'v',
@@ -110,31 +117,62 @@ my @regexs = (
 # '%o{2,}%' => 'oo',
 # '%e{2,}%' => 'ee',
 #
-# '%([\.!\?])\s*(</[^>]+>)?\s*$%' => '$1 Bork Bork Bork!$2',
+# '%([\.!\?])\\s*(</[^>]+>)?\\s*$%' => '$1 Bork Bork Bork!$2',
 
 );
 
-# Change the "Id:" RCS tag to show that we translated the file.
-if (m/^#.*\$Id:/) {
+
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
+}
+
+while ( <> ) {
+
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
     print "# language-MuppetsChef.sys, translated from language-English.sys\n";
     print "# Please do not edit this derived file.\n";
     next;
-}
-# Skip other comment lines
-if (m/^#/) { next; }
+  }
+  # Skip other comment lines
+  if (m/^#/) {
+    next;
+  }
 
-# Split each incoming line by the '|' character
-@pieces = split /\|/;
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+  }
 
-foreach my $test (@regexs) {
+  foreach my $test (@regexs) {
 
     @reg_parts = split /\:/, $test;
 
-    # Modify the second portion of each line only
-    $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/;
-}
+    if ($do_split) {
+      # Translate the second portion of each line only
+      $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
+    }
+    else {
+      # Translate the entire line of text
+      s/$reg_parts[0]/$reg_parts[1]/g;
+    }
+  }
 
-# Combine the line again for output to STDOUT
-print join '|', @pieces;
+  if ($do_split) {
+    # Combine the line again for output to STDOUT
+    print join '|', @pieces;
+  }
+  else {
+    print;
+  }
+}
 
 

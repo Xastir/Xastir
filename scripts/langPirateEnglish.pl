@@ -1,4 +1,4 @@
-#!/usr/bin/perl -n
+#!/usr/bin/perl -W
 
 # $Id$
 
@@ -25,13 +25,12 @@
 # Run it like this:
 #
 #   cd xastir/config
-#   ../scripts/langPirateEnglish.pl <language-English.sys >language-PirateEnglish.sys
+#   ../scripts/langPirateEnglish.pl -split <language-English.sys >language-PirateEnglish.sys
+# or
+#   ../scripts/langPirateEnglish.pl <some-input-file >some-output-file
 #
-# If you would like, replace the language-English.sys file in the
-# destination directory (usually "/usr/local/share/xastir/config")
-# with this new file (renaming it to "language-English.sys" of
-# course), then restart Xastir and you'll have it displaying in
-# Pirate-speak!
+# "-split": Translate 2nd part of line only (Xastir language file).
+# Without it:  Translate entire text.
 
 
 # Regex strings derived from:
@@ -52,7 +51,8 @@ my @regexs = (
   "\\bkb7uvc\\b:scurvy dog",
   "\\bwa7nwp\\b:cabin boy",
   "\\b[Mm]ap\\b:Treasure Map",
-  "\\b([xX]astir)\\b:HMS $1",
+  "\\bXastir\\b:HMS Xastir",
+  "\\bxastir\\b:HMS xastir",
   "\\bXASTIR\\b:HMS XASTIR",
   "\\bStation:Ship",
   "\\bstation:ship",
@@ -237,7 +237,7 @@ my @regexs = (
   "\\bguy\\b:feller",  
   "\\bfellow\\b:feller",
   "\\bidiot\\b:scalawag",
-  "\\ing\\b:in\'",
+  "ing\\b:in\'",
   "\\bin\\b:\'n",
   "\\bis\\b:be",
   "\\bit\'s\\b:\'tis",
@@ -453,36 +453,36 @@ my @regexs = (
 
 # Randomize use of this array, both in order and in frequency of
 # use.  Not currently used at all.
-my @shouts = (
-  ", avast$stub",
-  "$stub Ahoy!",
-  ", and a bottle of rum!",
-  ", by Blackbeard's sword$stub",
-  ", by Davy Jones' locker$stub",
-  "$stub Walk the plank!",
-  "$stub Aarrr!",
-  "$stub Yaaarrrrr!",
-  ", pass the grog!",
-  ", and dinna spare the whip!",
-  ", with a chest full of booty$stub",
-  ", and a bucket o' chum$stub",
-  ", we'll keel-haul ye!",
-  "$stub Shiver me timbers!",
-  "$stub And hoist the mainsail!",
-  "$stub And swab the deck!",
-  ", ye scurvey dog$stub",
-  "$stub Fire the cannons!",
-  ", to be sure$stub",
-  ", I'll warrant ye$stub",
-  ", on a dead man's chest!",
-  "$stub Load the cannons!",
-  "$stub Prepare to be boarded!",
-  ", I'll warrant ye$stub",
-  "$stub Ye'll be sleepin' with the fishes!",
-  "$stub The sharks will eat well tonight!",
-  "$stub Oho!",
-  "$stub Fetch me spyglass!",
- );
+#my @shouts = (
+#  ", avast$stub",
+#  "$stub Ahoy!",
+#  ", and a bottle of rum!",
+#  ", by Blackbeard's sword$stub",
+#  ", by Davy Jones' locker$stub",
+#  "$stub Walk the plank!",
+#  "$stub Aarrr!",
+#  "$stub Yaaarrrrr!",
+#  ", pass the grog!",
+#  ", and dinna spare the whip!",
+#  ", with a chest full of booty$stub",
+#  ", and a bucket o' chum$stub",
+#  ", we'll keel-haul ye!",
+#  "$stub Shiver me timbers!",
+#  "$stub And hoist the mainsail!",
+#  "$stub And swab the deck!",
+#  ", ye scurvey dog$stub",
+#  "$stub Fire the cannons!",
+#  ", to be sure$stub",
+#  ", I'll warrant ye$stub",
+#  ", on a dead man's chest!",
+#  "$stub Load the cannons!",
+#  "$stub Prepare to be boarded!",
+#  ", I'll warrant ye$stub",
+#  "$stub Ye'll be sleepin' with the fishes!",
+#  "$stub The sharks will eat well tonight!",
+#  "$stub Oho!",
+#  "$stub Fetch me spyglass!",
+# );
 
 # Randomize use of this array both in order and frequency of use.
 # Not currently used at all.
@@ -497,29 +497,60 @@ my @openings = (
   'Arrrr! '
 );
 
-# Change the "Id:" RCS tag to show that we translated the file.
-if (m/^#.*\$Id:/) {
-    print "# language-PirateEnglish.sys, translated from language-English.sys\n";
-    print "# Please do not edit this derived file.\n";
+
+# Check whether we're translating an Xastir language file or plain
+# text:
+#   "-split" present:  Translate the 2nd piece of each line.
+#   "-split" absent:   Translate the entire text.
+my $a;
+if ($#ARGV < 0) { $a = ""; }
+else            { $a = shift; }
+$do_split = 0;
+if (length($a) > 0 && $a =~ m/-split/) {
+  $do_split = 1;
+}
+
+while ( <> ) {
+
+  # Change the "Id:" RCS tag to show that we translated the file.
+  if (m/^#.*\$Id:/) {
+      print "# language-PirateEnglish.sys, translated from language-English.sys\n";
+      print "# Please do not edit this derived file.\n";
+      next;
+  }
+  # Skip other comment lines
+  if (m/^#/) {
     next;
+  }
+
+  if ($do_split) {
+    # Split each incoming line by the '|' character
+    @pieces = split /\|/;
+  }
+
+  foreach my $test (@regexs) {
+
+      @reg_parts = split /\:/, $test;
+
+      if ($do_split) {
+        # Translate the second portion of each line only
+        $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/g;
+      }
+      else {
+        # Translate the entire line of text
+        s/$reg_parts[0]/$reg_parts[1]/g;
+      }
+  }
+
+  # Add an opening phrase to each line randomly?
+
+  if ($do_split) {
+    # Combine the line again for output to STDOUT
+    print join '|', @pieces;
+  }
+  else {
+    print;
+  }
 }
-# Skip other comment lines
-if (m/^#/) { next; }
-
-# Split each incoming line by the '|' character
-@pieces = split /\|/;
-
-foreach my $test (@regexs) {
-
-    @reg_parts = split /\:/, $test;
-
-    # Modify the second portion of each line only
-    $pieces[1] =~ s/$reg_parts[0]/$reg_parts[1]/;
-}
-
-# Add an opening phrase to each line randomly?
-
-# Combine the line again for output to STDOUT
-print join '|', @pieces;
 
 
