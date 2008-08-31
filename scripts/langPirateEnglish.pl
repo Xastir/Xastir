@@ -95,10 +95,12 @@ my @regexs = (
   "\\bsnapshot:etching",
 #  "\\bObject:",
 #  "\\bobject:",
-#  "\\Item:",
-#  "\\item:",
-  "\\Interface:Grapple",
-  "\\interface:grapple",
+#  "\\bItem:",
+#  "\\bitem:",
+  "\\bInterface:Grapple",
+  "\\binterface:grapple",
+  "\\bConfigure:Provision me' ship",
+  "\\bconfigure:provision me' ship",
 
   # From userscripts:
   "About:\'bout",
