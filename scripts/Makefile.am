@@ -15,6 +15,11 @@ pkglib_SCRIPTS = \
     icontable.pl \
     inf2geo.pl \
     kiss-off.pl \
+    langElmerFudd.pl \
+    langMuppetsChef.pl \
+    langOldeEnglish.pl \
+    langPigLatin.pl \
+    langPirateEnglish.pl \
     mapblast2geo.pl \
     mapfgd.pl \
     object2shp.pl \
@@ -35,7 +40,5 @@ pkglib_SCRIPTS = \
 
 
 EXTRA_DIST = $(pkglib_SCRIPTS)
-
-
 
 

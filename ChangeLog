@@ -1,3 +1,178 @@
+2008-09-03 08:46  gstueve
+
+	* config/.cvsignore: Get CVS to forget about the generated language
+	  files.
+
+2008-09-03 08:43  gstueve
+
+	* src/main.c: Get valgrind to stop complaining about the lost
+	  blocks in the app_context.
+
+2008-09-03 06:06  we7u
+
+	* scripts/langPirateEnglish.pl: Translating "Maps" as well as
+	  "Map".
+
+2008-08-31 16:45  we7u
+
+	* scripts/langMuppetsChef.pl: Enabling more of the regex.  Much
+	  better "translation".
+
+2008-08-31 16:27  we7u
+
+	* scripts/: langElmerFudd.pl, langMuppetsChef.pl, langPigLatin.pl,
+	  langPirateEnglish.pl: More updates to the derived language
+	  scripts.
+
+2008-08-31 15:31  we7u
+
+	* scripts/langOldeEnglish.pl: Rewriting the script so that
+	  anchoring & substitutions work in the regex.
+
+2008-08-31 13:52  we7u
+
+	* bootstrap.sh, scripts/langElmerFudd.pl,
+	  scripts/langMuppetsChef.pl, scripts/langOldeEnglish.pl,
+	  scripts/langPigLatin.pl, scripts/langPirateEnglish.pl: Updates to
+	  derived languages scripts, preparing for possible future uses.
+
+2008-08-31 09:26  we7u
+
+	* scripts/langPirateEnglish.pl: More for TLAPD.
+
+2008-08-30 18:56  we7u
+
+	* scripts/langPirateEnglish.pl: More Pirate updates.
+
+2008-08-30 18:14  we7u
+
+	* scripts/langPirateEnglish.pl: Latest Pirate updates.
+
+2008-08-30 17:31  we7u
+
+	* scripts/langPirateEnglish.pl: Added a few more Xastir-specific
+	  translations.
+
+2008-08-30 16:30  we7u
+
+	* INSTALL, README.Getting-Started, README.win32, bootstrap.sh,
+	  config/Makefile.am, help/help-English.dat, help/help-German.dat,
+	  help/help-Italian.dat, help/help-Portuguese.dat,
+	  help/help-Spanish.dat, src/main.c: Adding five new official
+	  languages to the "-l" flag in Xastir.
+
+2008-08-30 16:28  we7u
+
+	* scripts/: langElmerFudd.pl, langMuppetsChef.pl,
+	  langOldeEnglish.pl, langPirateEnglish.pl: Adding more official
+	  languages.
+
+2008-08-29 22:21  we7u
+
+	* scripts/langPigLatin.pl: Changing a comment to avoid the RCS tag
+	  substitution as well.
+
+2008-08-29 22:19  we7u
+
+	* scripts/langPigLatin.pl: Changed the match string so that RCS/CVS
+	  won't substitute a new Id: string in our REGEX expression.
+
+2008-08-29 22:12  we7u
+
+	* scripts/langPigLatin.pl: Renamed from PigLatin.pl
+
+2008-08-29 22:11  we7u
+
+	* scripts/PigLatin.pl: Moving this file to langPigLatin.pl
+
+2008-08-28 08:14  gstueve
+
+	* scripts/: get-maptools.sh, get_shapelib.sh: Use available
+	  resources to make use of temporary file as safe as possible.
+
+2008-08-28 07:24  gstueve
+
+	* scripts/get_shapelib.sh: Use same library logic as
+	  get-maptools.sh and clear temporary file for our use.
+
+2008-08-28 07:22  gstueve
+
+	* scripts/get-maptools.sh: Make sure to get temporary file out of
+	  way so we don't copy into something outside our expectation.
+
+2008-08-27 06:25  tvrusso
+
+	* acinclude.m4: Introduce proper quoting of AC_CACHE_CHECK
+	  arguments in XASTIR_GUESS_RUNPATH_SWITCH macro.
+
+2008-08-27 06:23  tvrusso
+
+	* acinclude.m4: Fix the XASTIR_GUESS_RUNPATH_SWITCH macro so that
+	  it uses AC_CACHE_CHECK with a CACHE-ID that conforms to the
+	  naming conventions expected.
+
+	  In versions of autoconf 2.62 and later, using a CACHE-ID without
+	  the "_cv_" string included in its name produces an annoying and
+	  possibly confusing warning message:
+
+	   configure.ac:572: warning: AC_CACHE_VAL(xastir_runpath_switch,
+	  ...): suspicious cache-id, must contain _cv_ to be cached
+	   ../../lib/autoconf/general.m4:1973: AC_CACHE_VAL is expanded
+	  from...
+	   ../../lib/autoconf/general.m4:1993: AC_CACHE_CHECK is expanded
+	  from...
+	   acinclude.m4:1131: XASTIR_GUESS_RUNPATH_SWITCH is expanded
+	  from...
+	   acinclude.m4:1120: XASTIR_ADD_LIBPATH_TO is expanded from...
+	   acinclude.m4:964: XASTIR_BERKELEY_DB_CHK_LIB is expanded from...
+	   ../../lib/m4sugar/m4sh.m4:508: AS_IF is expanded from...
+	   ../../lib/autoconf/general.m4:2461: AC_COMPILE_IFELSE is
+	  expanded from...
+	   ../../lib/autoconf/general.m4:2469: AC_TRY_COMPILE is expanded
+	  from...
+	   acinclude.m4:1059: XASTIR_BERKELEY_DB_CHK is expanded from...
+	   configure.ac:572: the top level
+
+	  several times during bootstrap.  By renaming
+	  "xastir_runpath_switch" to "xastir_cv_runpath_switch" throughout
+	  acinclude.m4, this warning is silenced and the variable is cached
+	  as intended.
+
+	  According to the autoconf documentation, cache variables *MUST*
+	  have the "_cv_" string in their names.  It is only in recent
+	  versions of autoconf that violating this requirement is actually
+	  flagged as a warning.
+
+2008-08-25 08:19  gstueve
+
+	* src/testawk.c: Add prefix to indicate that we are printing
+	  hexadecimal value.
+
+2008-08-21 09:50  gstueve
+
+	* src/bulletin_gui.c: Make sure everything is allocated for
+	  bulletins before use.
+
+2008-08-21 09:48  gstueve
+
+	* src/dbfawk.c: Release memory & directory after we finish with
+	  them.
+
+2008-08-18 19:02  gstueve
+
+	* scripts/get-fcc-rac.pl: No need to extract unsorted file to disk.
+	  Process directly into script.
+
+2008-08-15 13:24  we7u
+
+	* configure.ac, scripts/BUILDRPMS: Setting up for 1.9.5 development
+	  versions.
+
+2008-08-15 12:51  we7u
+
+	* ChangeLog: Updating ChangeLog to match latest changes (for
+	  upcoming stable release).
+
 2008-08-15 12:50  we7u
 
 	* configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
