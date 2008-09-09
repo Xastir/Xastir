@@ -15421,6 +15421,7 @@ void check_for_new_gps_map(int curr_sec) {
             // Rename the temporary file to the new filename.  We must
             // do this three times, once for each piece of the Shapefile
             // map.
+#if defined(HAVE_MV)
             xastir_snprintf(temp,
                 sizeof(temp),
                 "%s %s/%s %s/%s",
@@ -15471,6 +15472,8 @@ void check_for_new_gps_map(int curr_sec) {
                 gps_details_selected = 0;
                 return;
             }
+#endif  // HAVE_MV
+
 
             // Write out a WKT in a .prj file to go with this shapefile.
             xastir_snprintf(temp,

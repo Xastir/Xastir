@@ -482,6 +482,7 @@ static void* findu_transfer_thread(void *arg) {
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);
 
+#if defined(HAVE_SED)
     // Add three spaces before each "<br>" and axe the "<br>".  This
     // is so that Base-91 compressed packets with no comment and no
     // speed/course/altitude will get decoded ok.  Otherwise the
@@ -553,7 +554,7 @@ static void* findu_transfer_thread(void *arg) {
         SED_PATH,
         log_filename);
     system(sys_cmd);
-
+#endif  // HAVE_SED
 
 /*
 #ifdef HAVE_HTML2TEXT
@@ -572,12 +573,14 @@ static void* findu_transfer_thread(void *arg) {
     // Rename the file so that we can keep the static char* name
     // pointing to it, needed for the read_file_ptr code in the main
     // thread.
+#if defined(HAVE_MV)
     sprintf(sys_cmd,
         "%s %s %s",
         MV_PATH,
         log_filename_tmp,
         log_filename);
     system(sys_cmd);
+#endif  // HAVE_MV
 #endif  // HAVE_HTML2TEXT
 */
 
