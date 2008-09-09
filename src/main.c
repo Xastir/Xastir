@@ -4580,9 +4580,11 @@ void Query_xfontsel_pipe (void) {
 
  
 void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
+
+#if defined(HAVE_XFONTSEL)
+ 
     int fontsize = XTPOINTER_TO_INT(clientData);
     char xfontsel[50];
-
 
     /* invoke xfontsel -print and stick into map_font_text */
     sprintf(xfontsel,
@@ -4599,6 +4601,7 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
     } else {
         perror("xfontsel");
     }
+#endif  // HAVE_XFONTSEL
 }
 
 
