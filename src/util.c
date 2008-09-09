@@ -5097,7 +5097,7 @@ struct FtpFile {
 
 
 
-int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
+size_t curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
   struct FtpFile *out = (struct FtpFile *)stream;
   if (out && !out->stream) {
     out->stream=fopen(out->filename, "wb");
