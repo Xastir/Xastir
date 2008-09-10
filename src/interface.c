@@ -1503,6 +1503,10 @@ void channel_data(int port, unsigned char *string, volatile int length) {
         // routine initiates an unlock before the thread dies.  We
         // must be in deferred cancellation mode for the thread to
         // have this work properly.
+//
+// NOTE: Ignore the four \"suggest braces\" warnings you see when
+//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+//
         pthread_cleanup_pop(0);
 
  
@@ -1532,6 +1536,10 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     // initiates an unlock before the thread dies.  We must be in
     // deferred cancellation mode for the thread to have this work
     // properly.
+//
+// NOTE: Ignore the four \"suggest braces\" warnings you see when
+//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+//
     pthread_cleanup_pop(0);
 }
 
@@ -4980,6 +4988,10 @@ static void* net_connect_thread(void *arg) {
     // initiates an unlock before the thread dies.  We must be in
     // deferred cancellation mode for the thread to have this work
     // properly.
+//
+// NOTE: Ignore the four \"suggest braces\" warnings you see when
+//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+//
     pthread_cleanup_pop(0);
  
 
@@ -6713,6 +6725,10 @@ void port_write(int port) {
             // cleanup routine initiates an unlock before the thread
             // dies.  We must be in deferred cancellation mode for
             // the thread to have this work properly.
+//
+// NOTE: Ignore the four \"suggest braces\" warnings you see when
+//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+//
             pthread_cleanup_pop(0);
  
         }
