@@ -5423,6 +5423,31 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 
 
+/* 
+ * Track from Station_data
+ *
+ * Called by Station_data function below from the Track Station
+ * button in Station Info.
+ */
+void Track_from_Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
+    DataRow *p_station = clientData;
+ 
+    if (p_station->call_sign[0] != '\0') {
+        xastir_snprintf(tracking_station_call,
+            sizeof(tracking_station_call),
+            "%s",
+            p_station->call_sign);
+        track_station_on = 1;
+    }
+    else {
+        tracking_station_call[0] = '\0';
+    }
+}
+
+
+
+
+
 /*
  *  List station info and trail
  *  If calldata is non-NULL, then we drop straight through to the
@@ -5450,7 +5475,8 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
         button_trace, button_messages, button_object_modify,
         button_direct, button_version, station_icon, station_call,
         station_type, station_data_auto_update_w,
-        button_tactical, button_change_trail_color;
+        button_tactical, button_change_trail_color,
+        button_track_station;
     Arg args[50];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
@@ -5864,6 +5890,24 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Station_data_destroy_shell, db_station_info);
 
+        button_track_station = XtVaCreateManagedWidget(langcode("UNIOP00999"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_store_track,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 0,
+                            XmNleftOffset,5,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 1,
+//                            XmNrightOffset, 5,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
+                            NULL);
+        XtAddCallback(button_track_station, XmNactivateCallback,Track_from_Station_data, (XtPointer)p_station);
+
+ 
 
 // Now build from the top of the dialog to the buttons.
 
@@ -6006,7 +6050,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XtSetArg(args[n], XmNtopWidget, station_icon); n++;
         XtSetArg(args[n], XmNtopOffset, 5); n++;
         XtSetArg(args[n], XmNbottomAttachment, XmATTACH_WIDGET); n++;
-        XtSetArg(args[n], XmNbottomWidget, button_store_track); n++;
+//        XtSetArg(args[n], XmNbottomWidget, button_store_track); n++;
+        XtSetArg(args[n], XmNbottomWidget, button_track_station); n++;
         XtSetArg(args[n], XmNbottomOffset, 1); n++;
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
