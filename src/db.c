@@ -5890,7 +5890,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Station_data_destroy_shell, db_station_info);
 
-        button_track_station = XtVaCreateManagedWidget(langcode("UNIOP00999"),xmPushButtonGadgetClass, form,
+        button_track_station = XtVaCreateManagedWidget(langcode("WPUPTSP001"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_WIDGET,
                             XmNbottomWidget, button_store_track,
