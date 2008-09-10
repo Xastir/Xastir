@@ -161,7 +161,7 @@ AC_DEFUN([XASTIR_DETECT_BINARIES],
 [
 BINPATH=$PATH
 
-for d in / /usr /usr/local /usr/X11 /usr/X11R6 /usr/sfw /opt/sfw /sw; do
+for d in / /usr /usr/local /usr/X11 /usr/X11R6 /usr/sfw /opt/sfw /opt/local /sw; do
 test -d $d/bin && echo $BINPATH | grep -- $d/bin > /dev/null || BINPATH="$BINPATH:$d/bin"
 done
 
@@ -550,9 +550,9 @@ if test "${use_graphicsmagick}" = "yes"; then
   #
   # Figure out the build options using the GraphicsMagick-config script
   #
-  CPPFLAGS="$CPPFLAGS `${GMAGIC_BIN} --cppflags`" 
-  CXXFLAGS="$CXXFLAGS `${GMAGIC_BIN} --cflags`" 
-  LDFLAGS="$LDFLAGS `${GMAGIC_BIN} --ldflags`" 
+  CPPFLAGS="`${GMAGIC_BIN} --cppflags` $CPPFLAGS" 
+  CXXFLAGS="`${GMAGIC_BIN} --cflags` $CXXFLAGS" 
+  LDFLAGS="`${GMAGIC_BIN} --ldflags` $LDFLAGS" 
   LIBS="${MAGIC_LIB_DIR} `${GMAGIC_BIN} --libs` $LIBS" 
   # 
   AC_CHECK_HEADER(GraphicsMagick/magick/api.h, use_graphicsmagick="yes", use_graphicsmagick="no")
