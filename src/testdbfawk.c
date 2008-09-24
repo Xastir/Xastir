@@ -110,7 +110,7 @@ awk_rule rules[] = {
 int nrules = sizeof(rules)/sizeof(rules[0]);
 
 void usage(void) {
-  fprintf(stderr,"Usage: testawk [-f file.awk| -D dir] -d file.dbf\n");
+  fprintf(stderr,"Usage: testdbfawk [-f file.awk| -D dir] -d file.dbf\n");
   fprintf(stderr," -D for dir containing *.dbfawk files.\n");
   fprintf(stderr," or -f for file containing awk rules.\n");
   fprintf(stderr," -d for dbf file to parse \n");

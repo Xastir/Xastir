@@ -3,8 +3,7 @@
 # Copyright (C) 2000-2008  The Xastir Group
 #
 
-bin_PROGRAMS = xastir xastir_udp_client
-noinst_PROGRAMS = testawk
+bin_PROGRAMS = xastir xastir_udp_client testdbfawk
 
 SUBDIRS = @SUBRTREE@ @SUBSHP@
 DIST_SUBDIRS = rtree shapelib
@@ -76,8 +75,8 @@ xastir_SOURCES = $(XASTIR_SRC) compiledate.c
 xastir_udp_client_SOURCES = \
     xastir_udp_client.c
 
-testawk_SOURCES = \
-    testawk.c \
+testdbfawk_SOURCES = \
+    testdbfawk.c \
     awk.c \
     dbfawk.c \
     rpl_malloc.c rpl_malloc.h
@@ -91,10 +90,10 @@ remove_compiledate:
 
 xastir_LDADD=@LIBRTREE@ @LIBSHP@
 
-testawk_LDADD=@LIBSHP@
+testdbfawk_LDADD=@LIBSHP@
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 xastir_udp_client_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
-testawk_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+testdbfawk_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@

@@ -134,7 +134,7 @@ find . -type f -name Makefile -print | while read i
 (make 2>&1) | tee make.log
 strip src/xastir
 strip src/xastir_udp_client
-strip src/testawk
+strip src/testdbfawk
 strip callpass/callpass
 
 # Get rid of the LSB-Xastir install files so that we get a clean

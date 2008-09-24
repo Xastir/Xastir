@@ -586,28 +586,28 @@ Getting Maps and other Data Files for Xastir:
       file by setting debug level 16 in Xastir (this will generate a huge
       amount of map rendering debug output, including dbfawk info):
        "./xastir -v 16 2>/tmp/log"
-      Or, use "testawk" which reads a .dbf file (or single field assignments
+      Or, use "testdbfawk" which reads a .dbf file (or single field assignments
       on the command line).  For example:
-	./testawk -D . -d tgr36119lkA.dbf 2>&1|less
+	testdbfawk -D . -d tgr36119lkA.dbf 2>&1|less
 	20 Columns,  42427 Records in file
 	sig: TLID:FNODE:TNODE:LENGTH:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC:FRADDL:TOADDL:FRADDR:TOADDR:ZIPL:ZIPR:CENSUS1:CENSUS2:CFCC1:CFCC2:SOURCE
 	DBF Signatures match!
 	name=Hancock Ave, key=80309984, symbol=, color=40, lanes=1, filled=0, pattern=1,display_level=96,label_level=16
 
-      testawk takes the following command line syntax:
-        testawk --help
+      testdbfawk takes the following command line syntax:
+        testdbfawk --help
           Prints command line usage
-        testawk -D directory -d file.dbf
+        testdbfawk -D directory -d file.dbf
           Scans directory for dbfawk files with signatures matching file.dbf,
           runs the dbfawk program that matches if it's found.
-        testawk -f file.dbfawk -d file.dbf
+        testdbfawk -f file.dbfawk -d file.dbf
           runs the dbfawk file "file.dbfawk" over the dbf file "file.dbf"
 
-      So in the example above, testawk (which is assumed to be in the current
-      working directory) scans the current directory for dbfawk files with
-      signatures that match tgr36119lkA.dbf's signature.  testawk dumps 
-      its output to standard error, so in the example standard error is 
-      redirected to standard out and piped into "less" for paging.
+      So in the example above, testdbfawk scans the current directory
+      for dbfawk files with signatures that match tgr36119lkA.dbf's
+      signature.  testdbfawk dumps its output to standard error, so in
+      the example standard error is redirected to standard out and
+      piped into "less" for paging.
 
       To create a .dbfawk file, you need to understand the layout and contents
       of your .dbf file.  Use "dbfinfo" and "dbfdump" which are in the shapelib
