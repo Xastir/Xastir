@@ -898,6 +898,7 @@ void draw_tiger_map (Widget w,
                 (unsigned int)screen_height,
                 0,
                 0);
+            DestroyExceptionInfo(&exception);
             return;
         }
 
