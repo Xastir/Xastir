@@ -1,7 +1,7 @@
 Makefile.in
 Makefile
 .deps
-testawk
+testdbfawk
 xastir
 xastir_udp_client
 compiledate.c
