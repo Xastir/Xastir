@@ -196,6 +196,7 @@ typedef struct _pipe_object {
     int to_parent[2];
     char callsign[20];
     int authenticated;
+    int active;		// Mark for deletion after every task is finished
     struct _pipe_object *next;
 } pipe_object;
 
@@ -505,10 +506,9 @@ int pipe_check(char *client_address) {
         // Read data from pipe, write to all pipes except the one
         // who sent it.
         //
-        n = readline(p->to_parent[0], line, MAXLINE);
-        if (n == 0) {
+        n = p->active ? readline(p->to_parent[0], line, MAXLINE): 0;
+        if (n == 0 && p->active) {
             char timestring[101];
-            pipe_object *q = pipe_head;
 
             get_timestamp(timestring);
 
@@ -530,21 +530,7 @@ int pipe_check(char *client_address) {
             close(p->to_child[1]);
             close(p->to_parent[0]);
 
-            // Unlink this record from our list
-            if (q == p) {   // Beginning of list?
-                pipe_head = q->next;
-            }
-            else {
-                while (q->next != p && q != NULL)
-                    q = q->next;    
-                if (q != NULL)
-                    q->next = p->next;
-            }
-            free(p);    // Free the malloc'd memory.
-
-// Commented out the below line 'cuz it made the server ports die on
-// client disconnect.
-//            p = NULL;
+            p->active = 0;	// This task is ready to let go.
 
             wait(NULL); // Reap the status of the dead process
         }
@@ -558,7 +544,7 @@ int pipe_check(char *client_address) {
                 fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
             }
         }
-        else {  // We received some data.  Send it down all of the
+        else if (p->active) {  // We received some data.  Send it down all of the
                 // pipes except the one that sent it.
 
             pipe_object *q;
@@ -684,7 +670,8 @@ int pipe_check(char *client_address) {
             while (q != NULL) {
 //                fprintf(stderr,"pipe_check: %s\n",line);
 
-                if (q != p) {
+                // Only send to active pipes
+                if (q != p && q->active) {
                     if (writen(q->to_child[1], line, n) != n) {
                         fprintf(stderr,"pipe_check: Writen error1: %d\n",errno);
                     }
@@ -725,7 +712,7 @@ int pipe_check(char *client_address) {
             }
         }
 
-        p = p->next;
+        if (p) p = p->next;
     }
 
 
@@ -753,11 +740,20 @@ int pipe_check(char *client_address) {
 // Also send it down the socket.
         pipe_object *q = pipe_head;
 
+        if (q) for (p = pipe_head->next; p != NULL; p = p->next) {
+            if (!p->active) { // Marked for deletion.
+		q->next = p->next; // Keep pointer to next connection.
+		free(p);
+		p = q; // Establish pointer back to referenced connection.
+	    }
+	    q = p; // Save pointer to previous item in queue
+	}
+	q = pipe_head; // Reset pointer to beginning of list
 
-//fprintf(stderr,"n:%d\n",n);
-// Terminate it
-line[n] = '\0';
-//fprintf(stderr,"sp %s\n", line);
+        //fprintf(stderr,"n:%d\n",n);
+        // Terminate it
+        line[n] = '\0';
+        //fprintf(stderr,"sp %s\n", line);
  
         // The internet protocol for sending lines is "\r\n".  Knock
         // off any line-end characters that might be present, then
@@ -775,7 +771,7 @@ line[n] = '\0';
         strncat(line, "\r\n", 2);
         n += 2;
 
-        while (q != NULL) {
+        while (q != NULL && q->active) {
 //          fprintf(stderr,"pipe_check: %s\n",line);
 
             if (writen(q->to_child[1], line, n) != n) {
@@ -811,9 +807,30 @@ extern char *__progname, *__progname_full;
 #endif  // __LSB__
 #endif  // __linux__
 static char *LastArgv = ((void *)0);
-extern char **environ;
+static char **local_environ;
+static char *old_progname, *old_progname_full;
 
 
+
+void clear_proc_title(void)
+{
+  int i;
+  for(i = 0; local_environ && local_environ[i] != NULL; i++) {
+    free(local_environ[i]);
+  }
+  if (local_environ) {
+    free(local_environ);
+    local_environ = NULL;
+  }
+#ifdef __linux__
+#ifndef __LSB__
+  free(__progname);
+  free(__progname_full);
+  __progname = old_progname;
+  __progname_full = old_progname_full;
+#endif  // __LSB__
+#endif  // __linux__
+}
 
 void init_set_proc_title(int argc, char *argv[], char *envp[]) {
     int i, envpsize;
@@ -823,44 +840,36 @@ void init_set_proc_title(int argc, char *argv[], char *envp[]) {
         envpsize += strlen(envp[i]) + 1;
   
     if((p = (char **) malloc((i + 1) * sizeof(char *))) != NULL ) {
-        environ = p;
+        local_environ = p;
 
     for(i = 0; envp[i] != NULL; i++) {
-        if((environ[i] = malloc(strlen(envp[i]) + 1)) != NULL)
-            xastir_snprintf(environ[i],
-                sizeof(environ[i]),
+        if((local_environ[i] = malloc(strlen(envp[i]) + 1)) != NULL)
+            xastir_snprintf(local_environ[i],
+                strlen(envp[i])+1,
                 "%s",
                 envp[i]);
         }
-    
-        environ[i] = NULL;
     }
+    local_environ[i] = NULL;
 
     Argv = argv;
   
-    for(i = 0; envp[i] != NULL; i++) {
-        if((LastArgv + 1) == envp[i]) // Not sure if this conditional is needed
+    for(i = 0; argv[i] != NULL; i++) {
+        if((LastArgv + 1) == argv[i]) // Not sure if this conditional is needed
         LastArgv = envp[i] + strlen(envp[i]);
     }
 #ifdef __linux__
 #ifndef __LSB__
     // Pretty sure you don't need this either
+    old_progname = __progname;
+    old_progname_full = __progname_full;
     __progname = strdup("xastir");
     __progname_full = strdup(argv[0]);
 #endif  // __LSB__
 #endif  // __linux__
+    atexit(clear_proc_title);
 }
 
-
-void clear_proc_title(void)
-{
-  int i;
-  for(i = 0; environ[i] != NULL; i++) {
-    free(environ[i]);
-  }
-  free(environ);
-  environ = NULL;
-}
 
 void set_proc_title(char *fmt,...) {
     va_list msg;
@@ -885,7 +894,6 @@ void set_proc_title(char *fmt,...) {
     while(p < LastArgv)
         *p++ = '\0';
     Argv[1] = ((void *)0) ;
-    atexit(clear_proc_title);
 }
 
 
@@ -1054,18 +1062,23 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             timestring,
             inet_ntoa(cli_addr.sin_addr));
  
-        // Link it into the head of the chain.
-        //
-        p->next = pipe_head;
-        pipe_head = p;
-
         if (pipe(p->to_child) < 0 || pipe(p->to_parent) < 0) {
             fprintf(stderr,"x_spider: Can't create pipes\n");
+            if (p->to_child[1]) close(p->to_child[1]);
+            if (p->to_child[0]) close(p->to_child[0]);
             free(p);    // Free the malloc'd memory.
             p = NULL;
             close(newsockfd);
             goto finis;
         }
+
+        // Indicate active connection!
+        p->active = 1;
+
+        // Link it into the head of the chain.
+        //
+        p->next = pipe_head;
+        pipe_head = p;
 
         flag = 1;
 
@@ -1086,6 +1099,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             close(p->to_child[1]);
             close(p->to_parent[0]);
             close(p->to_parent[1]);
+            pipe_head = p->next;
             free(p);    // Free the malloc'd memory.
             p = NULL;
             close(newsockfd);
@@ -1526,7 +1540,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
 //            fprintf(stderr,"Starting TCP_Server...\n");
 
             TCP_Server(argc, argv, envp);
- 
+
 //            fprintf(stderr,"TCP_Server process died.\n");
 //        }
     }
@@ -1645,7 +1659,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
 //            fprintf(stderr,"Starting UDP_Server...\n");
 
 	UDP_Server(argc, argv, envp);
- 
+
 	fprintf(stderr,"UDP_Server process died.\n");
 //        }
     }
