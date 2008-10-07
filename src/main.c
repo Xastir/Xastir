@@ -3663,7 +3663,7 @@ void redraw_symbols(Widget w) {
 
 
 static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *event, /*@unused@*/ Boolean *flag) {
-    char my_text[50];
+    char my_text[70];
     char str_lat[20];
     char str_long[20];
     long x, y;
@@ -3732,11 +3732,11 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 
     strncat(my_text,
         "  ",
-        sizeof(my_text) - strlen(my_text));
+        sizeof(my_text) - strlen(my_text) - 1);
 
     strncat(my_text,
         sec_to_loc(x,y),
-        sizeof(my_text) - strlen(my_text));
+        sizeof(my_text) - strlen(my_text) - 1);
 
     // begin dist/bearing
     if ( do_dbstatus ) {
@@ -3785,19 +3785,19 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 
         strncat(my_text,
             " ",
-            sizeof(my_text) - strlen(my_text));
+            sizeof(my_text) - strlen(my_text) - 1);
 
         strncat(my_text,
             temp_my_distance,
-            sizeof(my_text) - strlen(my_text));
+            sizeof(my_text) - strlen(my_text) - 1);
 
         strncat(my_text,
             " ",
-            sizeof(my_text) - strlen(my_text));
+            sizeof(my_text) - strlen(my_text) - 1);
 
         strncat(my_text,
             temp_my_course,
-            sizeof(my_text) - strlen(my_text));
+            sizeof(my_text) - strlen(my_text) - 1);
     }
 
     XmTextFieldSetString(textarea, my_text);
