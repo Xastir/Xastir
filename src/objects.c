@@ -7169,7 +7169,7 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     if ((int)'-'==(int)*(call+(strlen(call)-1))) {
         // make sure that we don't write past the end of call
         if (strlen(call)<MAX_CALLSIGN) {
-            strcat(call,"1");
+            strncat(call,"1",1);
         }
     }
     // Check object names against our station database until we find
