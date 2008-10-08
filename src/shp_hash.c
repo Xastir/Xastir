@@ -236,9 +236,9 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
     temp->filename = (char *) malloc(sizeof(char)*(filenm_len+1));
     CHECKMALLOC(temp->filename);
 
-    //strncpy(temp->filename,filename,filenm_len+1);
-    //temp->filename[filenm_len]='\0';  // just to be safe
-    xastir_snprintf(temp->filename,sizeof(shpinfo),"%s",filename);
+    strncpy(temp->filename,filename,filenm_len+1);
+    temp->filename[filenm_len]='\0';  // just to be safe
+//    xastir_snprintf(temp->filename,sizeof(shpinfo),"%s",filename);
 
     temp->root = Xastir_RTreeNewIndex();  
     temp->creation = sec_now();
