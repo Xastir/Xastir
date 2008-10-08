@@ -8234,7 +8234,7 @@ void fill_in_new_alert_entries() {
         dir);
     strncat(alert_scan, // Complete alert directory is now set up in the string
         "/",
-        sizeof(alert_scan) - strlen(alert_scan));
+        sizeof(alert_scan) - 1 - strlen(alert_scan));
     dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
     // Iterate through the weather alerts.  It looks like we wish to

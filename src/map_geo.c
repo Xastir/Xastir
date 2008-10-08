@@ -721,7 +721,7 @@ void draw_geo_image_map (Widget w,
                     if (strlen(temp) < (MAX_FILENAME - 1 - strlen(fileimg)))
                         strncat(temp,
                             fileimg,
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
                     xastir_snprintf(fileimg,sizeof(fileimg),"%s",temp);
                 }
             }

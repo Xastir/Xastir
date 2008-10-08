@@ -415,80 +415,80 @@ void draw_tiger_map (Widget w,
     xastir_snprintf(tigertmp, sizeof(tigertmp), "http://tiger.census.gov/cgi-bin/mapper/map.gif?");
 
     if (tiger_show_grid)
-        strncat(tigertmp, "&on=GRID", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=GRID", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=GRID", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=GRID", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_counties)
-        strncat(tigertmp, "&on=counties", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=counties", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=counties", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=counties", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_cities)
-        strncat(tigertmp, "&on=CITIES", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=CITIES", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=CITIES", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=CITIES", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_places)
-        strncat(tigertmp, "&on=places", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=places", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=places", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=places", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_majroads)
-        strncat(tigertmp, "&on=majroads", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=majroads", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=majroads", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=majroads", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_streets)
-        strncat(tigertmp, "&on=streets", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=streets", sizeof(tigertmp) - 1 - strlen(tigertmp));
     // Don't turn streets off since this will automagically show up as you zoom in.
 
     if (tiger_show_railroad)
-        strncat(tigertmp, "&on=railroad", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=railroad", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=railroad", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=railroad", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_states)
-        strncat(tigertmp, "&on=states", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=states", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=states", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=states", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_interstate)
-        strncat(tigertmp, "&on=interstate", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=interstate", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=interstate", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=interstate", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_ushwy)
-        strncat(tigertmp, "&on=ushwy", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=ushwy", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=ushwy", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=ushwy", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_statehwy)
-        strncat(tigertmp, "&on=statehwy", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=statehwy", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=statehwy", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=statehwy", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_water)
-        strncat(tigertmp, "&on=water", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=water", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=water", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=water", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_lakes)
-        strncat(tigertmp, "&on=shorelin", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=shorelin", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=shorelin", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=shorelin", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     if (tiger_show_misc)
-        strncat(tigertmp, "&on=miscell", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&on=miscell", sizeof(tigertmp) - 1 - strlen(tigertmp));
     else
-        strncat(tigertmp, "&off=miscell", sizeof(tigertmp) - strlen(tigertmp));
+        strncat(tigertmp, "&off=miscell", sizeof(tigertmp) - 1 - strlen(tigertmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);    
-    strncat (tigertmp, tmpstr, sizeof(tigertmp) - strlen(tigertmp));
+    strncat (tigertmp, tmpstr, sizeof(tigertmp) - 1 - strlen(tigertmp));
     xastir_snprintf(tmpstr, sizeof(tmpstr), "wid=%f\046ht=%f\046", map_width, map_height);
-    strncat (tigertmp, tmpstr, sizeof(tigertmp) - strlen(tigertmp));
+    strncat (tigertmp, tmpstr, sizeof(tigertmp) - 1 - strlen(tigertmp));
     xastir_snprintf(tmpstr, sizeof(tmpstr), "iwd=%i\046iht=%i", tp[1].img_x + 1, tp[1].img_y + 1);
-    strncat (tigertmp, tmpstr, sizeof(tigertmp) - strlen(tigertmp));
+    strncat (tigertmp, tmpstr, sizeof(tigertmp) - 1 - strlen(tigertmp));
     xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
 
     if (debug_level & 512) {

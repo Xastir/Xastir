@@ -350,8 +350,8 @@ void draw_WMS_map (Widget w,
 
 
     xastir_snprintf(WMStmp, sizeof(WMStmp), URL);
-    strncat(WMStmp, "&REQUEST=getmap", sizeof(WMStmp) - strlen(WMStmp));
-    strncat(WMStmp, "&EXCEPTIONS=INIMAGE", sizeof(WMStmp) - strlen(WMStmp));
+    strncat(WMStmp, "&REQUEST=getmap", sizeof(WMStmp) - 1 - strlen(WMStmp));
+    strncat(WMStmp, "&EXCEPTIONS=INIMAGE", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
 // This specifies a bounding box based on square pixels.
     xastir_snprintf(tmpstr, sizeof(tmpstr),
@@ -360,23 +360,23 @@ void draw_WMS_map (Widget w,
         bottom, // Lower left
         right,  // Upper right
         top);   // Upper right
-    strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+    strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&HEIGHT=%d", geo_image_height);
-    strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+    strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&WIDTH=%d", geo_image_width);    
-    strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+    strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp));
 
 
 // These should be specified in the .geo file instead of hard-coded:
 //
-//    strncat(WMStmp, "&VERSION=1.0.0", sizeof(WMStmp) - strlen(WMStmp));
-//    strncat(WMStmp, "&FORMAT=image/png", sizeof(WMStmp) - strlen(WMStmp));
-//    strncat(WMStmp, "&TRANSPARENT=TRUE", sizeof(WMStmp) - strlen(WMStmp));
-//    strncat(WMStmp, "&BGCOLOR=0xffffff", sizeof(WMStmp) - strlen(WMStmp));
-//    strncat(WMStmp, "&BGCOLOR=0x000000", sizeof(WMStmp) - strlen(WMStmp));
-//    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - strlen(WMStmp));
+//    strncat(WMStmp, "&VERSION=1.0.0", sizeof(WMStmp) - 1 - strlen(WMStmp));
+//    strncat(WMStmp, "&FORMAT=image/png", sizeof(WMStmp) - 1 - strlen(WMStmp));
+//    strncat(WMStmp, "&TRANSPARENT=TRUE", sizeof(WMStmp) - 1 - strlen(WMStmp));
+//    strncat(WMStmp, "&BGCOLOR=0xffffff", sizeof(WMStmp) - 1 - strlen(WMStmp));
+//    strncat(WMStmp, "&BGCOLOR=0x000000", sizeof(WMStmp) - 1 - strlen(WMStmp));
+//    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
 
 
@@ -386,80 +386,80 @@ void draw_WMS_map (Widget w,
     xastir_snprintf(WMStmp, sizeof(WMStmp), "http://tiger.census.gov/cgi-bin/mapper/map.png?");
 
     if (tiger_show_grid)
-        strncat(WMStmp, "&on=GRID", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=GRID", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=GRID", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=GRID", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_counties)
-        strncat(WMStmp, "&on=counties", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=counties", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=counties", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=counties", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_cities)
-        strncat(WMStmp, "&on=CITIES", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=CITIES", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=CITIES", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=CITIES", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_places)
-        strncat(WMStmp, "&on=places", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=places", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=places", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=places", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_majroads)
-        strncat(WMStmp, "&on=majroads", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=majroads", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=majroads", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=majroads", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_streets)
-        strncat(WMStmp, "&on=streets", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=streets", sizeof(WMStmp) - 1 - strlen(WMStmp));
     // Don't turn streets off since this will automagically show up as you zoom in.
 
     if (tiger_show_railroad)
-        strncat(WMStmp, "&on=railroad", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=railroad", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=railroad", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=railroad", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_states)
-        strncat(WMStmp, "&on=states", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=states", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=states", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=states", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_interstate)
-        strncat(WMStmp, "&on=interstate", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=interstate", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=interstate", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=interstate", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_ushwy)
-        strncat(WMStmp, "&on=ushwy", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=ushwy", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=ushwy", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=ushwy", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_statehwy)
-        strncat(WMStmp, "&on=statehwy", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=statehwy", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=statehwy", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=statehwy", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_water)
-        strncat(WMStmp, "&on=water", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=water", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=water", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=water", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_lakes)
-        strncat(WMStmp, "&on=shorelin", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=shorelin", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=shorelin", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=shorelin", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     if (tiger_show_misc)
-        strncat(WMStmp, "&on=miscell", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&on=miscell", sizeof(WMStmp) - 1 - strlen(WMStmp));
     else
-        strncat(WMStmp, "&off=miscell", sizeof(WMStmp) - strlen(WMStmp));
+        strncat(WMStmp, "&off=miscell", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);    
-    strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+    strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp));
     xastir_snprintf(tmpstr, sizeof(tmpstr), "wid=%f\046ht=%f\046", map_width, map_height);
-    strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp));
+    strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp));
     xastir_snprintf(tmpstr, sizeof(tmpstr), "iwd=%i\046iht=%i", tp[1].img_x + 1, tp[1].img_y + 1);
-    strncat (WMStmp, tmpstr, sizeof(WMStmp) - strlen(WMStmp)); */
+    strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp)); */
 
 
     xastir_snprintf(fileimg, sizeof(fileimg), WMStmp);

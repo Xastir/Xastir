@@ -2897,13 +2897,13 @@ int OpenTrac_decode_hazmat(unsigned char *element,
         fprintf(stderr, "HAZMAT: Unknown Material\n");
         strncat(comment,
             " HAZMAT: Unknown Material",
-            comment_size - strlen(comment));
+            comment_size - 1 - strlen(comment));
     }
     else if (element_len > 2) {
         fprintf(stderr, "HAZMAT: Unknown Material: ID too Long\n");
         strncat(comment,
             " HAZMAT: Unknown Material: ID too Long",
-            comment_size - strlen(comment));
+            comment_size - 1 - strlen(comment));
     }
     else {
         char temp[200];
@@ -2916,7 +2916,7 @@ int OpenTrac_decode_hazmat(unsigned char *element,
             *hazmat_id);
         strncat(comment,
             temp,
-            comment_size - strlen(comment));
+            comment_size - 1 - strlen(comment));
     }
     return 0;
 }
@@ -2967,7 +2967,7 @@ int OpenTrac_decode_units(int           unitnum,
                 units[unitnum]);
             strncat(comment,
                 temp,
-                comment_size - strlen(comment));
+                comment_size - 1 - strlen(comment));
             fprintf(stderr, "%s\n",temp);
             break;
         case 2:
@@ -2979,7 +2979,7 @@ int OpenTrac_decode_units(int           unitnum,
                 units[unitnum]);
             strncat(comment,
                 temp,
-                comment_size - strlen(comment));
+                comment_size - 1 - strlen(comment));
             fprintf(stderr, "%s\n", temp);
             break;
         case 4:
@@ -2990,7 +2990,7 @@ int OpenTrac_decode_units(int           unitnum,
                 units[unitnum]);
             strncat(comment,
                 temp,
-                comment_size - strlen(comment));
+                comment_size - 1 - strlen(comment));
             fprintf(stderr, "%s\n", temp);
             break;
         case 8:
@@ -3001,7 +3001,7 @@ int OpenTrac_decode_units(int           unitnum,
                 units[unitnum]);
             strncat(comment,
                 temp,
-                comment_size - strlen(comment));
+                comment_size - 1 - strlen(comment));
             fprintf(stderr, "%s\n", temp);
             break;
         default:
@@ -3907,39 +3907,39 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
     /* I think if we don't have a '*' in the path we can assume direct? -FG */
     /*
     if((digis == 0) || (digi_h[0] != 0x80))
-        strncat(buffer, "*", buffer_size - strlen(buffer));
+        strncat(buffer, "*", buffer_size - 1 - strlen(buffer));
      */
 
-    strncat(buffer, ">", buffer_size - strlen(buffer));
+    strncat(buffer, ">", buffer_size - 1 - strlen(buffer));
 
     /* destination is at the begining of the chain, because it is  */
     /* needed so MIC-E packets can be decoded correctly. */
     /* this may be changed in the future but for now leave it here -FG */
-    strncat(buffer, (char *)dest, buffer_size - strlen(buffer));
+    strncat(buffer, (char *)dest, buffer_size - 1 - strlen(buffer));
 
     for(i = 0; i < (int)digis; i++) {
-        strncat(buffer, ",", buffer_size - strlen(buffer));
-        strncat(buffer, (char *)digi[i], buffer_size - strlen(buffer));
+        strncat(buffer, ",", buffer_size - 1 - strlen(buffer));
+        strncat(buffer, (char *)digi[i], buffer_size - 1 - strlen(buffer));
         /* at the last digi always put a '*' when h_bit is set */
         if (i == (int)(digis - 1)) {
             if (digi_h[i] == (unsigned char)0x80) {
                 /* this digi must have transmitted the packet */
-                strncat(buffer, "*", buffer_size - strlen(buffer));
+                strncat(buffer, "*", buffer_size - 1 - strlen(buffer));
             }
         } else {
             if (digi_h[i] == (unsigned char)0x80) {
                 /* only put a '*' when the next digi has no h_bit */
                 if (digi_h[i + 1] != (unsigned char)0x80) {
                     /* this digi must have transmitted the packet */
-                    strncat(buffer, "*", buffer_size - strlen(buffer));
+                    strncat(buffer, "*", buffer_size - 1 - strlen(buffer));
                 }
             }
         }
     }
-    strncat(buffer, ":", buffer_size - strlen(buffer));
+    strncat(buffer, ":", buffer_size - 1 - strlen(buffer));
 
     //Copy into only the free space in buffer.
-    strncat( buffer, (char *)message, MAX_DEVICE_BUFFER - strlen(buffer) - 1 );
+    strncat( buffer, (char *)message, MAX_DEVICE_BUFFER - 1 - strlen(buffer));
 
     // And null-terminate it to make sure.
     buffer[MAX_DEVICE_BUFFER - 1] = '\0';
@@ -5549,7 +5549,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     fix_up_callsign(temp_source, sizeof(temp_source));
     strncat((char *)transmit_txt,
         (char *)temp_source,
-        sizeof(transmit_txt) - strlen((char *)transmit_txt));
+        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     // Break up the path into individual callsigns and send them one
     // by one to fix_up_callsign().  If we get passed an empty path,
@@ -5574,7 +5574,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
             fix_up_callsign(temp, sizeof(temp));
             strncat((char *)transmit_txt,
                 (char *)temp,
-                sizeof(transmit_txt) - strlen((char *)transmit_txt));
+                sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
         }
     }
 
@@ -5587,19 +5587,19 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     control[1] = '\0';
     strncat((char *)transmit_txt,
         (char *)control,
-        sizeof(transmit_txt) - strlen((char *)transmit_txt));
+        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     // Add the PID byte
     pid[0] = 0xf0;
     pid[1] = '\0';
     strncat((char *)transmit_txt,
         (char *)pid,
-        sizeof(transmit_txt) - strlen((char *)transmit_txt));
+        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     // Append the information chars
     strncat((char *)transmit_txt,
         data,
-        sizeof(transmit_txt) - strlen((char *)transmit_txt));
+        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     //fprintf(stderr,"%s\n",transmit_txt);
 

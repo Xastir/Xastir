@@ -367,7 +367,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2"
 
             strncat(temp1,
                 from_call_sign,
-                sizeof(temp1) - strlen(temp1));
+                sizeof(temp1) - 1 - strlen(temp1));
 
             if (!disable_all_popups) {
                 Send_message(appshell, temp1, NULL);

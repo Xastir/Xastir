@@ -570,7 +570,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
             strncat(speed_course,
                 tempstr,
-                sizeof(speed_course) - strlen(speed_course));
+                sizeof(speed_course) - 1 - strlen(speed_course));
             speed = temp;
 
             // Speed is non-zero.  Compute the current dead-reckoned
@@ -598,13 +598,13 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         else {
             strncat(speed_course,
                 "...",
-                sizeof(speed_course) - strlen(speed_course));
+                sizeof(speed_course) - 1 - strlen(speed_course));
         }
     }
     else {  // No speed entered, blank it out
         strncat(speed_course,
             "...",
-            sizeof(speed_course) - strlen(speed_course));
+            sizeof(speed_course) - 1 - strlen(speed_course));
     }
     if ( (speed_course[0] == '.') && (speed_course[4] == '.') ) {
         speed_course[0] = '\0'; // No speed or course entered, so blank it
@@ -4430,19 +4430,19 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
             xastir_snprintf(line, line_length, "%03d", temp);
             strncat(speed_course,
                 line,
-                sizeof(speed_course) - strlen(speed_course));
+                sizeof(speed_course) - 1 - strlen(speed_course));
             speed = temp;
         }
         else {
             strncat(speed_course,
                 "...",
-                sizeof(speed_course) - strlen(speed_course));
+                sizeof(speed_course) - 1 - strlen(speed_course));
         }
     }
     else {  // No speed entered, blank it out
         strncat(speed_course,
             "...",
-            sizeof(speed_course) - strlen(speed_course));
+            sizeof(speed_course) - 1 - strlen(speed_course));
     }
     if ( (speed_course[0] == '.') && (speed_course[4] == '.') ) {
         speed_course[0] = '\0'; // No speed or course entered, so blank it
@@ -5224,17 +5224,17 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
             xastir_snprintf(line, line_length, "%03d", temp);
             strncat(speed_course,
                 line,
-                sizeof(speed_course) - strlen(speed_course));
+                sizeof(speed_course) - 1 - strlen(speed_course));
             speed = temp;
         } else {
             strncat(speed_course,
                 "...",
-                sizeof(speed_course) - strlen(speed_course));
+                sizeof(speed_course) - 1 - strlen(speed_course));
         }
     } else {  // No speed entered, blank it out
         strncat(speed_course,
             "...",
-            sizeof(speed_course) - strlen(speed_course));
+            sizeof(speed_course) - 1 - strlen(speed_course));
     }
     if ( (speed_course[0] == '.') && (speed_course[4] == '.') ) {
         speed_course[0] = '\0'; // No speed or course entered, so blank it

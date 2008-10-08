@@ -198,26 +198,26 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
                     if (my_rac_data.qual_a[0] == 'A')
                         strncat(temp,
                             langcode("STIFCC0008"),
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
 
                     if (my_rac_data.qual_d[0] == 'D')
                         strncat(temp,
                             langcode("STIFCC0009"),
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
 
                     if (my_rac_data.qual_b[0] == 'B' && my_rac_data.qual_c[0] != 'C')
                         strncat(temp,
                             langcode("STIFCC0010"),
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
 
                     if (my_rac_data.qual_c[0] == 'C')
                         strncat(temp,
                             langcode("STIFCC0011"),
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
 
                     strncat(temp,
                         "\n",
-                        sizeof(temp) - strlen(temp));
+                        sizeof(temp) - 1 - strlen(temp));
 
                     if (strlen(my_rac_data.club_name) > 1) {
                         xastir_snprintf(temp2,
@@ -230,7 +230,7 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
                             my_rac_data.club_postal_code);
                         strncat(temp,
                             temp2,
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
                     }
 
 

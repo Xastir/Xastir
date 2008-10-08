@@ -2826,7 +2826,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "H:%.0f%%", atof(weather->wx_hum));
                 strncat(temp_wx_temp,
                     wx_tm,
-                    sizeof(temp_wx_temp) - strlen(temp_wx_temp));
+                    sizeof(temp_wx_temp) - 1 - strlen(temp_wx_temp));
             }
 
             if (strlen(weather->wx_speed) > 0) {
@@ -2839,14 +2839,14 @@ void display_station(Widget w, DataRow *p_station, int single) {
                                 atof(weather->wx_gust)*cvt_mi2len,un_spd);
                 strncat(temp_wx_wind,
                     wx_tm,
-                    sizeof(temp_wx_wind) - strlen(temp_wx_wind));
+                    sizeof(temp_wx_wind) - 1 - strlen(temp_wx_wind));
             }
 
             if (strlen(weather->wx_course) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0f°", atof(weather->wx_course));
                 strncat(temp_wx_wind,
                     wx_tm,
-                    sizeof(temp_wx_wind) - strlen(temp_wx_wind));
+                    sizeof(temp_wx_wind) - 1 - strlen(temp_wx_wind));
             }
 
             if (temp_wx_wind[strlen(temp_wx_wind)-1] == ' ') {
@@ -4006,26 +4006,26 @@ void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
         if (my_data.qual_a[0] == 'A')
             strncat(temp,
                 langcode("STIFCC0008"),
-                sizeof(temp) - strlen(temp));
+                sizeof(temp) - 1 - strlen(temp));
 
         if (my_data.qual_d[0] == 'D')
             strncat(temp,
                 langcode("STIFCC0009"),
-                sizeof(temp) - strlen(temp));
+                sizeof(temp) - 1 - strlen(temp));
 
         if (my_data.qual_b[0] == 'B' && my_data.qual_c[0] != 'C')
             strncat(temp,
                 langcode("STIFCC0010"),
-                sizeof(temp) - strlen(temp));
+                sizeof(temp) - 1 - strlen(temp));
 
         if (my_data.qual_c[0] == 'C')
             strncat(temp,
                 langcode("STIFCC0011"),
-                sizeof(temp) - strlen(temp));
+                sizeof(temp) - 1 - strlen(temp));
 
         strncat(temp,
             "\n",
-            sizeof(temp) - strlen(temp));
+            sizeof(temp) - 1 - strlen(temp));
 
         if (strlen(my_data.club_name) > 1){
             xastir_snprintf(club, sizeof(club), "%s\n%s\n%s, %s\n%s\n",
@@ -4033,11 +4033,11 @@ void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
                     my_data.club_city, my_data.club_province, my_data.club_postal_code);
             strncat(temp,
                 club,
-                sizeof(temp) - strlen(temp));
+                sizeof(temp) - 1 - strlen(temp));
         }
         strncat(temp,
             "\n",
-            sizeof(temp) - strlen(temp));
+            sizeof(temp) - 1 - strlen(temp));
         XmTextInsert(si_text,0,temp);
         XmTextShowPosition(si_text,0);
 
@@ -4580,7 +4580,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
             strncat(temp,
                 "\n",
-                sizeof(temp) - strlen(temp));
+                sizeof(temp) - 1 - strlen(temp));
         }
         else
             xastir_snprintf(temp, sizeof(temp), "\n");
@@ -14761,7 +14761,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     xastir_snprintf(temp, sizeof(temp), "%03d%02d.%02d%c%c",d,m,h,(west ? 'W': 'E'), info[6]);
     strncat(new_info,
         temp,
-        sizeof(new_info) - strlen(new_info));
+        sizeof(new_info) - 1 - strlen(new_info));
 
     /* Compute speed in knots */
     speed = (int)( ( info[3] - (char)28 ) * (char)10 );
@@ -14781,7 +14781,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     xastir_snprintf(temp, sizeof(temp), "%03d/%03d",course,speed);
     strncat(new_info,
         temp,
-        sizeof(new_info) - strlen(new_info));
+        sizeof(new_info) - 1 - strlen(new_info));
     offset = 8;   // start of rest of info
 
     /* search for rig type in Mic-E data */
@@ -14820,7 +14820,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
             offset += 4;
             strncat(new_info,
                 temp,
-                sizeof(new_info) - strlen(new_info));
+                sizeof(new_info) - 1 - strlen(new_info));
         }
     }
 
@@ -14829,54 +14829,54 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         xastir_snprintf(temp, sizeof(temp), "%s",rig_type);
         strncat(new_info,
             temp,
-            sizeof(new_info) - strlen(new_info));
+            sizeof(new_info) - 1 - strlen(new_info));
     }
 
     strncat(new_info,
         " Mic-E ",
-        sizeof(new_info) - strlen(new_info));
+        sizeof(new_info) - 1 - strlen(new_info));
     if (msgtyp == 0) {
         switch (msg) {
             case 1:
                 strncat(new_info,
                     "Enroute",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
                 break;
 
             case 2:
                 strncat(new_info,
                     "In Service",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
                 break;
 
             case 3:
                 strncat(new_info,
                     "Returning",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
                 break;
 
             case 4:
                 strncat(new_info,
                     "Committed",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
                 break;
 
             case 5:
                 strncat(new_info,
                     "Special",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
                 break;
 
             case 6:
                 strncat(new_info,
                     "Priority",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
                 break;
 
             case 7:
                 strncat(new_info,
                     "Emergency",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
 
                 // Do a popup to alert the operator to this
                 // condition.  Make sure we haven't popped up an
@@ -14971,14 +14971,14 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
             default:
                 strncat(new_info,
                     "Off Duty",
-                    sizeof(new_info) - strlen(new_info));
+                    sizeof(new_info) - 1 - strlen(new_info));
         }
     }
     else {
         xastir_snprintf(temp, sizeof(temp), "Custom%d",msg);
         strncat(new_info,
             temp,
-            sizeof(new_info) - strlen(new_info));
+            sizeof(new_info) - 1 - strlen(new_info));
     }
 
     if (info[offset] != '\0') {
@@ -14989,10 +14989,10 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         temp[info_size-offset] = '\0';
         strncat(new_info,
             " ",
-            sizeof(new_info) - strlen(new_info));
+            sizeof(new_info) - 1 - strlen(new_info));
         strncat(new_info,
             temp,
-            sizeof(new_info) - strlen(new_info));
+            sizeof(new_info) - 1 - strlen(new_info));
     }
 
     if (debug_level & 1) {
@@ -15052,10 +15052,10 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
                         strncat(temp,
                             " ",
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
                         strncat(temp,
                             p_station->call_sign,
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
                     }
                     else {
 
@@ -15067,10 +15067,10 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                                         ":%s:Directs=",from_call);
                         strncat(temp,
                             " ",
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
                         strncat(temp,
                             p_station->call_sign,
-                            sizeof(temp) - strlen(temp));
+                            sizeof(temp) - 1 - strlen(temp));
                     }
                 }
             }
@@ -17831,16 +17831,16 @@ int decode_ax25_header(unsigned char *data_string, int *length) {
         more = decode_ax25_address(temp, callsign, 1); // Add asterisk
         strncat(result,
             ",",
-            sizeof(result) - strlen(result));
+            sizeof(result) - 1 - strlen(result));
         strncat(result,
             callsign,
-            sizeof(result) - strlen(result));
+            sizeof(result) - 1 - strlen(result));
         num_digis++;
     }
 
     strncat(result,
         ":",
-        sizeof(result) - strlen(result));
+        sizeof(result) - 1 - strlen(result));
 
 
     // Check the Control and PID bytes and toss packets that are
@@ -17876,7 +17876,7 @@ int decode_ax25_header(unsigned char *data_string, int *length) {
     // Add the Info field to the decoded header info
     strncat(result,
         (char *)(&data_string[ptr]),
-        sizeof(result) - strlen(result));
+        sizeof(result) - 1 - strlen(result));
 
     // Copy the result onto the top of the input data.  Note that
     // the length can sometimes be longer than the input string, so
@@ -18184,12 +18184,12 @@ OLD CODE:
             && (ii < MAX_RELAY_SUBSTRINGS) ) {
         strncat(new_path,
             Substring[ii],
-            sizeof(new_path) - strlen(new_path));
+            sizeof(new_path) - 1 - strlen(new_path));
         ii++;
         if (Substring[ii] != NULL)  // Add a comma if more to come
             strncat(new_path,
                 ",",
-                sizeof(new_path) - strlen(new_path));
+                sizeof(new_path) - 1 - strlen(new_path));
     }
 
 //fprintf(stderr,"*** New Path: %s,%s\n", destination, new_path);
@@ -18245,7 +18245,7 @@ sprintf(small_string,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: 
     port, call, destination, new_path, info);
 strncat(big_string,
     small_string,
-    sizeof(big_string) - strlen(big_string));
+    sizeof(big_string) - 1 - strlen(big_string));
 //fprintf(stderr,"%s",big_string);
 
 
@@ -19276,28 +19276,28 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
         // Build up the whole format string
         // "Aloha radius %d"
         strncpy(format,langcode("WPUPALO001"),sizeof(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         // "Stations inside...: %d"
-        strncat(format,langcode("WPUPALO002"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO002"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         //" Digis:               %d"
-        strncat(format,langcode("WPUPALO003"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO003"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         //" Mobiles (in motion): %d"
-        strncat(format,langcode("WPUPALO004"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO004"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         //" Mobiles (other):     %d"
-        strncat(format,langcode("WPUPALO005"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO005"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         //" WX stations:         %d"
-        strncat(format,langcode("WPUPALO006"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO006"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         //" Home stations:       %d"
-        strncat(format,langcode("WPUPALO007"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO007"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         //"Last calculated %s ago."
-        strncat(format,langcode("WPUPALO008"),sizeof(format) - strlen(format));
-        strncat(format,"\n",sizeof(format)-strlen(format));
+        strncat(format,langcode("WPUPALO008"),sizeof(format) - 1 - strlen(format));
+        strncat(format,"\n",sizeof(format) - 1 - strlen(format));
 
         // We now have the whole format string, now print using it:
         xastir_snprintf(temp,sizeof(temp),format,

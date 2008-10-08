@@ -263,7 +263,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
 
         strncat(match_line,                         // Copy info portion
             c2+1,
-            sizeof(match_line) - strlen(match_line));
+            sizeof(match_line) - 1 - strlen(match_line));
     }
     else {  // At least one separator was not found, copy entire string
         xastir_snprintf(match_line,

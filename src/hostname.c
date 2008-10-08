@@ -246,12 +246,12 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                                         if (ips>0) {
                                             strncat(ip_addr,
                                                 " ",
-                                                sizeof(ip_addr) - strlen(ip_addr));
+                                                sizeof(ip_addr) - 1 - strlen(ip_addr));
                                         }
 
                                         strncat(ip_addr,
                                             temp,
-                                            sizeof(ip_addr) - strlen(ip_addr));
+                                            sizeof(ip_addr) - 1 - strlen(ip_addr));
 
                                         ips++;
                                     }

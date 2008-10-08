@@ -576,7 +576,7 @@ int pipe_check(char *client_address) {
                 // Add white space to the end.
                 strncat(line2,
                     "                                    ",
-                    sizeof(line2) - strlen(line2));
+                    sizeof(line2) - 1 - strlen(line2));
 
                 // Find the "user" string position
                 callsign = strstr(line2,"user");

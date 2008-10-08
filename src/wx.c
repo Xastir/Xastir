@@ -3176,8 +3176,8 @@ time_t wx_tx_data1(char *st, int st_size) {
                         "...");
                 }
                 //sprintf(st,"%s/%s",weather->wx_course,weather->wx_speed);
-                strncat(st, temp, st_size - strlen(st));
-                strncat(st, "/", st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
+                strncat(st, "/", st_size - 1 - strlen(st));
 
                 xastir_snprintf(temp,
                     sizeof(temp),
@@ -3197,7 +3197,7 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "...");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else {
                 // We don't have enough wx_data, may be from a Qualimetrics Q-Net?
                 wx_time=weather->wx_sec_time;
@@ -3234,9 +3234,9 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "g...");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else
-                strncat(st, "g...", st_size - strlen(st));
+                strncat(st, "g...", st_size - 1 - strlen(st));
 
             if (strlen(weather->wx_temp) > 0) {
                 xastir_snprintf(temp,
@@ -3259,9 +3259,9 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "t...");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else
-                strncat(st, "t...", st_size - strlen(st));
+                strncat(st, "t...", st_size - 1 - strlen(st));
 
             if (strlen(weather->wx_rain) > 0) {
                 xastir_snprintf(temp,
@@ -3286,10 +3286,10 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "r...");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else {
                 // Don't transmit this field if it's not valid
-                //strncat(st, "r...", st_size - strlen(st));
+                //strncat(st, "r...", st_size - 1 - strlen(st));
             }
 
             if (strlen(weather->wx_prec_00) > 0) {
@@ -3315,10 +3315,10 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "P...");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else {
                 // Don't transmit this field if it's not valid
-                //strncat(st, "P...", st_size - strlen(st));
+                //strncat(st, "P...", st_size - 1 - strlen(st));
             }
 
             if (strlen(weather->wx_prec_24) > 0) {
@@ -3344,10 +3344,10 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "p...");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else {
                 // Don't transmit this field if it's not valid
-                //strncat(st, "p...", st_size - strlen(st));
+                //strncat(st, "p...", st_size - 1 - strlen(st));
             }
 
             if (strlen(weather->wx_hum) > 0) {
@@ -3374,10 +3374,10 @@ time_t wx_tx_data1(char *st, int st_size) {
                     // Don't transmit this field if it's not valid
                     //xastir_snprintf(temp,sizeof(temp),"h..");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else {
                 // Don't transmit this field if it's not valid
-                //strncat(st, "h..", st_size - strlen(st));
+                //strncat(st, "h..", st_size - 1 - strlen(st));
             }
 
             if (strlen(weather->wx_baro) > 0) {
@@ -3397,10 +3397,10 @@ time_t wx_tx_data1(char *st, int st_size) {
                     // Don't transmit this field if it's not valid
                     //xastir_snprintf(temp,sizeof(temp),"b.....");
                 }
-                strncat(st, temp, st_size - strlen(st));
+                strncat(st, temp, st_size - 1 - strlen(st));
             } else {
                 // Don't transmit this field if it's not valid
-                //strncat(st, "b.....", st_size - strlen(st));
+                //strncat(st, "b.....", st_size - 1 - strlen(st));
             }
 
             xastir_snprintf(temp,
@@ -3408,7 +3408,7 @@ time_t wx_tx_data1(char *st, int st_size) {
                 "%c%s",
                 weather->wx_type,
                 weather->wx_station);
-            strncat(st, temp, st_size - strlen(st));
+            strncat(st, temp, st_size - 1 - strlen(st));
         }
     }
 

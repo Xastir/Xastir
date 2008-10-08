@@ -7776,7 +7776,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         case DEVICE_SERIAL_MKISS_TNC:
@@ -7791,7 +7791,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         case DEVICE_NET_DATABASE:
@@ -7811,7 +7811,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         case DEVICE_AX25_TNC:
@@ -7825,7 +7825,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         default:
@@ -7894,7 +7894,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         case DEVICE_SERIAL_MKISS_TNC:
@@ -7910,7 +7910,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         case DEVICE_NET_DATABASE:
@@ -7931,7 +7931,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         case DEVICE_AX25_TNC:
@@ -7946,7 +7946,7 @@ void modify_device_list(int option, int port) {
                                 devices[i].comment);
                             strncat(temp,
                                 "    ",
-                                sizeof(temp) - strlen(temp));
+                                sizeof(temp) - 1 - strlen(temp));
                             break;
 
                         default:
