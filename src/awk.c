@@ -248,8 +248,8 @@ int awk_set_sym(awk_symbol *s,
         if (minlen > 0) {
             // Change this to an xastir_snprintf() function if we
             // need to use this awk_set_sym() function later.
-            // strncpy can forget to null-terminate the string if
-            // the destination isn't large enough.
+            // strncpy won't null-terminate the string if there's no
+            // '\0' in the first minlen bytes.
             strncpy(s->val,val,minlen);
             s->len = l - 1;
         }
