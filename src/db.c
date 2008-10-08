@@ -19029,8 +19029,10 @@ double calc_aloha_distance(void) {
         if ( (p_station->flag & ST_VIATNC) != 0 && 
              (p_station->flag & ST_ACTIVE) != 0 ) {
             if (position_defined(p_station->coord_lat,p_station->coord_lon,1)){
-                strncpy(aloha_array[num_aloha_entries].call_sign,
-                        p_station->call_sign,MAX_CALLSIGN+1);
+                xastir_snprintf(aloha_array[num_aloha_entries].call_sign,
+                    MAX_CALLSIGN+1,
+                    "%s",
+                    p_station->call_sign);
                 aloha_array[num_aloha_entries].is_digi = 
                     aloha_array[num_aloha_entries].is_mobile = 
                     aloha_array[num_aloha_entries].is_other_mobile = 
@@ -19275,7 +19277,7 @@ void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
 
         // Build up the whole format string
         // "Aloha radius %d"
-        strncpy(format,langcode("WPUPALO001"),sizeof(format));
+        xastir_snprintf(format,sizeof(format),"%s",langcode("WPUPALO001"));
         strncat(format,"\n",sizeof(format) - 1 - strlen(format));
         // "Stations inside...: %d"
         strncat(format,langcode("WPUPALO002"),sizeof(format) - 1 - strlen(format));
