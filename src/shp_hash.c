@@ -63,6 +63,7 @@
 /// THIS ONLY FOR DEBUGGING!
 #include "hashtable_private.h"
 #include "shp_hash.h"
+#include "snprintf.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -235,8 +236,9 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
     temp->filename = (char *) malloc(sizeof(char)*(filenm_len+1));
     CHECKMALLOC(temp->filename);
 
-    strncpy(temp->filename,filename,filenm_len+1);
-    temp->filename[filenm_len]='\0';  // just to be safe
+    //strncpy(temp->filename,filename,filenm_len+1);
+    //temp->filename[filenm_len]='\0';  // just to be safe
+    xastir_snprintf(temp->filename,sizeof(shpinfo),"%s",filename);
 
     temp->root = Xastir_RTreeNewIndex();  
     temp->creation = sec_now();
