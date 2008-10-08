@@ -5698,6 +5698,9 @@ void clear_dangerous(void) {
 }
 
 
+
+
+
 // Write out a WKT file
 void xastirWriteWKT(char *filename)
 {
@@ -5716,6 +5719,10 @@ void xastirWriteWKT(char *filename)
         fprintf(stderr,"Could not open file %s for writing\n",filename);
     }        
 }
+
+
+
+
 
 // makeMultiline
 // Create an APRS multiline string given an array of lat/lon pairs.
@@ -5870,8 +5877,11 @@ char * makeMultiline(int numPairs, double *lon, double *lat, char colorStyle,
                 }
                 returnString[stringOffset++]='{';
                 strncpy(&(returnString[stringOffset]),sqnc,6);
+                returnString[rsMaxLen-1] = '\0'; // Just to be safe
             }
         }
     }
     return (returnString);
 }
+
+
