@@ -3789,8 +3789,8 @@ void display_file(Widget w) {
         }
         else {
             if (debug_level & 256) {
-                fprintf(stderr,"Station trails %d, track data %x\n",
-                    Display_.trail, (int)p_station->newest_trackpoint);
+                fprintf(stderr,"Station trails %d, track data %lx\n",
+                    Display_.trail, (long int)p_station->newest_trackpoint);
             }
         }
 
