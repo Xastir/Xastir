@@ -904,7 +904,7 @@ void draw_shapefile_map (Widget w,
         
     }
     recordcount = DBFGetRecordCount(hDBF);
-    if (recordcount == (int)NULL) {
+    if (recordcount == 0) {
         DBFClose( hDBF );   // Clean up open file descriptors
         return;     // Should have at least one record
     }
