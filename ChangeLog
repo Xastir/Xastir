@@ -1,3 +1,180 @@
+2008-10-08 21:57  we7u
+
+	* src/map_shp.c: Getting rid of a 64-bit compiler warning by
+	  changing an "(int)NULL" to a "0".
+
+2008-10-08 21:56  we7u
+
+	* src/db.c: Changing a debug format so that it doesn't cause a
+	  warning on 64-bit machines.
+
+2008-10-08 08:11  we7u
+
+	* src/maps.c: Getting rid of two compiler warnings:  One by forcing
+	  a terminator into the first char of a string buffer instead of
+	  doing an empty xastir_snprintf(), another by casting a strlen()
+	  result to an int for an fprintf.
+
+2008-10-07 23:10  we7u
+
+	* src/shp_hash.c: Reverting back to the original code for strncpy()
+	  in this module:  The previous change caused a panic.
+
+2008-10-07 22:59  we7u
+
+	* src/shp_hash.c: Getting rid of another strncpy() call.
+
+2008-10-07 22:43  we7u
+
+	* src/util.c: Forcibly terminating a string as an added precaution.
+
+2008-10-07 22:42  we7u
+
+	* src/shp_hash.c: Adding some blank lines to delimit an strcpy()
+	  call.
+
+2008-10-07 22:41  we7u
+
+	* src/objects.c: Getting rid of an strcat() call.
+
+2008-10-07 22:41  we7u
+
+	* src/db.c: Getting rid of some strncpy() calls.
+
+2008-10-07 22:40  we7u
+
+	* src/awk.c: Updating a comment.
+
+2008-10-07 22:14  we7u
+
+	* src/: db.c, fcc_data.c, hostname.c, igate.c, interface.c,
+	  interface_gui.c, locate_gui.c, map_WMS.c, map_geo.c, map_shp.c,
+	  map_tiger.c, maps.c, messages.c, objects.c, util.c, wx.c,
+	  x_spider.c, xa_config.c: Fixing some off-by-one errors in string
+	  handling.
+
+2008-10-07 21:42  we7u
+
+	* src/: alert.c, main.c: Fixing some off-by-one errors in string
+	  handling.
+
+2008-10-06 22:04  we7u
+
+	* src/main.c: Fixing the my_text string buffer in TrackMouse() so
+	  that it won't get overrun.  The worst conditions are English
+	  Units, Dist/Bearing Status enabled, Degrees/Minutes/Seconds,
+	  zoomed out to world view and putting the mouse in the "corner" of
+	  the world (10,000+ miles).  This results in about 54 characters
+	  being used whereas the original string buffer was only capable of
+	  holding 49.
+
+2008-09-26 07:30  gstueve
+
+	* src/x_spider.c: Make sure both sides of the pipe are satisfied
+	  before releasing the memory. The system is not happy about trying
+	  to read data from free space.
+
+2008-09-24 12:44  we7u
+
+	* .cvsignore: Ignore the derived file "xastir-lsb.spec" as well.
+
+2008-09-24 12:18  we7u
+
+	* src/.cvsignore: Ignoring testdbfawk now instead of testawk file.
+
+2008-09-24 11:03  gstueve
+
+	* src/map_tiger.c: Found one more place that needed to release
+	  ExceptionInfo when interrupted.
+
+2008-09-24 09:16  tvrusso
+
+	* README.MAPS, scripts/LSB-BUILD, src/Makefile.am, src/testawk.c,
+	  src/testdbfawk.c: Rename "testawk" to "testdbfawk" and add it to
+	  the list of programs that "make install" will install.
+
+	  This addresses a couple of issues:   0) Testawk is a *terrible*
+	  name for this program, because in fact it does      not test
+	  "awk", the system program, but rather "dbfawk," the Xastir
+	  feature inspired by awk but completely unrelated to awk in any
+	  other sense.	  1) testawk was never installed by Xastir's build
+	  process, meaning that       packagers of Xastir binaries for
+	  various systems did not bundle this	    little program with
+	  their binary packages.  There is even a bug in       debian's bug
+	  tracker from an Xastir user asking that the xastir package
+	  have testawk installed (in a non-standard place because of its
+	     "generic, even misleading name") by the .deb package.
+
+	  I've updated README.MAPS and the LSB-BUILD script to make them
+	  refer to testdbfawk instead of testawk.  I'll still have to
+	  change various web resources so they point at the new program,
+	  too.
+
+2008-09-22 13:19  we7u
+
+	* src/x_spider.c: Removing an earlier change 'cuz it makes the
+	  server ports die when a client disconnects.  Without this line
+	  they appear to be solid again.
+
+2008-09-11 06:07  we7u
+
+	* src/main.c: Grey'ing out the xfontsel buttons when that app's not
+	  available.
+
+2008-09-09 22:38  we7u
+
+	* src/xa_config.c: Saving/restoring the tracking station callsign
+	  to/from the config file, but not saving the state of the tracking
+	  toggle.  This means that the last tracked callsign will be
+	  remembered but tracking will not be on when Xastir starts up.
+
+2008-09-09 22:17  we7u
+
+	* src/db.c: A proper label for the new "Track Station" button on
+	  the Station Info dialog.
+
+2008-09-09 22:11  we7u
+
+	* src/db.c: Initial working version of "Track Station" from the
+	  Station Info dialog.	Still needs additions to the language files
+	  for the button label.
+
+2008-09-09 20:10  we7u
+
+	* src/interface.c: Adding some comments near four areas that cause
+	  compiler warnings which we can currently do nothing about.
+
+2008-09-09 20:09  we7u
+
+	* src/testawk.c: Changing an int* to an int to get rid of a
+	  compiler warning about a mismatch.
+
+2008-09-09 20:07  we7u
+
+	* acinclude.m4: Adding /opt/local/ directory to the test for
+	  binaries (MacPorts).	Changing the order of some compiler flags
+	  to help find GM before IM on FreeBSD systems.
+
+2008-09-09 08:47  we7u
+
+	* src/util.c: Changing the return type for a curl function to get
+	  rid of a warning caused by newer versions of libcurl.
+
+2008-09-09 08:37  we7u
+
+	* src/: main.c, track_gui.c: Adding #ifdef's around SED and MV
+	  calls.
+
+2008-09-09 08:20  we7u
+
+	* src/main.c: Added #ifdef around XFONTSEL call so that absence of
+	  the binary won't cause compile problems.
+
+2008-09-08 09:13  we7u
+
+	* ChangeLog, scripts/Makefile.am: Adding lang* scripts to package
+	  build.  Updating ChangeLog to latest.
+
 2008-09-03 08:46  gstueve
 
 	* config/.cvsignore: Get CVS to forget about the generated language
