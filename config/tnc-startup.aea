@@ -9,7 +9,7 @@
 # Please modify it and send the patches to the mailing lists.
 # Thanks.
 #
-HID off
+HID on
 #CWID off
 EXP on
 ECHO off
