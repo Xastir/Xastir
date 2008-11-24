@@ -1,6 +1,13 @@
 #
 # Copyright (C) 2000-2008  The Xastir Group
 #
+# Compare your results with the Area Object images here after
+# sucking this file in as a log file (They should appear in the
+# Pacific Ocean):
+#
+#   http://www.xastir.org/wiki/index.php/HowTo:Scripts
+#
+
 
 #Corridors (Line with width in miles)
 #{1} means a corridor 1 mile on either side of the line
