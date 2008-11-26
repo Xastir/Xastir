@@ -1722,7 +1722,7 @@ static __inline__ int onscreen(long left, long right, long top, long bottom) {
 //
 // Exceptions to this are the triangle, ellipse, and circle.  The
 // ellipse and circle have the lat/long as the center point.  The
-// triangle is an isoscelese triangle with the lat/long point being
+// triangle is an isosceles triangle with the lat/long point being
 // the bottom right and the bottom of the triangle being horizontal.
 //
 void draw_area(long x_long, long y_lat, char type, char color,
