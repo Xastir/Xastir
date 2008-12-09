@@ -1,6 +1,14 @@
 
 $Id$
 
+---------------------------------------------------------------------
+Note that there are other options to get Xastir running on Win32.
+The method described below in this document is for getting Xastir
+running under Cygwin which can be problematic.  Other methods exist
+on the Xastir Wiki pages which are typically easier and more robust:
+
+    http://www.xastir.org/wiki/index.php/Installation_Notes
+---------------------------------------------------------------------
 
   Two companies have created simpler installs of Cygwin/Xastir than
   described in this document.  Contact one of these folks for more
@@ -88,7 +96,8 @@ your Windows desktop.
 
 Please subscribe to the "xastir" mailing list at
 "http://www.xastir.org".  There are lots of helpful people there
-that can aid you in installing/running Xastir.
+that can aid you in installing/running Xastir.  You must be subscribed
+in order to post messages there.
 
 
 [ ] Step 1)  Install Cygwin, a free download.
@@ -662,8 +671,9 @@ These additional Xastir libraries have been tested on Cygwin:
     GDAL/OGR
 
 Anyone testing additional libraries is encouraged to share their
-findings on the Xastir mailing lists.  The libraries which have
-_not_ been made to work yet on Cygwin are:
+findings on the Xastir mailing lists (you must be subscribed in
+order to post messages there).  The libraries which have _not_ been
+made to work yet on Cygwin are:
 
     AX25
     GPSMan/gpsmanshp

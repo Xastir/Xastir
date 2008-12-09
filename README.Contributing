@@ -67,7 +67,8 @@ This creates mypatch.gz, which you can attach to an e-mail or put up
 on an ftp or http site for download.
 
 *) Contribute patches either directly to one of the active
-developers or to the Xastir-Dev mailing list.
+developers or to the Xastir-Dev mailing list (you must be subscribed
+in order to post messages there).
 
 *) To apply a patch I typically do this:
 

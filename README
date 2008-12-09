@@ -61,7 +61,8 @@ README
 
           including the latest releases, the anonymous CVS access (lets you
           download the latest developers' code), and information on how to join
-          Xastir mailing lists.
+          Xastir mailing lists.  Note that you must be subscribed in order to
+          post to the mailing lists.
 
           SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
           Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
@@ -554,6 +555,7 @@ README
           There are currently a couple of mailing lists about Xastir.
           xastir@xastir.org is the one relevant for posts about
           Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
+          You must be subscribed to the list in order to post messages.
 
           To subscribe to the Xastir mailing list, send email to:
           xastir-request@xastir.org In the body of the message,
@@ -583,7 +585,8 @@ README
           reports, technical questions, your thoughts or
           suggestions on new features being added to Xastir, things
           that should be removed or fixed, amazing problems that even
-          stump the guru's, etc... are what we want to see here.
+          stump the guru's, etc... are what we want to see here.  You
+          must be subscribed to the list in order to post messages.
 
      (10) DOCUMENTATION
 

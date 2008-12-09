@@ -147,15 +147,17 @@ The Answers
 
     1.6 Whom do I contact for support?
 
-    This FAQ may answer many of users frequent questions.  However, there
-    are two active mailing lists that users could use to help answer any
-    other questions.  Both mailing list are by subscription only and can
-    be accessed through the Xastir web-site.  See the top of this document
-    for the addresses.
+    This FAQ may answer many of users frequent questions.  However, there are
+    two active mailing lists that users could use to help answer any other
+    questions.  Both mailing list are by subscription only and can be accessed
+    through the Xastir web-site.  See the top of this document for the
+    addresses.  You must be subscribed in order to post messages.
 
     1.7 Where can I submit Bug reports or feature requests?
 
     The mailing lists are a good place to bring up bugs or feature requests.
+    Note that you must be subscribed in order to post messages.  See above.
+
     Another good place to document the request or bug in a more permanent
     manner is the sourceforge tracker. There are separate bug and feature
     request trackers, both listed at the Xastir project page,
@@ -190,7 +192,7 @@ The Answers
             Many Xastir users and developers can be found roaming its
             virtual halls, so it is suggested that you seek wisdom there.
             The chances are good that you'll get your question answered
-            there.
+            there.  You must be subscribed in order to post messages.
 
     2.2 How do I submit a patch to the Xastir Development Group?
 
@@ -1138,7 +1140,8 @@ APRS(tm) is a Trademark of Bob Bruninga
 If you find other problems, or would like to point out other caveats to add to
 this FAQ, please point them out to the developers on the Xastir-dev mailing
 list.  The addresses for the mailing lists may be found on the main Xastir
-web pages, which are listed at the top of this document.
+web pages, which are listed at the top of this document.  You must be subscribed
+in order to post messages.
 
 
 Copyright (C) 2000-2008 The Xastir Group
