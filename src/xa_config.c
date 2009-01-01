@@ -1114,6 +1114,13 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
             }
         }
 
+// NOTE:  To minimize the possibility that we'll end up with a
+// missing or corrupt config file, we actually should COPY
+// config_file to config_file_bak1 here so that there's always a
+// config file in place no matter what.  In the next block we can do
+// the rename of config_file_tmp to config_file and not miss a beat.
+// See "man 2 rename".
+
         // Rename config to bak1
         // NOTE: config won't exist until the first save happens.
         //
@@ -1125,9 +1132,14 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
                     config_file);
                 return;
             }
-            if ( rename (config_file, config_file_bak1) ) {
+            //
+            // Note "copy_file()" instead of "rename()".  This
+            // assures that we always have a config file in place no
+            // matter what errors might occur.
+            //
+            if ( copy_file(config_file, config_file_bak1) ) {
                 fprintf(stderr,
-                    "Couldn't rename %s to %s, cancelling save_data()\n",
+                    "Couldn't copy %s to %s, cancelling save_data()\n",
                     config_file,
                     config_file_bak1);
 
