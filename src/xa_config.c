@@ -60,7 +60,8 @@
 #define CONFIG_FILE_BAK1 "config/xastir.cnf.1"
 #define CONFIG_FILE_BAK2 "config/xastir.cnf.2"
 #define CONFIG_FILE_BAK3 "config/xastir.cnf.3"
-#define CONFIG_FILE_TMP  "config/xastir.tmp"
+#define CONFIG_FILE_BAK4 "config/xastir.cnf.4"
+#define CONFIG_FILE_TMP  "config/xastir.cnf.tmp"
 
 #define MAX_VALUE 300
 
@@ -362,120 +363,26 @@ void save_data(void)  {
     char name_temp[20];
     char name[50];
     FILE * fout;
+    char config_file_tmp[MAX_VALUE];
     char config_file[MAX_VALUE];
     char config_file_bak1[MAX_VALUE];
     char config_file_bak2[MAX_VALUE];
     char config_file_bak3[MAX_VALUE];
+    char config_file_bak4[MAX_VALUE];
     struct stat file_status;
 
 
 //    if (debug_level & 1)
 //        fprintf(stderr,"Store String Start\n");
 
-    xastir_snprintf(config_file,
-        sizeof(config_file),
+    // The new file we'll create
+    xastir_snprintf(config_file_tmp,
+        sizeof(config_file_tmp),
         "%s",
-        get_user_base_dir(CONFIG_FILE));
+        get_user_base_dir(CONFIG_FILE_TMP));
 
-    xastir_snprintf(config_file_bak1,
-        sizeof(config_file_bak1),
-        "%s",
-        get_user_base_dir(CONFIG_FILE_BAK1));
-
-    xastir_snprintf(config_file_bak2,
-        sizeof(config_file_bak2),
-        "%s",
-        get_user_base_dir(CONFIG_FILE_BAK2));
-
-    xastir_snprintf(config_file_bak3,
-        sizeof(config_file_bak3),
-        "%s",
-        get_user_base_dir(CONFIG_FILE_BAK3));
- 
-
-    // Remove the bak3 file
-    unlink (config_file_bak3);
-    if (stat(config_file_bak3, &file_status) == 0) {
-        // We got good status.  That means it didn't get deleted!
-        fprintf(stderr,
-            "Couldn't delete backup file: %s, cancelling save_data()\n",
-            config_file_bak3);
-        return;
-    }
-
-    // Rename bak2 to bak3
-    // NOTE: bak won't exist until a couple of saves have happened.
-    //
-    // Check whether bak2 exists
-    if (stat(config_file_bak2, &file_status) == 0) {
-        if (!S_ISREG(file_status.st_mode)) {
-            fprintf(stderr,
-                "Couldn't stat %s, cancelling save_data()\n",
-                config_file_bak2);
-            return;
-        }
-        if ( rename (config_file_bak2, config_file_bak3) ) {
-            fprintf(stderr,
-                "Couldn't rename %s to %s, cancelling save_data()\n",
-                config_file_bak2,
-                config_file_bak3);
-
-            // Attempt to restore to previous state
-            // Nothing to do here!  bak3 was deleted.
-            return;
-        }
-    }
-
-    // Rename bak1 to bak2
-    // NOTE: bak won't exist until a couple of saves have happened.
-    //
-    // Check whether bak1 exists
-    if (stat(config_file_bak1, &file_status) == 0) {
-        if (!S_ISREG(file_status.st_mode)) {
-            fprintf(stderr,
-                "Couldn't stat %s, cancelling save_data()\n",
-                config_file_bak1);
-            return;
-        }
-        if ( rename (config_file_bak1, config_file_bak2) ) {
-            fprintf(stderr,
-                "Couldn't rename %s to %s, cancelling save_data()\n",
-                config_file_bak1,
-                config_file_bak2);
-
-            // Attempt to restore to previous state
-            rename (config_file_bak3, config_file_bak2);
-            return;
-        }
-    }
-
-    // Rename config to bak1
-    // NOTE: config won't exist until the first save happens.
-    //
-    // Check whether config exists
-    if (stat(config_file, &file_status) == 0) {
-        if (!S_ISREG(file_status.st_mode)) {
-            fprintf(stderr,
-                "Couldn't stat %s, cancelling save_data()\n",
-                config_file);
-            return;
-        }
-        if ( rename (config_file, config_file_bak1) ) {
-            fprintf(stderr,
-                "Couldn't rename %s to %s, cancelling save_data()\n",
-                config_file,
-                config_file_bak1);
-
-            // Attempt to restore to previous state
-            rename (config_file_bak2, config_file_bak1);
-            rename (config_file_bak3, config_file_bak2);
-            return;
-        }
-    }
-
-    // Now save to a new config file
-
-    fout = fopen (config_file, "a");
+    // Save to the new config file
+    fout = fopen (config_file_tmp, "a");
     if (fout != NULL) {
 //        Position x_return;
 //        Position y_return;
@@ -1095,7 +1002,168 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         if (debug_level & 1)
             fprintf(stderr,"Save Data Stop\n");
 
+        // Close the config_file_tmp file, we're done writing it.
         (void)fclose (fout);
+
+
+        xastir_snprintf(config_file,
+            sizeof(config_file),
+            "%s",
+            get_user_base_dir(CONFIG_FILE));
+
+        xastir_snprintf(config_file_bak1,
+            sizeof(config_file_bak1),
+            "%s",
+            get_user_base_dir(CONFIG_FILE_BAK1));
+
+        xastir_snprintf(config_file_bak2,
+            sizeof(config_file_bak2),
+            "%s",
+            get_user_base_dir(CONFIG_FILE_BAK2));
+
+        xastir_snprintf(config_file_bak3,
+            sizeof(config_file_bak3),
+            "%s",
+            get_user_base_dir(CONFIG_FILE_BAK3));
+ 
+        xastir_snprintf(config_file_bak4,
+            sizeof(config_file_bak4),
+            "%s",
+            get_user_base_dir(CONFIG_FILE_BAK4));
+
+
+        //
+        // Rename the old config files so that we have a few
+        // backups in case of corruption:
+        //
+        //   xastir.cnf.3   -> xastir.cnf.4
+        //   xastir.cnf.2   -> xastir.cnf.3
+        //   xastir.cnf.1   -> xastir.cnf.2
+        //   xastir.cnf     -> xastir.cnf.1
+        //   xastir.cnf.tmp -> xastir.cnf
+        //
+
+        // Rename bak3 to bak4
+        // NOTE: bak3 won't exist until a few saves have happened.
+        //
+        // Check whether bak3 exists
+        if (stat(config_file_bak3, &file_status) == 0) {
+            if (!S_ISREG(file_status.st_mode)) {
+                fprintf(stderr,
+                    "Couldn't stat %s, cancelling save_data()\n",
+                    config_file_bak3);
+                return;
+            }
+            if ( rename (config_file_bak3, config_file_bak4) ) {
+                fprintf(stderr,
+                    "Couldn't rename %s to %s, cancelling save_data()\n",
+                    config_file_bak3,
+                    config_file_bak4);
+
+                // Attempt to restore to previous state
+                // Nothing to do here!
+                return;
+            }
+        }
+
+        // Rename bak2 to bak3
+        // NOTE: bak2 won't exist until a few saves have happened.
+        //
+        // Check whether bak2 exists
+        if (stat(config_file_bak2, &file_status) == 0) {
+            if (!S_ISREG(file_status.st_mode)) {
+                fprintf(stderr,
+                    "Couldn't stat %s, cancelling save_data()\n",
+                    config_file_bak2);
+                return;
+            }
+            if ( rename (config_file_bak2, config_file_bak3) ) {
+                fprintf(stderr,
+                    "Couldn't rename %s to %s, cancelling save_data()\n",
+                    config_file_bak2,
+                    config_file_bak3);
+
+                // Attempt to restore to previous state
+                rename (config_file_bak4, config_file_bak3);
+                // Nothing to do here!
+                return;
+            }
+        }
+
+        // Rename bak1 to bak2
+        // NOTE: bak1 won't exist until a couple of saves have happened.
+        //
+        // Check whether bak1 exists
+        if (stat(config_file_bak1, &file_status) == 0) {
+            if (!S_ISREG(file_status.st_mode)) {
+                fprintf(stderr,
+                    "Couldn't stat %s, cancelling save_data()\n",
+                    config_file_bak1);
+                return;
+            }
+            if ( rename (config_file_bak1, config_file_bak2) ) {
+                fprintf(stderr,
+                    "Couldn't rename %s to %s, cancelling save_data()\n",
+                    config_file_bak1,
+                    config_file_bak2);
+
+                // Attempt to restore to previous state
+                rename (config_file_bak3, config_file_bak2);
+                rename (config_file_bak4, config_file_bak3);
+                return;
+            }
+        }
+
+        // Rename config to bak1
+        // NOTE: config won't exist until the first save happens.
+        //
+        // Check whether config exists
+        if (stat(config_file, &file_status) == 0) {
+            if (!S_ISREG(file_status.st_mode)) {
+                fprintf(stderr,
+                    "Couldn't stat %s, cancelling save_data()\n",
+                    config_file);
+                return;
+            }
+            if ( rename (config_file, config_file_bak1) ) {
+                fprintf(stderr,
+                    "Couldn't rename %s to %s, cancelling save_data()\n",
+                    config_file,
+                    config_file_bak1);
+
+                // Attempt to restore to previous state
+                rename (config_file_bak2, config_file_bak1);
+                rename (config_file_bak3, config_file_bak2);
+                rename (config_file_bak4, config_file_bak3);
+                return;
+            }
+        }
+
+        // Rename config.tmp to xastir.cnf
+        // NOTE: config won't exist until the first save happens.
+        //
+        // Check whether config.tmp exists
+        if (stat(config_file_tmp, &file_status) == 0) {
+            if (!S_ISREG(file_status.st_mode)) {
+                fprintf(stderr,
+                    "Couldn't stat %s, cancelling save_data()\n",
+                    config_file_tmp);
+                return;
+            }
+            if ( rename (config_file_tmp, config_file) ) {
+                fprintf(stderr,
+                    "Couldn't rename %s to %s, cancelling save_data()\n",
+                    config_file_tmp,
+                    config_file);
+
+                // Attempt to restore to previous state
+                rename (config_file_bak1, config_file);
+                rename (config_file_bak2, config_file_bak1);
+                rename (config_file_bak3, config_file_bak2);
+                rename (config_file_bak4, config_file_bak3);
+                return;
+            }
+        }
     } else  {
         // Couldn't create new config (out of filespace?).
         fprintf(stderr,"Couldn't open config file for appending: %s\n", config_file);
@@ -1111,10 +1179,6 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
                 config_file_bak1);
             return;
         }
-        rename (config_file_bak2, config_file_bak1);
-        rename (config_file_bak3, config_file_bak2);
-
-        // We're short one file now (config_file_bak3);
     }
 }
 
