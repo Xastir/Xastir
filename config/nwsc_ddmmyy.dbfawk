@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2003-2008  The Xastir Group
+# Copyright (C) 2003-2009  The Xastir Group
 #
 # This dbfawk file is used to map arbitrary dbf data that accompanies
 # a shapefile into Xastir canoncical values of:
