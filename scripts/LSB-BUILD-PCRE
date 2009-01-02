@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # $Id$
-# Copyright (C) 2006-2008  The Xastir Group
+# Copyright (C) 2006-2009  The Xastir Group
 # <http://www.pcre.org/>
 
 # Compile pcre-6.7 under Linux Standard Base 3.0.  Install into

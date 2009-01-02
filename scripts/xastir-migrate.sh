@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-# Copyright (C) 2003-2008  The Xastir Group
+# Copyright (C) 2003-2009  The Xastir Group
 #
 # migrate from old xastir USER FILES to new directory structure.
 # Stuff that was under /usr/local/xastir is now under /usr/local/share/xastir/
