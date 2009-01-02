@@ -3,7 +3,7 @@
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
- * Copyright (C) 2000-2008  The Xastir Group
+ * Copyright (C) 2000-2009  The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -197,7 +197,7 @@ char *xastir_version=VERSION;
 // lines and we could update the years in the Help->About message
 // each time.  Otherwise it often gets missed when we're updating
 // the years.
-#define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\n        http://www.xastir.org\n\nCopyright (C) 1999-2000  Frank Giannandrea\nCopyright (C) 1999-2008  The Xastir Group\nSee the \"LICENSE\" file for other applicable copyrights"
+#define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\n        http://www.xastir.org\n\nCopyright (C) 1999-2000  Frank Giannandrea\nCopyright (C) 1999-2009  The Xastir Group\nSee the \"LICENSE\" file for other applicable copyrights"
 
 
 // Define this if you want an xastir.pid file created in the

@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2000-2008  The Xastir Group
+# Copyright (C) 2000-2009  The Xastir Group
 #
 
 bin_PROGRAMS = xastir xastir_udp_client testdbfawk
