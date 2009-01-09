@@ -450,6 +450,32 @@ installed on your system, with minimal map support.  Later sections
 of this document detail adding additional map libraries in order to
 give you access to the full mapping capability of Xastir.
 
+NOTE:  If you get the below errors during the compile it means that
+Cygwin has changed one of their packages to be incompatible with the
+rest (and needs to change a lot more of their packages to
+correspond):
+---------------------------------------------------------------------
+/usr/include/Xm/Print.h:28:34: X11/extensions/Print.h: No such file or directory
+In file included from /usr/include/Xm/XmAll.h:79,
+                 from alert.c:308:
+/usr/include/Xm/Print.h:40: error: parse error before "XPContext"
+/usr/include/Xm/Print.h:43: error: parse error before '}' token
+/usr/include/Xm/Print.h:61: error: parse error before "XPFinishProc"
+make[3]: *** [alert.o] Error 1
+---------------------------------------------------------------------
+A temporary fix for the above errors (until Cygwin gets their act
+together) is to do the following:
+---------------------------------------------------------------------
+    Launch the Cygwin setup program
+    When you get to the list of packages change the list to FULL mode
+    Uncheck "Hide Obsolete Packages"
+    Scroll down the list until you find xorg-x11-devel
+    Click on the word "keep" until it changes to a 6.x version of the file
+    Click Next and finish the setup
+    Unfortunately you'll have to perform the same fix each time you
+      use the Cygwin setup program or it will "upgrade" to the
+      broken package again.
+---------------------------------------------------------------------
 
 [ ] Step 7)  Create a link to the Xastir executable.  Type the
 following commands into the BASH shell:
