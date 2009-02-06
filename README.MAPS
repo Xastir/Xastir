@@ -1167,6 +1167,10 @@ Getting Maps and other Data Files for Xastir:
       alerts are still active they should appear in the View->Weather Alerts
       dialog.
 
+	Australian rules Weather Alerts
+
+		http://wxsvr.aprs.net.au/implementation.html
+
      Raw Tiger/Line format maps (requires GDAL/OGR):
 
       If you have GDAL/OGR library added to Xastir, you should (very soon)
@@ -1226,9 +1230,9 @@ Getting Maps and other Data Files for Xastir:
        ----------------------
 
          Download:
-         ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+         http://wireless.fcc.gov/uls/data/complete/l_amat.zip
 
-         (The only file needed from this 60Meg zip is the EN.dat file)
+         (The only file needed from this 87 Meg zip is the EN.dat file)
 
          **** NOTE To use the data base file it must be sorted first!!! ****
      
