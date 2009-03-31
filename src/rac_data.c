@@ -75,10 +75,10 @@
 /*    my version of chomp from perl, removes spaces and dashes    */
 /*                                    */
 /* ******************************************************************** */
-int chomp(char *input,unsigned int i) {
+int chomp(char *input, unsigned int i) {
     unsigned int    x;
 
-    for (x=i;input[x] == ' ' || input[x] == '-';x--)
+    for (x=i; input[x] == ' ' || input[x] == '-'; x--)
         input[x] = '\0';
 
     return ( (int)(i-x) );
@@ -205,26 +205,28 @@ int search_rac_data(char *callsign, rac_record *data) {
     FILE *fdb;
     FILE *fndx;
     char *rc;
-    long call_offset = 0;
+    long call_offset = 0l;
     char char_offset[16];
     char index[32];
     int found = 0;
     rac_record racdata;
     /*char        filler[8];*/
 
-    xastir_snprintf(index,sizeof(index)," ");
-    xastir_snprintf(racdata.callsign,sizeof(racdata.callsign)," ");
+
+    xastir_snprintf(index, sizeof(index)," ");
+    xastir_snprintf(racdata.callsign, sizeof(racdata.callsign)," ");
 
     /* ====================================================================    */
     /*    Search thru the index, get the RBA                */
     /*                                    */
-    fndx=fopen(get_user_base_dir("data/AMACALL.ndx"),"r");
-    if(fndx!=NULL) {
-        rc = fgets(index,(int)sizeof(index),fndx);
-        xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
-        while (!feof(fndx) && strncmp(callsign,index,6) > 0) {
-            xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
-            rc = fgets(index,(int)sizeof(index),fndx);
+
+    fndx = fopen(get_user_base_dir("data/AMACALL.ndx"), "r");
+    if(fndx != NULL) {
+        rc = fgets(index, (int)sizeof(index), fndx);
+        xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
+        while (!feof(fndx) && strncmp(callsign, index, 6) > 0) {
+            xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
+            rc = fgets(index, (int)sizeof(index), fndx);
         }
     } else {
         fprintf(stderr,
@@ -234,6 +236,7 @@ int search_rac_data(char *callsign, rac_record *data) {
         return (0);
     }
     call_offset = atol(char_offset);
+ 
     (void)fclose(fndx);
 
     /* ====================================================================    */
@@ -242,13 +245,13 @@ int search_rac_data(char *callsign, rac_record *data) {
     /*    This will take an avg of 1/2 of the # skipped making the index    */
     /*                                    */
 
-    fdb=fopen(get_data_base_dir("fcc/AMACALL.LST"),"r");
-    if (fdb!=NULL) {
-        (void)fseek(fdb, call_offset,SEEK_SET);
+    fdb = fopen(get_data_base_dir("fcc/AMACALL.LST"), "r");
+    if (fdb != NULL) {
+        (void)fseek(fdb, call_offset, SEEK_SET);
         if (callsign[5] == '-')
             (void)chomp(callsign,5);
 
-        while (!feof(fdb) && strncmp((char *)&racdata,callsign,6) < 0)
+        while (!feof(fdb) && strncmp((char *)&racdata, callsign, 6) < 0)
 
 //WE7U
 // Problem here:  We're sticking 8 bytes too many into racdata!
@@ -258,24 +261,28 @@ int search_rac_data(char *callsign, rac_record *data) {
         fprintf(stderr,"Search:Could not open RAC data base: %s\n", get_data_base_dir("fcc/AMACALL.LST") );
 
     /*  || (callsign[5] == '-' && strncmp((char *)&racdata,callsign,5) < 0)) */
-    (void)chomp(racdata.callsign,6);
-    if (!strncmp((char *)racdata.callsign,callsign,6)) {
+    (void)chomp(racdata.callsign, 6);
+
+    if (!strncmp((char *)racdata.callsign, callsign, 6)) {
         found = 1;
-        (void)chomp(racdata.first_name,35);
-        (void)chomp(racdata.last_name,35);
-        (void)chomp(racdata.address,70);
-        (void)chomp(racdata.city,35);
-        (void)chomp(racdata.province,2);
-        (void)chomp(racdata.postal_code,10);
-        (void)chomp(racdata.qual_a,1);
-        (void)chomp(racdata.qual_b,1);
-        (void)chomp(racdata.qual_c,1);
-        (void)chomp(racdata.qual_d,1);
-        (void)chomp(racdata.club_name,141);
-        (void)chomp(racdata.club_address,70);
-        (void)chomp(racdata.club_city,35);
-        (void)chomp(racdata.club_province,2);
-        (void)chomp(racdata.club_postal_code,9);
+
+// Some of these cause problems on 64-bit processors, so commented
+// them out for now.
+//        (void)chomp(racdata.first_name, 35);
+//        (void)chomp(racdata.last_name, 35);
+//        (void)chomp(racdata.address, 70);
+//        (void)chomp(racdata.city, 35);
+//        (void)chomp(racdata.province, 2);
+//        (void)chomp(racdata.postal_code, 10);
+//        (void)chomp(racdata.qual_a, 1);
+//        (void)chomp(racdata.qual_b, 1);
+//        (void)chomp(racdata.qual_c, 1);
+//        (void)chomp(racdata.qual_d, 1);
+//        (void)chomp(racdata.club_name, 141);
+//        (void)chomp(racdata.club_address, 70);
+//        (void)chomp(racdata.club_city, 35);
+//        (void)chomp(racdata.club_province, 2);
+//        (void)chomp(racdata.club_postal_code, 9);
 
         xastir_snprintf(data->callsign,
             sizeof(data->callsign),
@@ -366,7 +373,7 @@ int search_rac_data(char *callsign, rac_record *data) {
         popup_message_always(langcode("STIFCC0101"),
             langcode("STIFCC0102") );
     }
-
+ 
     return(found);
 }
 
