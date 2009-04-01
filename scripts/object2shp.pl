@@ -74,7 +74,7 @@ foreach $command (@cmd)
 # We now have the shapefile and dbf file created, start populating from the
 # objects file:
 
-$i=1;
+$i=0;
 while (<INOBJ>)
 {
     chomp($_);
@@ -92,6 +92,8 @@ while (<INOBJ>)
 # commented out with #, etc.
     next if ($semicolon ne ";");
     next if ($live_or_dead eq "_");
+
+    $i++;  # bump the ID number so every point has a unique one
 
     $lat_deg=substr($lat,0,2);
     $lat_min=substr($lat,2,5);
