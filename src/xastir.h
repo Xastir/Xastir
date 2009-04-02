@@ -103,7 +103,6 @@ extern void Send_message(Widget w, XtPointer clientData, XtPointer callData);
 extern void create_gc(Widget w);
 
 extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
-extern void Window_Quit(Widget w, XtPointer client, XtPointer call);
 
 extern void fix_dialog_size(Widget w);
 extern void fix_dialog_vsize(Widget w);
