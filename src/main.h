@@ -368,7 +368,6 @@ extern void HandlePendingEvents(XtAppContext app);
 extern void create_gc(Widget w);
 extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Station_List(Widget w, XtPointer clientData, XtPointer calldata);
-extern void Window_Quit(Widget w, XtPointer client, XtPointer call);
 extern void Tracks_All_Clear(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_station(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_place(Widget w, XtPointer clientData, XtPointer callData);

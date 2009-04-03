@@ -337,6 +337,9 @@ char lang_to_use[30];
 int  altnet;
 char altnet_call[MAX_CALLSIGN+1];
 
+static void Window_Quit(Widget w, XtPointer client, XtPointer call);
+static void save_state(Widget w, XtPointer client, XtPointer call);
+
 void da_input(Widget w, XtPointer client_data, XtPointer call_data);
 void da_resize(Widget w, XtPointer client_data, XtPointer call_data);
 void da_expose(Widget w, XtPointer client_data, XtPointer call_data);
@@ -3191,12 +3194,13 @@ Boolean unbusy_cursor(XtPointer clientdata) {
 
 
 
+static Cursor cs = (Cursor)NULL;
 
 void busy_cursor(Widget w) {
-    static Cursor cs = (Cursor)NULL;
 
-    if(!cs)
+    if(!cs) {
         cs=XCreateFontCursor(XtDisplay(w),XC_watch);
+    }
 
     (void)XDefineCursor(XtDisplay(w),XtWindow(w),cs);
     (void)XFlush(XtDisplay(w));
@@ -5253,6 +5257,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //    XWMHints *wm_hints; // Used for window manager hints
     Dimension my_appshell_width, my_appshell_height;
     Dimension da_width, da_height;
+    static XmFontListEntry font_entry;
 
 
     if(debug_level & 8)
@@ -5394,7 +5399,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         }
     }
 
-    fontlist1 = XmFontListCreate(font1, "chset1");
+    font_entry = XmFontListEntryCreate(XmFONTLIST_DEFAULT_TAG, XmFONT_IS_FONT, font1);
+    fontlist1 = XmFontListAppendEntry(NULL, font_entry);
+    XmFontListEntryFree(&font_entry);
     XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
 
 
@@ -9510,6 +9517,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     WM_DELETE_WINDOW = XmInternAtom(XtDisplay(appshell),"WM_DELETE_WINDOW", FALSE);
     XmAddWMProtocolCallback(appshell, WM_DELETE_WINDOW, Window_Quit, (XtPointer) NULL);
+    XtAddCallback(appshell,XtNsaveCallback, save_state, (XtPointer) NULL);
+    XtAddCallback(appshell,XtNdieCallback, Window_Quit, (XtPointer) NULL);
 
     XmTextFieldSetString(text,"");
     XtManageChild(text);
@@ -9572,8 +9581,10 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         0, 0,           // argv and argc for restarting
         NULL);          // size hints
 
-    if (title)
+    if (title) {
         free(title);
+	title = NULL;
+    }
 
     if (track_me)
         XmToggleButtonSetState(trackme_button,TRUE,TRUE);
@@ -11449,7 +11460,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                   fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,connections[i]);                          
                               got_conn = openConnection(&devices[i],connections[i]); 
                           }
-                          if ((got_conn == 1) && (!(connections[i]->type==NULL))) { 
+                          if ((got_conn == 1) && (!(connections[i]->type==0))) { 
                               getAllSimplePositions(connections[i]);
                               // if connection worked, it is a oneshot upload of data, so we don't 
                               // need to set port_data[].active and .status values here.
@@ -12468,7 +12479,7 @@ void shut_down_server(void) {
 // to call signal() from outside any signal handlers to tell it to
 // ignore further SIGHUP's.
 //
-void restart(int sig) {
+static void restart(int sig) {
 
 //    if (debug_level & 1)
         fprintf(stderr,"Shutting down Xastir...\n");
@@ -12506,7 +12517,7 @@ void restart(int sig) {
 
 
 
-void quit(int sig) {
+static void quit(int sig) {
 
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
@@ -12545,7 +12556,7 @@ void quit(int sig) {
 
 #ifdef USE_PID_FILE_CHECK
 
-int pid_file_check(void){
+static int pid_file_check(int hold){
 
     int killret=0; 
     int other_pid=0;
@@ -12579,7 +12590,7 @@ int pid_file_check(void){
             fprintf(stderr, "other_pid = <%d> killret == <%d> errno == <%d>\n",
                 other_pid,killret,errno); 
 #endif
-        if ((killret == -1) && (errno == ESRCH )){
+        if ((killret == -1) && (errno == ESRCH ) && !hold){
             fprintf(stderr,
                 "Other Xastir process, pid: %d does not appear be running. \n",
                 other_pid);
@@ -14023,6 +14034,22 @@ void Window_Quit( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client, /*@unuse
 
 void Menu_Quit( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     quit(0);
+}
+
+
+
+
+
+void save_state( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client, /*@unused@*/ XtPointer calldata) {
+    if (((XtCheckpointToken)calldata)->shutdown) {
+	save_data();
+
+	// shutdown all interfaces
+	shutdown_all_active_or_defined_port(-1);
+
+	shut_down_server();
+    }
+
 }
 
 
@@ -17163,26 +17190,26 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     extern char compiledate[];
    
     xastir_snprintf(string2, sizeof(string2),"\nXastir V%s \n",xastir_version);
-    xb = XmStringCreateLtoR(string2, XmFONTLIST_DEFAULT_TAG);
-    xa = XmStringCreateLtoR(compiledate, XmFONTLIST_DEFAULT_TAG);
+    xb = XmStringCreateLocalized(string2);
+    xa = XmStringCreateLocalized(compiledate);
     xms = XmStringConcat(xb, xa);
     XmStringFree(xa);
     XmStringFree(xb);
     //xms is still defined
 
-    xa = XmStringCreateLtoR("\n\n" ABOUT_MSG "\n\nLibraries used: " XASTIR_INSTALLED_LIBS, XmFONTLIST_DEFAULT_TAG);  // Add some newlines
+    xa = XmStringCreateLocalized("\n\n" ABOUT_MSG "\n\nLibraries used: " XASTIR_INSTALLED_LIBS);  // Add some newlines
     xb = XmStringConcat(xms, xa);
     XmStringFree(xa);
     XmStringFree(xms);
     //xb is still defined
 
-    xa = XmStringCreateLtoR("\n" XmVERSION_STRING, XmFONTLIST_DEFAULT_TAG);  // Add the Motif version string
+    xa = XmStringCreateLocalized("\n" XmVERSION_STRING);  // Add the Motif version string
     xms = XmStringConcat(xb, xa);
     XmStringFree(xa);
     XmStringFree(xb);
     //xms is still defined
 
-    xa = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
+    xa = XmStringCreateLocalized("\n");  // Add a newline
     xb = XmStringConcat(xms, xa);
     XmStringFree(xa);
     XmStringFree(xms);
@@ -17194,11 +17221,11 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
 #ifdef HAVE_NETAX25_AXLIB_H
     //if (libax25_version != NULL) {
-    xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);
+    xb = XmStringCreateLocalized("\n");
     xa = XmStringConcat(xb, xms);
     XmStringFree(xb);
     XmStringFree(xms);
-    xb = XmStringCreateLtoR("@(#)LibAX25 (ax25lib_version is broken. Complain to the authors.)\n", XmFONTLIST_DEFAULT_TAG);
+    xb = XmStringCreateLocalized("@(#)LibAX25 (ax25lib_version is broken. Complain to the authors.)\n");
     xms = XmStringConcat(xa, xb);
     XmStringFree(xa);
     XmStringFree(xb);
@@ -17206,19 +17233,19 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 #endif  // AVE_NETAX25_AXLIB_H
 
 #ifdef HAVE_MAGICK
-    xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
+    xb = XmStringCreateLocalized("\n");  // Add a newline
     xa = XmStringConcat(xb, xms);
     XmStringFree(xb);
     XmStringFree(xms);
     //xa is still defined
 
-    xb = XmStringCreateLtoR( MagickVersion, XmFONTLIST_DEFAULT_TAG);    // Add ImageMagick version string
+    xb = XmStringCreateLocalized( MagickVersion);    // Add ImageMagick version string
     xms = XmStringConcat(xa, xb);
     XmStringFree(xa);
     XmStringFree(xb);
     //xms is still defined
 #endif  // HAVE_MAGICK
-    xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
+    xb = XmStringCreateLocalized("\n");  // Add a newline
     xa = XmStringConcat(xb, xms);
     XmStringFree(xb);
     XmStringFree(xms);
@@ -17226,7 +17253,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
     version = XRotVersion( string1, 99 );
     xastir_snprintf(string2, sizeof(string2), "\n%s, Version %0.2f", string1, version);
-    xb = XmStringCreateLtoR( string2, XmFONTLIST_DEFAULT_TAG);    // Add Xvertext version string
+    xb = XmStringCreateLocalized( string2);    // Add Xvertext version string
     xms = XmStringConcat(xa, xb);
     XmStringFree(xa);
     XmStringFree(xb);
@@ -17615,7 +17642,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     int i;
     Position x, y;
     unsigned int n;
-    char *temp;
+    char *temp = NULL;
     char title[200];
     char temp2[200];
     char temp3[200];
@@ -17639,8 +17666,8 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     for (x=1; x<=i;x++) {
         if (XmListPosSelected(help_list,x)) {
             found=1;
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
-                x=i+1;
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+            x=i+1;
         }
     }
     open=0;
@@ -17835,7 +17862,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
             while (!feof(f)) {
                 (void)get_line(f,temp,600);
                 if (strncmp(temp,"HELP-INDEX>",11)==0) {
-                    XmListAddItem(help_list, str_ptr = XmStringCreateLtoR((temp+11),XmFONTLIST_DEFAULT_TAG),n++);
+                    XmListAddItem(help_list, str_ptr = XmStringCreateLocalized((temp+11)),n++);
                     XmStringFree(str_ptr);
                 }
             }
@@ -18091,7 +18118,8 @@ void map_properties_fill_in (void) {
             {
                 if (XmListPosSelected(map_list,x)) {
                     // Snag the filename portion from the line
-                    if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+		    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+                    if (temp) {
 
                         // Update this file or directory in the in-memory
                         // map index, setting the "temp_select" field to 1.
@@ -18338,10 +18366,8 @@ if (current->temp_select) {
                     temp_auto,
                     current->filename);
 
-                XmListAddItem(map_properties_list,
-                    str_ptr = XmStringCreateLtoR(temp,
-                                 XmFONTLIST_DEFAULT_TAG),
-                                 n);
+                str_ptr = XmStringCreateLocalized(temp);
+		XmListAddItem(map_properties_list, str_ptr, n);
                 n++;
                 XmStringFree(str_ptr);
             }
@@ -18500,22 +18526,11 @@ void map_properties_filled_auto(Widget widget, XtPointer clientData, XtPointer c
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_filled" field to 2.
-                map_index_update_filled_auto(temp2);
+                map_index_update_filled_auto(temp);
                 XtFree(temp);
             }
         }
@@ -18552,22 +18567,11 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_filled" field to 1.
-                map_index_update_filled_yes(temp2);
+                map_index_update_filled_yes(temp);
                 XtFree(temp);
             }
         }
@@ -18604,22 +18608,11 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_filled" field to 0.
-                map_index_update_filled_no(temp2);
+                map_index_update_filled_no(temp);
                 XtFree(temp);
             }
         }
@@ -18673,22 +18666,11 @@ void map_properties_usgs_drg(Widget widget, XtPointer clientData, XtPointer call
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "usgs_drg" field to drg_setting.
-                map_index_update_usgs_drg(temp2,drg_setting);
+                map_index_update_usgs_drg(temp,drg_setting);
                 XtFree(temp);
             }
         }
@@ -18773,22 +18755,11 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "auto_maps" field to 1.
-                map_index_update_auto_maps_yes(temp2);
+                map_index_update_auto_maps_yes(temp);
                 XtFree(temp);
             }
         }
@@ -18825,22 +18796,11 @@ void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer 
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "auto_maps" field to 0.
-                map_index_update_auto_maps_no(temp2);
+                map_index_update_auto_maps_no(temp);
                 XtFree(temp);
             }
         }
@@ -18903,23 +18863,12 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
                 // as appropriate.
-                map_index_update_layer(temp2, new_layer);
+                map_index_update_layer(temp, new_layer);
                 XtFree(temp);
             }
         }
@@ -18982,23 +18931,12 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//                fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
                 // as appropriate.
-                map_index_update_max_zoom(temp2, new_max_zoom);
+                map_index_update_max_zoom(temp, new_max_zoom);
                 XtFree(temp);
             }
         }
@@ -19061,23 +18999,12 @@ void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPoint
         if ( XmListPosSelected(map_properties_list,x) ) {
  
             // Snag the filename portion from the line
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                char *temp2;
-
-                // Need to get rid of the first XX characters on the
-                // line in order to come up with just the
-                // path/filename portion.
-//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
-//printed into the map_properties_list, we have to change this
-//offset.
-                temp2 = temp + MPD_FILENAME_OFFSET;
-
-//fprintf(stderr,"New string:%s\n",temp2);
-
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_END);
+            if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
                 // as appropriate.
-                map_index_update_min_zoom(temp2, new_min_zoom);
+                map_index_update_min_zoom(temp, new_min_zoom);
                 XtFree(temp);
             }
         }
@@ -19707,7 +19634,8 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     // big speed improvement when you have 1000's of maps.
     //
     for(x=1; x<=i;x++) {
-        if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+        if (temp) {
             // Update this file or directory in the in-memory map
             // index, setting/resetting the "selected" field as
             // appropriate.
@@ -19802,7 +19730,8 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
     // big speed improvement when you have 1000's of maps.
     //
     for(x=1; x<=i;x++) {
-        if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+        if (temp) {
             // Update this file or directory in the in-memory map
             // index, setting/resetting the "selected" field as
             // appropriate.
@@ -19918,7 +19847,8 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
 //            XmListDeselectPos(map_list,x);
 //        }
 
-        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+        if(temp) {
             ext = get_map_ext (temp);
             if ( (ext != NULL)
                     && (   (strcasecmp(ext,"map") == 0)
@@ -19975,7 +19905,8 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
 //            XmListDeselectPos(map_list,x);
 //        }
 
-        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+        if(temp) {
             ext = get_map_ext (temp);
             length = (int)strlen(temp);
             if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
@@ -20014,7 +19945,8 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
 //            XmListDeselectPos(map_list,x);
 //        }
 
-        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+        if(temp) {
             ext = get_map_ext (temp);
             length = (int)strlen(temp);
             if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
@@ -20053,7 +19985,8 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 //            XmListDeselectPos(map_list,x);
 //        }
 
-        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+        if(temp) {
             ext = get_map_ext (temp);
             length = (int)strlen(temp);
             if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
@@ -20141,7 +20074,8 @@ void sort_list(char *filename,int size, Widget list, int *item) {
             if (fread(&file_ptr,sizeof(file_ptr),1,f_pointer)==1) {
                 (void)fseek(f_data,file_ptr,SEEK_SET);
                 if (fread(fill,(size_t)size,1,f_data)==1) {
-                    XmListAddItem(list, str_ptr = XmStringCreateLtoR(fill,XmFONTLIST_DEFAULT_TAG),*item);
+		    str_ptr = XmStringCreateLocalized(fill);
+                    XmListAddItem(list, str_ptr,*item);
                     XmStringFree(str_ptr);
                     (*item)++;
                 }
@@ -20222,7 +20156,7 @@ void map_chooser_init (void) {
 // map_index is set for each file/directory.
 //
 // We also check the XmStringPtr field in the map index records.  If
-// NULL, then we call XmStringCreateLtoR() to allocate and fill in
+// NULL, then we call XmStringCreateLocalized() to allocate and fill in
 // the XmString value corresponding to the filename.  We use that to
 // speed up Map Chooser later.
 //
@@ -20267,8 +20201,7 @@ void map_chooser_fill_in (void) {
                 // to the record.  The 2nd and succeeding times we
                 // bring up Map Chooser, things will be faster.
                 if (current->XmStringPtr == NULL) {
-                    current->XmStringPtr = XmStringCreateLtoR(current->filename,
-                        XmFONTLIST_DEFAULT_TAG);
+                    current->XmStringPtr = XmStringCreateLocalized(current->filename);
                 }
 
                 XmListAddItem(map_list,
@@ -21858,7 +21791,8 @@ void read_file_selection_now(Widget w, XtPointer clientData, XtPointer callData)
     char *file;
     XmFileSelectionBoxCallbackStruct *cbs =(XmFileSelectionBoxCallbackStruct*)callData;
 
-    if(XmStringGetLtoR(cbs->value,XmFONTLIST_DEFAULT_TAG,&file)) {
+    file = XmStringUnparse(cbs->value, NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    if(file) {
         // fprintf(stderr,"FILE is %s\n",file);
 
         // Make sure we're not already reading a file and the user actually
@@ -22138,40 +22072,30 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 #else
         switch (load_predefined_cb_selected) { 
            case 1:
-               load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+               load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
               break;
            case 2:
-               load_predefined_cb_selection = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
+               load_predefined_cb_selection = XmStringCreateLocalized("predefined_EVENT.sys");
                break;
            case 3:
-               load_predefined_cb_selection = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
+               load_predefined_cb_selection = XmStringCreateLocalized("predefined_USER.sys");
                break;
            case 4:
-               load_predefined_cb_selection = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
+               load_predefined_cb_selection = XmStringCreateLocalized(predefined_object_definition_filename);
                break;
            default:
-               load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+               load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
         }
 #endif //USE_COMBO_BOX
     }
     else {
 
-        // ??????????????
-        // Should this be XmStringCreateLocalized, or another
-        // XmString creation function with XmCHARSET_TEXT??  Not
-        // sure of the implications of using localization or not
-        // when creating and extracting the picklist values.
-        // XmStringCreateLtoR, allthough deprecated appears to be in
-        // standard use in Xastir, use it pending global
-        // conversion.
-        // ??????????????
-
-        load_predefined_cb_selection = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
+        load_predefined_cb_selection = XmStringCreateLocalized("predefined_SAR.sys");
     }
 
     xastir_snprintf(predefined_object_definition_filename,
         sizeof(predefined_object_definition_filename),
-        XmStringUnparse(load_predefined_cb_selection,
+        temp = XmStringUnparse(load_predefined_cb_selection,
             NULL,
             XmCHARSET_TEXT,
             XmCHARSET_TEXT,
@@ -22179,8 +22103,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
             0,
             XmOUTPUT_ALL) );
 
-        //XmStringGetLtoR(load_predefined_cb_selection,XmFONTLIST_DEFAULT_TAG,temp));
-
+    XtFree(temp);
     XmStringFree(load_predefined_cb_selection);
 
     // Repopulate the predefined object (SAR/Public service) struct
@@ -22587,9 +22510,9 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         // Need to replace combo boxes with a pull down menu when lesstif is used.
         // See xpdf's  XPDFViewer.cc/XPDFViewer.h for an example.
 
-        cb_items[0] = XmStringCreateLtoR("predefined_SAR.sys", XmFONTLIST_DEFAULT_TAG);
-        cb_items[1] = XmStringCreateLtoR("predefined_EVENT.sys", XmFONTLIST_DEFAULT_TAG);
-        cb_items[2] = XmStringCreateLtoR("predefined_USER.sys", XmFONTLIST_DEFAULT_TAG);
+        cb_items[0] = XmStringCreateLocalized("predefined_SAR.sys");
+        cb_items[1] = XmStringCreateLocalized("predefined_EVENT.sys");
+        cb_items[2] = XmStringCreateLocalized("predefined_USER.sys");
 #ifdef USE_COMBO_BOX
         // Combo box to pick file from which to load predefined objects menu
         load_predefined_objects_menu_from_file = XtVaCreateManagedWidget("Load objects menu filename ComboBox",
@@ -22872,7 +22795,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             if (predefined_object_definition_filename != NULL ) { 
 
 #ifdef USE_COMBO_BOX            
-                XmString tempSelection = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
+                XmString tempSelection = XmStringCreateLocalized(predefined_object_definition_filename);
                 XmComboBoxSelectItem(load_predefined_objects_menu_from_file, tempSelection);
                 XmStringFree(tempSelection);
 #else
@@ -22888,7 +22811,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 // user won't be able to edit it, but they will see it.
                 if (x==-1) { 
                     ac = 0;
-                    cb_items[i] = XmStringCreateLtoR(predefined_object_definition_filename, XmFONTLIST_DEFAULT_TAG);
+                    cb_items[i] = XmStringCreateLocalized(predefined_object_definition_filename);
                     XtSetArg(al[ac], XmNlabelString, cb_items[i]); ac++;
                     XtSetArg(al[ac], XmNuserData, (XtPointer)i); ac++;
                     XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
@@ -23044,8 +22967,6 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel;
     Atom delw;
-    int length;
-    int timeout_length;
     XmString x_str;
 
 
@@ -23075,7 +22996,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 NULL);
 
         // Posit Time
-        length = strlen(langcode("WPUPCFTM02")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM02"));
         posit_interval = XtVaCreateManagedWidget("Posit Interval",
                 xmScaleWidgetClass,
@@ -23095,12 +23015,9 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNminimum, 5,          // 0.5 = Thirty seconds
                 XmNmaximum, 60*10,      // 60 minutes
                 XmNdecimalPoints, 1,    // Move decimal point over one
+	        XmNscaleMultiple, 5,	// Move 30 seconds per left mouse
                 XmNshowValue, TRUE,
                 XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM02"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23110,7 +23027,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
         // Interval for stations being considered old (symbol ghosting)
-        length = strlen(langcode("WPUPCFTM03")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM03"));
         ghosting_time = XtVaCreateManagedWidget("Station Ghosting Time",
                 xmScaleWidgetClass,
@@ -23131,10 +23047,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 3*60,   // Three hours
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_old/60),
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM03"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23143,7 +23055,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Object Item Transmit Interval
-        length = strlen(langcode("WPUPCFTM04")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM04"));
         object_item_interval = XtVaCreateManagedWidget("Object/Item Transmit Interval (min)",
                 xmScaleWidgetClass,
@@ -23163,12 +23074,9 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNborderWidth, 1,
                 XmNminimum, 5,      // Five minutes
                 XmNmaximum, 120,    // 120 minutes
+	        XmNscaleMultiple, 5,	// Move 5 minutes per left mouse
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(OBJECT_rate / 60),
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM04"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23177,7 +23085,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Interval for station not being displayed
-        length = strlen(langcode("WPUPCFTM05")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM05"));
         clearing_time = XtVaCreateManagedWidget("Station Clear Time",
                 xmScaleWidgetClass,
@@ -23199,10 +23106,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 24*7,   // One week
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_clear/(60*60)),
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM05"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23211,7 +23114,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // GPS Time
-        length = strlen(langcode("WPUPCFTM06")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM06"));
         gps_interval = XtVaCreateManagedWidget("GPS Interval",
                 xmScaleWidgetClass,
@@ -23233,10 +23135,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty seconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)gps_time,
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM06"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23245,7 +23143,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Interval for station being removed from database
-        length = strlen(langcode("WPUPCFTM07")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM07"));
         removal_time = XtVaCreateManagedWidget("Station Delete Time",
                 xmScaleWidgetClass,
@@ -23267,10 +23164,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 14,     // Two weeks
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_remove/(60*60*24)),
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM07"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23279,7 +23172,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Dead Reckoning Timeout
-        length = strlen(langcode("WPUPCFTM08")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM08"));
         dead_reckoning_time = XtVaCreateManagedWidget("DR Time (min)",
                 xmScaleWidgetClass,
@@ -23301,10 +23193,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(dead_reckoning_timeout / 60),
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM08"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23313,7 +23201,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Serial Pacing Time (delay between each serial character)
-        length = strlen(langcode("WPUPCFTM09")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM09"));
         serial_pacing_time = XtVaCreateManagedWidget("Serial Pacing Time (ms)",
                 xmScaleWidgetClass,
@@ -23335,10 +23222,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 50,     // Fifty milliseconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(serial_char_pacing),
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM09"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23347,7 +23230,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Time below which track segment will get drawn, in minutes
-        length = strlen(langcode("WPUPCFTM10")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM10"));
         trail_segment_timeout = XtVaCreateManagedWidget("Trail segment timeout",
                 xmScaleWidgetClass,
@@ -23369,10 +23251,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 12*60, // 12 hours
                 XmNshowValue, TRUE,
                 XmNvalue, trail_segment_time,
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM10"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23381,7 +23259,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Interval at track segment will not get drawn, in degrees
-        length = strlen(langcode("WPUPCFTM11")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM11"));
         trail_segment_distance_max = XtVaCreateManagedWidget("Trail segment interval degrees",
                 xmScaleWidgetClass,
@@ -23403,10 +23280,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 45, // 90 degrees
                 XmNshowValue, TRUE,
                 XmNvalue, trail_segment_distance,
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM11"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23415,7 +23288,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
         XmStringFree(x_str);
 
         // Time below which track segment will get drawn, in minutes
-        length = strlen(langcode("WPUPCFTM12")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM12"));
         RINO_download_timeout = XtVaCreateManagedWidget("RINO download interval",
                 xmScaleWidgetClass,
@@ -23437,10 +23309,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 30,     // 30 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, RINO_download_interval,
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM12"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23452,7 +23320,6 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 XtSetSensitive(RINO_download_timeout, FALSE);
 #endif  // HAVE_GPSMAN
 
-       timeout_length = strlen(langcode("MPUPTGR017")) + 1;
        x_str = XmStringCreateLocalized(langcode("MPUPTGR017"));
        net_map_slider  = XtVaCreateManagedWidget("Net Map Timeout",
                 xmScaleWidgetClass,
@@ -23474,10 +23341,6 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNmaximum, 300,
                 XmNshowValue, TRUE,
                 XmNvalue, net_map_timeout,
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -23486,7 +23349,6 @@ XtSetSensitive(RINO_download_timeout, FALSE);
         XmStringFree(x_str);
 
         // Interval at which snapshots will be taken, in minutes
-        length = strlen(langcode("WPUPCFTM13")) + 1;
         x_str = XmStringCreateLocalized(langcode("WPUPCFTM13"));
         snapshot_interval_slider = XtVaCreateManagedWidget("Snapshot interval",
                 xmScaleWidgetClass,
@@ -23508,10 +23370,6 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNmaximum, 30,     // 30 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, snapshot_interval,
-// Note:  Some versions of OpenMotif (distributed with Fedora,
-// perhaps others) don't work properly with XtVaTypedArg() as used
-// here, instead showing blank labels for the Scale widgets.
-//                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM13"), length,
                 XmNtitleString, x_str,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -25028,8 +24886,6 @@ void Track_Me( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callD
 // Pointer to the Move/Measure cursor object
 static Cursor cs_move_measure = (Cursor)NULL;
 
-
-
 /*
  *  Move_Object
  *
@@ -25044,7 +24900,7 @@ void  Move_Object( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
         measuring_distance = 0;
 
         // Change the cursor
-            if(!cs_move_measure) {
+        if(!cs_move_measure) {
             cs_move_measure=XCreateFontCursor(XtDisplay(da),XC_crosshair);
         }
 
@@ -27005,7 +26861,7 @@ char **dupargv (char **argv) {
     /* the vector */
     for (argc = 0; argv[argc] != NULL; argc++);
 
-    copy = (char **) malloc ((argc + 1) * sizeof (char *));
+    copy = (char **) calloc ((argc + 1), sizeof (char *));
 
     if (copy == NULL)
         return NULL;
@@ -27042,6 +26898,7 @@ int main(int argc, char *argv[], char *envp[]) {
     static char lang_to_use_or[30];
     char temp[100];
     static char *Geometry = NULL;
+    static int xt = 0;
 
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
@@ -27281,10 +27138,10 @@ int main(int argc, char *argv[], char *envp[]) {
     memset(&appshell, 0, sizeof(appshell));
 
     // Here we had to add "g:" in order to allow -geometry to be
-    // used, which is actually parsed out by the XtIntrinsics code,
-    // not directly in Xastir code.
+    // used and x: to allow xt arguments, which is actually parsed out
+    // by the XtIntrinsics code, not directly in Xastir code.
     //
-    while ((ag = getopt(argc, argv, "c:f:v:l:g:012346789timp")) != EOF) {
+    while ((ag = getopt(argc, argv, "c:f:v:l:g:x:012346789timp")) != EOF) {
 
         switch (ag) {
             
@@ -27376,6 +27233,11 @@ int main(int argc, char *argv[], char *envp[]) {
                     Geometry = argv[optind++];
                 break;
 
+	    case 'x':   // -xtsessionID
+		optind++; // swallow argument, let XtIntrinsics deal with it.
+		xt = 1;
+		break;
+
             case 'p':   // Disable popups
                 disable_all_popups = 1;
                 pop_up_new_bulletins = 0;
@@ -27414,6 +27276,26 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options
     }
+
+
+    // If we don't make this call, we can't access Xt or
+    // Xlib calls from multiple threads at the same time.
+    // Note that Motif from the OSF (including OpenMotif)
+    // still can't handle multiple threads talking to it at
+    // the same time.  See:
+    // http://www.faqs.org/faqs/x-faq/part7/section-46.html
+    // We'll probably have to add in a global mutex lock in
+    // order to keep from accessing the widget set from more
+    // than one thread.
+    //
+    XInitThreads();
+
+
+    // Set language attribs.  Must be called prior to
+    // XtVaOpenApplication().
+    (void)XtSetLanguageProc((XtAppContext) NULL,
+                            XtSetLanguageProc(NULL, NULL, NULL),
+                            (XtPointer) NULL );
 
 
     if (Geometry) {
@@ -27551,7 +27433,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 #ifdef USE_PID_FILE_CHECK
 
-    if (pid_file_check() !=0 ){
+    if (pid_file_check(xt) !=0 ){
         fprintf(stderr,"pid_file_check failed:\t%s \n", strerror(errno) );
             exit(errno);
     }
@@ -27715,26 +27597,6 @@ int main(int argc, char *argv[], char *envp[]) {
             reset_outgoing_messages();
 
 
-            // If we don't make this call, we can't access Xt or
-            // Xlib calls from multiple threads at the same time.
-            // Note that Motif from the OSF (including OpenMotif)
-            // still can't handle multiple threads talking to it at
-            // the same time.  See:
-            // http://www.faqs.org/faqs/x-faq/part7/section-46.html
-            // We'll probably have to add in a global mutex lock in
-            // order to keep from accessing the widget set from more
-            // than one thread.
-            //
-            XInitThreads();
-
-
-            // Set language attribs.  Must be called prior to
-            // XtVaOpenApplication().
-            (void)XtSetLanguageProc((XtAppContext) NULL,
-                (XtLanguageProc) NULL,
-                (XtPointer) NULL );
-
-
             // This convenience function calls (in turn):
             //      XtToolkitInitialize()
             //      XtCreateApplicationContext()
@@ -27749,7 +27611,7 @@ int main(int argc, char *argv[], char *envp[]) {
                 &argc,
                 argv,
                 fallback_resources,
-                applicationShellWidgetClass,
+                sessionShellWidgetClass,
                 XmNmappedWhenManaged, FALSE,
                 NULL);
 
@@ -27769,6 +27631,7 @@ int main(int argc, char *argv[], char *envp[]) {
             // errors during init!
             //
             (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
+            (void)setlocale(LC_CTYPE, "C");         // K4INT: Make sure strings work OK.
 
 
             setup_visual_info(display, DefaultScreen(display));
