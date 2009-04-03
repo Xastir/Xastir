@@ -85,7 +85,6 @@
 #endif  // HAVE_LIBINTL_H
 
 #include <Xm/XmAll.h>
-#include <X11/cursorfont.h>
 
 #include "xastir.h"
 #include "symbols.h"
