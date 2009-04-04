@@ -4,7 +4,7 @@ dnl ICE_FIND_XmHTML
 dnl
 dnl Adapted from a macro by Andreas Zeller.
 dnl
-AC_DEFUN(ICE_FIND_XmHTML,
+AC_DEFUN([ICE_FIND_XmHTML],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 xmhtml_includes=
