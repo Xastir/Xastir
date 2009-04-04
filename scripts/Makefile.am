@@ -33,12 +33,43 @@ pkglib_SCRIPTS = \
     toporama250k.pl\
     track-get.pl \
     update_langfile.pl \
+    values \
+    values.pl \
     waypoint-get.pl \
     xastir-fixcfg.sh \
     xastir-migrate.sh \
     Xastir_tigerpoly.py
 
-
 EXTRA_DIST = $(pkglib_SCRIPTS)
 
+MAINTAINERCLEANFILES = $(CONFIGURE_DEPS}
 
+SUFFIXES  = .in
+am--refresh:
+	@:
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+	@for dep in $?; do \
+          case '$(am__configure_deps)' in \
+            *$$dep*) \
+              echo ' cd $(srcdir) && $(AUTOMAKE) --gnu '; \
+              cd $(srcdir) && $(AUTOMAKE) --gnu  \
+                && exit 0; \
+              exit 1;; \
+          esac; \
+        done; \
+        echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  Makefile'; \
+        cd $(top_srcdir) && \
+          $(AUTOMAKE) --gnu  Makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+          *config.status*) \
+            echo ' $(SHELL) ./config.status'; \
+            $(SHELL) ./config.status;; \
+          *) \
+            echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
+            cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
+        esac;
+
+%:	%.in
+	sed -e 's:@PREFIX@:${prefix}:' >$@  <$^

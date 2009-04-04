@@ -27,6 +27,9 @@
 #
 
 GNIS_SITE=http://geonames.usgs.gov/docs/stategaz
+SUFFIX=_Features_20090203
+
+. `dirname $0`/values
 
 if [ $# -lt 1 ]
 then
@@ -44,19 +47,19 @@ do
 
     printf "Retrieving GNIS file for %s\n" ${MYSTATE}
 
-    rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.txt
-    if (wget ${GNIS_SITE}/${MYSTATE}_DECI.zip)
+    rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}.txt
+    if (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.zip)
     then
-        unzip ${MYSTATE}_DECI.zip 
+        unzip ${MYSTATE}${SUFFIX}.zip 
     else 
-        rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.txt
-        wget ${GNIS_SITE}/${MYSTATE}_DECI.txt
+        rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}.txt
+        wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.txt
     fi
 
-    if ( [ -f ${MYSTATE}_DECI.txt ] )
+    if ( [ -f ${MYSTATE}${SUFFIX}.txt ] )
     then 
-        printf "File successfully downloaded. Moving to /usr/local/share/xastir/GNIS\n" 
-        sudo mv ${MYSTATE}_DECI.txt /usr/local/share/xastir/GNIS/${MYSTATE}.gnis
+        printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
+        sudo mv ${MYSTATE}${SUFFIX}.txt ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
     else 
         printf "File for %s not successfully downloaded.\n" ${MYSTATE}
     fi 

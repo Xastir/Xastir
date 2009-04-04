@@ -27,9 +27,12 @@
 #     typical call:  icontable.pl > symbols.xpm
 
 #--------------------------------------------------------------------------
-                                            
+use File::Basename;
+$dirname=dirname($0);
+require ($dirname."/values.pl");
+
 # symbols file from XASTIR V2.1, change the path for your environment
-$SYMBFILE = "/usr/local/share/xastir/symbols/symbols.dat";
+$SYMBFILE = $prefix."/share/xastir/symbols/symbols.dat";
 
 #--------------------------------------------------------------------------
 %sympix = ();

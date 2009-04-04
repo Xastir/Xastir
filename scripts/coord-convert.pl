@@ -26,7 +26,7 @@
 #
 
 
-use lib "/usr/local/lib";
+use lib "${prefix}/lib";
 use Coordinate;         # WE7U's Coordinate.pm module
 
 

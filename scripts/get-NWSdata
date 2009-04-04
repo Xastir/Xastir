@@ -40,7 +40,8 @@ FILE5="hz28au04"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE6="fz19nv08"  # NWSM Libraries: Fire Weather Zone Boundaries
 FILE7="c_03oc08"  # County Libraries: AWIPS Counties
 
-cd /usr/local/share/xastir/Counties
+. `dirname $0`/values
+cd ${prefix}/share/xastir/Counties
 
 
 # Remove any old zip files hanging around in this directory
