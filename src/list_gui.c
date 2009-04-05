@@ -466,7 +466,6 @@ void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
  *  Fill list with new data
  */
 void Station_List_fill(int type, int new_offset) {
-    int i;
     int row;
     char temp[8];
     char *temp_ptr;
@@ -487,6 +486,8 @@ void Station_List_fill(int type, int new_offset) {
     int to_move, rows;
     int strwid;
 
+#define HGT 26
+#define FUDGE 78
     // type 0 all, 1: mobile, 2: WX, 3: local, 4: time, 5: Objects/Items
     // offset is the entry that should be displayed in the first line
     
@@ -501,18 +502,18 @@ void Station_List_fill(int type, int new_offset) {
             XtVaGetValues(station_list_dialog[type], XmNwidth,  &ww, XmNheight, &wh, NULL);
             // w, h    get width and height of scrollbar:
             XtVaGetValues(SL_scroll[type], XmNwidth,  &w, XmNheight, &h, NULL);
-            rows  = (h+10) / 29;         // number of rows we can display, 29 pixel per row
+            rows = (h+10) / HGT;         // number of rows we can display, HGT pixel per row
 //            fprintf(stderr,"fill: %d %d %d\n",wh, h, rows);
         } else {
             if (list_size_w[type] > 0 && list_size_h[type] > 0) {
                 wh = list_size_h[type];         // restore size
                 ww = list_size_w[type];
-                rows  = (wh -81+10) / 29;              // 81 ???
+                rows = (wh -FUDGE+10) / HGT;              // Fudge Factor ???
 //                fprintf(stderr,"load: %d       %d\n",wh, rows);
             } else {
                 wh = 500;                       // start with this... ???
                 ww = 700;
-                rows  = (wh -81+10) / 29;              // 81 ???
+                rows = (wh -FUDGE+10) / HGT;              // Fudge Factor ???
 //                fprintf(stderr,"set:  %d       %d\n",wh, rows);
             }
             XtVaSetValues(station_list_dialog[type], XmNwidth, ww, NULL); // set widget width
@@ -521,8 +522,8 @@ void Station_List_fill(int type, int new_offset) {
             rows = 17;
         if (rows < 1)
             rows = 1;
-        // new_h = (rows*29) + (wh-h);    // (rows + border) in pixel
-        new_h = (rows*29) + 81;    // (rows + border) in pixel
+        // new_h = (rows*HGT) + (wh-h);    // (rows + border) in pixel
+        new_h = (rows*HGT) + FUDGE;    // (rows + border) in pixel
         XtVaSetValues(station_list_dialog[type], XmNheight, new_h, NULL);       // correct widget height
 
         list_size_h[type] = new_h;                      // remember current size
@@ -611,14 +612,13 @@ void Station_List_fill(int type, int new_offset) {
         last_offset[type] = new_offset;
 
         // now fill the list rows
-        row = 0;
         xastir_snprintf(temp, sizeof(temp), "%d", (rows+new_offset));                   // calculate needed string width
         strwid = (int)strlen(temp);                             // to keep it right justified
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill" );
 
         // Start filling in the rows of the widget
-        for (i=0;i<rows;i++) {                                  // loop over display lines
+        for (row=0; row<rows; row++) {                          // loop over display lines
             if (p_station != NULL) {                            // we have data...
                 int ghost;
 
@@ -664,7 +664,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                       );
 
                 // number in list
-                xastir_snprintf(temp, sizeof(temp), "%*d", strwid, (i+1+new_offset));
+                xastir_snprintf(temp, sizeof(temp), "%*d", strwid, (row+1+new_offset));
                 XmTextFieldSetString(SL_list[type][row],temp);
                 XtManageChild(SL_list[type][row]);
 
@@ -970,7 +970,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
                 XtManageChild(SL_da[type][row]);
 
-                xastir_snprintf(temp, sizeof(temp), "%*d", strwid, (i+1+new_offset));
+                xastir_snprintf(temp, sizeof(temp), "%*d", strwid, (row+1+new_offset));
                 XmTextFieldSetString(SL_list[type][row],temp);
                 XtManageChild(SL_list[type][row]);
 
@@ -1039,7 +1039,6 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         break;
                 }
             }           // empty line
-            row++;      // next line
             if (p_station != NULL)
                 get_list_member(type, &p_station, 1, 1);        // get next member in list
         }  // loop over display lines
@@ -1271,7 +1270,7 @@ void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
     if (!station_list_dialog[type]) {   // setup list area if not previously done
                                         // DK7IN: we should destroy those Widgets to get the
                                         // memory back, and rebuild it on the next call.   ????
-                                        // I don't exactly know what's going on, but we loose memory
+                                        // I don't exactly know what's going on, but we lose memory
                                         // every time we call it.
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
@@ -1281,7 +1280,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
             XmNdeleteResponse,      XmDESTROY,
             XmNdefaultPosition,     FALSE,
             XmNminWidth,            274,
-            XmNmaxHeight,           610,
+            XmNmaxHeight,           520,
             XmNminHeight,           95,
 //          XmNheight,             230,
             XmNfontList, fontlist1,
@@ -1908,7 +1907,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
             SL_da[type][i] = XtVaCreateManagedWidget("Station_List icon", xmPushButtonWidgetClass, win_list,
                                       XmNtopAttachment,         XmATTACH_OPPOSITE_WIDGET,
                                       XmNtopWidget,             SL_list[type][i],
-                                      XmNtopOffset,             1,
+                                      XmNtopOffset,             -5,             // Align with top of row, not top of text.
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNleftAttachment,        XmATTACH_WIDGET,
                                       XmNleftWidget,            SL_list[type][i],
