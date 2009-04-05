@@ -66,6 +66,7 @@
 extern XmFontList fontlist1;    // Menu/System fontlist
 
 #define SL_MAX 20
+#define ROWS 17
 
 // List Numbers (defined in list_gui.h)
 // 0: LST_ALL   - all stations list
@@ -317,7 +318,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists
 
     for (type=0;type<LST_NUM;type++) {
         station_list_dialog[type] = NULL;       // set list to undefined
-        for (i=0;i<SL_MAX;i++) {
+        for (i=0;i<ROWS;i++) {
             SL_icon[type][i] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
                                 DefaultDepthOfScreen(XtScreen(appshell)));
         }
@@ -385,7 +386,7 @@ void station_list_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
 
     begin_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
 
-    for (i = 0; i < 17; i++) {
+    for (i = 0; i < ROWS; i++) {
         XtDestroyWidget(SL_list[type][i]);
         XtDestroyWidget(SL_da[type][i]);
         XtDestroyWidget(SL_call[type][i]);
@@ -486,6 +487,7 @@ void Station_List_fill(int type, int new_offset) {
     int to_move, rows;
     int strwid;
 
+    assert(ROWS <= SL_MAX);
 #define HGT 26
 #define FUDGE 78
     // type 0 all, 1: mobile, 2: WX, 3: local, 4: time, 5: Objects/Items
@@ -518,8 +520,8 @@ void Station_List_fill(int type, int new_offset) {
             }
             XtVaSetValues(station_list_dialog[type], XmNwidth, ww, NULL); // set widget width
         }
-        if (rows > 17)          // limit vertical size to data structure size for widgets
-            rows = 17;
+        if (rows > ROWS)          // limit vertical size to data structure size for widgets
+            rows = ROWS;
         if (rows < 1)
             rows = 1;
         // new_h = (rows*HGT) + (wh-h);    // (rows + border) in pixel
@@ -1280,7 +1282,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
             XmNdeleteResponse,      XmDESTROY,
             XmNdefaultPosition,     FALSE,
             XmNminWidth,            274,
-            XmNmaxHeight,           520,
+            XmNmaxHeight,           ROWS*HGT+FUDGE,
             XmNminHeight,           95,
 //          XmNheight,             230,
             XmNfontList, fontlist1,
@@ -1850,7 +1852,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
         XtAddEventHandler(win_list, ButtonReleaseMask, FALSE,
                           (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
-        for (i=0; i<17;i++) {   // setup widgets for maximum number of rows
+        for (i=0; i<ROWS;i++) {   // setup widgets for maximum number of rows
             if (i != 0) {         // not first row
 
                 seps[i] = XtVaCreateManagedWidget("Station_List seps", xmSeparatorGadgetClass, win_list,
