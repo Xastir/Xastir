@@ -1444,7 +1444,7 @@ void check_and_transmit_objects_items(time_t time) {
     // we'll be running through the station list too often and
     // wasting cycles.
     if (time < (last_object_check + (int)(4.0 * OBJECT_CHECK_RATE/5.0 + 1.0) ) )
-        return;
+      return;
 
 //fprintf(stderr,"check_and_transmit_objects_items\n");
 
@@ -1452,7 +1452,7 @@ void check_and_transmit_objects_items(time_t time) {
     last_object_check = time;
 
     if (debug_level & 1)
-        fprintf(stderr,"Checking whether to retransmit any objects/items\n");
+      fprintf(stderr,"Checking whether to retransmit any objects/items\n");
 
 // We could speed things up quite a bit here by either keeping a
 // separate list of our own objects/items, or going through the list
@@ -1460,57 +1460,55 @@ void check_and_transmit_objects_items(time_t time) {
 // backwards from the current time by the max transmit interval plus
 // some increment.  Watch out for the user changing the slider).
 
-    p_station = n_first;    // Go through received stations alphabetically
-    while (p_station != NULL) {
+    for (p_station = n_first; p_station != NULL; p_station = p_station->n_next) {
 
         //fprintf(stderr,"%s\t%s\n",p_station->call_sign,p_station->origin);
 
         // If station is owned by me (Exact match includes SSID)
 //        if (is_my_call(p_station->origin,1)) {
-        if (is_my_object_item(p_station)) {
+        // and it's an object or item
+        if ((p_station->flag & (ST_OBJECT|ST_ITEM)) && is_my_object_item(p_station)) {
 
-            // and it's an object or item
-            if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
-                long x_long_save, y_lat_save;
+            long x_long_save, y_lat_save;
 
-                // If dead-reckoning, we need to send out a new
-                // position for this object instead of just
-                // overwriting the old position, which will cause
-                // the track to skip.  Here we save the old position
-                // away so we can save it back to the record later.
-                //
-                x_long_save = p_station->coord_lon;
-                y_lat_save = p_station->coord_lat;
+            // If dead-reckoning, we need to send out a new
+            // position for this object instead of just
+            // overwriting the old position, which will cause
+            // the track to skip.  Here we save the old position
+            // away so we can save it back to the record later.
+            //
+            x_long_save = p_station->coord_lon;
+            y_lat_save = p_station->coord_lat;
 
-                if (debug_level & 1) {
-                    fprintf(stderr,
+            if (debug_level & 1) {
+                fprintf(stderr,
                         "Found a locally-owned object or item: %s\n",
                         p_station->call_sign);
-                }
+            }
 
-                // Call the DR function to compute a new lat/long
-                // and change the object's lat/long to match so that
-                // we move the object along each time we transmit
-                // it.
-                //
+            // Call the DR function to compute a new lat/long
+            // and change the object's lat/long to match so that
+            // we move the object along each time we transmit
+            // it.
+            //
 // WE7U
 // Here we should log the new position to file if it's not done
 // automatically.
-                //
-                if (p_station->speed[0] != '\0') {
-                    long x_long, y_lat;
+            //
+            if (p_station->speed[0] != '\0') {
+                long x_long, y_lat;
 
-                    compute_current_DR_position(p_station, &x_long, &y_lat);
+                compute_current_DR_position(p_station, &x_long, &y_lat);
 
-                    // Put the new position into the record
-                    // temporarily so that we can 
-                    p_station->coord_lon = x_long;
-                    p_station->coord_lat = y_lat;
-                }
+                // Put the new position into the record
+                // temporarily so that we can 
+                p_station->coord_lon = x_long;
+                p_station->coord_lat = y_lat;
+            }
 
-                // Keep the timestamp current on my own
-                // objects/items so they don't expire.
-                p_station->sec_heard = sec_now();
+            // Keep the timestamp current on my own
+            // objects/items so they don't expire.
+            p_station->sec_heard = sec_now();
 
 // Implementing sped-up transmission of new objects, regular
 // transmission of old objects (decaying algorithm).  We'll do this
@@ -1539,138 +1537,136 @@ void check_and_transmit_objects_items(time_t time) {
 ///////////////////////////////////
 
 
-                // Check for the case where the timing slider has
-                // been reduced and the expire time is too long.
-                // Reset it to the current max expire time so that
-                // it'll get transmitted more quickly.
-                if (p_station->transmit_time_increment > OBJECT_rate)
-                    p_station->transmit_time_increment = OBJECT_rate;
+            // Check for the case where the timing slider has
+            // been reduced and the expire time is too long.
+            // Reset it to the current max expire time so that
+            // it'll get transmitted more quickly.
+            if (p_station->transmit_time_increment > OBJECT_rate)
+              p_station->transmit_time_increment = OBJECT_rate;
 
 
-                increment = p_station->transmit_time_increment;
+            increment = p_station->transmit_time_increment;
 
-                if ( ( p_station->last_transmit_time + increment) <= time ) {
-                    // We should transmit this object/item as it has
-                    // hit its transmit interval.
+            if ( ( p_station->last_transmit_time + increment) <= time ) {
+                // We should transmit this object/item as it has
+                // hit its transmit interval.
 
-                    float randomize;
-                    int one_fifth_increment;
-                    int new_increment;
+                float randomize;
+                int one_fifth_increment;
+                int new_increment;
 
 
-                    if (first && !object_tx_disable) {    // "Transmitting objects/items"
-                        statusline(langcode("BBARSTA042"),1);
-                        first = 0;
-                    }
+                if (first && !object_tx_disable) {    // "Transmitting objects/items"
+                    statusline(langcode("BBARSTA042"),1);
+                    first = 0;
+                }
 
-                    // Set up the new doubling increment
-                    increment = increment * 2;
-                    if (increment > OBJECT_rate) {
-                        increment = OBJECT_rate;
-                    }
+                // Set up the new doubling increment
+                increment = increment * 2;
+                if (increment > OBJECT_rate) {
+                    increment = OBJECT_rate;
+                }
 
-                    // Randomize the distribution a bit, so that all
-                    // objects are not transmitted at the same time.
-                    // Allow the random number to vary over 20%
-                    // (one-fifth) of the newly computed increment.
-                    one_fifth_increment = (int)((increment / 5) + 0.5);
+                // Randomize the distribution a bit, so that all
+                // objects are not transmitted at the same time.
+                // Allow the random number to vary over 20%
+                // (one-fifth) of the newly computed increment.
+                one_fifth_increment = (int)((increment / 5) + 0.5);
 //fprintf(stderr,"one_fifth_increment: %d\n", one_fifth_increment);
 
-                    // Scale the random number from 0.0 to 1.0.
-                    // Must convert at least one of the numbers to a
-                    // float else randomize will be zero every time.
-                    randomize = rand() / (float)RAND_MAX;
+                // Scale the random number from 0.0 to 1.0.
+                // Must convert at least one of the numbers to a
+                // float else randomize will be zero every time.
+                randomize = rand() / (float)RAND_MAX;
 //fprintf(stderr,"randomize: %f\n", randomize);
 
-                    // Scale it to the range we want (0% to 20% of
-                    // the interval)
-                    randomize = randomize * one_fifth_increment;
+                // Scale it to the range we want (0% to 20% of
+                // the interval)
+                randomize = randomize * one_fifth_increment;
 //fprintf(stderr,"scaled randomize: %f\n", randomize);
 
-                    // Subtract it from the increment, use
-                    // poor-man's rounding to turn the random number
-                    // into an int (so we get the full range).
-                    new_increment = increment - (int)(randomize + 0.5);
-                    p_station->transmit_time_increment = (short)new_increment;
+                // Subtract it from the increment, use
+                // poor-man's rounding to turn the random number
+                // into an int (so we get the full range).
+                new_increment = increment - (int)(randomize + 0.5);
+                p_station->transmit_time_increment = (short)new_increment;
 
 //fprintf(stderr,"check_and_transmit_objects_items():Setting
 //tx_increment to %d:%s\n",
 //    new_increment,
 //    p_station->call_sign);
 
-                    // Set the last transmit time into the object.
-                    // Keep this based off the time the object was
-                    // last created/modified/deleted, so that we
-                    // don't end up with a bunch of them transmitted
-                    // together.
-                    p_station->last_transmit_time = p_station->last_transmit_time + new_increment;
+                // Set the last transmit time into the object.
+                // Keep this based off the time the object was
+                // last created/modified/deleted, so that we
+                // don't end up with a bunch of them transmitted
+                // together.
+                p_station->last_transmit_time = p_station->last_transmit_time + new_increment;
 
-                    // Here we need to re-assemble and re-transmit
-                    // the object or item
-                    // Check whether it is a "live" or "killed"
-                    // object and vary the
-                    // number of retransmits accordingly.  Actually
-                    // we should be able
-                    // to keep retransmitting "killed" objects until
-                    // they expire out of
-                    // our station queue with no problems.  If
-                    // someone wants to ressurect
-                    // the object we'll get new info into our struct
-                    // and this function will
-                    // ignore that object from then on, unless we
-                    // again snatch control of
-                    // the object.
+                // Here we need to re-assemble and re-transmit
+                // the object or item
+                // Check whether it is a "live" or "killed"
+                // object and vary the
+                // number of retransmits accordingly.  Actually
+                // we should be able
+                // to keep retransmitting "killed" objects until
+                // they expire out of
+                // our station queue with no problems.  If
+                // someone wants to ressurect
+                // the object we'll get new info into our struct
+                // and this function will
+                // ignore that object from then on, unless we
+                // again snatch control of
+                // the object.
 
-                    // if signpost, area object, df object, or
-                    // generic object
-                    // check p_station->APRS_Symbol->aprs_type:
-                    //   APRS_OBJECT
-                    //   APRS_ITEM
-                    //   APRS_DF (looks like I didn't use this one
-                    //   when I implemented DF objects)
+                // if signpost, area object, df object, or
+                // generic object
+                // check p_station->APRS_Symbol->aprs_type:
+                //   APRS_OBJECT
+                //   APRS_ITEM
+                //   APRS_DF (looks like I didn't use this one
+                //   when I implemented DF objects)
 
-                    //   Whether area, df, signpost.
-                    // Check ->signpost for signpost data.  Check
-                    // ->df_color also.
+                //   Whether area, df, signpost.
+                // Check ->signpost for signpost data.  Check
+                // ->df_color also.
 
-                    // call_sign, sec_heard, coord_lon, coord_lat,
-                    // packet_time, origin,
-                    // aprs_symbol, pos_time, altitude, speed,
-                    // course, bearing, NRQ,
-                    // power_gain, signal_gain, signpost,
-                    // station_time, station_time_type,
-                    // comments, df_color
-                    if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
+                // call_sign, sec_heard, coord_lon, coord_lat,
+                // packet_time, origin,
+                // aprs_symbol, pos_time, altitude, speed,
+                // course, bearing, NRQ,
+                // power_gain, signal_gain, signpost,
+                // station_time, station_time_type,
+                // comments, df_color
+                if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
 
-                        // Restore the original lat/long before we
-                        // transmit the (possibly) new position.
-                        //
-                        p_station->coord_lon = x_long_save;
-                        p_station->coord_lat = y_lat_save;
+                    // Restore the original lat/long before we
+                    // transmit the (possibly) new position.
+                    //
+                    p_station->coord_lon = x_long_save;
+                    p_station->coord_lat = y_lat_save;
 
 //fprintf(stderr,"Transmitting: %s\n",line);
-                        // Attempt to transmit the object/item again
-                        if (object_tx_disable || transmit_disable) {    // Send to loopback only
-                            output_my_data(line,-1,0,1,0,NULL); // Local loopback only, not igating
-                        }
-                        else { // Send to all active tx-enabled interfaces
-                            output_my_data(line,-1,0,0,0,NULL); // Transmit/loopback object data, not igating
-                        }
+                    // Attempt to transmit the object/item again
+                    if (object_tx_disable || transmit_disable) {    // Send to loopback only
+                        output_my_data(line,-1,0,1,0,NULL); // Local loopback only, not igating
                     }
-                    else {
-//fprintf(stderr,"Create_object_item_tx_string returned a 0\n");
-                        // Don't transmit it.
+                    else { // Send to all active tx-enabled interfaces
+                        output_my_data(line,-1,0,0,0,NULL); // Transmit/loopback object data, not igating
                     }
                 }
-                else {  // Not time to transmit it yet
+                else {
+//fprintf(stderr,"Create_object_item_tx_string returned a 0\n");
+                    // Don't transmit it.
+                }
+            }
+            else {  // Not time to transmit it yet
 //fprintf(stderr,"Not time to TX yet:
 //%s\t%s\t",p_station->call_sign,p_station->origin);
 //fprintf(stderr, "%ld secs to go\n", p_station->last_transmit_time
 //+ increment - time );
-                }
             }
         }
-        p_station = p_station->n_next;  // Get next station
     }
 //fprintf(stderr,"Exiting check_and_transmit_objects_items\n");
 }
@@ -2916,6 +2912,14 @@ void Set_CAD_object_parameters_dialog(char *area_description, CADRow *CAD_object
 
 
 
+static Cursor cs_CAD = (Cursor)NULL;
+
+void free_cs_CAD(void)
+{
+	XFreeCursor(XtDisplay(da), cs_CAD);
+	cs_CAD = (Cursor)NULL;
+}
+
 // This is the callback for the Draw togglebutton
 //
 void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
@@ -2923,7 +2927,6 @@ void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
         XtPointer callData) {
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
-    static Cursor cs_CAD = (Cursor)NULL;
 
 
     if(state->set) {
@@ -2933,6 +2936,7 @@ void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
         //
         if(!cs_CAD) {
             cs_CAD=XCreateFontCursor(XtDisplay(da),XC_pencil);
+            atexit(free_cs_CAD);
         }
     
         // enable the close polygon button on an open CAD menu
