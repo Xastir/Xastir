@@ -282,6 +282,9 @@ Cell Name
 // Examples of old/new format:
 // 1462331|VA|Abingdon Elementary School|school|Arlington|51|013|385023N|0770546W|38.83972|-77.09611||||||||Alexandria
 // 1462331|VA|Abingdon Elementary School|School|Arlington|51|013|385023N|0770545W|38.8398349|-77.0958117|56|Alexandria
+// 2008 Format follows
+//FEATURE_ID|FEATURE_NAME|FEATURE_CLASS|STATE_ALPHA|STATE_NUMERIC|COUNTY_NAME|COUNTY_NUMERIC|PRIMARY_LAT_DMS|PRIM_LONG_DMS|PRIM_LAT_DEC|PRIM_LONG_DEC|SOURCE_LAT_DMS|SOURCE_LONG_DMS|SOURCE_LAT_DEC|SOURCE_LONG_DEC|ELEVATION|MAP_NAME|DATE_CREATED|DATE_EDITED
+//205110|Appalachian National Scenic Trail|Trail|PA|42|Perry|099|401920N|0770439W|40.3221113|-77.0775473|||||201|Wertzville|09/12/1979|05/19/2008
 
                     //NOTE:  We handle running off the end of "line"
                     //via the "continue" statement.  Skip the line
@@ -295,60 +298,60 @@ Cell Name
                         continue;   // Skip this line
                     }
 
-                    // Find end of State field
-                    i = index(j+1, '|');
-
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip this line
-                    }
-
-                    i[0] = '\0';
-                    xastir_snprintf(state,sizeof(state),"%s",j+1);
-
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
 
                     // Find end of Feature Name field
-                    j = index(i+1, '|');
+                    i = index(++j, '|');
 
-                    if (j == NULL) {    // Pipe not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
-                    j[0] = '\0';
-                    xastir_snprintf(name,sizeof(name),"%s",i+1);
+                    i[0] = '\0';
+                    xastir_snprintf(name,sizeof(name),"%s",j);
 
                     // Find end of Feature Type field
-                    i = index(j+1, '|');
-
-                    if (i == NULL) {    // Pipe not found
-                        continue;   // Skip this line
-                    }
-
-                    i[0] = '\0';
-                    xastir_snprintf(type,sizeof(type),"%s",j+1);
-
-                    // Find end of County Name field
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     j[0] = '\0';
-                    xastir_snprintf(county,sizeof(county),"%s",i+1);
+                    xastir_snprintf(type,sizeof(type),"%s",i);
 
-                    // Find end of State Number Code field
-                    i = index(j+1, '|');
+                    // Find end of State field
+                    i = index(++j, '|');
 
                     if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
+                    xastir_snprintf(state,sizeof(state),"%s",j);
+
+                    // Find end of State Number Code field
+                    j = index(++i, '|');
+
+                    if (j == NULL) {    // Pipe not found
+                        continue;   // Skip this line
+                    }
+
+                    j[0] = '\0';
+
+                    // Find end of County Name field
+                    i = index(++j, '|');
+
+                    if (i == NULL) {    // Pipe not found
+                        continue;   // Skip this line
+                    }
+
+                    i[0] = '\0';
+                    xastir_snprintf(county,sizeof(county),"%s",j);
 
                     // Find end of County Number Code field
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
@@ -361,14 +364,14 @@ Cell Name
 // 1462331|VA|Abingdon Elementary School|School|Arlington|51|013|385023N|0770545W|38.8398349|-77.0958117|56|Alexandria
 
                     // Find end of Primary Latitude field (DDMMSSN)
-                    i = index(j+1, '|');
+                    i = index(++j, '|');
 
                     if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
-                    xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
+                    xastir_snprintf(latitude,sizeof(latitude),"%s",j);
                     if (!isdigit((int)latitude[0])) { // skip record if not
                         continue;                // numeric! (e.g. "UNKNOWN")
                     }
@@ -377,14 +380,14 @@ Cell Name
                     clean_string(latitude);
                     
                     // Find end of Primary Longitude field (DDDMMSSW)
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     j[0] = '\0';
-                    xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
+                    xastir_snprintf(longitude,sizeof(longitude),"%s",i);
                     if (!isdigit((int)longitude[0])) { // skip record if not
                         continue;                 // numeric (e.g. UNKNOWN)
                     }
@@ -394,7 +397,7 @@ Cell Name
 
                     // Find end of Primary Latitude field (decimal
                     // degrees)
-                    i = index(j+1, '|');
+                    i = index(++j, '|');
 
                     if (i == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -404,7 +407,7 @@ Cell Name
 
                     // Find end of Primary Longitude field (decimal
                     // degrees)
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -418,7 +421,7 @@ Cell Name
  
                     // Find end of Source Latitude field (DMS) (old
                     // format) or elevation (new format)
-                    i = index(j+1, '|');
+                    i = index(++j, '|');
 
                     if (i == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -428,7 +431,7 @@ Cell Name
 
                     // Find end of Source Longitude field (DMS) (old
                     // format) or 
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -438,7 +441,7 @@ Cell Name
 
                     // Find end of Source Latitude field (decimal
                     // degrees)
-                    i = index(j+1, '|');
+                    i = index(++j, '|');
 
                     if (i == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -448,7 +451,7 @@ Cell Name
 
                     // Find end of Source Longitude field (decimal
                     // degrees)
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -457,7 +460,7 @@ Cell Name
                     j[0] = '\0';
 
                     // Find end of Elevation field
-                    i = index(j+1, '|');
+                    i = index(++j, '|');
 
                     if (i == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -466,7 +469,7 @@ Cell Name
                     i[0] = '\0';
 
                     // Find end of Estimated Population field
-                    j = index(i+1, '|');
+                    j = index(++i, '|');
 
                     if (j == NULL) {    // Pipe not found
                         goto FINISH;    // We have enough to process now
@@ -474,7 +477,7 @@ Cell Name
 
                     if ( j != NULL ) {
                         j[0] = '\0';
-                        xastir_snprintf(population,sizeof(population),"%s",i+1);
+                        xastir_snprintf(population,sizeof(population),"%s",i);
                     }
 
 FINISH:
@@ -1087,64 +1090,64 @@ int gnis_locate_place( Widget w,
                     continue;   // Skip this line
                 }
 
-                // Find end of State field
-                i = index(j+1,'|');
-
-                if (i == NULL) {    // Pipe not found
-                    continue;   // Skip line
-                }
-
-                i[0] = '\0';
-                xastir_snprintf(state,sizeof(state),"%s",j+1);
-                clean_string(state);
-
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
 
                 // Find end of Feature Name field
-                j = index(i+1, '|');
+                i = index(++j, '|');
 
-                if (j == NULL) {    // Pipe not found
+                if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
                 }
 
-                j[0] = '\0';
-                xastir_snprintf(name,sizeof(name),"%s",i+1);
+                i[0] = '\0';
+                xastir_snprintf(name,sizeof(name),"%s",j);
                 clean_string(name);
 
                 // Find end of Feature Type field
-                i = index(j+1, '|');
-
-                if (i == NULL) {    // Pipe not found
-                    continue;   // Skip line
-                }
-
-                i[0] = '\0';
-                xastir_snprintf(type,sizeof(type),"%s",j+1);
-                clean_string(type);
-
-                // Find end of County Name field
-                j = index(i+1, '|');
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
                 }
 
                 j[0] = '\0';
-                xastir_snprintf(county,sizeof(county),"%s",i+1);
-                clean_string(county);
+                xastir_snprintf(type,sizeof(type),"%s",i);
+                clean_string(type);
 
-                // Find end of State Number Code field
-                i = index(j+1, '|');
+                // Find end of State field
+                i = index(++j,'|');
 
                 if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
                 }
 
                 i[0] = '\0';
+                xastir_snprintf(state,sizeof(state),"%s",j);
+                clean_string(state);
+
+                // Find end of State Number Code field
+                j = index(++i, '|');
+
+                if (j == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
+
+                j[0] = '\0';
+
+                // Find end of County Name field
+                i = index(++j, '|');
+
+                if (i == NULL) {    // Pipe not found
+                    continue;   // Skip line
+                }
+
+                i[0] = '\0';
+                xastir_snprintf(county,sizeof(county),"%s",j);
+                clean_string(county);
 
                 // Find end of County Number Code field
-                j = index(i+1, '|');
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1153,30 +1156,30 @@ int gnis_locate_place( Widget w,
                 j[0] = '\0';
 
                 // Find end of Primary Latitude field (DDMMSSN)
-                i = index(j+1, '|');
+                i = index(++j, '|');
 
                 if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
                 }
 
                 i[0] = '\0';
-                xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
+                xastir_snprintf(latitude,sizeof(latitude),"%s",j);
                 clean_string(latitude);
 
                 // Find end of Primary Longitude field (DDDMMSSW)
-                j = index(i+1, '|');
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
                 }
 
                 j[0] = '\0';
-                xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
+                xastir_snprintf(longitude,sizeof(longitude),"%s",i);
                 clean_string(longitude);
 
                 // Find end of Primary Latitude field (decimal
                 // degrees)
-                i = index(j+1, '|');
+                i = index(++j, '|');
 
                 if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1186,7 +1189,7 @@ int gnis_locate_place( Widget w,
 
                 // Find end of Primary Longitude field (decimal
                 // degrees)
-                j = index(i+1, '|');
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1195,7 +1198,7 @@ int gnis_locate_place( Widget w,
                 j[0] = '\0';
 
                 // Find end of Source Latitude field (DMS)
-                i = index(j+1, '|');
+                i = index(++j, '|');
 
                 if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1204,7 +1207,7 @@ int gnis_locate_place( Widget w,
                 i[0] = '\0';
 
                 // Find end of Source Longitude (DMS)
-                j = index(i+1, '|');
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1214,7 +1217,7 @@ int gnis_locate_place( Widget w,
 
                 // Find end of Source Latitude field (decimal
                 // degrees)
-                i = index(j+1, '|');
+                i = index(++j, '|');
 
                 if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1224,7 +1227,7 @@ int gnis_locate_place( Widget w,
 
                 // Find end of Source Longitude field (decimal
                 // degrees)
-                j = index(i+1, '|');
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1232,8 +1235,8 @@ int gnis_locate_place( Widget w,
 
                 j[0] = '\0';
 
-                // Find end of Elevation field
-                i = index(j+1, '|');
+                // Find end of Estimated Population field
+                i = index(++j, '|');
 
                 if (i == NULL) {    // Pipe not found
                     continue;   // Skip line
@@ -1241,19 +1244,19 @@ int gnis_locate_place( Widget w,
 
                 i[0] = '\0';
 
-                // Find end of Estimated Population field
-                j = index(i+1, '|');
+                xastir_snprintf(population,sizeof(population),"%s",j);
+                clean_string(population);
+
+                // Find end of Quad field
+                j = index(++i, '|');
 
                 if (j == NULL) {    // Pipe not found
                     continue;   // Skip line
                 }
 
                 j[0] = '\0';
-                xastir_snprintf(population,sizeof(population),"%s",i+1);
-                clean_string(population);
 
-                // Snag Cell Name field (Quad name, last field)
-                xastir_snprintf(quad,sizeof(quad),"%s",j+1);
+                xastir_snprintf(quad,sizeof(quad),"%s",i);
                 clean_string(quad);
 
                 // If "Match Case" togglebutton is not set, convert
