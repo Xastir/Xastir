@@ -27,7 +27,7 @@
 #
 
 GNIS_SITE=http://geonames.usgs.gov/docs/stategaz
-SUFFIX=_Features_20090203
+SUFFIX=_Features_20090401
 
 . `dirname $0`/values
 
