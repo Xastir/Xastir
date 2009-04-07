@@ -18458,7 +18458,7 @@ void map_index_update_filled_auto(char *filename) {
         if (strcmp(current->filename,filename) == 0) {
             // Found a match.  Update the field and return.
             current->draw_filled = 2;
-            return;
+            break;
         }
         current = current->next;
     }
@@ -18477,7 +18477,7 @@ void map_index_update_filled_yes(char *filename) {
         if (strcmp(current->filename,filename) == 0) {
             // Found a match.  Update the field and return.
             current->draw_filled = 1;
-            return;
+            break;
         }
         current = current->next;
     }
@@ -18496,7 +18496,7 @@ void map_index_update_filled_no(char *filename) {
         if (strcmp(current->filename,filename) == 0) {
             // Found a match.  Update the field and return.
             current->draw_filled = 0;
-            return;
+            break;
         }
         current = current->next;
     }
@@ -18530,7 +18530,7 @@ void map_properties_filled_auto(Widget widget, XtPointer clientData, XtPointer c
             if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_filled" field to 2.
-                map_index_update_filled_auto(temp);
+                map_index_update_filled_auto(&temp[MPD_FILENAME_OFFSET]);
                 XtFree(temp);
             }
         }
@@ -18571,7 +18571,7 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
             if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_filled" field to 1.
-                map_index_update_filled_yes(temp);
+                map_index_update_filled_yes(&temp[MPD_FILENAME_OFFSET]);
                 XtFree(temp);
             }
         }
@@ -18612,7 +18612,7 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
             if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_filled" field to 0.
-                map_index_update_filled_no(temp);
+                map_index_update_filled_no(&temp[MPD_FILENAME_OFFSET]);
                 XtFree(temp);
             }
         }
@@ -18636,7 +18636,7 @@ void map_index_update_usgs_drg(char *filename, int drg_setting) {
         if (strcmp(current->filename,filename) == 0) {
             // Found a match.  Update the field and return.
             current->usgs_drg = drg_setting;
-            return;
+            break;
         }
         current = current->next;
     }
@@ -18670,7 +18670,7 @@ void map_properties_usgs_drg(Widget widget, XtPointer clientData, XtPointer call
             if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "usgs_drg" field to drg_setting.
-                map_index_update_usgs_drg(temp,drg_setting);
+                map_index_update_usgs_drg(&temp[MPD_FILENAME_OFFSET],drg_setting);
                 XtFree(temp);
             }
         }
@@ -18759,7 +18759,7 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
             if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "auto_maps" field to 1.
-                map_index_update_auto_maps_yes(temp);
+                map_index_update_auto_maps_yes(&temp[MPD_FILENAME_OFFSET]);
                 XtFree(temp);
             }
         }
@@ -18800,7 +18800,7 @@ void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer 
             if (temp) {
                 // Update this file or directory in the in-memory
                 // map index, setting the "auto_maps" field to 0.
-                map_index_update_auto_maps_no(temp);
+                map_index_update_auto_maps_no(&temp[MPD_FILENAME_OFFSET]);
                 XtFree(temp);
             }
         }
@@ -18868,7 +18868,7 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
                 // as appropriate.
-                map_index_update_layer(temp, new_layer);
+                map_index_update_layer(&temp[MPD_FILENAME_OFFSET], new_layer);
                 XtFree(temp);
             }
         }
@@ -18936,7 +18936,7 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
                 // as appropriate.
-                map_index_update_max_zoom(temp, new_max_zoom);
+                map_index_update_max_zoom(&temp[MPD_FILENAME_OFFSET], new_max_zoom);
                 XtFree(temp);
             }
         }
@@ -19004,7 +19004,7 @@ void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPoint
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
                 // as appropriate.
-                map_index_update_min_zoom(temp, new_min_zoom);
+                map_index_update_min_zoom(&temp[MPD_FILENAME_OFFSET], new_min_zoom);
                 XtFree(temp);
             }
         }
@@ -19644,7 +19644,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
                 &ptr);
             XtFree(temp);
         }
-//fprintf(stderr,"Passed back: %s\n", ptr->filename);
+	//fprintf(stderr,"Passed back: %s\n", ptr->filename);
         ptr = ptr->next;
     }
 
