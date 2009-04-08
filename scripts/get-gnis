@@ -60,7 +60,7 @@ do
     then 
         printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
         sudo mv ${MYSTATE}${SUFFIX}.txt ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
-	if [ ${MYSTATE} == "AK" -o ${MYSTATE} == "HI" ]; then
+	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
 		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
 	fi
     else 
