@@ -393,6 +393,7 @@ void maps_init(void)
 {
     fprintf(stderr,"\n\nBuilt-in map types:\n");
     fprintf(stderr,"%10s   USGS GNIS Datapoints\n","gnis");
+    fprintf(stderr,"%10s   USGS GNIS Datapoints w/population\n","pop");
     fprintf(stderr,"%10s   APRSdos Maps\n","map");
     fprintf(stderr,"%10s   WinAPRS/MacAPRS/X-APRS Maps\n","map");
     fprintf(stderr,"%10s   PocketAPRS Maps\n","pdb");
@@ -5674,6 +5675,14 @@ extern void draw_gnis_map(Widget w,
                           int destination_pixmap,
                           map_draw_flags *draw_flags);
 
+extern void draw_pop_map(Widget w,
+                          char *dir,
+                          char *filenm,
+                          alert_entry *alert,
+                          u_char alert_color,
+                          int destination_pixmap,
+                          map_draw_flags *draw_flags);
+
 #ifdef HAVE_LIBGDAL
 extern void draw_gdal_map(Widget w,
                    char *dir,
@@ -5694,7 +5703,7 @@ extern void draw_ogr_map(Widget w,
 
 struct {
     char *ext;
-    enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo, dgn, sdts, s57} type;
+    enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo, dgn, sdts, s57, pop} type;
     void (*func)(Widget w,
                char *dir,
                char *filenm,
@@ -5712,6 +5721,7 @@ struct {
 
   {"geo",geo,draw_geo_image_map},
   {"gnis",gnis,draw_gnis_map},
+  {"pop",pop,draw_pop_map},
 
 #ifdef HAVE_LIBSHP
 #ifndef GDAL_SHAPEFILES

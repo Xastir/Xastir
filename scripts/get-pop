@@ -1,0 +1,78 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Script to retrieve GNIS files by state. 
+#
+# Written 20041205 Dan Brown N8YSZ
+#
+# Copyright (C) 2000-2009  The Xastir Group
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+# Look at the README for more information on the program.
+#
+
+GNIS_SITE=ftp://aprs.tamu.edu/pub/GNIS
+SUFFIX=.gnis
+
+. `dirname $0`/values
+
+if [ $# -lt 1 ]
+then
+    printf "%s: error - Need at least one state to download\n" $0
+    printf "Usage: %s ST [ST]... \n" $0
+    exit 1 
+fi
+
+cd /tmp 
+
+while [ $1 ]
+do 
+
+    MYSTATE=`printf ${1} | tr a-z A-Z `
+
+    printf "Retrieving GNIS file for %s\n" ${MYSTATE}
+
+    rm -f ${MYSTATE}${SUFFIX}.bz2 ${MYSTATE}${SUFFIX}.txt
+    if (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.bz2)
+    then
+        bunzip2 ${MYSTATE}${SUFFIX}.bz2 
+    else 
+        rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}
+        wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}
+    fi
+
+    if ( [ -f ${MYSTATE}${SUFFIX}.txt ] ) then 
+        printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
+        sudo mv ${MYSTATE}${SUFFIX}.txt ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
+	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
+		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
+	fi
+    elif ( [ -f ${MYSTATE}${SUFFIX} ] ) then 
+        printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
+        sudo mv ${MYSTATE}${SUFFIX} ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
+	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
+		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
+	fi
+        printf "File for %s not successfully downloaded.\n" ${MYSTATE}
+    fi 
+
+shift
+
+done 
+
+
