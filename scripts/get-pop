@@ -69,9 +69,6 @@ do
     elif ( [ -f ${MYSTATE}${SUFFIX} ] ) then 
         printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
         sudo mv ${MYSTATE}${SUFFIX} ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
-	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
-		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
-	fi
     else
         printf "File for %s not successfully downloaded.\n" ${MYSTATE}
     fi 
