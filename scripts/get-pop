@@ -26,7 +26,8 @@
 # Look at the README for more information on the program.
 #
 
-GNIS_SITE=ftp://aprs.tamu.edu/pub/GNIS
+#GNIS_SITE=ftp://aprs.tamu.edu/pub/GNIS
+GNIS_SITE=http://www.eng.uah.edu/pub/xastir
 SUFFIX=.gnis
 
 . `dirname $0`/values
@@ -47,12 +48,15 @@ do
 
     printf "Retrieving GNIS file for %s\n" ${MYSTATE}
 
-    rm -f ${MYSTATE}${SUFFIX}.bz2 ${MYSTATE}${SUFFIX}.txt
+    rm -f ${MYSTATE}${SUFFIX}.bz2 ${MYSTATE}${SUFFIX}.txt ${MYSTATE}${SUFFIX}.gz
     if (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.bz2)
     then
         bunzip2 ${MYSTATE}${SUFFIX}.bz2 
+    elif (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.gz)
+    then
+        gunzip ${MYSTATE}${SUFFIX}.gz
     else 
-        rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}
+        rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX} ${MYSTATE}${SUFFIX}.gz
         wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}
     fi
 
@@ -68,6 +72,7 @@ do
 	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
 		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
 	fi
+    else
         printf "File for %s not successfully downloaded.\n" ${MYSTATE}
     fi 
 
