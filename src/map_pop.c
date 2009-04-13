@@ -485,7 +485,7 @@ FINISH:
                     // "Federal Status" and "Cell Name".  We ignore
                     // those for now.
  
-		    if (strlen(latitude < 7)
+		    if (strlen(latitude) < 7)
 			continue;	// We really don't have any latitude here!
                     lat_dd[0] = latitude[0];
                     lat_dd[1] = latitude[1];
@@ -1325,7 +1325,7 @@ int pop_locate_place( Widget w,
 // "Found It!"
 //popup_message_always( langcode("POPEM00029"), name );
 
-		    if (strlen(latitude < 7)
+		    if (strlen(latitude) < 7)
 			continue;	// We really don't have any latitude here!
                     lat_dd[0] = latitude[0];
                     lat_dd[1] = latitude[1];
@@ -1342,7 +1342,7 @@ int pop_locate_place( Widget w,
                     lat_dir[0] = latitude[6];
                     lat_dir[1] = '\0';
 
-		    if (strlen(longitude < 8)
+		    if (strlen(longitude) < 8)
 			continue;	// We really don't have any longitude here!
                     long_dd[0] = longitude[0];
                     long_dd[1] = longitude[1];
