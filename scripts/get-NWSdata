@@ -40,7 +40,8 @@ FILE5="hz28au04"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE6="fz19nv08"  # NWSM Libraries: Fire Weather Zone Boundaries
 FILE7="c_03oc08"  # County Libraries: AWIPS Counties
 
-. `dirname $0`/values
+x=`dirname $0`
+. $x/values
 cd ${prefix}/share/xastir/Counties
 
 

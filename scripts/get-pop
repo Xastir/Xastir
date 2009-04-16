@@ -30,7 +30,8 @@
 GNIS_SITE=http://www.eng.uah.edu/pub/xastir
 SUFFIX=.gnis
 
-. `dirname $0`/values
+x=`dirname $0`
+. $x/values
 
 if [ $# -lt 1 ]
 then
