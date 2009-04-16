@@ -864,6 +864,8 @@ AC_CONFIG_FILES([Makefile \
     help/Makefile \
     m4/Makefile \
     scripts/Makefile \
+    scripts/values \
+    scripts/values.pl \
     src/Makefile \
     src/rtree/Makefile \
     src/shapelib/Makefile \

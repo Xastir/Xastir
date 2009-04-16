@@ -44,34 +44,3 @@ pkglib_SCRIPTS = \
 
 EXTRA_DIST = $(pkglib_SCRIPTS)
 
-MAINTAINERCLEANFILES = $(CONFIGURE_DEPS}
-
-SUFFIXES  = .in
-am--refresh:
-	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
-	@for dep in $?; do \
-          case '$(am__configure_deps)' in \
-            *$$dep*) \
-              echo ' cd $(srcdir) && $(AUTOMAKE) --gnu '; \
-              cd $(srcdir) && $(AUTOMAKE) --gnu  \
-                && exit 0; \
-              exit 1;; \
-          esac; \
-        done; \
-        echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu scripts/Makefile.in \
-        cd $(top_srcdir) && \
-          $(AUTOMAKE) --gnu scripts/Makefile.in
-.PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
-	@case '$?' in \
-          *config.status*) \
-            echo ' cd $(top_builddir) && $(SHELL) ./config.status'; \
-            cd $(top_builddir) && $(SHELL) ./config.status;; \
-          *) \
-            echo ' cd $(top_builddir) && $(SHELL) ./config.status scripts/$@ $(am__depfiles_maybe)'; \
-            cd $(top_builddir) && $(SHELL) ./config.status scripts/$@ $(am__depfiles_maybe);; \
-        esac;
-
-%:	%.in
-	sed -e 's:@PREFIX@:${prefix}:' >$@  <$^

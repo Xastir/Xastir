@@ -1,5 +1,5 @@
 #!/bin/perl
-$prefix="@PREFIX@";
+$prefix="@prefix@";
 
 =include for usage
 use File::Basename;
