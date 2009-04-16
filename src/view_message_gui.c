@@ -75,7 +75,7 @@ static xastir_mutex All_messages_dialog_lock;
 
 int vm_range;
 int view_message_limit = 10000;
-int Read_messages_packet_data_type = 0;
+int Read_messages_packet_data_type = 0; // 1=tnc_only, 2=net_only, 0=tnc&net
 int Read_messages_mine_only = 0;
 
 
@@ -630,7 +630,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 NULL);
  
         XtAddCallback(read_mine_only_button,XmNvalueChangedCallback,Read_messages_mine_only_toggle,"1");
- 
+
         n=0;
         XtSetArg(args[n], XmNrows, 15); IncN(n);
         XtSetArg(args[n], XmNcolumns, 85); IncN(n);
@@ -728,4 +728,5 @@ end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_mes
         (void)XRaiseWindow(XtDisplay(All_messages_dialog), XtWindow(All_messages_dialog));
     }
 }
+
 

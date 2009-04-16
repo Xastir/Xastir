@@ -116,6 +116,8 @@ extern void Send_message_call(Widget w, XtPointer clientData, XtPointer callData
 // view_message_gui.c
 extern int vm_range;
 extern int view_message_limit;
+extern int Read_messages_packet_data_type;
+extern int Read_messages_mine_only;
 
 #endif  /*  XASTIR_MESSAGES_H */
 

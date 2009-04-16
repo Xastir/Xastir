@@ -14110,12 +14110,12 @@ void  CAD_draw_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    // turn on or off dsiplay of cad objects 
+    // turn on or off display of cad objects 
     if (strcmp(which,"CAD_draw_objects")==0) { 
          CAD_draw_objects = state->set;
     }
 
-    // uurn on or off display of standard metadata
+    // turn on or off display of standard metadata
     if (strcmp(which,"CAD_show_label")==0) { 
          CAD_show_label = state->set;
     }

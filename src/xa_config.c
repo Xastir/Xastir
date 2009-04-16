@@ -581,6 +581,13 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "DISPLAY_DIST_BEAR_STATUS",      do_dbstatus);
 
 
+        // CAD Objects
+        store_int (fout, "DISPLAY_CAD_OBJECT_LABEL",       CAD_show_label);
+        store_int (fout, "DISPLAY_CAD_OBJECT_PROBABILITY", CAD_show_raw_probability);
+        store_int (fout, "DISPLAY_CAD_OBJECT_COMMENT",     CAD_show_comment);
+        store_int (fout, "DISPLAY_CAD_OBJECT_AREA",        CAD_show_area);
+
+
         // Interface values
         store_int (fout, "DISABLE_TRANSMIT",   transmit_disable);
         store_int (fout, "DISABLE_POSIT_TX",   posit_tx_disable);
@@ -957,6 +964,9 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int(fout,"VIEW_MESSAGE_LIMIT",view_message_limit);
         store_int(fout,"PREDEF_MENU_LOAD",predefined_menu_from_file);
         store_string(fout,"PREDEF_MENU_FILE",predefined_object_definition_filename);
+
+        store_int(fout, "READ_MESSAGES_PACKET_DATA_TYPE", Read_messages_packet_data_type);
+        store_int(fout, "READ_MESSAGES_MINE_ONLY", Read_messages_mine_only);
 
         /* printer variables */
         store_int (fout, "PRINT_ROTATED", print_rotated);
@@ -1650,6 +1660,14 @@ void load_data_or_default(void) {
 
     english_units = get_int ("DISPLAY_UNITS_ENGLISH", 0, 1, 0);
     do_dbstatus = get_int ("DISPLAY_DIST_BEAR_STATUS", 0, 1, 0);
+
+
+    CAD_show_label = get_int ("DISPLAY_CAD_OBJECT_LABEL", 0, 1, 1);
+    CAD_show_raw_probability = get_int ("DISPLAY_CAD_OBJECT_PROBABILITY", 0, 1, 1 );
+    CAD_show_comment = get_int ("DISPLAY_CAD_OBJECT_COMMENT", 0, 1, 1 );
+    CAD_show_area = get_int ("DISPLAY_CAD_OBJECT_AREA", 0, 1, 1 );
+
+
     transmit_disable = get_int ("DISABLE_TRANSMIT", 0, 1, 0);
     posit_tx_disable = get_int ("DISABLE_POSIT_TX", 0, 1, 0);
     object_tx_disable = get_int ("DISABLE_OBJECT_TX", 0, 1, 0);
@@ -2258,6 +2276,8 @@ void load_data_or_default(void) {
             "predefined_SAR.sys");
     }
 
+    Read_messages_packet_data_type = get_int ("READ_MESSAGES_PACKET_DATA_TYPE", 0,2,0);
+    Read_messages_mine_only = get_int ("READ_MESSAGES_MINE_ONLY", 0,1,0);
 
     /* printer variables */
     print_rotated = get_int ("PRINT_ROTATED", 0,1,0);
