@@ -1,0 +1,87 @@
+# tgr2007featnames.dbfawk
+#
+# Copyright (C) 2003-2009  The Xastir Group
+#
+# Census.gov 2008 TigerMaps for FEATNAMES
+# Richard Polivka, N6NKO - April, 2008
+# Craig Anderson, N6YXK - May, 2008
+# Dale Seaburg, KG5LT - March, 2009
+#
+#
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   pattern - line pattern for road, river, etc. (0 - solid; 1 - dash; 2 - double dash)
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map US Census Tiger/Line Shapefiles as available at:
+# http://www.census.gov/cgi-bin/geo/shapefiles/national-files
+#
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+# 2007FE = dbfinfo="TLID:FULLNAME:NAME:PREDIRABRV:PRETYPABRV:PREQUALABR:SUFDIRABRV:SUFTYPABRV:SUFQUALABR:PREDIR:PRETYP:PREQUAL:SUFDIR:SUFTYP:SUFQUAL:LINEARID:MTFCC:PAFLAG";
+dbfinfo="TLID:FULLNAME:NAME:PREDIRABRV:PRETYPABRV:PREQUALABR:SUFDIRABRV:SUFTYPABRV:SUFQUALABR:PREDIR:PRETYP:PREQUAL:SUFDIR:SUFTYP:SUFQUAL:LINEARID:MTFCC:PAFLAG";
+#dbffields is which of the above fields we actually want to look at.
+# No point reading dbffields that are not looked at further.
+dbffields="FULLNAME:MTFCC";
+}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+# use color 11 to highlight stuff that isn't properly mapped.
+BEGIN_RECORD {key=""; lanes=1; color=26; fill_color=26; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=26; font_size=0; symbol=""; fill_style=0 }
+
+/^FULLNAME=(.*)$/ {name="$1";next}
+# item locations
+#/^MTFCC=C3/ {display_level=0; next}
+# water
+/^MTFCC=H20/ {filled=1; fill_style=2; fill_stipple=2; color=117; fill_color=117; label_color=26; display_level=1024;next}
+/^MTFCC=H30/ {filled=1; fill_style=2; fill_stipple=2; color=117; fill_color=117; label_color=26; display_level=1024;next}
+# buildings
+#/^MTFCC=K/ {display_level=256; color=25; next}
+# PLCC
+/^MTFCC=L/ {display_level=0; next}
+# legal / statistical boundary
+/^MTFCC=P0001/ {display_level=0; next}
+# water shoreline
+/^MTFCC=P0002/ {display_level=1240; color=9; fill_color=9; next}
+# water intermittent shoreline
+/^MTFCC=P0003/ {display_level=1240; color=9; fill_color=9; next}
+# non-visible boundary
+/^MTFCC=P0004/ {display_level=0; next}
+# railroad
+/^MTFCC=R/ {lanes=2; color=8; pattern=1; display_level=128; next}
+# Limited access road
+/^MTFCC=S11/ {display_level=2048; lanes=4; color=11; label_level=512; font_size=3; next}
+# secondary road
+/^MTFCC=S12/ {display_level=128; lanes=3; color=8; label_level=128; font_size=2; next}
+# local road
+/^MTFCC=S14/ {display_level=128; label_level=16; color=20; lanes=1; next}
+# 4WD off-road trail
+/^MTFCC=S15/ {lanes=1; color=69; display_level=64; font_size=1; next}
+# Freeway access / service drive
+/^MTFCC=S16/ {color=11; display_level=64; next}
+# walkway / stairway
+/^MTFCC=S17[12]/ {lanes=1; color=12; pattern=2; display_level=64; next}
+# alley / private road
+/^MTFCC=S17[34]/ {lanes=1; color=40; pattern=2; display_level=64; next}
+# bike / bridle path
+/^MTFCC=S18/ {lanes=1; color=40; pattern=2; display_level=64; next}
+# road median
+/^MTFCC=S20/ {lanes=1; color=40; pattern=2; display_level=64; next}
+# just a demo of the END_RECORD and END rules:
+#END_RECORD {name="$name ($key)";}
+#END {}
+

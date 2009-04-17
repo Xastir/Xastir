@@ -57,7 +57,15 @@ EXTRA_DIST = \
     tnc-stop.d700 \
     tnc-stop.sys \
     tnc-stop.thd7 \
-    tnc-stop.tnc2-ui
+    tnc-stop.tnc2-ui \
+    areawater.dbfawk \
+    arealm.dbfawk \
+    tabblock.dbfawk \
+    cousub.dbfawk \
+    cousub00.dbfawk \
+    edge.dbfawk \
+    featnames.dbfawk \
+    pointlm.dbfawk
 
 config_DATA = ${EXTRA_DIST}
 

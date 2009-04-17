@@ -1,0 +1,63 @@
+# tgr2007pointlm.dbfawk
+#
+# Copyright (C) 2003-2009  The Xastir Group
+#
+# Census.gov 2008 TigerMaps for POINTLM
+# Richard Polivka, N6NKO - April, 2008
+# Craig Anderson, N6YXK - May, 2008
+# Dale Seaburg, KG5LT - March, 2009
+#
+#
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   pattern - line pattern for road, river, etc. (0 - solid; 1 - dash; 2 - double dash)
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map US Census Tiger/Line Shapefiles as available at:
+# http://www.census.gov/cgi-bin/geo/shapefiles/national-files
+#
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+# 2007FE = dbfinfo="STATEFP:COUNTYFP:COUNTYNS:POINTID:FULLNAME:MTFCC";
+dbfinfo="STATEFP:COUNTYFP:ANSICODE:POINTID:FULLNAME:MTFCC";
+#dbffields is which of the above fields we actually want to look at.
+# No point reading dbffields that are not looked at further.
+dbffields="FULLNAME:MTFCC";
+}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+# use color 11 to highlight stuff that isn't properly mapped.
+BEGIN_RECORD {key=""; lanes=1; color=6; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0 }
+
+/^FULLNAME=(.*)$/ {name="$1";next}
+# item locations
+/^MTFCC=C3/ {display_level=512;color=50; next}
+# Hospitals
+/^MTFCC=K12/ {filled=1; fill_color=12; label_color=12; display_level=256; label_level=128; font_size=12; next}
+# Schools
+/^MTFCC=K25/ {filled=1; fill_color=5; label_color=5; display_level=256; label_level=64; font_size=10; next}
+# Airports
+/^MTFCC=K24/ {filled=1; fill_color=13; label_color=13; display_level=256; label_level=128; font_size=12; next}
+# buildings
+/^MTFCC=K/ {filled=1; fill_color=2; label_color=2; display_level=256; next}
+# PLCC
+/^MTFCC=L/ {display_level=0; next}
+# just a demo of the END_RECORD and END rules:
+#END_RECORD {name="$name ($key)";}
+#END {}
+
+
