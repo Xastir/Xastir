@@ -24,7 +24,7 @@
 #  compatible.
 #
 # This file is used to map US Census Tiger/Line Shapefiles as available at:
-# http://www.census.gov/cgi-bin/geo/shapefiles/national-files
+# http://www.census.gov/geo/www/tiger/tgrshp2008/tgrshp2008.html
 #
 
 # BEGIN is called once per dbf file which contains multiple records.
