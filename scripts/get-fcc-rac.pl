@@ -55,7 +55,7 @@ if (-e $file && -r $file && -f $file) {
       chop;
       chop;
       $y = $_;
-      if (defined $from{$2}) {
+      if (defined $from{$2}) { # check for vanity reassignment
         if ($from{$z} =~ /^EN\|(\d+)\|\|\|(\w+)\|.*/) {
           if ($1 < $x) {
             $replaced++;
@@ -70,8 +70,8 @@ if (-e $file && -r $file && -f $file) {
   }
   close FILE;
  
-  open FILE_OUT, "> $file_out" or die "Can't open $file_out : $!";
-  for my $callsign ( sort keys %from ) {
+  open FILE_OUT, "|sort -k 5,5 -t \\| > $file_out" or die "Can't sort $file_out : $!";
+  for my $callsign ( keys %from ) {
     $total++;
     print FILE_OUT "$from{$callsign}\n";
   }
