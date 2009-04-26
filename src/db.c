@@ -5445,6 +5445,22 @@ void Track_from_Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPoin
     }
 }
 
+/* 
+ * Clear DF from Station_data
+ *
+ * Called by Station_data function below from the Clear DF Bearing
+ * button in Station Info.
+ */
+void Clear_DF_from_Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
+    DataRow *p_station = clientData;
+ 
+    if (strlen(p_station->bearing) == 3) {
+        // we have DF data to clear
+        p_station->bearing[0]='\0';
+        p_station->NRQ[0]='\0';
+    }
+}
+
 
 
 
@@ -5477,7 +5493,7 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
         button_direct, button_version, station_icon, station_call,
         station_type, station_data_auto_update_w,
         button_tactical, button_change_trail_color,
-        button_track_station;
+        button_track_station,button_clear_df;
     Arg args[50];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
@@ -5891,6 +5907,25 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Station_data_destroy_shell, db_station_info);
 
+        // Button to clear DF bearing data if we actually have some.
+        if (strlen(p_station->bearing) == 3) {
+            button_clear_df = XtVaCreateManagedWidget(langcode("WPUPSTI092"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_cancel,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 3,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 4,
+                            XmNrightOffset, 5,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNfontList, fontlist1,
+                            NULL);
+            XtAddCallback(button_clear_df, XmNactivateCallback,Clear_DF_from_Station_data, (XtPointer)p_station);
+        }
+            
         button_track_station = XtVaCreateManagedWidget(langcode("WPUPTSP001"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_WIDGET,

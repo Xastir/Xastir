@@ -833,6 +833,7 @@ WPUPSTI088|DF Beamwidth||
 WPUPSTI089|DF Length||
 WPUPSTI090|Not Valid||
 WPUPSTI091|Change Trail Color||
+WPUPSTI092|Clear DF Bearing||
 #
 #
 # PopUp "ALOHA Statistics"
