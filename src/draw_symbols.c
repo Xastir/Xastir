@@ -1418,14 +1418,15 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 // The angle is what is important here.
 //
 void draw_bearing(long x_long, long y_lat, char *course,
-        char *bearing, char *NRQ, int color,
-        time_t sec_heard, Pixmap where) {
+                  char *bearing, char *NRQ, int color, int draw_beamwidth, 
+                  int draw_bearing,
+                  time_t sec_heard, Pixmap where) {
     double range = 0;
     double real_bearing = 0.0;
     double real_bearing_min = 0.0;
     double real_bearing_max = 0.0;
     int width = 0;
-    long x_long2, x_long3, y_lat2, y_lat3;
+    long x_long2, x_long3, x_long4, y_lat2, y_lat3, y_lat4;
     double screen_miles;
 
 
@@ -1514,26 +1515,43 @@ void draw_bearing(long x_long, long y_lat, char *course,
         // rest of the code much easier.  Need to skip adding 270
         // degrees if we use that method.
         //
-        compute_DR_position(x_long, // input (long)
-            y_lat,                  // input (long)
-            range,                  // input in nautical miles (double)
-            real_bearing_min,       // input in ° true (double)
-            &x_long2,               // output (*long)
-            &y_lat2);               // output (*long)
+        if (draw_beamwidth) {
+          compute_DR_position(x_long,       // input (long)
+                              y_lat,        // input (long)
+                              range,        // input in nautical miles (double)
+                              real_bearing_min,     // input in ° true (double)
+                              &x_long2,             // output (*long)
+                              &y_lat2);             // output (*long)
 
-        compute_DR_position(x_long, // input (long)
-            y_lat,                  // input (long)
-            range,                  // input in nautical miles (double)
-            real_bearing_max,       // input in ° true (double)
-            &x_long3,               // output (*long)
-            &y_lat3);               // output (*long)
+          compute_DR_position(x_long,       // input (long)
+                              y_lat,        // input (long)
+                              range,        // input in nautical miles (double)
+                              real_bearing_max,    // input in ° true (double)
+                              &x_long3,            // output (*long)
+                              &y_lat3);            // output (*long)
+        }
+
+        if (draw_bearing) {
+          compute_DR_position(x_long,       // input (long)
+                              y_lat,        // input (long)
+                              range,        // input in nautical miles (double)
+                              real_bearing,   // input in ° true (double)
+                              &x_long4,           // output (*long)
+                              &y_lat4);           // output (*long)
+        }
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
         //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+        if (draw_beamwidth) {
+          (void)XSetForeground(XtDisplay(da),gc,colors[0x4a]); // red2
+          draw_vector(da, x_long, y_lat, x_long2, y_lat2, gc, where, 0);
+          draw_vector(da, x_long, y_lat, x_long3, y_lat3, gc, where, 0);
+        }
 
-        draw_vector(da, x_long, y_lat, x_long2, y_lat2, gc, where, 0);
-        draw_vector(da, x_long, y_lat, x_long3, y_lat3, gc, where, 0);
+        if (draw_bearing) {
+          (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+          draw_vector(da, x_long, y_lat, x_long4, y_lat4, gc, where, 0);
+        }          
     }
 
     // Change back to non-stipple for whatever drawing occurs after this

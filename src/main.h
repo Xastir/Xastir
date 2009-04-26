@@ -237,6 +237,8 @@ typedef struct _what_to_display {
     int phg_of_moving;
 
     int df_data;
+    int df_beamwidth_data;
+    int df_bearing_data;
     int dr_data;
     int dr_arc;
     int dr_course;

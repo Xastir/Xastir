@@ -571,6 +571,8 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "DISPLAY_LAST_HEARD",            Display_.last_heard);
         store_int (fout, "DISPLAY_POSITION_AMB",          Display_.ambiguity);
         store_int (fout, "DISPLAY_DF_INFO",               Display_.df_data);
+        store_int (fout, "DISPLAY_DF_BEAMWIDTH_INFO",     Display_.df_beamwidth_data);
+        store_int (fout, "DISPLAY_DF_BEARING_INFO",               Display_.df_bearing_data);
         store_int (fout, "DISPLAY_DEAD_RECKONING_INFO",   Display_.dr_data);
         store_int (fout, "DISPLAY_DEAD_RECKONING_ARC",    Display_.dr_arc);
         store_int (fout, "DISPLAY_DEAD_RECKONING_COURSE", Display_.dr_course);
@@ -1651,6 +1653,8 @@ void load_data_or_default(void) {
     Display_.last_heard = get_int ("DISPLAY_LAST_HEARD", 0, 1, 0);
     Display_.ambiguity = get_int ("DISPLAY_POSITION_AMB", 0, 1, 1);
     Display_.df_data = get_int ("DISPLAY_DF_INFO", 0, 1, 1);
+    Display_.df_beamwidth_data = get_int ("DISPLAY_DF_BEAMWIDTH_INFO", 0, 1, 1);
+    Display_.df_bearing_data = get_int ("DISPLAY_DF_BEARING_INFO", 0, 1, 0);
     Display_.dr_data = get_int ("DISPLAY_DEAD_RECKONING_INFO", 0, 1, 1);
     Display_.dr_arc = get_int ("DISPLAY_DEAD_RECKONING_ARC", 0, 1, 1);
     Display_.dr_course = get_int ("DISPLAY_DEAD_RECKONING_COURSE", 0, 1, 1);

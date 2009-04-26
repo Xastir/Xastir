@@ -2942,6 +2942,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                       p_station->bearing,
                       p_station->NRQ,
                       trail_colors[p_station->df_color],
+                      Display_.df_beamwidth_data, Display_.df_bearing_data,
                       temp_sec_heard,
                       drawing_target);
     }

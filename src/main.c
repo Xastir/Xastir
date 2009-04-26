@@ -553,6 +553,8 @@ What_to_display Display_ = { 1, // callsign
                              1, // phg_of_moving
 
                              1, // df_data
+                             1, // df_beamwidth_data
+                             1, // df_bearing_data
                              1, // dr_data
                              1, // dr_arc
                              1, // dr_course
@@ -605,6 +607,8 @@ Widget display_default_phg_button;
 Widget display_phg_of_moving_button;
 
 Widget display_df_data_button;
+Widget display_df_beamwidth_data_button;
+Widget display_df_bearing_data_button;
 Widget display_dr_data_button;
 Widget display_dr_arc_button;
 Widget display_dr_course_button;
@@ -657,6 +661,8 @@ static void Display_default_phg_toggle(Widget w, XtPointer clientData, XtPointer
 static void Display_phg_of_moving_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
 static void Display_df_data_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_df_beamwidth_data_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_df_bearing_data_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_dr_data_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_dr_arc_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_dr_course_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -7741,6 +7747,43 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     if (no_data_selected())
         XtSetSensitive(display_df_data_button, FALSE);
 
+    display_df_beamwidth_data_button = XtVaCreateManagedWidget(langcode("PULDNDP123"),
+            xmToggleButtonGadgetClass,
+            filter_display_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(display_df_beamwidth_data_button, XmNvalueChangedCallback, Display_df_beamwidth_data_toggle, "1");
+    if (Display_.df_beamwidth_data)
+        XmToggleButtonSetState(display_df_beamwidth_data_button, TRUE, FALSE);
+    if (!Display_.df_data || no_data_selected())
+        XtSetSensitive(display_df_beamwidth_data_button, FALSE);
+
+    display_df_bearing_data_button = XtVaCreateManagedWidget(langcode("PULDNDP223"),
+            xmToggleButtonGadgetClass,
+            filter_display_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(display_df_bearing_data_button, XmNvalueChangedCallback, Display_df_bearing_data_toggle, "1");
+    if (Display_.df_bearing_data)
+        XmToggleButtonSetState(display_df_bearing_data_button, TRUE, FALSE);
+    if (!Display_.df_data || no_data_selected())
+        XtSetSensitive(display_df_bearing_data_button, FALSE);
+
+    (void)XtVaCreateManagedWidget("create_appshell sep3e",
+            xmSeparatorGadgetClass,
+            filter_display_pane,
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     display_dr_data_button = XtVaCreateManagedWidget(langcode("PULDNDP035"),
             xmToggleButtonGadgetClass,
@@ -16123,6 +16166,15 @@ void set_sensitive_display(int sensitive)
     XtSetSensitive(display_last_heard_button, sensitive);
     XtSetSensitive(display_ambiguity_button,  sensitive);
     XtSetSensitive(display_df_data_button,    sensitive);
+    if (!Display_.df_data) {
+        XtSetSensitive(display_df_beamwidth_data_button,    FALSE);
+        XtSetSensitive(display_df_bearing_data_button,      FALSE);
+    }
+    else {
+        XtSetSensitive(display_df_beamwidth_data_button,    sensitive);
+        XtSetSensitive(display_df_bearing_data_button,      sensitive);
+    }
+
     XtSetSensitive(display_dr_data_button,    sensitive);
     if (!Display_.dr_data) {
         XtSetSensitive(display_dr_arc_button,    FALSE);
@@ -16840,10 +16892,39 @@ void Display_df_data_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoin
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if (state->set)
+    if (state->set) {
         Display_.df_data = atoi(which);
-    else
+        XtSetSensitive(display_df_beamwidth_data_button,  TRUE);
+        XtSetSensitive(display_df_bearing_data_button,    TRUE);
+    }
+    else {
         Display_.df_data = 0;
+        XtSetSensitive(display_df_beamwidth_data_button,  FALSE);
+        XtSetSensitive(display_df_bearing_data_button,    FALSE);
+    }
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+void Display_df_beamwidth_data_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Display_.df_beamwidth_data = atoi(which);
+    else
+        Display_.df_beamwidth_data = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+void Display_df_bearing_data_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Display_.df_bearing_data = atoi(which);
+    else
+        Display_.df_bearing_data = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

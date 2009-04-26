@@ -176,8 +176,6 @@ PULDNOT003|Corto||
 PULDNDP014|Localizar Estación|L|
 PULDNDP001|Rastreo de Estación|E|
 PULDNDP022|Sacar Rastro de Findu|F|
-#
-# SubMenú "Filtrar Datos"
 PULDNDP032|Filtrar Datos||
 PULDNDP040|- Seleccionar Nada||
 PULDNDP041|- Seleccionar Mío||
@@ -195,8 +193,6 @@ PULDNDP045|- Seleccionar Objetos/Artículos||
 PULDNDP026|- Seleccionar Objetos/Artículos de WX||
 PULDNDP039|- Seleccionar Objetos/Artículos Medidores de Agua||
 PULDNDP031|- Seleccionar Otros Objetos/Artículos||
-#
-# SubMenú "Filtrar Despliegue"
 PULDNDP033|Filtrar Visualización||
 PULDNDP010|Mostrar Indicativo|I|
 PULDNDP012|Mostrar Símbolo|D|
@@ -216,13 +212,14 @@ PULDNDP008|Mostrar Potencia/Ganancia|P|
 PULDNDP021|- Usar Pot/Ganancia por Defecto||
 PULDNDP020|- Mostrar Pot/Ganancia Móviles||
 PULDNDP023|Mostrar atributos DF||
+PULDNDP123|Display DF Beamwidth||
+PULDNDP223|Display DF Bearing||
 PULDNDP035|Activar Conteo-Muerto||
 PULDNDP036|- Mostrar Arco||
 PULDNDP037|- Mostrar Curso||
 PULDNDP038|- Mostrar Símbolo||
 PULDNDP005|Mostrar Orientación/Distancia|D|
 PULDNDP024|Mostrar Tiempo del Ultimo Informe||
-#
 PULDNDP015|Anular Todas las Estaciones|A|
 PULDNDP016|Limpiar Rastros|n|
 PULDNDP025|Limpiar Historia de Objeto/Artículo||
@@ -862,8 +859,7 @@ STIFCC0009|Advanzada ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
-#
-# FCC-RAC indexing/searching
+# FCC-RAC buscar Indicativo
 STIFCC0100|FCC index old, rebuilding||
 STIFCC0101|Callsign Search||
 STIFCC0102|Callsign Not Found!||
@@ -1153,7 +1149,7 @@ PRINT0013|Convirtiendo a Postscript...||
 PRINT0014|Creando archivo de impresión Finalizado||
 PRINT0015|Estado de Impresora||
 #
-# Print Dialog
+# Diálogo de la Propiedades de Impresora
 PRINT1001|Direct to:||
 PRINT1002|Via Previewer:||
 #
@@ -1306,24 +1302,36 @@ CADPUD014|Double Dash||
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA001|XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ||
-#"XASTIR Map of <lat/long> (upper left) to <lat/long> (lower right).  Lat/Long grid, <wgs84> datum. ",
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA002|XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum.||
-#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM zones, <wgs84> datum. ",
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA003|XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum.||
 #
 # Text interpretation of integer values of database type and schema type
 # used for sql database configuration in interface_gui.c
 # DB_MYSQL 
 XADBMST001|MySQL (lat/long)||
-# DB_POSTGIS 
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
 XADBMST002|Postgreql with Postgis||
-# DB_MYSQL_SPATIAL
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
 XADBMST003|MySQL (spatial)||
 # XASTIR_SCHEMA_SIMPLE]
 XASCHEMA01|Xastir Simple Schema||
-#XASTIR_SCHEMA_CAD
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA02|Xastir CAD Schema||
-#XASTIR_SCHEMA_COMPLEX
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA03|Xastir full Schema||
-#XASTIR_SCHEMA_APRSWORLD
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA04|APRSWorld Schema||

@@ -213,6 +213,8 @@ PULDNDP008|Display Power/Gain||
 PULDNDP021|- Use Default Power/Gain||
 PULDNDP020|- Display Mobile Power/Gain||
 PULDNDP023|Display DF Attributes||
+PULDNDP123|Display DF Beamwidth||
+PULDNDP223|Display DF Bearing||
 PULDNDP035|Enable Dead-Reckoning||
 PULDNDP036|- Display Arc||
 PULDNDP037|- Display Course||

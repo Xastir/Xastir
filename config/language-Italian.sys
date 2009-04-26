@@ -214,6 +214,8 @@ PULDNDP008|Potenza/Guadagno|P|
 PULDNDP021|- Potenza/Guadagno - default||
 PULDNDP020|- Potenza/Guadagno - stazioni mobili||
 PULDNDP023|Visualizza i cerchi DF||
+PULDNDP123|Display DF Beamwidth||
+PULDNDP223|Display DF Bearing||
 PULDNDP035|Abilita Conteggio||
 PULDNDP036|- Visualizza Arc||
 PULDNDP037|- Visualizza Rotta||
@@ -859,8 +861,7 @@ STIFCC0009|Informazioni avanzate ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
-#
-# FCC-RAC indexing/searching
+# FCC-RAC Call Look up
 STIFCC0100|FCC index old, rebuilding||
 STIFCC0101|Callsign Search||
 STIFCC0102|Callsign Not Found!||
@@ -1150,7 +1151,7 @@ PRINT0013|Conversione in Postscript...||
 PRINT0014|Fine elaborazione file.||
 PRINT0015|Stato del processo di stampa||
 #
-# Print Dialog
+# Finestra di dialogo proprieta di stampa
 PRINT1001|Direct to:||
 PRINT1002|Via Previewer:||
 #
@@ -1310,24 +1311,36 @@ CADPUD014|Double Dash||
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA001|XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ||
-#"XASTIR Map of <lat/long> (upper left) to <lat/long> (lower right).  Lat/Long grid, <wgs84> datum. ",
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA002|XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum.||
-#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM zones, <wgs84> datum. ",
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
 MDATA003|XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum.||
 #
 # Text interpretation of integer values of database type and schema type
 # used for sql database configuration in interface_gui.c
 # DB_MYSQL 
 XADBMST001|MySQL (lat/long)||
-# DB_POSTGIS 
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
 XADBMST002|Postgreql with Postgis||
-# DB_MYSQL_SPATIAL
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
 XADBMST003|MySQL (spatial)||
 # XASTIR_SCHEMA_SIMPLE]
 XASCHEMA01|Xastir Simple Schema||
-#XASTIR_SCHEMA_CAD
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA02|Xastir CAD Schema||
-#XASTIR_SCHEMA_COMPLEX
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA03|Xastir full Schema||
-#XASTIR_SCHEMA_APRSWORLD
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA04|APRSWorld Schema||

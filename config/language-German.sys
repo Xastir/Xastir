@@ -222,6 +222,8 @@ PULDNDP008|Leistung/Gewinn||
 PULDNDP021|- mit Standardwert||
 PULDNDP020|- bei Mobilstationen||
 PULDNDP023|DF Kreise zeigen||
+PULDNDP123|Display DF Beamwidth||
+PULDNDP223|Display DF Bearing||
 PULDNDP035|Positionsvoraussage||
 PULDNDP036|- Kreis zeigen||
 PULDNDP037|- Kurs zeigen||
@@ -867,7 +869,7 @@ STIFCC0009|Erweitert ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
-# FCC-RAC indexing/searching
+# FCC-RAC Call Look up
 STIFCC0100|FCC-Index zu alt, erstelle neu...||
 STIFCC0101|Rufzeichensuche||
 STIFCC0102|Rufzeichen nicht gefunden!||
@@ -1158,7 +1160,7 @@ PRINT0013|Konvertiere in Postscript...||
 PRINT0014|Erstellen der Druckdatei beendet||
 PRINT0015|Druckerstatus||
 #
-# Drucker Dialog
+# Druckereinstellungen Dialog
 PRINT1001|Direkt an:||
 PRINT1002|Über Vorschau:||
 #
@@ -1333,15 +1335,21 @@ MDATA003|XASTIR Karte von %s (oben links) to %s (unten rechts).  UTM Zonen, %s D
 # used for sql database configuration in interface_gui.c
 # DB_MYSQL 
 XADBMST001|MySQL (lat/long)||
-# DB_POSTGIS 
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
 XADBMST002|Postgreql with Postgis||
-# DB_MYSQL_SPATIAL
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
 XADBMST003|MySQL (spatial)||
 # XASTIR_SCHEMA_SIMPLE]
 XASCHEMA01|Xastir Simple Schema||
-#XASTIR_SCHEMA_CAD
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA02|Xastir CAD Schema||
-#XASTIR_SCHEMA_COMPLEX
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA03|Xastir full Schema||
-#XASTIR_SCHEMA_APRSWORLD
+# XASTIR_SCHEMA_SIMPLE]
 XASCHEMA04|APRSWorld Schema||
