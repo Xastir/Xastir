@@ -13702,17 +13702,17 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
             }
 #endif  // HAVE_FESTIVAL
             /* FG really should check the path before we do this and add setup for these ranges */
-            if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
-                    sound_play_band_open_message && from == DATA_VIA_TNC) {
+            if (sound_play_band_open_message && from == DATA_VIA_TNC && !(p_station->flag && ST_3RD_PT) &&
+                (distance > atof(bando_min)) && (distance < atof(bando_max))) {
                 xastir_snprintf(station_id, sizeof(station_id), "%s %s %.1f %s",p_station->call_sign, langcode("UMBNDO0001"),
                         distance, english_units?langcode("UNIOP00004"):langcode("UNIOP00005"));
                 statusline(station_id,0);
                 play_sound(sound_command,sound_band_open_message);
                 /*fprintf(stderr,"%s> BO distance %f\n",p_station->call_sign, distance);*/
-            }
+	    }
 #ifdef HAVE_FESTIVAL
-            if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
-                   festival_speak_band_opening && from == DATA_VIA_TNC) {
+            if (festival_speak_band_opening && from == DATA_VIA_TNC && !(p_station->flag && ST_3RD_PT) &&
+                (distance > atof(bando_min)) && (distance < atof(bando_max))) {
                 char speech_callsign[50];
 
                 xastir_snprintf(speech_callsign,

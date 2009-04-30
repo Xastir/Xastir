@@ -516,7 +516,7 @@ extern CADRow *CAD_list_head;
 #define ST_MOVING       0x08    // station is moving
 #define ST_DIRECT       0x10    // heard direct (not via digis)
 #define ST_VIATNC       0x20    // station heard via TNC
-#define ST_3RD_PT       0x40    // third party traffic (not used yet)
+#define ST_3RD_PT       0x40    // third party traffic
 #define ST_MSGCAP       0x80    // message capable (not used yet)
 #define ST_STATUS       0x100   // got real status message
 #define ST_INVIEW       0x200   // station is in current screen view
