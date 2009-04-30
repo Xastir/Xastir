@@ -11320,7 +11320,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 #ifdef USE_RTREE
   #ifdef HAVE_LIBSHP
-            purge_shp_hash();                   // purge stale rtrees
+            purge_shp_hash(current_time);               // purge stale rtrees
   #endif // HAVE_LIBSHP
 #endif // USE_RTREE
 

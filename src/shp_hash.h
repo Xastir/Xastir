@@ -32,7 +32,7 @@ void build_rtree(struct Node **root, SHPHandle sHP);
 void destroy_shp_hash(void);
 void empty_shpinfo(shpinfo *si);
 void destroy_shpinfo(shpinfo *si);
-void purge_shp_hash(void);
+void purge_shp_hash(time_t secs_now);
 shpinfo *get_shp_from_hash(char *filename);
 
 #endif // USE_RTREE
