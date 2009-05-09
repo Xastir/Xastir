@@ -13655,16 +13655,22 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
             distance = value * cvt_kn2len;
         
             /* check ranges */
-            if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && sound_play_prox_message) {
-                xastir_snprintf(station_id, sizeof(station_id), "%s < %.3f %s",p_station->call_sign, distance,
-                        english_units?langcode("UNIOP00004"):langcode("UNIOP00005"));
-                statusline(station_id,0);
-                play_sound(sound_command,sound_prox_message);
-                /*fprintf(stderr,"%s> PROX distance %f\n",p_station->call_sign, distance);*/
+            if ((distance > atof(prox_min)) && (distance < atof(prox_max))) {
+                
+                //fprintf(stderr,"Station within proximity circle, creating waypoint\n");
+                create_garmin_waypoint(p_station->coord_lat,
+                                       p_station->coord_lon,
+                                       p_station->call_sign);
 
-            //fprintf(stderr,"Station within proximity circle, creating waypoint\n");
-            create_garmin_waypoint(p_station->coord_lat,p_station->coord_lon,p_station->call_sign);
-
+                if (sound_play_prox_message) {
+                    xastir_snprintf(station_id, sizeof(station_id), 
+                                    "%s < %.3f %s",p_station->call_sign, 
+                                    distance,
+                                    english_units?langcode("UNIOP00004"):langcode("UNIOP00005"));
+                    statusline(station_id,0);
+                    play_sound(sound_command,sound_prox_message);
+                    /*fprintf(stderr,"%s> PROX distance %f\n",p_station->call_sign, distance);*/
+                }
             }
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && festival_speak_proximity_alert) {
