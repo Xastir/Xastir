@@ -82,7 +82,8 @@ enum APRS_Types {
     APRS_MICE,
     APRS_GRID,
     DALLAS_ONE_WIRE,
-    DAVISMETEO
+    DAVISMETEO,
+    DAVISAPRSDL
 };
 
 

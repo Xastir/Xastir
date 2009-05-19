@@ -2776,8 +2776,158 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             weather->wx_rain,weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
             weather->wx_station);
             break;
+         // This is the output of the Davis APRS Data Logger.  The format
+         // is in fact exactly the same as a regular APRS weather packet,
+         // complete with position information.  Ignore that.
+         // @xxxxxxzDDMM.mmN/DDDMM.mmW_CSE/SPDgGGGtTTTrRRRpRRRPRRRhXXbXXXXX.DsVP
+        case (DAVISAPRSDL):
 
-    }   // End of big switch
+            memset(weather->wx_course,0,4);    // Keep out fradulent data...
+            memset(weather->wx_speed,0,4);
+            memset(weather->wx_gust,0,4);
+            memset(weather->wx_temp,0,5);
+            memset(weather->wx_rain,0,10);
+            memset(weather->wx_rain_total,0,10);
+            memset(weather->wx_hum,0,5);
+            memset(weather->wx_baro,0,10);
+            memset(weather->wx_station,0,MAX_WXSTATION);
+			
+            if (sscanf((char *)data,
+                       "%*27s%3s/%3sg%3st%3sr%3sp%3sP%3sh%2sb%5s.DsVP",
+                       weather->wx_course,
+                       weather->wx_speed,
+                       weather->wx_gust,
+                       weather->wx_temp,
+                       weather->wx_rain,
+                       weather->wx_prec_24,
+                       weather->wx_prec_00,
+                       weather->wx_hum,
+                       weather->wx_baro) == 9){
+              // then we got all the data out of the packet... now process
+              // First null-terminate all the strings:
+              weather->wx_course[3]='\0';
+              weather->wx_speed[3]='\0';
+              weather->wx_gust[3]='\0';
+              weather->wx_temp[3]='\0';
+              weather->wx_rain[3]='\0';
+              weather->wx_prec_24[3]='\0';
+              weather->wx_prec_00[3]='\0';
+              weather->wx_hum[2]='\0';
+              weather->wx_baro[6]='\0';
+
+              // Check for course = 0.  Change to 360.
+              if (strncmp(weather->wx_course,"000",3) == 0) {
+                xastir_snprintf(weather->wx_course,
+                                sizeof(weather->wx_course),
+                                "360");
+              }
+              
+              // compute high wind
+              if(wx_high_wind[0] == '\0' ||   // first time
+                 (get_hours() == 0 && get_minutes() == 0) || // midnite
+                 (atol(weather->wx_gust) > atol(wx_high_wind))) { // gust
+                xastir_snprintf(wx_high_wind,
+                                sizeof(wx_high_wind),
+                                "%s",
+                                weather->wx_gust);
+              }
+              wx_high_wind_on=1;
+              
+              // compute hi temp, since APRS doesn't send that
+              if(wx_hi_temp[0] == '\0' || // first time 
+                 (get_hours() == 0 && get_minutes() == 0) || // midnite
+                 (atol(weather->wx_temp) > atol(wx_hi_temp))) {
+                xastir_snprintf(wx_hi_temp,
+                                sizeof(wx_hi_temp),
+                                "%s",
+                                weather->wx_temp);
+              }
+              wx_hi_temp_on=1;
+              
+              // compute low temp, since APRS doesn't send that
+              if(wx_low_temp[0] == '\0' || // first time 
+                 (get_hours() == 0 && get_minutes() == 0) || // midnite
+                 (atol(weather->wx_temp) < atol(wx_low_temp))) {
+                xastir_snprintf(wx_low_temp,
+                                sizeof(wx_low_temp),
+                                "%s",
+                                weather->wx_temp);
+              }
+              wx_low_temp_on=1;
+              
+              
+              // fix up humidity --- 00 in APRS means 100%:
+              if (strncmp(weather->wx_hum,"00",2)==0) {
+                weather->wx_hum[0]='1'; 
+                weather->wx_hum[1]=weather->wx_hum[2]='0'; 
+                weather->wx_hum[3]='\0';
+              }
+              
+              // fix up barometer.  APRS sends in 10ths of millibars:
+              temp_temp=(float)(atof(weather->wx_baro))/10.0;
+              weather->wx_baro[0]='\0'; // zero out so snprintf doesn't append
+              xastir_snprintf(weather->wx_baro,
+                              sizeof(weather->wx_baro),
+                              "%0.1f",
+                              temp_temp);  // this should terminate Just Fine.
+              
+              // now compute wind chill
+              wind_chill = 35.74 + .6215 * atof(weather->wx_temp) - 
+                35.75 * pow(atof(weather->wx_gust), .16) + 
+                .4275 * atof(weather->wx_temp) * 
+                pow(atof(weather->wx_gust), .16);
+              
+              if((wind_chill < atof(weather->wx_temp)) && 
+                 (atof(weather->wx_temp) < 50)) {
+                
+                xastir_snprintf(wx_wind_chill,
+                                sizeof(wx_wind_chill),
+                                "%.0f",
+                                wind_chill);
+                wx_wind_chill_on = 1;	
+              }
+              else {
+                wx_wind_chill_on = 0;
+                wx_wind_chill[0] = '\0';
+              }
+              xastir_snprintf(weather->wx_station,
+                              sizeof(weather->wx_station),
+                              "%s",
+                              (char *) &(data[63]));
+              
+              /* Heat Index Calculation*/
+              hi_hum=atoi(weather->wx_hum);
+              rh2= atoi(weather->wx_hum);
+              rh2=(rh2 * rh2);
+              hidx_temp=atoi(weather->wx_temp);
+              t2= atoi(weather->wx_temp);
+              t2=(t2 * t2);
+              
+              if (hidx_temp >= 70) {
+                heat_index=-42.379+2.04901523 * hidx_temp+10.1433127 * hi_hum-0.22475541
+                  * hidx_temp * hi_hum-0.00683783 * t2-0.05481717 * rh2+0.00122874
+                  * t2 * hi_hum+0.00085282 * hidx_temp * rh2-0.00000199 * t2 * rh2;
+                xastir_snprintf (wx_heat_index,
+                                 sizeof(wx_heat_index),
+                                 "%03d",
+                                 heat_index);
+                wx_heat_index_on = 1;
+              } else
+                wx_heat_index_on = 0;
+              
+              
+              if (debug_level & 1)
+                fprintf(stdout,"Davis APRS DataLogger Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rt-%s,h-%s,ap-%s,station-%s\n",
+                        
+                        weather->wx_course,weather->wx_speed,weather->wx_gust,
+                        weather->wx_temp, weather->wx_rain,
+                        weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
+                        weather->wx_station);
+            }
+            break;
+            
+    }            
+       // End of big switch
 }   // End of wx_fill_data()
 
 
@@ -3030,7 +3180,23 @@ void wx_decode(unsigned char *wx_line, int port) {
                         }
                     }
                 }
-
+                else if (wx_line[0]=='@' && strncmp((char *)&(wx_line[63]),".DsVP",5)==0) {
+                  // this is a Davis Vantage Pro with APRS Data Logger
+                  if (debug_level & 1)
+                    fprintf(stdout,"Davis VP APRS Data Logger data found ... %s\n", wx_line);
+                  xastir_snprintf(wx_station_type,
+                                  sizeof(wx_station_type),
+                                  "%s",
+                                  langcode("WXPUPSI028"));
+                  
+                  xastir_snprintf(weather->wx_time,
+                                  sizeof(weather->wx_time),
+                                  "%s",
+                                  get_time(time_data));
+                  weather->wx_sec_time=sec_now();
+                  wx_fill_data(0,DAVISAPRSDL,wx_line,p_station);
+                  decoded=1;
+                }
                 else {	// ASCII data of undetermined type
 
                     // Davis Weather via meteo -> db2APRS -> TCP port
