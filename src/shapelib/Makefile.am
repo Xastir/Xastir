@@ -3,7 +3,7 @@
 # Copyright (C) 2004-2009  The Xastir Group
 
 noinst_LIBRARIES=libshape.a
-noinst_PROGRAMS=shpcreate dbfcreate shpadd dbfadd
+bin_PROGRAMS=shpcreate dbfcreate shpadd dbfadd
 libshape_a_SOURCES=shpopen.c \
 		shptree.c \
 		dbfopen.c \
