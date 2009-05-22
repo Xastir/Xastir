@@ -27,6 +27,7 @@ pkglib_SCRIPTS = \
     overlay.pl \
     ozi2geo.pl \
     permutations.pl \
+    pos2shp.pl \
     slideshow.pl \
     split_gnis.bash \
     split_gnis.pl \
