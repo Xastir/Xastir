@@ -81,9 +81,22 @@ MapInfo             GDAL/OGR.  Preliminary.
 Tiger/Line Raw      GDAL/OGR.  Preliminary.
 Microstation DGN    GDAL/OGR.  Preliminary.
 S57                 GDAL/OGR.  Preliminary.
+APRS Overlays       Convert to Shapefile maps with scripts/pos2shp.pl
 
 
 The default map, "worldhi.map", is used with permission of its creator, Keith Sproul, WU2Z.
+
+
+How to Use APRS Overlay Maps (*.POS files) within Xastir:
+---------------------------------------------------------
+    Use the "xastir/scripts/pos2shp.pl" script to convert the
+    overlay files to ESRI Shapefile maps:
+
+        # ./pos2shp.pl test.pos testmap
+        # cp testmap* /usr/local/share/xastir/maps/.
+
+    Xastir:  Map->Configure->Index: Add New Maps
+             Map Chooser:  Select the "testmap" map
 
 
 Getting Maps and other Data Files for Xastir:
