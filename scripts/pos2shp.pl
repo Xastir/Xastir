@@ -31,43 +31,38 @@
 # Tom Russo said:  "It could be trivially modified to do pos format
 # instead just by changing the parsing lines between lines 81 and
 # 89, I think.  Those lines look for the semicolon at the beginning
-# of the line, the "live_or_dead" flag, and the timestamp.  None of
-# those are present in the pos format.  And it assumes the name is 9
-# characters, which is not the case, so one would have to  replace
-# that by a search forward for the bang ("!") to get the name
-# delimiter.  All the assumptions about where things live on the
-# line are broken for pos format, but once one rewrote that block to
-# fill in the right variables from the alternate format, the rest of
-# the dbfadd/shpadd stuff will all work."
+# of the line, and the timestamp.  None of those are present in the
+# pos format.  And it assumes the name is 9 characters, which is not
+# the case, so one would have to  replace that by a search forward
+# for the bang ("!") to get the name delimiter.  All the assumptions
+# about where things live on the line are broken for pos format, but
+# once one rewrote that block to fill in the right variables from
+# the alternate format, the rest of the dbfadd/shpadd stuff will all
+# work."
 #
 #---------------------------------------------
 #
-# Original note (much of it no longer applies, so edit freely when
-# we implement the pos2shp functionality:
+# This script produces an ESRI point shapefile from an APRS overlay
+# file (*.pos), according to the "Rolling your own shapefile maps"
+# section of README.MAPS The point file will display using the TIGER
+# Landmark Point dbfawk file.
 #
-# This script produces an ESRI point shapefile from the object.log file, 
-# according to the "Rolling your own shapefile maps" section of README.MAPS
-# The point file will display using the TIGER Landmark Point dbfawk file
-#
-# This enables fast generation of point maps by using xastir to plop down
-# objects, then this script to turn the object.log file into a shapefile
+# This enables fast generation of point maps in Shapefile format
+# from APRS overlay files.
 #
 # Typical usage:  
-#   pos2shp.pl object.log myshape
-#
-# Remember to exit xastir and delete "object.log", otherwise xastir will
-# never forget your objects.
+#   pos2shp.pl file.pos myshape
 #--------------------------------------------------------------------------
 
 
 if ($#ARGV != 1)
 {
-    print "Usage: $0 <object_file> <shapefile base name>\n";
+    print "Usage: $0 <file.pos> <shapefile base name>\n";
     exit 1;
 }
 
 
-open(INOBJ,"<$ARGV[0]") || die "Cannot open input object file $ARGV[0]\n";
+open(INOBJ,"<$ARGV[0]") || die "Cannot open input overlay file $ARGV[0]\n";
 
 $cmd[0]="shpcreate $ARGV[1] point";
 $cmd[1]="dbfcreate $ARGV[1] -n ID 8 0 -s CFCC 4 -s NAME 30";
@@ -95,26 +90,30 @@ foreach $command (@cmd)
 }
 
 # We now have the shapefile and dbf file created, start populating from the
-# objects file:
+# overlay file:
 
 $i=0;
 while (<INOBJ>)
 {
     chomp($_);
+
+
+# Edit between these lines to adapt to POS format:
+# -------------------------------------------------------------------
     $semicolon=substr($_,0,1);
+
     $name=substr($_,1,9);
-    $live_or_dead=substr($_,10,1);
     $timestamp=substr($_,11,7);
     $lat=substr($_,18,8);
     $symtab=substr($_,26,1);
     $long=substr($_,27,9);
     $sym=substr($_,36,1);
+# -------------------------------------------------------------------
+
 
 #sanity check --- don't try to convert if the line doesn't conform to what
-# it should, or if it represents a killed object.  Sometimes objects get
-# commented out with #, etc.
+# it should.
     next if ($semicolon ne ";");
-    next if ($live_or_dead eq "_");
 
     $i++;  # bump the ID number so every point has a unique one
 
