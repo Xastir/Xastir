@@ -101,8 +101,10 @@ while (<INOBJ>)
     $long=substr($rest,9,9);
     $sym=substr($rest,18,1);
 
-# TODO: Do something with the comment field?
+# TODO: Do something with the comment field?  It appears that if we
+# add too much here we get strange results when displayed in Xastir.
     $comment=substr($rest,19,100);
+#    $name = $name . ":" . $comment;
 
     $i++;  # bump the ID number so every point has a unique one
 
