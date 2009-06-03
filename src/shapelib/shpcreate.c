@@ -34,6 +34,10 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.2  2007/07/25 15:37:50  we7u
+ * Added shprewind.c to the "clean" target of the original Makefile.  Added
+ * stdlib.h includes to some of the utilities to get a clean compile.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -76,6 +80,8 @@ static char rcsid[] =
 
 #include "shapefil.h"
 #include <stdlib.h>
+
+#include <string.h>
 
 int main( int argc, char ** argv )
 
