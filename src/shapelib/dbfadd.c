@@ -34,6 +34,9 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.2  2009/06/03 22:24:19  we7u
+ * Adding includes for string.h to get rid of compiler warnings.
+ *
  * Revision 1.1  2006/11/10 21:48:09  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -77,8 +80,8 @@
  *
  */
 
-static char rcsid[] = 
-  "$Id$";
+//static char rcsid[] =
+//    "$Id$";
 
 #include "shapefil.h"
 #include <math.h>
