@@ -990,8 +990,11 @@ int alert_on_screen(void) {
 //
 // SFONPW>APRS::NWS-ADVIS:WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
 //
-// We also now have compressed NWS alerts, signified by NWS_ADVIS
-// (underline instead of dash).
+// We also have compressed NWS alerts, signified by NWS_ADVIS
+// (underline instead of dash).  Note that Pete Loveall, AE5PL, is
+// also sending out alerts and sending the "compressed" zone format
+// with "NWS-" which is different than how Dale Huguley was sending
+// them out.  Pete's change is to support Kenwood radios.
 //
 //
 // Expiration is then computed from the activity field.  Alert_level
@@ -1212,7 +1215,18 @@ void alert_build_list(Message *fill) {
         // Check for "NWS_" in the call_sign field.  Underline
         // signifies compressed alert format.  Dash signifies
         // non-compressed format.
-        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
+//
+// TEMPORARY CHANGE:  Process all NWS_ or NWS- as compressed to
+// handle the format that Pete Loveall, AE5PL, is putting out on the
+// 'net.  The correct change would be to check inside the data
+// portion for compressed-format zones in all cases and de-compress
+// them when found.
+// WE7U.
+//
+//        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
+        if (       (strncmp(fill->call_sign,"NWS_",4) == 0)
+                || (strncmp(fill->call_sign,"NWS-",4) == 0) ) {
+
             char compressed_wx[512];
             char *ptr;
 
