@@ -123,7 +123,7 @@ NAME	Heli-
 PAGE	/
 SYMBOL	/
 DATA	NULL
-MENU	Heli-n Helipoint
+MENU	Heli-n Helispot
 HIDDENCHILD	NO
 
 NAME	Camp
