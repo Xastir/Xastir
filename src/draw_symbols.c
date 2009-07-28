@@ -2554,7 +2554,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
         long x_long,long y_lat, char *callsign_text, char *alt_text, char *course_text,
         char *speed_text, char *my_distance, char *my_course, char *wx_temp,
         char* wx_wind, time_t sec_heard, int temp_show_last_heard, Pixmap where,
-        char orient, char area_type, char *signpost, int bump_count) {
+        char orient, char area_type, char *signpost, char *gauge_data, int bump_count) {
 
     long x_offset,y_offset;
     int length;
@@ -2723,7 +2723,8 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 posyl += 13;
             }
 
-            if (posyr < posyl)  // weather goes to the bottom, centered horizontally
+            // weather goes to the bottom, centered horizontally.
+            if (posyr < posyl)
                 posyr = posyl;
             if (posyr < 18)
                 posyr = 18;
@@ -2741,6 +2742,22 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
+            }
+
+            if (gauge_data != NULL) {
+                // Gauge data goes on the bottom, centered
+                // horizontally.  White.
+                if (posyr < posyl)
+                    posyr = posyl;
+                if (posyr < 22)
+                    posyr = 22;
+
+                length=(int)strlen(gauge_data);
+                if ( (!ghost || Select_.old_data) && length>0) {
+                    x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
+                    y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
+                    draw_nice_string(w,where,letter_style,x_offset,y_offset,gauge_data,0x08,0x0f,length);
+                }
             }
         }
     }
@@ -3522,7 +3539,8 @@ void draw_deadreckoning_features(DataRow *p_station,
             symbol_orient(p_station->course),
             p_station->aprs_symbol.area_object.type,
             p_station->signpost,
-            0); // Don't bump the station count
+            (char) NULL,
+            0);  // Don't bump the station count
     }
 }
 

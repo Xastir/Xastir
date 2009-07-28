@@ -53,7 +53,7 @@ extern void symbol(Widget w, int ghost,char symbol_table, char symbol_id, char s
 
 extern void draw_WP_line(DataRow *p_station, int ambiguity_flag, long ambiguity_coord_lon, long ambiguity_coord_lat, Pixmap where, Widget w);
 
-extern void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_lon, long y_lat,char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance, char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard, Pixmap where, char rotate, char area_type, char *signpost, int bump_count );
+extern void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_lon, long y_lat,char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance, char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard, Pixmap where, char rotate, char area_type, char *signpost, char *gauge_data, int bump_count );
 
 extern void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where);
 extern void draw_precision_rectangle(long x_long, long y_lat, double range, unsigned int lat_precision, unsigned int lon_precision, int color, Pixmap where);

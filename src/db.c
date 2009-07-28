@@ -2536,7 +2536,7 @@ int ok_to_draw_station(DataRow *p_station) {
         if (p_station->weather_data) {
             return Select_.weather_objects;
         }
-        // Check if water gage and we wish to see it
+        // Check if water gauge and we wish to see it
         else if (p_station->aprs_symbol.aprs_type == '/'
                  && p_station->aprs_symbol.aprs_symbol == 'w') {
             return Select_.gauge_objects;
@@ -2613,6 +2613,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char temp_my_distance[20];
     char temp_my_course[20];
     char temp1_my_course[20];
+    char temp2_my_gauge_data[50];
     time_t temp_sec_heard;
     int temp_show_last_heard;
     long l_lon, l_lat;
@@ -3191,6 +3192,65 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
     }
 
+    // Zero out the variable in case we don't use it below.
+    temp2_my_gauge_data[0] = '\0';
+ 
+    // If an H2O object, create a timestamp + last comment variable
+    // (which should contain gage-height and/or water-flow numbers)
+    // for use in the draw_symbol() function below.
+    if (p_station->aprs_symbol.aprs_type == '/'
+            && p_station->aprs_symbol.aprs_symbol == 'w'
+            && (   p_station->flag & ST_OBJECT    // And it's an object
+                || p_station->flag & ST_ITEM) ) { // or an item
+
+// NOTE:  Also check whether it was sent by the Firenet GAGE
+// script??  "GAGE-*"
+
+// NOTE:  Check most recent comment time against
+// p_station->sec_heard.  If they don't match, don't display the
+// comment.  This will make sure that older comment data doesn't get
+// displayed which can be quite misleading for stream gauges.
+
+        // Check whether we have any comment data at all.  If so,
+        // the first one will be the most recent comment and the one
+        // we wish to display.
+        if (p_station->comment_data != NULL) {
+            CommentRow *ptr;
+//            time_t sec;
+//            struct tm *time;
+
+
+            ptr = p_station->comment_data;
+ 
+            // Check most recent comment's sec_heard time against
+            // the station record's sec_heard time.  If they don't
+            // match, don't display the comment.  This will make
+            // sure that older comment data doesn't get displayed
+            // which can be quite misleading for stream gauges.
+            if (p_station->sec_heard == ptr->sec_heard) {
+    
+                // Note that text_ptr can be an empty string.
+                // That's ok.
+
+                // Also print the sec_heard timestamp so we know
+                // when this particular gauge data was received
+                // (Very important!).
+//                sec = ptr->sec_heard;
+//                time = localtime(&sec);
+
+                xastir_snprintf(temp2_my_gauge_data,
+                    sizeof(temp2_my_gauge_data),
+                    "%s",
+//                    "%02d/%02d %02d:%02d %s",
+//                    time->tm_mon + 1,
+//                    time->tm_mday,
+//                    time->tm_hour,
+//                    time->tm_min,
+                    ptr->text_ptr);
+//fprintf(stderr, "%s\n", temp2_my_gauge_data);
+            }
+        }
+    }
 
     draw_symbol(w,
                 p_station->aprs_symbol.aprs_type,
@@ -3214,6 +3274,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 orient,
                 p_station->aprs_symbol.area_object.type,
                 p_station->signpost,
+                temp2_my_gauge_data,
                 1); // Increment "currently_selected_stations"
 
     // If it's a Waypoint symbol, draw a line from it to the
