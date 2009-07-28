@@ -7048,14 +7048,14 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
         predefinedObjects[j].index = j;
         j++;
         
-        // Helipoint  (helicopter landing spot)
+        // Helispot  (helicopter landing spot)
         // Heli- will be created as Heli-1, Heli-2, Heli-3, etc.  
         // terminal - on a call is a magic character. see Create_SAR+Object.
         xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),"Heli-");
         xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),"/");
         xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),"/");
         xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
-        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Heli-n: Helipoint");
+        xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),"Heli-n: Helispot");
         predefinedObjects[j].show_on_menu = 1;
         predefinedObjects[j].index_of_child = -1;
         predefinedObjects[j].index = j;
