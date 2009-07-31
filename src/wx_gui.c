@@ -261,7 +261,14 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
 
     memset(&serv_addr, 0, sizeof(serv_addr));
 
-    serverhost = gethostbyname("wxsvr.net");
+
+    // Changing Finger host because WXSVR.net has been down for a
+    // month or more and Pete, AE5PL, has a replacement online that
+    // performs this function.
+    //serverhost = gethostbyname("wxsvr.net");
+    serverhost = gethostbyname("wx.aprs-is.net");
+
+
     if (serverhost == (struct hostent *)0) {
 //        fprintf(stderr,"wx_alert_finger_output: gethostbyname failed\n");
         xastir_snprintf(temp,
