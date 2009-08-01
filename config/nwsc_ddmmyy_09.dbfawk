@@ -25,6 +25,10 @@
 # key is set to the concatentation of the STATE and FIPS county code
 # in the same format as the alert->title (e.g. WI_C037).
 #
+# This DBFAWK file matches the set of county shapefiles that was published
+# by NOAA in 2009, and differs from the earlier format.  Shapefiles from 2008
+# are matched by the file "nwsc_ddmmyy.dbfawk" instead.
+#
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
