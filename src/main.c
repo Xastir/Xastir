@@ -27101,6 +27101,10 @@ int main(int argc, char *argv[], char *envp[]) {
         Ctrl <Key>n: Next()\n\
         Ctrl <Key>p: Prev()\n",
 
+        "*minWidth: 200\n",
+
+        "*minHeight: 100\n",
+
         NULL
     };
 
