@@ -90,6 +90,7 @@ The Questions
     4.29 Xastir can't find "xastir.rgb" or some other file.  What's wrong?
     4.30 Why can't I see station trails as stations move around?
     4.31 Why don't the maps I installed show up in the Map Chooser?
+    4.32 Dialogs are tiny bullet-shaped windows with no handles.  Why?
 
 5.  Features
 
@@ -1051,6 +1052,18 @@ The Answers
     Xastir should index all of your maps on startup. After it is
     complete, bring up the Map Chooser and all available maps should
     be listed.
+
+    4.32 Dialogs are tiny bullet-shaped windows with no handles.  Why?
+
+    This is caused by an interaction between "Motif" and "compiz".
+    "compiz" is enabled in some versions of Ubuntu Linux with a
+    "Desktop Effects" menu item.  They changed the default to *ON*
+    several releases ago.  "compiz" is a window manager which
+    enables eye-candy effects such as animated window
+    opening/closing, 3-D effects, and so forth.  To fix this
+    problem, turn *OFF* "Desktop Effects" which will disable
+    "compiz" and re-enable the default window manager.
+
 
 5.  Features
 
