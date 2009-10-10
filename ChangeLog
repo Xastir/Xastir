@@ -1,3 +1,717 @@
+2009-08-12 11:59  we7u
+
+	* src/main.c: Adding minWidth and minHeight to the fallback
+	  resources string in main() to attempt fixing the compiz/fusion
+	  bug with tiny unsizeable dialogs.
+
+2009-08-12 11:14  we7u
+
+	* FAQ: Adding a blurb regarding "compiz" and cigar-shaped windows
+	  in Xastir.   Thanks to Tom R. for this text which I modified
+	  somewhat.
+
+2009-07-31 21:19  tvrusso
+
+	* config/nwsc_ddmmyy_09.dbfawk: Add a comment about the difference
+	  between this file and the nwsc_ddmmyy file.
+
+2009-07-31 21:17  tvrusso
+
+	* config/: Makefile.am, nwsc_ddmmyy_09.dbfawk: Add a new
+	  nwsc_ddmmyy file with different signature to match the very
+	  latest shapefiles.
+
+	  I am adding this as a new dbfawk instead of modifying the
+	  existing one so that those who don't wish to update their
+	  shapefiles will not have to, and those who have only the new ones
+	  will actually be able to use them.  Xastir will pick the dbfawk
+	  file with the matching signature.
+
+2009-07-31 15:38  we7u
+
+	* src/wx_gui.c: Changing the weather alert FINGER server since
+	  WXSVR.net has been offline for a while.  We're switching to
+	  Pete's new system (AE5PL) which is already online and functional.
+
+2009-07-30 12:41  tvrusso
+
+	* symbols/symbols.dat: Change color of ICP (Incident Command Post,
+	  /c) symbol to match the color specified in FEMA and NWCG ICS
+	  materials.  (I'm working through lots of these courses while
+	  simultaneously trying to get Xastir integrated more into our
+	  local SAR system, and getting these discrepancies of terminology
+	  and symbology fixed is important).
+
+2009-07-28 15:51  tvrusso
+
+	* config/predefined_SAR.sys: Make predefined SAR objects conform
+	  with NIMS standard ICS terminology.
+
+	  There is no "Helipoint" in that terminology.	The term "Helispot"
+	  is used for what we were previously calling a "Helipoint."
+
+2009-07-28 15:49  tvrusso
+
+	* src/objects.c: Fix predefined object name to conform with
+	  standard ICS terminology.  A "Helispot" is a temporary landing
+	  place for helicopters.  There is no "Helipoint" in standard ICS
+	  terminology.
+
+2009-07-28 14:35  we7u
+
+	* src/alert.c: Temporary change to allow viewing of compressed-zone
+	  format alerts sent by Pete Loveall, AE5PL's server.
+
+2009-07-27 18:44  we7u
+
+	* src/: db.c, draw_symbols.c, draw_symbols.h: Display of latest
+	  comment if H2O symbol plus object or item, and the comment time =
+	  the latest object/item update time.  This is to support fast
+	  viewing of flood gauges during emergencies, using the data from
+	  the Firenet gage.pl script.
+
+2009-06-29 00:14  we7u
+
+	* src/db.c: Fixing Canadian callsign lookup to add VO and VY
+	  prefixes.
+
+2009-06-19 23:01  tvrusso
+
+	* src/shp_hash.c: Insert a conditional around code that uses a
+	  pointer returned by SHPReadObject.  A user is finding that
+	  SHPReadObject is having an fread problem on one of his
+	  shapefiles, and returning NULL.  This commit prevents Xastir from
+	  trying to dereference the null pointer.
+
+2009-06-03 21:25  we7u
+
+	* src/shapelib/: dbfadd.c, dbfcreate.c, shpadd.c, shpcreate.c,
+	  shpdump.c, shptest.c, shptreedump.c, shputils.c: Getting rid of
+	  compiler warnings due to unused variable.
+
+2009-06-03 15:24  we7u
+
+	* src/shapelib/: dbfadd.c, shpcreate.c: Adding includes for
+	  string.h to get rid of compiler warnings.
+
+2009-06-03 14:57  tvrusso
+
+	* src/shapelib/Makefile.am: Not really sure why this worked before
+	  but now doesn't work for Curt, but there was nothing in the
+	  src/shapelib/Makefile.am to make the {shp,dbf}{add,create}
+	  programs link with the shapelib we just built.
+
+	  Put that in.
+
+	  Rebootstrap before trying.
+
+2009-05-22 16:23  we7u
+
+	* scripts/pos2shp.pl: Changed some comments WRT the TODO for the
+	  comment field.
+
+2009-05-22 14:41  we7u
+
+	* README.MAPS: Adding bits about APRS Overlay files and the
+	  pos2shp.pl script.
+
+2009-05-22 14:35  we7u
+
+	* scripts/Makefile.am: Adding pos2shp.pl to list of scripts to
+	  install.
+
+2009-05-22 14:23  we7u
+
+	* scripts/pos2shp.pl: Better version.  Limits $name to 9 chars and
+	  chops trailing spaces on same.
+
+2009-05-22 14:14  we7u
+
+	* scripts/pos2shp.pl: First working version.  Needs more error
+	  checking, needs to assure the name field is properly formatted,
+	  and needs to do something with the comment field yet.
+
+2009-05-22 13:16  we7u
+
+	* scripts/pos2shp.pl: Updated comments, removed live_or_dead code.
+	  Has NOT been converted to parse POS format files yet (Overlay
+	  files).
+
+2009-05-22 11:19  we7u
+
+	* scripts/pos2shp.pl: Start of a pos2shp.pl script.  No code
+	  changes yet from the original object2shp.pl script it started
+	  from.
+
+2009-05-22 10:44  tvrusso
+
+	* src/shapelib/Makefile.am: Change internal shapelib makefile so
+	  that it *does* install the create and add programs if we're
+	  building with internal shapelib.
+
+	  Note:  This should not be tested by those who have shapelib tools
+	  installed from a package unless you know how to do it without
+	  clobbering them.
+
+	  Hint:  configure --prefix=/some/other/base/than/usr/local will
+	  make sure that the new test install doesn't clober anything that
+	  the normal install created.
+
+2009-05-22 10:30  tvrusso
+
+	* src/shapelib/Makefile.am: Add "noinst_PROGRAMS" to the internal
+	  shapelib build so that shpcreate, shpadd, dbfcreate and dbfadd
+	  are built if the user is building the local shapelib.
+
+	  They are not installed, because I didn't want to test that
+	  feature.  To make it so that they *are* installed when make
+	  install is called, one needs only change "noinst_PROGRAMS" in
+	  src/shapelib/Makefile.am to "bin_PROGRAMS" .
+
+2009-05-19 13:47  tvrusso
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/database.h, src/wx.c: Add
+	  support for the Davis 6540 "Weatherlink for APRS" with "Streaming
+	  Data Logger".  This attachment to the Davis Vantage Pro causes
+	  the device to stream APRS posits (sans fromcall, tocall, and
+	  path) to the serial port instead of requiring polling.  With such
+	  a device, Meteo and the associated glue program (db2APRS or
+	  whatever it's called) are unnecessary, so long as this patch is
+	  in place.
+
+	  Also update language files as needed.
+
+2009-05-09 07:15  tvrusso
+
+	* src/db.c: Move "create_garmin_waypoint" call outside of "if
+	  (sound_play_prox_message)" conditional.
+
+	  A local user was completely confused why his garmin wasn't
+	  receiving waypoint data from Xastir, and when I hunted through
+	  the coude found that this feature only works if you have audio
+	  alerts for proximity warnings turned on.  This seems wrong, so I
+	  moved the conditionals around so that waypoints are created if
+	  you're within proximity warning distance, whether or not you've
+	  actually got the old audio alarm turned on for proximity
+	  warnings.
+
+2009-04-30 12:25  gstueve
+
+	* src/: database.h, db.c: Fix band opening logic to ignore 3rd
+	  party traffic. Should make this really work for band opening and
+	  not messages from network. Fix Bug ID:2749796.
+
+2009-04-30 11:52  gstueve
+
+	* src/: main.c, shp_hash.c, shp_hash.h: We already know the current
+	  time, there is no need to ask again.
+
+2009-04-29 20:08  gstueve
+
+	* scripts/get-fcc-rac.pl: Minimize memory footprint for constrained
+	  systems. Do memory intense activity as late as possible.
+
+2009-04-25 23:40  tvrusso
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/db.c:
+	  Fix an annoyance related to DF bearing reports.
+
+	  Sometimes a bad parse of garbled Mic-E data causes Xastir to
+	  think that a D700 (or other mobile) is sending a DF report.  Even
+	  if only a single such garbled transmission is received, the
+	  station is shown with DF bearing information for as long as it's
+	  in the database.  Watching a mobile drive around with randomly
+	  moving DF beam lines is distracting.	Not being able to make it
+	  go away without restarting Xastir has been annoying.
+
+	  Another way for this to happen is for some bonehead (such as
+	  KM5VY) to create a series of DF objects from an external program
+	  with his callsign as base name and sequential numbers to identify
+	  the reports (say "KM5VY-1", "KM5VY-2", etc.) until he happens to
+	  hit the SSID of the station that's sending the reports (say,
+	  KM5VY-8).  What happens is the "object" data gets attached to the
+	  Xastir instance itself.  This bogus beam heading shows up forever
+	  until shutting down Xastir.  This happened today on a SAR ELT DF
+	  practice.  The name of the bonehead has not been changed to
+	  protect the bonehead.
+
+	  This commit adds the ability to clear such bogosity.	Now, the
+	  "Station Info" dialog for any station with DF bearing information
+	  has a "Clear DF Bearing" button that will zero out the bearing
+	  and NRQ strings for the station, removing the unwanted (and
+	  presumably incorrect) bearing lines until the station transmits
+	  them again (which probably means they're wanted and not
+	  incorrect).
+
+2009-04-25 21:53  tvrusso
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/db.c, src/draw_symbols.c,
+	  src/draw_symbols.h, src/main.c, src/main.h, src/xa_config.c:
+	  Add a map-decluttering option.
+
+	  Prior to this commit, "Station->Filter Display->Display DF
+	  Attributes" would draw a pair of bearing lines for every DF
+	  object.  The lines drawn represented the stated beamwidth of the
+	  report.
+
+	  Unfortunately, in a big DFing operation, this rapidly leads to a
+	  huge clutter on the map, making it very difficult, if not
+	  impossible,  to read.  I saw this during a big DF practice this
+	  morning, and just had to change it.
+
+	  I have added two new buttons under Display DF Attributes:
+	  "Display DF Beamwidth" and "Display DF Bearing."  Selecting the
+	  first and not the second gives the current behavior.	Selecting
+	  the second and not the first draws only the stated bearing, not
+	  the beamwidth.  Selecting both draws all three lines for those
+	  who really, really like cluttered maps.  The color of red used
+	  for the bearing line and the beamwidth lines is slightly
+	  different.
+
+	  I tried to set up xa_config so that when people first start up
+	  Xastir after updating, they'll recover the original behavior ---
+	  "Display DF Bearing" defaults to off if it's not found in the
+	  config file.	Unless the new option is deliberately selected,
+	  users should not notice the change.
+
+	  Both Display DF Bearing and Display DF Beamwidth are greyed out
+	  if "Display DF Attributes" is deselected.
+
+	  Updated all the language files with the "update-language.pl"
+	  script to support the new menu items.  A lot of other things got
+	  changed in the language files with this action, but those seemed
+	  mostly to be comments.
+
+2009-04-24 13:10  gstueve
+
+	* scripts/get-fcc-rac.pl: Move sort back to system package. PERL
+	  does parsing well, not sorting.
+
+2009-04-17 16:10  we7u
+
+	* config/: arealm.dbfawk, areawater.dbfawk, cousub.dbfawk,
+	  cousub00.dbfawk, edge.dbfawk, featnames.dbfawk, pointlm.dbfawk,
+	  tabblock.dbfawk: Updating the URL for the Shapefiles to point to
+	  the 2008 shapefiles instead of 2007!
+
+2009-04-17 09:12  we7u
+
+	* config/: Makefile.am, arealm.dbfawk, areawater.dbfawk,
+	  cousub.dbfawk, cousub00.dbfawk, edge.dbfawk, featnames.dbfawk,
+	  pointlm.dbfawk, tabblock.dbfawk: Adding the dbfawk files worked
+	  on by Richard Polivka, N6NKO, Craig Anderson, N6YXK, and Dale
+	  Seaburg, KG5LT, which help to nicely render 2008 Tiger Shapeline
+	  files.
+
+	  A note from Craig about layering:
+
+	    "...use "vi" on the map_index.sys file while xastir is not
+	  running.
+	    Once you are editing the file, use the following 3 commands in
+	  "vi"
+	    to change the layers.  This assumes that, like with my xastir,
+	  new
+	    maps get added into the list at layer 1000.
+
+	    :g/tabblock/s/01000/00995/
+	    :g/pointlm/s/01000/00996/
+	    :g/arealm/s/01000/00997/
+
+	    (translation: global search throughout the file for lines with
+	    "arealm" and substitute on that line for "01000", a "00997")
+
+	    This moves the tabblock (& tabblock00) files, pointlm files,
+	  and
+	    arealm files down underneath the roads maps.  Otherwise the
+	  roads
+	    can get covered up by urban background coloring.  Or you can do
+	  this
+	    through the GUI interface as well."
+
+2009-04-16 19:55  we7u
+
+	* src/wx.c: Fixing up the Peet Bros 2000 data logging and packet
+	  mode decoding for wind direction.  These were really 4-character
+	  fields but the first two chars should be zeroed out.	We were
+	  reading in only the 2nd two characters and then zeroing them out
+	  (the reading of interest).
+
+2009-04-16 14:20  tvrusso
+
+	* scripts/values.pl.in: Change values.pl.in so it references
+	  #!/usr/bin/perl instead of #!/bin/perl.
+
+	  Neither is strictly correct since perl could be installed just
+	  about anywhere on any system, but this brings it in line with all
+	  the rest of the scripts here.
+
+	  Ideally the location of the perl interpreter should be probed by
+	  configure and substituted in all the scripts, but that is
+	  probably more work than it's worth given that all of our scripts
+	  have had /usr/bin/perl hardcoded all this time.
+
+	  #!/usr/bin/env perl
+
+	  is sometimes suggested to make such scripts system-independent,
+	  but this is generally considered a security vulnerability because
+	  it uses the first "perl" that appears in the user's path, which
+	  might be a malicious bit of code.
+
+2009-04-16 12:34  tvrusso
+
+	* configure.ac, scripts/Makefile.am, scripts/values.in,
+	  scripts/values.pl.in: Remove inappropriate use of GNU Make
+	  extensions in scripts/Makefile.am.
+
+	  These were introduced to generate scripts/values and
+	  scripts/values.pl from scripts/values.in and
+	  scripts/values.pl.in, but this is the wrong approach.  Generating
+	  these files from the .in's should be done by adding them to the
+	  configure.ac AC_CONFIG_FILES list and by using standard
+	  substitution strings in the .in files.  Non-standard substitution
+	  strings can also be used if one also adds AC_SUBST calls to the
+	  configure.ac file.
+
+	  The standard substitution string for prefix is @prefix@ not
+	  @PREFIX@.
+
+2009-04-16 12:26  gstueve
+
+	* scripts/Makefile.am: Makefile should actually work properly for
+	  split source/build configuration.
+
+2009-04-16 11:56  gstueve
+
+	* scripts/Makefile.am: Make sure proper Makefile is updated when
+	  Makefile.am is updated.
+
+2009-04-16 11:39  we7u
+
+	* src/: main.c, messages.h, view_message_gui.c, xa_config.c:
+	  Saving/restoring the status of the CAD Objects buttons and the
+	  View Messages TNC/NET/MINE selection buttons.
+
+2009-04-16 11:28  gstueve
+
+	* scripts/: get-NWSdata, get-gnis, get-pop: Remove another possible
+	  bashism reported by checkbashisms script.
+
+2009-04-16 09:25  we7u
+
+	* scripts/: Makefile.am, slideshow.pl: Adding slideshow.pl, a
+	  script which snags the snapshot.png files into a separate
+	  directory and renames them for possible later use as a slideshow
+	  or animated movie.
+
+2009-04-13 13:18  gstueve
+
+	* scripts/get-pop: Position files are only ASCII, don't push AK or
+	  HI through recoding.
+
+2009-04-13 13:10  gstueve
+
+	* scripts/get-pop: Adjust download site to complete list. Retain
+	  tamu site for reference.
+
+2009-04-13 11:34  gstueve
+
+	* src/: locate_gui.c, maps.h: Add ability to locate map features
+	  from population format files.
+
+2009-04-13 11:13  gstueve
+
+	* src/map_pop.c: Missed these. Had compiled on other system.
+	  Mistyped entry.
+
+2009-04-13 10:32  gstueve
+
+	* src/: map_gnis.c, map_pop.c: Found a couple of locations that
+	  could get unhappy about trying to read bad data.
+
+2009-04-13 10:16  gstueve
+
+	* scripts/Makefile.am, scripts/get-pop, src/Makefile.am,
+	  src/map_pop.c, src/maps.c: Reintroduce previous population
+	  geolocator processing into new file type.  The .pop file
+	  extension will reflect the old information. GNIS does not have
+	  authorative population data, we should use census info. The
+	  script will look to aprs.tamu.edu but I was not able to locate
+	  all of the states data files.
+
+2009-04-08 09:24  gstueve
+
+	* scripts/get-gnis: Get rid of bashism that escaped my first tests.
+
+2009-04-08 09:17  gstueve
+
+	* scripts/get-gnis: Add recode to convert AK & HI UTF-16 files to
+	  UTF-8 to give us a fighting chance to actually locate anything in
+	  those states.
+
+2009-04-07 14:17  gstueve
+
+	* scripts/get-gnis: USGS has made geocodes a moving target. Current
+	  file is 20090401.
+
+2009-04-07 02:23  gstueve
+
+	* src/main.c: Repair damage to map properties dialog inflicted by
+	  last check-in.
+
+2009-04-06 09:07  gstueve
+
+	* src/interface_gui.c: Move Path entries around to reduce vertical
+	  challenge.
+
+2009-04-05 17:28  gstueve
+
+	* src/map_gnis.c: Update field sequence to match current GNIS file
+	  layout.
+
+2009-04-04 23:10  gstueve
+
+	* src/list_gui.c: Update max display list to symbolic count.
+
+2009-04-04 21:14  gstueve
+
+	* src/list_gui.c: Clean up station list to actually line up with
+	  icon and line height.
+
+2009-04-04 19:21  gstueve
+
+	* src/objects.c: Maintain pointer to cursor to keep memory usage
+	  clean.
+
+2009-04-04 11:37  gstueve
+
+	* scripts/: .cvsignore, Makefile.am, coord-convert.pl, get-NWSdata,
+	  get-fcc-rac.pl, get-gnis, icontable.pl, values.in, values.pl.in,
+	  xastir-fixcfg.sh, xastir-migrate.sh: Fix the scripts to match the
+	  structure for placement of files by using -prefix from configure
+	  process to allow matchup to FHS placement.
+
+2009-04-04 11:28  gstueve
+
+	* m4/xmhtml.m4: Wrap macro name to keep everyone happy. Remove
+	  autoreconf complaint.
+
+2009-04-03 07:08  gstueve
+
+	* src/: main.c, main.h: Upgrade to session aware application space.
+	  Permit GNOME window manager to clean up without warning message
+	  about unsaved data. Permit restart to keep proper character
+	  translations for display. Clean up some free memory leaks and
+	  update for Motif 2.0 XmString functions.
+
+2009-04-02 18:22  gstueve
+
+	* src/interface.c: Remove extraneous include entry.
+
+2009-04-02 15:09  gstueve
+
+	* src/xastir.h: Remove external reference to internal application
+	  close out function.
+
+2009-03-31 20:06  tvrusso
+
+	* scripts/object2shp.pl: Fix a minor, but completely
+	  inconsequential error in this script.  It would produce
+	  shapefiles with every shape having the same ID attribute.
+	  Doesn't matter at all since ID is not used for anything, but this
+	  is the right fix.
+
+2009-03-31 12:56  we7u
+
+	* src/rac_data.c: Fixing a 64-bit mode bug in the RAC callsign
+	  lookup code.
+
+2009-02-06 09:22  gstueve
+
+	* README.MAPS: Add hint for Australian rules Weather Alerts &
+	  update address for FCC data.
+
+2009-02-06 08:51  gstueve
+
+	* scripts/get-NWSdata: Update to latest from US NWS.
+
+2009-01-08 17:53  we7u
+
+	* README.win32: Adding notes WRT a Cygwin xorg-x11-devel 7.x
+	  compile error and how to fix it, courtesy of David Flood, KD7MYC.
+
+2009-01-02 00:15  we7u
+
+	* src/Makefile.am, src/alert.c, src/alert.h, src/awk.c, src/awk.h,
+	  src/bulletin_gui.c, src/bulletin_gui.h, src/color.c, src/color.h,
+	  src/database.h, src/datum.c, src/datum.h, src/db.c, src/db_gis.c,
+	  src/db_gis.h, src/dbfawk.c, src/dbfawk.h, src/draw_symbols.c,
+	  src/draw_symbols.h, src/fcc_data.c, src/fcc_data.h,
+	  src/festival.c, src/festival.h, src/geo-client.c, src/geo-find.c,
+	  src/geo.h, src/geocoder_gui.c, src/gps.c, src/gps.h,
+	  src/hashtable.c, src/hashtable.h, src/hashtable_itr.c,
+	  src/hashtable_itr.h, src/hashtable_private.h, src/hostname.c,
+	  src/hostname.h, src/igate.c, src/igate.h, src/interface.c,
+	  src/interface.h, src/interface_gui.c, src/io-common.c,
+	  src/io-mmap.c, src/io.h, src/lang.c, src/lang.h,
+	  src/leak_detection.h, src/list_gui.c, src/list_gui.h,
+	  src/locate_gui.c, src/location.c, src/location_gui.c,
+	  src/macspeech.c, src/main.c, src/main.h, src/map_WMS.c,
+	  src/map_cache.c, src/map_cache.h, src/map_dos.c, src/map_gdal.c,
+	  src/map_geo.c, src/map_gnis.c, src/map_pdb.c, src/map_shp.c,
+	  src/map_tif.c, src/map_tiger.c, src/maps.c, src/maps.h,
+	  src/messages.c, src/messages.h, src/messages_gui.c,
+	  src/objects.c, src/objects.h, src/popup.h, src/popup_gui.c,
+	  src/rac_data.c, src/rac_data.h, src/rotated.c, src/rotated.h,
+	  src/rpl_malloc.c, src/rpl_malloc.h, src/shp_hash.c,
+	  src/shp_hash.h, src/snprintf.c, src/snprintf.h, src/sound.c,
+	  src/symbols.h, src/testdbfawk.c, src/track_gui.c,
+	  src/track_gui.h, src/util.c, src/util.h, src/view_message_gui.c,
+	  src/wx.c, src/wx.h, src/wx_gui.c, src/x_spider.c, src/x_spider.h,
+	  src/xa_config.c, src/xa_config.h, src/xastir.h,
+	  src/xastir_udp_client.c, AUTHORS, DEBUG_LEVELS, FAQ, INSTALL,
+	  LICENSE, Makefile.am, NEWS, README, README.CVS,
+	  README.Contributing, README.Getting-Started, README.MAPS,
+	  README.win32, REGRESSION_TESTS, UPGRADE, acinclude.m4,
+	  bootstrap.sh, changes.txt, configure.ac, install-xastir,
+	  update-xastir, xastir.1, m4/Makefile.am: Updating copyright
+	  notices for 2009.
+
+2009-01-01 23:58  we7u
+
+	* src/: rtree/Makefile.am, rtree/card.c, rtree/card.h,
+	  rtree/gammavol.c, rtree/index.c, rtree/index.h, rtree/node.c,
+	  rtree/rect.c, rtree/sphvol.c, rtree/split_l.c, rtree/split_l.h,
+	  rtree/split_q.c, rtree/split_q.h, shapelib/Makefile.am,
+	  shapelib/contrib/Makefile.am: Updating the copyright notices for
+	  2009.
+
+2009-01-01 23:56  we7u
+
+	* scripts/: LSB-BUILD, LSB-BUILD-ALL, LSB-BUILD-CURL, LSB-BUILD-DB,
+	  LSB-BUILD-GDAL, LSB-BUILD-GRAPHICSMAGICK, LSB-BUILD-JASPER,
+	  LSB-BUILD-JPEG, LSB-BUILD-LESSTIF, LSB-BUILD-PCRE, LSB-BUILD-PNG,
+	  LSB-BUILD-ZLIB, Makefile.am, Xastir_tigerpoly.py,
+	  example_objects.log, get-NWSdata, get-fcc-rac.pl, get-gnis,
+	  get-maptools.sh, get_shapelib.sh, langElmerFudd.pl,
+	  langMuppetsChef.pl, langOldeEnglish.pl, langPigLatin.pl,
+	  langPirateEnglish.pl, toporama250k.pl, toporama50k.pl,
+	  xastir-fixcfg.sh, xastir-migrate.sh: Updating copyright notices
+	  for 2009.
+
+2009-01-01 23:54  we7u
+
+	* callpass/: Makefile.am, callpass.c: Updating the copyright
+	  notices for 2009.
+
+2009-01-01 23:51  we7u
+
+	* symbols/Makefile.am, symbols/symbols.dat, LaCrosse/Makefile.am,
+	  LaCrosse/README, LaCrosse/bootstrap.sh, LaCrosse/configure.ac,
+	  LaCrosse/src/Makefile.am, LaCrosse/src/defs.h,
+	  LaCrosse/src/open2300db2APRS.c, help/Makefile.am,
+	  help/help-Dutch.dat, help/help-English.dat, help/help-French.dat,
+	  help/help-German.dat, help/help-Italian.dat,
+	  help/help-Portuguese.dat, help/help-Spanish.dat,
+	  Davis/Makefile.am, Davis/README, Davis/bootstrap.sh,
+	  Davis/configure.ac, Davis/src/Makefile.am, Davis/src/db2APRS.c,
+	  Davis/src/defs.h, config/24kgrid.dbfawk, config/Makefile.am,
+	  config/gps_wpt.dbfawk, config/language-Dutch.sys,
+	  config/language-English.sys, config/language-French.sys,
+	  config/language-German.sys, config/language-Italian.sys,
+	  config/language-Portuguese.sys, config/language-Spanish.sys,
+	  config/nwsc_ddmmyy.dbfawk, config/nwsmzddmmyy.dbfawk,
+	  config/nwsmzoddmmyy.dbfawk, config/nwsozddmmyy.dbfawk,
+	  config/nwsw_ddmmyy.dbfawk, config/nwsz1ddmmyy.dbfawk,
+	  config/nwsz_ddmmyy.dbfawk, config/nwszoddmmyy.dbfawk,
+	  config/predefined_EVENT.sys, config/predefined_SAR.sys,
+	  config/tgr2shp.dbfawk, config/tgr2shppoly.dbfawk,
+	  config/tgr2shppoly_2006.dbfawk, config/tgrcty.dbfawk,
+	  config/tgrkgl.dbfawk, config/tgrlk.dbfawk, config/tgrlpt.dbfawk,
+	  config/tgrlpy.dbfawk, config/tgrplc00.dbfawk,
+	  config/tgrwat.dbfawk, config/tnc-startup.aea,
+	  config/tnc-startup.d700, config/tnc-startup.kam,
+	  config/tnc-startup.kpc2, config/tnc-startup.kpc3,
+	  config/tnc-startup.paccomm, config/tnc-startup.pico,
+	  config/tnc-startup.sys, config/tnc-startup.thd7,
+	  config/tnc-startup.tnc2, config/tnc-startup.tnc2-ui,
+	  config/tnc-stop.d700, config/tnc-stop.sys, config/tnc-stop.thd7,
+	  config/tnc-stop.tnc2-ui: Updating the copyright notices for 2009.
+
+2008-12-31 20:37  we7u
+
+	* src/xa_config.c: Changing xastir.cnf -> xastir.cnf.1 to a
+	  copy_file() call instead of a move().  This assures that we'll
+	  always have a config file in place even if we error-out before we
+	  can complete the next block which renames xastir.cnf.tmp ->
+	  xastir.cnf.
+
+2008-12-31 20:18  we7u
+
+	* src/xa_config.c: A better ordering for writing the config file.
+	  We now write a temporary file.  If successful, we rename all the
+	  backups and then rename the temporary file as the current config
+	  file.  This should help to minimize the instances of config file
+	  corruption.
+
+2008-12-09 08:10  we7u
+
+	* FAQ, README, README.Contributing, README.Getting-Started,
+	  README.win32: Adding notes about having to subscribe to the
+	  mailing lists before posting.
+
+2008-11-26 09:39  we7u
+
+	* src/draw_symbols.c: Correcting a comment.
+
+2008-11-24 12:27  we7u
+
+	* scripts/example_objects.log: Adding a link to the Xastir Wiki
+	  where images of these objects can be seen.
+
+2008-11-12 15:26  tvrusso
+
+	* src/map_geo.c: Comment out the use of GetOnePixel and the
+	  variable it assigns to.
+
+	  This is for two reasons:
+
+	   1) F*!#*ng ImageMagick has broken its API yet again with version
+	  6.4.5,
+	      making GetOnePixel no longer compatible with usage prior to
+	  6.4.4
+	   2) map_geo.c does this:
+		PixelPacket target;
+		target=GetOnePixel(image,0,0)
+	      after which it does NOTHING with the pixel so retrieved.	So
+	  commenting
+	      out this useless line is less work than what I had started
+	  doing,
+	      which was hacking the configure detection of ImageMagick to
+	  distinguish
+	      between pre-6.4.5 and post-6.4.5, and coding around this
+	  garbage.
+
+	  I Hate ImageMagick.
+
+2008-10-17 00:18  we7u
+
+	* config/tnc-startup.aea: Turning on the HID function which is
+	  required on AEA TNC's for proper identification if they're
+	  digipeating.	Since we have digipeating turned on in this file...
+
+2008-10-16 09:20  we7u
+
+	* ChangeLog: Updating for devel release.
+
 2008-10-08 21:57  we7u
 
 	* src/map_shp.c: Getting rid of a 64-bit compiler warning by
