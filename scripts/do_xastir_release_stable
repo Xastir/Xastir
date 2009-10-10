@@ -78,7 +78,12 @@ printf("\n*** Uploading $filename to SourceForge\n");
 # `ncftpput upload.sourceforge.net incoming $filename`;
 #
 # New method using RSYNC-over-SSH:
-`rsync -P -t -vv --progress -e ssh $filename we7u\@frs.sourceforge.net:uploads/`;
+#`rsync -P -t -vv --progress -e ssh $filename we7u\@frs.sourceforge.net:uploads/`;
+#
+# Newest method which sends it to a per-project area.  We then use
+# the SourceForge web pages to create a release sub-directory and
+# move the file into it using cut/paste:
+`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/`;
 
 
 printf("\n*** Tagging repository using $file_prefix tag\n");
