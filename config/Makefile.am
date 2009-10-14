@@ -34,11 +34,16 @@ EXTRA_DIST = \
     tgrwat.dbfawk \
     nwsc_ddmmyy.dbfawk \
     nwsc_ddmmyy_09.dbfawk \
+    nwsc_ddmmyy_09b.dbfawk \
     nwsmzddmmyy.dbfawk \
+    nwsmzddmmyy_09.dbfawk \
     nwsmzoddmmyy.dbfawk \
     nwsozddmmyy.dbfawk \
+    nwsozddmmyy_09.dbfawk \
     nwsw_ddmmyy.dbfawk \
+    nwsw_ddmmyy_09.dbfawk \
     nwsz_ddmmyy.dbfawk \
+    nwsz_ddmmyy_09.dbfawk \
     nwsz1ddmmyy.dbfawk \
     nwszoddmmyy.dbfawk \
     predefined_EVENT.sys \
