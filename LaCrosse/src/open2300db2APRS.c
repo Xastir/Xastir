@@ -447,6 +447,7 @@ int Get_Latest_WX( double *winddir,
     char latest_timestamp[20];
     char query_buffer[160];
     int nrows, row_cnt, item_count;
+    int nfields;
 
 		
     // Find latest, see if it's new to us
@@ -521,8 +522,10 @@ int Get_Latest_WX( double *winddir,
         return 0;
     }
     else {
+        nfields=mysql_num_fields(result);
+        row=mysql_fetch_row(result);
         if (debug_level & 1)
-            fprintf(stderr,"info: Latest Weather Data query: number of types of readings %d\n",nrows);
+            fprintf(stderr,"info: Latest Weather Data query: number of types of readings %d\n",nfields);
     }
 
     *valid_data_flgs = 0;
