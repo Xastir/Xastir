@@ -2328,9 +2328,26 @@ fprintf(stderr,"2 ");
                                 trans_skip = 0; // draw it
                             }
                         } else {
-                            pack_pixel_bits(pixel_pack[l].red * raster_map_intensity,
-                                            pixel_pack[l].green * raster_map_intensity,
-                                            pixel_pack[l].blue * raster_map_intensity,
+                            // It is not safe to assume that the red/green/blue
+                            // elements of pixel_pack of type Quantum are the
+                            // same as the red/green/blue of an XColor!
+                            if (QuantumDepth==16) {
+                                my_colors[0].red=pixel_pack[l].red;
+                                my_colors[0].green=pixel_pack[l].green;
+                                my_colors[0].blue=pixel_pack[l].blue;
+                            }
+                            else { // QuantumDepth=8
+                                // shift the bits of the 8-bit quantity so that
+                                // they become the high bigs of my_colors.*
+                                my_colors[0].red=pixel_pack[l].red<<8;
+                                my_colors[0].green=pixel_pack[l].green<<8;
+                                my_colors[0].blue=pixel_pack[l].blue<<8;
+                            }
+                            // NOW my_colors has the right r,g,b range for
+                            // pack_pixel_bits
+                            pack_pixel_bits(my_colors[0].red * raster_map_intensity,
+                                            my_colors[0].green * raster_map_intensity,
+                                            my_colors[0].blue * raster_map_intensity,
                                             &my_colors[0].pixel);
                             if ( trans_color_head && 
                                     check_trans(my_colors[0],trans_color_head) ) {
