@@ -43,6 +43,7 @@ The Questions
     3.7 Why isn't ImageMagick recognized and used during Xastir's
         "configure" stage?
     3.8 Why do I get an error now when trying to do a "cvs update"?
+    3.9 Why does compilation of map_geo, map_WMS or map_tiger fail with "invalid operands to binary <<" errors?
 
 4.  Running Xastir
 
@@ -418,6 +419,22 @@ The Answers
     find -name Root -path \*CVS\* -exec perl -pi.bak -e's/cvs.sf.net/xastir.cvs.sourceforge.net/' \{\} \;
 
 
+   3.9 Why does compilation of map_geo, map_WMS or map_tiger fail with "invalid operands to binary <<" errors?
+
+   This is a problem with ImageMagick.  In short, your ImageMagick
+   installation has been built with an option incompatible with
+   Xastir.
+
+   New versions of ImageMagick include experimental support for High
+   Dynamic Range Images (HDRI).  This support changes the data type of
+   a Quantum (pixel value) from an 8- or 16-bit integer quantity to a
+   floating point.  Xastir assumes that all pixel values are integer
+   types, and uses operations on those values based on that
+   assumption.  
+
+   You have two choices for getting around this issue: rebuild
+   ImageMagick without HDRI support, or use GraphicsMagick instead.
+
 4. Running Xastir
 
     4.1 Why do I get wrong texts in menus or other places when using a
@@ -691,11 +708,21 @@ The Answers
 
     4.17 Why do I get black map images when I use ImageMagick?
 
-    It may be due to bugs in your particular version of ImageMagick,
-    but more likely it's related to the color-depth of your
-    X-Server.  If you are using 8-bit, 24-bit, or 32-bit
-    color-depth:  Try 16-bit, which is the color-depth best
-    supported by the Xastir code.
+    There was a bug in versions of Xastir prior to the CVS version of
+    4 December 2009 that caused this problem if ImageMagick (or
+    GraphicsMagick) were compiled with QuantumDepth not equal to 16
+    (GraphicsMagick now defaults this parameter to 8).  The bug was
+    fixed, and current versions of Xastir should not have this
+    problem.  If you are running an older version than 4 December
+    2009, updating will likely solve this problem for you.
+
+    If you are running a version higher than 1.9.7 or a CVS version
+    checked out after 4 December 2009, then the problem lies
+    elsewhere.  It may be due to bugs in your particular version of
+    ImageMagick, but more likely it's related to the color-depth of
+    your X-Server.  If you are using 8-bit, 24-bit, or 32-bit
+    color-depth: Try 16-bit, which is the color-depth best supported
+    by the Xastir code.
 
     4.18 Why does my MacOSX machine w/USB->Serial adapters hang?
 
