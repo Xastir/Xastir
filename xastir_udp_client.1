@@ -1,0 +1,43 @@
+.TH xastir_udp_client 1 2009-12-22 "The Xastir Group"
+
+.SH NAME
+xastir_udp_client \- send simple messages to xastir for APRS(tm) network.
+
+.SH SYNOPSIS
+.B xastir_udp_client
+.I <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+
+.SH DESCRIPTION
+
+xastir_udp_client sends packets into the UDP listening port of an enabled xastir instance.
+
+.SH EXAMPLES
+
+ xastir_udp_client localhost 2023 <callsign> <passcode> "APRS Packet Goes Here"
+
+Currently that will inject the packet into Xastir's decoding routines and send
+it to any TCP-connected clients. It will also igate it to the INET if you have
+igating enabled.  It will send the packet out the RF ports as third-party
+packets only if you add the "-to_rf" flag after the passcode like this:
+
+ xastir_udp_client localhost 2023 <callsign> <passcode> -to_rf "APRS Packet"
+
+The UDP client is useful for generating and injecting APRS packets from
+external scripts.  It can also be used to fetch the callsign of the remote
+xastir server by using the -identify flag:
+
+ xastir_udp_client localhost 2023 <callsign> <passcode> -identify
+
+.SH NOTES
+This is a very simple utility that provides no validation of message content.
+
+.SH SEE ALSO
+xastir help file
+.br
+.PP
+.B APRS[tm]
+is a Trademark of Bob Bruninga, his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"
+.SH COPYING
+Copyright (C) 1999,2000 Frank Giannandrea KC2GJS
+.br
+Copyright (C) 2000-2009 The Xastir Group

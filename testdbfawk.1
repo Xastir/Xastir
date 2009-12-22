@@ -1,0 +1,48 @@
+.TH testdbfawk 1 2009-12-22 "The Xastir Group"
+
+.SH NAME
+testdbfawk \- scan dbfawk files for matching dbf file for map rendering in xastir
+
+.SH SYNOPSIS
+.B testdbfawk
+.I [-f file.awk| -D dir] -d file.dbf
+
+.SH DESCRIPTION
+Scan dbfawk files for matching dbf file for map rendering in xastir
+.br
+.PP
+.B --help
+prints command line usage
+.br
+.B -D
+for dir containing *.dbfawk files.
+.br
+.B -f
+for file containing awk rules.
+.br
+.B -d
+for dbf file to parse
+.SH EXAMPLES
+testdbfawk -D . -d tgr36119lkA.dbf 2>&1|less
+
+testdbfawk scans the current directory for dbfawk files with signatures that match tgr36119lkA.dbf's
+signature.  testdbfawk dumps its output to standard error, so in the example standard error is
+redirected to standard out and piped into "less" for paging.
+
+.SH NOTES
+Dbfawk hints and kinks:  You have to think like an awk programmer and
+realize that the order that rules are listed matters, that it's important
+to use "next" as soon as it makes sense so other rules aren't looked at
+unnecessarily and, to use "skip" when you want to fix bad dbf data.
+
+.SH SEE ALSO
+README.MAPS in xastir documentation
+.br
+.PP
+.B APRS[tm]
+is a Trademark of Bob Bruninga, his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+.SH COPYING
+Copyright (C) 1999,2000 Frank Giannandrea KC2GJS
+.br
+Copyright (C) 2000-2009 The Xastir Group

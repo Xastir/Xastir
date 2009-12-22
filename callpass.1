@@ -1,0 +1,29 @@
+.TH callpass 1 2009-12-22 "The Xastir Group"
+
+.SH NAME
+callpass \- generate Pass-code associated with your callsign for authentication to APRS(tm) network.
+
+.SH SYNOPSIS
+.B callpass
+.I <callsign>
+
+.SH DESCRIPTION
+Generate passcode for use in xastir authentication to APRS network for traffic delivery to cooperating systems.
+.SH EXAMPLES
+
+callpass nocall
+	outputs 'Passcode for nocall is 12960'
+
+.SH NOTES
+There is no error or consistency check for callsign. This utility will generate a passcode for any string.
+.SH SEE ALSO
+xastir help file
+.br
+.PP
+.B APRS[tm]
+is a Trademark of Bob Bruninga, his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+.SH COPYING
+Copyright (C) 1999,2000 Frank Giannandrea KC2GJS
+.br
+Copyright (C) 2000-2009 The Xastir Group
