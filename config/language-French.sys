@@ -71,6 +71,7 @@ PULDNCF008|Sauvegarder la configuration maintenant !|a|
 PULDNMP001|Choix des cartes|C|
 PULDNMP012|Aller à|l|
 PULDNMP014|Localiser élément cartographique|F|
+PULDNMP016|Disable Map Zoom/Pan||
 PULDNMP013|Désactiver cartes|D|
 PULDNMP002|Activer cartographie automatique|A|
 PULDNMP003|Activer quadrillage|q|

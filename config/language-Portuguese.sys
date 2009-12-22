@@ -68,6 +68,7 @@ PULDNCF008|Guardar configuracao!|G|
 PULDNMP001|Seleccionar mapas|M|
 PULDNMP012|Saltar para um local do mapa|S|
 PULDNMP014|Localizar faixa no mapa|L|
+PULDNMP016|Disable Map Zoom/Pan||
 PULDNMP013|Desactivar todos os mapas||
 PULDNMP002|Activar auto mapas||
 PULDNMP003|Activar as coordenadas do mapa||

@@ -453,6 +453,10 @@ int draw_labeled_grid_border = FALSE;   // Toggle labeled border around map.
 
 
 static void CAD_draw_toggle( Widget w, XtPointer clientData, XtPointer calldata);
+
+int map_lock_pan_zoom = 0;
+static void Map_lock_pan_zoom_toggle( Widget w, XtPointer clientData, XtPointer calldata);
+
 int disable_all_maps = 0;
 static void Map_disable_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -5209,7 +5213,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         weather_button, wx_station_button, locate_button, geocode_place_button,
         locate_place_button, jump_button, jump_button2, alert_button,
         config_button, defaults_button, timing_button,
-        coordinates_button, station_button, map_disable_button,
+        coordinates_button, station_button, map_lock_pan_zoom_button, map_disable_button,
         map_button, map_auto_button, map_chooser_button,
         map_grid_button, map_levels_button, map_labels_button,
         map_fill_button, coordinate_calculator_button,
@@ -6296,7 +6300,22 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    
+
+
+    map_lock_pan_zoom_button = XtVaCreateManagedWidget(langcode("PULDNMP016"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(map_lock_pan_zoom_button, XmNvalueChangedCallback, Map_lock_pan_zoom_toggle, "1");
+    if (map_lock_pan_zoom)
+        XmToggleButtonSetState(map_lock_pan_zoom_button, TRUE, FALSE);
+  
+ 
     map_disable_button = XtVaCreateManagedWidget(langcode("PULDNMP013"),
             xmToggleButtonGadgetClass,
             mappane,
@@ -6306,9 +6325,9 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(map_disable_button,XmNvalueChangedCallback,Map_disable_toggle,"1");
+    XtAddCallback(map_disable_button, XmNvalueChangedCallback, Map_disable_toggle, "1");
     if (disable_all_maps)
-        XmToggleButtonSetState(map_disable_button,TRUE,FALSE);
+        XmToggleButtonSetState(map_disable_button, TRUE, FALSE);
 
 
     map_auto_button = XtVaCreateManagedWidget(langcode("PULDNMP002"),
@@ -10574,68 +10593,71 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 else {  // Must be "Compute new center/zoom" function
                     float ratio;
 
-                    // We need to compute a new center and a new scale, then
-                    // cause the new image to be created.
-                    // Compute new center.  It'll be the average of the two points
-                    x_center = (menu_x + input_x) /2;
-                    y_center = (menu_y + input_y) /2;
+                    if (!map_lock_pan_zoom) {
 
-                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
-                    new_mid_x = center_longitude - ((width *scale_x)/2) + (x_center*scale_x);
-                    new_mid_y = center_latitude  - ((height*scale_y)/2) + (y_center*scale_y);
+                        // We need to compute a new center and a new scale, then
+                        // cause the new image to be created.
+                        // Compute new center.  It'll be the average of the two points
+                        x_center = (menu_x + input_x) /2;
+                        y_center = (menu_y + input_y) /2;
 
-                    //
-                    // What Rolf had to say:
-                    //
-                    // Calculate center of mouse-marked area and get the scaling relation
-                    // between x and y for that position. This position will be the new
-                    // center, so that lattitude-dependent relation does not change with
-                    // a zoom-in. For both x and y calculate a new zoom factor necessary
-                    // to fit that screen direction. Select the one that allows both x
-                    // and y part to fall into the screen area. Draw the new screen with
-                    // new center and new zoom factor.
-                    //
+                        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
+                        new_mid_x = center_longitude - ((width *scale_x)/2) + (x_center*scale_x);
+                        new_mid_y = center_latitude  - ((height*scale_y)/2) + (y_center*scale_y);
 
-                    // Compute the new scale, or as close to it as we can get
-                    //new_scale_y = scale_y / 2;    // Zoom in by a factor of 2
-                    new_scale_y = (long)( (((float)abs(menu_y - input_y) / (float)height ) * (float)scale_y ) + 0.5);
-                    new_scale_x = (long)( (((float)abs(menu_x - input_x) / (float)width  ) * (float)scale_x ) + 0.5);
+                        //
+                        // What Rolf had to say:
+                        //
+                        // Calculate center of mouse-marked area and get the scaling relation
+                        // between x and y for that position. This position will be the new
+                        // center, so that lattitude-dependent relation does not change with
+                        // a zoom-in. For both x and y calculate a new zoom factor necessary
+                        // to fit that screen direction. Select the one that allows both x
+                        // and y part to fall into the screen area. Draw the new screen with
+                        // new center and new zoom factor.
+                        //
 
-                    if (new_scale_y < 1)
-                        new_scale_y = 1;            // Don't go further in than zoom 1
+                        // Compute the new scale, or as close to it as we can get
+                        //new_scale_y = scale_y / 2;    // Zoom in by a factor of 2
+                        new_scale_y = (long)( (((float)abs(menu_y - input_y) / (float)height ) * (float)scale_y ) + 0.5);
+                        new_scale_x = (long)( (((float)abs(menu_x - input_x) / (float)width  ) * (float)scale_x ) + 0.5);
 
-                    if (new_scale_x < 1)
-                        new_scale_x = 1;            // Don't go further in than zoom 1
+                        if (new_scale_y < 1)
+                            new_scale_y = 1;            // Don't go further in than zoom 1
 
-                    // We now know approximately the scales we need
-                    // in order to view all of the pixels just
-                    // selected in the drag operation.  Now set
-                    // new_scale_y to the highest number of the two,
-                    // which will make sure the entire drag
-                    // selection will be seen at the new zoom level.
-                    // Use the new ratio between scales to compute
-                    // this, computed from the new midpoint.
-                    //
-                    //fprintf(stderr,"scale_x:%ld\tscale_y:%ld\n", get_x_scale(new_mid_x, new_mid_y, scale_y), scale_y );
-                    ratio = ((float)get_x_scale(new_mid_x,new_mid_y,scale_y) / (float)scale_y);
+                        if (new_scale_x < 1)
+                            new_scale_x = 1;            // Don't go further in than zoom 1
 
-                    //fprintf(stderr,"Ratio: %f\n", ratio);
-                    //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
-                    if ( new_scale_y < (long)((new_scale_x / ratio) + 0.5) ) {
-                        new_scale_y =  (long)((new_scale_x / ratio) + 0.5);
-                        //fprintf(stderr,"Changed y\n");
+                        // We now know approximately the scales we need
+                        // in order to view all of the pixels just
+                        // selected in the drag operation.  Now set
+                        // new_scale_y to the highest number of the two,
+                        // which will make sure the entire drag
+                        // selection will be seen at the new zoom level.
+                        // Use the new ratio between scales to compute
+                        // this, computed from the new midpoint.
+                        //
+                        //fprintf(stderr,"scale_x:%ld\tscale_y:%ld\n", get_x_scale(new_mid_x, new_mid_y, scale_y), scale_y );
+                        ratio = ((float)get_x_scale(new_mid_x,new_mid_y,scale_y) / (float)scale_y);
+
+                        //fprintf(stderr,"Ratio: %f\n", ratio);
+                        //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
+                        if ( new_scale_y < (long)((new_scale_x / ratio) + 0.5) ) {
+                            new_scale_y =  (long)((new_scale_x / ratio) + 0.5);
+                            //fprintf(stderr,"Changed y\n");
+                        }
+                        //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
+
+                        display_zoom_image(1);          // Check range and do display, recenter
+
+                        menu_x = input_x;
+                        menu_y = input_y;
+                        //fprintf(stderr,"Drag/zoom/center happened\n");
+
+                        // Reset the zoom-box variables
+                        possible_zoom_function = 0;
+                        zoom_box_x1 = -1;
                     }
-                    //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
-
-                    display_zoom_image(1);          // Check range and do display, recenter
-
-                    menu_x = input_x;
-                    menu_y = input_y;
-                    //fprintf(stderr,"Drag/zoom/center happened\n");
-
-                    // Reset the zoom-box variables
-                    possible_zoom_function = 0;
-                    zoom_box_x1 = -1;
                 }
             }
             mouse_zoom = 0;
@@ -10646,7 +10668,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // ZOOM OUT //
 //////////////
 
-        else if (event->xbutton.button == Button2) {
+        else if (event->xbutton.button == Button2 && !map_lock_pan_zoom) {
             // Middle mouse button release
 
             // Zoom out 2x with panning
@@ -13080,7 +13102,7 @@ void display_zoom_image(int recenter) {
 void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13098,7 +13120,7 @@ void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude;
@@ -13116,7 +13138,7 @@ void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13135,7 +13157,7 @@ void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 void Zoom_out_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude;
@@ -13192,6 +13214,10 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 //    unsigned int ac = 0;           /* Arg Count */
     Atom delw;
     char temp[50];
+
+    if (map_lock_pan_zoom) {
+        return;
+    }
 
     if(!custom_zoom_dialog) {
 
@@ -13340,7 +13366,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
     int level;
 
     level=atoi((char *)clientData);
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13436,7 +13462,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13452,7 +13478,7 @@ void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude  - (height*scale_y/4);
@@ -13468,7 +13494,7 @@ void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused
 void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude  - (height*scale_y/10);
@@ -13484,7 +13510,7 @@ void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude  + (height*scale_y/4);
@@ -13500,7 +13526,7 @@ void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude  + (height*scale_y/10);
@@ -13516,7 +13542,7 @@ void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - (width*scale_x/4);
         new_mid_y = center_latitude;
@@ -13532,7 +13558,7 @@ void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - (width*scale_x/10);
         new_mid_y = center_latitude;
@@ -13548,7 +13574,7 @@ void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude + (width*scale_x/4);
         new_mid_y = center_latitude;
@@ -13564,7 +13590,7 @@ void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up) {
+    if(display_up && !map_lock_pan_zoom) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude + (width*scale_x/10);
         new_mid_y = center_latitude;
@@ -13632,8 +13658,10 @@ void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
 void Go_Home( Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     DataRow *p_station;
 
-    if (search_station_name(&p_station,my_callsign,1)) {
-        set_map_position(w, p_station->coord_lat, p_station->coord_lon);
+    if (!map_lock_pan_zoom) {
+        if (search_station_name(&p_station,my_callsign,1)) {
+            set_map_position(w, p_station->coord_lat, p_station->coord_lon);
+        }
     }
 }
 
@@ -13655,6 +13683,10 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 //    unsigned int ac = 0;           /* Arg Count */
     Atom delw;
     char temp[50];
+
+    if (map_lock_pan_zoom) {
+        return;
+    }
 
     if(!center_zoom_dialog) {
 
@@ -14174,6 +14206,22 @@ void  CAD_draw_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
 
     // redraw objects on the current base maps
     redraw_symbols(da);
+}
+
+
+
+
+
+void  Map_lock_pan_zoom_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set) {
+        map_lock_pan_zoom = atoi(which);
+    }
+    else {
+        map_lock_pan_zoom = 0;
+    }
 }
 
 

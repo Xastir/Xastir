@@ -479,6 +479,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "MAPS_LABELED_GRID_BORDER", draw_labeled_grid_border);
         store_int (fout, "MAPS_LEVELS", map_color_levels);
         store_int (fout, "MAPS_LABELS", map_labels);
+        store_int (fout, "MAP_LOCK_PAN_ZOOM", map_lock_pan_zoom);
         store_int (fout, "MAPS_AUTO_MAPS", map_auto_maps);
         store_int (fout, "MAPS_AUTO_MAPS_SKIP_RASTER", auto_maps_skip_raster);
         store_int (fout, "MAPS_INDEX_ON_STARTUP", index_maps_on_startup);
@@ -1498,6 +1499,8 @@ void load_data_or_default(void) {
     map_color_levels = get_int ("MAPS_LEVELS", 0, 1, 1);
 
     map_labels = get_int ("MAPS_LABELS", 0, 1, 1);
+
+    map_lock_pan_zoom = get_int ("MAP_LOCK_PAN_ZOOM", 0, 1, 0);
 
     map_auto_maps = get_int ("MAPS_AUTO_MAPS", 0, 1, 0);
 

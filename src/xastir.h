@@ -140,6 +140,7 @@ extern int long_lat_grid;
 //extern Pixmap  pixmap_alerts;
 extern int map_color_levels;
 extern int map_labels;
+extern int map_lock_pan_zoom;
 extern int map_auto_maps;
 extern int auto_maps_skip_raster;
 extern time_t sec_remove;
