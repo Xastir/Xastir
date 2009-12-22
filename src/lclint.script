@@ -10,7 +10,7 @@
 
 
 #$options = "+forcehints +gnuextensions -warnposix -I/usr/X11/LessTif/Motif2.0/include -I/usr/local/include -I/usr/X11/include +trytorecover";
-$options = "+forcehints -warnposix -I/usr/X11/LessTif/Motif2.0/include -I/usr/local/include -I/usr/X11/include +trytorecover";
+$options = "+D__LCLINT__ +forcehints -warnposix -I/usr/X11/LessTif/Motif2.0/include -I/usr/local/include -I/usr/X11/include -I../devel +trytorecover";
 #$options = "-warnposix -I/usr/X11/LessTif/Motif2.0/include -I/usr/local/include -I/usr/X11/include +trytorecover -boolops -predboolint";
 #$options = "-unqualifiedtrans -branchstate -mayaliasunique -exportlocal -linelength 1000 -predboolothers -nullassign -warnposix -I/usr/X11/LessTif/Motif1.2/include -I/usr/local/include -I/usr/X11/include +trytorecover -boolops -predboolint";
 
@@ -45,110 +45,110 @@ $grep = " \\
 #$grep = "";
 
 
-`(nice lclint $options callpass/callpass.c  2>&1) $grep >callpass.lint`;
+`(nice splint $options ../callpass/callpass.c  2>&1) $grep >callpass.lint`;
 
 
 `echo "\n\nalert.c" > xastir.lint`;
-`(nice lclint $options alert.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options alert.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nbulletin_gui.c" >> xastir.lint`;
-`(nice lclint $options bulletin_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options bulletin_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ncolor.c" >> xastir.lint`;
-`(nice lclint $options color.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options color.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ndatum.c" >> xastir.lint`;
-`(nice lclint $options datum.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options datum.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ndb.c" >> xastir.lint`;
-`(nice lclint $options db.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options db.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ndb_gis.c" >> xastir.lint`;
-`(nice lclint $options db_gis.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options db_gis.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ndraw_symbols.c" >> xastir.lint`;
-`(nice lclint $options draw_symbols.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options draw_symbols.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nfcc_data.c" >> xastir.lint`;
-`(nice lclint $options fcc_data.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options fcc_data.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nfestival.c" >> xastir.lint`;
-`(nice lclint $options festival.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options festival.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ngps.c" >> xastir.lint`;
-`(nice lclint $options gps.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options gps.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nhostname.c" >> xastir.lint`;
-`(nice lclint $options hostname.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options hostname.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nigate.c" >> xastir.lint`;
-`(nice lclint $options igate.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options igate.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ninterface.c" >> xastir.lint`;
-`(nice lclint $options interface.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options interface.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ninterface_gui.c" >> xastir.lint`;
-`(nice lclint $options interface_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options interface_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nlang.c" >> xastir.lint`;
-`(nice lclint $options lang.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options lang.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nlist_gui.c" >> xastir.lint`;
-`(nice lclint $options list_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options list_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nlocate_gui.c" >> xastir.lint`;
-`(nice lclint $options locate_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options locate_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nlocation.c" >> xastir.lint`;
-`(nice lclint $options location.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options location.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nlocation_gui.c" >> xastir.lint`;
-`(nice lclint $options location_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options location_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nmain.c" >> xastir.lint`;
-`(nice lclint $options main.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options main.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nmaps.c" >> xastir.lint`;
-`(nice lclint $options maps.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options maps.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nmessages.c" >> xastir.lint`;
-`(nice lclint $options messages.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options messages.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nmessages_gui.c" >> xastir.lint`;
-`(nice lclint $options messages_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options messages_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\npopup_gui.c" >> xastir.lint`;
-`(nice lclint $options popup_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options popup_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nrac_data.c" >> xastir.lint`;
-`(nice lclint $options rac_data.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options rac_data.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nrotated.c" >> xastir.lint`;
-`(nice lclint $options rotated.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options rotated.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nsnprintf.c" >> xastir.lint`;
-`(nice lclint $options snprintf.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options snprintf.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nsound.c" >> xastir.lint`;
-`(nice lclint $options sound.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options sound.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\ntrack_gui.c" >> xastir.lint`;
-`(nice lclint $options track_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options track_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nutil.c" >> xastir.lint`;
-`(nice lclint $options util.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options util.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nview_message_gui.c" >> xastir.lint`;
-`(nice lclint $options view_message_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options view_message_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nwx.c" >> xastir.lint`;
-`(nice lclint $options wx.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options wx.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nwx_gui.c" >> xastir.lint`;
-`(nice lclint $options wx_gui.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options wx_gui.c 2>&1) $grep >> xastir.lint`;
 
 `echo "\n\nxa_config.c" >> xastir.lint`;
-`(nice lclint $options xa_config.c 2>&1) $grep >> xastir.lint`;
+`(nice splint $options xa_config.c 2>&1) $grep >> xastir.lint`;
 
-#'(nice lclint $options alert.c bulletin_gui.c color.c datum.c db.c db_gis.c draw_symbols.c fcc_data.c festival.c gps.c hostname.c igate.c interface.c interface_gui.c lang.c list_gui.c locate_gui.c location.c location_gui.c main.c maps.c messages.c messages_gui.c popup_gui.c rac_data.c rotated.c snprintf.c sound.c track_gui.c util.c view_message_gui.c wx.c wx_gui.c xa_config.c 2>&1) $grep > xastir.lint`;
+#'(nice splint $options alert.c bulletin_gui.c color.c datum.c db.c db_gis.c draw_symbols.c fcc_data.c festival.c gps.c hostname.c igate.c interface.c interface_gui.c lang.c list_gui.c locate_gui.c location.c location_gui.c main.c maps.c messages.c messages_gui.c popup_gui.c rac_data.c rotated.c snprintf.c sound.c track_gui.c util.c view_message_gui.c wx.c wx_gui.c xa_config.c 2>&1) $grep > xastir.lint`;
 

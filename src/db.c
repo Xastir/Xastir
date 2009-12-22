@@ -49,6 +49,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <locale.h>
+#include <wchar.h>
 #include <string.h>
 
 // Needed for Solaris
@@ -1496,10 +1498,12 @@ void update_messages(int force) {
     static XmTextPosition pos;
     char temp1[MAX_CALLSIGN+1];
     char temp2[500];
+    wchar_t wcs[500];
     char stemp[20];
     long i;
     int mw_p;
     char *temp_ptr;
+    char *locale;
 
 
     if ( message_update_time() || force) {
@@ -1725,10 +1729,13 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //                                            pos,
 //                                            pos+strlen(temp2),
 //                                            temp2);
+				    locale = setlocale(LC_CTYPE, "");
+				    mbstowcs(wcs, temp2, 500);
+				    setlocale(LC_CTYPE, locale);
 
-                                    XmTextInsert(mw[mw_p].send_message_text,
+                                    XmTextInsertWcs(mw[mw_p].send_message_text,
                                             pos,
-                                            temp2);
+                                            wcs);
  
                                     // Set highlighting based on the
                                     // "acked" field.  Callsign
@@ -1739,7 +1746,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //fprintf(stderr,"Setting underline\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
                                             pos+offset,
-                                            pos+strlen(temp2),
+                                            pos+wcslen(wcs),
                                             //XmHIGHLIGHT_SECONDARY_SELECTED); // Underlining
                                             XmHIGHLIGHT_SELECTED);         // Reverse Video
                                     }
@@ -1747,13 +1754,13 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //fprintf(stderr,"Setting normal\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
                                             pos+offset,
-                                            pos+strlen(temp2),
+                                            pos+wcslen(wcs),
                                             XmHIGHLIGHT_NORMAL);
                                     }
 
 //fprintf(stderr,"Text: %s\n",temp2); 
 
-                                    pos += strlen(temp2);
+                                    pos += wcslen(wcs);
 
                                 }
 
