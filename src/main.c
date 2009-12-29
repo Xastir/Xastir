@@ -13215,10 +13215,6 @@ void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
     Atom delw;
     char temp[50];
 
-    if (map_lock_pan_zoom) {
-        return;
-    }
-
     if(!custom_zoom_dialog) {
 
         // "Custom Zoom"
@@ -13366,7 +13362,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
     int level;
 
     level=atoi((char *)clientData);
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13683,10 +13679,6 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 //    unsigned int ac = 0;           /* Arg Count */
     Atom delw;
     char temp[50];
-
-    if (map_lock_pan_zoom) {
-        return;
-    }
 
     if(!center_zoom_dialog) {
 
