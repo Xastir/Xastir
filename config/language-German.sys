@@ -76,7 +76,7 @@ PULDNCF008|Einstellungen sichern|E|
 PULDNMP001|Kartenauswahl|K|
 PULDNMP012|Ausschnitte|A|
 PULDNMP014|Objekt in Karte suchen|O|
-PULDNMP016|Disable Map Zoom/Pan||
+PULDNMP016|Disable Fast Zoom/Pan/Home||
 PULDNMP013|Alle Karten verbergen||
 PULDNMP002|Automatische Karten||
 PULDNMP003|Gitter||

@@ -5175,6 +5175,16 @@ inline int no_data_selected(void)
 
 
 
+#ifdef ARROWS
+Widget pan_up_menu, pan_down_menu,
+        pan_left_menu, pan_right_menu,
+        zoom_in_menu, zoom_out_menu;
+#endif // ARROWS
+
+
+
+
+ 
 void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
     Pixmap icon_pixmap;
     Atom WM_DELETE_WINDOW;
@@ -5256,10 +5266,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #ifdef HAVE_DB        
         store_all_db_button,
 #endif  // HAVE_DB
-#ifdef ARROWS
-        pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
-        zoom_in_menu, zoom_out_menu, 
-#endif // ARROWS
         help_button, help_about, help_help;
 
     char *title, *t;
@@ -8575,6 +8581,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(zoom_in_menu,XmNactivateCallback,Zoom_in_no_pan,NULL);
+    if (map_lock_pan_zoom) XtSetSensitive(zoom_in_menu, FALSE);
 
     zoom_out_menu=XtVaCreateManagedWidget(langcode("POPUPMA003"),
             xmPushButtonWidgetClass,
@@ -8592,6 +8599,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(zoom_out_menu,XmNactivateCallback,Zoom_out_no_pan,NULL);
+    if (map_lock_pan_zoom) XtSetSensitive(zoom_out_menu, FALSE);
 
     pan_left_menu=XtVaCreateManagedWidget("create_appshell arrow1_menu",
             xmArrowButtonGadgetClass,
@@ -8607,6 +8615,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             XmNtraversalOn, FALSE,
             NULL);
     XtAddCallback(pan_left_menu,XmNactivateCallback,Pan_left,NULL);
+    if (map_lock_pan_zoom) XtSetSensitive(pan_left_menu, FALSE);
 
     pan_up_menu=XtVaCreateManagedWidget("create_appshell arrow2_menu",
             xmArrowButtonGadgetClass,
@@ -8622,6 +8631,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             XmNtraversalOn, FALSE,
             NULL);
     XtAddCallback(pan_up_menu,XmNactivateCallback,Pan_up,NULL);
+    if (map_lock_pan_zoom) XtSetSensitive(pan_up_menu, FALSE);
 
     pan_down_menu=XtVaCreateManagedWidget("create_appshell arrow3_menu",
             xmArrowButtonGadgetClass,
@@ -8637,6 +8647,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             XmNtraversalOn, FALSE,
             NULL);
     XtAddCallback(pan_down_menu,XmNactivateCallback,Pan_down,NULL);
+    if (map_lock_pan_zoom) XtSetSensitive(pan_down_menu, FALSE);
 
     pan_right_menu=XtVaCreateManagedWidget("create_appshell arrow4_menu",
             xmArrowButtonGadgetClass,
@@ -8652,6 +8663,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             XmNtraversalOn, FALSE,
             NULL);
     XtAddCallback(pan_right_menu,XmNactivateCallback,Pan_right,NULL);
+    if (map_lock_pan_zoom) XtSetSensitive(pan_right_menu, FALSE);
 #endif // ARROWS
 
 
@@ -10705,7 +10717,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // SCROLL UP //
 ///////////////
 
-        else if (event->xbutton.button == Button4) {
+        else if (event->xbutton.button == Button4 && !map_lock_pan_zoom) {
 // Scroll up
             menu_x=input_x;
             menu_y=input_y;
@@ -10717,7 +10729,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // SCROLL DOWN //
 /////////////////
 
-        else if (event->xbutton.button == Button5) {
+        else if (event->xbutton.button == Button5 && !map_lock_pan_zoom) {
 // Scroll down
             menu_x=input_x;
             menu_y=input_y;
@@ -10729,7 +10741,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // YET MORE MOUSE BUTTON RELEASES //
 ////////////////////////////////////
 
-        else if (event->xbutton.button == 6) {
+        else if (event->xbutton.button == 6 && !map_lock_pan_zoom) {
 // Mouse button 6 release
             menu_x=input_x;
             menu_y=input_y;
@@ -10737,7 +10749,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             mouse_zoom = 0;
         }   // End of Button6 code
 
-        else if (event->xbutton.button == 7) {
+        else if (event->xbutton.button == 7 && !map_lock_pan_zoom) {
 // Mouse button 7 release
             menu_x=input_x;
             menu_y=input_y;
@@ -10811,7 +10823,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         // keycode ??, keysym 65360 is Home (0x???? on sun kbd)
 //        if ((key == 65360) || (key == 0x????)) {
         if (key == 65360) {
-            Go_Home(w, NULL, NULL);
+            if (!map_lock_pan_zoom) {
+                Go_Home(w, NULL, NULL);
+            }
         }
 
         // keycode 99, keysym 65365 is PageUp (0xffda on sun kbd)
@@ -10833,49 +10847,57 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         // keycode 100, keysym 65361 is left-arrow
         if ( (key == 65361)
             || ( (key == 65361) && (event->xkey.state & ShiftMask) ) ) {    // Doesn't work yet.
-            menu_x=input_x;
-            menu_y=input_y;
-            if (event->xbutton.state & ShiftMask)   // This doesn't work yet
-                Pan_left_less( w, client_data, call_data);
-            else
-                Pan_left( w, client_data, call_data );
-            TrackMouse(w, (XtPointer)text2, event, NULL);
+            if (!map_lock_pan_zoom) {
+                menu_x=input_x;
+                menu_y=input_y;
+                if (event->xbutton.state & ShiftMask)   // This doesn't work yet
+                    Pan_left_less( w, client_data, call_data);
+                else
+                    Pan_left( w, client_data, call_data );
+                TrackMouse(w, (XtPointer)text2, event, NULL);
+            }
         }
 
         // keycode 102, keysym 65363 is right-arrow
         if ( (key == 65363)
             || ( (key == 65363) && (event->xkey.state & ShiftMask) ) ) {    // Doesn't work yet.
-            menu_x=input_x;
-            menu_y=input_y;
-            if (event->xbutton.state & ShiftMask)   // This doesn't work yet
-                Pan_right_less( w, client_data, call_data);
-            else
-                Pan_right( w, client_data, call_data );
-            TrackMouse(w, (XtPointer)text2, event, NULL);
+            if (!map_lock_pan_zoom) {
+                menu_x=input_x;
+                menu_y=input_y;
+                if (event->xbutton.state & ShiftMask)   // This doesn't work yet
+                    Pan_right_less( w, client_data, call_data);
+                else
+                    Pan_right( w, client_data, call_data );
+                TrackMouse(w, (XtPointer)text2, event, NULL);
+            }
         }
 
         // keycode 98, keysym 65362 is up-arrow
         if ( (key == 65362)
             || ( (key == 65362) && (event->xkey.state & ShiftMask) ) ) {    // Doesn't work yet.
-            menu_x=input_x;
-            menu_y=input_y;
-            if (event->xbutton.state & ShiftMask)   // This doesn't work yet
-                Pan_up_less( w, client_data, call_data);
-            else
-                Pan_up( w, client_data, call_data );
-            TrackMouse(w, (XtPointer)text2, event, NULL);
+            if (!map_lock_pan_zoom) {
+                menu_x=input_x;
+                menu_y=input_y;
+                if (event->xbutton.state & ShiftMask)   // This doesn't work yet
+                    Pan_up_less( w, client_data, call_data);
+                else
+                    Pan_up( w, client_data, call_data );
+                TrackMouse(w, (XtPointer)text2, event, NULL);
+            }
         }
 
         // keycode 105, keysym 65364 is down-arrow
         if ( (key == 65364)
             || ( (key == 65364) && (event->xkey.state & ShiftMask) ) ) {    // Doesn't work yet.
-            menu_x=input_x;
-            menu_y=input_y;
-            if (event->xbutton.state & ShiftMask)   // This doesn't work yet
-                Pan_down_less( w, client_data, call_data);
-            else
-                Pan_down( w, client_data, call_data );
-            TrackMouse(w, (XtPointer)text2, event, NULL);
+            if (!map_lock_pan_zoom) {
+                menu_x=input_x;
+                menu_y=input_y;
+                if (event->xbutton.state & ShiftMask)   // This doesn't work yet
+                    Pan_down_less( w, client_data, call_data);
+                else
+                    Pan_down( w, client_data, call_data );
+                TrackMouse(w, (XtPointer)text2, event, NULL);
+            }
         }
 
         // keycode 35, keysym 61 is Equals
@@ -13102,7 +13124,7 @@ void display_zoom_image(int recenter) {
 void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13138,7 +13160,7 @@ void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13458,7 +13480,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
@@ -13474,7 +13496,7 @@ void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude  - (height*scale_y/4);
@@ -13506,7 +13528,7 @@ void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude;
         new_mid_y = center_latitude  + (height*scale_y/4);
@@ -13538,7 +13560,7 @@ void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude - (width*scale_x/4);
         new_mid_y = center_latitude;
@@ -13570,7 +13592,7 @@ void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     Dimension width, height;
 
-    if(display_up && !map_lock_pan_zoom) {
+    if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = center_longitude + (width*scale_x/4);
         new_mid_y = center_latitude;
@@ -14210,9 +14232,21 @@ void  Map_lock_pan_zoom_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
     if(state->set) {
         map_lock_pan_zoom = atoi(which);
+        XtSetSensitive(zoom_in_menu, FALSE);
+        XtSetSensitive(zoom_out_menu, FALSE);
+        XtSetSensitive(pan_left_menu, FALSE);
+        XtSetSensitive(pan_up_menu, FALSE);
+        XtSetSensitive(pan_down_menu, FALSE);
+        XtSetSensitive(pan_right_menu, FALSE);
     }
     else {
         map_lock_pan_zoom = 0;
+        XtSetSensitive(zoom_in_menu, TRUE);
+        XtSetSensitive(zoom_out_menu, TRUE);
+        XtSetSensitive(pan_left_menu, TRUE);
+        XtSetSensitive(pan_up_menu, TRUE);
+        XtSetSensitive(pan_down_menu, TRUE);
+        XtSetSensitive(pan_right_menu, TRUE);
     }
 }
 

@@ -68,7 +68,7 @@ PULDNCF008|Salva la Configurazione Ora!|C|
 PULDNMP001|Scegli mappa|C|
 PULDNMP012|Vai alla posizione...|J|#NUOVA funzione dalla v. 0.3.2
 PULDNMP014|Localizza Elemento Mappa|E|
-PULDNMP016|Disable Map Zoom/Pan||
+PULDNMP016|Disable Fast Zoom/Pan/Home||
 PULDNMP013|Disattiva tutte le mappe|D|
 PULDNMP002|Mappe automatiche|A|
 PULDNMP003|Reticolato|G|

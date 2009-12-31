@@ -69,7 +69,7 @@ PULDNCF008|Save Config Now!|C|
 PULDNMP001|Map Chooser|M|
 PULDNMP012|Map Display Bookmarks|B|
 PULDNMP014|Locate Map Feature|F|
-PULDNMP016|Disable Map Zoom/Pan||
+PULDNMP016|Disable Fast Zoom/Pan/Home||
 PULDNMP013|Disable All Maps||
 PULDNMP002|Enable Auto Maps||
 PULDNMP003|Enable Map Grid||

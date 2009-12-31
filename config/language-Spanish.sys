@@ -68,7 +68,7 @@ PULDNCF008|Guardar Configuración!|G|
 PULDNMP001|Seleccionar Mapas|M|
 PULDNMP012|Saltar a una Locación|S|
 PULDNMP014|Localice rasgo del Mapa|L|
-PULDNMP016|Disable Map Zoom/Pan||
+PULDNMP016|Disable Fast Zoom/Pan/Home||
 PULDNMP013|Desactive todos los Mapas||
 PULDNMP002|Activar Auto Mapas||
 PULDNMP003|Rejillas sobre Mapa||
