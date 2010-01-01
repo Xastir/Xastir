@@ -10781,10 +10781,12 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             menu_y=input_y;
             mouse_zoom = 1;
 
-            if (!moving_object) {
-                // Not moving an object/item, so allow the zoom-in
-                // box to display.
-                possible_zoom_function++;
+            if (!moving_object) {  // Can be "Measure" or "Zoom-in"
+                if  (!map_lock_pan_zoom || (map_lock_pan_zoom && measuring_distance)) {
+                    // Not moving an object/item, so allow the
+                    // zoom-in box to display.
+                    possible_zoom_function++;
+                }
             }
         }   // End of Button1 Press code
 
