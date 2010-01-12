@@ -9922,7 +9922,7 @@ void check_station_remove(time_t curr_sec) {
 //                        || ( (is_my_call(p_station->origin,1)) // Station is owned by me (including SSID)
 //                          && ( ((p_station->flag & ST_OBJECT) != 0) // and it's an object
 //                            || ((p_station->flag & ST_ITEM  ) != 0) ) ) ) { // or an item
-                if ( is_my_station(p_station) ) {
+                if ( is_my_station(p_station) || is_my_object_item(p_station)) {
 
                     // It's one of mine, leave it alone!
 
@@ -12197,7 +12197,6 @@ int data_add(int type,
     int compr_pos;
     char *p = NULL; // KC2ELS - used for WIDEn-N
     int direct = 0;
-    int object_is_mine_previous = 0;
     int new_origin_is_mine = 0;
     int num_digits = 0; // Number of digits after decimal point in NMEA string
 
@@ -12260,35 +12259,11 @@ int data_add(int type,
         if (debug_level & 1)
             fprintf(stderr,"data_add: Found existing station record.\n");
  
-        // Check whether it's already a locally-owned object/item
-//        if ( (is_my_call(p_station->origin,1))                  // If station is owned by me (including SSID)
-//                && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
-//                  || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
-        if (is_my_object_item(p_station)) {
+        move_station_time(p_station,p_time);        // update time, change position in time sorted list
+        new_station = (char)FALSE;                  // we have seen this one before
 
-            // We don't want to re-order it in the time-ordered list
-            // so that it'll expire from the queue normally.  Don't
-            // call "move_station_time()" here.
-
-            // We need an exception later in this function for the
-            // case where we've moved an object/item (by how much?).
-            // We need to update the time in this case so that it'll
-            // expire later (in fact it could already be expired
-            // when we move it).  We should be able to move expired
-            // objects/items to make them active again.  Perhaps
-            // some other method as well?
-
-            new_station = (char)FALSE;
-            object_is_mine_previous++;
-        }
-        else {
-            move_station_time(p_station,p_time);        // update time, change position in time sorted list
-            new_station = (char)FALSE;                  // we have seen this one before
-        }
-
-//        if (is_my_call(p_station->call_sign,1)) {   // If my callsign, including SSID
         if (is_my_station(p_station)) {
-            station_is_mine++; // Station/object/item is owned/controlled by me
+            station_is_mine++; // Station is  me
         }
         //fprintf(stderr,"checks ok\n");
     }
@@ -12565,9 +12540,10 @@ int data_add(int type,
                 if (new_origin_is_mine
                         && !(p_station->flag & ST_ACTIVE)
                         && (p_station->flag & ST_OBJECT) ) {  // Old record was a killed Object
-                    remove_name(p_station);  // Remove old killed Object
+                    station_del_ptr(p_station);  // Remove old killed Object
+                                                 // *completely*
                     redo_list = (int)TRUE;
-                    return( data_add(type, call_sign, path, data, from, port, origin, third_party, 1, 1) );
+                    return( data_add(type, call_sign, path, data, from, port, origin, third_party, 0, 1) );
                 }
  
                 ok = extract_time(p_station, data, type);               // we need a time
@@ -12678,9 +12654,10 @@ int data_add(int type,
                         && !(p_station->flag & ST_ACTIVE)
                         && (p_station->flag & ST_ITEM) ) {  // Old record was a killed Item
  
-                    remove_name(p_station);  // Remove old killed Item
+                    station_del_ptr(p_station);  // Remove old killed Item
+                                                 // *completely*
                     redo_list = (int)TRUE;
-                    return( data_add(type, call_sign, path, data, from, port, origin, third_party, 1, 1) );
+                    return( data_add(type, call_sign, path, data, from, port, origin, third_party, 0, 1) );
                 }
  
                 if (!extract_position(p_station,&data,type)) {          // uncompressed lat/lon
@@ -13130,9 +13107,9 @@ int data_add(int type,
         // make time index unique by adding a serial number
 
         if (station_is_mine) {
-            // This station/object/item is owned by me.  Set the
+            // This station is me.  Set the
             // flag which shows that we own/control this
-            // station/object/item.  We use this flag later in lieu
+            // station.  We use this flag later in lieu
             // of the is_my_call() function in order to speed things
             // up.
             //
@@ -13609,9 +13586,9 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                                 // time-sorted list to change
                                 // expiration time.
                                 move_station_time(p_station,p_time);
-
                                 // Give it a new timestamp
                                 p_station->sec_heard = curr_sec;
+
                                 //fprintf(stderr,"Updating last heard time\n");
                             }
                         }

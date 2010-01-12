@@ -164,6 +164,10 @@
 //#include "igate.h"
 #include "objects.h"
 
+//#include "database.h"
+// in lieu of the above, just declare one function:
+void move_station_time(DataRow *p_curr, DataRow *p_time);
+
 //#ifdef HAVE_LIBSHP
 //  #include "shp_hash.h"
 //#endif  // HAVE_LIBSHP
@@ -1509,6 +1513,7 @@ void check_and_transmit_objects_items(time_t time) {
             // Keep the timestamp current on my own
             // objects/items so they don't expire.
             p_station->sec_heard = sec_now();
+            move_station_time(p_station,NULL);
 
 // Implementing sped-up transmission of new objects, regular
 // transmission of old objects (decaying algorithm).  We'll do this
@@ -4208,6 +4213,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
 
         // Keep the time current for our own objects.
         p_station->sec_heard = sec_now();
+        move_station_time(p_station,NULL);
     }
 
     temp_ptr = XmTextFieldGetString(object_name_data);
@@ -5014,6 +5020,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
 
         // Keep the time current for our own items.
         p_station->sec_heard = sec_now();
+        move_station_time(p_station,NULL);
     }
 
     temp_ptr = XmTextFieldGetString(object_name_data);
@@ -5748,6 +5755,7 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 
             // Keep the time current for our own objects.
             p_station->sec_heard = sec_now();
+            move_station_time(p_station,NULL);
  
 //            p_station->last_modified_time = sec_now(); // For dead-reckoning
 //fprintf(stderr,"Object_change_data_set(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
@@ -5803,6 +5811,7 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
 
             // Keep the time current for our own items.
             p_station->sec_heard = sec_now();
+            move_station_time(p_station,NULL);
  
 //            p_station->last_modified_time = sec_now(); // For dead-reckoning
 //fprintf(stderr,"Item_change_data_set(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
@@ -7416,7 +7425,6 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     }
 */
 
-
     // Save the data so that other routines can access it.  Some of the
     // callbacks can only handle one parameter, and we need two.
     if (p_station != NULL)
@@ -7471,7 +7479,6 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 // the type of the object?
 
     if (p_station != NULL) {
-
 /*
         if (calldata != NULL) {
             if (strcmp(calldata,"2") == 0)
@@ -7484,7 +7491,6 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 fprintf(stderr,"Set_Del_Object: calldata: invalid.  New object.\n");
         }
 */
-
 
         // Check to see whether we should even be here at all!
         if ( !(p_station->flag & ST_OBJECT)
@@ -10755,9 +10761,8 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station = clientData;
 
     //if (calldata != NULL)
-    //    fprintf(stderr,"Modify_object:  calldata:  %s\n", (char
-    //    *)calldata);
-
+    //    fprintf(stderr,"Modify_object:  calldata:  %s\n", (char *)calldata);
+    
     //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
 
     // Only move the object if it is our callsign, else force the
