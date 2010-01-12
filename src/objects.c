@@ -3087,9 +3087,10 @@ void Restore_CAD_Objects_from_file(void) {
         }
         else if (strncasecmp(line,"creation_time:",14) == 0) {
             //fprintf(stderr,"Found creation_time:\n");
-            if (1 != sscanf(line+15, "%lu",
-                    (unsigned long *)&CAD_list_head->creation_time)) {
+            unsigned long temp_time;
+            if (1 != sscanf(line+15, "%lu",&temp_time)) {
                 fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error [creation_time]\n");
+                CAD_list_head->creation_time=(time_t)temp_time;
             }
         }
         else if (strncasecmp(line,"line_color:",11) == 0) {
