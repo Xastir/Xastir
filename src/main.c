@@ -22957,11 +22957,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmStringFree(tempSelection);
 #else
                 x = -1;
-                if (predefined_object_definition_filename=="predefined_SAR.sys") 
+                if (strncmp(predefined_object_definition_filename,"predefined_SAR.sys",strlen(predefined_object_definition_filename)) == 0) 
                     x = 0;
-                if (predefined_object_definition_filename=="predefined_EVENT.sys")
+                if (strncmp(predefined_object_definition_filename,"predefined_EVENT.sys",strlen(predefined_object_definition_filename)) == 0)
                     x = 1;
-                if (predefined_object_definition_filename=="predefined_USER.sys")
+                if (strncmp(predefined_object_definition_filename,"predefined_USER.sys",strlen(predefined_object_definition_filename)) == 0)
                     x = 2;
                 i = 3;
                 // allow display of another filename from the config file.
