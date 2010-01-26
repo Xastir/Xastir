@@ -578,7 +578,9 @@ int initConnections() {
    }
    if (debug_level & 4096) { 
        for (x=0;x<MAX_IFACE_DEVICES;x++) {
+           #ifdef HAVE_POSTGIS
            fprintf(stderr,"Initialized connection %d [%p] type=%d phandle=[%p]\n",x,connections[x],connections[x]->type,connections[x]->phandle);
+           #endif /* HAVE_POSTGIS */
        }
    }
    return 1;
@@ -602,7 +604,7 @@ int openConnection(ioparam *anIface, Connection *connection) {
     unsigned int port;  // port to make connection on
     time_t start_time;
     int connection_made = 0;
-    Connection *c;
+    //Connection *c;
     #ifdef HAVE_POSTGIS
     PGconn *postgres_connection;
     PostgresPollingStatusType poll;
@@ -616,7 +618,13 @@ int openConnection(ioparam *anIface, Connection *connection) {
         return returnvalue;
     }
     #ifdef HAVE_MYSQL
-    if (anIface->database_type!=DB_POSTGIS) { 
+    switch (anIface->database_type) { 
+        #ifdef HAVE_MYSQL_SPATIAL
+        case DB_MYSQL_SPATIAL : 
+        #endif /* HAVE_MYSQL_SPATIAL */
+        #ifdef HAVE_MYSQL
+        case DB_MYSQL : 
+        #endif /* HAVE_MYSQL */
         // instantiate the MYSQL structure for the connection
         mysql_init((MYSQL*)&connection->mhandle);
     }
@@ -872,7 +880,9 @@ int closeConnection(Connection *aDbConnection, int port_number) {
 int pingConnection(Connection *aDbConnection) { 
     int returnvalue = True;
     int dbreturn;
+    #ifdef HAVE_POSTGIS
     ConnStatusType psql_status;
+    #endif /* HAVE_POSTGIS */
 
     if (aDbConnection==NULL)
        return 0;
@@ -952,9 +962,11 @@ int testConnection(Connection *aDbConnection){
     int dbreturn;
     int major_version;
     int minor_version;
-    char *warning[100];
+    char warning[100];
+    #ifdef HAVE_POSTGIS
     ConnStatusType psql_status;
     PGresult *result;
+    #endif /* HAVE_POSTGIS */ 
     const char *postgis_sql = "SELECT COUNT(*) FROM geometry_columns";  // test to see if schema used in connection has postgis support added
     if (aDbConnection==NULL)
        return 0;
@@ -1282,6 +1294,8 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             } else {  
                 xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
             }   
+fprintf(stderr,"node_path   (12345678901234567890123456789012345678901234567890123456)\n"); 
+fprintf(stderr,"node_path = [%s]\n",node_path); 
             // Get time in seconds, adjust to datetime
             // If aStation is my station or another unset sec_heard is 
             // encountered, use current time instead. Conversely, use time
