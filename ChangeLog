@@ -1,3 +1,399 @@
+2010-01-30 23:41  we7u
+
+	* configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
+	  scripts/do_xastir_release_dev, scripts/do_xastir_release_stable:
+	  Preparing for 1.9.8 stable release.  Changing revision numbers.
+
+2010-01-30 18:12  we7u
+
+	* AUTHORS, DEBUG_LEVELS, FAQ, INSTALL, LICENSE, Makefile.am, NEWS,
+	  README, README.CVS, README.Contributing, README.Getting-Started,
+	  README.MAPS, README.win32, REGRESSION_TESTS, UPGRADE,
+	  acinclude.m4, bootstrap.sh, callpass.1, changes.txt,
+	  configure.ac, install-xastir, testdbfawk.1, update-xastir,
+	  xastir.1, xastir_udp_client.1, Davis/Makefile.am, Davis/README,
+	  Davis/bootstrap.sh, Davis/configure.ac, Davis/src/Makefile.am,
+	  Davis/src/db2APRS.c, Davis/src/defs.h, LaCrosse/AUTHORS,
+	  LaCrosse/Makefile.am, LaCrosse/README, LaCrosse/bootstrap.sh,
+	  LaCrosse/configure.ac, LaCrosse/src/Makefile.am,
+	  LaCrosse/src/defs.h, LaCrosse/src/open2300db2APRS.c,
+	  callpass/Makefile.am, callpass/callpass.c, config/24kgrid.dbfawk,
+	  config/Makefile.am, config/arealm.dbfawk,
+	  config/areawater.dbfawk, config/cousub.dbfawk,
+	  config/cousub00.dbfawk, config/edge.dbfawk,
+	  config/featnames.dbfawk, config/gps_wpt.dbfawk,
+	  config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, config/nwsc_ddmmyy.dbfawk,
+	  config/nwsc_ddmmyy_09.dbfawk, config/nwsc_ddmmyy_09b.dbfawk,
+	  config/nwsmzddmmyy.dbfawk, config/nwsmzddmmyy_09.dbfawk,
+	  config/nwsmzoddmmyy.dbfawk, config/nwsozddmmyy.dbfawk,
+	  config/nwsozddmmyy_09.dbfawk, config/nwsw_ddmmyy.dbfawk,
+	  config/nwsw_ddmmyy_09.dbfawk, config/nwsz1ddmmyy.dbfawk,
+	  config/nwsz_ddmmyy.dbfawk, config/nwsz_ddmmyy_09.dbfawk,
+	  config/nwszoddmmyy.dbfawk, config/pointlm.dbfawk,
+	  config/predefined_EVENT.sys, config/predefined_SAR.sys,
+	  config/stored_track.dbfawk, config/tabblock.dbfawk,
+	  config/tgr2shp.dbfawk, config/tgr2shppoly.dbfawk,
+	  config/tgr2shppoly_2006.dbfawk, config/tgrcty.dbfawk,
+	  config/tgrkgl.dbfawk, config/tgrlk.dbfawk, config/tgrlpt.dbfawk,
+	  config/tgrlpy.dbfawk, config/tgrplc00.dbfawk,
+	  config/tgrwat.dbfawk, config/tnc-startup.aea,
+	  config/tnc-startup.d700, config/tnc-startup.kam,
+	  config/tnc-startup.kpc2, config/tnc-startup.kpc3,
+	  config/tnc-startup.paccomm, config/tnc-startup.pico,
+	  config/tnc-startup.sys, config/tnc-startup.thd7,
+	  config/tnc-startup.tnc2, config/tnc-startup.tnc2-ui,
+	  config/tnc-stop.d700, config/tnc-stop.sys, config/tnc-stop.thd7,
+	  config/tnc-stop.tnc2-ui, help/Makefile.am, help/help-Dutch.dat,
+	  help/help-English.dat, help/help-French.dat,
+	  help/help-German.dat, help/help-Italian.dat,
+	  help/help-Portuguese.dat, help/help-Spanish.dat, m4/Makefile.am,
+	  scripts/Coordinate.pm, scripts/LSB-BUILD, scripts/LSB-BUILD-ALL,
+	  scripts/LSB-BUILD-CURL, scripts/LSB-BUILD-DB,
+	  scripts/LSB-BUILD-GDAL, scripts/LSB-BUILD-GRAPHICSMAGICK,
+	  scripts/LSB-BUILD-JASPER, scripts/LSB-BUILD-JPEG,
+	  scripts/LSB-BUILD-LESSTIF, scripts/LSB-BUILD-PCRE,
+	  scripts/LSB-BUILD-PNG, scripts/LSB-BUILD-ZLIB,
+	  scripts/Makefile.am, scripts/UIView2XastirLog.pl,
+	  scripts/Xastir_tigerpoly.py, scripts/example_objects.log,
+	  scripts/get-NWSdata, scripts/get-fcc-rac.pl, scripts/get-gnis,
+	  scripts/get-maptools.sh, scripts/get-pop,
+	  scripts/get_shapelib.sh, scripts/inf2geo.pl, scripts/kiss-off.pl,
+	  scripts/langElmerFudd.pl, scripts/langMuppetsChef.pl,
+	  scripts/langOldeEnglish.pl, scripts/langPigLatin.pl,
+	  scripts/langPirateEnglish.pl, scripts/object2shp.pl,
+	  scripts/overlay.pl, scripts/ozi2geo.pl, scripts/permutations.pl,
+	  scripts/pos2shp.pl, scripts/slideshow.pl, scripts/test_coord.pl,
+	  scripts/toporama250k.pl, scripts/toporama50k.pl,
+	  scripts/track-get.pl, scripts/waypoint-get.pl,
+	  scripts/xastir-fixcfg.sh, scripts/xastir-migrate.sh,
+	  src/Makefile.am, src/alert.c, src/alert.h, src/awk.c, src/awk.h,
+	  src/bulletin_gui.c, src/bulletin_gui.h, src/color.c, src/color.h,
+	  src/database.h, src/datum.c, src/datum.h, src/db.c, src/db_gis.c,
+	  src/db_gis.h, src/dbfawk.c, src/dbfawk.h, src/draw_symbols.c,
+	  src/draw_symbols.h, src/fcc_data.c, src/fcc_data.h,
+	  src/festival.c, src/festival.h, src/geo-client.c, src/geo-find.c,
+	  src/geo.h, src/geocoder_gui.c, src/gps.c, src/gps.h,
+	  src/hashtable.c, src/hashtable.h, src/hashtable_itr.c,
+	  src/hashtable_itr.h, src/hashtable_private.h, src/hostname.c,
+	  src/hostname.h, src/igate.c, src/igate.h, src/interface.c,
+	  src/interface.h, src/interface_gui.c, src/io-common.c,
+	  src/io-mmap.c, src/io.h, src/lang.c, src/lang.h,
+	  src/leak_detection.h, src/list_gui.c, src/list_gui.h,
+	  src/locate_gui.c, src/location.c, src/location_gui.c,
+	  src/macspeech.c, src/main.c, src/main.h, src/map_WMS.c,
+	  src/map_cache.c, src/map_cache.h, src/map_dos.c, src/map_gdal.c,
+	  src/map_geo.c, src/map_gnis.c, src/map_pdb.c, src/map_pop.c,
+	  src/map_shp.c, src/map_tif.c, src/map_tiger.c, src/maps.c,
+	  src/maps.h, src/messages.c, src/messages.h, src/messages_gui.c,
+	  src/objects.c, src/objects.h, src/popup.h, src/popup_gui.c,
+	  src/rac_data.c, src/rac_data.h, src/rotated.c, src/rotated.h,
+	  src/rpl_malloc.c, src/rpl_malloc.h, src/shp_hash.c,
+	  src/shp_hash.h, src/snprintf.c, src/snprintf.h, src/sound.c,
+	  src/symbols.h, src/testdbfawk.c, src/track_gui.c,
+	  src/track_gui.h, src/util.c, src/util.h, src/view_message_gui.c,
+	  src/wx.c, src/wx.h, src/wx_gui.c, src/x_spider.c, src/x_spider.h,
+	  src/xa_config.c, src/xa_config.h, src/xastir.h,
+	  src/xastir_udp_client.c, src/rtree/Makefile.am, src/rtree/card.c,
+	  src/rtree/card.h, src/rtree/gammavol.c, src/rtree/index.c,
+	  src/rtree/index.h, src/rtree/node.c, src/rtree/rect.c,
+	  src/rtree/sphvol.c, src/rtree/split_l.c, src/rtree/split_l.h,
+	  src/rtree/split_q.c, src/rtree/split_q.h,
+	  src/shapelib/Makefile.am, src/shapelib/contrib/Makefile.am,
+	  symbols/Makefile.am, symbols/symbols.dat: Updating Copyright
+	  notice for 2010.
+
+2010-01-25 20:09  chicoreus
+
+	* src/db_gis.c: Make fails with errors	when configured with just
+	  --with-mysql.  Fixing nesting of HAVE_POSTGIS and HAVE_MYSQL
+	  directives so that xastir will build with just --with-mysql.
+	  Both compiler warnings and runtime errors remain when built
+	  --with-mysql --without-postgis.
+
+2010-01-16 22:27  tvrusso
+
+	* src/main.c: Fix three instances of a string compare being
+	  attempted by:    char chararray[EXTENT]    read chararray from
+	  some file    if (chararray == "string literal")    {	  }
+
+	  which is bad form in C and could lead to undefined behavior.	The
+	  correct way to do this is with strcmp or strncmp.  I replaced
+	  this with:
+
+	     if (strncmp(chararray,"string literal",strlen(chararray))==0)
+	     {
+	     }
+
+	  This is silently accepted by most older compilers, but is warned
+	  about by gcc 4.4 (the default compiler in Ubuntu 9.10).
+
+2010-01-12 11:32  tvrusso
+
+	* src/objects.c: Fix to my most recent fix; make sure that the code
+	  that doesn't get the compiler warning actually does the same
+	  thing that it did before the fix.
+
+2010-01-12 09:47  tvrusso
+
+	* src/objects.c: Minor tweak to silence a warning about
+	  "dereferencing type-punned pointer breaks strict-aliasing rules."
+
+2010-01-11 19:30  tvrusso
+
+	* src/: db.c, objects.c:
+	  Fix two bugs.
+
+	  1) Bug 1698474 in the sourceforge tracker (Expire code messes up
+	  internal linked-list order)
+
+	     The title of the bug is erroneous.  The expire code doesn't
+	  mess up
+	     any internal linked-list order.  The expire code was being
+	  messed
+	     up by a broken linked-list order.	What was breaking the list
+	  was
+	     the handling of our own objects.  Code throughout objects.c
+	  was
+	     continually resetting the time stamp of station records to
+	     sec_now() withouth then moving the station record to the end
+	  of the
+	     time-sorted list.	This led to the time-sorted list not being
+	     time-sorted anymore.  The expire code explicitly depends on
+	  the
+	     list remaining sorted at all times.
+
+	     There was also a small block of code dating back to version
+	  1.1 of
+	     db.c that also skipped moving a station record in the
+	  time-sorted
+	     list if it was our object or item.  This very old code appears
+	  to
+	     do nothing at all.  I have removed it.  The time sorted list
+	  MUST
+	     be kept in time-sorted order.  There was also a variable
+	     (object_is_mine_previous) that was set by this block of code
+	  but never
+	     accessed anywhere else.  I've removed that variable, too.
+
+	     Additionally, the check_station_remove function erroneously
+	  checks
+	     "is_my_station" to determine if the station or object in
+	  question is
+	     owned by "me."  It should be checking (is_my_station ||
+	  is_my_object_item)
+	     to be consistent with the older conditional that is commented
+	  out just
+	     above it.
+
+	  2) Creating an object that has the same name as a previously
+	  killed object    would lead to an "immovable" object being
+	  created.  This bug was never	  entered into the issue tracker.
+
+	     Prior to this commit, the following actions would create an
+	  object that
+	     could not be moved:
+
+		 create object a
+		 delete object a
+		 create object a
+
+	     Once the second create was done, the object a could not be
+	  moved by any
+	     means on the screen -- either by dragging with the Move button
+	  down or
+	     using the Modify Object dialog.
+
+	     The reason was that the code to handle resurrecting a killed
+	  object
+	     was improperly flagging the new object as being "my station"
+	  in
+	     addition to being flagged as "my object."	The code that
+	  decodes
+	     position strings would see this flag and refuse to move the
+	  object
+	     "because I know my position better."  Furthermore, the
+	  resurrection
+	     code would remove the old killed record from the name-sorted
+	  list,
+	     but not really delete the station record, leaving it in the
+	     time-sorted list.	This also impacted expiration.	This commit
+	     fixes the improper flagging as "my station" and completely
+	  deletes
+	     the station record for a killed object when we create a new
+	  object
+	     with the same name.
+
+2010-01-01 15:04  we7u
+
+	* src/main.c: Fixed some side-effects regarding zoom boxes when map
+	  lock is enabled.
+
+2010-01-01 06:22  gstueve
+
+	* src/db.c: Recall one of my tests from the wild. It escaped before
+	  its' time.
+
+2009-12-31 03:10  we7u
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/main.c: Finishing up the map
+	  lock code.
+
+2009-12-29 13:56  we7u
+
+	* src/main.c: Detaching the map lock from three areas where they
+	  are more complicated operations and therefore aren't easily done
+	  by mistake.  Therefore no map lock required for those three.
+
+2009-12-27 08:26  gstueve
+
+	* callpass.1, testdbfawk.1, xastir.1, xastir_udp_client.1: Update
+	  APRS site reference to useful URL.
+
+2009-12-27 07:29  gstueve
+
+	* callpass.1: Add reference to xastir in NAME section to allow
+	  `apropos` to associate.
+
+2009-12-25 07:20  we7u
+
+	* README: Updating the SuSE 11.x ham repository info.
+
+2009-12-22 13:37  gstueve
+
+	* Makefile.am, src/db.c, src/lclint.script: Add additional man
+	  pages to list for publication.
+
+2009-12-22 13:20  gstueve
+
+	* callpass.1, testdbfawk.1, xastir.1, xastir_udp_client.1: Add
+	  simple documentation for all applications. Provide APRS reference
+	  in NAME section for 'apropos' & 'whatis' lookup. Make sure NAME
+	  section is parseable for scanning.
+
+2009-12-22 02:56  we7u
+
+	* config/language-Dutch.sys, config/language-English.sys,
+	  config/language-French.sys, config/language-German.sys,
+	  config/language-Italian.sys, config/language-Portuguese.sys,
+	  config/language-Spanish.sys, src/main.c, src/xa_config.c,
+	  src/xastir.h: Adding map zoom/pan lock feature to the Map menu.
+
+2009-12-17 09:44  gstueve
+
+	* xastir.spec.in: Allow rpmbuild spec to work for 64bit
+	  environments also.
+
+2009-12-08 11:34  we7u
+
+	* README.MAPS: Updating the location of the RAC callsign manual
+	  download to match the URL in the get-fcc-rac.pl script.
+
+2009-12-07 16:34  tvrusso
+
+	* FAQ: Update FAQ to include updated answer to the "black images
+	  from imagemagick" question, and add a FAQ about compilation woes
+	  due to use of ImageMagick with HDRI support.
+
+2009-12-04 10:54  tvrusso
+
+	* src/: map_WMS.c, map_geo.c, map_tiger.c:
+	  Fix for the problem where Xastir will display black images when
+	  compiled against GraphicsMagick with its new default QuantumDepth
+	  of 8, or ImageMagick with its optional QuantumDepth of 8.
+
+	  The problem was that when the image was not a colormapped image
+	  (e.g. JPEG or other full color type), Xastir was assuming
+	  (incorrectly) that a Quantum was the same type as the red, green,
+	  and blue components of an XColor, and using the Quantums directly
+	  out of the pixel_pack in a call that required the latter.  The
+	  result was that when pack_pixel_bits returned, the result was
+	  always that the packed pixel bits were always 0x000000, because
+	  it was taking the high-order 8 bits from the unsigned short to
+	  which the unsigned char was being cast.
+
+	  What was needed was a little block of code that massaged the
+	  pixel_pack values into unsigned shorts at that point if
+	  QuantumDepth is 8.
+
+	  This fix applies the same fix to map_tiger, map_geo and map_WMS,
+	  all of which had duplicated code (ugh) that made the same
+	  mistaken assumption of Quantum/unsigned short equivalence.
+
+	  This fix does NOT address the problem that exists on a few
+	  systems, where ImageMagick has been compiled with HDRI (High
+	  Dynamic Range Image) support.  On those systems, a Quantum is not
+	  even an integer type, it's a float or double.  Dealing with
+	  *that* mess will be harder.
+
+	  Ideally, the duplicated code between map_WMS, map_geo, and
+	  map_tiger should be consolidated according to good software
+	  engineering principles.
+
+2009-11-26 08:52  tvrusso
+
+	* LaCrosse/src/open2300db2APRS.c:
+	  Fix for an insidious bug in open2300db2APRS that relied on an
+	  unsafe internal behavior of the mysql API.
+
+	  The function Get_Latest_WX makes 2 SQL queries to the server, one
+	  to get the highest value of the "timestamp" field present in the
+	  DB, an another to get the row with that timestamp.  Only after
+	  the first query was the function calling "row =
+	  mysql_fetch_row(&result)".  That function returns a char ** that
+	  can be used to pick off the field values.  Somehow, despite never
+	  being called after the second query, the row array still managed
+	  (on some systems) to have the right data in it --- presumably
+	  because the API call was returning a pointer to an internal block
+	  of memory that contained the field values, and on the systems
+	  where this worked that block wasn't moving.
+
+	  When I upgraded my BSD system and recompiled mysql, this started
+	  failing, and open2300db2APRS would segfault.
+
+	  Calling mysql_fetch_row after the second query fixes it.
+
+	  While I was at it, I fixed a mistake in some debug output that
+	  prints the number of fields retrieved by the query.
+
+2009-11-09 12:46  we7u
+
+	* scripts/UIView2XastirLog.pl: New script to convert UI-View log
+	  files to Xastir-format log files.  Timestamp info is currently
+	  removed during the conversion.
+
+2009-10-13 23:25  we7u
+
+	* scripts/get-NWSdata: Updating the get-NWSdata script to snag the
+	  latest-latest NWS Shapefile maps used for weather alerts.
+
+2009-10-13 23:24  we7u
+
+	* config/: Makefile.am, nwsc_ddmmyy_09b.dbfawk,
+	  nwsmzddmmyy_09.dbfawk, nwsozddmmyy_09.dbfawk,
+	  nwsw_ddmmyy_09.dbfawk, nwsz_ddmmyy_09.dbfawk: Adding yet another
+	  round of dbfawk files to match new NWS Shapefile signatures.
+
+2009-10-11 22:18  we7u
+
+	* configure.ac: Bumping devel version up to 1.9.7
+
+2009-10-10 11:28  we7u
+
+	* scripts/: do_xastir_release_dev, do_xastir_release_stable:
+	  Updating to new SourceForge release process.
+
+2009-10-10 10:41  we7u
+
+	* ChangeLog, configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
+	  scripts/do_xastir_release_dev, scripts/do_xastir_release_stable:
+	  Preparing for 1.9.6 stable release.
+
 2009-08-12 11:59  we7u
 
 	* src/main.c: Adding minWidth and minHeight to the fallback
