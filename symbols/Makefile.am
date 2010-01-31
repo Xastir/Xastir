@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2000-2009  The Xastir Group
+# Copyright (C) 2000-2010  The Xastir Group
 #
 
 symbolsdir=${pkgdatadir}/symbols

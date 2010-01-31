@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-#  Copyright (C) 2006 Tom Russo
+#  Copyright (C) 2006-2010 Tom Russo
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

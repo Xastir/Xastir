@@ -1,3 +1,9 @@
+# $Id$
+#
+# Copyright (C) 2009-2010  The Xastir Group
+#
+
+
 BEGIN {
 dbfinfo="Credits:DateTime:Label;
 dbffields="Label:DateTime";

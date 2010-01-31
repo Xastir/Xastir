@@ -1,5 +1,7 @@
 #
-# Copyright (C) 2004-2009  The Xastir Group
+# $Id$
+#
+# Copyright (C) 2004-2010  The Xastir Group
 #
 
 bin_PROGRAMS = open2300db2APRS

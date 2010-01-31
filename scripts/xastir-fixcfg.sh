@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-# Copyright (C) 2003-2009  The Xastir Group
+# Copyright (C) 2003-2010  The Xastir Group
 #
 # fix up a user's .xastir/config/xastir.cnf to rewrite /usr/local/xastir
 # to ${prefix}/share/${name}.

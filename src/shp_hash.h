@@ -1,6 +1,6 @@
 
 // $Id$
-// Copyright (C) 2004-2009  The Xastir Group
+// Copyright (C) 2004-2010  The Xastir Group
 
 
 #ifndef __XASTIR_SHP_HASH_H

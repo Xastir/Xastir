@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 
-# Copyright (C) 2004 Curt Mills, WE7U
+# Copyright (C) 2004-2010 Curt Mills, WE7U
 # Released to the public domain.
 #
 # $Id$

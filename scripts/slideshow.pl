@@ -8,7 +8,7 @@
 #
 # Written 20090415 by Curt Mills, WE7U
 #
-# Copyright (C) 2009  The Xastir Group
+# Copyright (C) 2010  The Xastir Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

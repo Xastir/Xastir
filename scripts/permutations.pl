@@ -2,7 +2,7 @@
 
 
 #
-# Copyright (C) 2002-2003 Paul Lutt, KE7XT & Curt Mills, WE7U.
+# Copyright (C) 2002-2010 Paul Lutt, KE7XT & Curt Mills, WE7U.
 # Released to the public domain.
 #
 #
