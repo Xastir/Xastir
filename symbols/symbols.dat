@@ -212,24 +212,24 @@ pppppppppp..........
 #
 APRS )               Wheelchair (handicapped)
 ....................
-..hhhhhhhhhhhhhhhh..
-.hhhhhhmmmhhhhhhhhh.
-.hhhhhhmmmhhhhhhhhh.
-.hhhhhhmmhhhhhhhhhh.
-.hhhhhhmmhhhhhhhhhh.
-.hhhhhhhmmhhhhhhhhh.
-.hhhhmmhmmmmmmmhhhh.
-.hhmmmhhmmhhhhhhhhh.
-.hhmmhhhhmmmmmmmhhh.
-.hmmhhhhhhmmmmmmhhh.
-.hmmhhhhhhhmmhmmhhh.
-.hmmhhhhhhhmmhmmhhh.
-.hmmhhhhhhhmmhmmhhh.
-.hhmmhhhhhmmhhmmhhh.
-.hhmmmhhhhmmhhmmmmh.
-.hhhmmmmmmmhhhhhhhh.
-.hhhhmmmmmhhhhhhhhh.
-..hhhhhhhhhhhhhhhh..
+..llllllllllllllll..
+.llllllmmmlllllllll.
+.llllllmmmlllllllll.
+.llllllmmllllllllll.
+.llllllmmllllllllll.
+.lllllllmmlllllllll.
+.llllmmlmmmmmmmllll.
+.llmmmllmmlllllllll.
+.llmmllllmmmmmmmlll.
+.lmmllllllmmmmmmlll.
+.lmmlllllllmmlmmlll.
+.lmmlllllllmmlmmlll.
+.lmmlllllllmmlmmlll.
+.llmmlllllmmllmmlll.
+.llmmmllllmmllmmmml.
+.lllmmmmmmmllllllll.
+.llllmmmmmlllllllll.
+..llllllllllllllll..
 ....................
 #
 APRS *             l Snowmobile
@@ -2023,7 +2023,27 @@ APRS $               Bank or ATM (green box)
 ....................
 ....................
 #
-#APRS %
+APRS %               Power Plant (w overlay)
+nnoooooooooonn......
+..nnnooooooooon.....
+.....nnnooooooonn...
+........nnnoooooon..
+...........nnnoooon.
+..............nnnoon
+................qqqq
+................qqqq
+..........q...q.qqqq
+.........qq..qq.qqqq
+........qqq.qqq.qqqq
+......qqqqqqqqqqqqqq
+......qqqqqqqq#qqqqq
+......qqqqqqq#qqqqqq
+......qqqqqq#qqqqqqq
+......qqqqqqq#qqqqqq
+......qqqqqqqq#qqqqq
+......qqqqqqq#qqqqqq
+......qqqqqq#qqqqqqq
+......qqqqqqqqqqqqqq
 #
 APRS &               Any Gateway (diamond) (w overlay)
 ....................
