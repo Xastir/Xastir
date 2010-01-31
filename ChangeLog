@@ -1,3 +1,22 @@
+2010-01-31 00:44  we7u
+
+	* symbols/symbols.dat: Updated wheelchair symbol plus new power
+	  plant symbol by Kyle Mills.  Thanks!
+
+2010-01-31 00:24  we7u
+
+	* README.CYGWIN: A re-written Cygwin install by David Flood,
+	  KD7MYC.  Thanks!
+
+2010-01-31 00:19  we7u
+
+	* README.MAPS: Tweaks by David Aitcheson, kb3efs.  Thanks!  A few
+	  minor tweaks by we7u.
+
+2010-01-30 23:42  we7u
+
+	* ChangeLog: Committing latest changelog before release.
+
 2010-01-30 23:41  we7u
 
 	* configure.ac, scripts/BUILDRPMS, scripts/LSB-BUILD,
