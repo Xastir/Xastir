@@ -205,18 +205,12 @@ Getting Maps and other Data Files for Xastir:
       Here's a page that we'll try to keep up-to-date which will have lots of
       links to download-able maps on it:
 
-        http://wiki.findewe.com/nwaprs/XastirMaps
-
-      That page is down at present, so it is temporarily here:
-
-        http://nwp.ampr2.net/nwaprs/XastirMaps
-
+        http://www.xastir.org/wiki/index.php/Xastir_Maps
 
      Dos/Win/MacAPRS style vector/fill maps:
 
-      ftp://aprs.rutgers.edu/pub/hamradio/APRS/maps02/
+      http://www.winaprs.com/Maps.htm
       http://www.cnunix.com/ftp/hamradio/rutgers.mirror/maps/maps2/
-      ftp://aprs.rutgers.edu/pub/hamradio/APRS/
       ftp://ftp.tapr.org/aprssig/maps/
 
        WORLDHI.MAP is suggested as a basic view of the world map.
@@ -234,17 +228,35 @@ Getting Maps and other Data Files for Xastir:
       PocketAPRS vector maps for the USA. The download is about 60MB, from the
       TAPR ftp site.
 
-      Also try:  
-       ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
+        ftp://ftp.tapr.org/aprssig/winstuff/WinAPRS/waprs251.zip
 
    
      Raster Maps:
 
-      For Canada theres a country wide set of topographic map images available 
+      For Canada there is a country wide set of topographic map images available 
       from the "Department of Natural Resources Geomatics Canada". Running 
       /scripts/toporama250k.pl will pull down 430mb of 1:250k map images 
       from that departments site. If thats not enough data, running
       /scripts/toporama50k.pl will pull down around 10gigs
+
+**** Note that recent changes at the "Department of Natural Resources Geomatics 
+Canada" have made these scripts fail.  Changes to the scripts are being coded 
+and tested.  CVS well be updated once the scripts are proven to work again. ****
+
+
+     For Ireland, EI8IC (http://www.mapability.com) has produced a set of overlay 
+     maps that show the County Borders, Main Towns and Roads.  John, EI7IG, has 
+     created a set of ".geo" files to go with them and they are all available in one 
+     tarball from [http://ireland.aprs2.net/xastir/IrelandMaps/Ireland.tar.gz 
+     ireland.aprs2.net] They are free for non-commercial use.
+
+     Also available are a map of the 
+     [http://ireland.aprs2.net/xastir/IrelandMaps/Ireland1600x2000.bmp country], with 
+     an associated [http://ireland.aprs2.net/xastir/IrelandMapsIreland1600x2000.geo 
+     geo] file, the [http://ireland.aprs2.net/xastir/IrelandMaps/Ireland1600x2000.bmp 
+     South East], it's associated  
+     [http://ireland.aprs2.net/xastir/IrelandMapsIreland1600x2000.geo geo] and a 
+     [http://ireland.aprs2.net/xastir/IrelandMaps/IrishMET.geo Weather Radar] .geo file.
 
 
      Shapefile format maps (Requires shapefile support):
