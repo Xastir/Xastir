@@ -9,14 +9,14 @@
 # SET VERSION HERE!
 #
 # AC_INIT():
-# It should look something like this:  (xastir, 1.9.8, xastir@xastir.org)
+# It should look something like this:  (xastir, 1.9.9, xastir@xastir.org)
 # The revision number must contain at least one '.' and two digits.
 # AM_INIT_AUTOMAKE():
-# It should look something like this:  (xastir, 1.9.8)
+# It should look something like this:  (xastir, 1.9.9)
 # The revision number must contain at least one '.' and two digits.
 #
-AC_INIT(xastir, 1.9.8, xastir@xastir.org)
-AM_INIT_AUTOMAKE(xastir, 1.9.8)
+AC_INIT(xastir, 1.9.9, xastir@xastir.org)
+AM_INIT_AUTOMAKE(xastir, 1.9.9)
 #########################################################################
 
 
