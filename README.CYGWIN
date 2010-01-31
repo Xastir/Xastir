@@ -1,0 +1,857 @@
+
+$Id$
+
+
+---------------------------------------------------------------------
+Note that there are other options to get Xastir running on Win32.
+The method described below in this document is for getting Xastir
+running under Cygwin which can be problematic.  Other methods exist
+on the Xastir Wiki pages which are typically easier and more robust:
+
+    http://www.xastir.org/wiki/index.php/Installation_Notes
+---------------------------------------------------------------------
+
+  In the past, two companies have created simpler installs of 
+  Cygwin/Xastir than described in this document.  Contact one of 
+  these folks for more info.  Remember to replace the "at" below 
+  with the "@" symbol to arrive at the correct e-mail addresses.  
+  We have to do that to prevent large amounts of spam from going to 
+  addresses harvested from web pages:
+
+
+    Lintronix:
+      Internet install of Xastir available for free, CD-ROM available
+      for a nominal fee.  Everything needed to install Cygwin/Xastir
+      online (Internet install) or off-line (CD-ROM).  Walks you
+      through an automated install:
+
+        http://www.lintronix.com/winxastir/
+        E-mail:  winxastir at lintronix.com
+
+
+    Inuit Nunaani Wireless Inc:
+      CD-ROM available for a nominal fee.  Everything needed to
+      install Cygwin/Xastir off-line.  Walks you through an
+      automated install.  This install is verified to work on WinXP
+      and Win98 (known _not_ to work on Win95/WinME).  Contact:
+
+        E-mail:  Tom Tessier <ttessier at trtdigital.ca>
+
+
+
+------------------------------------
+Installing Xastir on Windows/Cygwin:
+------------------------------------
+
+These directions assume that you installed Cygwin after the new version
+was released in January of 2010.  If you had Cygwin installed before
+then, it is simpler to delete the Cygwin directory and the Start Menu
+entries than to upgrade your existing install to the new version.
+
+System Requirements:
+
+CPU: at least 1Ghz
+Memory: at least 512Meg with at least 1Gig of swap space
+OS: Windows 2000 or later
+Time: At least 6 hours if not using the get-maptools.sh script
+      24 to 48 hours if using the script
+
+
+Please Note:  It's beneficial to actually log in to your Windows
+computer rather than skipping that step of the Windows login process
+(Don't hit escape just to get rid of the dialog!).  If you log into
+Windows properly, Cygwin will be able to figure out where to put your
+home directory.  If you don't do this, you'll be referred to as
+"unknown" and you won't have a home directory in Cygwin.  This means
+there won't be a good place to put your Xastir startup files.  Of
+course, log in as the same user each time in order for Cygwin to use
+the proper home directory for you.
+
+CAN'T REPLACE FILES:  Every once in a while Windows will refuse to
+allow you to delete/rename one of the files.  The only way I've
+found to get around this problem is to reboot.  Also, Windows
+typically won't allow you to replace a file that Windows currently
+has open.  If you're going to be recompiling/reinstalling Xastir, or
+updating Cygwin, make sure that these applications are shut down
+before doing so.  You can get VERY strange results if only some
+files get updated.
+
+SPACES IN USERNAMES:  Cygwin specifically, and Unix boxes in
+general, don't much like spaces in filenames, directories, or login
+names.  Any of these may cause you headaches while playing with
+Cygwin.  Create a new login that doesn't have spaces and log in as
+that user before installing Cygwin, and whenever you intend to run
+Cygwin/Xastir.  It's very likely that Xastir won't work for you if
+you use a login that has spaces embedded in it.  For additional
+info, see this link:
+
+    http://cygwin.com/faq/faq_2.html#SEC17
+
+Explanation of this login box for those that don't see it:  If you
+have the option of running networking, you'll have a login box show
+up when you first start up Windows.  It'll ask for you user name and
+password, then let you in.  If you escape out of that dialog, Windows
+may start right up but networking will be disabled.
+
+If you don't see that box, there are two options that I know about,
+either you or someone else set it up to auto-login with your user/
+password combo, or you don't have networking installed at all.
+
+The following steps direct you through installing Cygwin, Xastir, and
+a few optional map libraries that Xastir can use.  Note that in most
+of the places below where the directions state to type commands, this
+must be done from within a Cygwin BASH shell, not a DOS window.
+Where you are asked to edit files, it's best to use Wordpad instead
+of Notepad, as Notepad doesn't do nice things to Unix-format files.
+
+Cygwin now allows you to have Xwindows apps and Windows apps all on
+the screen and visible at the same time!  The instructions here set
+it up in that manner, so you can have Xastir as just another app on
+your Windows desktop.
+
+Please subscribe to the "xastir" mailing list at
+"http://www.xastir.org".  There are lots of helpful people there
+that can aid you in installing/running Xastir.  You must be subscribed
+in order to post messages there.
+
+
+[ ] Step 1)  Install Cygwin, a free download.
+
+
+[ ] Step 1a) Go to http://www.cygwin.com with your web browser.
+Look for the black and green Cygwin icon, then click on "Install
+now!".
+
+This will load the Cygwin network installer program onto your
+computer.  Remember where you decide to put this program.  I put
+mine in "c:\<login>\cygwin\setup.exe", (for instance
+"c:\hacker\cygwin\setup.exe").  This program will allow you to do a
+network install of Cygwin.  After you install Cygwin (see the steps
+below for details) you'll have a package directory (in my case
+"c:\hacker\cygwin\") and a Cygwin directory (in my case
+"c:\cygwin").  The un-installed packages go into the package
+directory as they are downloaded from the 'net.
+
+It will be beneficial to re-run the Cygwin network installer from
+time to time in order to keep Cygwin up to date.  Each time you run
+it you'll update any packages that have been changed since you last
+ran it.
+
+[ ] Step 1b)  Find the "setup.exe" program and execute it either by:
+
+  a) Clicking on it with File Explorer, or
+  b) Start->Run->path to executable, or
+  c) Opening a DOS window and typing the name.
+
+This will start installing Cygwin over the network.  Answers to
+provide to the program:
+
+    Install from Internet (*)
+    "C:\cygwin"
+    Install For All Users
+    Default Text File Type Unix (*)
+    Local Package Directory "C:\hacker\cygwin"
+    Select Your Internet Connection (choose one)
+    Choose A Download Site (choose one nearby if you can determine that)
+
+Note:  Responses above listed with a "(*)" are required.  Others are
+up to the individual user to answer as they wish.  You'll get to a
+"Progress" page where "setup.bz2" is downloaded from the 'net.  If
+it hangs at this step, you may wish to "Cancel" and try another
+server until you obtain this file and are presented with a list of
+packages to install.
+
+
+[ ] Step 1c)  Select Packages:  Leave the packages selected that
+were selected by default, plus select the additional packages listed
+below.  Note that enabling some of these packages causes others to
+be selected as well, that's OK and necessary.
+
+[ ] Press the "View" button until it says "Full" next to it.  All
+packages are now in alphanumeric sorted order.
+
+Selecting a package involves clicking on the little circle symbol
+until the option you want is displayed.  You can choose older
+versions of a package, choose to keep the package you have installed
+already, or choose to remove or install a package in this manner.
+If you're running Cygwin install again and see "Keep" as an option,
+that means you've already installed that package.  We're only
+concerned with the "bin" packages here (stands for "binary") and not
+the "src" packages (source code).
+
+It's suggested that you keep whatever was selected by default, and
+just add the below packages to the selection.  As you select
+packages, other packages may be selected for you that are also
+required:
+
+[ ] autoconf
+[ ] automake
+[ ] binutils
+[ ] bzip2
+[ ] curl
+[ ] cvs
+[ ] db4.x (pick the highest number listed for x)
+[ ] diffutils
+[ ] font-adobe-* (pick all of them)
+[ ] font-bitstream-* (pick all of them)
+[ ] font-util
+[ ] font-xfree86-type1
+[ ] gcc4
+
+[ ] gcc4-fortran (if you are going to use the get-maptools script)
+[ ] gcc4-objc (if you are going to use the get-maptools script)
+
+[ ] GraphicsMagick
+[ ] gv
+[ ] gzip
+[ ] jasper
+[ ] jbigkit
+[ ] lcms
+[ ] less
+[ ] lesstif
+[ ] libbz2-devel
+[ ] libcurl-devel
+[ ] libjasper-devel
+[ ] liblcms-devel
+[ ] libdb4.x (pick the same x as db2.x above)
+[ ] libdb4.x-devel (pick the same x as db2.x above)
+[ ] libfontconfig-devel
+
+[ ] libgeotiff (if you are NOT going to use the get-maptools script)
+[ ] libgeotiff-devel (if you are NOT going to use the get-maptools script)
+[ ] libgeotiff1 (if you are NOT going to use the get-maptools script)
+
+[ ] libGraphicsMagick-devel
+[ ] libGraphicsMagick3
+[ ] libjbig-devel
+[ ] libpcrecpp-devel
+[ ] libpng*-devel (pick the number that matches the already selected libpng* library)
+
+[ ] libproj-devel (if you are NOT going to use the get-maptools script)
+[ ] libproj1 (if you are NOT going to use the get-maptools script)
+
+[ ] libtiff-devel
+[ ] libtool
+[ ] libwmf-devel
+[ ] libX11-devel
+[ ] libXext-devel
+[ ] libXm-devel
+[ ] libxml2-devel
+[ ] m4
+[ ] make
+[ ] nano (a windows-style text editor, optional)
+[ ] patch
+[ ] pcre
+[ ] perl
+
+[ ] proj (if you are NOT going to use the get-maptools script)
+
+[ ] python
+[ ] rcs
+[ ] tcltk
+[ ] tiff 
+[ ] unzip
+[ ] vim (a Unix-style text editor, optional)
+[ ] wget (Optional: Can use libcurl instead)
+[ ] X-start-menu-icons (may take a minute to respond because it turns on many others)
+[ ] xextproto
+
+[ ] zip
+
+Clicking on the small circle with the two arrows will run you
+through the various select/de-select options for each package.
+
+
+[ ] Step 1d)  Click Next and the packages will get downloaded and
+installed.  Repeat the above if you have network difficulties, until
+the install succeeds completely.
+
+Some servers fail to download some files and require the user to
+press enter between downloads when it fails on these files.  If this
+happens, back up and select another server.
+
+
+[ ] Step 1e)  At the end of the install it'll ask you if you wish to
+create desktop icons and menu entries.  Definitely select these!  It
+doesn't mean that Cygwin will start automatically each time you
+reboot your computer or login (it doesn't start automatically).  It
+_does_ mean that you'll have an icon to click on manually to get
+things going.
+
+This will create a Black/Green Cygwin icon on the desktop and a menu
+entry so that you can start Cygwin through the menu system as well.
+
+[ ] Step 1f) Click "Finish".  Cygwin is now installed.  One more
+pop-up informs you Cygwin has been installed.  Sometimes this last
+dialog gets hidden behind other windows, and it does seem to need OK
+clicked to complete the installation.  Click the OK button on that
+last dialog to _really_ complete the installation.
+
+The Black/Green Cygwin icon will start up a BASH window, without
+starting up Xwindows.  Think of it as being similar to a DOS window,
+but with a lot more power.  It understands Unix commands though, not
+DOS commands.
+
+[ ] Note:  I've had the Cygwin network install fail before during
+the downloading stage without informing me in any recognizable
+manner.  You might which to re-do step 1 to make sure nothing
+further gets downloaded/installed.  Once you get to that point, Step
+1 is complete.
+
+[ ] Step 2) Reboot.  Yes, I know that "modern Windows" doesn't always
+require this but you just installed a lot of stuff including a DLL.
+
+[ ] Step 3)  (optional) Create shortcut for starting X:
+
+Click on START / Programs (or All Programs) / Cywgin-X
+
+Right-click on XWin-Server and then click on Send-to / Desktop
+(create Shortcut) to copy that Start Menu entry to a icon
+on your Desktop
+
+[ ] Step 4)  Test Cygwin and create startup shortcuts:
+
+Double-click on the shortcut you just made.  You should get a shell
+window that looks very much like a DOS window.  It's a BASH shell
+window and understands Unix commands instead of DOS commands.
+
+You should see an 'X' in your system tray.  That's the
+X-server running.  
+
+Once you've gotten to this stage, you now have Cygwin and Xwindows
+installed and operational.  Next we go after Xastir itself.
+
+[ ] Step 5)  Create a file at C:\cygwin\home\<user>\ called
+".cvsrc", where the "<user>" part is your Windows login name.  Don't
+forget the leading period in the filename as it's important.  For
+instance, I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The
+file should contain the following lines:
+
+    cvs -z3
+    update -P -d
+    status -v
+    diff -u
+
+The '#' marks comment out the first line.  "cvs -z3" invokes
+compression, and the SourceForge site isn't performing compression
+currently.
+
+PLEASE NOTE:  this file must be created in Unix format, not DOS
+format.  DO NOT USE Notepad or other Windows tools to create the
+file, as CVS will not recognize the contents.  Thanks to Kirk
+Mefford <kc2elo@softhome.net> for noticing this.  The editor "nano"
+can be invoked from a Cygwin window to create this file, or for
+those of you who know "vi" or have Windows editors available that
+can save in Unix format, use those.  If you don't, the "cvs update"
+commands won't work for you, at least until you recreate the file in
+Unix format.  You've been warned!
+
+The "." in ".cvsrc" makes it a Unix hidden file, and it won't appear
+in most Unix listings.  Unix files don't need a file extension, so
+don't create a file that has one (or else rename it to ".cvsrc" when
+done).
+
+Another option is to create the file using a Windows editor, then
+run a dos2unix program on it to convert it to the proper format.
+
+
+[ ] Step 5)  Download Xastir sources.  Start up Xwindows using your
+shortcut.  Type the six lines below into the shell exactly as shown.
+Hit <ENTER> when asked for a password after typing line four (the
+"login" command):
+
+  cd ~
+  touch .cvspass
+  mkdir src
+  cd src
+  cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login 
+  cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir 
+
+NOTE:  The "login" command must complete without errors in order to
+create a dummy blank password in your .cvspass file.  Without this
+password you'll have trouble with later CVS commands.  If you see
+"EOF", "connection reset by peer", "connection refused", or "timed
+out", it means that the anonymous CVS server at SourceForge is
+overloaded (too many users).  Keep trying the failed commands until
+they succeed!  Notice that up-arrow (on the keyboard) and then
+<ENTER> will repeat the last command, saving you some typing.
+
+The end result when it succeeds  will be a new directory
+"C:\cygwin\home\<user>\src\xastir\" which contains all of the Xastir
+source code.  You can type "ls xastir" (that's lower-case LS) to see
+the file listing.
+
+Side Note:  Here's the coolest thing about CVS:  Once you've done
+this initial source-code download, you'll never have to do the whole
+Xastir download again.  You'll just go into the "src/xastir"
+directory and type "cvs update", which will snag just the _changes_
+to the files since you last updated, and is very fast.  Compile and
+install at that point and you'll be running the latest developer's
+version in just a few minutes!  It's very easy to keep up with the
+developers this way.
+
+
+[ ] Step 6)  Configure/compile/install Xastir.  Type these commands
+into the BASH shell, waiting until each one completes before typing
+the next command:
+
+    cd ~/src/xastir
+    ./bootstrap.sh
+    ./configure
+    make
+    make install
+
+NOTE:  You'll probably want to run the configure step from an xterm
+window with the X11 server running of course.  If you do this from a
+non-X11 window then the configure test for "gv" will fail, as "gv"
+requires an X11 server even when asking it for it's version number.
+Without "gv" support you won't be able to print from Xastir.
+ 
+NOTE:  The "make" step can be extremely memory hungry.  If you don't
+have much free memory, that step might take a long time to run.  One
+Win2k machine with only 20MB of free RAM (128MB total RAM) couldn't
+complete this step, but adding another 128MB of RAM to that machine
+caused it to succeed.  Another machine running Win2k with 64MB free
+(128MB total RAM) took six hours (but keep reading!).  Free up
+memory if you're having trouble completing that step.  This behavior
+is only seen on Windows/Cygwin, not on the Unix-based systems.  On a
+typical Linux box that step takes under two seconds.  Hopefully
+Cygwin linking will improve over time to alleviate this issue.
+We've added a new link-stage parameter to reduce the memory usage
+for that step, but it doesn't totally resolve the problem.  The
+machine that took six hours originally now takes 60 seconds to
+complete that step.
+
+Ignore the "PACKAGE_* redefined" warnings.  They won't break
+anything and are just an annoyance.
+
+Once you get through the above commands, Xastir is compiled and
+installed on your system, with minimal map support.  Later sections
+of this document detail adding additional map libraries in order to
+give you access to the full mapping capability of Xastir.
+
+NOTE:  If you get the below errors during the compile it means that
+Cygwin has changed one of their packages to be incompatible with the
+rest (and needs to change a lot more of their packages to
+correspond).  It also means that you probably had Cygwin installed
+previous to January 2010 and upgraded rather than replaced your
+installation.
+
+---------------------------------------------------------------------
+/usr/include/Xm/Print.h:28:34: X11/extensions/Print.h: No such file or directory
+In file included from /usr/include/Xm/XmAll.h:79,
+                 from alert.c:308:
+/usr/include/Xm/Print.h:40: error: parse error before "XPContext"
+/usr/include/Xm/Print.h:43: error: parse error before '}' token
+/usr/include/Xm/Print.h:61: error: parse error before "XPFinishProc"
+make[3]: *** [alert.o] Error 1
+---------------------------------------------------------------------
+A temporary fix for the above errors (until Cygwin gets their act
+together) is to do the following:
+---------------------------------------------------------------------
+    Launch the Cygwin setup program
+    When you get to the list of packages change the list to FULL mode
+    Uncheck "Hide Obsolete Packages"
+    Scroll down the list until you find xorg-x11-devel
+    Click on the word "keep" until it changes to a 6.x version of the file
+    Click Next and finish the setup
+    Unfortunately you'll have to perform the same fix each time you
+      use the Cygwin setup program or it will "upgrade" to the
+      broken package again.
+---------------------------------------------------------------------
+
+[ ] Step 8)  Actually run the darn thing:
+
+Let's start from scratch to make sure it all works.  Close any
+Cygwin/BASH windows you may have.
+
+Click on the shortcut you created to start Xwindows.
+
+From the resulting BASH window, type "LANG=C xastir &".  Xastir should
+start up shortly.
+
+Note:  Xastir has support for PocketAPRS, DosAPRS, WinAPRS, MacAPRS
+and GNIS maps by default.  For additional types of maps, you'll need
+to install some libraries, then recompile Xastir so that it knows to
+use them.  See the instructions below.
+
+The README.MAPS file has instructions for where to get maps and where
+to put them under the Xastir hierarchy.
+
+If you have any WinAPRS, DosAPRS, or PocketAPRS maps, now is a good
+time to place them in the /cygwin/usr/local/share/xastir/maps folder
+(or a subdirectory of it).  You can also use "*.geo" files and the
+associated image files with Xastir.  You may place them in this
+directory (or a subdirectory of it) as well, though most of the .geo
+files won't work for you until you install the ImageMagick library.
+
+What Xastir paths look like from within Windows (in case you're
+moving maps around with Explorer):  Just prefix them all with
+"cygwin/".  For instance, maps go into
+/cygwin/usr/local/share/xastir/maps instead of
+/usr/local/share/xastir/maps.  Xastir will continue to see them as
+"/usr/local/share/xastir/maps" though from inside Cygwin.  It kind
+of looks like a miniature Unix box from inside Cygwin.
+
+Run Windows in 15-bit color or better (32768 colors or more) or
+you'll get lots of warnings about Xastir not being able to allocate
+colors when it starts up, and the display will be rather stark
+looking.
+
+To set a new language or change the language current choice, use
+this command line instead from inside an Xterm:
+
+     xastir -l <language>
+
+Current choices are:
+
+    Dutch English French German Italian Portuguese Spanish
+    ElmerFudd MuppetsChef OldeEnglish PigLatin PirateEnglish
+
+This option will be stored in the users config file for the next
+time Xastir is run. On new installs Xastir will default to English
+until you use this command line option once.
+
+Another difference with Cygwin as opposed to Unix-like operating
+systems:  You can't do the make install portion if Xastir is up and
+running.  You have to kill Xastir first before you do "make install"
+or "make install-strip".  Otherwise the newly compiled Xastir won't
+replace the old one.
+
+Note that one user running Cygwin on XP had it crash every time his
+screen-saver kicked in.  Disabling the screen-server fixed that
+problem.
+
+Another interesting "feature" of Cygwin/Xwindows is that some of the
+modifier keys like ScrollLock/CapsLock/NumLock must be pressed while
+that X-window is the active foreground window.  If not, the event
+can be missed, and Xwindows can get out of sync with the actual
+state of the key.  This doesn't appear to be an Xastir-specific
+problem, but a Cygwin/Xwindow problem.  With just a BASH shell under
+Cygwin (not involving Xwindows), the problem doesn't appear to
+happen.  Just inside Xwindows on Cygwin.
+
+Some users have experienced problems with their Windows box running
+the NTFS "convert.exe" program instead of the ImageMagick
+"convert.exe" program, usually when enabling snapshots in Xastir.
+If you experience this, check your path settings and make sure that
+ImageMagick's path is first.
+
+When specifying serial ports to use with Xastir,
+
+    "COM1" is called "/dev/ttyS0" in Cygwin (and Linux)
+    "COM2" is called "/dev/ttyS1" in Cygwin (and Linux)
+
+Note the capital 'S'.
+
+
+[ ] Step 9)  Document & Back Up the Configuration
+
+One user had a problem where after Cygwin/Xastir was installed, he
+installed another program, in this case Java, and it wiped out some
+of the environment variables that Cygwin set.  $HOME was one
+variable that got changed.
+
+To guard against such changes, go to My Computer and right-click on
+properties.  Write down the Advanced System Variables and keep the
+note in a safe place.
+
+
+Optional
+
+
+Please see the INSTALL file and the Help menu in Xastir itself
+for additional information not mentioned in this document.
+
+Additional info can be found on the cygwin web-site:
+
+    http://www.cygwin.com
+
+or the Cygwin/XFree86 web-site:
+
+    http://cygwin.com/xfree/
+
+
+[ ] Step 10)  Keeping up-to-date:
+
+Once a week or once a month, run the Cygwin network installer
+program (step 1b above).  After it finishes, open a Cygwin window
+and type these commands to update the Xastir source code:
+
+    cd ~/src/xastir
+    cvs update
+
+If you see "EOF" or "connection reset by peer" it means that the
+anonymous CVS server at SourceForge is overloaded (too many users).
+Keep trying the failed commands until they succeed!  Notice that
+up-arrow (on the keyboard) and then <ENTER> will repeat the last
+command, saving you some typing.
+
+Every once in a while Windows will refuse to allow you to
+delete/rename one of the files.  The only way I've found to get
+around this problem is to reboot.  I sometimes see this when trying
+to do a CVS update, and Windows won't allow one or more files to get
+updated.
+
+Repeat step 6) above to recompile/reinstall the latest Xastir.
+
+A very good option is to read the SUDO instructions in the
+README.CVS file, setting up the /etc/sudoers file and creating an
+update-xastir script as shown.  Then you can type "./update-xastir"
+at any time to snag down the latest Xastir changes, compile, and
+install it.  We've just included an update-xastir script with
+Xastir, so you don't have to create it anymore.  You may however
+need to remove the "sudo" keyword from each line for it to work
+properly on Cygwin.
+
+
+-----
+
+-------------------------------------------
+OPTIONAL:  ADDING ADDITIONAL MAP LIBRARIES:
+-------------------------------------------
+
+These additional Xastir libraries have been tested on Cygwin:
+
+    ImageMagick
+    Shapelib
+    libtiff
+    libproj
+    libgeotiff
+    Festival
+    GDAL/OGR (broken as of January 2010 - kd7myc)
+
+Anyone testing additional libraries is encouraged to share their
+findings on the Xastir mailing lists (you must be subscribed in
+order to post messages there).  The libraries which have _not_ been
+made to work yet on Cygwin are:
+
+    AX25
+    GPSMan/gpsmanshp
+
+The AX25 libraries will probably never work, as they are for Linux
+only.  GPSMan/gpsmanshp may work on Cygwin at some point if enough
+work is done to figure out and document the process.
+
+
+RECOMMENDED:  Adding maptools:
+------------------------------------------------------------
+
+*******************************NOTE**************************************
+As of 10 November 2006, xastir's source tree contains a copy of shapelib
+1.2.10, and automatically builds shapelib if you don't have it installed.
+************************************************************************
+
+
+[ ] From a BASH shell, type:
+
+    cd ~/src/xastir/scripts
+    ./get-maptools.sh
+    come back in six to 48 hours
+    
+The last thing the script tries to do is compile GDAL.  This is currently
+broken.  Don't worry.  The rest should have been installed just fine.
+
+[ ] Now you should be ready to configure and compile Xastir with
+Shapelib support.  Type these commands:
+
+    cd ~/src/xastir
+    cvs update
+    ./bootstrap.sh
+    ./configure
+    make
+    make install
+
+
+See the README.MAPS file for where to get the maps.
+
+
+OPTIONAL:  Install Festival support:
+------------------------------------
+Allows using a synthesized voice from within Xastir for alerts,
+reading messages to you, and other cool things.  Tom Russo did the
+initial work on this, Henk de Groot optimized it:
+
+1) Start BASH shell in Cygwin
+
+2) Make ~/festival download directory and
+    /usr/local/festival installation directory
+
+3) Download festival components from festvox.org into ~/festival, in
+   the Windows environment the corresponding path is:
+
+     C:\Cygwin\home\%USERNAME%\festival
+
+    get the following files:
+
+     speech_tools-1.2.95-beta.tar.gz
+     festival-1.95-beta.tar.gz
+     festlex-CMU.tar.gz
+     festlex-POSLEX.tar.gz
+     festvox-kallpc16k.tar.gz
+
+4) Build festival and company:
+
+    cd /usr/local/festival
+    tar xzf ~/festival/speech_tools-1.2.95-beta.tar.gz
+    tar xzf ~/festival/festival-1.95-beta.tar.gz
+    tar xzf ~/festival/festlex_CMU.tar.gz
+    tar xzf ~/festival/festlex_POSLEX.tar.gz
+    tar xzf ~/festival/festvox_kallpc16k.tar.gz
+
+    cd speech_tools
+    ./configure && make
+    cd ../festival
+    ./configure && make
+
+   These packages are build and used where they are compiled.
+
+5) Test festival:
+
+    cd /usr/local/festival/festival/examples
+    sh saytime
+
+   Festival should say the time if everything went fine
+
+6) Add /festival/festival/bin to PATH in .profile and .bashrc. For
+   me both files look like this:
+
+    .profile and .bashrc:
+    -------------------
+    export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:/usr/local/bin:/usr/local/festival/festival/bin:~/bin:.
+
+    -------------------
+
+7) Configure and build xastir.  Configure should report that
+   festival is found.
+
+8) Start the festival server:
+
+    festival --server &
+
+   To do this automatically I added the following lines to my
+   .bash_profile:
+
+    -------------------
+    if  [ `ps -ef | grep festival | wc -l` -eq 0 ]
+    then
+      festival --server &
+      sleep 1
+    fi
+    -------------------
+
+9) Run xastir, do File->Configure->Speech, add things to say, and
+   listen.
+
+
+
+How to make Sound Alerts work under Cygwin
+------------------------------------------
+(from Kirk Mefford, kc2elo)
+"I figured I'd share exactly what I did to make the sound alerts work in
+xastir under Cygwin. Sound support seems to be just one of the many quirks
+of trying to use *nix native software under Microsoft OS's. Hope this helps
+someone else.
+
+FYI: This was tested under Win2000
+
+Sound alert support under Cygwin using Network Audio Server (NAS)
+
+I downloaded http://nas.intra-links.net/files/nas-1.6-win-binary.zip and
+decompressed the archive with winzip (any zip utility should work fine) into
+a temporary folder.
+
+I deleted the "cygwin1.dll" and "README.txt" files that came in the package
+since they aren't needed and the extra cygwin1.dll can cause problems.
+
+
+  Note from James Cour, K1ZC:
+  ---------------------------
+  "The procedure he (Kirk) outlines there works fine EXCEPT that
+  there is a valuable piece of information in that Readme.txt file...
+  The user must have a folder named /DEV under the Cygwin folder in
+  order for NASD to work.  NASD will not create it automatically, and
+  NASD will not run without it.  The default set-up instructions for
+  Xastir and Cygwin do not create this folder, so the user needs to
+  manually create the folder from Windows."
+
+
+  Note from Tim Baggett, AA5DF:
+  -----------------------------
+  "I recommend running the script (create_devices.sh) found attached
+  to the email located at the URL below to create the /dev directory,
+  and all supported devices under Cygwin."
+
+  "http://cygwin.com/ml/cygwin-xfree/2004-01/msg00353.html"
+
+
+Then copy the remaining files from the package into the /bin directory under
+cygwin.
+
+All that is needed to make nas available to xastir is to load the server
+before running xastir.
+
+To load NAS for xastir to use simply type "nasd -local -b" from cygwin. This
+command will load the NAS server in the background and will only allow local
+users to access it.  For more command options type "nasd -help" from within
+cygwin.  Some people have trouble with the "-local" option, so try
+it without that option as well ("nasd -b").
+
+After NAS is loaded you can load xastir as you normally would.
+
+Once xastir is running, to play sound alerts you need to change the default
+configuration to use "auplay"
+
+From within xastir click on File>Configure>Audio Alarms.
+The "Audio Play Command" box should be changed to "auplay"
+Then ensure the audio files listed to play are located in
+"/usr/local/share/xastir/sounds" directory.
+
+Click OK to accept the changes and be sure to save your config before
+exiting xastir or sound will not work the next time it is loaded.
+
+Turn up the volume on your PC speakers and enjoy the noise xastir makes."
+
+
+OPTIONAL:  Install GDAL/OGR support:
+------------------------------------
+One user has been successful in compiling GDAL/OGR support into
+Xastir.  One thing he mentioned:
+
+"Now the word of warning.  If you try to compile GDAL under Cygwin
+and the compile blows up, you are better rm -rvf'ing the entire
+directory and re-untaring the source again than trying to recompile
+in that blown directory.  Make Clean doesn't do a thing and the old
+settings and mistakes stick around no matter what you try."
+
+Make sure you've got Shapelib installed on your system else Xastir
+won't find GDAL (the private Xastir copy of Shapelib is fine).  Both
+are needed.
+
+Download "gdal-1.2.0b.tar.gz".  In a cygwin window, type the
+following:
+
+
+    tar xzvf gdal-1.2.0b.tar.gz
+    cd gdal-1.2.0b
+    ./configure --with-jpeg=internal --with-libtiff=internal
+    make
+    make install
+
+
+The GDAL/OGR library should now be installed on your system.  Return
+to the xastir directory and start with the ./configure command.  It
+should pick up the fact that GDAL/OGR has been installed and compile
+support for it into Xastir.  Follow with the rest of the commands to
+make/install Xastir.
+
+One user required the below GDAL configure line as otherwise it
+complained about not finding libproj:
+
+    ./configure --with-jpeg=internal --with-libtiff=internal --with-static-proj4
+
+
+APRS(tm) is a Trademark of Bob Bruninga
+
+Copyright (C) 2003-2010 The Xastir Group
+
