@@ -18,15 +18,15 @@ xastir_udp_client sends packets into the UDP listening port of an enabled xastir
 Currently that will inject the packet into Xastir's decoding routines and send
 it to any TCP-connected clients. It will also igate it to the INET if you have
 igating enabled.  It will send the packet out the RF ports as third-party
-packets only if you add the "-to_rf" flag after the passcode like this:
+packets only if you add the "\-to_rf" flag after the passcode like this:
 
- xastir_udp_client localhost 2023 <callsign> <passcode> -to_rf "APRS Packet"
+ xastir_udp_client localhost 2023 <callsign> <passcode> \-to_rf "APRS Packet"
 
 The UDP client is useful for generating and injecting APRS packets from
 external scripts.  It can also be used to fetch the callsign of the remote
-xastir server by using the -identify flag:
+xastir server by using the \-identify flag:
 
- xastir_udp_client localhost 2023 <callsign> <passcode> -identify
+ xastir_udp_client localhost 2023 <callsign> <passcode> \-identify
 
 .SH NOTES
 This is a very simple utility that provides no validation of message content.
