@@ -92,6 +92,7 @@ The Questions
     4.30 Why can't I see station trails as stations move around?
     4.31 Why don't the maps I installed show up in the Map Chooser?
     4.32 Dialogs are tiny bullet-shaped windows with no handles.  Why?
+    4.33 Fedora 12 right-click menus don't work.
 
 5.  Features
 
@@ -1091,6 +1092,17 @@ The Answers
     problem, turn *OFF* "Desktop Effects" which will disable
     "compiz" and re-enable the default window manager.
 
+    4.33 Fedora 12 right-click menus don't work.
+
+    Kevin, K1KWP, sent this note along to the Xastir mailing list on
+    Feb 01, 2010.  It should fix the problem on Fedora:
+
+    "For those who may care but have not been following this issue
+    on other forums there is a fix in test which you can get now by
+    downloading and installing these 2 packages."
+
+    http://kojipkgs.fedoraproject.org/packages/xorg-x11-server/1.7.4/6.fc12/i686/xorg-x11-server-common-1.7.4-6.fc12.i686.rpm
+    http://kojipkgs.fedoraproject.org/packages/xorg-x11-server/1.7.4/6.fc12/i686/xorg-x11-server-Xorg-1.7.4-6.fc12.i686.rpm 
 
 5.  Features
 
