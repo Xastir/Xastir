@@ -15,7 +15,7 @@ SUBDIRS = src m4 config help scripts symbols callpass
 # DISTCLEANFILES = intl/libintl.h
 
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
-        missing mkinstalldirs placeholder FAQ LICENSE README README.CVS \
+        missing mkinstalldirs placeholder FAQ LICENSE README README.CVS README.CYGWIN\
         README.Getting-Started README.Contributing README.MAPS README.win32 testdbfawk.1 \
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 terraserver.geo \
         terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
@@ -52,7 +52,7 @@ sounddir=${pkgdatadir}/sounds
 sound_DATA=placeholder
 
 docdir=${prefix}/share/doc/xastir
-doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
+doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS README.CYGWIN \
         README.MAPS README.win32 COPYING INSTALL UPGRADE \
         README.Getting-Started README.Contributing \
         COPYING.LIB.LESSTIF
