@@ -1094,15 +1094,8 @@ The Answers
 
     4.33 Fedora 12 right-click menus don't work.
 
-    Kevin, K1KWP, sent this note along to the Xastir mailing list on
-    Feb 01, 2010.  It should fix the problem on Fedora:
-
-    "For those who may care but have not been following this issue
-    on other forums there is a fix in test which you can get now by
-    downloading and installing these 2 packages."
-
-    http://kojipkgs.fedoraproject.org/packages/xorg-x11-server/1.7.4/6.fc12/i686/xorg-x11-server-common-1.7.4-6.fc12.i686.rpm
-    http://kojipkgs.fedoraproject.org/packages/xorg-x11-server/1.7.4/6.fc12/i686/xorg-x11-server-Xorg-1.7.4-6.fc12.i686.rpm 
+    This was a Fedora or X11 bug and has been fixed.  Do a "yum
+    update" on your system to get the latest Fedora fixes.
 
 5.  Features
 
