@@ -1284,7 +1284,7 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             // PQescapeStringConn(conn,call_sign,aStation->call_sign,(MAX_CALLSIGN*2)+1,escape_error);
             xastir_snprintf(call_sign,MAX_CALLSIGN+1,"%s",aStation->call_sign);
             if (strlen(aStation->origin) > 0) { 
-                xastir_snprintf(origin,strlen(aStation->origin)+1,"%s",aStation->origin);
+                xastir_snprintf(origin,sizeof(origin),"%s",aStation->origin);
             } else { 
                 xastir_snprintf(origin,1,"%c",'\0');
             } 
@@ -1292,10 +1292,12 @@ int storeStationSimplePointToGisDbPostgis(Connection *aDbConnection, DataRow *aS
             if (aStation->node_path_ptr==NULL) { 
                 xastir_snprintf(node_path,2," ");
             } else {  
-                xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
+                xastir_snprintf(node_path,sizeof(node_path),"%s",aStation->node_path_ptr);
             }   
-fprintf(stderr,"node_path   (12345678901234567890123456789012345678901234567890123456)\n"); 
-fprintf(stderr,"node_path = [%s]\n",node_path); 
+            if (debug_level & 4096) {
+               fprintf(stderr,"node_path   (12345678901234567890123456789012345678901234567890123456)\n"); 
+               fprintf(stderr,"node_path = [%s]\n",node_path); 
+            } 
             // Get time in seconds, adjust to datetime
             // If aStation is my station or another unset sec_heard is 
             // encountered, use current time instead. Conversely, use time
@@ -1682,7 +1684,7 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
     char special_overlay[2];  // temporary holding for escaped overlay
     char record_type[2];              // temporary holding for escaped record type
     char origin[MAX_CALLSIGN+1];  // temporary holding for escaped origin
-    char node_path[NODE_PATH_SIZE];         // temporary holding for escaped node_path_ptr
+    char node_path[NODE_PATH_SIZE+1];         // temporary holding for escaped node_path_ptr
     MYSQL_STMT *statement;
     // bind string lengths
     int call_sign_length;
@@ -1859,7 +1861,11 @@ int storeStationSimplePointToGisDbMysql(Connection *aDbConnection, DataRow *aSta
                            //xastir_snprintf(node_path,2,"%c",'\0');
                            node_path[0]='\0';
                        } else { 
-                           xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
+                            if (debug_level & 4096) {
+                                fprintf(stderr,"node_path   (12345678901234567890123456789012345678901234567890123456)\n"); 
+                                fprintf(stderr,"node_path = [%s]\n",aStation->node_path_ptr); 
+                           }
+                           xastir_snprintf(node_path,NODE_PATH_SIZE+1,"%s",aStation->node_path_ptr);
                        }
                        node_path_length = strlen(node_path);
 
@@ -2241,7 +2247,7 @@ int storeStationSimplePointToDbMysql(Connection *aDbConnection, DataRow *aStatio
                 xastir_snprintf(node_path,2,"%c",'\0');
             } else { 
                 //mysql_real_escape_string(conn,&node_path,aStation->node_path_ptr,((strlen(aStation->node_path_ptr)*2)+1));
-                xastir_snprintf(node_path,strlen(aStation->node_path_ptr)+1,"%s",aStation->node_path_ptr);
+                xastir_snprintf(node_path,sizeof(node_path),"%s",aStation->node_path_ptr);
             } 
             
             xastir_snprintf(sql,sizeof(sql),"insert into simpleStation (station, symbol, overlay, aprstype, transmit_time, latitude, longitude, origin, record_type, node_path) values ('%s','%s','%s','%s','%s','%3.6f','%3.6f','%s','%c','%s')", call_sign, aprs_symbol, special_overlay, aprs_type,timestring,latitude,longitude,origin,record_type,node_path);
