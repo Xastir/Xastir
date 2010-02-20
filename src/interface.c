@@ -2673,7 +2673,7 @@ int OpenTrac_decode_radio_capabilities(unsigned char *element,
 //WE7U: Need to decode/pass back values.  This element is still
 //being defined in the spec.
 
-    fprintf(stderr, "Radio Capabilites\n");
+    fprintf(stderr, "Radio Capabilities\n");
 
     return 0;
 }
