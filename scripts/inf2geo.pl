@@ -14,7 +14,12 @@
 #
 # To process all .inf files in that directory.
 #
+# Note:  This script requires GraphicsMagick or ImageMagick packages
+# to be installed before it will function properly.  Install one of
+# these via your package manager.
 #
+#
+# What the script does for you:
 # Read in .inf file (from Ui-View)
 # Convert the lat/long coordinates into dd.dddd format
 # Get the image extents via "identify -ping filename" or
@@ -240,3 +245,5 @@ sub findImageFile {
     print "Found this image: $image_size\n";
     return ($filename, $image_size);
 }
+
+
