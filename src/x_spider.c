@@ -738,17 +738,41 @@ int pipe_check(char *client_address) {
     else {  // We received some data.  Send it down all of the
             // pipes.
 // Also send it down the socket.
-        pipe_object *q = pipe_head;
 
-        if (q) for (p = pipe_head->next; p != NULL; p = p->next) {
-            if (!p->active) { // Marked for deletion.
-		q->next = p->next; // Keep pointer to next connection.
-		free(p);
-		p = q; // Establish pointer back to referenced connection.
-	    }
-	    q = p; // Save pointer to previous item in queue
-	}
-	q = pipe_head; // Reset pointer to beginning of list
+        // Check for disconnected clients and delete their records
+        // from the chain.
+        pipe_object *q = pipe_head;
+        pipe_object *r = pipe_head;
+        for (q = pipe_head; q != NULL; ) {
+
+            if (!q->active) { // Marked for deletion.
+
+                // Check for head of list, handle it in a special
+                // manner.  We don't have to fix up the "next"
+                // pointer on the previous object (it doesn't exist)
+                // but must fix up "pipe_head" pointer.
+                if (q == pipe_head) {
+                    pipe_head = q->next;  // New head of list
+                    p = q; // Assign temporary pointer
+                    q = q->next; // Keep pointer to next object
+                    r = q;  // Keep 'r' and 'q' the same for now,
+                            // later 'r' will lag 'q' by one object
+                    free(p); // Free struct at temporary pointer
+                }
+                else { // Not the head object
+                    r->next = q->next; // Bridge soon-to-be-made gap
+                    p = q; // Assign temporary pointer
+                    q = q->next; // Keep pointer to next connection.
+                    free(p); // Free struct at temp pointer
+                }
+            }
+            else {
+                r = q;  // Pointer to last object (so we can get to
+                        // the "next" pointer)
+                q = q->next; // Pointer to next object
+            }
+        }
+        q = pipe_head; // Reset pointer to beginning of list
 
         //fprintf(stderr,"n:%d\n",n);
         // Terminate it
