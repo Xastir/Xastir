@@ -1094,8 +1094,16 @@ The Answers
 
     4.33 Fedora 12 right-click menus don't work.
 
-    This was a Fedora or X11 bug and has been fixed.  Do a "yum
+    This was a Fedora X11 bug and has been fixed.  Do a "yum
     update" on your system to get the latest Fedora fixes.
+
+    If you're having troubles with another OS, read this thread to
+    get some insight into the problem:
+      https://bugzilla.redhat.com/show_bug.cgi?id=543647
+
+    It appears to be a bug in the X11 server and can affect OpenMotif
+    and Lesstif apps.  I didn't read every comment though.  There were
+    definitely many dead-ends as they went along discussing it.
 
 5.  Features
 
