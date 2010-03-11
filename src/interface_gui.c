@@ -5881,7 +5881,6 @@ void Sql_Database_change_data(Widget widget, XtPointer clientData, XtPointer cal
         was_up=1;
 
         // close connection
-        (void)closeConnection((Connection*)connections[Sql_Database_port],Sql_Database_port); 
 
     }
 
@@ -6020,7 +6019,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Sql_Database_change_data"
     if (was_up) {
         // If the connection was allready open when we started then reconnect
         // and reopen the database connection with the new parameters.
-        if (openConnection(&devices[Sql_Database_port],(Connection*)connections[Sql_Database_port])==1) { 
+        if (openConnection(&devices[Sql_Database_port],&connections[Sql_Database_port])==1) { 
            port_data[Sql_Database_port].status = DEVICE_UP;
         } else { 
            port_data[Sql_Database_port].status = DEVICE_ERROR;
@@ -6157,12 +6156,16 @@ void Config_sql_Database( /*@unused@*/ Widget w, int config_type, int port) {
             NULL);
         // Combo box to pick dbms
         cb_items [0] = (XmString *) XtMalloc ( sizeof (XmString) * 4 );
+        // Combo box items are defined by xastir_dbms_type, defined in db_gis.c
+        cb_items[0][0] = XmStringCreateLtoR( &xastir_dbms_type[1][0] , XmFONTLIST_DEFAULT_TAG);
+        cb_items[0][1] = XmStringCreateLtoR( &xastir_dbms_type[2][0] , XmFONTLIST_DEFAULT_TAG);
+        cb_items[0][2] = XmStringCreateLtoR( &xastir_dbms_type[3][0] , XmFONTLIST_DEFAULT_TAG);
         // mysql
-        cb_items[0][0] = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
+        //cb_items[0][0] = XmStringCreateLtoR("MySQL (lat/long)", XmFONTLIST_DEFAULT_TAG);
         // postgresql
-        cb_items[0][1] = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
+        //cb_items[0][1] = XmStringCreateLtoR("Postgres/Postgis", XmFONTLIST_DEFAULT_TAG);
         // mysql with spatial extensions
-        cb_items[0][2] = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
+        //cb_items[0][2] = XmStringCreateLtoR("MySQL (spatial)", XmFONTLIST_DEFAULT_TAG);
         cb_items[0][3] = NULL;
 #ifdef USE_COMBO_BOX
         Sql_Database_dbms_data = XtVaCreateManagedWidget("select dbms", xmComboBoxWidgetClass, form,

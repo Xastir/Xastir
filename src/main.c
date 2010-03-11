@@ -11529,6 +11529,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 for (i = 0; i < MAX_IFACE_DEVICES; i++){
                      // if interface is a database and is set to load on start then load
                      if (connections_initialized==0) { 
+fprintf(stderr,"main, initializing connections");
                            connections_initialized = initConnections();
                      }
                      if (devices[i].device_type == DEVICE_SQL_DATABASE && devices[i].query_on_startup && port_data[i].status==DEVICE_UP) { 
@@ -11536,21 +11537,21 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                           if (devices[i].connect_on_startup == 1) { 
                               // there should be an open connection already
                               if (debug_level & 4096) 
-                                  fprintf(stderr,"Opening (in main) connection [%d] with existing connection [%p]",i,connections[i]); 
-                              if (pingConnection(connections[i])==True) { 
+                                  fprintf(stderr,"Opening (in main) connection [%d] with existing connection [%p]",i,&connections[i]); 
+                              if (pingConnection(&connections[i])==True) { 
                                   got_conn = 1;
                               } else { 
                                 // if (debug_level & 4096) 
-                                     fprintf(stderr,"Ping failed opening new connection [%p]",connections[i]);                          
-                                 got_conn = openConnection(&devices[i],connections[i]); 
+                                     fprintf(stderr,"Ping failed opening new connection [%p]",&connections[i]);                          
+                                 got_conn = openConnection(&devices[i],&connections[i]); 
                               }
                           } else { 
                               if (debug_level & 4096) 
-                                  fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,connections[i]);                          
-                              got_conn = openConnection(&devices[i],connections[i]); 
+                                  fprintf(stderr,"Opening (in main) connection [%d] with new connection [%p]",i,&connections[i]);                          
+                              got_conn = openConnection(&devices[i],&connections[i]); 
                           }
-                          if ((got_conn == 1) && (!(connections[i]->type==0))) { 
-                              getAllSimplePositions(connections[i]);
+                          if ((got_conn == 1) && (!(connections[i].type==0))) { 
+                              getAllSimplePositions(&connections[i]);
                               // if connection worked, it is a oneshot upload of data, so we don't 
                               // need to set port_data[].active and .status values here.
                           } else {
