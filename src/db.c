@@ -10965,6 +10965,7 @@ void extract_area(DataRow *p_station, char *data) {
     if (val >= 0 && val <= AREA_MAX) {
         temp_area.type = val;
         val = data[4] - '0';
+        temp_area.color = AREA_BLACK_HI; // Initial value
         if (data[3] == '/') {
             if (val >=0 && val <= 9) {
                 temp_area.color = val;
