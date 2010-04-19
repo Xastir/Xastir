@@ -20,8 +20,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-# 02111-1307, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 #
 # See README.MAPS for a bit more information on the program.
 #
@@ -32,7 +32,7 @@
 # <http://www.weather.gov/geodata/>
 
 
-FILE1="z_11ja10"  # NWSM Libraries: Public Zone Boundaries
+FILE1="z_01ap10"  # NWSM Libraries: Public Zone Boundaries
 FILE2="w_15jl09"  # NWSM Libraries: County Warning Area Boundaries
 FILE3="mz15jl09"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE4="oz02jn09"  # NWSM Libraries: Coastal and Offshore Marine Zones
