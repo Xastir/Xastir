@@ -80,17 +80,17 @@ install-exec-hook:
 	rm -f \$(configdir)/nwsfz_ddmmyy.dbfawk
 
 language-ElmerFudd.sys: language-English.sys
-	$(top_srcdir)/scripts/langElmerFudd.pl -split >$@ <$<
+	$(top_srcdir)/scripts/langElmerFudd.pl -split >$@ <$(srcdir)/language-English.sys
 
 language-MuppetsChef.sys: language-English.sys
-	$(top_srcdir)/scripts/langMuppetsChef.pl -split >$@ <$<
+	$(top_srcdir)/scripts/langMuppetsChef.pl -split >$@ <$(srcdir)/language-English.sys
 
 language-OldeEnglish.sys: language-English.sys
-	$(top_srcdir)/scripts/langOldeEnglish.pl -split >$@ <$<
+	$(top_srcdir)/scripts/langOldeEnglish.pl -split >$@ <$(srcdir)/language-English.sys
 
 language-PigLatin.sys: language-English.sys
-	$(top_srcdir)/scripts/langPigLatin.pl -split >$@ <$<
+	$(top_srcdir)/scripts/langPigLatin.pl -split >$@ <$(srcdir)/language-English.sys
 
 language-PirateEnglish.sys: language-English.sys
-	$(top_srcdir)/scripts/langPirateEnglish.pl -split >$@ <$<
+	$(top_srcdir)/scripts/langPirateEnglish.pl -split >$@ <$(srcdir)/language-English.sys
 
