@@ -133,7 +133,7 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
     char temp_my_course[10];
     char temp_text[30];
     double distance;
-    XmTextPosition pos, eol;
+    XmTextPosition pos, eol, eod;
     struct tm *tmp;
     time_t timehd;
     char time_str[20];
@@ -166,6 +166,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_
 
         if ((Display_bulletins_dialog != NULL) && Display_bulletins_text != NULL) {   // Dialog is up
 
+            eod = XmTextGetLastPosition(Display_bulletins_text);
             xastir_snprintf(temp_text,
                 sizeof(temp_text),
                 "%s",
@@ -177,21 +178,34 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_
             if (XmTextFindString(Display_bulletins_text, 0, temp_text, XmTEXT_FORWARD, &pos)) {
 
                 // Found it, so now find the end-of-line for it
-                (void)XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol);
-                eol++;
+                if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
+                  eol++;
+                else 
+                  eol = eod;
 
                 // And replace the old bulletin with a new copy
+                if (eol == eod)
+                  temp[strlen(temp)-1] = '\0';
                 XmTextReplace(Display_bulletins_text, pos, eol, temp);
             } else {
-                for (pos = 0; strlen(temp_text) > 12 && pos < XmTextGetLastPosition(Display_bulletins_text);) {
+                for (pos = 0; strlen(temp_text) > 12 && pos < eod;) {
                     if (XmCOPY_SUCCEEDED == XmTextGetSubstring(Display_bulletins_text, pos, 14, 30, temp_text)) {
                         if (temp_text[0] && strncmp(temp, temp_text, 14) < 0)
                             break;
                     } else
                         break;
 
-                    (void)XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol);
-                    pos = ++eol;
+                    if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
+                      pos = ++eol;
+                    else
+                      pos = eod;
+                }
+                if (pos == eod) {
+                  temp[strlen(temp)-1] = '\0'; // End-of-Data remove trailing LF
+                  if (pos > 0) { // Already have text. Need to insert LF between items
+                    memmove(&temp[1], temp, strlen(temp));
+                    temp[0] = '\n';
+                  }
                 }
                 XmTextInsert(Display_bulletins_text,pos,temp);
             }
