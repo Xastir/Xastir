@@ -9018,6 +9018,12 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             "create_appshell Menu Popup",
             al,
             ac);
+#if XmVersion >= 2000
+    XtVaSetValues(right_menu_popup, XmNpopupEnabled, XmPOPUP_DISABLED, NULL);
+    XtUngrabButton(da, AnyButton, AnyModifier);
+#else
+    XtVaSetValues(right_menu_popup, XmNpopupEnabled, False, NULL);
+#endif
     //XtVaSetValues(right_menu_popup, XmNwhichButton, 3, NULL);
 
     ac = 0;
