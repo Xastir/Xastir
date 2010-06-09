@@ -483,7 +483,7 @@ void draw_OSM_map (Widget w,
     xastir_snprintf(tmpstr, sizeof(tmpstr), "z=%d", z);
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
 
-    xastir_snprintf(fileimg, sizeof(fileimg), OSMtmp);
+    xastir_snprintf(fileimg, sizeof(fileimg), "%s", OSMtmp);
 
     if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);

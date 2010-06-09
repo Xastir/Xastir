@@ -318,7 +318,7 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         handle);
 
     // Send the request text out the socket
-    ret = fprintf(fd, temp);
+    ret = fprintf(fd, "%s", temp);
 
     if (ret == 0 || ret == -1) {
 //        fprintf(stderr,"Couldn't send finger command to wxsvr\n");

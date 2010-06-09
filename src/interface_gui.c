@@ -1169,7 +1169,7 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("IGPUPCF004"));
         igate_label = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
@@ -4554,7 +4554,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("IGPUPCF004"));
         igate_label = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
@@ -7469,7 +7469,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
 
-        xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("IGPUPCF004"));
         igate_label = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,

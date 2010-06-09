@@ -5180,18 +5180,18 @@ int net_init(int port) {
                         break;
 
                     case 0:
-                        xastir_snprintf(st, sizeof(st), langcode("BBARSTA021"));
+                        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA021"));
                         statusline(st,1);               // Net Connection Failed!
                         ok = -1;
                         break;
 
                     case -1:
-                        xastir_snprintf(st, sizeof(st), langcode("BBARSTA022"));
+                        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA022"));
                         statusline(st,1);               // Could not bind socket
                         break;
 
                     case -2:
-                        xastir_snprintf(st, sizeof(st), langcode("BBARSTA018"));
+                        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
                         statusline(st,1);               // Net Connection timed out
                         ok = 0;
                         break;
@@ -5201,7 +5201,7 @@ int net_init(int port) {
                         /*break;*/
                 }
             } else { /* host lookup time out */
-                xastir_snprintf(st, sizeof(st), langcode("BBARSTA018"));
+                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
                 statusline(st,1);                       // Net Connection timed out
                 port_data[port].status = DEVICE_ERROR;
                 if (debug_level & 2)
@@ -5213,7 +5213,7 @@ int net_init(int port) {
                 ok = 0;
             }
         } else {    /* Host ip look up failure (no ip address for that host) */
-            xastir_snprintf(st, sizeof(st), langcode("BBARSTA023"));
+            xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA023"));
             statusline(st,1);                           // No IP for Host
             port_data[port].status = DEVICE_ERROR;
             if (debug_level & 2)
@@ -5224,7 +5224,7 @@ int net_init(int port) {
         }
     }
     else {    /* Host look up failure (no host by that name) */
-        xastir_snprintf(st, sizeof(st), langcode("BBARSTA023"));
+        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA023"));
         statusline(st,1);                               // No IP for Host
         port_data[port].status = DEVICE_ERROR;
         if (debug_level & 2)

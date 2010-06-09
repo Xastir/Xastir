@@ -349,7 +349,7 @@ void draw_WMS_map (Widget w,
 //        "http://mesonet.tamu.edu/cgi-bin/p-warn?SERVICE=WMS&VERSION=1.1.1&REQUEST=getmap");
 
 
-    xastir_snprintf(WMStmp, sizeof(WMStmp), URL);
+    xastir_snprintf(WMStmp, sizeof(WMStmp), "%s", URL);
     strncat(WMStmp, "&REQUEST=getmap", sizeof(WMStmp) - 1 - strlen(WMStmp));
     strncat(WMStmp, "&EXCEPTIONS=INIMAGE", sizeof(WMStmp) - 1 - strlen(WMStmp));
 
@@ -462,7 +462,7 @@ void draw_WMS_map (Widget w,
     strncat (WMStmp, tmpstr, sizeof(WMStmp) - 1 - strlen(WMStmp)); */
 
 
-    xastir_snprintf(fileimg, sizeof(fileimg), WMStmp);
+    xastir_snprintf(fileimg, sizeof(fileimg), "%s", WMStmp);
 
     if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);

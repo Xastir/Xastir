@@ -560,7 +560,7 @@ void output_igate_net(char *line, int port, int third_party) {
                     "REJECT: Packet was gated before or shouldn't be gated!\n");
                 log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
-                fprintf(stderr,temp);
+                fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -589,7 +589,7 @@ void output_igate_net(char *line, int port, int third_party) {
                 "REJECT: Third party traffic!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -618,7 +618,7 @@ void output_igate_net(char *line, int port, int third_party) {
                 "REJECT: General Query!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -650,7 +650,7 @@ void output_igate_net(char *line, int port, int third_party) {
                 "REJECT: From my call!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -704,7 +704,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                 port);
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -816,7 +816,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                 sizeof(temp),
                 "REJECT: NOGATE found in path or shouldn't be gated!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -842,7 +842,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                 sizeof(temp),
                 "REJECT: General Query!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -911,7 +911,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                     sizeof(temp),
                     "REJECT: Unregistered net user!\n");
                 log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-                fprintf(stderr,temp);
+                fprintf(stderr, "%s", temp);
             }
             return;
         }
@@ -960,7 +960,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                 sizeof(temp),
                 "REJECT: RF->RF talk!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -1026,7 +1026,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
                         if (debug_level & 1024)
-                            fprintf(stderr,temp);
+                            fprintf(stderr, "%s", temp);
 
                         // ok write this data out to the RF port
 
@@ -1056,7 +1056,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                 "REJECT: NET->RF on port [%d]!\n",
                                 x);
                             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-                            fprintf(stderr,temp);
+                            fprintf(stderr, "%s", temp);
                         }
                     }
 
@@ -1253,7 +1253,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: Unregistered net user!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -1275,7 +1275,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: NOGATE found in path!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -1294,7 +1294,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: No nws-stations.txt file!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return;
     }
@@ -1321,7 +1321,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: No matching station in nws-stations.txt file!\n");
             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-            fprintf(stderr,temp);
+            fprintf(stderr, "%s", temp);
         }
         return; // Match for station not found in file
     }
@@ -1382,7 +1382,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
 
                         if (debug_level & 1024)
-                            fprintf(stderr,temp);
+                            fprintf(stderr, "%s", temp);
 
                         // ok write this data out to the RF port
 
@@ -1410,7 +1410,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                 "REJECT: NET->RF on port [%d]!\n",
                                 x);
                             log_data( get_user_base_dir(LOGFILE_IGATE), temp );
-                            fprintf(stderr,temp);
+                            fprintf(stderr, "%s", temp);
                         }
                     }
 

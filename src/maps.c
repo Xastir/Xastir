@@ -3992,7 +3992,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
-    xastir_snprintf(temp, sizeof(temp), langcode("PRINT0012") );
+    xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0012") );
     statusline(temp,1);       // Dumping image to file...
 
     chdir(get_user_base_dir("tmp"));
@@ -4024,7 +4024,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
         if (debug_level & 512)
             fprintf(stderr,"Width: %ld\tHeight: %ld\n", screen_width, screen_height);
 
-        xastir_snprintf(temp, sizeof(temp), langcode("PRINT0013") );
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0013") );
         statusline(temp,1);       // Converting to Postscript...
 
 
@@ -4095,7 +4095,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
             fprintf(stderr,"  Done printing.\n");
     }
 
-    xastir_snprintf(temp, sizeof(temp), langcode("PRINT0014") );
+    xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0014") );
     statusline(temp,1);       // Finished creating print file.
 
     //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );
@@ -4151,7 +4151,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
-    xastir_snprintf(temp, sizeof(temp), langcode("PRINT0012") );
+    xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0012") );
     statusline(temp,1);       // Dumping image to file...
 
     chdir(get_user_base_dir("tmp"));
@@ -4256,7 +4256,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
             xastir_snprintf(density, sizeof(density), "-density %dx%d", print_resolution,
                     print_resolution );
 
-            xastir_snprintf(temp, sizeof(temp), langcode("PRINT0013") );
+            xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0013") );
             statusline(temp,1);       // Converting to Postscript...
 
 
@@ -4348,7 +4348,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
             fprintf(stderr,"  Done printing.\n");
     }
 
-    xastir_snprintf(temp, sizeof(temp), langcode("PRINT0014") );
+    xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0014") );
     statusline(temp,1);       // Finished creating print file.
 
     //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );

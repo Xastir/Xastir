@@ -2505,7 +2505,7 @@ void draw_shapefile_map (Widget w,
 
                         // Fill in the label we'll use later
                         xastir_snprintf(gps_label,
-                            sizeof(gps_label),
+                            sizeof(gps_label), "%s",
                             filename);
 
                         // Knock off the "_Color.shp" portion of the

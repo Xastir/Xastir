@@ -1480,6 +1480,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
             case 0: // Metric
                 xastir_snprintf(temp_label_string,
                     sizeof(temp_label_string),
+                    "%s",
                     langcode("SMARTB004") );
                 break;
             case 1: // English
@@ -1487,6 +1488,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
             default:
                 xastir_snprintf(temp_label_string,
                     sizeof(temp_label_string),
+                    "%s",
                     langcode("SMARTB003") );
                 break;
         }
@@ -1574,6 +1576,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
             case 0: // Metric
                 xastir_snprintf(temp_label_string,
                     sizeof(temp_label_string),
+                    "%s",
                     langcode("SMARTB007") );
                 break;
             case 1: // English
@@ -1581,6 +1584,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
             default:
                 xastir_snprintf(temp_label_string,
                     sizeof(temp_label_string),
+                    "%s",
                     langcode("SMARTB006") );
                 break;
         }
@@ -12095,6 +12099,7 @@ fprintf(stderr,"main, initializing connections");
                             // match on it against "my_callsign"
                             xastir_snprintf(temp_call,
                                 sizeof(temp_call),
+                                "%s",
                                 (char *)(line+line_offset));
                             if (strchr(temp_call,'>')) {
                                 *strchr(temp_call,'>') = '\0';
@@ -12667,6 +12672,7 @@ static int pid_file_check(int hold){
     char pidfile_name[MAX_FILENAME];
 
     xastir_snprintf(pidfile_name, sizeof(pidfile_name),
+        "%s",
         get_user_base_dir("xastir.pid")); 
 
     if (filethere(pidfile_name)){
@@ -22272,6 +22278,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     xastir_snprintf(predefined_object_definition_filename,
         sizeof(predefined_object_definition_filename),
+        "%s",
         temp = XmStringUnparse(load_predefined_cb_selection,
             NULL,
             XmCHARSET_TEXT,
@@ -27327,16 +27334,17 @@ int main(int argc, char *argv[], char *envp[]) {
         switch (ag) {
             
             case 'c': 
-            	if (optarg) {
-	                xastir_snprintf(xa_config_dir,sizeof(xa_config_dir),optarg);
-        	        fprintf(stderr,"Using config dir %s\n",xa_config_dir);
-            	}
+                if (optarg) {
+                    xastir_snprintf(xa_config_dir,sizeof(xa_config_dir),"%s", optarg);
+                    fprintf(stderr,"Using config dir %s\n",xa_config_dir);
+                }
                 break;
 
             case 'f':   // Track callsign
                 if (optarg) {
                     xastir_snprintf(temp_tracking_station_call,
                         sizeof(temp_tracking_station_call),
+                        "%s",
                         optarg);
                     fprintf(stderr,
                         "Tracking callsign %s\n",

@@ -510,7 +510,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 p_station->probability_max,
                 comment);
         }
-        xastir_snprintf(comment,sizeof(comment),comment2);
+        xastir_snprintf(comment,sizeof(comment), "%s", comment2);
     }
 
 
@@ -2370,11 +2370,11 @@ void Set_CAD_object_parameters (Widget widget,
     // set label, comment, and probability for area
     xastir_snprintf(target_object->label,
                 sizeof(target_object->label),
-                XmTextGetString(cad_label_data)
+                "%s", XmTextGetString(cad_label_data)
                 );
     xastir_snprintf(target_object->comment,
                 sizeof(target_object->comment),
-                XmTextGetString(cad_comment_data)
+                "%s", XmTextGetString(cad_comment_data)
                 );
     // Is more error checking needed?  atof appears to correctly handle
     // empty input, reasonable probability values, and text (0.00).  
@@ -6864,7 +6864,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                 get_data_base_dir("config"),
 #endif  // OBJECT_DEF_FILE_USER_BASE
                 predefined_object_definition_file);
-            fprintf(stderr,error_correct_location);
+            fprintf(stderr, "%s", error_correct_location);
             while (!feof(fp_file)) {
                 // read lines to end of file
                 (void)get_line(fp_file, line, line_max_length);
@@ -6881,7 +6881,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                     if (strcmp("NAME",variable)==0) {
                         value = strtok(NULL,"\t\r\n");
                         if (value != NULL) {
-                            xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call),value);
+                            xastir_snprintf(predefinedObjects[j].call,sizeof(predefinedObjects[j].call), "%s", value);
                             // by default, set data to an empty string, allowing DATA to be ommitted
                             xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
                             object_read_ok ++;
@@ -6890,14 +6890,14 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                     if (strcmp("PAGE",variable)==0) {
                         value = strtok(NULL,"\t\r\n");
                         if (value != NULL) {
-                            xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page),value);
+                            xastir_snprintf(predefinedObjects[j].page,sizeof(predefinedObjects[j].page), "%s", value);
                             object_read_ok ++;
                         }
                     }
                     if (strcmp("SYMBOL",variable)==0) {
                         value = strtok(NULL,"\t\r\n");
                         if (value != NULL) {
-                            xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol),value);
+                            xastir_snprintf(predefinedObjects[j].symbol,sizeof(predefinedObjects[j].symbol), "%s", value);
                             object_read_ok ++;
                         }
                     }
@@ -6906,13 +6906,13 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                         if (value == NULL || strcmp(value,"NULL")==0) {
                              xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),"%c",'\0');
                         } else {
-                             xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data),value);
+                             xastir_snprintf(predefinedObjects[j].data,sizeof(predefinedObjects[j].data), "%s", value);
                         }
                     }
                     if (strcmp("MENU",variable)==0) {
                         value = strtok(NULL,"\t\r\n");
                         if (value != NULL) {
-                             xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call),value);
+                             xastir_snprintf(predefinedObjects[j].menu_call,sizeof(predefinedObjects[j].menu_call), "%s", value);
                             object_read_ok ++;
                         }
                     }
@@ -6961,7 +6961,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
 #else   // OBJECT_DEF_FILE_USER_BASE
                 get_data_base_dir("config"));
 #endif  // OBJECT_DEF_FILE_USER_BASE
-            fprintf(stderr,error_correct_location);
+            fprintf(stderr, "%s", error_correct_location);
         }
     }
 
@@ -7140,9 +7140,9 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     i = (int)clientData;
     if (i > -1) {
         if (i <= number_of_predefined_objects) {
-            xastir_snprintf(page,sizeof(page),predefinedObjects[i].page);
-            xastir_snprintf(symbol,sizeof(symbol),predefinedObjects[i].symbol);
-            xastir_snprintf(call, sizeof(call), predefinedObjects[i].call);
+            xastir_snprintf(page,sizeof(page), "%s", predefinedObjects[i].page);
+            xastir_snprintf(symbol,sizeof(symbol), "%s", predefinedObjects[i].symbol);
+            xastir_snprintf(call, sizeof(call), "%s", predefinedObjects[i].call);
             xastir_snprintf(symbol_plus, sizeof(symbol_plus), "%s%s",symbol,predefinedObjects[i].data);
         }
     }
@@ -7322,7 +7322,7 @@ fprintf(stderr, "No more iterations left\n");
 
     xastir_snprintf(origin,
         sizeof(origin),
-        my_callsign);
+        "%s", my_callsign);
     xastir_snprintf(time, sizeof(time), "%02d%02d%02d", 
         get_hours(), 
         get_minutes(), 

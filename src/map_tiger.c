@@ -489,7 +489,7 @@ void draw_tiger_map (Widget w,
     strncat (tigertmp, tmpstr, sizeof(tigertmp) - 1 - strlen(tigertmp));
     xastir_snprintf(tmpstr, sizeof(tmpstr), "iwd=%i\046iht=%i", tp[1].img_x + 1, tp[1].img_y + 1);
     strncat (tigertmp, tmpstr, sizeof(tigertmp) - 1 - strlen(tigertmp));
-    xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
+    xastir_snprintf(fileimg, sizeof(fileimg), "%s", tigertmp);
 
     if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);

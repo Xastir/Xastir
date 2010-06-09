@@ -4723,7 +4723,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         if (strlen(weather->wx_rain) > 0 || strlen(weather->wx_prec_00) > 0
                 || strlen(weather->wx_prec_24) > 0) {
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI036"));
+            xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI036"));
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
         }
@@ -4883,14 +4883,14 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         pos += strlen(temp);
     }
     else {
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI007"));
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI007"));
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
     }
 
     switch(p_station->data_via) {
         case('L'):
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI008"));
+            xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI008"));
             break;
 
         case('T'):
@@ -4902,7 +4902,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             break;
 
         case('F'):
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI011"));
+            xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI011"));
             break;
 
         case(DATA_VIA_DATABASE):
@@ -4910,14 +4910,14 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             break;
 
         default:
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI012"));
+            xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI012"));
             break;
     }
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
     if (p_station->newest_trackpoint != NULL) {
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI013"));
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI013"));
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
     }
@@ -4929,7 +4929,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     // Callsign check here includes checking SSID
 //    if (is_my_call(p_station->call_sign,1)) {
     if ( is_my_station(p_station) ) {
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI055"));
+        xastir_snprintf(temp, sizeof(temp), "%s", langcode("WPUPSTI055"));
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
         for (i=0;i<6;i++) {
