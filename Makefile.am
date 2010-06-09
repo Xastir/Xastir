@@ -20,6 +20,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 terraserver.geo \
         terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
         terraserver-topo.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
+        OpenStreetMaps.geo \
         CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse \
         COPYING COPYING.LIB.LESSTIF AUTHORS
 
@@ -43,7 +44,8 @@ onlinedir=${pkgdatadir}/maps/Online
 online_DATA=terraserver.geo terraserver-topo.geo tigermap.geo \
         terraserver-reflectivity.geo terraserver-urban.geo \
         USRadar.geo CanadaTopo250k.geo CanadaTopo50k.geo \
-        TXRadar.geo WMSRadar.geo
+        TXRadar.geo WMSRadar.geo \
+        OpenStreetMaps.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
