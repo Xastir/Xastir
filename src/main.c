@@ -986,7 +986,7 @@ int interrupt_drawing_now = 0;  // Flag used to interrupt map drawing
 int request_resize = 0;         // Flag used to request a resize operation
 int request_new_image = 0;      // Flag used to request a create_image operation
 //time_t last_input_event = (time_t)0;  // Time of last mouse/keyboard event
-extern void new_image(Widget da);
+void new_image(Widget da);
 
 
 typedef struct XastirGlobal {
@@ -1031,7 +1031,7 @@ float d_screen_distance;     // Diag screen distance
 float x_screen_distance;     // x screen distance
 //---------------------------------------------------------------------------------------------
 
-int OSMserver_flag = 0;     // used to trigger rescaling to OSM levels, set in map_geo.c
+int use_OSM_levels = 0;         // OpenStreetMap uses distinct levels rather than a continuous scale
 
 char user_dir[1000];            /* user directory file */
 int delay_time;                 /* used to delay display data */
@@ -12970,6 +12970,16 @@ void new_image(Widget da) {
         center_longitude,
         center_latitude);
 
+    if (use_OSM_levels == 1) {
+        if (debug_level & 512) {
+            fprintf(stderr,"new_image(): scale - x:%ld\ty:%ld\n",scale_x,scale_y);
+        }
+        adj_to_OSM_level(&scale_x, &scale_y);
+        if (debug_level & 512) {
+            fprintf(stderr,"new_image(): scaled for OSM- x:%ld\ty:%ld\n\n",scale_x,scale_y);
+        }
+    }
+
     if (create_image(da)) {
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
@@ -13035,10 +13045,13 @@ void check_range(void) {
         fprintf(stderr,"checkrange- x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
     }
 
-    if (OSMserver_flag == 1) {
+    if (use_OSM_levels == 1) {
+        if (debug_level & 512) {
+            fprintf(stderr,"checkrange(): scale - x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
+        }
         adj_to_OSM_level(&new_scale_x, &new_scale_y);
         if (debug_level & 512) {
-            fprintf(stderr,"checkrange, rescaled for OSM- x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
+            fprintf(stderr,"checkrange(): scaled for OSM- x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
         }
     }
 
@@ -19788,6 +19801,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
 
+    use_OSM_levels = 0;
 
     // reset map_refresh in case we no longer have a refreshed map selected
     map_refresh_interval = 0;
@@ -19845,6 +19859,11 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
             // file.
             if (ptr->selected) {
                 fprintf(f,"%s\n",ptr->filename);
+                if (   strstr(ptr->filename, ".osm")
+                    || strstr(ptr->filename, ".OSM")
+                    || strstr(ptr->filename, ".Osm")) {
+                    use_OSM_levels = 1;
+                }
             }
             ptr = ptr->next;
         }
@@ -19884,6 +19903,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
 
+    use_OSM_levels = 0;
 
     // reset map_refresh in case we no longer have a refreshed map selected
     map_refresh_interval = 0;
@@ -19941,6 +19961,11 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
             // file.
             if (ptr->selected) {
                 fprintf(f,"%s\n",ptr->filename);
+                if (   strstr(ptr->filename, ".osm")
+                    || strstr(ptr->filename, ".OSM")
+                    || strstr(ptr->filename, ".Osm")) {
+                    use_OSM_levels = 1;
+                }
             }
             ptr = ptr->next;
         }
@@ -20292,6 +20317,8 @@ void map_chooser_init (void) {
 
     busy_cursor(appshell);
 
+    use_OSM_levels = 0;
+
     // First run through our in-memory map index, clearing all of
     // the selected bits.
     current = map_index_head;
@@ -20318,6 +20345,11 @@ void map_chooser_init (void) {
 
                 if (strcmp(temp,current->filename) == 0) {
                     current->selected = 1;
+                    if (   strstr(current->filename, ".osm")
+                        || strstr(current->filename, ".OSM")
+                        || strstr(current->filename, ".Osm")) {
+                        use_OSM_levels = 1;
+                    }
                     done++;
                 }
                 current = current->next;

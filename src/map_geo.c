@@ -643,7 +643,7 @@ void draw_geo_image_map (Widget w,
     int terraserver_flag = 0;   // U.S. satellite images/topo/reflectivity/urban
                                 // areas via terraserver
     int tigerserver_flag = 0;   // U.S. Street maps via census.gov
-    extern int OSMserver_flag;  // OpenStreetMaps StaticMap server, defined in main.c
+    int OSMserver_flag = 0;     // OpenStreetMaps StaticMap server
     int toporama_flag = 0;      // Canadian topo's from mm.aprs.net (originally from Toporama)
     int WMSserver_flag = 0;     // WMS server
     char map_it[MAX_FILENAME];
