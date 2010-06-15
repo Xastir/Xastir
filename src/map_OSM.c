@@ -244,7 +244,7 @@ set_dangerous("map_OSM: map_cache_fileid");
             "%s/map_%s.%s",
             get_user_base_dir("map_cache"),
             cache_file_id,
-            "gif");
+            "png");
         free(cache_file_id);
 clear_dangerous();
 
@@ -254,7 +254,7 @@ clear_dangerous();
         MAX_FILENAME,               // hardcoded to avoid sizeof()
         "%s/map.%s",
          get_user_base_dir("tmp"),
-        "gif");
+        "png");
 
 #endif  // USE_MAP_CACHE
 
@@ -271,7 +271,7 @@ clear_dangerous();
     }
 
     // For debugging the MagickError/MagickWarning segfaults.
-    //system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
+    //system("cat /dev/null >/var/tmp/xastir_hacker_map.png");
    
  
 #ifdef USE_MAP_CACHE
@@ -309,6 +309,8 @@ clear_dangerous();
 void draw_OSM_map (Widget w,
         char *filenm,
         int destination_pixmap,
+        char *url,
+        char *style,
         int nocache) {  // For future implementation of a "refresh cached map" option
     char file[MAX_FILENAME];        // Complete path/name of image file
     char short_filenm[MAX_FILENAME];
@@ -365,7 +367,7 @@ void draw_OSM_map (Widget w,
     double long_center = 0;
 
     char map_it[MAX_FILENAME];
-    char tmpstr[100];
+    char tmpstr[1001];
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
 
@@ -423,21 +425,34 @@ void draw_OSM_map (Widget w,
         return; // Done indexing this file
     }
 
+    // calculate the OSM zoom level (z) that is nearest the xastir scale
+    // OSM units are 360 / (2^(z+8)) per pixel
+    double circumference = 360.0*3600.0*100.0;  // Xastir Units, 1/100 sec / pixel
+    double zf = (log(circumference / scale_x) / log(2)) - 8.0; 
+    int z = (int)(zf + 0.5);
 
-    // Tiepoint for upper left screen corner
+    // OSM levels run from 0 to 18. Not all levels are available for all views.
+    if (z < 0) {
+      z = 0;
+    }
+    if (z > 18) {
+      z = 18;
+    }
+
+
+    /*
+     * Calculate the image size to request. The request will be for WxH at lat/long.
+     * In order to reuse the geo/tiger scaling code written below, we must request an
+     * image from the OSM server with the coordinates of the image corners matching the
+     * coordinates of the Xastir display.
+     */
+
+    // Tiepoint for upper left image corner
     //
-    tp[0].img_x = 0;                // Pixel Coordinates
-    tp[0].img_y = 0;                // Pixel Coordinates
+    tp[0].img_x = 0;                // Pixel Coordinates for image
+    tp[0].img_y = 0;                // Pixel Coordinates for image
     tp[0].x_long = NW_corner_longitude;   // Xastir Coordinates
     tp[0].y_lat  = NW_corner_latitude;    // Xastir Coordinates
-
-    // Tiepoint for lower right screen corner
-    //
-    tp[1].img_x =  screen_width - 1; // Pixel Coordinates
-    tp[1].img_y = screen_height - 1; // Pixel Coordinates 
-
-    tp[1].x_long = SE_corner_longitude; // Xastir Coordinates
-    tp[1].y_lat  =  SE_corner_latitude; // Xastir Coordinates
 
     left = (double)((NW_corner_longitude - 64800000l )/360000.0);   // Lat/long Coordinates
     top = (double)(-((NW_corner_latitude - 32400000l )/360000.0));  // Lat/long Coordinates
@@ -447,11 +462,27 @@ void draw_OSM_map (Widget w,
     map_width = right - left;   // Lat/long Coordinates
     map_height = top - bottom;  // Lat/long Coordinates
 
-    geo_image_width  = screen_width;
-    geo_image_height = screen_height;
-
     long_center = (left + right)/2.0l;
     lat_center  = (top + bottom)/2.0l;
+
+    geo_image_width = (long)((map_width * (double)(2<<(z+7))) / 360.0);
+
+    // Adjust vertical scale for latitude of the center of the image.
+    // This is a simplified version of the projection that is used when the OSM tiles
+    // are generated. The vertical scaling for the OSM tiles is 'correct' only for the
+    // center of the tile. Note that a further error is introduced here since (in
+    // general) the map we requested is composed of multiple tiles, but this
+    // calculation uses only a single center point to calculate the scaling for a,
+    // typically, larger image.
+    geo_image_height = (long)(((map_height * (double)(2<<(z+7))) / 360.0) * (1.0 / cos(-1.0 * lat_center * (M_PI/180.0)))) ;
+
+    // Tiepoint for lower right image corner
+    //
+    tp[1].img_x = geo_image_width - 1; // Pixel Coordinates
+    tp[1].img_y = geo_image_height - 1; // Pixel Coordinates 
+    tp[1].x_long = SE_corner_longitude; // Xastir Coordinates
+    tp[1].y_lat  = SE_corner_latitude; // Xastir Coordinates
+
 
 /*
  * Query format to the StaticMap
@@ -461,24 +492,28 @@ void draw_OSM_map (Widget w,
  *     w=WWW&h=HHH&layer=osmarender&mode=Export&att=none&show=1
  */
 
-    xastir_snprintf(OSMtmp, sizeof(OSMtmp), "http://ojw.dev.openstreetmap.org/StaticMap/?layer=osmarender&mode=Export&att=text&show=1&");
+    if (url[0] != '\0') {
+        xastir_snprintf(OSMtmp, sizeof(OSMtmp), "%s", url);
+    } else {
+        xastir_snprintf(OSMtmp, sizeof(OSMtmp), "http://ojw.dev.openstreetmap.org/StaticMap/");
+    }
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "?mode=Export&att=text&show=1&");
+    strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
+
+    if (style[0] != '\0') {
+        xastir_snprintf(tmpstr, sizeof(tmpstr), "%s", style);
+        strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
+    } else {
+        xastir_snprintf(tmpstr, sizeof(tmpstr), "layer=osmarender&");
+        strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
+    }
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);    
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
 
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "w=%li\046h=%li\046", screen_width, screen_height);
+    //xastir_snprintf(tmpstr, sizeof(tmpstr), "w=%li\046h=%li\046", screen_width, screen_height);
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "w=%i\046h=%i\046", geo_image_width, geo_image_height);
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
-
-    // calculate the OSM level that is nearest the xastir scale
-    double circumference = 360.0*3600.0*100.0;
-    double zf = (log(circumference / scale_x) / log(2)) - 8.0;
-    int z = (int)(zf + 0.5);
-    if (z < 1) {
-      z = 1;
-    }
-    if (z > 18) {
-      z = 18;
-    }
 
     xastir_snprintf(tmpstr, sizeof(tmpstr), "z=%d", z);
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
@@ -487,9 +522,13 @@ void draw_OSM_map (Widget w,
 
     if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);
+          fprintf(stderr,"OSM left is  %f\n", long_center - ((double)(geo_image_width / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"right side is %f\n", right);
+          fprintf(stderr,"OSM right is  %f\n", long_center + ((double)(geo_image_width / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"top  is %f\n", top);
+          fprintf(stderr,"OSM top is %f\n", lat_center + ((double)(geo_image_height / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"bottom is %f\n", bottom);
+          fprintf(stderr,"OSM bottom is %f\n", lat_center - ((double)(geo_image_height / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"lat center is %f\n", lat_center);
           fprintf(stderr,"long center is %f\n", long_center);
           fprintf(stderr,"screen width is %li\n", screen_width);

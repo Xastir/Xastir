@@ -20,8 +20,13 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 terraserver.geo \
         terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
         terraserver-topo.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
-        OpenStreetMaps.osm \
         CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse \
+        OSM_cloudmade_1.geo OSM_cloudmade_1.osm OSM_cloudmade_2.geo \
+        OSM_cloudmade_2.osm OSM_cloudmade_5.geo OSM_cloudmade_5.osm \
+        OSM_cloudmade_998.geo OSM_cloudmade_998.osm OSM_cloudmade_999.geo \
+        OSM_cloudmade_999.osm OSM_cycle.geo OSM_cycle.osm \
+        OSM_mapnik.geo OSM_mapnik.osm OSM_osmarender.geo \
+        OSM_osmarender.osm OSM_skiing.geo OSM_skiing.osm \
         COPYING COPYING.LIB.LESSTIF AUTHORS
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
@@ -45,7 +50,12 @@ online_DATA=terraserver.geo terraserver-topo.geo tigermap.geo \
         terraserver-reflectivity.geo terraserver-urban.geo \
         USRadar.geo CanadaTopo250k.geo CanadaTopo50k.geo \
         TXRadar.geo WMSRadar.geo \
-        OpenStreetMaps.osm
+        OSM_cloudmade_1.geo OSM_cloudmade_1.osm OSM_cloudmade_2.geo \
+        OSM_cloudmade_2.osm OSM_cloudmade_5.geo OSM_cloudmade_5.osm \
+        OSM_cloudmade_998.geo OSM_cloudmade_998.osm OSM_cloudmade_999.geo \
+        OSM_cloudmade_999.osm OSM_cycle.geo OSM_cycle.osm \
+        OSM_mapnik.geo OSM_mapnik.osm OSM_osmarender.geo \
+        OSM_osmarender.osm OSM_skiing.geo OSM_skiing.osm
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder

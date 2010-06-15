@@ -22,6 +22,9 @@
  * Look at the README for more information on the program.
  *
  */
+#define MAX_OSMSTYLE 1000  // max characters in the a OSM style argument
+#define MAX_OSM_URL  1000  // max characters for a OSM URL
+
 void adj_to_OSM_level(
         long *new_scale_x,
         long *new_scale_y);
@@ -29,6 +32,8 @@ void adj_to_OSM_level(
 void draw_OSM_map (Widget w,
         char *filenm,
         int destination_pixmap,
+        char *url,
+        char *style,
         int nocache);
 
 
