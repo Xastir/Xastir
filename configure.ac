@@ -217,6 +217,20 @@ fi
 
 
 
+# Test for libgps, used for accessing GPSD daemon
+use_libgps=no
+AC_CHECK_HEADER(gps.h, GPS_INC="yes", GPS_INC="no")
+if test "${GPS_INC}" = "yes"; then
+  AC_CHECK_LIB([gps], [gps_open],
+               [use_libgps="yes"
+                LIBS="${LIBS} -lgps"
+                AC_DEFINE(HAVE_LIBGPS, ,
+                          [Define to 1 if your `libgps' library has gps_open.])
+                ])
+fi
+
+
+
 # JMT - XXX - why is this here?
 AC_CHECK_LIB(compat, main, 
     [LIBCOMPAT="-lcompat"
@@ -929,6 +943,7 @@ echo "  GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
 echo "  Festival (Text-to-speech) .............. : $use_festival"
 echo "  GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
 echo "  GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
+echo "  GPSD (Shared/Networked/USB GPS) ........ : $use_libgps"
 
 if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
   echo

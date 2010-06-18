@@ -26,6 +26,64 @@
  AX.25 Parts adopted from: aprs_tty.c by Henk de Groot - PE1DNN
 */
 
+
+
+
+
+/* GPSD NOTES:  GPSD v2.91 (2010) dropped support for the API we
+ * have been using since about mid-2004.  Their web pages now talk
+ * about an entirely different API using "libgps" which we'll have
+ * to switch to.  Their "Future" web page talks about some
+ * additional changes to that API we need to be aware of so that we
+ * don't program ourselves into a corner and have GPSD break on us
+ * again in the near future.  To that end, here are the calls that
+ * we may be using soon:
+ *
+ *   gps_open()
+ *   gps_open_r()  # Changing name to gps_open() later.
+ *   gps_stream()  # Set watch policy.  Use instead of gps_send()
+ *   gps_waiting() # Non-blocking check for data.
+ *   gps_poll()    # Changing name to gps_read() later, blocking
+ *                 # read.
+ *   gps_close()
+ *
+ * There will be a new non-blocking gps_poll() later as well.
+ *
+ * Do NOT use gps_set_raw_hook(), gps_send(), or the deprecated
+ * thread calls.
+ * Consider using gps_open_r() for now and switching to gps_open()
+ * later when gps_open_r() supercedes it and changes its name.
+ *
+ *   gps_open_r();
+ *   gps_stream();
+ *   while (1) {
+ *     if (gps_waiting()) {
+ *       gps_poll();
+ *     }
+ *   }
+ *   gps_close();
+ *
+ * We'll have to find all of the "case DEVICE_NET_GPSD:" instances
+ * and separate from other socket code to implement the new GPSD
+ * client protocol.
+ *
+ * Note that we have GPSD_API_MAJOR_VERSION and
+ * GPSD_API_MINOR_VERSION defines available in <gps.h> to key from
+ * if we need to change our code to fit various libusb versions.
+ * The tricky part at first will be figuring out whether we have
+ * libusb at all, and whether to try a normal socket connection to
+ * GPSD/sending an 'R' command as we have historically.  If libgps
+ * works for both old and new gpsd then we can skip the old method
+ * entirely.
+ *
+ * We now define "HAVE_LIBGPS" in config.h if we have <gps.h>
+ * installed and can run gps_open() in libgps.
+ */
+
+
+
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif  // HAVE_CONFIG_H
