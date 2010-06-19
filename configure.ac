@@ -943,7 +943,7 @@ echo "  GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
 echo "  Festival (Text-to-speech) .............. : $use_festival"
 echo "  GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
 echo "  GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
-echo "  GPSD Client (libgps) ................... : $use_libgps"
+#echo "  GPSD Client (libgps) ................... : $use_libgps"
 
 if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
   echo
