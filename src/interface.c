@@ -5018,6 +5018,7 @@ static void* net_connect_thread(void *arg) {
 //**************************************************************
 int net_init(int port) {
     int ok;
+    int have_address = 0;
     char ip_addrs[400];
     char ip_addr[40];
     char st[200];
@@ -5025,7 +5026,8 @@ int net_init(int port) {
     int stat;
     int wait_on_connect;
     time_t wait_time;
-
+    struct in_addr ip_test;
+ 
     if (begin_critical_section(&port_data_lock, "interface.c:net_init(1)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
@@ -5043,21 +5045,47 @@ int net_init(int port) {
 
     ok = -1;
 
-    xastir_snprintf(st, sizeof(st), langcode("BBARSTA019"), port_data[port].device_host_name);
-    statusline(st,1);   // Looking up host
+    // Check whether we were passed an IPv4/IPv6 address or a
+    // hostname.  If an address, skip the host_lookup.
+    if (inet_aton(port_data[port].device_host_name, &ip_test)) {
+        // We have an IPv4 or IPv6 address already.  Set a flag so
+        // that the code below can directly use it.
+        have_address = 1;
+    }
 
-    // We currently give 13 seconds to look up the hostname
-    (void)host_lookup(port_data[port].device_host_name,
-        ip_addrs,
-        sizeof(ip_addrs),
-        13);
+    if (!have_address) {
+        xastir_snprintf(st, sizeof(st), langcode("BBARSTA019"), port_data[port].device_host_name);
+        statusline(st,1);   // Looking up host
 
-    if (strcmp(ip_addrs,"NOIP") != 0) {
-        if (strcmp(ip_addrs,"NOHOST") != 0) {
-            if (strcmp(ip_addrs,"TIMEOUT") != 0) {    // We found an IP address
-                /* get the first ip */
-                if (1 != sscanf(ip_addrs,"%39s",ip_addr)) {
-                    fprintf(stderr,"net_init: sscanf parsing error\n");
+        //fprintf(stderr,"Hostname Lookup\n");
+
+        // We currently give 13 seconds to look up the hostname
+        (void)host_lookup(port_data[port].device_host_name,
+            ip_addrs,
+            sizeof(ip_addrs),
+            13);
+    }
+    else {
+        //fprintf(stderr,"Skipping Hostname Lookup\n");
+    }
+
+    if (have_address || strcmp(ip_addrs,"NOIP") != 0) {
+        if (have_address || strcmp(ip_addrs,"NOHOST") != 0) {
+            if (have_address || strcmp(ip_addrs,"TIMEOUT") != 0) {    // We found an IP address
+
+                if (have_address) {
+                    // Stuff the address passed to us into our
+                    // working variable.
+                    xastir_snprintf(ip_addr,
+                        sizeof(ip_addr),
+                        "%s",
+                        port_data[port].device_host_name);
+                }
+                else {
+                    // Get the first IP address from the lookup.
+                    if (1 != sscanf(ip_addrs,"%39s",ip_addr)) {
+                        fprintf(stderr,"net_init: sscanf parsing error\n");
+                    }
                 }
                 if (debug_level & 2)
                     fprintf(stderr,"IP Address: %s\n",ip_addr);
