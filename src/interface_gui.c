@@ -3996,7 +3996,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
         if (config_type==0) {
             /* first time port */
             XmTextFieldSetString(NGPS_host_name_data,"localhost");
-            XmTextFieldSetString(NGPS_host_port_data,"1234");
+            XmTextFieldSetString(NGPS_host_port_data,"2947");
             XmTextFieldSetString(NGPS_comment,"");
             XmToggleButtonSetState(NGPS_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(NGPS_host_reconnect_data,TRUE,FALSE);
