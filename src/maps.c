@@ -131,8 +131,6 @@
 #include "color.h"
 #include "xa_config.h"
 
-#include "map_OSM.h"
-
 // Must be last include file
 #include "leak_detection.h"
 
@@ -204,8 +202,6 @@ int npoints;    /* number of points in a line */
 
 float raster_map_intensity = 0.65;    // Raster map color intensity, set from Maps->Map Intensity
 float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma correction, set from Maps->Adjust Gamma
-
-extern int use_OSM_levels;      // defined in main.c, controls the use of continous scale or OpenStreetMap levels
 
 // Storage for the index file timestamp
 time_t map_index_timestamp;
@@ -6786,10 +6782,7 @@ void index_update_xastir(char *filename,
  
             if (       strstr(filename,".geo")
                     || strstr(filename,".GEO")
-                    || strstr(filename,".Geo")
-                    || strstr(filename,".osm")
-                    || strstr(filename,".OSM")
-                    || strstr(filename,".Osm")) {
+                    || strstr(filename,".Geo")) {
                 temp_record->auto_maps = 0;
             }
             else {
@@ -6854,10 +6847,7 @@ void index_update_xastir(char *filename,
 
         if (       strstr(filename,".geo")
                 || strstr(filename,".GEO")
-                || strstr(filename,".Geo")
-                || strstr(filename,".osm")
-                || strstr(filename,".OSM")
-                || strstr(filename,".Osm")) {
+                || strstr(filename,".Geo")) {
             temp_record->auto_maps = 0;
         }
         else {
@@ -7015,10 +7005,7 @@ void index_update_ll(char *filename,
 
             if (       strstr(filename,".geo")
                     || strstr(filename,".GEO")
-                    || strstr(filename,".Geo")
-                    || strstr(filename,".osm")
-                    || strstr(filename,".OSM")
-                    || strstr(filename,".Osm")) {
+                    || strstr(filename,".Geo")) {
                 temp_record->auto_maps = 0;
             }
             else {
@@ -7085,10 +7072,7 @@ void index_update_ll(char *filename,
 
         if (       strstr(filename,".geo")
                 || strstr(filename,".GEO")
-                || strstr(filename,".Geo")
-                || strstr(filename,".osm")
-                || strstr(filename,".OSM")
-                || strstr(filename,".Osm")) {
+                || strstr(filename,".Geo")) {
             temp_record->auto_maps = 0;
         }
         else {
@@ -8646,9 +8630,6 @@ void load_auto_maps (Widget w, char *dir) {
                     && (   strstr(current->filename,".geo")
                         || strstr(current->filename,".GEO")
                         || strstr(current->filename,".Geo")
-                        || strstr(current->filename,".osm")
-                        || strstr(current->filename,".OSM")
-                        || strstr(current->filename,".Osm")
                         || strstr(current->filename,".tif")
                         || strstr(current->filename,".TIF")
                         || strstr(current->filename,".Tif"))) {
@@ -8767,6 +8748,7 @@ void load_maps (Widget w) {
     char selected_dir[MAX_FILENAME];
     map_index_record *current;
     map_draw_flags mdf;
+
 //    int dummy;
 
 
@@ -8797,9 +8779,6 @@ void load_maps (Widget w) {
         // Empty the sorted list first.  We'll create a new one.
         empty_map_sorted_list();
  
-        // Assume that we will use scale for zooming rather than OSM levels
-        use_OSM_levels = 0;
-
         // Make sure the string is empty before we start
         selected_dir[0] = '\0';
 
@@ -8872,11 +8851,6 @@ void load_maps (Widget w) {
                                         //WE7U
                                         insert_map_sorted(current->filename);
 
-                                        if (   strstr(current->filename,".osm")
-                                            || strstr(current->filename,".OSM")
-                                            || strstr(current->filename,".Osm") ) {
-                                            use_OSM_levels = 1;
-                                        }
 /*
                                         draw_map (w,
                                             SELECTED_MAP_DIR,
@@ -8898,11 +8872,6 @@ void load_maps (Widget w) {
 
                             //WE7U
                             insert_map_sorted(mapname);
-                            if (   strstr(mapname,".osm")
-                                || strstr(mapname,".OSM")
-                                || strstr(mapname,".Osm") ) {
-                                use_OSM_levels = 1;
-                            }
 
 /*
                             draw_map (w,
@@ -8941,18 +8910,6 @@ void load_maps (Widget w) {
         //fprintf(stderr,"*** DONE sorting the selected maps.\n");
     }
 
-    // Adjust scaling if necessary
-    /*
-    if (use_OSM_levels == 1) {
-         if (debug_level & 512) {
-             fprintf(stderr, "maps:load_maps, scale, x:%ld\ty:%ld\n\n", scale_x, scale_y);
-         }
-         adj_to_OSM_level(&scale_x, &scale_y);
-         if (debug_level & 512) {
-             fprintf(stderr, "maps:load_maps, rescaled for OSM, x:%ld\ty:%ld\n\n", scale_x, scale_y);
-         }
-    }
-    */
 
     // We have the maps in sorted order.  Run through the list and
     // draw them.

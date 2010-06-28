@@ -69,12 +69,12 @@
 
 #include "xastir.h"
 #include "maps.h"
-#include "alert.h"
+//#include "alert.h"
 #include "util.h"
 #include "main.h"
-#include "datum.h"
-#include "draw_symbols.h"
-#include "rotated.h"
+//#include "datum.h"
+//#include "draw_symbols.h"
+//#include "rotated.h"
 #include "color.h"
 #include "xa_config.h"
 
@@ -95,109 +95,143 @@
 #  include <time.h>
 # endif // HAVE_SYS_TIME_H
 #endif  // TIME_WITH_SYS_TIME
-#undef RETSIGTYPE
-// TVR: "stupid ImageMagick"
-// The problem is that magick/api.h includes Magick's config.h file, and that
-// pulls in all the same autoconf-generated defines that we use.
-// plays those games below, but I don't think in the end that they actually 
-// make usable macros with our own data in them.
-// Fortunately, we don't need them, so I'll just undef the ones that are
-// causing problems today.  See main.c for fixes that preserve our values.
-#undef PACKAGE
-#undef VERSION
-/* JMT - stupid ImageMagick */
-#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
-#undef PACKAGE_BUGREPORT
-#define XASTIR_PACKAGE_NAME PACKAGE_NAME
-#undef PACKAGE_NAME
-#define XASTIR_PACKAGE_STRING PACKAGE_STRING
-#undef PACKAGE_STRING
-#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
-#undef PACKAGE_TARNAME
-#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
-#undef PACKAGE_VERSION
+
 #ifdef HAVE_GRAPHICSMAGICK
 /*#include <GraphicsMagick/magick/api.h>*/
 #include <magick/api.h>
 #else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
 #endif  // HAVE_GRAPHICSMAGICK 
-#undef PACKAGE_BUGREPORT
-#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
-#undef XASTIR_PACKAGE_BUGREPORT
-#undef PACKAGE_NAME
-#define PACKAGE_NAME XASTIR_PACKAGE_NAME
-#undef XASTIR_PACKAGE_NAME
-#undef PACKAGE_STRING
-#define PACKAGE_STRING XASTIR_PACKAGE_STRING
-#undef XASTIR_PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
-#undef XASTIR_PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
-#undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_MAGICK
 
 // Must be last include file
 #include "leak_detection.h"
 
+// osm_scale_x - map Xastir scale_x value to an OSM binned value
+// 
+// Note that the terms 'higher' and 'lower' are confusing because a
+// smaller Xastir scale number is a larger OSM zoom level. OSM zoom level
+// 0 would show the whole world in a 256x256 pixel tile, OSM zoom level
+// 18 (the max) would require 2^18 tiles to simple wrap the equator.
+//
+// On the equator, OSM zoom level 0 equates to ~97 miles/pixel
+// and OSM zoom level 18 equates to ~2 ft/pixel
+//
+// direction = -1, zoom in
+// direction = 1, zoom out
+// direction = 0, nearst level out from the xastir scale
+//
+#define MAX_OSM_ZOOM_LEVEL 18
+#define OSM_ZOOM_LEVELS    (MAX_OSM_ZOOM_LEVEL + 1)
 
+static long osm_scale_x(long xastir_scale_x) {
 
-extern int npoints;		/* tsk tsk tsk -- globals */
-extern int mag;
-
-
-
-void adj_to_OSM_level(
-        long *new_scale_x,
-        long *new_scale_y) {
-
-    // map OSM levels to 1/100 sec/pixel values
-    long osm_level[20] = {506250, 506250, 253125, 126563, 63281, 31641, \
-                          15820, 7910, 3955, 1978, 989, 494, 247, 124, 62,\
-                          31, 15, 8, 4, 2};
-    long osm_scale_x = osm_level[18];
+    long osm_level[OSM_ZOOM_LEVELS] = {1, 2, 4, 8, 15, 31, 62, 124, \
+                          247, 494, 989, 1978, 3955, 7910, 15820, 31641,\
+                          63281, 126563, 253125};
+    long osm_scale_x = osm_level[0];
     int i = 0;
 
-    for (i=1; i <19; i++) {
-        if (*new_scale_x < osm_level[i]) {
+    for (i=1; i <= MAX_OSM_ZOOM_LEVEL; i++) {
+       if (xastir_scale_x > osm_level[i]) {
             continue;
         } else {
-            osm_scale_x = osm_level[i];
-
-            // We got here because the user did something that changed the
-            // scale, but xastir scale changes have more resolution that OSM levels,
-            // so a forced changed is necessary in some cases.
-            if (osm_scale_x == scale_x) {
-                if (*new_scale_x > scale_x) {
-                    osm_scale_x = osm_level[i - 1];
-                } else if (*new_scale_x < scale_x) {
-                    osm_scale_x = osm_level[i + 1];
-                }
+            if (abs(osm_level[i - 1] - xastir_scale_x) < abs(osm_level[i] - xastir_scale_x)) {
+                osm_scale_x = osm_level[i - 1];
+            } else {
+                osm_scale_x = osm_level[i];
             }
-
             break;
         }
     }
 
-    // the y scale must also be adjusted.
-    *new_scale_y = (int)(((double)(*new_scale_y) * ((double)osm_scale_x / (double)(*new_scale_x)) + 0.5));
-    *new_scale_x = osm_scale_x;
+    if (i > MAX_OSM_ZOOM_LEVEL) {
+        i = MAX_OSM_ZOOM_LEVEL;
+        osm_scale_x = osm_level[i];
+    }
 
+    return(osm_scale_x);
+
+} // osm_scale_x()
+
+
+/*
+ * adj_to_OSM_level - adjust scale_x and scale_y to approximate an OSM zoom level
+ *
+ * The OSM zoom level closest to the scale_x value will be chosen and scale_x is modified.
+ * The scale_y value (pointed to by the second argument) is scaled proportionaly. Both
+ * values pointed to by the arguments are modified.
+ */
+void adj_to_OSM_level( long *new_scale_x, long *new_scale_y) {
+
+    long scale;
+
+    scale = osm_scale_x(*new_scale_x);
+
+    // the y scale must also be adjusted.
+    *new_scale_y = (int)(((double)(*new_scale_y) * ((double)scale / (double)(*new_scale_x)) + 0.5));
+    *new_scale_x = scale;
+
+    return;
+
+} // adj_to_OSM_level()
+
+
+/*
+ * osm_zoom_level - translate the longitude scale to the nearest OSM zoom level
+ *
+ * OSM tile scaling is based on the number of tiles needed to wrap the earth at the equator.
+ * A tile is 256x256 pixels.
+ */
+int osm_zoom_level(long scale_x) {
+    double circumference = 360.0*3600.0*100.0; // Xastir Units = 1/100 second.
+    double zf;
+    int z;
+    zf = (log(circumference / (double)scale_x) / log(2.0)) - 8.0;
+    z = (int)(zf + 0.5);
+    
+    // OSM levels run from 0 to 18. Not all levels are available for all views.
+    if (z < 0) {
+      z = 0;
+    }
+    if (z > 18) {
+      z = 18;
+    }
+
+    return(z);
+
+} // osm_zoom_level()
+
+
+static KeySym OptimizeKey = 0;
+static KeySym ReportScaleKey = 0;
+
+void init_OSM_values(void) {
+    OptimizeKey = 0;
+    ReportScaleKey = 0;
     return;
 }
 
+int OSM_optimize_key(KeySym key) {
+    return (key == OptimizeKey ? TRUE : FALSE);
+}
 
+void set_OSM_optimize_key(KeySym key) {
+    OptimizeKey = key;
+    return;
+}
 
-void get_OSM_local_file(char * local_filename, char * fileimg){
+int OSM_report_scale_key(KeySym key) {
+    return (key == ReportScaleKey ? TRUE : FALSE);
+}
+
+void set_OSM_report_scale_key(KeySym key) {
+    ReportScaleKey = key;
+    return;
+}
+
+static void get_OSM_local_file(char * local_filename, char * fileimg){
 #ifdef HAVE_MAGICK
-
-//  char local_filename[MAX_FILENAME];
-
-//    char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
-
-
     time_t query_start_time, query_end_time; 
 
 #ifdef USE_MAP_CACHE 
@@ -298,7 +332,78 @@ clear_dangerous();
 } // end get_OSM_local_file
 
 
+static long xastirLat2pixelLat(
+        long xlat, int osm_zoom ) {
+    double lat;  // in radians
+    double projection, y;
+    long pixelLat;
 
+    lat = convert_lat_l2r(xlat);
+
+    // xastir latitude values can exceed +/- 90.0 degrees because
+    // the latitude is the extent of the display window. Limit the
+    // OSM latitute to less than +/- 90.0 degrees so that the projection
+    // calculation does not blow up or return unreasonable values.
+    if (lat > ((89.0/180.0) * M_PI)) {
+        lat = ((89.0/180.0) * M_PI);
+    } else if (lat < ((-89.0/180.0) * M_PI)) {
+        lat = ((-89.0/180.0) * M_PI);
+    }
+
+
+    projection = log(tan(lat) + (1.0 / cos(lat)));
+    y = projection / M_PI;
+    y = 1.0 - y;
+    pixelLat = (long)((y * (double)(1<<(osm_zoom + 8))) / 2.0);
+    return(pixelLat);
+} // xastirLat2pixelLat()
+  
+
+static double pixelLat2Lat(long osm_lat, int osm_zoom){
+    double lat, projection, y;
+    y = (double)osm_lat * 2.0 / (double)(1<<(osm_zoom + 8));
+    y = 1.0 - y;
+    projection = y * M_PI;
+    lat = 2.0 * atan(exp(projection)) - (M_PI / 2.0);
+    lat = (lat * 180.0 ) / M_PI;
+    return(lat);
+} // pixelLat2Lat()
+
+
+static long pixelLat2xastirLat(long osm_lat, int osm_zoom) {
+    double lat;
+    long xastirLat;
+    lat = pixelLat2Lat(osm_lat, osm_zoom);
+    xastirLat = (long)((90.0 - lat) * 3600.0 * 100.0);
+    return (xastirLat);
+} // pixelLat2xastirLat()
+
+
+static long xastirLon2pixelLon(
+        long xlon, int osm_zoom) {
+    double lon;
+    long pixelLon;
+    lon = xlon / (3600.0 * 100.0);
+    lon = lon * (1<<(osm_zoom +8));
+    lon = lon / 360.0;
+    pixelLon = lon;
+    return(pixelLon);
+} // xastirLon2pixelLon()
+
+
+static double pixelLon2Lon(long osm_lon, int osm_zoom) {
+    double lon;
+    lon = osm_lon * 360.0 ;
+    lon = lon / (1<<(osm_zoom + 8));
+    return(lon);
+} // pixelLon2Lon()
+
+
+static long pixelLon2xastirLon(long osm_lon, int osm_zoom) {
+    long xastirLon;
+    xastirLon = (long)(pixelLon2Lon(osm_lon, osm_zoom) * 3600.0 * 100.0);
+    return(xastirLon);
+} // pixelLon2xastirLon()
 
 
 /**********************************************************
@@ -316,41 +421,20 @@ void draw_OSM_map (Widget w,
     char short_filenm[MAX_FILENAME];
     FILE *f;                        // Filehandle of image file
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
-    char OSMtmp[MAX_FILENAME*2];  // Used for putting together the OSMmap query
-    int width, height;
-    tiepoint tp[2];                 // Calibration points for map, read in from .geo file
-    register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
-    register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
-    unsigned long c_x_min,  c_y_min;// top left coordinates of map inside screen
-    unsigned long c_y_max;          // bottom right coordinates of map inside screen
-    double c_x;                     // Xastir coordinates 1/100 sec, 0 = 180°W
-    double c_y;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+    char OSMtmp[MAX_FILENAME*2];    // Used for putting together the OSMmap query
+    tiepoint tp[2];                 // Calibration points for map
 
-    long map_y_0;                   // map pixel pointer prior to TM adjustment
-    register long map_x, map_y;     // map pixel pointers, DNN: this was a float, chg to long
+    long map_image_row;
+    long map_image_col;
     long map_x_min, map_x_max;      // map boundaries for in screen part of map
     long map_y_min, map_y_max;      //
-    long map_x_ctr;                 // half map width in pixel
-    long map_y_ctr;                 // half map height in pixel
     int map_seen = 0;
     int map_act;
     int map_done;
 
-    long map_c_yc;                  // map center, vert coordinate
-    long map_c_xc;                  // map center, hor  coordinate
-    double map_c_dx, map_c_dy;      // map coordinates increment (pixel width)
-    double c_dx;                    // adjusted map pixel width
-
     long scr_x,  scr_y;             // screen pixel plot positions
     long scr_xp, scr_yp;            // previous screen plot positions
     int  scr_dx, scr_dy;            // increments in screen plot positions
-    long scr_x_mc;                  // map center in screen units
-
-    long scr_c_xr;
-
-    long scale_xa;                  // adjusted for topo maps
-    double scale_x_nm;              // nm per Xastir coordinate unit
-    long scale_x0;                  // at widest map area
 
     char local_filename[MAX_FILENAME];
     
@@ -362,14 +446,19 @@ void draw_OSM_map (Widget w,
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
-    double left, right, top, bottom, map_width, map_height;
+    double left, right, top, bottom;
     double lat_center  = 0;
     double long_center = 0;
 
     char map_it[MAX_FILENAME];
     char tmpstr[1001];
-    int geo_image_width;        // Image width  from GEO file
-    int geo_image_height;       // Image height from GEO file
+    int osm_zl = 18;                 // OSM zoom level, at 18, the whole world fits in one 256x256 tile.
+    unsigned map_image_width;        // Image width
+    unsigned map_image_height;       // Image height
+    // TODO: put the max_image_* limits in the .geo/.osm file because it could change on a by-server
+    //       basis and the server URL can be specified in the .geo/.osm file.
+    unsigned max_image_width = 2000;  // This value is for the default server
+    unsigned max_image_height = 2000; // This value is for the default server
 
     // initialize this
     local_filename[0]='\0';
@@ -398,8 +487,6 @@ void draw_OSM_map (Widget w,
         langcode ("BBARSTA028"),
         short_filenm);
     statusline(map_it,0);       // Loading ...
-
-
         
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -425,72 +512,60 @@ void draw_OSM_map (Widget w,
         return; // Done indexing this file
     }
 
-    // calculate the OSM zoom level (z) that is nearest the xastir scale
-    // OSM units are 360 / (2^(z+8)) per pixel
-    double circumference = 360.0*3600.0*100.0;  // Xastir Units, 1/100 sec / pixel
-    double zf = (log(circumference / scale_x) / log(2)) - 8.0; 
-    int z = (int)(zf + 0.5);
+    // calculate the OSM zoom level (osm_zl) that is nearest the xastir scale
+    osm_zl = osm_zoom_level(scale_x);
 
-    // OSM levels run from 0 to 18. Not all levels are available for all views.
-    if (z < 0) {
-      z = 0;
-    }
-    if (z > 18) {
-      z = 18;
+    // Calculate the image size to request. The size will be saved as tiepoints
+    // for the top-left and bottom-right of the image.
+    tp[0].x_long = xastirLon2pixelLon(NW_corner_longitude, osm_zl); // OSM pixels
+    tp[1].x_long = xastirLon2pixelLon(SE_corner_longitude, osm_zl); // OSM pixels
+    tp[0].y_lat = xastirLat2pixelLat(NW_corner_latitude, osm_zl);  // OSM pixels
+    tp[1].y_lat = xastirLat2pixelLat(SE_corner_latitude, osm_zl);  // OSM pixels
+
+    map_image_height = tp[1].y_lat - tp[0].y_lat;
+    map_image_width = tp[1].x_long - tp[0].x_long;
+
+    // Limit dimensions to the max the server will allow.
+    if (map_image_width > max_image_width) {
+        int tmp = ((map_image_width - map_image_height) / 2) + 1;
+        tp[0].x_long += tmp;
+        tp[1].x_long -= tmp;
+        map_image_width = tp[1].x_long - tp[0].x_long;
     }
 
+    if (map_image_height > max_image_height) {
+        int tmp = ((map_image_height - max_image_height) / 2) + 1;
+        tp[0].y_lat += tmp;
+        tp[1].y_lat -= tmp;
+        map_image_height = tp[1].y_lat - tp[0].y_lat;
+    }
+
+    // Size and coordinates for the tiepoints in pixels
+    tp[0].img_x = 0;
+    tp[0].img_y = 0;
+    tp[1].img_x = map_image_width - 1;
+    tp[1].img_y = map_image_height - 1;
+
+    // calculate the center coordinates for the image request
+    left = (double)((NW_corner_longitude - 64800000l )/360000.0);   // Lat/long Coordinates, degrees
+    top = (double)(-((NW_corner_latitude - 32400000l )/360000.0));  // Lat/long Coordinates, degrees
+    right = (double)((SE_corner_longitude - 64800000l)/360000.0);   //Lat/long Coordinates, degrees
+    bottom = (double)(-((SE_corner_latitude - 32400000l)/360000.0));//Lat/long Coordinates, degrees
+
+    long_center = (left + right)/2.0l; // degrees
+
+    // The vertical center of the image must be calculated from the OSM image size to
+    // compensate for latitude scaling (Mercator). This is particularly important for small image/screen
+    // sizes and may not be apparent on large displays.
+    lat_center = pixelLat2Lat((map_image_height / 2) + tp[0].y_lat, osm_zl);
 
     /*
-     * Calculate the image size to request. The request will be for WxH at lat/long.
-     * In order to reuse the geo/tiger scaling code written below, we must request an
-     * image from the OSM server with the coordinates of the image corners matching the
-     * coordinates of the Xastir display.
+     * Query format to the StaticMap
+     * See: http://ojw.dev.openstreetmap.org/StaticMap/?mode=API&
+     *
+     * http://ojw.dev.openstreetmap.org/StaticMap/?lat=LL.LLLLLL&lon=-LLL.LLLLL&z=15& \
+     *     w=WWW&h=HHH&layer=osmarender&mode=Export&att=none&show=1
      */
-
-    // Tiepoint for upper left image corner
-    //
-    tp[0].img_x = 0;                // Pixel Coordinates for image
-    tp[0].img_y = 0;                // Pixel Coordinates for image
-    tp[0].x_long = NW_corner_longitude;   // Xastir Coordinates
-    tp[0].y_lat  = NW_corner_latitude;    // Xastir Coordinates
-
-    left = (double)((NW_corner_longitude - 64800000l )/360000.0);   // Lat/long Coordinates
-    top = (double)(-((NW_corner_latitude - 32400000l )/360000.0));  // Lat/long Coordinates
-    right = (double)((SE_corner_longitude - 64800000l)/360000.0);//Lat/long Coordinates
-    bottom = (double)(-((SE_corner_latitude - 32400000l)/360000.0));//Lat/long Coordinates
-
-    map_width = right - left;   // Lat/long Coordinates
-    map_height = top - bottom;  // Lat/long Coordinates
-
-    long_center = (left + right)/2.0l;
-    lat_center  = (top + bottom)/2.0l;
-
-    geo_image_width = (long)((map_width * (double)(2<<(z+7))) / 360.0);
-
-    // Adjust vertical scale for latitude of the center of the image.
-    // This is a simplified version of the projection that is used when the OSM tiles
-    // are generated. The vertical scaling for the OSM tiles is 'correct' only for the
-    // center of the tile. Note that a further error is introduced here since (in
-    // general) the map we requested is composed of multiple tiles, but this
-    // calculation uses only a single center point to calculate the scaling for a,
-    // typically, larger image.
-    geo_image_height = (long)(((map_height * (double)(2<<(z+7))) / 360.0) * (1.0 / cos(-1.0 * lat_center * (M_PI/180.0)))) ;
-
-    // Tiepoint for lower right image corner
-    //
-    tp[1].img_x = geo_image_width - 1; // Pixel Coordinates
-    tp[1].img_y = geo_image_height - 1; // Pixel Coordinates 
-    tp[1].x_long = SE_corner_longitude; // Xastir Coordinates
-    tp[1].y_lat  = SE_corner_latitude; // Xastir Coordinates
-
-
-/*
- * Query format to the StaticMap
- * See: http://ojw.dev.openstreetmap.org/StaticMap/?mode=API&
- *
- * http://ojw.dev.openstreetmap.org/StaticMap/?lat=LL.LLLLLL&lon=-LLL.LLLLL&z=15& \
- *     w=WWW&h=HHH&layer=osmarender&mode=Export&att=none&show=1
- */
 
     if (url[0] != '\0') {
         xastir_snprintf(OSMtmp, sizeof(OSMtmp), "%s", url);
@@ -511,70 +586,49 @@ void draw_OSM_map (Widget w,
     xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);    
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
 
-    //xastir_snprintf(tmpstr, sizeof(tmpstr), "w=%li\046h=%li\046", screen_width, screen_height);
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "w=%i\046h=%i\046", geo_image_width, geo_image_height);
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "w=%i\046h=%i\046", map_image_width, map_image_height);
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
 
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "z=%d", z);
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "z=%d", osm_zl);
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
 
     xastir_snprintf(fileimg, sizeof(fileimg), "%s", OSMtmp);
 
     if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);
-          fprintf(stderr,"OSM left is  %f\n", long_center - ((double)(geo_image_width / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"right side is %f\n", right);
-          fprintf(stderr,"OSM right is  %f\n", long_center + ((double)(geo_image_width / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"top  is %f\n", top);
-          fprintf(stderr,"OSM top is %f\n", lat_center + ((double)(geo_image_height / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"bottom is %f\n", bottom);
-          fprintf(stderr,"OSM bottom is %f\n", lat_center - ((double)(geo_image_height / 2) * (360.0 / (double)(2<<(z+7)))));
           fprintf(stderr,"lat center is %f\n", lat_center);
           fprintf(stderr,"long center is %f\n", long_center);
           fprintf(stderr,"screen width is %li\n", screen_width);
           fprintf(stderr,"screen height is %li\n", screen_height);
-          fprintf(stderr,"map width is %f\n", map_width);
-          fprintf(stderr,"map height is %f\n", map_height);
+          fprintf(stderr,"OSM image width is %i\n", map_image_width);
+          fprintf(stderr,"OSM image height is %i\n", map_image_height);
           fprintf(stderr,"scale_y = %li\n", scale_y);
           fprintf(stderr,"scale_x = %li\n", scale_x);
-          fprintf(stderr,"zf = %f\n", zf);
-          fprintf(stderr,"z = %i\n", z);
+          fprintf(stderr,"OSM zoom level = %i\n", osm_zl);
           fprintf(stderr,"fileimg is %s\n", fileimg);
           fprintf(stderr,"ftp or http file: %s\n", fileimg);
     }
 
-
-// Hopefully this will eventually allow us to get maps in the background
-//    while (sometimeout !=0 && local_filename[0]==NULL){
-
-    if  (local_filename[0]=='\0' ){
-
-        if (debug_level & 512 ) { 
-            fprintf(stderr,"OSM_local_file=<%s>\n",local_filename);
-        }
-
-        HandlePendingEvents(app_context);
-        if (interrupt_drawing_now) {
-            // Update to screen
-            (void)XCopyArea(XtDisplay(da),
-                pixmap,
-                XtWindow(da),
-                gc,
-                0,
-                0,
-                (unsigned int)screen_width,
-                (unsigned int)screen_height,
-                0,
-                0);
-            return;
-        }
-
-        get_OSM_local_file(local_filename,fileimg); 
-
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
+        return;
     }
 
-// whackadoodle
-
+    get_OSM_local_file(local_filename,fileimg); 
 
     // Tell ImageMagick where to find it
     xastir_snprintf(file,
@@ -642,6 +696,28 @@ void draw_OSM_map (Widget w,
             DestroyImageInfo(image_info);
 	DestroyExceptionInfo(&exception);
         return;
+
+    } else if ( (image->columns != map_image_width)
+               || (image->rows != map_image_height)) {
+        fprintf(stderr, "Server returned an image size different than requested!\n");
+
+#ifdef USE_MAP_CACHE
+        // clear from cache if bad    
+        if (map_cache_del(fileimg)) {
+            if (debug_level & 512) {
+                fprintf(stderr,"Couldn't delete map from cache\n");
+            }
+        }
+#endif
+
+        if (image) {
+            DestroyImage(image);
+        }
+        if (image_info) {
+            DestroyImageInfo(image_info);
+        }
+        DestroyExceptionInfo(&exception);
+        return;
     }
 
 
@@ -657,26 +733,6 @@ void draw_OSM_map (Widget w,
 	DestroyExceptionInfo(&exception);
         return;
     }
-
-    width = image->columns;
-    height = image->rows;
-
-    //  Code to mute the image so it's not as bright.
-/*    if (raster_map_intensity < 1.0) {
-        char tempstr[30];
-
-        if (debug_level & 512)
-            fprintf(stderr,"level=%s\n", tempstr);
-
-        xastir_snprintf(tempstr,
-            sizeof(tempstr),
-            "%d, 100, 100",
-            (int)(raster_map_intensity * 100.0));
-
-        ModulateImage(image, tempstr);
-    }
-*/
-
 
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
@@ -710,7 +766,6 @@ void draw_OSM_map (Widget w,
 	DestroyExceptionInfo(&exception);
         return;
     }
-
 
     index_pack = GetIndexes(image);
     if (image->storage_class == PseudoClass && !index_pack) {
@@ -769,154 +824,74 @@ void draw_OSM_map (Widget w,
         }
     }
 
-
-
     /*
     * Here are the corners of our viewport, using the Xastir
     * coordinate system.  Notice that Y is upside down:
     *
     *   left edge of view = NW_corner_longitude
     *  right edge of view = SE_corner_longitude
-    *    top edge of view =  NW_corner_latitude
-    * bottom edge of view =  SE_corner_latitude
+    *    top edge of view = NW_corner_latitude
+    * bottom edge of view = SE_corner_latitude
     *
-    * The corners of our map will soon be (after translating the
-    * tiepoints to the corners if they're not already there):
+    * The corners of our image were calculated and stored
+    * above as tiepoints using OSM units (pixels/circle). They are:
     *
-    *   left edge of map = tp[0].x_long   in Xastir format
+    *   left edge of map = tp[0].x_long
     *  right edge of map = tp[1].x_long
     *    top edge of map = tp[0].y_lat
     * bottom edge of map = tp[1].y_lat
     *
     */
-    map_c_L = tp[0].x_long - NW_corner_longitude;     // map left coordinate
-    map_c_T = tp[0].y_lat  - NW_corner_latitude;      // map top  coordinate
 
-    tp_c_dx = (long)(tp[1].x_long - tp[0].x_long);//  Width between tiepoints
-    tp_c_dy = (long)(tp[1].y_lat  - tp[0].y_lat); // Height between tiepoints
-
-
-    // Check for tiepoints being in wrong relation to one another
-    if (tp_c_dx < 0) 
-        tp_c_dx = -tp_c_dx;       // New  width between tiepoints
-    if (tp_c_dy < 0) 
-        tp_c_dy = -tp_c_dy;       // New height between tiepoints
-
-    // Calculate step size per pixel
-    map_c_dx = ((double) tp_c_dx / abs(tp[1].img_x - tp[0].img_x));
-    map_c_dy = ((double) tp_c_dy / abs(tp[1].img_y - tp[0].img_y));
-
-    // Scaled screen step size for use with XFillRectangle below
-    scr_dx = (int) (map_c_dx / scale_x) + 1;
-    scr_dy = (int) (map_c_dy / scale_y) + 1;
-
-    // calculate top left map corner from tiepoints
-    if (tp[0].img_x != 0) {
-        tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
-        map_c_L = tp[0].x_long - NW_corner_longitude;     // delta ??
-        tp[0].img_x = 0;
-        if (debug_level & 512)
-            fprintf(stderr,"Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
-    }
-    if (tp[0].img_y != 0) {
-        tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
-        map_c_T = tp[0].y_lat - NW_corner_latitude;
-        tp[0].img_y = 0;
-        if (debug_level & 512)
-            fprintf(stderr,"Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
-    }
-
-    // calculate bottom right map corner from tiepoints
-    // map size is geo_image_width / geo_image_height
-    if (tp[1].img_x != (geo_image_width - 1) ) {
-        tp[1].img_x = geo_image_width - 1;
-        tp[1].x_long = tp[0].x_long + (tp[1].img_x * map_c_dx); // right
-        if (debug_level & 512)
-            fprintf(stderr,"Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
-    }
-    if (tp[1].img_y != (geo_image_height - 1) ) {
-        tp[1].img_y = geo_image_height - 1;
-        tp[1].y_lat = tp[0].y_lat + (tp[1].img_y * map_c_dy);   // bottom
-        if (debug_level & 512)
-            fprintf(stderr,"Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
-    }
-
+    scr_dx = 1;
+    scr_dy = 1;
     if (debug_level & 512) {
-        fprintf(stderr,"X tiepoint width: %ld\n", tp_c_dx);
-        fprintf(stderr,"Y tiepoint width: %ld\n", tp_c_dy);
         fprintf(stderr,"Loading imagemap: %s\n", file);
         fprintf(stderr,"\nImage: %s\n", file);
-        fprintf(stderr,"Image size %d %d\n", geo_image_width, geo_image_height);
-        fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
-            map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
-        fprintf(stderr,"Image size %d %d\n", width, height);
+        fprintf(stderr,"Image size %d %d\n", map_image_width, map_image_height);
 #if (MagickLibVersion < 0x0540)
         fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
 #else // MagickLib < 540
         fprintf(stderr,"Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
 #endif // MagickLib < 540
-        fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
-            map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
         fprintf(stderr,"image matte is %i\n", image->matte);
     } // debug_level & 512
 
-    // draw the image from the file out to the map screen
-
-    // Get the border values for the X and Y for loops used
-    // for the XFillRectangle call later.
-
-    map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
-    map_y_ctr = (long)(height / 2 +0.499);
-    scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
-
-    map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
-    map_x_ctr = (long)(width  / 2 +0.499);
-    scr_x_mc  = (map_c_xc - NW_corner_longitude) / scale_x; // screen coordinates of map center
-
     // calculate map pixel range in y direction that falls into screen area
-    c_y_max = 0ul;
     map_y_min = map_y_max = 0l;
-    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
-        scr_y = (c_y - NW_corner_latitude) / scale_y;   // current screen position
+    for (map_image_row = 0; map_image_row < (long)image->rows; map_image_row++){
+        scr_y = (pixelLat2xastirLat(map_image_row + tp[0].y_lat, osm_zl) - NW_corner_latitude) / scale_y;
         if (scr_y > 0) {
             if (scr_y < screen_height) {
-                map_y_max = map_y_0;          // update last map pixel in y
-                c_y_max = (unsigned long)c_y;// bottom map inside screen coordinate
+                map_y_max = map_image_row;  // update last map pixel in y
             } else
                 break;                      // done, reached bottom screen border
         } else {                            // pixel is above screen
-            map_y_min = map_y_0;              // update first map pixel in y
+            map_y_min = map_image_row;     // update first map pixel in y
         }
     }
-    c_y_min = (unsigned long)(tp[0].y_lat + map_y_min * map_c_dy);   // top map inside screen coordinate
 
-        map_x_min = map_x_max = 0l;
-        for (map_x = 0, c_x = tp[0].x_long; map_x < (long)width; map_x++, c_x += map_c_dx) {
-            scr_x = (c_x - NW_corner_longitude)/ scale_x;  // current screen position
-            if (scr_x > 0) {
-                if (scr_x < screen_width)
-                    map_x_max = map_x;          // update last map pixel in x
-                else
-                    break;                      // done, reached right screen border
-            } else {                            // pixel is left from screen
-                map_x_min = map_x;              // update first map pixel in x
-            }
+    // Calculate the position of the map image relative to the screen
+    map_x_min = map_x_max = 0l;
+    for (map_image_col = 0; map_image_col < (long)image->columns; map_image_col++) {
+        scr_x = (pixelLon2xastirLon(map_image_col + tp[0].x_long, osm_zl) - NW_corner_longitude) / scale_x;
+        if (scr_x > 0) {
+            if (scr_x < screen_width)
+                map_x_max = map_image_col;          // update last map pixel in x
+            else
+                break;                      // done, reached right screen border
+        } else {                            // pixel is left from screen
+            map_x_min = map_image_col;              // update first map pixel in x
         }
-        c_x_min = (unsigned long)(tp[0].x_long + map_x_min * map_c_dx);   // left map inside screen coordinate
+    }
 
     scr_yp = -1;
-    scr_c_xr = SE_corner_longitude;
-    c_dx = map_c_dx;                            // map pixel width
-    scale_xa = scale_x0;                        // the compiler likes it ;-)
-
     map_done = 0;
     map_act  = 0;
     map_seen = 0;
-    scr_y = screen_height - 1;
-
 
     // loop over map pixel rows
-    for (map_y_0 = map_y_min, c_y = (double)c_y_min; (map_y_0 <= map_y_max); map_y_0++, c_y += map_c_dy) {
+    for (map_image_row = map_y_min; (map_image_row <= map_y_max); map_image_row++) {
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
@@ -939,25 +914,44 @@ void draw_OSM_map (Widget w,
             return;
         }
 
-        scr_y = (c_y - NW_corner_latitude) / scale_y;
+        scr_y = (pixelLat2xastirLat(map_image_row + tp[0].y_lat, osm_zl)
+                                    - NW_corner_latitude) / scale_y;
+
+        // image rows do not match 1:1 with screen rows due to Mercator
+        // scalling, so scr_dy will be passed to XFillRectangle to 
+        // handle that issue.
+        // scr_dy is in rows and must be a minimum of 1 row.
+        scr_dy = ((  pixelLat2xastirLat(map_image_row + 1 + tp[0].y_lat, osm_zl)
+                   - NW_corner_latitude) / scale_y) - scr_y;
+        if (scr_dy < 1)
+            scr_dy = 1;
+
         if (scr_y != scr_yp) {                  // don't do a row twice
             scr_yp = scr_y;                     // remember as previous y
             scr_xp = -1;
             // loop over map pixel columns
             map_act = 0;
-            scale_x_nm = calc_dscale_x(0,(long)c_y) / 1852.0;  // nm per Xastir coordinate
-            for (map_x = map_x_min, c_x = (double)c_x_min; map_x <= map_x_max; map_x++, c_x += c_dx) {
-                scr_x = (c_x - NW_corner_longitude) / scale_x;
+            for (map_image_col = map_x_min; map_image_col <= map_x_max; map_image_col++) {
+                scr_x = (  pixelLon2xastirLon(map_image_col + tp[0].x_long, osm_zl)
+                         - NW_corner_longitude) / scale_x;
+                // handle the case when here the horizontal resolution
+                // of the image is less than the horizontal resolution
+                // displayed. scr_dx is passed to XFillRectangle() below
+                // and must be at least 1 column.
+                scr_dx = ( (pixelLon2xastirLon(map_image_col + 1 + tp[0].x_long, osm_zl)
+                          - NW_corner_longitude) / scale_x) - scr_x;
+                if (scr_dx < 1)
+                    scr_dx = 1;
                 if (scr_x != scr_xp) {      // don't do a pixel twice
                     scr_xp = scr_x;         // remember as previous x
-                    map_y = map_y_0;
 
-                    if (map_y >= 0 && map_y <= tp[1].img_y) { // check map boundaries in y direction
+                    // check map boundaries in y direction
+                    if (map_image_row >= 0 && map_image_row <= tp[1].img_y) {
                         map_seen = 1;
-                        map_act = 1;    // detects blank screen rows (end of map)
+                        map_act = 1;   // detects blank screen rows (end of map)
 
                         // now copy a pixel from the map image to the screen
-                        l = map_x + map_y * image->columns;
+                        l = map_image_col + map_image_row * image->columns;
                         if (image->storage_class == PseudoClass) {
                             XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
                         }
@@ -985,13 +979,17 @@ void draw_OSM_map (Widget w,
                                             &my_colors[0].pixel);
                             XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
                         }
+                        // write the pixel from the map image to the
+                        // screen. Strech to a rectangle as needed
+                        // specified by scr_dx and scr_dy.
                         (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
                     } // check map boundaries in y direction
-                }
+                }  // don't do a screen pixel twice (in the same row)
             } // loop over map pixel columns
+
             if (map_seen && !map_act)
                 map_done = 1;
-        }
+        } // don't do a screen row twice.
     } // loop over map pixel rows
 
     if (image)
@@ -999,7 +997,9 @@ void draw_OSM_map (Widget w,
     if (image_info)
        DestroyImageInfo(image_info);
     DestroyExceptionInfo(&exception);
-}
+
+}  // end draw_OSM_map()
+
 #endif //HAVE_MAGICK
 ///////////////////////////////////////////// End of OpenStreetMap code ///////////////////////////////////////
 

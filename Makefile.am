@@ -21,12 +21,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
         terraserver-topo.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
         CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse \
-        OSM_cloudmade_1.geo OSM_cloudmade_1.osm OSM_cloudmade_2.geo \
-        OSM_cloudmade_2.osm OSM_cloudmade_5.geo OSM_cloudmade_5.osm \
-        OSM_cloudmade_998.geo OSM_cloudmade_998.osm OSM_cloudmade_999.geo \
-        OSM_cloudmade_999.osm OSM_cycle.geo OSM_cycle.osm \
-        OSM_mapnik.geo OSM_mapnik.osm OSM_osmarender.geo \
-        OSM_osmarender.osm OSM_skiing.geo OSM_skiing.osm \
+	OSM_template \
         COPYING COPYING.LIB.LESSTIF AUTHORS
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
@@ -50,12 +45,10 @@ online_DATA=terraserver.geo terraserver-topo.geo tigermap.geo \
         terraserver-reflectivity.geo terraserver-urban.geo \
         USRadar.geo CanadaTopo250k.geo CanadaTopo50k.geo \
         TXRadar.geo WMSRadar.geo \
-        OSM_cloudmade_1.geo OSM_cloudmade_1.osm OSM_cloudmade_2.geo \
-        OSM_cloudmade_2.osm OSM_cloudmade_5.geo OSM_cloudmade_5.osm \
-        OSM_cloudmade_998.geo OSM_cloudmade_998.osm OSM_cloudmade_999.geo \
-        OSM_cloudmade_999.osm OSM_cycle.geo OSM_cycle.osm \
-        OSM_mapnik.geo OSM_mapnik.osm OSM_osmarender.geo \
-        OSM_osmarender.osm OSM_skiing.geo OSM_skiing.osm
+        OSM_cloudmade_1.geo OSM_cloudmade_2.geo \
+        OSM_cloudmade_5.geo OSM_cloudmade_998.geo \
+	OSM_cloudmade_999.geo OSM_cycle.geo OSM_mapnik.geo \
+	OSM_osmarender.geo OSM_skiing.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
@@ -79,6 +72,34 @@ install-exec-hook:
  
 mandir=${prefix}/share/man
 man_MANS=xastir.1 callpass.1 xastir_udp_client.1 testdbfawk.1
+
+OSM_cloudmade_1.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=cloudmade_1/' < $(top_srcdir)/OSM_template >$@
+
+OSM_cloudmade_2.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=cloudmade_2/' < $(top_srcdir)/OSM_template >$@
+
+OSM_cloudmade_5.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=cloudmade_5/' < $(top_srcdir)/OSM_template >$@
+
+OSM_cloudmade_998.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=cloudmade_998/' < $(top_srcdir)/OSM_template >$@
+
+OSM_cloudmade_999.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=cloudmade_999/' < $(top_srcdir)/OSM_template >$@
+
+OSM_cycle.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=cycle/' < $(top_srcdir)/OSM_template >$@
+
+OSM_mapnik.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=mapnik/' < $(top_srcdir)/OSM_template >$@
+
+OSM_osmarender.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=osmarender/' < $(top_srcdir)/OSM_template >$@
+
+OSM_skiing.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/-STYLE/-layer=skiing/' < $(top_srcdir)/OSM_template >$@
+
 
 ChangeLog::
 

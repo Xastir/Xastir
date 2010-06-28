@@ -678,7 +678,10 @@ void draw_geo_image_map (Widget w,
     char *cache_file_id;
   #endif  // USE_MAP_CACHE
 #endif  // HAVE_MAGICK
-
+    
+    // Initialize values that change depending on contents of the OSM .geo file
+    KeySym OSM_key = 0;
+    init_OSM_values();
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
@@ -799,6 +802,34 @@ void draw_geo_image_map (Widget w,
                 if (strlen(line) > 13) {
                     if (1 != sscanf (line + 13, "%s", OSMstyle)) {
                         fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM style.\n"); 
+                    }
+                }
+            }
+
+            if (OSMserver_flag == 1) {  // the following keywords are only valid for OSM maps
+                if (strncasecmp (line, "OSM_OPTIMIZE_KEY", 16) == 0){
+                    if ((destination_pixmap != INDEX_CHECK_TIMESTAMPS)
+                            && (destination_pixmap != INDEX_NO_TIMESTAMPS)) {
+                        if (strlen(line) > 17) {
+                            if (1 != sscanf (line + 17, "%lu", &OSM_key)) {
+                                fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM_OPTIMIZE_KEY.\n");
+                            } else {
+                                set_OSM_optimize_key(OSM_key);
+                            }
+                        }
+                    }
+                }
+
+                if (strncasecmp (line, "OSM_REPORT_SCALE_KEY", 20) == 0){
+                    if ((destination_pixmap != INDEX_CHECK_TIMESTAMPS)
+                            && (destination_pixmap != INDEX_NO_TIMESTAMPS)) {
+                        if (strlen(line) > 21) {
+                            if (1 != sscanf (line + 21, "%lu", &OSM_key)) {
+                                fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM_OPTIMIZE_KEY.\n");
+                            } else {
+                                set_OSM_report_scale_key(OSM_key);
+                            }
+                        }
                     }
                 }
             }

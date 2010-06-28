@@ -1031,8 +1031,6 @@ float d_screen_distance;     // Diag screen distance
 float x_screen_distance;     // x screen distance
 //---------------------------------------------------------------------------------------------
 
-int use_OSM_levels = 0;         // OpenStreetMap uses distinct levels rather than a continuous scale
-
 char user_dir[1000];            /* user directory file */
 int delay_time;                 /* used to delay display data */
 time_t last_weather_cycle;      // Time of last call to cycle_weather()
@@ -10929,6 +10927,25 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             grid_size--;
             redraw = 1;
         }
+
+        // Additions for OSM
+        if (OSM_optimize_key(key)) {
+            if (debug_level & 512) {
+                fprintf(stderr, "Initial scale, before adjustment sx/sy = %li/%li\n", scale_x, scale_y);
+            }
+
+            adj_to_OSM_level(&scale_x, &scale_y);
+
+            if (debug_level & 512) {
+                fprintf(stderr, "Scale adjusted for OSM, sx/sy = %li/%li\n", scale_x, scale_y);
+            }
+            redraw = 1;
+        }
+
+        if ((debug_level & 512) && OSM_report_scale_key(key)) {
+            fprintf(stderr, "scale_x = %li, scale_y = %li, OSM zoom = %i\n",
+                scale_x, scale_y, osm_zoom_level(scale_x));
+        }
     }
 // End of KeyPress code
 
@@ -10958,6 +10975,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 //        last_input_event = sec_now() + 2;
     }
 }
+
+
 
 
 
@@ -12970,16 +12989,6 @@ void new_image(Widget da) {
         center_longitude,
         center_latitude);
 
-    if (use_OSM_levels == 1) {
-        if (debug_level & 512) {
-            fprintf(stderr,"new_image(): scale - x:%ld\ty:%ld\n",scale_x,scale_y);
-        }
-        adj_to_OSM_level(&scale_x, &scale_y);
-        if (debug_level & 512) {
-            fprintf(stderr,"new_image(): scaled for OSM- x:%ld\ty:%ld\n\n",scale_x,scale_y);
-        }
-    }
-
     if (create_image(da)) {
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
@@ -13043,16 +13052,6 @@ void check_range(void) {
 
     if (debug_level & 512) {
         fprintf(stderr,"checkrange- x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
-    }
-
-    if (use_OSM_levels == 1) {
-        if (debug_level & 512) {
-            fprintf(stderr,"checkrange(): scale - x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
-        }
-        adj_to_OSM_level(&new_scale_x, &new_scale_y);
-        if (debug_level & 512) {
-            fprintf(stderr,"checkrange(): scaled for OSM- x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
-        }
     }
 
 //    // scale_x will always be bigger than scale_y, so no problem here...
@@ -19796,12 +19795,9 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     XmString *list;
     FILE *f;
     map_index_record *ptr = map_index_head;
-   
 
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
-
-    use_OSM_levels = 0;
 
     // reset map_refresh in case we no longer have a refreshed map selected
     map_refresh_interval = 0;
@@ -19859,11 +19855,6 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
             // file.
             if (ptr->selected) {
                 fprintf(f,"%s\n",ptr->filename);
-                if (   strstr(ptr->filename, ".osm")
-                    || strstr(ptr->filename, ".OSM")
-                    || strstr(ptr->filename, ".Osm")) {
-                    use_OSM_levels = 1;
-                }
             }
             ptr = ptr->next;
         }
@@ -19898,12 +19889,9 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
     XmString *list;
     FILE *f;
     map_index_record *ptr = map_index_head;
-   
 
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
-
-    use_OSM_levels = 0;
 
     // reset map_refresh in case we no longer have a refreshed map selected
     map_refresh_interval = 0;
@@ -19961,11 +19949,6 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
             // file.
             if (ptr->selected) {
                 fprintf(f,"%s\n",ptr->filename);
-                if (   strstr(ptr->filename, ".osm")
-                    || strstr(ptr->filename, ".OSM")
-                    || strstr(ptr->filename, ".Osm")) {
-                    use_OSM_levels = 1;
-                }
             }
             ptr = ptr->next;
         }
@@ -20317,8 +20300,6 @@ void map_chooser_init (void) {
 
     busy_cursor(appshell);
 
-    use_OSM_levels = 0;
-
     // First run through our in-memory map index, clearing all of
     // the selected bits.
     current = map_index_head;
@@ -20345,11 +20326,6 @@ void map_chooser_init (void) {
 
                 if (strcmp(temp,current->filename) == 0) {
                     current->selected = 1;
-                    if (   strstr(current->filename, ".osm")
-                        || strstr(current->filename, ".OSM")
-                        || strstr(current->filename, ".Osm")) {
-                        use_OSM_levels = 1;
-                    }
                     done++;
                 }
                 current = current->next;
