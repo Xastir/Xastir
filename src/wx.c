@@ -2947,7 +2947,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 // Note that the length of "wx_line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
-void wx_decode(unsigned char *wx_line, int port) {
+void wx_decode(unsigned char *wx_line, int data_length, int port) {
     DataRow *p_station;
     int decoded;
     int find;
@@ -2962,9 +2962,15 @@ void wx_decode(unsigned char *wx_line, int port) {
 
 
     //fprintf(stderr,"wx_decode: %s\n",wx_line);
+    //fprintf(stderr,"\nwx_decode: %d bytes\n", data_length);
 
     find=0;
-    len=strlen((char *)wx_line);
+
+    len = data_length;
+    if (len == 0) {
+        len=strlen((char *)wx_line);
+    }
+
     if (len>10 || ((int)wx_line[0]!=0 && port_data[port].data_type==1)) {
         if (search_station_name(&p_station,my_callsign,1)) {
             if (get_weather_record(p_station)) {    // DK7IN: only add record if we found something...
@@ -2978,8 +2984,9 @@ void wx_decode(unsigned char *wx_line, int port) {
                         && port_data[port].data_type==0) {
 
                     /* Found Peet Bros U-2k */
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found Peet Bros U-2k WX:%s\n",wx_line+2);
 
-                    /*fprintf(stderr,"Found Peet Bros U-2k WX:%s\n",wx_line+2);*/
                     xastir_snprintf(wx_station_type,
                         sizeof(wx_station_type),
                         "%s",
@@ -3007,12 +3014,13 @@ void wx_decode(unsigned char *wx_line, int port) {
                         && port_data[port].data_type==0) {
 
                     /* Found Peet Bros raw U2 data */
-
                     xastir_snprintf(wx_station_type,
                         sizeof(wx_station_type),
                         "%s",
                         langcode("WXPUPSI012"));
-                    /*fprintf(stderr,"Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
+
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);
 
                     xastir_snprintf(raw_wx_string,
                         sizeof(raw_wx_string),
@@ -3045,7 +3053,9 @@ void wx_decode(unsigned char *wx_line, int port) {
                         sizeof(wx_station_type),
                         "%s",
                         langcode("WXPUPSI013"));
-                    /*fprintf(stderr,"Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
+
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);
 
                     xastir_snprintf(raw_wx_string,
                         sizeof(raw_wx_string),
@@ -3076,7 +3086,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                             sizeof(wx_station_type),
                             "%s",
                             langcode("WXPUPSI016"));
-                        /*fprintf(stderr,"Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);*/
+
+                        if (debug_level & 1)
+                            fprintf(stderr,"Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);
+
                         xastir_snprintf(weather->wx_time,
                             sizeof(weather->wx_time),
                             "%s",
@@ -3107,6 +3120,9 @@ void wx_decode(unsigned char *wx_line, int port) {
                         && is_xnum_or_dash((char *)(wx_line+5),44)
                         && port_data[port].data_type==0) {
 
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found Peet Complete station data\n");
+ 
                     xastir_snprintf(wx_station_type,
                         sizeof(wx_station_type),
                         "%s",
@@ -3126,9 +3142,12 @@ void wx_decode(unsigned char *wx_line, int port) {
                 }
 
                 else if (port_data[port].data_type==1) {
+//                    int jj;
 
                     /* binary data type */
-
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found binary data:  %d bytes\n", len);
+ 
                     /* clear raw string */
                     memset(raw_wx_string,0,sizeof(raw_wx_string));
                     max=0;
@@ -3156,14 +3175,37 @@ void wx_decode(unsigned char *wx_line, int port) {
                         default:
                             break;
                     }
-                    if (max>0) {
-                        check_sum=0;
-                        for (i=0; i<max;i++)
-                            check_sum+=wx_line[i];
 
-                        if (wx_line[max] == (0xff & check_sum)) {
+//                    fprintf(stderr, "wx_decode binary: ");
+//                    for (jj = 0; jj < len+1; jj++) {
+//                        fprintf(stderr, "%02x ", wx_line[jj]);
+//                    }
+//                    fprintf(stderr, "\n");
+//                    fprintf(stderr, "Integers: ");
+//                    for (jj = 0; jj < max+1; jj++) {
+//                        fprintf(stderr, "%0d ", wx_line[jj]);
+//                    }
+//                    fprintf(stderr, "\n");
+
+
+                    if (len < (max+1)) {
+                        fprintf(stderr, " Short NET_WX packet, %d bytes\n", len);
+                    }
+
+                    if (max > 0 && len >= (max+1) ) {
+
+                        // Compute the checksum from the data
+                        check_sum = 0;
+ 
+                        for (i = 0; i < max; i++) {
+                            check_sum += wx_line[i];
+                        }
+//                        fprintf(stderr," Checksum: 0x%02x ", 0x0ff & check_sum);
+
+                        if ( wx_line[max] == (0xff & check_sum) ) {
+
                             /* good RS WX-200 data */
-                            /*fprintf(stderr,"GOOD %0X data\n",wx_line[0]);*/
+                            //fprintf(stderr,"GOOD RS WX-200 %0X data\n",wx_line[0]);
                             /* found RS WX-200 */
                             xastir_snprintf(wx_station_type,
                                 sizeof(wx_station_type),
@@ -3177,6 +3219,9 @@ void wx_decode(unsigned char *wx_line, int port) {
                             //weather->wx_data=1;
                             wx_fill_data(0,RSWX200,wx_line,p_station);
                             decoded=1;
+                        }
+                        else {
+//                            fprintf(stderr, "bad");
                         }
                     }
                 }

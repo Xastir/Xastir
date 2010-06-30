@@ -173,6 +173,7 @@ static int pop_count = 0;
 //
 int pop_incoming_data(unsigned char *data_string, int *port) {
     int length;
+    int jj;
 
     if (begin_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
@@ -197,10 +198,17 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
 
     length = incoming_data_queue[incoming_read_ptr].length;
 
-    xastir_snprintf((char *)data_string,
-        (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
-        "%s",
-        incoming_data_queue[incoming_read_ptr].data);
+    // This isn't safe for binary data.  It gets truncated at the
+    // first zero byte!
+    // xastir_snprintf((char *)data_string,
+    //     (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
+    //     "%s",
+    //     incoming_data_queue[incoming_read_ptr].data);
+    //
+    // Binary safe code
+    for (jj = 0; jj < length; jj++) {
+        data_string[jj] = incoming_data_queue[incoming_read_ptr].data[jj];
+    }
 
     // Add terminator, just in case
     data_string[length+1] = '\0';
@@ -235,6 +243,7 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
 //
 int push_incoming_data(unsigned char *data_string, int length, int port) {
     int next_write_ptr = (incoming_write_ptr + 1) % MAX_INPUT_QUEUE;
+    int jj;
 
 
     if (begin_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
@@ -261,10 +270,17 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
 
     incoming_data_queue[incoming_write_ptr].port = port;
 
-    xastir_snprintf((char *)incoming_data_queue[incoming_write_ptr].data,
-        (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
-        "%s",
-        data_string);
+    // This isn't safe for binary data.  It gets truncated at the
+    // first zero byte!
+    // xastir_snprintf((char *)incoming_data_queue[incoming_write_ptr].data,
+    //     (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
+    //     "%s",
+    //     data_string);
+    //
+    // Binary safe
+    for (jj = 0; jj < length; jj++) {
+        incoming_data_queue[incoming_write_ptr].data[jj] = data_string[jj];
+    }
 
     queue_depth++;
     push_count++;
@@ -1378,6 +1394,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     if (length == 0) {
         // Compute length of string including terminator
         length = strlen((const char *)string) + 1;
+//fprintf(stderr,"Computing length with strlen, port %d\n", port);
     }
 
     // Check for excessively long packets.  These might be TCP/IP
@@ -5886,6 +5903,7 @@ void port_read(int port) {
     struct timeval tmv;
     fd_set rd;
     int group;
+    int binary_wx_data = 0;
     int max;
     /*
     * Some local variables used for checking AX.25 data - PE1DNN
@@ -6236,22 +6254,27 @@ length++;
 
                                                 case 0x8f:
                                                     max = 35;
+                                                    binary_wx_data = 1;
                                                     break;
 
                                                 case 0x9f:
                                                     max = 34;
+                                                    binary_wx_data = 1;
                                                     break;
 
                                                 case 0xaf:
                                                     max = 31;
+                                                    binary_wx_data = 1;
                                                     break;
 
                                                 case 0xbf:
                                                     max = 14;
+                                                    binary_wx_data = 1;
                                                     break;
 
                                                 case 0xcf:
                                                     max = 27;
+                                                    binary_wx_data = 1;
                                                     break;
 
                                                 default:
@@ -6275,10 +6298,24 @@ length++;
                                 }
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {   /* ok try to decode it */
+                                        int length = 0;
+//int jj;   
+                                        if (binary_wx_data) {                             
+                                            length = port_data[port].read_in_pos - port_data[port].read_out_pos;
+                                            if (length < 0)
+                                                length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+                                            length++;
+                                        }
+//fprintf(stderr,"\n\n3, length: %d ", length);
+//for (jj = 0; jj < (length-1); jj++) {
+//  fprintf(stderr, "%02x ", 0x0ff & port_data[port].device_read_buffer[jj]);
+//}
+//fprintf(stderr,"\n");
+
 
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                            0);
+                                            length);
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
