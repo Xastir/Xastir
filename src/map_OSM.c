@@ -95,13 +95,48 @@
 #  include <time.h>
 # endif // HAVE_SYS_TIME_H
 #endif  // TIME_WITH_SYS_TIME
-
+#undef RETSIGTYPE
+// TVR: "stupid ImageMagick"
+// The problem is that magick/api.h includes Magick's config.h file, and that
+// pulls in all the same autoconf-generated defines that we use.
+// plays those games below, but I don't think in the end that they actually 
+// make usable macros with our own data in them.
+// Fortunately, we don't need them, so I'll just undef the ones that are
+// causing problems today.  See main.c for fixes that preserve our values.
+#undef PACKAGE
+#undef VERSION
+/* JMT - stupid ImageMagick */
+#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
+#undef PACKAGE_BUGREPORT
+#define XASTIR_PACKAGE_NAME PACKAGE_NAME
+#undef PACKAGE_NAME
+#define XASTIR_PACKAGE_STRING PACKAGE_STRING
+#undef PACKAGE_STRING
+#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
+#undef PACKAGE_TARNAME
+#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
+#undef PACKAGE_VERSION
 #ifdef HAVE_GRAPHICSMAGICK
 /*#include <GraphicsMagick/magick/api.h>*/
 #include <magick/api.h>
 #else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
 #endif  // HAVE_GRAPHICSMAGICK 
+#undef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
+#undef XASTIR_PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#define PACKAGE_NAME XASTIR_PACKAGE_NAME
+#undef XASTIR_PACKAGE_NAME
+#undef PACKAGE_STRING
+#define PACKAGE_STRING XASTIR_PACKAGE_STRING
+#undef XASTIR_PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
+#undef XASTIR_PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
+#undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_MAGICK
 
 // Must be last include file
