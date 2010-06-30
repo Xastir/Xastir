@@ -3387,6 +3387,10 @@ int create_image(Widget w) {
         return(0);
  
     if (display_up_first != 0) {
+        // clear the OSM function keys. If an OSM
+        // map is selected they will get re-initialized when
+        // the map is loaded.
+        init_OSM_values();
         if (map_auto_maps && !disable_all_maps)
             load_auto_maps(w,AUTO_MAP_DIR);
         else if (!disable_all_maps)

@@ -679,9 +679,7 @@ void draw_geo_image_map (Widget w,
   #endif  // USE_MAP_CACHE
 #endif  // HAVE_MAGICK
     
-    // Initialize values that change depending on contents of the OSM .geo file
     KeySym OSM_key = 0;
-    init_OSM_values();
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
