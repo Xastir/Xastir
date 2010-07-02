@@ -28,6 +28,7 @@ pkglib_SCRIPTS = \
     ozi2geo.pl \
     permutations.pl \
     pos2shp.pl \
+    ridge_radar.pl \
     slideshow.pl \
     split_gnis.bash \
     split_gnis.pl \
