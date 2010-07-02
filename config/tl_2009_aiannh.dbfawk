@@ -22,7 +22,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #  02111-1307  USA
 #
-#  see file COPYING for details
+#   see file COPYING for details
 #
 # color,label_color,fill_color	sets object colors
 # lanes				sets width of lines drawn (in pixels)
