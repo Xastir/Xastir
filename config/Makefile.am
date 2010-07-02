@@ -49,6 +49,17 @@ EXTRA_DIST = \
     nwszoddmmyy.dbfawk \
     predefined_EVENT.sys \
     predefined_SAR.sys \
+    tl_2009_aiannh.dbfawk \
+    tl_2009_aits.dbfawk \
+    tl_2009_arealm.dbfawk \
+    tl_2009_areawater.dbfawk \
+    tl_2009_county.dbfawk \
+    tl_2009_cousub.dbfawk \
+    tl_2009_edges.dbfawk \
+    tl_2009_mil.dbfawk \
+    tl_2009_nn_county.dbfawk \
+    tl_2009_pointlm.dbfawk \
+    tl_2009_zcta5.dbfawk \
     tnc-startup.aea \
     tnc-startup.d700 \
     tnc-startup.kam \

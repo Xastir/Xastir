@@ -1,0 +1,52 @@
+# Written for the Tiger/Line 2009 dataset
+# NB: Colors have been chosen with a black background in mind.
+#
+# $Id$
+#
+#  Copyright (C) 2010  Peter Gamache, KC0TFB
+#
+#  This program is free software; you can redistribute it and/or
+#  modify
+#  it under the terms of the GNU General Public License as published
+#  by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#  02111-1307  USA
+#
+#  see file COPYING for details
+#
+# color,label_color,fill_color	sets object colors
+# lanes				sets width of lines drawn (in pixels)
+# name				sets the text that will be used as the label for the feature
+# symbol			"XYZ", where X=group (/ or \), Y=symbol and Z=overlay
+# fill_style			0=solid, 1=tiled, 2=stippled, 3=Opaque Stippled
+# fill_stipple			0 is a 13 percent stipple, 1 is 25%, 2 is 50%.
+# pattern			line pattern: 0=solid, 1=dashed, 2=double dash
+# display_level			maximum zoom level for object display
+# label_level			maximum zoom level for label display
+# font_size			0="Tiny", 4="Huge"
+
+BEGIN {
+# dbfinfo extracted from tl_2009_27_aiannh.dbf:
+dbfinfo="AIANNHCE:AIANNHNS:AIANNHID:NAME:NAMELSAD:LSAD:CLASSFP:COMPTYP:AIANNHR:MTFCC:FUNCSTAT:ALAND:AWATER:INTPTLAT:INTPTLON:STATEFP:AIANNHFP:PARTFLG";
+dbffields="NAMELSAD:MTFCC";
+}
+/^NAMELSAD=(.*)$/ {name="$1";next}
+
+/^MTFCC=G21/ { 
+display_level=128; color=65;
+label_level=96;   label_color=6;
+next;
+}
+
+#END_RECORD {}
+#END {}

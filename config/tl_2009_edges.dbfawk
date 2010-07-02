@@ -1,0 +1,100 @@
+# Written for the Tiger/Line 2009 dataset
+# NB: Colors have been chosen with a black background in mind.
+#
+# $Id$
+#
+#  Copyright (C) 2010  Peter Gamache, KC0TFB
+#
+#  This program is free software; you can redistribute it and/or
+#  modify
+#  it under the terms of the GNU General Public License as published
+#  by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#  02111-1307  USA
+#
+#  see file COPYING for details
+#
+# color,label_color,fill_color	sets object colors
+# lanes				sets width of lines drawn (in pixels)
+# name				sets the text that will be used as the label for the feature
+# symbol			"XYZ", where X=group (/ or \), Y=symbol and Z=overlay
+# fill_style (w/ filled=1)      0=solid, 1=tiled, 2=stippled, 3=Opaque Stippled
+# fill_stipple			0 is a 13 percent stipple, 1 is 25%, 2 is 50%.
+# pattern			line pattern: 0=solid, 1=dashed, 2=double dash
+# display_level			maximum zoom level for object display
+# label_level			maximum zoom level for label display
+# font_size			0="Tiny", 4="Huge"
+
+BEGIN {
+dbfinfo="STATEFP:COUNTYFP:TLID:TFIDL:TFIDR:MTFCC:FULLNAME:SMID:LFROMADD:LTOADD:RFROMADD:RTOADD:ZIPL:ZIPR:FEATCAT:HYDROFLG:RAILFLG:ROADFLG:OLFFLG:PASSFLG:DIVROAD:EXTTYP:TTYP:DECKEDROAD:ARTPATH:PERSIST:GCSEFLG:OFFSETL:OFFSETR:TNIDF:TNIDT";
+dbffields="MTFCC:FULLNAME";
+# level presets
+l_metro=256; l_county=80; l_city=32; l_town=16; l_hood=8;
+}
+
+BEGIN_RECORD {
+  color=11; # color 11 used on things we missed.
+  # Set defaults for other values:
+  name=""; filled=0; pattern=0; key=""; lanes=1; fill_color=20; label_color=20; fill_style=0;
+  display_level=64; label_level=32; font_size=0; symbol=""; fill_stipple=0;
+}
+
+/^FULLNAME=(.*)$/ {name="$1";next; }
+
+# Non-road items:
+
+/^MTFCC=L4031/ { # Ski Lift or Arial Tramway
+display_level=l_city; color=12; pattern=2; name="$name (Ski Lift/Tramway)"; next; }
+/^MTFCC=L4165/ { # Ferry crossing
+lanes=3; pattern=2; color=72; label_color=72; display_level=l_metro; label_level=l_county; next; }
+/^MTFCC=[CHKLP]/ { # Don't draw other non-road items
+display_level=0; next; }
+/^MTFCC=R101/ { # Freight Rail (heavy/freight)
+color=80; label_color=48;  pattern=1; lanes=2; display_level=128; label_level=64; next; }
+/^MTFCC=R105/ { # Passenger Rail (light/mass transit/cog rail)
+color=67; label_color=67; pattern=2; display_level=128; label_level=64; next; }
+
+# Public Roadways
+
+/^MTFCC=S11/ { # Freeways/major highways
+lanes=4; color=102; label_color=102; display_level=1024; label_level=256; font_size=2; next; }
+/^MTFCC=S12/ { # Secondary roads
+display_level=256; lanes=3; color=36; label_color=36; label_level=128; font_size=2; next; }
+/^MTFCC=S14/ { # Local roads, ramps and service drives/frontage roads
+display_level=40; color=44; label_color=44; label_level=16; color=48; lanes=1; next; }
+/^MTFCC=S15/ { # 4WD off-road trail
+color=99; label_color=99; display_level=64; font_size=1; name="$name (OHV/4WD trail)"; next; }
+/^MTFCC=S16/ { # ramps and service roads for Freeways/major highways
+color=102; label_color=102; display_level=32; next; }
+/^MTFCC=S20/ { # road median
+color=44; label_color=44; pattern=1; display_level=16; next; }
+/^MTFCC=S173/ { # alley
+color=44; label_color=44; pattern=1; display_level=32; name="$name (alley)"; next; }
+
+# Non-public roads (and public non-roads)
+
+/^MTFCC=S171/ { # walkway / pedestrian trail
+lanes=1; color=65; label_color=65; pattern=1; display_level=64; label_level=32; name="$name (walkway)"; next; }
+/^MTFCC=S172/ { # stairway
+lanes=1; color=12; label_color=12; pattern=2; display_level=32; label_level=20; name="$name (stairs)"; next; }
+/^MTFCC=S174/ { # private road
+lanes=1; color=23; label_color=23; pattern=2; display_level=32; label_level=20; name="$name (private road)"; next; }
+/^MTFCC=S17/ { # business park / townhome road / parking lane / "internal census use only"
+lanes=1; color=23; label_color=23; pattern=1; display_level=32; label_level=20; name="$name (parking/private)"; next; }
+/^MTFCC=S182/ { # bike path
+lanes=1; color=65; label_color=65; pattern=1; display_level=64; label_level=32; name="$name (bikeway)"; next; }
+/^MTFCC=S183/ { # bridle path
+lanes=1; color=65; label_color=65; pattern=2; display_level=64; label_level=32; name="$name (bridle path)"; next; }
+
+#END_RECORD {}
+#END {}

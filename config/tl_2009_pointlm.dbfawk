@@ -1,0 +1,135 @@
+# Written for the Tiger/Line 2009 dataset
+# NB: Colors have been chosen with a black background in mind.
+#
+# $Id$
+#
+#  Copyright (C) 2010  Peter Gamache, KC0TFB
+#
+#  This program is free software; you can redistribute it and/or
+#  modify
+#  it under the terms of the GNU General Public License as published
+#  by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#  02111-1307  USA
+#
+#  see file COPYING for details
+#
+# color,label_color,fill_color	sets object colors
+# lanes				sets width of lines drawn (in pixels)
+# name				sets the text that will be used as the label for the feature
+# symbol			"XYZ", where X=group (/ or \), Y=symbol and Z=overlay
+# fill_style (w/ filled=1)	0=solid, 1=tiled, 2=stippled, 3=Opaque Stippled
+# fill_stipple			0 is a 13 percent stipple, 1 is 25%, 2 is 50%.
+# pattern			line pattern: 0=solid, 1=dashed, 2=double dash
+# display_level			maximum zoom level for object display
+# label_level			maximum zoom level for label display
+# font_size			0="Tiny", 4="Huge"
+
+BEGIN {
+dbfinfo="STATEFP:COUNTYFP:ANSICODE:POINTID:FULLNAME:MTFCC";
+dbffields="FULLNAME:MTFCC";
+# level presets
+l_metro=128; l_county=64; l_city=32; l_town=16; l_hood=8;
+}
+
+BEGIN_RECORD { # Defaults
+key=""; lanes=1; color=70; fill_color=70; name=""; filled=0; pattern=0; display_level=48; label_level=32; label_color=70; font_size=0; symbol=""; fill_style=0;
+}
+
+/^FULLNAME=(.*)$/ {name="$1"; next; }
+
+# Geography
+
+/^MTFCC=3022/ { # Mountain Peak or Summit
+display_level=l_county; next; }
+/^MTFCC=3022/ { # Islands should be in edges.dbf, not here.
+display_level=0; next; }
+/^MTFCC=3026/ { # Quarry
+next; }
+/^MTFCC=3027/ { # Dam should be in areawater, not here.
+display_level=0; next; }
+
+# Road features
+
+/^MTFCC=C306/ { # ignore cul-de-sacs, roundabouts, gates and toll booths
+display_level=0; next; }
+
+# Towers
+
+/^MTFCC=C307[014]/ { # Towers (beacon/observation/lighthouse, antenna and water)
+display_level=l_city; color=50; label_color=50; symbol="\L"; next; }
+/^MTFCC=C3072/ { display_level=l_city; color=50; label_color=50; name="$name (antenna tower)"; symbol="/r"; next; }
+/^MTFCC=C3073/ { display_level=l_city; color=50; label_color=50; name="$name (water tower)"; symbol="/r"; next; }
+/^MTFCC=C307/ { # ignore other towers (tanks, windmills and monuments)
+display_level=0; next; }
+
+# Locality points
+
+/^MTFCC=C308/ { # city names; redundant with cousub.dbf
+display_level=0; next}
+
+# Potential housing (for disaster relief)
+
+/^MTFCC=K1231/ { # Hospitals
+label_color=12; display_level=l_county; symbol="/h"; next}
+/^MTFCC=K12/ { # Don't display other types
+display_level=0; next}
+
+# other gov't items
+
+/^MTFCC=K2110/ { # Military; redundant with mil.dbf
+display_level=0; next; }
+/^MTFCC=K2146/ { # Community center
+display_level=l_city; symbol="/?"; next}
+/^MTFCC=K2165/ { # Gov't center
+display_level=l_city; symbol="/?"; next}
+/^MTFCC=K218/ { # Parks not shown; redundant with arealm.dbf
+display_level=0; next}
+/^MTFCC=K2193/ { # fire dept
+label_color=12; display_level=l_county; symbol="/d"; next}
+/^MTFCC=K2194/ { # police/sheriff station
+label_color=9; display_level=l_county; symbol="/!"; next}
+/^MTFCC=K2196/ { # City hall
+display_level=l_city; symbol="/?"; next}
+/^MTFCC=K219/ { # other buildings not shown
+display_level=0; next}
+
+# Transportation
+
+/^MTFCC=K2400/ { # Transportation terminal?
+display_level=l_city; symbol="/U?"; next}
+/^MTFCC=K245[156]/ { # Airport/airfield, seaplane terminal
+display_level=l_county; symbol="\^@"; next; }
+/^MTFCC=K2452/ { # train/trolley/light rail station
+display_level=l_city; symbol="/=@"; next}
+/^MTFCC=K2453/ { # bus terminal
+display_level=l_city; symbol="/U@"; next}
+/^MTFCC=K2454/ { # marine terminal
+display_level=l_county; symbol="\s@"; next}
+
+# Education/entertainment/misc
+
+/^MTFCC=K254[03]/ { # University/school
+display_level=l_town; symbol="/K"; next}
+/^MTFCC=K2561/ { # golf course; redundant w/ arealm
+display_level=0; next; }
+/^MTFCC=K2582/ { # cemetaries
+display_level=0; next}
+/^MTFCC=K3544/ { # religious
+display_level=0; next}
+
+# catch-all rule:
+/^MTFCC=K/ {display_level=16; label_level=16; next}
+
+#END_RECORD {}
+#END {}

@@ -1,0 +1,104 @@
+# Written for the Tiger/Line 2009 dataset
+# NB: Colors have been chosen with a black background in mind.
+#
+# $Id$
+#
+#  Copyright (C) 2010  Peter Gamache, KC0TFB
+#
+#  This program is free software; you can redistribute it and/or
+#  modify
+#  it under the terms of the GNU General Public License as published
+#  by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#  02111-1307  USA
+#
+#  see file COPYING for details
+#
+# color,label_color,fill_color	sets object colors
+# lanes				sets width of lines drawn (in pixels)
+# name				sets the text that will be used as the label for the feature
+# symbol			"XYZ", where X=group (/ or \), Y=symbol and Z=overlay
+# fill_style (w/ filled=1)      0=solid, 1=tiled, 2=stippled, 3=Opaque Stippled
+# fill_stipple			0 is a 13 percent stipple, 1 is 25%, 2 is 50%.
+# pattern			line pattern: 0=solid, 1=dashed, 2=double dash
+# display_level			maximum zoom level for object display
+# label_level			maximum zoom level for label display
+# font_size			0="Tiny", 4="Huge"
+
+BEGIN {
+dbfinfo="STATEFP:COUNTYFP:ANSICODE:AREAID:FULLNAME:MTFCC:ALAND:AWATER:INTPTLAT:INTPTLON";
+dbffields="FULLNAME:MTFCC";
+}
+
+BEGIN_RECORD {
+  color=11; # color 11 used on things we missed.
+  # Set defaults for other values:
+  name=""; filled=0; pattern=0; key=""; lanes=1; fill_color=40; label_color=48; fill_style=0;
+  display_level=128; label_level=96; font_size=0; symbol=""; fill_stipple=0;
+}
+
+/^FULLNAME=(.*)$/ {name="$1";next}
+
+/^MTFCC=C3023/ { # Island
+color=40; label_color=48; font_size=1; display_level=256; label_level=128; next; }
+/^MTFCC=C3/ { # Other "C3" features not drawn - less than 20 in the whole dataset.
+display_level=0; next; }
+
+# Dwelling areas:
+
+/^MTFCC=K1121/ { # Apartment complex
+display_level=32; label_level=24; next; }
+/^MTFCC=K1228/ { # Campground
+display_level=64; label_level=48; filled=1; color=114 fill_color=114; fill_style=2; fill_stipple=2; label_color=0; font_size=1; next; }
+/^MTFCC=K122/  { # Trailer court, dormitory, hotel/resort, shelter/mission
+display_level=32; label_level=24; next; }
+/^MTFCC=K1231/ { # Hospital/hospice/urgent care facility
+display_level=64; label_level=48; filled=1; fill_color=112; fill_style=2; label_color=12; font_size=1; next; }
+/^MTFCC=K123[349]/ { # Nursing/retirement home, County home/poor farm, religious quarters
+display_level=32; label_level=24; next; }
+/^MTFCC=K123[567]/ { Juvenile Institution/Local Jail or Detention Center/Federal Penitentiary, State Prison
+display_level=32; label_level=24; filled=1; fill_style=2; fill_stipple=1; label_color=67; font_size=1; next; }
+
+# Government facilities:
+
+/^MTFCC=21[046]/ { # Governmental/Community Center/Government Center
+display_level=64; label_level=48; filled=1; fill_color=67; fill_style=2; fill_stipple=2; label_color=15; font_size=1; next; }
+/^MTFCC=K218/ { # Park/NPS land/Nat'l forest or other federal land/State, regional, county or city park
+display_level=64; label_level=32; filled=1; color=114 fill_color=114; fill_style=2; label_color=0; font_size=1; next; }
+
+# Commercial facilities
+
+/^MTFCC=K23/ { # We don't draw "K23" features
+display_level=0; next; }
+
+# Transit
+
+/^MTFCC=K24/ { # Marina/Airport/Train Station/Bus Terminal/Marine Terminal/Seaplane Anchorage/etc
+display_level=128; label_level=64; filled=1; color=115 fill_color=115; fill_style=2; label_color=0; font_size=1; next; }
+
+# Education/recreation/misc
+
+/^MTFCC=K254[03]/ { # University/College/School/Academy
+display_level=64; label_level=48; filled=1; fill_color=103; fill_style=2; font_size=0; next; }
+/^MTFCC=K2561/ { # Golf course
+display_level=64; label_level=48; filled=1; color=114 fill_color=100; fill_style=2; label_color=10; font_size=1; next; }
+/^MTFCC=K2582/ { # Cemetary (don't display - overlap w/ pointlm database)
+display_level=0; next; }
+/^MTFCC=K3544/ { # Place of worship (don't display - overlap w/ pointlm database)
+display_level=0; next; }
+/^MTFCC=K25/ { # All others (Amusement Center, Zoo)
+display_level=128; label_level=64; next; }
+
+#END_RECORD {}
+#END {}
+

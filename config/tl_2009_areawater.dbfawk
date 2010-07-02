@@ -1,0 +1,74 @@
+# Written for the Tiger/Line 2009 dataset
+# NB: Colors have been chosen with a black background in mind.
+#
+# $Id$
+#
+#  Copyright (C) 2010  Peter Gamache, KC0TFB
+#
+#  This program is free software; you can redistribute it and/or
+#  modify
+#  it under the terms of the GNU General Public License as published
+#  by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#  02111-1307  USA
+#
+#  see file COPYING for details
+#
+# color,label_color,fill_color	sets object colors
+# lanes				sets width of lines drawn (in pixels)
+# name				sets the text that will be used as the label for the feature
+# symbol			"XYZ", where X=group (/ or \), Y=symbol and Z=overlay
+# fill_style (w/ filled=1)      0=solid, 1=tiled, 2=stippled, 3=Opaque Stippled
+# fill_stipple			0 is a 13 percent stipple, 1 is 25%, 2 is 50%.
+# pattern			line pattern: 0=solid, 1=dashed, 2=double dash
+# display_level			maximum zoom level for object display
+# label_level			maximum zoom level for label display
+# font_size			0="Tiny", 4="Huge"
+
+BEGIN {
+dbfinfo="STATEFP:COUNTYFP:ANSICODE:HYDROID:FULLNAME:MTFCC:ALAND:AWATER:INTPTLAT:INTPTLON";
+dbffields="FULLNAME:MTFCC";
+}
+
+BEGIN_RECORD {
+  color=11; # color 11 used on things we missed.
+  # defaults for items below
+  name=""; filled=1; pattern=0; key=""; lanes=1;
+  fill_color=42; label_color=3; fill_style=0;
+  display_level=128; label_level=32; font_size=0; symbol="";
+}
+
+/^FULLNAME=(.*)$/ {name="$1";next}
+
+/^MTFCC=H2025/ { # Swamp/marsh
+color=42; fill_style=2; display_level=64; fill_stipple=0; next}
+/^MTFCC=H2030/ { # Lake/Pond, Reservoir, Bay/Estuary/Gulf/Sound, Ocean/Sea
+color=42; fill_style=0; next}
+/^MTFCC=H2040/ { # Reservoir
+color=42; fill_style=2; fill_stipple=2; display_level=64; next}
+/^MTFCC=H20[48]1/ { # Treatment Pond, Glacier
+color=42; fill_style=2; fill_stipple=1; display_level=64; next}
+/^MTFCC=H205/ { # Bay/Estuary/Gulf/Sound, Ocean/Sea
+color=42; fill_style=0; display_level=256; next}
+/^MTFCC=H2060/ { # Quarry filled w/ water
+color=42; fill_style=2; fill_stipple=2; display_level=64; name="$name (Quarry/Pit)"; next}
+/^MTFCC=H3010/ { # Stream/river
+color=42; next}
+/^MTFCC=H3013/ { # Braided stream
+color=42; display_level=64; next}
+/^MTFCC=H302/ { # Canal/ditch/aqueduct
+color=42; display_level=32; next}
+
+#END_RECORD {}
+#END {}
+
