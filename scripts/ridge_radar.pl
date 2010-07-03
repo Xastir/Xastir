@@ -2,8 +2,8 @@
 #
 # $Id$
 #
-# Copyright (c) 2010  Jeremy McDermond.  Contributed to the public
-# domain.
+# Contributed to the public domain.  Authored by Jeremy McDermond
+# (NH6Z).
 #
 # This script takes a single argument:  The abbreviation of the
 # radar station off of the NWS site, and outputs to STDOUT a .geo

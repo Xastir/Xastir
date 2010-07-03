@@ -2,7 +2,7 @@
 
 
 #
-# Copyright (C) 2002 Paul Lutt, KE7XT.
+# Written by Paul Lutt, KE7XT.
 # Released to the public domain.
 #
 #

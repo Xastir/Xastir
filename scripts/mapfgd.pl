@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # -*- perl -*-
-# Copyright (C) 2002 Derrick J Brashear, KB3EGH
+# Written by Derrick J Brashear, KB3EGH
 # Released to the public domain.
 
 # $Id$

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2001-2010 Curt Mills, WE7U
+# Written by Curt Mills, WE7U
 # Released to the public domain.
 # Modified from the earlier inf2geo.pl script.
 #
