@@ -10932,8 +10932,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             redraw = 1;
         }
 
-        // Additions for OSM
-        if (OSM_optimize_key(key)) {
+        // Adjust map scale, execpt when pan/zoom locked
+        if (!map_lock_pan_zoom && OSM_optimize_key(key)) {
             if (debug_level & 512) {
                 fprintf(stderr, "Initial scale, before adjustment sx/sy = %li/%li\n", scale_x, scale_y);
             }
