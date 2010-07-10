@@ -20,3 +20,4 @@ EXTRA_DIST=ChangeLog LICENSE.LGPL README README.tree dbf_api.html \
 	shpadd.c shpcreate.c shpdump.c shprewind.c shptest.c shptreedump.c \
 	shputils.c stream1.out stream1.sh stream2.out stream2.sh stream3.out
 DIST_SUBDIRS=contrib
+SUBDIRS=contrib
