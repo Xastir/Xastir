@@ -35,6 +35,9 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.3  2010/07/11 07:51:03  we7u
+ * Fixing more compiler warnings.  There are a few left yet.
+ *
  * Revision 1.2  2009/06/04 04:25:19  we7u
  * Getting rid of compiler warnings due to unused variable.
  *
@@ -92,6 +95,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 static void SHPTreeNodeDump( SHPTree *, SHPTreeNode *, const char *, int );
 static void SHPTreeNodeSearchAndDump( SHPTree *, double *, double * );
