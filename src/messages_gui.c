@@ -30,6 +30,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>                      // printf
+#include <stdint.h>
 
 #include <Xm/XmAll.h>
 
@@ -904,10 +905,10 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_des
 
 
 void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    int i, pos;
+    int pos;
+    intptr_t i;
 
-
-    i=(int)clientData;
+    i=(intptr_t)clientData;
  
     /* clear window*/
     pos=0;
@@ -1733,7 +1734,7 @@ void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
 
 
 void HamHUD_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    int ii = (int)clientData;
+    intptr_t ii =(intptr_t)clientData;
     int hamhud;
 
     hamhud = XmToggleButtonGetState(mw[ii].HamHUD_mode);
@@ -1750,7 +1751,7 @@ void HamHUD_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer cal
 
 
 void D700_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    int ii = (int)clientData;
+    intptr_t ii = (intptr_t)clientData;
     int d700;
 
     d700 = XmToggleButtonGetState(mw[ii].D700_mode);
@@ -1767,7 +1768,7 @@ void D700_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callD
 
 
 void D7_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    int ii = (int)clientData;
+    intptr_t ii = (intptr_t)clientData;
     int d7;
 
     d7 = XmToggleButtonGetState(mw[ii].D7_mode);
@@ -1938,7 +1939,8 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     Arg args[50];
     char temp[60];
     unsigned int n;
-    int j,i;
+    int j;
+    intptr_t i;
     char group[MAX_CALLSIGN+1];
     int groupon;
     int box_len;
@@ -2374,7 +2376,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 args,
                 n);
 
-        xastir_snprintf(mw[i].win, sizeof(mw[i].win), "%d", i);
+        xastir_snprintf(mw[i].win, sizeof(mw[i].win), "%ld", i);
 
         XtAddCallback(mw[i].send_message_change_path, XmNactivateCallback, Send_message_change_path, (XtPointer)mw[i].win);
  
@@ -2443,7 +2445,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 // outbound messages.
 //
 void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    int ii;
+    intptr_t ii;
     int msgs_found = 0;
 
 

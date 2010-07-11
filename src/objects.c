@@ -31,6 +31,7 @@
 
 //#include <stdio.h>
 //#include <stdlib.h>
+#include <stdint.h>
 //#include <assert.h>
 #include <ctype.h>
 #include <math.h>
@@ -7122,7 +7123,7 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     char c_lon[10]; 
     char c_lat[10];
     char time[7];
-    int i;
+    intptr_t i;
     DataRow *p_station;
     int done = 0;
     int iterations_left = 1000; // Max iterations of while loop below
@@ -7137,7 +7138,7 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
     //for (i=0;i<number_of_predefined_objects;i++) {
     //   if (strcmp((char *)clientData,predefinedObjects[i].call)==0) {   
-    i = (int)clientData;
+    i = (intptr_t)clientData;
     if (i > -1) {
         if (i <= number_of_predefined_objects) {
             xastir_snprintf(page,sizeof(page), "%s", predefinedObjects[i].page);
@@ -7152,12 +7153,12 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     x_lon = center_longitude - ((width *scale_x)/2) + (menu_x*scale_x);
     x_lat = center_latitude  - ((height*scale_y)/2) + (menu_y*scale_y);
     if(debug_level & 1)
-        fprintf(stderr, "Creating symbol %s %s at: %lu %lu with calldata: [%i]\n",
+        fprintf(stderr, "Creating symbol %s %s at: %lu %lu with calldata: [%li]\n",
              page,
              symbol,
              x_lat,
              x_lon,
-             (int)clientData);
+             (intptr_t)clientData);
 
     // CONVERT_LP_NOSP      = DDMM.MMN
     convert_lat_l2s(x_lat, (char *)c_lat, sizeof(c_lat), CONVERT_LP_NOSP);

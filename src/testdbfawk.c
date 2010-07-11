@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifdef WITH_DBFAWK
 
@@ -78,8 +79,8 @@ void print_symtbl(awk_symtab *this) {
     int i;
 
 //    fprintf(stderr,"symtbl 0%0x dump:\n",(u_int)this);
-    fprintf(stderr,"symtbl 0x%0x dump:\n",
-        (unsigned int)this);
+    fprintf(stderr,"symtbl 0x%0lx dump:\n",
+        (uintptr_t)this);
     for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
       for (s = this->hash[i]; s; s = s->next_sym) {
         *buf = '\0';

@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -293,25 +294,27 @@ shpinfo *get_shp_from_hash(char *filename) {
 // Must not ever use cache a value of the root pointer if there's any
 // chance that the tree needs to be expanded!
 void build_rtree (struct Node **root, SHPHandle sHP) {
-    int nEntities,i;
+    int nEntities;
+    intptr_t i;
     SHPObject	*psCShape;
     struct Rect bbox_shape;
     SHPGetInfo(sHP, &nEntities, NULL, NULL, NULL);
     for( i = 0; i < nEntities; i++ ) {
         psCShape = SHPReadObject ( sHP, i );
- 	if (psCShape != NULL) {
-          bbox_shape.boundary[0]=(RectReal) psCShape->dfXMin;
-          bbox_shape.boundary[1]=(RectReal) psCShape->dfYMin;
-          bbox_shape.boundary[2]=(RectReal) psCShape->dfXMax;
-          bbox_shape.boundary[3]=(RectReal) psCShape->dfYMax;
-          SHPDestroyObject ( psCShape );
-          // Only insert the rect if it will not fail the assertion in 
-          // Xastir_RTreeInsertRect --- this will cause us to ignore any shapes that
-          // have invalid bboxes (or that return invalid bboxes from shapelib
-          // for whatever reason
-          if (bbox_shape.boundary[0] <= bbox_shape.boundary[2] &&
-              bbox_shape.boundary[1] <= bbox_shape.boundary[3])
-              Xastir_RTreeInsertRect(&bbox_shape,i+1,root,0);
+     	if (psCShape != NULL) {
+            bbox_shape.boundary[0]=(RectReal) psCShape->dfXMin;
+            bbox_shape.boundary[1]=(RectReal) psCShape->dfYMin;
+            bbox_shape.boundary[2]=(RectReal) psCShape->dfXMax;
+            bbox_shape.boundary[3]=(RectReal) psCShape->dfYMax;
+            SHPDestroyObject ( psCShape );
+            // Only insert the rect if it will not fail the assertion in 
+            // Xastir_RTreeInsertRect --- this will cause us to ignore any shapes that
+            // have invalid bboxes (or that return invalid bboxes from shapelib
+            // for whatever reason
+            if (bbox_shape.boundary[0] <= bbox_shape.boundary[2] &&
+                    bbox_shape.boundary[1] <= bbox_shape.boundary[3]) {
+                Xastir_RTreeInsertRect(&bbox_shape, (void *)(i+1), root, 0);
+            }
         }
     }
 }

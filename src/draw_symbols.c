@@ -3539,7 +3539,7 @@ void draw_deadreckoning_features(DataRow *p_station,
             symbol_orient(p_station->course),
             p_station->aprs_symbol.area_object.type,
             p_station->signpost,
-            (char) NULL,
+            (char) 0x00,
             0);  // Don't bump the station count
     }
 }

@@ -4068,8 +4068,6 @@ int ax25_init(int port) {
     // Show the latest status in the interface control dialog
     update_interface_list();
 
-    temp[0] = proto = (int)dev;     // Converting pointer to int, then to char?????
-    // ^^^^ this doesn't do anything
 #else /* HAVE_LIBAX25 */
     fprintf(stderr,"AX.25 support not compiled into Xastir!\n");
     popup_message(langcode("POPEM00004"),langcode("POPEM00021"));
