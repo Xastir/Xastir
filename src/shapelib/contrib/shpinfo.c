@@ -27,6 +27,9 @@
  * 
  *
  * $Log$
+ * Revision 1.3  2010/07/11 07:24:37  we7u
+ * Fixing multiple minor warnings with Shapelib.  Still plenty left.
+ *
  * Revision 1.2  2007/07/25 15:45:27  we7u
  * Adding includes necessary for warning-free compiles.
  *
@@ -136,4 +139,6 @@ int main( int argc, char ** argv )
 
 
     SHPClose( hSHP );
+    return(0);
 }
+

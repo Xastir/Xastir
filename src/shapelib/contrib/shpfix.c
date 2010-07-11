@@ -106,4 +106,6 @@ int main( int argc, char ** argv )
 
     SHPClose ( hSHP );
     SHPClose ( cSHP );
+    return(0);
 }
+

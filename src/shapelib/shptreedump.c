@@ -35,6 +35,9 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.2  2009/06/04 04:25:19  we7u
+ * Getting rid of compiler warnings due to unused variable.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -97,8 +100,7 @@ static void SHPTreeNodeSearchAndDump( SHPTree *, double *, double * );
 /*                               Usage()                                */
 /************************************************************************/
 
-static void Usage()
-
+static void Usage(void)
 {
     printf( "shptreedump [-maxdepth n] [-search xmin ymin xmax ymax]\n"
             "            [-v] shp_file\n" );

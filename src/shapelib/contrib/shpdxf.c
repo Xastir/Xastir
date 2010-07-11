@@ -43,9 +43,7 @@
 
 #define FLOAT_PREC "%16.5f\r\n"
 
-void dxf_hdr (x1,y1,x2,y2,df)
-double x1,y1,x2,y2;
-FILE  *df;
+void dxf_hdr (double x1, double y1, double x2, double y2, FILE *df)
 {
 /* Create HEADER section */
 
@@ -122,11 +120,7 @@ FILE  *df;
 }
 
 
-void
-dxf_ent_preamble (dxf_type, id, df)
-int dxf_type;
-char *id;
-FILE *df;
+void dxf_ent_preamble (int dxf_type, char *id, FILE *df)
 {
 
   fprintf( df, "  0\r\n" );
@@ -159,12 +153,7 @@ FILE *df;
 
 }
 
-void
-dxf_ent (id, x, y, z, dxf_type, df)
-char *id;
-double x,y,z;
-int dxf_type;
-FILE *df;
+void dxf_ent (char *id, double x, double y, double z, int dxf_type, FILE *df)
 {
   if ((dxf_type == SHPT_ARC) || ( dxf_type == SHPT_POLYGON))  {
     fprintf( df, "  0\r\n");
@@ -184,10 +173,7 @@ FILE *df;
 }
 
 
-void
-dxf_ent_postamble (dxf_type, df)
-int dxf_type;
-FILE *df;
+void dxf_ent_postamble (int dxf_type, FILE *df)
 {
   if ((dxf_type == SHPT_ARC) || ( dxf_type == SHPT_POLYGON)) 
     fprintf( df, "  0\r\nSEQEND\r\n  8\r\n0\r\n", df);
@@ -332,6 +318,7 @@ main (int argc, char **argv)
     SHPClose (shp);
     DBFClose (dbf);
     fclose (dxf);
+    return(0);
 }
 
 

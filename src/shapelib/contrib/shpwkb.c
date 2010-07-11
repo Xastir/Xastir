@@ -26,6 +26,9 @@
  *
  *
  * $Log$
+ * Revision 1.2  2010/07/11 07:24:37  we7u
+ * Fixing multiple minor warnings with Shapelib.  Still plenty left.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -149,4 +152,6 @@ int main( int argc, char ** argv )
     if ( wkb_file )  fclose ( wkb_file );
 
     printf ("\n");
+    return(0);
 }
+
