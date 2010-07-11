@@ -95,12 +95,12 @@ struct ListNode
  * It can terminate the search early by returning 0 in which case
  * the search will return the number of hits found up to that point.
  */
-typedef int (*SearchHitCallback)(int id, void* arg);
+typedef int (*SearchHitCallback)(void *id, void* arg);
 
 
 extern int Xastir_RTreeSearch(struct Node*, struct Rect*, SearchHitCallback, void*);
-extern int Xastir_RTreeInsertRect(struct Rect*, int, struct Node**, int depth);
-extern int Xastir_RTreeDeleteRect(struct Rect*, int, struct Node**);
+extern int Xastir_RTreeInsertRect(struct Rect*, void *, struct Node**, int depth);
+extern int Xastir_RTreeDeleteRect(struct Rect*, void *, struct Node**);
 extern struct Node * Xastir_RTreeNewIndex(void);
 extern struct Node * Xastir_RTreeNewNode(void);
 extern void Xastir_RTreeInitNode(struct Node*);

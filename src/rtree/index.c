@@ -83,7 +83,7 @@ int Xastir_RTreeSearch(struct Node *N, struct Rect *R, SearchHitCallback shcb, v
 			{
 				hitCount++;
 				if(shcb) // call the user-provided callback
-					if( ! shcb((int)n->branch[i].child, cbarg))
+					if( ! shcb(n->branch[i].child, cbarg))
 						return hitCount; // callback wants to terminate search early
 			}
 	}
@@ -101,7 +101,7 @@ int Xastir_RTreeSearch(struct Node *N, struct Rect *R, SearchHitCallback shcb, v
 // level to insert; e.g. a data rectangle goes in at level = 0.
 //
 static int Xastir_RTreeInsertRect2(struct Rect *r,
-		int tid, struct Node *n, struct Node **new_node, int level)
+		void *tid, struct Node *n, struct Node **new_node, int level)
 {
 /*
 	register struct Rect *r = R;
@@ -165,10 +165,10 @@ static int Xastir_RTreeInsertRect2(struct Rect *r,
 // level to insert; e.g. a data rectangle goes in at level = 0.
 // Xastir_RTreeInsertRect2 does the recursion.
 //
-int Xastir_RTreeInsertRect(struct Rect *R, int Tid, struct Node **Root, int Level)
+int Xastir_RTreeInsertRect(struct Rect *R, void *Tid, struct Node **Root, int Level)
 {
 	register struct Rect *r = R;
-	register int tid = Tid;
+	register void *tid = Tid;
 	register struct Node **root = Root;
 	register int level = Level;
 	register int i;
@@ -242,16 +242,16 @@ static void Xastir_RTreeReInsert(struct Node *n, struct ListNode **ee)
 // Returns 1 if record not found, 0 if success.
 //
 static int
-Xastir_RTreeDeleteRect2(struct Rect *R, int Tid, struct Node *N, struct ListNode **Ee)
+Xastir_RTreeDeleteRect2(struct Rect *R, void *Tid, struct Node *N, struct ListNode **Ee)
 {
 	register struct Rect *r = R;
-	register int tid = Tid;
+	register void *tid = Tid;
 	register struct Node *n = N;
 	register struct ListNode **ee = Ee;
 	register int i;
 
 	assert(r && n && ee);
-	assert(tid >= 0);
+	assert(tid >= (void *)0);
 	assert(n->level >= 0);
 
 	if (n->level > 0)  // not a leaf node
@@ -301,10 +301,10 @@ Xastir_RTreeDeleteRect2(struct Rect *R, int Tid, struct Node *N, struct ListNode
 // Returns 1 if record not found, 0 if success.
 // Xastir_RTreeDeleteRect provides for eliminating the root.
 //
-int Xastir_RTreeDeleteRect(struct Rect *R, int Tid, struct Node**Nn)
+int Xastir_RTreeDeleteRect(struct Rect *R, void *Tid, struct Node**Nn)
 {
 	register struct Rect *r = R;
-	register int tid = Tid;
+	register void *tid = Tid;
 	register struct Node **nn = Nn;
 	register int i;
 	register struct Node *tmp_nptr=NULL; // Original superliminal.com
@@ -317,7 +317,7 @@ int Xastir_RTreeDeleteRect(struct Rect *R, int Tid, struct Node**Nn)
 
 	assert(r && nn);
 	assert(*nn);
-	assert(tid >= 0);
+	assert(tid >= (void *)0);
 
 	if (!Xastir_RTreeDeleteRect2(r, tid, *nn, &reInsertList))
 	{
@@ -333,7 +333,7 @@ int Xastir_RTreeDeleteRect(struct Rect *R, int Tid, struct Node**Nn)
 				{
 					Xastir_RTreeInsertRect(
 						&(tmp_nptr->branch[i].rect),
-						(int)tmp_nptr->branch[i].child,
+						tmp_nptr->branch[i].child,
 						nn,
 						tmp_nptr->level);
 				}
