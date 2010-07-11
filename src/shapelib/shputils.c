@@ -53,6 +53,9 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.5  2010/07/11 07:51:03  we7u
+ * Fixing more compiler warnings.  There are a few left yet.
+ *
  * Revision 1.4  2010/07/11 07:24:37  we7u
  * Fixing multiple minor warnings with Shapelib.  Still plenty left.
  *
@@ -768,11 +771,13 @@ long int value, ty;
       case FTInteger:
         value = DBFReadIntegerAttribute( hDBF, iRecord, iselectitem );
         for (j = 0; j<selcount; j++)
-          {
+        {
           if (selectvalues[j] == value)
-               if (iunselect) return(0);  /* Keep this record */
-                        else  return(1);  /* Skip this record */
+          {
+            if (iunselect) return(0);  /* Keep this record */
+                     else  return(1);  /* Skip this record */
           }
+        }
 	break;
       case FTDouble:
         puts("Invalid Item");
@@ -853,12 +858,14 @@ int clip_boundary()
                }
                
           for( j2 = 0; j2 < psCShape->nVertices; j2++ ) 
-               {   /** At least one vertex must be inside the clip boundary **/
-               if ( (psCShape->padfX[j2] >= cxmin  &&  psCShape->padfX[j2] <= cxmax) ||
-                    (psCShape->padfY[j2] >= cymin  &&  psCShape->padfY[j2] <= cymax)  )
-                    if (ierase) return(0); /** SKIP  RECORD **/
-                         else   return(1); /** WRITE RECORD **/
-               }
+          {   /** At least one vertex must be inside the clip boundary **/
+            if ( (psCShape->padfX[j2] >= cxmin  &&  psCShape->padfX[j2] <= cxmax) ||
+                 (psCShape->padfY[j2] >= cymin  && psCShape->padfY[j2] <= cymax)  )
+            {
+              if (ierase) return(0); /** SKIP  RECORD **/
+                   else   return(1); /** WRITE RECORD **/
+            }
+          }
                
           /** All vertices are outside the clip boundary **/ 
           if (ierase) return(1); /** WRITE RECORD **/
