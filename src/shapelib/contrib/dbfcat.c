@@ -4,6 +4,9 @@
  * This code is in the public domain.
  *
  * $Log$
+ * Revision 1.2  2007/07/25 15:45:27  we7u
+ * Adding includes necessary for warning-free compiles.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -38,8 +41,8 @@
  *
  */
 
-static char rcsid[] = 
-  "$Id$";
+//static char rcsid[] = 
+//  "$Id$";
 
 #include "shapefil.h"
 #include <stdlib.h>
@@ -49,8 +52,9 @@ int main( int argc, char ** argv )
 
 {
     DBFHandle	hDBF;
-    int		*panWidth, i, iRecord;
-    char	szFormat[32], szField[1024];
+//    int		*panWidth;
+    int     i, iRecord;
+//    char	szFormat[32], szField[1024];
     char	cTitle[32], nTitle[32];
     int		nWidth, nDecimals;
     int		cnWidth, cnDecimals;
@@ -58,7 +62,8 @@ int main( int argc, char ** argv )
     DBFFieldType	hType,cType;
     int		ci, ciRecord;
     char	tfile[160];
-    int		hflds, j, cflds;
+    int		hflds, cflds;
+//    int     j;
     int 	verbose				= 0;
     int		force 				= 0;
     int		mismatch			= 0;
@@ -147,7 +152,7 @@ int main( int argc, char ** argv )
       ciRecord = DBFGetRecordCount( cDBF );
       for ( i = 0; i < hflds;i ++ )
 	{	
-	double	cf;
+//	double	cf;
 	ci = fld_m[i];
 	if ( ci != -1 )
 	{

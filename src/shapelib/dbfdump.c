@@ -34,6 +34,29 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.1  2006/11/10 21:48:09  tvrusso
+ * Add shapelib as an internal library, and use it if we don't find an external
+ * one.
+ *
+ * Make a loud warning if we do so, because the result of this is that we'll
+ * have a bigger executable.
+ *
+ * This commit is bigger than it needs to be, because it includes all of
+ * shapelib, including the contrib directory.
+ *
+ * Added an automake-generated Makefile for this thing.
+ *
+ * Builds only a static library, and calls it "libshape.a" instead of
+ * "libshp.a" so that if we use ask to use the static one while there is
+ * also an external one installed, the linker doesn't pull in the shared
+ * library one unbidden.
+ *
+ * This stuff can be tested on a system with libshp installed by configuring with
+ * "--without-shapelib"
+ *
+ * I will be removing Makefile.in because it's not supposed to be in CVS.  My
+ * mistake.
+ *
  * Revision 1.9  2002/01/15 14:36:07  warmerda
  * updated email address
  *
@@ -60,8 +83,8 @@
  *
  */
 
-static char rcsid[] = 
-  "$Id$";
+//static char rcsid[] = 
+//  "$Id$";
 
 #include <stdlib.h>
 #include <string.h>

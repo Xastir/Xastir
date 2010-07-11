@@ -27,6 +27,9 @@
  * 
  *
  * $Log$
+ * Revision 1.2  2007/07/25 15:45:27  we7u
+ * Adding includes necessary for warning-free compiles.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -69,13 +72,16 @@
 int main( int argc, char ** argv )
 
 {
-    SHPHandle	hSHP, cSHP;
-    int		nShapeType, nEntities, nVertices, nParts, *panParts, i, iPart;
-    double	*padVertices, adfBndsMin[4], adfBndsMax[4];
-    const char 	*pszPlus;
-    int		cShapeType, cEntities, cVertices, cParts, *cpanParts, ci, cPart;
-    double	*cpadVertices, cadBounds[4];
-    const char 	*cpszPlus;
+    SHPHandle	hSHP;
+//    SHPHandle   cSHP;
+    int		nShapeType, nEntities;
+//    int     nVertices, nParts, *panParts, i, iPart;
+    double	adfBndsMin[4], adfBndsMax[4];
+//    double  *padVertices;
+//    const char 	*pszPlus;
+//    int		cShapeType, cEntities, cVertices, cParts, *cpanParts, ci, cPart;
+//    double	*cpadVertices, cadBounds[4];
+//    const char 	*cpszPlus;
     char	sType [15]= "";
 /* -------------------------------------------------------------------- */
 /*      Display a usage message.                                        */
@@ -119,7 +125,7 @@ int main( int argc, char ** argv )
 
 /* -------------------------------------------------------------------- */
    printf ("Info for %s\n",argv[1]);
-   printf ("%s(%d), %ld Records in file\n",sType,nShapeType,nEntities);
+   printf ("%s(%d), %d Records in file\n",sType,nShapeType,nEntities);
 
 /* -------------------------------------------------------------------- */
 /*      Print out the file bounds.                                      */

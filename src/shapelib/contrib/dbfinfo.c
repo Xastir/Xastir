@@ -10,6 +10,9 @@
  * 
  *
  * $Log$
+ * Revision 1.2  2007/07/25 15:45:27  we7u
+ * Adding includes necessary for warning-free compiles.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -48,14 +51,16 @@ int main( int argc, char ** argv )
 
 {
     DBFHandle	hDBF;
-    int		*panWidth, i, iRecord;
-    char	szFormat[32], szField[1024];
-    char	ftype[15], cTitle[32], nTitle[32];
+    int		*panWidth, i;
+//    int     iRecord;
+//    char	szFormat[32], szField[1024];
+    char	ftype[15];
+//    char cTitle[32], nTitle[32];
     int		nWidth, nDecimals;
-    int		cnWidth, cnDecimals;
-    DBFHandle	cDBF;
-    DBFFieldType	hType,cType;
-    int		ci, ciRecord;
+//    int		cnWidth, cnDecimals;
+//    DBFHandle	cDBF;
+//    DBFFieldType	hType,cType;
+//    int		ci, ciRecord;
 
 /* -------------------------------------------------------------------- */
 /*      Display a usage message.                                        */
@@ -82,7 +87,7 @@ int main( int argc, char ** argv )
 /*	If there is no data in this file let the user know.		*/
 /* -------------------------------------------------------------------- */
     i = DBFGetFieldCount(hDBF);
-    printf ("%ld Columns,  %ld Records in file\n",i,DBFGetRecordCount(hDBF));
+    printf ("%d Columns,  %d Records in file\n",i,DBFGetRecordCount(hDBF));
     
 /* -------------------------------------------------------------------- */
 /*	Compute offsets to use when printing each of the field 		*/
@@ -94,7 +99,7 @@ int main( int argc, char ** argv )
     for( i = 0; i < DBFGetFieldCount(hDBF); i++ )
     {
 	char		szTitle[12];
-	DBFFieldType	eType;
+//	DBFFieldType	eType;
 
 	switch ( DBFGetFieldInfo( hDBF, i, szTitle, &nWidth, &nDecimals )) {
 	      case FTString:

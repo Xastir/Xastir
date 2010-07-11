@@ -32,6 +32,9 @@
  * use -DPROJ4 to compile in Projection support
  *
  * $Log$
+ * Revision 1.2  2007/07/25 15:45:27  we7u
+ * Adding includes necessary for warning-free compiles.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -294,7 +297,7 @@ int SHPOGisType ( int GeomType, int toOGis) {
  * **************************************************************************/
 int SHPReadSHPStream ( SHPObject *psCShape, char *stream_obj) {
 
-int	obj_storage;
+//int	obj_storage;
 int	my_order, need_swap =0, GeoType ;
 int	use_Z = 0;
 int	use_M = 0;
@@ -353,7 +356,8 @@ int	use_M = 0;
 int SHPWriteSHPStream ( WKBStreamObj *stream_obj, SHPObject *psCShape ) {
 
 int	obj_storage = 0;
-int	need_swap = 0, my_order, GeoType;
+int	need_swap = 0;
+//int my_order, GeoType;
 int	use_Z = 0;
 int	use_M = 0;
 
@@ -433,8 +437,9 @@ int WKBStreamRead ( WKBStreamObj* wso, void* this, int tcount, int tsize ) {
 SHPObject* SHPReadOGisWKB ( WKBStreamObj *stream_obj) {
   SHPObject	*psCShape;
   char		WKB_order;
-  int		need_swap = 0, my_order, GeoType = 0;
-  int		use_Z = 0, use_M = 0;
+//  int		need_swap = 0;
+  int       my_order, GeoType = 0;
+//  int		use_Z = 0, use_M = 0;
   int		nSHPType, thisDim;
 
   WKBStreamRead ( stream_obj, &WKB_order, 1, sizeof(char));
@@ -474,13 +479,14 @@ SHPObject* SHPReadOGisWKB ( WKBStreamObj *stream_obj) {
  * **************************************************************************/
 int SHPWriteOGisWKB ( WKBStreamObj* stream_obj, SHPObject *psCShape ) {
 
-  int		need_swap = 0, my_order, GeoType, thisDim;
-  int		use_Z = 0, use_M = 0;  
+//  int		need_swap = 0;
+  int       my_order, GeoType, thisDim;
+//  int		use_Z = 0, use_M = 0;  
   char		LSB = 1;
   /* indicate that this WKB is in LSB Order	*/
 
   /* OGis WKB can handle either byte order,  but if I get to choose I'd
-  /* rather have it predicatable system-to-system							*/
+   * rather have it predicatable system-to-system							*/
 
   if ( stream_obj ) {
     if ( stream_obj->wStream )
@@ -556,7 +562,8 @@ int SHPWriteOGisWKB ( WKBStreamObj* stream_obj, SHPObject *psCShape ) {
 int SHPWriteOGisPolygon ( WKBStreamObj *stream_obj, SHPObject *psCShape ) {
    SHPObject		**ppsC;
    SHPObject		*psC;
-   int			rPart, ring, rVertices, cpart, cParts, nextring, i, j;
+   int			rPart, ring, rVertices, cpart, cParts, nextring, j;
+//   int          i;
    char			Flag = 1;
    int			GeoType = OGIST_POLYGON;
    
@@ -659,9 +666,10 @@ int SHPWriteOGisPoint ( WKBStreamObj *stream_obj, SHPObject *psCShape ) {
  *
  * **************************************************************************/
 SHPObject* SHPReadOGisPolygon ( WKBStreamObj *stream_obj ) {
-   SHPObject		**ppsC;
+//   SHPObject		**ppsC;
    SHPObject		*psC;
-   int			rPart, ring, rVertices, cpart, cParts, nextring, i, j;
+   int			rPart, ring, rVertices, cpart, cParts, j;
+//   int          i, nextring;
    int			totParts, totVertices, pRings, nParts;
    
    psC = SHPCreateObject ( SHPT_POLYGON, -1, 0, NULL, NULL, 0,
@@ -726,9 +734,10 @@ SHPObject* SHPReadOGisPolygon ( WKBStreamObj *stream_obj ) {
  *
  * **************************************************************************/
 SHPObject* SHPReadOGisLine ( WKBStreamObj *stream_obj ) {
-   SHPObject		**ppsC;
+//   SHPObject		**ppsC;
    SHPObject		*psC;
-   int			rPart, ring, rVertices, cpart, cParts, nextring, i, j;
+   int			rPart, ring, rVertices, cpart, cParts, j;
+//   int          i, nextring;
    int			totParts, totVertices, pRings, nParts;
    
    psC = SHPCreateObject ( SHPT_ARC, -1, 0, NULL, NULL, 0,
@@ -1065,9 +1074,11 @@ PT SHPCentrd_2d ( SHPObject *psCShape ) {
  *
  * **************************************************************************/
 int RingCentroid_2d ( int nVertices, double *a, double *b, PT *C, double *Area ) {
-  int		iv,jv;
-  int		sign_x, sign_y;
-  double	dy_Area, dx_Area, Cx_accum, Cy_accum, ppx, ppy;
+  int		iv;
+//  int       jv;
+//  int		sign_x, sign_y;
+  double	dx_Area, Cx_accum, Cy_accum, ppx, ppy;
+//  double    dy_Area;
   double 	x_base, y_base, x, y;
 
 /* the centroid of a closed Ring is defined as
@@ -1140,7 +1151,8 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
    int		i, ti, last_vtx;
    double	tX;
    double 	*a, *b;
-   double	dx0, dx1, dy0, dy1, v1, v2 ,v3;
+   double	dx0, dx1, dy0, dy1, v3;
+//   double   v1, v2;
    
    tX = 0.0;
    a = psCShape->padfX;
@@ -1209,7 +1221,8 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
  * **************************************************************************/
 double SHPArea_2d ( SHPObject *psCShape ) {
     double 	cArea;
-    int		ring, ring_vtx, ringDir, ring_nVertices;
+    int		ring, ring_vtx, ring_nVertices;
+//    int     ringDir;
   
    cArea = 0;
    if ( !(SHPDimension (psCShape->nSHPType) & SHPD_AREA) )  
@@ -1310,7 +1323,8 @@ double RingLength_2d ( int nVertices, double *a, double *b ) {
  *
  * **************************************************************************/
 double RingArea_2d ( int nVertices, double *a, double *b ) {
-  int		iv,jv;
+  int		iv;
+//  int       jv;
   double	ppx, ppy;
   static 	double	Area;
   double	dx_Area;
@@ -1557,7 +1571,7 @@ SHPObject* SHPClone ( SHPObject *psCShape, int lowPart, int highPart ) {
 /************************************************************************/
 void SwapG( void *so, void *in, int this_cnt, int this_size ) {
     int		i, j;
-    unsigned char	temp;
+//    unsigned char	temp;
 
 /* return to a new pointer otherwise it would invalidate existing data	*/
 /* as prevent further use of it											*/

@@ -205,7 +205,8 @@ main (int argc, char **argv)
     char fldName[15];
     char id[255];
     double elev;
-    int   parts, *panParts, nParts, nVertices;
+    int   *panParts, nParts, nVertices;
+//    int   parts;
     FILE	*dxf;
     SHPHandle shp;
     DBFHandle dbf;

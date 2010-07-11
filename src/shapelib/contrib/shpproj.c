@@ -33,6 +33,9 @@
  * SHPGeo must be compiled with -DPROJ4 support
  *
  * $Log$
+ * Revision 1.2  2007/07/25 15:45:27  we7u
+ * Adding includes necessary for warning-free compiles.
+ *
  * Revision 1.1  2006/11/10 21:48:10  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -84,21 +87,22 @@ int main( int argc, char ** argv )
 {
     SHPHandle	old_SHP, new_SHP;
     DBFHandle   old_DBF, new_DBF;
-    int		nShapeType, nEntities, nVertices, nParts, *panParts, i, iPart, j;
-    double	*padVertices, adBounds[4];
-    const char 	*pszPlus;
-    DBFFieldType  idfld_type;
+    int		nShapeType, nEntities, i, j;
+//    int     nVertices, nParts *panParts, iPart;
+//    double	*padVertices, adBounds[4];
+//    const char 	*pszPlus;
+//    DBFFieldType  idfld_type;
     SHPObject	*psCShape;
     FILE	*ifp = NULL;
-    int		idfld, nflds;
-    char	kv[257] = "";
-    char	idfldName[120] = "";
-    char	fldName[120] = "";
-    char	shpFileName[120] = "";
-    char	dbfFileName[120] = "";
+//    int		idfld, nflds;
+//    char	kv[257] = "";
+//    char	idfldName[120] = "";
+//    char	fldName[120] = "";
+//    char	shpFileName[120] = "";
+//    char	dbfFileName[120] = "";
     char	prjFileName[120] = "";
     char	parg[80];
-    double	apeture[4];
+//    double	apeture[4];
     int		inarg, outarg;
     char	*DBFRow = NULL;
 
@@ -112,7 +116,7 @@ int main( int argc, char ** argv )
     int		in_argc = 0 , out_argc = 0, outf_arg;
     char	*arglst;
     projPJ	orig_prj, new_prj;
-    va_list	myargs, moargs;
+//    va_list	myargs, moargs;
 
     if( argc < 4)
     {
@@ -239,7 +243,7 @@ int main( int argc, char ** argv )
      
     for( i = 0; i < nEntities; i++ )
     {
-	int		j;
+//	int		j;
 
 	psCShape = SHPReadObject ( old_SHP, i );
 
