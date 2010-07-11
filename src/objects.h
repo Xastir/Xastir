@@ -26,6 +26,7 @@
 #define XASTIR_OBJECTS_H
 
 #include <X11/Intrinsic.h>
+#include <stdint.h>
 
 
 // For mutex debugging with Linux threads only
@@ -116,7 +117,7 @@ typedef struct {
     char data[PREDEFINED_OBJECT_DATA_LENGTH]; 
                                 // Data following the symbol.
     char menu_call[26];         // Name to display on menu.
-    int index;                  // Index of this object 
+    intptr_t index;             // Index of this object 
                                 // in the predefinedObjects array.
     int show_on_menu;           // !=1 to hide on menu.
     int index_of_child;         // > -1 to create two objects
