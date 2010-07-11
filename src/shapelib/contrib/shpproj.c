@@ -33,6 +33,9 @@
  * SHPGeo must be compiled with -DPROJ4 support
  *
  * $Log$
+ * Revision 1.4  2010/07/11 07:51:03  we7u
+ * Fixing more compiler warnings.  There are a few left yet.
+ *
  * Revision 1.3  2010/07/11 07:24:37  we7u
  * Fixing multiple minor warnings with Shapelib.  Still plenty left.
  *
@@ -90,7 +93,8 @@ int main( int argc, char ** argv )
 {
     SHPHandle	old_SHP, new_SHP;
     DBFHandle   old_DBF, new_DBF;
-    int		nShapeType, nEntities, i, j;
+    int		nShapeType, nEntities, i;
+    unsigned int j;
 //    int     nVertices, nParts *panParts, iPart;
 //    double	*padVertices, adBounds[4];
 //    const char 	*pszPlus;

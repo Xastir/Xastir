@@ -196,10 +196,10 @@ main (int argc, char **argv)
     FILE	*dxf;
     SHPHandle shp;
     DBFHandle dbf;
-    DBFFieldType  idfld_type;
+    DBFFieldType  idfld_type = FTInvalid;
     double adfBoundsMin[4], adfBoundsMax[4];
     int	vrtx, shp_type, shp_numrec, zfld, idfld, nflds, recNum, part;
-    unsigned int MaxElem = -1;
+    int MaxElem = 0;
  
     if ( argc < 2 )  {
         printf ("usage: shpdxf shapefile {idfield}\r\n");

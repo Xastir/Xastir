@@ -34,6 +34,9 @@
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.2  2010/07/11 07:24:37  we7u
+ * Fixing multiple minor warnings with Shapelib.  Still plenty left.
+ *
  * Revision 1.1  2006/11/10 21:48:09  tvrusso
  * Add shapelib as an internal library, and use it if we don't find an external
  * one.
@@ -167,6 +170,8 @@ int main( int argc, char ** argv )
                 pszTypeName = "Double";
             else if( eType == FTInvalid )
                 pszTypeName = "Invalid";
+            else
+                pszTypeName = "Unknown";
 
             printf( "Field %d: Type=%s, Title=`%s', Width=%d, Decimals=%d\n",
                     i, pszTypeName, szTitle, nWidth, nDecimals );
@@ -185,7 +190,7 @@ int main( int argc, char ** argv )
 	DBFFieldType	eType;
 
 	eType = DBFGetFieldInfo( hDBF, i, szTitle, &nWidth, &nDecimals );
-	if( strlen(szTitle) > nWidth )
+	if( (int)strlen(szTitle) > nWidth )
 	    panWidth[i] = strlen(szTitle);
 	else
 	    panWidth[i] = nWidth;
