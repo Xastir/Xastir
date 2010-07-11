@@ -4,7 +4,7 @@
 
 noinst_LIBRARIES=libshape.a
 
-bin_PROGRAMS=dbfadd \
+noinst_PROGRAMS=dbfadd \
         dbfcreate \
         dbfdump \
         shpadd \

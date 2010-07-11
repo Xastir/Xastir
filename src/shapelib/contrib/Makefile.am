@@ -8,7 +8,7 @@ EXTRA_DIST=Makefile_orig ShapeFileII.pas dbfcat.c dbfinfo.c makefile.vc \
 
 noinst_LIBRARIES=libshape.a
 
-bin_PROGRAMS=dbfcat \
+noinst_PROGRAMS=dbfcat \
         dbfinfo \
         shpcat \
         shpcentrd \
