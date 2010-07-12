@@ -26,10 +26,9 @@
 
 /* IEEE Not A Number.  */
 
-#ifdef _BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 #  define	__nan_bytes		{ 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 }
-#endif
-#ifdef _LITTLE_ENDIAN
+#else
 #  define	__nan_bytes		{ 0, 0, 0, 0, 0, 0, 0xf8, 0x7f }
 #endif
 
