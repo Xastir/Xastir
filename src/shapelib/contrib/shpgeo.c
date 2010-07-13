@@ -32,6 +32,12 @@
  * use -DPROJ4 to compile in Projection support
  *
  * $Log$
+ * Revision 1.4  2010/07/11 20:30:00  we7u
+ * More minor tweaks to get rid of compiler warnings.  Of particular note are
+ * some TODO entries added to a couple of files for two enumerated values that
+ * weren't being handled in "switch" statements.  There still isn't any code
+ * for those case statements, but the compiler warnings are gone.
+ *
  * Revision 1.3  2010/07/11 07:24:37  we7u
  * Fixing multiple minor warnings with Shapelib.  Still plenty left.
  *
@@ -86,6 +92,7 @@
 
 #include "shapefil.h"
 #include <string.h>
+#include <math.h>
 
 #ifndef NAN
 #include "my_nan.h"

@@ -21,10 +21,21 @@
 
 #define	_GNU_NAN_H	1
 
+#include <endian.h>
 
 /* hacked to define NAN on Solaris 2.7 if it wasn't defined  */
 
 /* IEEE Not A Number.  */
+
+#if __BYTE_ORDER == __BIG_ENDIAN
+#  warning "*** Big Endian ***"
+#else 
+#  if __BYTE_ORDER == __SMALL_ENDIAN
+#    warning "*** Small Endian ***"
+#  else
+#    warning "*** Endian-ness unknown ***"
+#  endif
+#endif
 
 #if __BYTE_ORDER == __BIG_ENDIAN
 #  define	__nan_bytes		{ 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 }
