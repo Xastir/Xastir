@@ -68,6 +68,7 @@
 // Must be last include file
 #include "leak_detection.h"
 
+extern int debug_level;
 extern int net_map_timeout;
 
 /* curl routines */
