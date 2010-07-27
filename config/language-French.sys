@@ -383,6 +383,9 @@ BBARSTA045|Chargement de symboles...||
 BBARSTA046|Rechargement des symboles...||
 BBARSTA047|Initialisation de ma station...||
 BBARSTA048|Démarrer interfaces...||
+BBARSTA049|Reading tiles...||
+BBARSTA050|Downloading tiles...||
+BBARSTA051|Downloading tile %li of %li||
 #
 #
 # PopUp "View - Incoming Packet Data"

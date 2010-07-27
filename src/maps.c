@@ -406,11 +406,14 @@ void maps_init(void)
 #ifndef NO_GRAPHICS
 #ifdef HAVE_LIBCURL
     fprintf(stderr,"%10s   URL (Internet maps via libcurl library)\n","geo");
-    fprintf(stderr,"%10s   URL (OpenStreetMaps via libcurl library)\n","osm");
+    fprintf(stderr,"%10s   URL (OpenStreetMaps via libcurl library\n","geo");
+    fprintf(stderr,"%10s        Copyright OpenStreetMap and contributors, CC-BY-SA)\n", "");
+
 #else
 #ifdef HAVE_WGET
     fprintf(stderr,"%10s   URL (Internet maps via wget)\n","geo");
-    fprintf(stderr,"%10s   URL (OpenStreetMaps via wget)\n","osm");
+    fprintf(stderr,"%10s   URL (OpenStreetMaps via wget\n","geo");
+    fprintf(stderr,"%10s        Copyright OpenStreetMap and contributors, CC-BY-SA)\n", "");
 #endif  // HAVE_WGET
 #endif  // HAVE_LIBCURL
 #endif  // NO_GRAPHICS
@@ -5721,7 +5724,6 @@ struct {
 #endif /* HAVE_LIBGEOTIFF */
 
   {"geo",geo,draw_geo_image_map},
-  {"osm",geo,draw_geo_image_map},
   {"gnis",gnis,draw_gnis_map},
   {"pop",pop,draw_pop_map},
 

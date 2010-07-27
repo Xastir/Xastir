@@ -162,8 +162,6 @@ extern char *sec_to_loc(long longitude, long latitude);
 
 extern short checkHash(char *theCall, short theHash);
 
-int fetch_remote_file(char *fileimg, char *local_filename);
-
 extern void split_string( char *data, char *cptr[], int max );
 extern void split_string_char ( char *data, char *cptr[], int max, char search_char );
 extern int check_unproto_path( char *data );

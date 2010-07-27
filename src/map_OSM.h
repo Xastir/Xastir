@@ -34,12 +34,19 @@ void adj_to_OSM_level(
         long *new_scale_x,
         long *new_scale_y);
 
-void draw_OSM_map (Widget w,
+void draw_OSM_map(Widget w,
         char *filenm,
         int destination_pixmap,
         char *url,
         char *style,
         int nocache);
+
+void draw_OSM_tiles(Widget w,
+        char *filenm,
+        int destination_pixmap,
+        char *server_url,
+        char *tileCacheDir,
+        char *mapName);
 
 int osm_zoom_level(long scale_x);
 void init_OSM_values(void);

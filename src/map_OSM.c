@@ -70,6 +70,7 @@
 #include "xastir.h"
 #include "maps.h"
 //#include "alert.h"
+#include "fetch_remote.h"
 #include "util.h"
 #include "main.h"
 //#include "datum.h"
@@ -80,6 +81,7 @@
 
 #include "map_cache.h"
 
+#include "tile_mgmnt.h"
 #include "map_OSM.h"
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
@@ -441,11 +443,780 @@ static long pixelLon2xastirLon(long osm_lon, int osm_zoom) {
 } // pixelLon2xastirLon()
 
 
-/**********************************************************
- * draw_OSM_map()
- * KA6HLD
- **********************************************************/
 #ifdef HAVE_MAGICK
+/**********************************************************
+ * draw_image() - copy a image onto the display
+ **********************************************************/
+static void draw_image(
+        Widget w,
+        Image *image,
+        ExceptionInfo *except_ptr,
+        unsigned offsetx,
+        unsigned offsety) {
+    int l;
+    XColor my_colors[256];
+    PixelPacket *pixel_pack;
+    PixelPacket temp_pack;
+    IndexPacket *index_pack;
+    unsigned image_row;
+    unsigned image_col;
+    unsigned scr_x, scr_y;             // screen pixel plot positions
+
+    if (debug_level & 512)
+        fprintf(stderr,"Color depth is %i \n", (int)image->depth);
+
+    if (image->colorspace != RGBColorspace) {
+        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
+        return;
+    }
+
+    // If were are drawing to a low bpp display (typically < 8bpp)
+    // try to reduce the number of colors in an image.
+    // This may take some time, so it would be best to do ahead of
+    // time if it is a static image.
+#if (MagickLibVersion < 0x0540)
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
+#else   // MagickLib >= 540
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, except_ptr) > 128) {
+#endif  // MagickLib Version
+
+        if (image->storage_class == PseudoClass) {
+#if (MagickLibVersion < 0x0549)
+            CompressColormap(image); // Remove duplicate colors
+#else // MagickLib >= 0x0549
+            CompressImageColormap(image); // Remove duplicate colors
+#endif  // MagickLibVersion < 0x0549
+        }
+
+        // Quantize down to 128 will go here...
+    }
+
+
+    pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+    if (!pixel_pack) {
+        fprintf(stderr,"pixel_pack == NULL!!!");
+        return;
+    }
+
+    index_pack = GetIndexes(image);
+    if (image->storage_class == PseudoClass && !index_pack) {
+        fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
+        return;
+    }
+
+
+    if (image->storage_class == PseudoClass && image->colors <= 256) {
+        for (l = 0; l < (int)image->colors; l++) {
+            // Need to check how to do this for ANY image, as
+            // ImageMagick can read in all sorts of image files
+            temp_pack = image->colormap[l];
+            if (debug_level & 512)
+                fprintf(stderr,"Colormap color is %i  %i  %i \n",
+                       temp_pack.red, temp_pack.green, temp_pack.blue);
+
+            // Here's a tricky bit:  PixelPacket entries are defined as
+            // Quantum's.  Quantum is defined in
+            // /usr/include/magick/image.h as either an unsigned short
+            // or an unsigned char, depending on what "configure"
+            // decided when ImageMagick was installed.  We can determine
+            // which by looking at MaxRGB or QuantumDepth.
+            //
+            if (QuantumDepth == 16) {  // Defined in /usr/include/magick/image.h
+                if (debug_level & 512)
+                    fprintf(stderr,"Color quantum is [0..65535]\n");
+                my_colors[l].red   = temp_pack.red * raster_map_intensity;
+                my_colors[l].green = temp_pack.green * raster_map_intensity;
+                my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
+            }
+            else {  // QuantumDepth = 8
+                if (debug_level & 512)
+                    fprintf(stderr,"Color quantum is [0..255]\n");
+                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+            }
+
+            // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
+            if (visual_type == NOT_TRUE_NOR_DIRECT) {
+//                XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+                XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+            }
+            else {
+                pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                &my_colors[l].pixel);
+            }
+
+            if (debug_level & 512)
+                fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
+                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
+        }
+    }
+
+    // loop over image pixel rows
+    for (image_row = 0; image_row < image->rows; image_row++) {
+
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now) {
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
+            return;
+        }
+
+        scr_y = image_row + offsety;
+
+        // loop over image pixel colums
+        for (image_col = 0; image_col < image->columns; image_col++) {
+            scr_x = image_col + offsetx;
+            // now copy a pixel from the image to the screen
+            l = image_col + (image_row * image->columns);
+            if (image->storage_class == PseudoClass) {
+                XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+            }
+            else {
+                // skip transparent pixels
+                if (pixel_pack[l].opacity == TransparentOpacity) {
+                    continue;
+                }
+
+                // It is not safe to assume that the red/green/blue
+                // elements of pixel_pack of type Quantum are the
+                // same as the red/green/blue of an XColor!
+                if (QuantumDepth==16) {
+                    my_colors[0].red=pixel_pack[l].red;
+                    my_colors[0].green=pixel_pack[l].green;
+                    my_colors[0].blue=pixel_pack[l].blue;
+                }
+                else { // QuantumDepth=8
+                    // shift the bits of the 8-bit quantity so that
+                    // they become the high bigs of my_colors.*
+                    my_colors[0].red=pixel_pack[l].red<<8;
+                    my_colors[0].green=pixel_pack[l].green<<8;
+                    my_colors[0].blue=pixel_pack[l].blue<<8;
+                }
+                // NOW my_colors has the right r,g,b range for
+                // pack_pixel_bits
+                pack_pixel_bits(my_colors[0].red * raster_map_intensity,
+                                my_colors[0].green * raster_map_intensity,
+                                my_colors[0].blue * raster_map_intensity,
+                                &my_colors[0].pixel);
+                XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+            }
+            // write the pixel from the map image to the
+            // screen.
+            (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,1,1);
+        } // loop over map pixel columns
+    } // loop over map pixel rows
+
+    return;
+}  // end draw_image()
+
+
+/**********************************************************
+ * draw_OSM_image() - copy map image to display
+ **********************************************************/
+static void draw_OSM_image(
+        Widget w,
+        Image *image,
+        ExceptionInfo *except_ptr,
+        tiepoint *tpNW,
+        tiepoint *tpSE,
+        int osm_zl)
+{
+    int l;
+    XColor my_colors[256];
+    PixelPacket *pixel_pack;
+    PixelPacket temp_pack;
+    IndexPacket *index_pack;
+    long map_image_row;
+    long map_image_col;
+    long map_x_min, map_x_max;      // map boundaries for in screen part of map
+    long map_y_min, map_y_max;
+    int map_seen = 0;
+    int map_act;
+    int map_done;
+
+    long scr_x,  scr_y;             // screen pixel plot positions
+    long scr_xp, scr_yp;            // previous screen plot positions
+    int  scr_dx, scr_dy;            // increments in screen plot positions
+
+    if (debug_level & 512)
+        fprintf(stderr,"Color depth is %i \n", (int)image->depth);
+
+    if (image->colorspace != RGBColorspace) {
+        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
+        return;
+    }
+
+    // If were are drawing to a low bpp display (typically < 8bpp)
+    // try to reduce the number of colors in an image.
+    // This may take some time, so it would be best to do ahead of
+    // time if it is a static image.
+#if (MagickLibVersion < 0x0540)
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
+#else   // MagickLib >= 540
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, except_ptr) > 128) {
+#endif  // MagickLib Version
+
+        if (image->storage_class == PseudoClass) {
+#if (MagickLibVersion < 0x0549)
+            CompressColormap(image); // Remove duplicate colors
+#else // MagickLib >= 0x0549
+            CompressImageColormap(image); // Remove duplicate colors
+#endif  // MagickLibVersion < 0x0549
+        }
+
+        // Quantize down to 128 will go here...
+    }
+
+
+    pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+    if (!pixel_pack) {
+        fprintf(stderr,"pixel_pack == NULL!!!");
+        return;
+    }
+
+    index_pack = GetIndexes(image);
+    if (image->storage_class == PseudoClass && !index_pack) {
+        fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
+        return;
+    }
+
+
+    if (image->storage_class == PseudoClass && image->colors <= 256) {
+        for (l = 0; l < (int)image->colors; l++) {
+            // Need to check how to do this for ANY image, as
+            // ImageMagick can read in all sorts of image files
+            temp_pack = image->colormap[l];
+            if (debug_level & 512)
+                fprintf(stderr,"Colormap color is %i  %i  %i \n",
+                       temp_pack.red, temp_pack.green, temp_pack.blue);
+
+            // Here's a tricky bit:  PixelPacket entries are defined as
+            // Quantum's.  Quantum is defined in
+            // /usr/include/magick/image.h as either an unsigned short
+            // or an unsigned char, depending on what "configure"
+            // decided when ImageMagick was installed.  We can determine
+            // which by looking at MaxRGB or QuantumDepth.
+            //
+            if (QuantumDepth == 16) {  // Defined in /usr/include/magick/image.h
+                if (debug_level & 512)
+                    fprintf(stderr,"Color quantum is [0..65535]\n");
+                my_colors[l].red   = temp_pack.red * raster_map_intensity;
+                my_colors[l].green = temp_pack.green * raster_map_intensity;
+                my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
+            }
+            else {  // QuantumDepth = 8
+                if (debug_level & 512)
+                    fprintf(stderr,"Color quantum is [0..255]\n");
+                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+            }
+
+            // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
+            if (visual_type == NOT_TRUE_NOR_DIRECT) {
+//                XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+                XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+            }
+            else {
+                pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                &my_colors[l].pixel);
+            }
+
+            if (debug_level & 512)
+                fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
+                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
+        }
+    }
+
+    /*
+    * Here are the corners of our viewport, using the Xastir
+    * coordinate system.  Notice that Y is upside down:
+    *
+    *   left edge of view = NW_corner_longitude
+    *  right edge of view = SE_corner_longitude
+    *    top edge of view = NW_corner_latitude
+    * bottom edge of view = SE_corner_latitude
+    *
+    * The corners of our image were calculated and stored
+    * above as tiepoints using OSM units (pixels/circle). They are:
+    *
+    *   left edge of map = tp[0].x_long
+    *  right edge of map = tp[1].x_long
+    *    top edge of map = tp[0].y_lat
+    * bottom edge of map = tp[1].y_lat
+    *
+    */
+
+    scr_dx = 1;
+    scr_dy = 1;
+
+    // calculate map pixel range in y direction that falls into screen area
+    map_y_min = map_y_max = 0l;
+    for (map_image_row = 0; map_image_row < (long)image->rows; map_image_row++){
+        scr_y = (pixelLat2xastirLat(map_image_row + tpNW->y_lat, osm_zl) - NW_corner_latitude) / scale_y;
+        if (scr_y > 0) {
+            if (scr_y < screen_height) {
+                map_y_max = map_image_row;  // update last map pixel in y
+            } else
+                break;                      // done, reached bottom screen border
+        } else {                            // pixel is above screen
+            map_y_min = map_image_row;     // update first map pixel in y
+        }
+    }
+
+    // Calculate the position of the map image relative to the screen
+    map_x_min = map_x_max = 0l;
+    for (map_image_col = 0; map_image_col < (long)image->columns; map_image_col++) {
+        scr_x = (pixelLon2xastirLon(map_image_col + tpNW->x_long, osm_zl) - NW_corner_longitude) / scale_x;
+        if (scr_x > 0) {
+            if (scr_x < screen_width)
+                map_x_max = map_image_col;          // update last map pixel in x
+            else
+                break;                      // done, reached right screen border
+        } else {                            // pixel is left from screen
+            map_x_min = map_image_col;              // update first map pixel in x
+        }
+    }
+
+    scr_yp = -1;
+    map_done = 0;
+    map_act  = 0;
+    map_seen = 0;
+
+    // loop over map pixel rows
+    for (map_image_row = map_y_min; (map_image_row <= map_y_max); map_image_row++) {
+
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now) {
+            // Update to screen
+            (void)XCopyArea(XtDisplay(da),
+                pixmap,
+                XtWindow(da),
+                gc,
+                0,
+                0,
+                (unsigned int)screen_width,
+                (unsigned int)screen_height,
+                0,
+                0);
+            return;
+        }
+
+        scr_y = (pixelLat2xastirLat(map_image_row + tpNW->y_lat, osm_zl)
+                                    - NW_corner_latitude) / scale_y;
+
+        // image rows do not match 1:1 with screen rows due to Mercator
+        // scalling, so scr_dy will be passed to XFillRectangle to 
+        // handle that issue.
+        // scr_dy is in rows and must be a minimum of 1 row.
+        scr_dy = ((  pixelLat2xastirLat(map_image_row + 1 + tpNW->y_lat, osm_zl)
+                   - NW_corner_latitude) / scale_y) - scr_y;
+        if (scr_dy < 1)
+            scr_dy = 1;
+
+        if (scr_y != scr_yp) {                  // don't do a row twice
+            scr_yp = scr_y;                     // remember as previous y
+            scr_xp = -1;
+            // loop over map pixel columns
+            map_act = 0;
+            for (map_image_col = map_x_min; map_image_col <= map_x_max; map_image_col++) {
+                scr_x = (  pixelLon2xastirLon(map_image_col + tpNW->x_long, osm_zl)
+                         - NW_corner_longitude) / scale_x;
+                // handle the case when here the horizontal resolution
+                // of the image is less than the horizontal resolution
+                // displayed. scr_dx is passed to XFillRectangle() below
+                // and must be at least 1 column.
+                scr_dx = ( (pixelLon2xastirLon(map_image_col + 1 + tpNW->x_long, osm_zl)
+                          - NW_corner_longitude) / scale_x) - scr_x;
+                if (scr_dx < 1)
+                    scr_dx = 1;
+                if (scr_x != scr_xp) {      // don't do a pixel twice
+                    scr_xp = scr_x;         // remember as previous x
+
+                    // check map boundaries in y direction
+                    if (map_image_row >= 0 && map_image_row <= tpSE->img_y) {
+                        map_seen = 1;
+                        map_act = 1;   // detects blank screen rows (end of map)
+
+                        // now copy a pixel from the map image to the screen
+                        l = map_image_col + map_image_row * image->columns;
+                        if (image->storage_class == PseudoClass) {
+                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                        }
+                        else {
+                            // It is not safe to assume that the red/green/blue
+                            // elements of pixel_pack of type Quantum are the
+                            // same as the red/green/blue of an XColor!
+                            if (QuantumDepth==16) {
+                                my_colors[0].red=pixel_pack[l].red;
+                                my_colors[0].green=pixel_pack[l].green;
+                                my_colors[0].blue=pixel_pack[l].blue;
+                            }
+                            else { // QuantumDepth=8
+                                // shift the bits of the 8-bit quantity so that
+                                // they become the high bigs of my_colors.*
+                                my_colors[0].red=pixel_pack[l].red<<8;
+                                my_colors[0].green=pixel_pack[l].green<<8;
+                                my_colors[0].blue=pixel_pack[l].blue<<8;
+                            }
+                            // NOW my_colors has the right r,g,b range for
+                            // pack_pixel_bits
+                            pack_pixel_bits(my_colors[0].red * raster_map_intensity,
+                                            my_colors[0].green * raster_map_intensity,
+                                            my_colors[0].blue * raster_map_intensity,
+                                            &my_colors[0].pixel);
+                            XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                        }
+                        // write the pixel from the map image to the
+                        // screen. Strech to a rectangle as needed
+                        // specified by scr_dx and scr_dy.
+                        (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
+                    } // check map boundaries in y direction
+                }  // don't do a screen pixel twice (in the same row)
+            } // loop over map pixel columns
+
+            if (map_seen && !map_act)
+                map_done = 1;
+        } // don't do a screen row twice.
+    } // loop over map pixel rows
+}  // end draw_OSM_image()
+
+
+/**********************************************************
+ * draw_OSM_tiles() - retrieve enough map tiles to fill the display
+ **********************************************************/
+// MaxTextExtent is an ImageMagick/GraphicMagick constant
+#define MAX_TMPSTRING MaxTextExtent
+
+void draw_OSM_tiles (Widget w,
+        char *filenm,           // this is the name of the xastir map file
+        int destination_pixmap,
+        char *server_url,      // if specified in xastir map file
+        char *tileCacheDir,    // if specified in xastir map file
+        char *mapName) {       // if specified in xastir map file
+
+    char serverURL[MAX_FILENAME];
+    char tileRootDir[MAX_FILENAME];
+    char map_it[MAX_FILENAME];
+    char short_filenm[MAX_FILENAME];
+    int osm_zl;
+    tileArea_t tiles;
+    coord_t corner;
+    tiepoint NWcorner;
+    tiepoint SEcorner;
+    unsigned long tilex, tiley;
+    unsigned long tileCnt = 0;
+    unsigned long numTiles;
+    int interrupted = 0;
+
+    ExceptionInfo exception;
+    Image *image = NULL;
+    Image *image_list = NULL;
+    Image *montage_image = NULL;
+    ImageInfo *image_info = NULL;
+    MontageInfo *mont_info = NULL;
+    unsigned int row, col;
+    char tmpString[MAX_TMPSTRING];
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
+        // Force the extents to the edges of the earth for the
+        // index file.
+        index_update_xastir(filenm, // Filename only
+            64800000l,      // Bottom
+            0l,             // Top
+            0l,             // Left
+            129600000l,     // Right
+            0);             // Default Map Level
+
+        // Update statusline
+        xastir_snprintf(map_it,
+            sizeof(map_it),
+            langcode ("BBARSTA039"),  // Indexing %s
+            short_filenm);
+        statusline(map_it,0);       // Indexing
+
+        return; // Done indexing this file
+    }
+
+    if (tileCacheDir[0] != '\0') {
+        if (tileCacheDir[0] == '/') {
+            xastir_snprintf(tileRootDir, sizeof(tileRootDir),
+                    "%s", tileCacheDir);
+        } else {
+            xastir_snprintf(tileRootDir, sizeof(tileRootDir),
+                    "%s", get_user_base_dir(tileCacheDir));
+        }
+    } else {
+        xastir_snprintf(tileRootDir, sizeof(tileRootDir),
+                "%s", get_user_base_dir("OSMtiles"));
+    }
+    
+    if (mapName[0] != '\0') {
+        xastir_snprintf(tmpString, sizeof(tmpString), "/%s", mapName);
+        strncat(tileRootDir, tmpString, sizeof(tileRootDir) - 1 - strlen(tileRootDir));
+    }
+
+    if (server_url[0] != '\0') {
+        xastir_snprintf(serverURL, sizeof(serverURL),
+                "%s", server_url);
+    } else {
+        xastir_snprintf(serverURL, sizeof(serverURL),
+                "%s", "http://tile.openstreetmap.org");
+    }
+
+    if (server_url[strlen(serverURL) - 1] == '/') {
+        serverURL[strlen(serverURL) - 1] = '\0';
+    }
+
+    // Create a shorter filename for display (one that fits the
+    // status line more closely).  Allow space for the
+    // "Indexing " or "Loading " strings.
+    if (strlen(filenm) > (41 - 9)) {
+        int avail = 41 - 11;
+        int new_len = strlen(filenm) - avail;
+
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "..%s",
+            &filenm[new_len]);
+    }
+    else {
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "%s",
+            filenm);
+    }
+
+    GetExceptionInfo(&exception);
+
+    if (debug_level & 512) {
+        unsigned long lat, lon;
+        (void)convert_to_xastir_coordinates(&lon, &lat,
+                                 f_NW_corner_longitude, f_NW_corner_latitude);
+        fprintf(stderr, "NW_corner_longitude = %f, %ld, %ld\n",
+                f_NW_corner_longitude, NW_corner_longitude, lon);
+        fprintf(stderr, "NW_corner_latitude = %f, %ld, %ld\n",
+                f_NW_corner_latitude, NW_corner_latitude, lat);
+
+        (void)convert_to_xastir_coordinates(&lon, &lat,
+                                 f_SE_corner_longitude, f_SE_corner_latitude);
+        fprintf(stderr, "SE_corner_longitude = %f, %ld, %ld\n",
+                f_SE_corner_longitude, SE_corner_longitude, lon);
+        fprintf(stderr, "SE_corner_latitude = %f, %ld, %ld\n",
+                f_SE_corner_latitude, SE_corner_latitude, lat);
+    }
+
+    osm_zl = osm_zoom_level(scale_x);
+    calcTileArea(f_NW_corner_longitude, f_NW_corner_latitude,
+                 f_SE_corner_longitude, f_SE_corner_latitude,
+                 osm_zl, &tiles);
+
+    xastir_snprintf(map_it, sizeof(map_it), "%s",
+            langcode ("BBARSTA050")); // Downloading tiles...
+    statusline(map_it,0);
+    XmUpdateDisplay(text);
+    
+    // make sure all the map directories exist
+    mkOSMmapDirs(tileRootDir, tiles.startx, tiles.endx, osm_zl);
+
+    // Check to see how many tiles need to be downloaded
+    // A simple calculation doesn't work well here because some
+    // (possibly all) of the tiles may exist in the cache.
+    numTiles = tilesMissing(tiles.startx, tiles.endx, tiles.starty,
+                            tiles.endy, osm_zl, tileRootDir);
+
+    // get the tiles
+    tileCnt = 1;
+    for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
+        for (tiley = tiles.starty; tiley <= tiles.endy; tiley++) {
+            xastir_snprintf(map_it, sizeof(map_it), langcode("BBARSTA051"),
+                    tileCnt, numTiles);  // Downloading tile %ls of %ls
+            statusline(map_it,0);
+            XmUpdateDisplay(text);
+            tileCnt += getOneTile(serverURL, tilex, tiley, osm_zl, tileRootDir);
+
+            HandlePendingEvents(app_context);
+            if (interrupt_drawing_now) {
+                interrupted = 1;
+                break;
+            }
+        }
+        if (interrupted == 1) {
+            break;
+        }
+    }
+
+    if (interrupted != 1) {
+        // calculate tie points
+        NWcorner.img_x = 0;
+        NWcorner.img_y = 0;
+        NWcorner.x_long = tiles.startx * 256;
+        NWcorner.y_lat = tiles.starty * 256;
+
+        if (debug_level & 512) {
+            fprintf(stderr, "scale = %ld, zoom = %d\n", scale_x, osm_zl);
+            fprintf(stderr, "NW corner:\n");
+            fprintf(stderr, "  img_x = %d, img_y = %d\n", NWcorner.img_x, NWcorner.img_y);
+            fprintf(stderr, "  x_long = %ld, y_lat = %ld\n", NWcorner.x_long, NWcorner.y_lat);
+            fprintf(stderr, "req. lon = %f, lat = %f\n", f_NW_corner_longitude,
+                    f_NW_corner_latitude);
+            tile2coord(tiles.startx, tiles.starty, osm_zl, &corner);
+            fprintf(stderr, "ret. lon = %f, lat = %f\n", corner.lon, corner.lat);
+            fprintf(stderr, "tile x = %li, y = %li\n", tiles.startx, tiles.starty);
+        }
+
+        // The NW corner of the next tile is the SE corner of the last tile
+        // we fetched. So add one to the end tile numbers before calculating
+        // the coordinates.
+        SEcorner.img_x = (256 * ((tiles.endx + 1) - tiles.startx)) - 1;
+        SEcorner.img_y = (256 * ((tiles.endy + 1) - tiles.starty)) - 1;
+        SEcorner.x_long = (tiles.endx + 1) * 256;
+        SEcorner.y_lat = (tiles.endy + 1) * 256;
+        
+        if (debug_level & 512) {
+            fprintf(stderr, "SE corner:\n");
+            fprintf(stderr, "  img_x = %d, img_y = %d\n", SEcorner.img_x, SEcorner.img_y);
+            fprintf(stderr, "  x_long = %ld, y_lat = %ld\n", SEcorner.x_long, SEcorner.y_lat);
+            fprintf(stderr, "req. lon = %f, lat = %f\n", f_SE_corner_longitude,
+                    f_SE_corner_latitude);
+            tile2coord(tiles.endx + 1, tiles.endy + 1, osm_zl, &corner);
+            fprintf(stderr, "ret. lon = %f, lat = %f\n", corner.lon, corner.lat);
+            fprintf(stderr, "tile x = %li, y = %li\n", tiles.endx, tiles.endy);
+        }
+
+        /*
+         * Initialize the image info structure and read the list of files
+         * provided by the user as a image sequence
+        */
+        image_info=CloneImageInfo((ImageInfo *)NULL);
+        mont_info=CloneMontageInfo(image_info, (MontageInfo *) NULL);
+        image_list=NewImageList();
+        montage_image=NewImageList();    /* q: why a new 'list'?
+                                          * a: all images are 'lists'
+                                          *   NewImageList() returns a NULL pointer.
+                                          */
+
+        // Set montage dimensions in tiles.
+        xastir_snprintf(tmpString, sizeof(tmpString), "%lix%li",
+                (tiles.endx + 1) - tiles.startx,
+                (tiles.endy + 1) - tiles.starty);
+        (void)CloneString(&mont_info->tile, tmpString);
+
+        // OSM tiles are always 256 pixel squares
+        (void)CloneString(&mont_info->geometry, "256x256");
+
+        xastir_snprintf(map_it, sizeof(map_it), "%s",
+                langcode ("BBARSTA049")); // Reading tiles...
+        statusline(map_it,0);
+        XmUpdateDisplay(text);
+
+        for (col = tiles.starty; col <= tiles.endy; col++) {
+            for (row = tiles.startx; row <= tiles.endx; row++) {
+                xastir_snprintf(tmpString, sizeof(tmpString),
+                        "%s/%d/%d/%d.png", tileRootDir, osm_zl, row, col);
+                strncpy(image_info->filename, tmpString, MaxTextExtent);
+
+                image=ReadImage(image_info,&exception);
+                if (exception.severity != UndefinedException) {
+                    CatchException(&exception);
+                    xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.png",
+                            tileRootDir, osm_zl, row, col);
+                    if (debug_level & 512) {
+                        fprintf(stderr, "%s NOT removed.\n", tmpString);
+                    } else {
+                        fprintf(stderr, "Removing %s\n", tmpString);
+                        unlink(tmpString);
+                    }
+
+                    // replace the missing tile with a place holder
+                    (void)CloneString(&image_info->size, "256x256");
+                    (void)strcpy(image_info->filename, "xc:red");
+                    image = ReadImage(image_info, &exception);
+                }
+                if (image) {
+                    (void) AppendImageToList(&image_list,image);
+                }
+            }
+        }
+
+        if (!image_list) {
+            fprintf(stderr, "Failed to read any tiles!\n");
+            xastir_snprintf(tmpString, sizeof(tmpString), "%lix%li",
+                    ((tiles.endx + 1) - tiles.startx) * 256,
+                    ((tiles.endy + 1) - tiles.starty) * 256);
+            (void)CloneString(&image_info->size, tmpString);
+            (void)strcpy(image_info->filename, "xc:red");
+            montage_image = ReadImage(image_info, &exception);
+        } else {
+            montage_image=MontageImages(image_list, mont_info, &exception);
+        }
+
+        if (debug_level & 512) {
+            WriteImages(image_info,montage_image,"/tmp/xastirOSMTiledMap.png",&exception);
+        }
+
+        draw_OSM_image(w, montage_image, &exception, &NWcorner, &SEcorner, osm_zl);
+
+        // Display the OpenStreetMap attribution
+        xastir_snprintf(tmpString, sizeof(tmpString),
+                "%s/CC_OpenStreetMap.png", get_data_base_dir("maps"));
+        strncpy(image_info->filename, tmpString, MaxTextExtent);
+
+        image=ReadImage(image_info,&exception);
+        if (exception.severity != UndefinedException) {
+            CatchException(&exception);
+        } else {
+            draw_image(w, image, &exception, 4, 4);
+        }
+    } else {
+        // map draw was interrupted
+        // Update to screen
+        (void)XCopyArea(XtDisplay(da),
+            pixmap,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            (unsigned int)screen_width,
+            (unsigned int)screen_height,
+            0,
+            0);
+    }
+
+    /*
+     * Release resources
+    */
+    if (image_list != NULL)
+        DestroyImageList(image_list);
+    if (montage_image != NULL)
+        DestroyImageList(montage_image);
+    if (image_info != NULL)
+        DestroyImageInfo(image_info);
+    if (mont_info != NULL)
+        DestroyMontageInfo(mont_info);
+    DestroyExceptionInfo(&exception);
+    return;
+
+} // draw_OSM_tiles()
+
+
+/**********************************************************
+ * draw_OSM_map() - retreive an image that is the size of the display
+ **********************************************************/
 void draw_OSM_map (Widget w,
         char *filenm,
         int destination_pixmap,
@@ -459,35 +1230,19 @@ void draw_OSM_map (Widget w,
     char OSMtmp[MAX_FILENAME*2];    // Used for putting together the OSMmap query
     tiepoint tp[2];                 // Calibration points for map
 
-    long map_image_row;
-    long map_image_col;
-    long map_x_min, map_x_max;      // map boundaries for in screen part of map
-    long map_y_min, map_y_max;      //
-    int map_seen = 0;
-    int map_act;
-    int map_done;
-
-    long scr_x,  scr_y;             // screen pixel plot positions
-    long scr_xp, scr_yp;            // previous screen plot positions
-    int  scr_dx, scr_dy;            // increments in screen plot positions
-
     char local_filename[MAX_FILENAME];
     
     ExceptionInfo exception;
     Image *image;
     ImageInfo *image_info;
-    PixelPacket *pixel_pack;
-    PixelPacket temp_pack;
-    IndexPacket *index_pack;
-    int l;
-    XColor my_colors[256];
     double left, right, top, bottom;
     double lat_center  = 0;
     double long_center = 0;
 
     char map_it[MAX_FILENAME];
     char tmpstr[1001];
-    int osm_zl = 18;                 // OSM zoom level, at 18, the whole world fits in one 256x256 tile.
+    int osm_zl = 18;                 // OSM zoom level, at 18, the whole
+                                     // world fits in one 256x256 tile.
     unsigned map_image_width;        // Image width
     unsigned map_image_height;       // Image height
     // TODO: put the max_image_* limits in the .geo/.osm file because it could change on a by-server
@@ -522,6 +1277,7 @@ void draw_OSM_map (Widget w,
         langcode ("BBARSTA028"),
         short_filenm);
     statusline(map_it,0);       // Loading ...
+    XmUpdateDisplay(text);
         
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -607,7 +1363,8 @@ void draw_OSM_map (Widget w,
     } else {
         xastir_snprintf(OSMtmp, sizeof(OSMtmp), "http://ojw.dev.openstreetmap.org/StaticMap/");
     }
-    xastir_snprintf(tmpstr, sizeof(tmpstr), "?mode=Export&att=text&show=1&");
+    //xastir_snprintf(tmpstr, sizeof(tmpstr), "?mode=Export&att=text&show=1&");
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "?mode=Export&show=1&");
     strncat (OSMtmp, tmpstr, sizeof(OSMtmp) - 1 - strlen(OSMtmp));
 
     if (style[0] != '\0') {
@@ -743,8 +1500,6 @@ void draw_OSM_map (Widget w,
                 fprintf(stderr,"Couldn't delete map from cache\n");
             }
         }
-#endif
-
         if (image) {
             DestroyImage(image);
         }
@@ -755,134 +1510,9 @@ void draw_OSM_map (Widget w,
         return;
     }
 
-
-    if (debug_level & 512)
-        fprintf(stderr,"Color depth is %i \n", (int)image->depth);
-
-    if (image->colorspace != RGBColorspace) {
-        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
-        return;
-    }
-
-    // If were are drawing to a low bpp display (typically < 8bpp)
-    // try to reduce the number of colors in an image.
-    // This may take some time, so it would be best to do ahead of
-    // time if it is a static image.
-#if (MagickLibVersion < 0x0540)
-    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
-#else   // MagickLib >= 540
-    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
-#endif  // MagickLib Version
-
-        if (image->storage_class == PseudoClass) {
-#if (MagickLibVersion < 0x0549)
-            CompressColormap(image); // Remove duplicate colors
-#else // MagickLib >= 0x0549
-            CompressImageColormap(image); // Remove duplicate colors
-#endif  // MagickLibVersion < 0x0549
-        }
-
-        // Quantize down to 128 will go here...
-    }
-
-
-    pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
-    if (!pixel_pack) {
-        fprintf(stderr,"pixel_pack == NULL!!!");
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
-        return;
-    }
-
-    index_pack = GetIndexes(image);
-    if (image->storage_class == PseudoClass && !index_pack) {
-        fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
-        return;
-    }
-
-
-    if (image->storage_class == PseudoClass && image->colors <= 256) {
-        for (l = 0; l < (int)image->colors; l++) {
-            // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
-            // of image files
-            temp_pack = image->colormap[l];
-            if (debug_level & 512)
-                fprintf(stderr,"Colormap color is %i  %i  %i \n",
-                       temp_pack.red, temp_pack.green, temp_pack.blue);
-
-            // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
-            // is defined in /usr/include/magick/image.h as either an unsigned short or an
-            // unsigned char, depending on what "configure" decided when ImageMagick was installed.
-            // We can determine which by looking at MaxRGB or QuantumDepth.
-            //
-            if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
-                if (debug_level & 512)
-                    fprintf(stderr,"Color quantum is [0..65535]\n");
-                my_colors[l].red   = temp_pack.red * raster_map_intensity;
-                my_colors[l].green = temp_pack.green * raster_map_intensity;
-                my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
-            }
-            else {  // QuantumDepth = 8
-                if (debug_level & 512)
-                    fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
-            }
-
-            // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
-            if (visual_type == NOT_TRUE_NOR_DIRECT) {
-//                XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
-                XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
-            }
-            else {
-                pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
-                                &my_colors[l].pixel);
-            }
-
-            if (debug_level & 512)
-                fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
-                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
-        }
-    }
-
-    /*
-    * Here are the corners of our viewport, using the Xastir
-    * coordinate system.  Notice that Y is upside down:
-    *
-    *   left edge of view = NW_corner_longitude
-    *  right edge of view = SE_corner_longitude
-    *    top edge of view = NW_corner_latitude
-    * bottom edge of view = SE_corner_latitude
-    *
-    * The corners of our image were calculated and stored
-    * above as tiepoints using OSM units (pixels/circle). They are:
-    *
-    *   left edge of map = tp[0].x_long
-    *  right edge of map = tp[1].x_long
-    *    top edge of map = tp[0].y_lat
-    * bottom edge of map = tp[1].y_lat
-    *
-    */
-
-    scr_dx = 1;
-    scr_dy = 1;
+#endif
     if (debug_level & 512) {
-        fprintf(stderr,"Loading imagemap: %s\n", file);
-        fprintf(stderr,"\nImage: %s\n", file);
+        fprintf(stderr,"Image: %s\n", file);
         fprintf(stderr,"Image size %d %d\n", map_image_width, map_image_height);
 #if (MagickLibVersion < 0x0540)
         fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
@@ -892,148 +1522,32 @@ void draw_OSM_map (Widget w,
         fprintf(stderr,"image matte is %i\n", image->matte);
     } // debug_level & 512
 
-    // calculate map pixel range in y direction that falls into screen area
-    map_y_min = map_y_max = 0l;
-    for (map_image_row = 0; map_image_row < (long)image->rows; map_image_row++){
-        scr_y = (pixelLat2xastirLat(map_image_row + tp[0].y_lat, osm_zl) - NW_corner_latitude) / scale_y;
-        if (scr_y > 0) {
-            if (scr_y < screen_height) {
-                map_y_max = map_image_row;  // update last map pixel in y
-            } else
-                break;                      // done, reached bottom screen border
-        } else {                            // pixel is above screen
-            map_y_min = map_image_row;     // update first map pixel in y
-        }
+    draw_OSM_image(w, image, &exception, &(tp[0]), &(tp[1]), osm_zl);
+    
+    // Display the OpenStreetMap attribution
+    xastir_snprintf(OSMtmp, sizeof(OSMtmp),
+            "%s/CC_OpenStreetMap.png", get_data_base_dir("maps"));
+    strncpy(image_info->filename, OSMtmp, MaxTextExtent);
+
+    image=ReadImage(image_info,&exception);
+    if (exception.severity != UndefinedException) {
+        CatchException(&exception);
+    } else {
+        draw_image(w, image, &exception, 4, 4);
     }
 
-    // Calculate the position of the map image relative to the screen
-    map_x_min = map_x_max = 0l;
-    for (map_image_col = 0; map_image_col < (long)image->columns; map_image_col++) {
-        scr_x = (pixelLon2xastirLon(map_image_col + tp[0].x_long, osm_zl) - NW_corner_longitude) / scale_x;
-        if (scr_x > 0) {
-            if (scr_x < screen_width)
-                map_x_max = map_image_col;          // update last map pixel in x
-            else
-                break;                      // done, reached right screen border
-        } else {                            // pixel is left from screen
-            map_x_min = map_image_col;              // update first map pixel in x
-        }
+
+    // Clean up
+    if (image) {
+        DestroyImage(image);
     }
-
-    scr_yp = -1;
-    map_done = 0;
-    map_act  = 0;
-    map_seen = 0;
-
-    // loop over map pixel rows
-    for (map_image_row = map_y_min; (map_image_row <= map_y_max); map_image_row++) {
-
-        HandlePendingEvents(app_context);
-        if (interrupt_drawing_now) {
-            if (image)
-               DestroyImage(image);
-            if (image_info)
-               DestroyImageInfo(image_info);
-            // Update to screen
-            (void)XCopyArea(XtDisplay(da),
-                pixmap,
-                XtWindow(da),
-                gc,
-                0,
-                0,
-                (unsigned int)screen_width,
-                (unsigned int)screen_height,
-                0,
-                0);
-            DestroyExceptionInfo(&exception);
-            return;
-        }
-
-        scr_y = (pixelLat2xastirLat(map_image_row + tp[0].y_lat, osm_zl)
-                                    - NW_corner_latitude) / scale_y;
-
-        // image rows do not match 1:1 with screen rows due to Mercator
-        // scalling, so scr_dy will be passed to XFillRectangle to 
-        // handle that issue.
-        // scr_dy is in rows and must be a minimum of 1 row.
-        scr_dy = ((  pixelLat2xastirLat(map_image_row + 1 + tp[0].y_lat, osm_zl)
-                   - NW_corner_latitude) / scale_y) - scr_y;
-        if (scr_dy < 1)
-            scr_dy = 1;
-
-        if (scr_y != scr_yp) {                  // don't do a row twice
-            scr_yp = scr_y;                     // remember as previous y
-            scr_xp = -1;
-            // loop over map pixel columns
-            map_act = 0;
-            for (map_image_col = map_x_min; map_image_col <= map_x_max; map_image_col++) {
-                scr_x = (  pixelLon2xastirLon(map_image_col + tp[0].x_long, osm_zl)
-                         - NW_corner_longitude) / scale_x;
-                // handle the case when here the horizontal resolution
-                // of the image is less than the horizontal resolution
-                // displayed. scr_dx is passed to XFillRectangle() below
-                // and must be at least 1 column.
-                scr_dx = ( (pixelLon2xastirLon(map_image_col + 1 + tp[0].x_long, osm_zl)
-                          - NW_corner_longitude) / scale_x) - scr_x;
-                if (scr_dx < 1)
-                    scr_dx = 1;
-                if (scr_x != scr_xp) {      // don't do a pixel twice
-                    scr_xp = scr_x;         // remember as previous x
-
-                    // check map boundaries in y direction
-                    if (map_image_row >= 0 && map_image_row <= tp[1].img_y) {
-                        map_seen = 1;
-                        map_act = 1;   // detects blank screen rows (end of map)
-
-                        // now copy a pixel from the map image to the screen
-                        l = map_image_col + map_image_row * image->columns;
-                        if (image->storage_class == PseudoClass) {
-                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
-                        }
-                        else {
-                            // It is not safe to assume that the red/green/blue
-                            // elements of pixel_pack of type Quantum are the
-                            // same as the red/green/blue of an XColor!
-                            if (QuantumDepth==16) {
-                                my_colors[0].red=pixel_pack[l].red;
-                                my_colors[0].green=pixel_pack[l].green;
-                                my_colors[0].blue=pixel_pack[l].blue;
-                            }
-                            else { // QuantumDepth=8
-                                // shift the bits of the 8-bit quantity so that
-                                // they become the high bigs of my_colors.*
-                                my_colors[0].red=pixel_pack[l].red<<8;
-                                my_colors[0].green=pixel_pack[l].green<<8;
-                                my_colors[0].blue=pixel_pack[l].blue<<8;
-                            }
-                            // NOW my_colors has the right r,g,b range for
-                            // pack_pixel_bits
-                            pack_pixel_bits(my_colors[0].red * raster_map_intensity,
-                                            my_colors[0].green * raster_map_intensity,
-                                            my_colors[0].blue * raster_map_intensity,
-                                            &my_colors[0].pixel);
-                            XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
-                        }
-                        // write the pixel from the map image to the
-                        // screen. Strech to a rectangle as needed
-                        // specified by scr_dx and scr_dy.
-                        (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
-                    } // check map boundaries in y direction
-                }  // don't do a screen pixel twice (in the same row)
-            } // loop over map pixel columns
-
-            if (map_seen && !map_act)
-                map_done = 1;
-        } // don't do a screen row twice.
-    } // loop over map pixel rows
-
-    if (image)
-       DestroyImage(image);
-    if (image_info)
-       DestroyImageInfo(image_info);
+    if (image_info) {
+        DestroyImageInfo(image_info);
+    }
     DestroyExceptionInfo(&exception);
 
 }  // end draw_OSM_map()
+
 
 #endif //HAVE_MAGICK
 ///////////////////////////////////////////// End of OpenStreetMap code ///////////////////////////////////////

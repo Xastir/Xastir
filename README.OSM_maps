@@ -1,0 +1,208 @@
+$Id$
+
+Copyright (C) 2010  The Xastir Group
+
+
+  Using OpenStreetMap in Xastir
+  ------------------------------------------------------------------------
+  CONTENTS
+     Introduction
+     Map Types
+     Map Sources and Renderings (Styles)
+     Map Cache
+     Sharing Tiles
+     Map Definition Files
+     Copyrights and Licenses
+
+
+  Introduction
+  ------------
+    What, you may ask is 'OpenStreetMap' (OSM)? From the web site,
+    www.openstreetmap.org, we read that
+
+        "OpenStreetMap is a free editable map of the whole world.
+         It is made by people like you".
+
+    The tag line for the map is "The Free Wiki World Map".
+
+    Xastir will display bitmap versions of the OSM. There are multiple
+    renderings of the OSM to choose from and, by default, nine (9)
+    are available in Xastir.
+
+  Map Types
+  ---------
+    Xastir can use two different map types based on OSM; static and
+    tiled. Static maps are bitmaps that are least as large as the Xastir
+    window. Tiled maps are built up from 256x256 pixel images.
+
+    Static maps are also assembled from tiles, but the assembly occurs
+    at the server and the full size image is downloaded to Xastir. There
+    is a major disadvantage to static maps- even slight changes in map
+    position requires a new map download.
+
+    Tiles have become the standard for bitmap map images. Their small
+    size allows for short download times and easy reuse. Tiles are the
+    basis of the 'slippy map' implementations on web sites,
+    applications, and portable devices. Note that Xastir is not a
+    'slippy map' application and map motions and refresh times are not
+    as smooth or quick as you can find in other applications (Xastir's
+    strengths lie in other areas).
+
+    Bitmap images, whether static or tiled, are available for only a
+    limited number of zoom levels. There are 18 possible zoom levels.
+    It takes 2^zoom tiles to represent 360 degrees. Since the tiles are
+    256 pixel squares, there are 2^(zoom + 8) pixels in 360 degrees.
+
+    When the Xastir scale does not equate to one of the 18 OSM zoom
+    levels, the bitmap image is scaled. However, scaled bitmaps tend to
+    look ugly. The scaled bitmap can have jagged lines, unequal pixel
+    sizes, and/or missing information. At best a scaled bitmap looks
+    blurred, but more typically some pixels will be enlarged into visible
+    blocks or compressed invisibility.
+
+    You can use the F4 key to adjust the Xastir scale to approximate the
+    OSM zoom level and refresh the display. (The key can be changed by
+    modifying a variable in the OSM definition (GEO) files.
+
+
+  Map Sources and Renderings (Styles)
+  -----------------------------------
+    The OSM data is rendered into tiles using different styles. The
+    easiest place to view and compare the styles is at
+    http://ojw.dev.openstreetmap.org/StaticMap/?mode=Style&
+
+    Tiles can be retreived from a number of servers. The supplied map
+    definitions will download tiles from:
+        http://tile.openstreetmap.org/
+        http://tah.openstreetmap.org/Tiles/tile/
+        http://tiles.openpistemap.org/tiles/contours/
+        http://andy.sandbox.cloudmade.com/tiles/cycle/
+
+    The CloudMade tiles are also available, but a user account and a key
+    are required. Register at http://www.cloudmade.com/ and then create
+    new OSM map definition files (GEO) by copying an existing file and
+    changing the URL variable. The CloudMade tile URLs have this form:
+
+        http://tile.cloudmade.com/<key>/<style#>/256/
+
+
+  Map Cache
+  ---------
+    Static maps are cached with other bitmap map images in the
+    ~/.xastir/map_cache/ directory.
+
+    Tiles are cached separately to make it possible to share them
+    with other applications. By default tiles are cached in
+    ~/.xastir/map_cache/OSMtiles/, but that location can be changed on a
+    by-style basis. The tiles are organized directories by style, zoom
+    level, and longitude:
+    
+      ~/.xastir/map_cache/OSMtiles/
+                             + <style1>/
+                             |    + <zoom>/
+                             |         <longitude>/
+                             |            + [0 ... (2^zoom - 1)].png
+                             + <style2>/
+                             ...
+     
+     Note that 'longitude' is a tile number between 0 and (2^zoom -1).
+
+     Xastir downloads tiles only as needed and does not check for
+     updates to tiles that have already been downloaded.
+
+     If a tile can not be downloaded for any reason or if the downloaded
+     file is not usable image, then the downloaded file (if any) will be
+     deleted and a red area will be shown in it's place on the display. 
+
+     NOTE: Run Xastir at debug level 512 (-v 512) for more information
+           on download issues. At debug level 512, corrupt tile files
+           will not be deleted. Examining the contents of the corrupt
+           files can be informative.
+
+     WARNING: Corrupt tile files will not be deleted when running at
+              debug level 512. If you do not delete them manually before
+              restarting Xastir, then the first time Xastir displays the
+              tile it will be shown in red and then deleted from the
+              cache.
+
+
+  Sharing Tiles
+  -------------
+     The directory structure used to cache tiles is common to other
+     programs, though the style names are typically different. An
+     example of a program that can share tiles with Xastir is TangoGPS
+     (http://www.tangogps.org).
+
+     Here are some examples of how you can share tiles with TangoGPS
+     (the setup for other programs would be similar):
+
+       1) Setup a symlink at the style level of the caches
+           $ cd ~/.xastir/OSMmaps/
+           $ ln ~/Maps/<tangoStyleName>/ <xastirStyleName>
+
+       2) Change the Xastir map definition file to specify the TangoGPS
+          cache by changing the following variables (see the next
+          section for more information):
+             OSM_TILED_MAP-<tangoStyleName>
+             TILE_DIR /home/<user>/Maps
+
+       3) Share all styles and tiles by creating a symlink at the top
+          level of the cache. This also requires changing the Xastir
+          map definition files to specify the style names used by
+          TangoGPS:
+             $ cd ~/.xastir
+             $ rm -rf OSMmaps/
+             $ ln -s ../Maps OSMmaps
+
+
+  Map Definition Files
+  --------------------
+    OSM map type, style, server, cache directory, and function keys are
+    specified in Xastir GEO files. By default the files are located in
+    the /usr/local/share/xastir/maps/Online/ directory. The supplied
+    definition files have filenames of this form:
+
+       OSM_<name>.geo        - static maps
+       OSM_tiled_<name>.geo  - tiled maps
+
+    Where <name> is replaced with the style name. Note that <name> could
+    be any unique string and is not required to be the style.
+
+    Read the comments in the supplied definition files for more
+    information.
+
+
+  Copyrights and Licenses
+  -----------------------
+    Maps and tiles from the OpenStreetMap project are
+    Copyright OpenStreetMap and contributors, CC-BY-SA
+
+       http://www.openstreetmap.org/
+       http://creativecommons.org/licenses/by-sa/2.0/
+
+    in addition, tiles from CloudMade are
+    Copyright CloudMade, CC-BY-SA
+
+        http://www.cloudmade.com/
+        http://cloudmade.com/about/api-terms-and-conditions
+        http://cloudmade.com/terms_conditions
+
+
+  Changing the Displayed Attribution
+  ----------------------------------
+
+    The licenses from OpenStreetMap and CloudMade require attribution
+    that is met, in part, by a label shown at the top left corner of the
+    map. Two label images have been provided, one shows icons and the
+    other shows black text on a white background.
+
+    You can change between the two label styles by changing a symlink:
+
+       $ cd /usr/local/share/xastir/maps/   # your installing may differ!
+       $ rm CC_OpenStreetMap.png
+       $ ln -s CC_OpenStreetMap_txt.png CC_OpenStreetMap.png
+          or
+       $ ln -S CC_OpenStreetMap_logo.png CC_OpenStreetMap.png
+
+
+  ------------------------------------------------------------------------

@@ -67,6 +67,7 @@
 #include "maps.h"
 #include "map_cache.h"
 #include "alert.h"
+#include "fetch_remote.h"
 #include "util.h"
 #include "main.h"
 #include "datum.h"
@@ -554,12 +555,14 @@ void draw_geo_image_map (Widget w,
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
     char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
+    char tileCache[MAX_FILENAME+1]; // directory for the OSM tile cache, read from GEO file.
     char OSMstyle[MAX_OSMSTYLE];
 
     // Start with an empty fileimg[] string so that we can
     // tell if a URL has been specified in the file. Same for OSMstyle.
     fileimg[0] = '\0';
     OSMstyle[0] = '\0';
+    tileCache[0] = '\0';
 
     int width,height;
 #ifndef NO_XPM
@@ -649,7 +652,7 @@ void draw_geo_image_map (Widget w,
     int terraserver_flag = 0;   // U.S. satellite images/topo/reflectivity/urban
                                 // areas via terraserver
     int tigerserver_flag = 0;   // U.S. Street maps via census.gov
-    int OSMserver_flag = 0;     // OpenStreetMaps StaticMap server
+    int OSMserver_flag = 0;     // OpenStreetMaps server, 1 = static maps, 2 = tiled
     int toporama_flag = 0;      // Canadian topo's from mm.aprs.net (originally from Toporama)
     int WMSserver_flag = 0;     // WMS server
     char map_it[MAX_FILENAME];
@@ -804,7 +807,17 @@ void draw_geo_image_map (Widget w,
                 }
             }
 
-            if (OSMserver_flag == 1) {  // the following keywords are only valid for OSM maps
+            if (strncasecmp (line, "OSM_TILED_MAP", 13) == 0)
+            {
+                OSMserver_flag = 2;
+                if (strlen(line) > 14) {
+                    if (1 != sscanf (line + 14, "%s", OSMstyle)) {
+                        fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM style.\n"); 
+                    }
+                }
+            }
+
+            if (OSMserver_flag > 0) {  // the following keywords are only valid for OSM maps
                 if (strncasecmp (line, "OSM_OPTIMIZE_KEY", 16) == 0){
                     if ((destination_pixmap != INDEX_CHECK_TIMESTAMPS)
                             && (destination_pixmap != INDEX_NO_TIMESTAMPS)) {
@@ -827,6 +840,14 @@ void draw_geo_image_map (Widget w,
                             } else {
                                 set_OSM_report_scale_key(OSM_key);
                             }
+                        }
+                    }
+                }
+
+                if (strncasecmp (line, "TILE_DIR", 8) == 0) {
+                    if (strlen(line) > 9) {
+                        if (1 != sscanf (line + 9, "%s", tileCache)) {
+                        fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_DIR\n");
                         }
                     }
                 }
@@ -1008,7 +1029,7 @@ void draw_geo_image_map (Widget w,
     // Check whether OpenStreetMap has been selected.  If so, run off to
     // another routine to service this request.
     //
-    if (OSMserver_flag) {
+    if (OSMserver_flag == 1) {
 
 #ifdef HAVE_MAGICK
 
@@ -1017,12 +1038,23 @@ void draw_geo_image_map (Widget w,
         // Later the GUI can implement a method for refreshing the
         // latest map and replacing the bad map in the cache.
         //
+        // fileimg is the server URL, if specified.
         draw_OSM_map(w, filenm, destination_pixmap, fileimg, OSMstyle, nocache);
 
 #endif  // HAVE_MAGICK
 
         return;
+    } else if (OSMserver_flag == 2) {
+#ifdef HAVE_MAGICK
+
+        // fileimg is the server URL, if specified.
+        draw_OSM_tiles(w, filenm, destination_pixmap, fileimg, tileCache, OSMstyle);
+
+#endif  // HAVE_MAGICK
+
+        return;
     }
+
 
 
     // Check whether a WMS server has been selected.  If so, run off

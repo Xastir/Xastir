@@ -129,6 +129,9 @@ static struct hashtable *tactical_hash = NULL;
 //          64,800,000 (-90 deg. or 90S)
 //
 // Returns 0 if error, 1 if good values were converted.
+//         Errors are due to the x and/or y values exceeding the above
+//         limits. In such cases the float values are set to appropriate
+//         minimum or maximum values.
 /////////////////////////////////////////////////////////////////////
 int convert_from_xastir_coordinates ( float *f_longitude,
                                       float *f_latitude,
@@ -136,33 +139,38 @@ int convert_from_xastir_coordinates ( float *f_longitude,
                                       long y ) {
 
 //fprintf(stderr,"convert_from_xastir_coordinates\n");
+    int result = 1;  // assume the input values are in range
 
     if (x < 0l ) {
         fprintf(stderr,
             "convert_from_xastir_coordinates:X out-of-range (too low):%lu\n",
             x);
-        return(0);
+        x = 0;
+        result = 0;
     }
 
     if (x > 129600000l) {
         fprintf(stderr,
             "convert_from_xastir_coordinates:X out-of-range (too high):%lu\n",
             x);
-        return(0);
+        x = 129600000l;
+        result = 0;
     }
 
     if (y < 0l) {
         fprintf(stderr,
             "convert_from_xastir_coordinates:Y out-of-range (too low):%lu\n",
             y);
-        return(0);
+        y = 0;
+        result = 0;
     }
 
     if (y > 64800000l) {
         fprintf(stderr,
             "convert_from_xastir_coordinates:Y out-of-range (too high):%lu\n",
             y);
-        return(0);
+        y = 64800000l;
+        result = 0;
     }
 
     *f_latitude  = (float)( -((y - 32400000l) / 360000.0) );
@@ -175,7 +183,7 @@ int convert_from_xastir_coordinates ( float *f_longitude,
 //    *f_latitude,
 //    *f_longitude);
 
-    return(1);
+    return(result);
 }
 
 
@@ -5080,170 +5088,6 @@ static short doHash(char *theCall) {
 short checkHash(char *theCall, short theHash) {
     return (short)(doHash(theCall) == theHash);
 }
-
-
-
-
-
-/* curl routines */
-#ifdef HAVE_LIBCURL
-
-struct FtpFile {
-  char *filename;
-  FILE *stream;
-};
-
-
-
-
-
-size_t curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
-  struct FtpFile *out = (struct FtpFile *)stream;
-  if (out && !out->stream) {
-    out->stream=fopen(out->filename, "wb");
-    if (!out->stream)
-      return -1;
-  }
-  return fwrite(buffer, size, nmemb, out->stream);
-}
-#endif  // HAVE_LIBCURL
-
-
-
-
-
-// Returns: 0 If file retrieved
-//          1 If there was a problem getting the file
-//
-int fetch_remote_file(char *fileimg, char *local_filename) {
-
-
-#ifdef HAVE_LIBCURL
-
-    CURL *curl;
-    CURLcode res;
-    char curlerr[CURL_ERROR_SIZE];
-    struct FtpFile ftpfile;
-    char agent_string[15];
-
-//fprintf(stderr, "Fetching remote file: %s\n", fileimg);
-
-    curl = curl_easy_init();
-
-    if (curl) { 
-
-        // verbose debug is keen
-        //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
-
-        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
-
-        xastir_snprintf(agent_string,sizeof(agent_string),"Xastir");
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, agent_string);
-
-        // write function
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
-
-        // download from fileimg
-        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
-
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
-
-        // Added in libcurl 7.9.8
-#if (LIBCURL_VERSION_NUM >= 0x070908)
-        curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10.6
-#if (LIBCURL_VERSION_NUM >= 0x071006)
-        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10.7
-#if (LIBCURL_VERSION_NUM >= 0x071007)
-        curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-#endif  // LIBCURL_VERSION_NUM
-
-        // Added in libcurl 7.10
-#if (LIBCURL_VERSION_NUM >= 0x070a00)
-        // This prevents a segfault for the case where we get a timeout on
-        // domain name lookup.  It has to do with the ALARM signal
-        // and siglongjmp(), which we use in hostname.c already.
-        // This URL talks about it a bit more, plus see the libcurl
-        // docs:
-        //
-        //     http://curl.haxx.se/mail/lib-2002-12/0103.html
-        //
-        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-#endif // LIBCURL_VERSION_NUM
-
-        ftpfile.filename = local_filename;
-        ftpfile.stream = NULL;
-        curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
-
-        res = curl_easy_perform(curl);
-
-        curl_easy_cleanup(curl);
-
-        if (CURLE_OK != res) {
-            fprintf(stderr, "curl told us %d\n", res);
-            fprintf(stderr, "curlerr: %s\n", curlerr);
-            fprintf(stderr,
-                "Perhaps a timeout? Try increasing \"Internet Map Timout\".\n");
-        }
-
-        if (ftpfile.stream)
-            fclose(ftpfile.stream);
-
-        // Return error-code if we had trouble
-        if (CURLE_OK != res) {
-            return(1);
-        }
-
-    } else { 
-        fprintf(stderr,"Couldn't download the file %s\n", fileimg);
-        fprintf(stderr,
-            "Perhaps a timeout? Try increasing \"Internet Map Timout\".\n");
- 
-        return(1);
-    }
-    return(0);  // Success!
-
-#else   // HAVE_LIBCURL
-
-#ifdef HAVE_WGET
-
-    char tempfile[500];
-
-    //"%s --server-response --timestamping --user-agent=Xastir --tries=1 --timeout=%d --output-document=%s \'%s\' 2> /dev/null\n",
-    xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s --server-response --user-agent=Xastir --tries=1 --timeout=%d --output-document=%s \'%s\' 2> /dev/null\n",
-        WGET_PATH,
-        net_map_timeout,
-        local_filename,
-        fileimg);
-
-    if (debug_level & 2)
-        fprintf(stderr,"%s",tempfile);
-
-    if ( system(tempfile) ) {   // Go get the file
-        fprintf(stderr,"Couldn't download the file\n");
-        fprintf(stderr,
-            "Perhaps a timeout? Try increasing \"Internet Map Timout\".\n");
- 
-        return(1);
-    }
-    return(0);  // Success!
-
-#else // HAVE_WGET
-
-    fprintf(stderr,"libcurl or 'wget' not installed.  Can't download file\n");
-    return(1);
-
-#endif  // HAVE_WGET
-#endif  // HAVE_LIBCURL
-
-}        
 
 
 

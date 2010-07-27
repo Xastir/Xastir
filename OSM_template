@@ -11,10 +11,27 @@
 # options. If not set it defaults to:
 #   layer=osmarander
 #
-OSMSTATICMAP-STYLE
+# The string following OSM_TILED_MAP-, is the name of a sub-directory in
+# the tile cache. It can be empty (delete the '-' too), though that is a
+# bad idea if multiple map styles are using the same TILE_DIR.
+#
+# Select only one of the two map types: OSMSTATICMAP or OSM_TILED_MAP
+#
+#
+#OSMSTATICMAP-STYLE
+#  or
+#OSM_TILED_MAP-STYLE
+#
+# The url for tiled maps defaults to http://tile.openstreetmap.org/. For
+# static maps it defaults to http://ojw.dev.openstreetmap.org/StaticMap/
+#URL tileURL
 
-# Uncomment this URL to override the default.
-#URL http://ojw.dev.openstreetmap.org/StaticMap/
+# The tile cache can be changed from the default (~/.xastir/OSMtiles) by
+# setting the following variable. If path does not begin with a '/' then
+# it will be relative to ~/.xastir/.
+#
+#TILE_DIR OSMtiles
+
 
 # When defined:
 # OSM_OPTIMIZE_KEY will change the map scaling to the nearest OSM zoom level.

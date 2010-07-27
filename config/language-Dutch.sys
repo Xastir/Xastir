@@ -392,6 +392,9 @@ BBARSTA045|Symbolen laden...||
 BBARSTA046|Opnieuw laden van symbolen...||
 BBARSTA047|Initialiseer mijn station...||
 BBARSTA048|Start interfaces...||
+BBARSTA049|Reading tiles...||
+BBARSTA050|Downloading tiles...||
+BBARSTA051|Downloading tile %li of %li||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen packets bekijken||

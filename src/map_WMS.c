@@ -65,6 +65,7 @@
 #include "xastir.h"
 #include "maps.h"
 #include "alert.h"
+#include "fetch_remote.h"
 #include "util.h"
 #include "main.h"
 #include "datum.h"

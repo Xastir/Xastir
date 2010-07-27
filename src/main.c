@@ -201,6 +201,9 @@ char *xastir_version=VERSION;
 // the years.
 #define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\n        http://www.xastir.org\n\nCopyright (C) 1999-2000  Frank Giannandrea\nCopyright (C) 1999-2010  The Xastir Group\nSee the \"LICENSE\" file for other applicable copyrights"
 
+// OpenStreetMap attribution
+#define ABOUT_OSM "Maps, tiles, and data from the OpenStreetMap project are\nCopyright OpenStreetMap and contributors, CC-BY-SA.\nMaps and tiles from CloudMade are Copyright CloudMade, CC-BY-SA.\n  http://www.openstreetmap.org/\n  http://creativecommons.org/licenses/by-sa/2.0/\n  http://www.cloudmade.com/\n"
+
 
 // Define this if you want an xastir.pid file created in the
 // ~/.xastir directory and want to check that there's not another
@@ -17398,7 +17401,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmStringFree(xb);
     //xms is still defined
 
-    xa = XmStringCreateLocalized("\n\n" ABOUT_MSG "\n\nLibraries used: " XASTIR_INSTALLED_LIBS);  // Add some newlines
+    xa = XmStringCreateLocalized("\n\n" ABOUT_MSG "\n\nLibraries used: " XASTIR_INSTALLED_LIBS "\n\n" ABOUT_OSM);  // Add some newlines
     xb = XmStringConcat(xms, xa);
     XmStringFree(xa);
     XmStringFree(xms);

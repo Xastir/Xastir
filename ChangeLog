@@ -1,3 +1,520 @@
+2010-07-21 04:52  we7u
+
+	* .cvsignore, src/shapelib/contrib/.cvsignore: Updating .cvsignore
+	  files to current build configuration.
+
+2010-07-12 23:12  we7u
+
+	* src/shapelib/contrib/: my_nan.h, shpgeo.c: Attempting to fix the
+	  "endian-ness" tests.
+
+2010-07-12 11:22  we7u
+
+	* src/shapelib/contrib/my_nan.h: Fixing up BYTE_ORDER so that
+	  internal Shapelib compiles on more machines.
+
+2010-07-11 16:39  we7u
+
+	* src/: main.c, objects.h: Getting rid of the final two compiler
+	  warnings, again by switch to the use of intptr_t instead of int.
+	  Other systems may have more warnings, but this OpenSuSE-11.2
+	  64-bit system compiles Xastir cleanly now.
+
+2010-07-11 16:31  we7u
+
+	* src/: draw_symbols.c, interface.c, map_shp.c, messages_gui.c,
+	  objects.c, shp_hash.c, testdbfawk.c: Getting rid of more compiler
+	  warnings, mostly by casting to/from intptr_t.
+
+2010-07-11 14:41  we7u
+
+	* src/rtree/: index.c, index.h, rect.c: Fixed some long-standing
+	  compiler warnings in the rtree code.	Seems to still work
+	  properly.
+
+2010-07-11 13:30  we7u
+
+	* src/shapelib/: dbfdump.c, shputils.c, contrib/dbfcat.c,
+	  contrib/shpdxf.c, contrib/shpgeo.c, contrib/shpproj.c: More minor
+	  tweaks to get rid of compiler warnings.  Of particular note are
+	  some TODO entries added to a couple of files for two enumerated
+	  values that weren't being handled in "switch" statements.  There
+	  still isn't any code for those case statements, but the compiler
+	  warnings are gone.
+
+2010-07-11 01:01  we7u
+
+	* src/shapelib/shputils.c: Adding some braces for some "if"
+	  statements so that the enclosed else clause won't be ambiguous.
+
+2010-07-11 00:57  we7u
+
+	* src/shapelib/: shpdump.c, shptreedump.c, contrib/shpdxf.c: Fixing
+	  a few more compiler warnings.
+
+2010-07-11 00:51  we7u
+
+	* src/shapelib/: shptreedump.c, shputils.c, contrib/shpcentrd.c,
+	  contrib/shpdata.c, contrib/shpdxf.c, contrib/shpfix.c,
+	  contrib/shpinfo.c, contrib/shpproj.c, contrib/shpwkb.c: Fixing
+	  more compiler warnings.  There are a few left yet.
+
+2010-07-11 00:24  we7u
+
+	* src/shapelib/: dbfdump.c, shprewind.c, shputils.c,
+	  contrib/dbfcat.c, contrib/dbfinfo.c, contrib/shpcentrd.c,
+	  contrib/shpdata.c, contrib/shpdxf.c, contrib/shpgeo.c,
+	  contrib/shpinfo.c, contrib/shpproj.c, contrib/shpwkb.c: Fixing
+	  multiple minor warnings with Shapelib.  Still plenty left.
+
+2010-07-10 23:31  we7u
+
+	* src/shapelib/: Makefile.am, contrib/Makefile.am: Changing the
+	  shapelib and shapelib/contrib Makefile.am files so that the
+	  binaries don't get installed during "make install"
+
+2010-07-10 23:22  we7u
+
+	* src/shapelib/: Makefile.am, shputils.c, contrib/Makefile.am:
+	  Setting up the rest of shapelib and shapelib/contrib so that
+	  everything compiles.	Had to add an include to shputils.c and add
+	  a "1" parameter to exit() in one spot.
+
+2010-07-10 22:52  we7u
+
+	* src/shapelib/: Makefile.am, contrib/Makefile.am: Now building
+	  libshape.a in both the shapelib and the shapelib/contrib
+	  directories so that we can build executables in both places
+	  successfully.
+
+2010-07-10 22:39  we7u
+
+	* src/shapelib/: Makefile.am, contrib/Makefile.am: Adding more
+	  binaries into the build.  The ones in "contrib" still depend on
+	  "libshape.a" in the "shapelib" dir and we still need to figure
+	  out how to build that library first.
+
+2010-07-10 13:53  tvrusso
+
+	* src/shapelib/: Makefile.am, contrib/Makefile.am: Modifications to
+	  internal shapelib support so that dbfinfo (from the contrib
+	  directory) builds when internal shapelib builds.  Until now, none
+	  of the "contrib" programs were built.
+
+2010-07-06 23:16  we7u
+
+	* src/main.c: Patch by Jerry Dunmire to prevent use of F4 key (Open
+	  Street Map optimum zoom) when Disable Fast Zoom is activated on
+	  the Map menu.
+
+2010-07-03 15:09  we7u
+
+	* scripts/: coord-convert.pl, inf2geo.pl, mapfgd.pl, overlay.pl,
+	  ozi2geo.pl, permutations.pl, ridge_radar.pl: Removing the
+	  Copyright noticed from scripts that were released to the public
+	  domain.  They are mutually exclusive.
+
+2010-07-02 00:17  we7u
+
+	* config/tl_2009_aiannh.dbfawk: I screwed up the credit on that
+	  last commit.	Those dbfawk files come to us courtesy of Peter
+	  Gamache, KC0TFB.  Sorry about that!
+
+2010-07-02 00:12  we7u
+
+	* config/: Makefile.am, tl_2009_aiannh.dbfawk, tl_2009_aits.dbfawk,
+	  tl_2009_arealm.dbfawk, tl_2009_areawater.dbfawk,
+	  tl_2009_county.dbfawk, tl_2009_cousub.dbfawk,
+	  tl_2009_edges.dbfawk, tl_2009_mil.dbfawk,
+	  tl_2009_nn_county.dbfawk, tl_2009_pointlm.dbfawk,
+	  tl_2009_zcta5.dbfawk: Contributions by Kevin Paetzold, K1KWP.
+	  Thanks!
+
+2010-07-02 00:08  we7u
+
+	* scripts/: Makefile.am, ridge_radar.pl: Adding ridge_radar.pl,
+	  which computes a .geo file for a particular NWS abbreviation.
+	  Contribution by Jeremy McDermond (NH6Z).  Thanks!
+
+2010-06-30 16:31  we7u
+
+	* src/map_OSM.c: Adding the ImageMagick ifdef's back in.  Patch by
+	  Jerry Dunmire.
+
+2010-06-29 23:41  we7u
+
+	* src/: main.c, map_geo.c: F4 key multiple maps fix by Jerry
+	  Dunmire.
+
+2010-06-29 23:25  we7u
+
+	* src/: interface.c, main.c, wx.c, wx.h: A fix for Radio
+	  Shack/Huger/Oregon Scientific weather stations connected via the
+	  WX200d daemon.  This fix may also help direct-connected weather
+	  stations of the above type, but since I don't have any to test
+	  with, it's unknown until someone tries.
+
+2010-06-29 10:01  we7u
+
+	* Makefile.am, tigermap.geo: First step at removing tigermap.geo:
+	  Making it invisible to the user.
+
+2010-06-28 14:25  we7u
+
+	* OSM_cloudmade_1.geo, OSM_cloudmade_2.geo, OSM_cloudmade_5.geo,
+	  OSM_cloudmade_998.geo, OSM_cloudmade_999.geo, OSM_cycle.geo,
+	  OSM_mapnik.geo, OSM_osmarender.geo, OSM_skiing.geo: Removing .geo
+	  files that are now created from a template.
+
+2010-06-28 13:49  we7u
+
+	* OSM_template: Need to commit a new file after Jerry's latest
+	  patch for things to work for everyone else!
+
+2010-06-28 12:17  we7u
+
+	* OSM_cloudmade_1.osm, OSM_cloudmade_2.osm, OSM_cloudmade_5.osm,
+	  OSM_cloudmade_998.osm, OSM_cloudmade_999.osm, OSM_cycle.osm,
+	  OSM_mapnik.osm, OSM_osmarender.osm, OSM_skiing.osm: A bit of
+	  cleanup:  Getting rid of the no-longer-used *.osm files.
+
+2010-06-28 12:14  we7u
+
+	* Makefile.am, OSM_cloudmade_1.geo, OSM_cloudmade_2.geo,
+	  OSM_cloudmade_5.geo, OSM_cloudmade_998.geo,
+	  OSM_cloudmade_999.geo, OSM_cycle.geo, OSM_mapnik.geo,
+	  OSM_osmarender.geo, OSM_skiing.geo, src/main.c, src/map_OSM.c,
+	  src/map_OSM.h, src/map_geo.c, src/maps.c: Mods by Jerry Dunmmire
+	  WRT OSM.  His notes: Summary of changes:   - scaling corrected
+	  - requested OSM map size limited to 2000x2000 and +/-89 deg
+	  latitude   - no 'binned' zoom levels	 - new function key (F4) to
+	  'optimize' zoom level for OSM   - .osm maps eliminated   - OSM
+	  map files (.geo) built from a single template
+
+	  Details:   scaling corrected:     This required a major rewrite
+	  of the map_OSM.c code since	  the map_tiger.c code that it was
+	  based on did not support     Mercator projection.
+
+	      Note that due to size limitations from the server and the
+	      use of Mercator scaling when the OSM bitmap images are
+	  rendered,
+	      some OSM maps will not fill the display window. This is
+	      particularly common when using a large display window.
+	  Selecting
+	      an optimized OSM zoom level (F4) will generally, but not
+	  always,
+	      result in bit map image that fills the window.
+
+	    map size limitations:
+	      The OSM map server that is used by this code limits the
+	  returned
+	      bitmap image to 2000 pixels in either direction. Also, as a
+	  side
+	      effect of the Mercator projection, latitude values must be
+	      limited to -90 < lat < 90.
+
+	    no binned zoom levels:
+	      Attempts to constrain the linear Xastir scaling to the binned
+	      OSM levels has been unsuccessful. The final straw was a
+	  problem
+	      with float to integer transitions that would result in
+	  looping
+	      and oscillation between levels.
+
+	    new function key to optimize OSM zoom levels:
+	      Since bitmap images do not scale well, they will always look
+	      best when the Xastir scale is closest to the OSM scale. A
+	      function key (F4) has been defined that will adjust the
+	  Xastir
+	      scale to the nearest OSM level and redraw the screen. Note
+	  that
+	      even if the scale is not changed, the F4 key will redraw the
+	      screen- this is intentional on my part.
+
+	      The F4 key works only if an OSM map is selected.
+
+	      If the F4 key is already defined for some other use on your
+	      system you can specify an alternative key by modifying the
+	  map
+	      files (OSM*.geo).  The specified value must be an X11 KeySym
+	      value.  Setting the value to 0 will disable the key.
+
+	    .osm maps eliminated
+	      Since binned scale levels are no longer supported, the .osm
+	      extension is no longer needed. .osm file will not be
+	  installed.
+
+	      If your maps directory (typically
+	      /usr/local/share/xastir/maps/Online/) contains .osm file from
+	  an
+	      previous install you will have to remove them by hand.
+
+	      You should also re-index your files
+	      (Map->Configure->Index:Reindex ALL maps) to remove them from
+	  the
+	      Map Chooser.
+
+	    OSM map files (.geo) built from a single template:
+	      This is primarily of interest to developers and results in a
+	      cleaner source tree.
+
+2010-06-28 12:01  we7u
+
+	* configure.ac: Commenting out the tests for libgps, which we're
+	  currently not using.
+
+2010-06-18 22:35  we7u
+
+	* src/interface.c: Skipping the hostname lookup if we pass an IP
+	  address instead of a hostname.
+
+2010-06-18 22:11  we7u
+
+	* src/interface_gui.c: Changing default GPSD port to 2947.
+
+2010-06-18 21:57  we7u
+
+	* configure.ac, src/interface.c: Changes to support pre-2.90 and
+	  post-2.90 versions of GPSD network connections.  We now send the
+	  "R\r\n" command across (old method), then then send:
+	  ?WATCH={"enable":true,"nmea":true}\r\n (new method).	Between the
+	  two strings either version of GPSD daemon gets kick-started into
+	  sending us NMEA strings.
+
+2010-06-17 20:41  we7u
+
+	* configure.ac: Changing one summary line (text only).
+
+2010-06-17 20:07  we7u
+
+	* configure.ac, src/interface.c: Added the configure test for
+	  libgps and the gps.h header file, necessary to continue with
+	  adding gpsd support into Xastir.  More to do yet.
+
+2010-06-17 16:24  we7u
+
+	* src/util.c: Added a debugging statement, but it's commented out.
+	  Useful at times.
+
+2010-06-15 07:29  we7u
+
+	* OpenStreetMaps.osm: Part of the OSM linear patch by Jerry
+	  Dunmire.
+
+2010-06-15 07:28  we7u
+
+	* Makefile.am, OSM_cloudmade_1.geo, OSM_cloudmade_1.osm,
+	  OSM_cloudmade_2.geo, OSM_cloudmade_2.osm, OSM_cloudmade_5.geo,
+	  OSM_cloudmade_5.osm, OSM_cloudmade_998.geo,
+	  OSM_cloudmade_998.osm, OSM_cloudmade_999.geo,
+	  OSM_cloudmade_999.osm, OSM_cycle.geo, OSM_cycle.osm,
+	  OSM_mapnik.geo, OSM_mapnik.osm, OSM_osmarender.geo,
+	  OSM_osmarender.osm, OSM_skiing.geo, OSM_skiing.osm,
+	  src/map_OSM.c, src/map_OSM.h, src/map_geo.c: OpenStreetMaps
+	  linear scaling patches by Jerry Dunmire.  Thanks!
+
+2010-06-10 19:04  we7u
+
+	* OpenStreetMaps.geo: Another patch by Jerry Dunmire, KA6HLD.
+
+2010-06-10 19:02  we7u
+
+	* Makefile.am, OpenStreetMaps.osm, src/main.c, src/map_geo.c,
+	  src/maps.c: Another OSM patch by Jerry Dunmire, KA6HLD.
+
+2010-06-09 16:28  we7u
+
+	* src/: db.c, igate.c, interface.c, interface_gui.c, main.c,
+	  map_OSM.c, map_WMS.c, map_shp.c, map_tiger.c, maps.c,
+	  messages_gui.c, objects.c, view_message_gui.c, wx_gui.c: More
+	  tweaks by Jerry Dunmire, KA6HLD.  These get rid of some compiler
+	  warnings with newer GCC compilers.
+
+2010-06-09 11:51  we7u
+
+	* AUTHORS, Makefile.am, OpenStreetMaps.geo, src/Makefile.am,
+	  src/main.c, src/map_OSM.c, src/map_OSM.h, src/map_geo.c: Initial
+	  patches to use Open Street Maps with Xastir.	This appears to be
+	  a good replacement for the now-defunct Tigermap server.  Patches
+	  contributed by Jerry Dunmire, KA6HLD.  Thanks Jerry!
+
+2010-05-27 07:01  gstueve
+
+	* scripts/: get-fcc-rac.pl, get-gnis: Uodate copyright info in a
+	  couple of scripts.
+
+2010-05-07 09:23  tvrusso
+
+	* src/main.c: Add a very simple hack cribbed from the "Grace"
+	  project
+
+	  http://patch-tracker.debian.org/patch/series/view/grace/1:5.1.22-5/motiflockup.diff
+
+	  to work around some extreme breakage introduced by Xorg server
+	  around version 1.7.5.  This breakage changed the way the server
+	  handles "passive grabs" and has broken *all* motif programs that
+	  use XmCreatePopupMenu (among other things); such programs will
+	  grab the mouse cursor upon creating the pop-up and restrict
+	  cursor motion to within the parent widget of the intended popup,
+	  rendering the desktop completely unusable until the X server is
+	  killed.  The correct fix is to update Xorg server (the fix is
+	  apparently in the yet-to-be-released 1.7.6), but that is not an
+	  option for some users of systems that only use stable releases of
+	  Xorg, and sometimes not even then (think Ubuntu, where they tend
+	  to stick only to bug-fix updates in a given LTS tree, and don't
+	  go to the next release number).  Thus, it is necessary either to
+	  patch motif libraries or work-around the issue in applications.
+	  Since patching motif libraries is not a reasonable thing to
+	  require of our users, it's worthwhile to hack Xastir.
+
+	  The work-around ungrabs the mouse cursor immediately after the
+	  call to XmCreatePopupMenu.  It's an almost trivial modification
+	  of the code.
+
+	  Tested on Xorg-server 1.6.5 and Xorg-server 1.7.5.  Looks good,
+	  so committing it.
+
+	  The fix does have one unfortunate side effect on the newer server
+	  , as it is somewhat more difficult to tap the right mouse button
+	  and get the right-click menu to stay up, but it is possible.	On
+	  the older server it appears to have no effect at all, which is
+	  good.
+
+2010-04-23 07:00  gstueve
+
+	* src/bulletin_gui.c: Remove annoying blank line from end of
+	  bulletin list.
+
+2010-04-21 12:36  gstueve
+
+	* config/Makefile.am: Fix source identification to work for BSD
+	  make. Should now work for new and old make utilities. I like
+	  these derived language files to test for added labels as I admit
+	  to a language deficiency.
+
+2010-04-19 10:48  gstueve
+
+	* config/Makefile.am: Permit derived language files to be generated
+	  from source file w/o requiring configure elements to be rerun.
+
+2010-04-19 10:45  gstueve
+
+	* config/Makefile.am, config/nwsz_ddmmyy_10.dbfawk,
+	  scripts/get-NWSdata: Add matching dbfawk file for new zone
+	  description file from NWS.
+
+2010-03-10 22:24  we7u
+
+	* src/db.c: Initializing a temp area object's color to a value to
+	  get rid of a compiler warning.
+
+2010-03-10 20:03  chicoreus
+
+	* src/: db.c, db_gis.c, db_gis.h, interface.c, interface_gui.c,
+	  main.c: Mike, W2SWR, attempted to deploy Xastir over a MySQL
+	  database, and in the process helped to find multiple issues,
+	  including both an inability to compile xastir with just
+	  --with-mysql, and multiple causes for segfaults starting and
+	  stopping database interfaces and saving data.  This commit
+	  addresses these issues.
+
+	  Xastir now compiles and runs with either or both --with-mysql and
+	  --with-postgis, as reqired definitions for each have now been
+	  appropriately included with preprocessor directives.
+
+	  The key fix for stability is in db_gis.h, the connection array
+	  has been redefined  from an array pointer to an array, and the
+	  MYSQL object in the Connection struct has been changed from a
+	  MYSQL pointer to a MYSQL.  Calls to methods that pass database
+	  connections have been rewritten to pass the address of the
+	  connection (&aDbConnection), rather than the connection.
+
+	  Multiple other fixes, mostly involving correcting the use of
+	  pointers, have been made to the db_gis.c code, and these have
+	  been tested and found to work with storage and retrieval of large
+	  quantities of internet feed data (on the order of 800,000
+	  records) to both MySQL and Postgis databases, with xastir
+	  compiled with --with-mysql, --with-postgis separately, and with
+	  --with-mysql --with-postgis together.
+
+	  Also fixed a user interface bug that prevented retention of a
+	  selection of mysql(spatial) as a database type.
+
+2010-03-05 21:52  we7u
+
+	* FAQ: Adding more info to the Fedora 12 right-click bug
+	  problem/solution.
+
+2010-02-28 07:47  we7u
+
+	* scripts/inf2geo.pl: Added some comments about GM/IM
+	  prerequisites.  Made it clear what the script does for the user.
+
+2010-02-27 17:33  we7u
+
+	* src/x_spider.c: Client connections to Xastir's server port had
+	  this problem:  The last connected client, if it disconnected,
+	  would lock up the server.  The pointer code taking care of
+	  removing objects in the linked list has been reworked.  It no
+	  longer matters which order of client connects/disconnects are
+	  applied to the server.  Thanks to Nathan Mills for helping me
+	  figure this out and test this.
+
+2010-02-19 17:33  gstueve
+
+	* src/interface.c: Fix spelling in error message that lintian
+	  found.
+
+2010-02-16 20:13  chicoreus
+
+	* src/db_gis.c: The node_path stored to a mysql database is not
+	  being truncated correctly with xastir_snprintf(), as the current
+	  length of the station->node_path_ptr that is providing the
+	  character array is used as the limit, rather than the maximum
+	  length allocated for the node_path into which it is being placed,
+	  thus causing a crash on trying to store a MySQL record for a
+	  position when the path exceeds 56 characters in length.
+
+2010-02-16 17:47  we7u
+
+	* FAQ: Tweaked the Fedora 12 right-click answer to point to "yum
+	  update".
+
+2010-02-11 21:13  we7u
+
+	* src/util.c: Taking an initial WIDE2-1 out of the equation which
+	  looks for WIDEn-N following WIDEn-N.
+
+2010-02-06 19:48  we7u
+
+	* Makefile.am: Setting up README.CYGWIN so that it gets copied to
+	  the docs directory with the rest of the docs during the install
+	  step.
+
+2010-02-03 09:37  we7u
+
+	* FAQ: Added Kevin K1KWP's note about getting right-click menus
+	  working in Fedora 12.
+
+2010-02-01 10:37  gstueve
+
+	* testdbfawk.1, xastir_udp_client.1: Quiet some warnings from
+	  manpages about hyphens and minus signs.
+
+2010-01-31 12:10  we7u
+
+	* configure.ac: Bumping the revision number for new development.
+
+2010-01-31 12:09  we7u
+
+	* README.Contributing: Updating text to call out the new place for
+	  the developers instructions (Xastir.org Wiki).
+
+2010-01-31 00:45  we7u
+
+	* ChangeLog: Committing latest ChangeLog (derived from cvs log)
+	  before release.
+
 2010-01-31 00:44  we7u
 
 	* symbols/symbols.dat: Updated wheelchair symbol plus new power

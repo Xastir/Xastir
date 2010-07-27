@@ -388,6 +388,9 @@ BBARSTA045|Lade Symbole...||
 BBARSTA046|Lade Symbole neu...||
 BBARSTA047|Initialisiere meine Station...||
 BBARSTA048|Starte Schnittstellen...||
+BBARSTA049|Reading tiles...||
+BBARSTA050|Downloading tiles...||
+BBARSTA051|Downloading tile %li of %li||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||

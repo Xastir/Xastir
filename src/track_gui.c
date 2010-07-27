@@ -40,6 +40,7 @@
 #include "lang.h"
 #include "objects.h"
 #include "popup.h"
+#include "fetch_remote.h"
 #include "util.h"
 #include "xa_config.h"
 
