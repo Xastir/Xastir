@@ -1500,6 +1500,7 @@ void draw_OSM_map (Widget w,
                 fprintf(stderr,"Couldn't delete map from cache\n");
             }
         }
+#endif
         if (image) {
             DestroyImage(image);
         }
@@ -1510,7 +1511,6 @@ void draw_OSM_map (Widget w,
         return;
     }
 
-#endif
     if (debug_level & 512) {
         fprintf(stderr,"Image: %s\n", file);
         fprintf(stderr,"Image size %d %d\n", map_image_width, map_image_height);
