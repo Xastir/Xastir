@@ -16,14 +16,14 @@ SUBDIRS = src m4 config help scripts symbols callpass
 
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
         missing mkinstalldirs placeholder FAQ LICENSE README README.CVS \
-	README.CYGWIN README.Getting-Started README.Contributing \
-	README.MAPS README.win32 README.OSM_maps testdbfawk.1 \
+        README.CYGWIN README.Getting-Started README.Contributing \
+        README.MAPS README.win32 README.OSM_maps testdbfawk.1 \
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 terraserver.geo \
         terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
         terraserver-topo.geo USRadar.geo CanadaTopo250k.geo \
         CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse \
-	OSM_template \
-	CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png \
+        OSM_template \
+        CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png \
         COPYING COPYING.LIB.LESSTIF AUTHORS
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
@@ -49,8 +49,8 @@ online_DATA=terraserver.geo terraserver-topo.geo \
         TXRadar.geo WMSRadar.geo \
         OSM_cloudmade_1.geo OSM_cloudmade_2.geo \
         OSM_cloudmade_5.geo OSM_cloudmade_998.geo \
-	OSM_cloudmade_999.geo OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
-	OSM_tiled_osmarender.geo OSM_tiled_skiing.geo
+        OSM_cloudmade_999.geo OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
+        OSM_tiled_osmarender.geo OSM_tiled_skiing.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
@@ -70,7 +70,7 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS README.CYGWIN \
 # documentation is FHS compliant.
 
 install-exec-hook:
-	-rm -rf ${pkgdatadir}/doc
+	-rm -rf ${pkgdatadir}/doc && \
 	cd $(mapdir) && \
 	rm -f CC_OpenStreetMap.png && \
 	$(LN_S) CC_OpenStreetMap_logo.png CC_OpenStreetMap.png
