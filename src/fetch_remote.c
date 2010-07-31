@@ -92,62 +92,47 @@ size_t curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
   }
   return fwrite(buffer, size, nmemb, out->stream);
 }
-#endif  // HAVE_LIBCURL
 
-
-
-
-
-// Returns: 0 If file retrieved
-//          1 If there was a problem getting the file
-//
-int fetch_remote_file(char *fileimg, char *local_filename) {
-
-
-#ifdef HAVE_LIBCURL
-
-    CURL *curl;
-    CURLcode res;
-    char curlerr[CURL_ERROR_SIZE];
-    struct FtpFile ftpfile;
+/*
+ * xastir_curl_init - create curl session with common options
+ */
+CURL *xastir_curl_init(char *errBuf) {
+    CURL *mySession;
     char agent_string[15];
+    
+    mySession = curl_easy_init();
+    if (mySession != NULL) {
+        if (debug_level & 8192) {
+            curl_easy_setopt(mySession, CURLOPT_VERBOSE, 1);
+        } else {
+            curl_easy_setopt(mySession, CURLOPT_VERBOSE, 0);
+        }
 
-//fprintf(stderr, "Fetching remote file: %s\n", fileimg);
 
-    curl = curl_easy_init();
+        curl_easy_setopt(mySession, CURLOPT_ERRORBUFFER, errBuf);
 
-    if (curl) { 
-
-        // verbose debug is keen
-        //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
-
-        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
-
-        xastir_snprintf(agent_string,sizeof(agent_string),"Xastir");
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, agent_string);
+        xastir_snprintf(agent_string, sizeof(agent_string),"Xastir");
+        curl_easy_setopt(mySession, CURLOPT_USERAGENT, agent_string);
 
         // write function
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+        curl_easy_setopt(mySession, CURLOPT_WRITEFUNCTION, curl_fwrite);
 
-        // download from fileimg
-        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
-
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, (long)net_map_timeout);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
+        curl_easy_setopt(mySession, CURLOPT_TIMEOUT, (long)net_map_timeout);
+        curl_easy_setopt(mySession, CURLOPT_CONNECTTIMEOUT, (long)(net_map_timeout/2));
 
         // Added in libcurl 7.9.8
 #if (LIBCURL_VERSION_NUM >= 0x070908)
-        curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
+        curl_easy_setopt(mySession, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
 #endif  // LIBCURL_VERSION_NUM
 
         // Added in libcurl 7.10.6
 #if (LIBCURL_VERSION_NUM >= 0x071006)
-        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+        curl_easy_setopt(mySession, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
 #endif  // LIBCURL_VERSION_NUM
 
         // Added in libcurl 7.10.7
 #if (LIBCURL_VERSION_NUM >= 0x071007)
-        curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+        curl_easy_setopt(mySession, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
 #endif  // LIBCURL_VERSION_NUM
 
         // Added in libcurl 7.10
@@ -160,9 +145,59 @@ int fetch_remote_file(char *fileimg, char *local_filename) {
         //
         //     http://curl.haxx.se/mail/lib-2002-12/0103.html
         //
-        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+        curl_easy_setopt(mySession, CURLOPT_NOSIGNAL, 1);
 #endif // LIBCURL_VERSION_NUM
 
+    }
+
+    return(mySession);
+} // xastir_curl_init()
+
+/*
+ * fetch_remote_tile - downloads file using an open curl session
+ * Returns curl result code.
+ */
+int fetch_remote_tile(CURL *session, char *tileURL, char *tileFileName) {
+    CURLcode res;
+    struct FtpFile ftpfile;
+
+    curl_easy_setopt(session, CURLOPT_URL, tileURL);
+    ftpfile.filename = tileFileName;
+    ftpfile.stream = NULL;
+    curl_easy_setopt(session, CURLOPT_FILE, &ftpfile);    
+
+    res = curl_easy_perform(session);
+
+    if (ftpfile.stream)
+        fclose(ftpfile.stream);
+
+    return(res);
+
+} // fetch_remote_tile()
+
+#endif  // HAVE_LIBCURL
+
+
+/*
+ * fetch_remote_file
+ * Returns: 0 If file retrieved
+ *          1 If there was a problem getting the file
+ */
+int fetch_remote_file(char *fileimg, char *local_filename) {
+#ifdef HAVE_LIBCURL
+    CURL *curl;
+    CURLcode res;
+    char curlerr[CURL_ERROR_SIZE];
+    struct FtpFile ftpfile;
+
+//fprintf(stderr, "Fetching remote file: %s\n", fileimg);
+
+    curl = xastir_curl_init(curlerr);
+
+    if (curl) { 
+
+        // download from fileimg
+        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
         ftpfile.filename = local_filename;
         ftpfile.stream = NULL;
         curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    

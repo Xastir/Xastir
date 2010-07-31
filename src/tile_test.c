@@ -37,6 +37,12 @@
 #include "util.h"
 #include "snprintf.h"
 
+#ifdef HAVE_LIBCURL
+#include <curl/curl.h>
+#endif  // HAVE_LIBCURL
+
+#include "fetch_remote.h"
+
 #include "tile_mgmnt.h"
 
 // Must be last include file
@@ -44,7 +50,7 @@
 
 // This is required for fetch_remote_tile()
 int net_map_timeout = 120;
-int debug_level = 0;
+int debug_level = 512 + 8192;
 
 int main(void) {
     tileArea_t tiles;
@@ -52,6 +58,11 @@ int main(void) {
     coord_t corner;
     int zoom;
     double rightLon, leftLon, topLat, bottomLat;
+#ifdef HAVE_LIBCURL
+    CURL *mySession;
+    char errBuf[CURL_ERROR_SIZE];
+    int  res;
+#endif //HAVE_LIBCURL
 
     zoom= 12;
     leftLon = -121.1;
@@ -71,11 +82,34 @@ int main(void) {
 
     (void)mkOSMmapDirs("/tmp", tiles.startx, tiles.endx, zoom);
 
+#ifdef HAVE_LIBCURL
+    mySession = xastir_curl_init(errBuf);
+#endif //HAVE_LIBCURL
+
     for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
         for (tiley = tiles.starty; tiley <= tiles.endy; tiley++) {
-            getOneTile("http://tile.openstreetmap.org/mapnik", tilex, tiley, zoom, "/tmp/");
+            //"http://tiles.openpistemap.org/contours/", zoom, tilex, tiley);
+#ifdef HAVE_LIBCURL
+            res = getOneTile(mySession, "http://tile.openstreetmap.org/mapnik",
+                             tilex, tiley, zoom, "/tmp/");
+            if (res < 0) {
+               fprintf(stderr, "Download error for %i/%li/%li.png\n",
+                       zoom, tilex, tiley);
+               fprintf(stderr, "curl told us %d\n", -1 * res);
+               fprintf(stderr, "curlerr: %s\n", errBuf);
+            }
+
+#else  // don't HAVE_LIBCURL
+            getOneTile("http://tile.openstreetmap.org/mapnik",
+                        tilex, tiley, zoom, "/tmp/");
+#endif // HAVE_LIBCURL
         }
     }
+
+#ifdef HAVE_LIBCURL
+    curl_easy_cleanup(mySession);
+#endif // HAVE_LIBCURL
+
 
     printf("Request tiles for lon/lat = %f/%f", leftLon, topLat);
     printf(" %f/%f\n", rightLon, bottomLat);

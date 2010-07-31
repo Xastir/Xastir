@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <errno.h>
 
 #include "xastir.h"
@@ -39,28 +40,24 @@
 #include "snprintf.h"
 #include "maps.h"
 
+#ifdef HAVE_LIBCURL
+#include <curl/curl.h>
+#endif // HAVE_LIBCURL
+
 #include "tile_mgmnt.h"
 
 // Must be last include file
 #include "leak_detection.h"
 
+// OSM Minimum cache time
+#define SECONDS_7_DAYS (7 * 24 * 3600)
+
 /*
- * routines to manage map tiles from OSM
+ * latLon2tileNum - calculate tile number
+ *
+ * The tile number is returned in in the structure pointed to by the
+ * tilenum argument.
  */
-// * lat-lon to tile numbers, requires zoom level
-// * tile numbers to lat-lon
-// * center lat-lon, screen dim, to tile list
-// * corner lat-lon pair to tile list
-// * download tile and put in cache
-// * assemble tile list into a larger image
-// * add license bit map (this might be better added after xastir image
-//   has been assembled. Need Openstreetmap, and possibly Cloudmade
-// * check tile to see if it is in the cache
-// * check cache to see if tile should be updated
-// * main function is one that takes the two corners, in floating
-//   lat-lon, with zoom, and returns an image with tie points.
-
-
 void latLon2tileNum (double lon_deg,
         double lat_deg,
         int zoom,
@@ -128,7 +125,12 @@ void tile2coord (unsigned long tilex,
 
 } // tile2coord()
 
-
+/*
+ * calcTileArea - calculate the x and y range of tile numbers
+ *
+ * Returns the calculated values in the structure pointed to by the
+ * tiles argument.
+ */
 void calcTileArea (double lon_upper_left,
         double lat_upper_left,
         double lon_lower_right,
@@ -148,14 +150,14 @@ void calcTileArea (double lon_upper_left,
 
 
 /*
- * tilesMissing - return the count of tiles that are missing from the queue
+ * tilesMissing - return the count of tiles that are missing from the cache
  */
 int tilesMissing (unsigned long startx,
         unsigned long endx,
         unsigned long starty,
         unsigned long endy,
         int zoom,
-        char *baseDir) {
+        char *cacheDir) {
     struct stat sb;
     char local_filename[1100];
     unsigned long x, y;
@@ -165,7 +167,7 @@ int tilesMissing (unsigned long startx,
         for (y = starty; y <= endy; y++) {
 
             xastir_snprintf(local_filename, sizeof(local_filename),
-                    "%s/%u/%lu/%lu.png", baseDir, zoom, x, y);
+                    "%s/%u/%lu/%lu.png", cacheDir, zoom, x, y);
 
             if (stat(local_filename, &sb) != 0) {
                 numMissing++;
@@ -180,36 +182,104 @@ int tilesMissing (unsigned long startx,
 /*
  * getOneTile - get one tile from the web
  *
- * The tile is fetched only if it does not exist.
+ * The tile is fetched if it does not exist and 1 is returned.
  *
- * Returns 0 if a tile does not need to be downloaded
+ * If the tile exists in the cache and if the Curl library is used,
+ * then the server will be queried to see if a newer version exists. If
+ * so, the newer tile will be downloaded.
  *
- * WARNING: Download failures are not reported.
+ * Returns 1 if a tile did not exist and download was attempted.
+ * Returns 0 if a tile exists in the cache (tile might be updated).
+ *
+ * Returns libcurl errors as a negative integer.
+ *
+ * WARNING: Download failures are not reported for wget.
  *
  */
+#ifdef HAVE_LIBCURL
+int getOneTile (CURL *session,
+        char *baseURL,
+        unsigned long x,
+        unsigned long y,
+        int zoom,
+        char *baseDir) {
+    CURLcode res;
+    time_t cacheTimeout;
+#else
 int getOneTile (char *baseURL,
         unsigned long x,
         unsigned long y,
         int zoom,
         char *baseDir) {
+#endif // HAVE_LIBCURL
     
     struct stat sb;
     char url[1100];
     char local_filename[1100];
+    int result = 0;
 
     xastir_snprintf(url, sizeof(url), "%s/%u/%lu/%lu.png", baseURL, zoom, x, y);
     xastir_snprintf(local_filename, sizeof(local_filename),
             "%s/%u/%lu/%lu.png", baseDir, zoom, x, y);
 
+#ifdef HAVE_LIBCURL
+    curl_easy_setopt(session, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+#endif // HAVE_LIBCURL
+
     if (stat(local_filename, &sb) == -1) {
         if (debug_level & 512) {
             fprintf(stderr, "Fetching %s\n", url);
         }
-        (void)fetch_remote_file(url, local_filename);
-        return(1);
+        result = 1;  // only count files that do not exist
+
+#ifdef HAVE_LIBCURL
+        // Since the file does not exist locally,
+        // set the time to something very early so that the file
+        // will always be fetched
+        curl_easy_setopt(session, CURLOPT_TIMEVALUE, (long)1);
+        res = fetch_remote_tile(session, url, local_filename);
+
     } else {
-        return(0);
+
+        // Check for updated tiles, but only after 7 days, per
+        // OSM Tile Usage Policy,
+        // http://wiki.openstreetmap.org/wiki/Tile_usage_policy,
+        // 2010/07/29
+        cacheTimeout = sb.st_mtime + SECONDS_7_DAYS;
+        if (cacheTimeout <= time(NULL)) {
+            // tile exists in the cache, but is older than 7 days, so
+            // check the server for a newer version.
+            if (debug_level & 512) {
+                fprintf(stderr, "Fetching %s if newer.\n", url);
+            }
+            curl_easy_setopt(session, CURLOPT_TIMEVALUE, (long)sb.st_mtime);
+            res = fetch_remote_tile(session, url, local_filename);
+
+        } else {
+
+            if (debug_level & 512) {
+                fprintf(stderr, "Skipping- %s\n", url);
+                fprintf(stderr, "          because cache time has not expired.\n");
+                fprintf(stderr, "          cache expires %s",
+                        ctime(&cacheTimeout));
+            }
+
+            res = CURLE_OK;
+        }
     }
+
+    if (CURLE_OK != res) {
+        // return the curl error as a negative value to distinqusih it
+        // successful values
+        result = -1 * (int)res;
+    }
+
+#else  // don't HAVE_LIBCURL
+        (void)fetch_remote_file(url, local_filename);
+    }
+#endif // HAVE_LIBCURL
+
+    return(result);
 
 } // getOneTile()
 
@@ -241,7 +311,8 @@ static void mkpath(const char *dir) {
 }  // end of mkpath()
 
 
-/* mkOSMmapDirs - try to create all the directories needed for the tiles
+/*
+ * mkOSMmapDirs - try to create all the directories needed for the tiles
  *
  * This is simply a best-effort attempt because there are valid reasons
  * for mkdir() to fail. For example, the tiles could be buffered in a RO

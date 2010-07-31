@@ -107,8 +107,10 @@ Copyright (C) 2010  The Xastir Group
      
      Note that 'longitude' is a tile number between 0 and (2^zoom -1).
 
-     Xastir downloads tiles only as needed and does not check for
-     updates to tiles that have already been downloaded.
+     Xastir downloads tiles as needed. If Xastir is compiled with
+     libcurl support, then it will check for updates to tiles that have
+     been cached for 7 days or more.
+     See http://wiki.openstreetmap.org/wiki/Tile_usage_policy
 
      If a tile can not be downloaded for any reason or if the downloaded
      file is not usable image, then the downloaded file (if any) will be
@@ -118,6 +120,9 @@ Copyright (C) 2010  The Xastir Group
            on download issues. At debug level 512, corrupt tile files
            will not be deleted. Examining the contents of the corrupt
            files can be informative.
+
+           If Xastir is compiled with libcurl support, then debug level
+           8192 will enable verbose output from libcurl.
 
      WARNING: Corrupt tile files will not be deleted when running at
               debug level 512. If you do not delete them manually before

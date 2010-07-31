@@ -69,13 +69,9 @@
 
 #include "xastir.h"
 #include "maps.h"
-//#include "alert.h"
 #include "fetch_remote.h"
 #include "util.h"
 #include "main.h"
-//#include "datum.h"
-//#include "draw_symbols.h"
-//#include "rotated.h"
 #include "color.h"
 #include "xa_config.h"
 
@@ -928,6 +924,12 @@ void draw_OSM_tiles (Widget w,
     unsigned int row, col;
     char tmpString[MAX_TMPSTRING];
 
+#ifdef HAVE_LIBCURL
+    CURL *mySession;
+    char errBuf[CURL_ERROR_SIZE];
+    int curl_result;
+#endif // HAVE_LIBCURL
+
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
@@ -1039,6 +1041,10 @@ void draw_OSM_tiles (Widget w,
     numTiles = tilesMissing(tiles.startx, tiles.endx, tiles.starty,
                             tiles.endy, osm_zl, tileRootDir);
 
+#ifdef HAVE_LIBCURL
+    mySession = xastir_curl_init(errBuf);
+#endif // HAVE_LIBCURL
+
     // get the tiles
     tileCnt = 1;
     for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
@@ -1047,7 +1053,20 @@ void draw_OSM_tiles (Widget w,
                     tileCnt, numTiles);  // Downloading tile %ls of %ls
             statusline(map_it,0);
             XmUpdateDisplay(text);
+
+#ifdef HAVE_LIBCURL
+            curl_result = getOneTile(mySession, serverURL, tilex, tiley, osm_zl, tileRootDir);
+            if (curl_result < 0) {
+               fprintf(stderr, "Download error for tile: %s/%i/%li/%li.png\n",
+                       serverURL, osm_zl, tilex, tiley);
+               fprintf(stderr, "curl told us %d\n", -1 * curl_result);
+               fprintf(stderr, "curlerr: %s\n", errBuf);
+            } else {
+                tileCnt += curl_result;
+            }
+#else
             tileCnt += getOneTile(serverURL, tilex, tiley, osm_zl, tileRootDir);
+#endif // HAVE_LIBCURL
 
             HandlePendingEvents(app_context);
             if (interrupt_drawing_now) {
@@ -1059,6 +1078,10 @@ void draw_OSM_tiles (Widget w,
             break;
         }
     }
+
+#ifdef HAVE_LIBCURL
+    curl_easy_cleanup(mySession);
+#endif // HAVE_LIBCURL
 
     if (interrupted != 1) {
         // calculate tie points
