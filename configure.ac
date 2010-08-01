@@ -437,8 +437,9 @@ if test "${use_geotiff}" = "yes"; then
             if test "${use_tiff}" = "yes"; then
                 use_geotiff=no
                 AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
-  	          LIBS="$LIBS -lgeotiff"
-                AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
+                    LIBS="$LIBS -lgeotiff"
+                    CPPFLAGS="$CPPFLAGS -I/usr/include/libgeotiff"
+                    AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
             else
                 echo "*** Warning: geotiff requires libtiff."
                 use_geotiff=no
@@ -449,6 +450,7 @@ if test "${use_geotiff}" = "yes"; then
         use_geotiff=no
     fi
 fi 
+ 
 
 # Check for spatial database support
 use_postgis=no
