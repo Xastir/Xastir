@@ -420,6 +420,7 @@ fi
 #check for libtiff, libgeotiff
 # libjpeg.a and libz.a need to be compiled under LSB
 
+
 use_geotiff=yes
 AC_ARG_WITH(geotiff, [  --without-geotiff         Disable geotiff features.], use_geotiff=$withval)
 if test "${use_geotiff}" = "yes"; then
@@ -431,17 +432,22 @@ if test "${use_geotiff}" = "yes"; then
             AC_DEFINE(HAVE_TIFF, ,Define to 1 if you have the 'tiff' library (-ltiff))
             AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).)
         else
-            AC_CHECK_LIB(tiff, TIFFClose, use_tiff=yes
-            LIBS="$LIBS -ltiff"
-            AC_DEFINE(HAVE_TIFF, ,Define to 1 if you have the 'tiff' library (-ltiff)))
-            if test "${use_tiff}" = "yes"; then
-                use_geotiff=no
-                AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
-                    LIBS="$LIBS -lgeotiff"
-                    AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
+            AC_CHECK_HEADER(xtiffio.h, , use_geotiff="no")
+            if test "${use_geotiff}" = "yes"; then
+                AC_CHECK_LIB(tiff, TIFFClose, use_tiff=yes
+                LIBS="$LIBS -ltiff"
+                AC_DEFINE(HAVE_TIFF, ,Define to 1 if you have the 'tiff' library (-ltiff)))
+                if test "${use_tiff}" = "yes"; then
+                    use_geotiff=no
+                    AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
+                        LIBS="$LIBS -lgeotiff"
+                        AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
+                else
+                    echo "*** Warning: geotiff requires libtiff."
+                    use_geotiff=no
+                fi
             else
-                echo "*** Warning: geotiff requires libtiff."
-                use_geotiff=no
+                echo "*** Warning: geotiff include files not found."
             fi
         fi
     else
