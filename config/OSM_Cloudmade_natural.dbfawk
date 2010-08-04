@@ -1,0 +1,58 @@
+# $Id$
+#
+# Copyright (C) 2003-2010  The Xastir Group
+#
+# This dbfawk file is used to map arbitrary dbf data that
+# accompanies a shapefile into Xastir canonical values of:
+#
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   pattern - line pattern for road, river, etc. (0 - solid; 1 - dash; 2 - double dash)
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+#
+# NOTE: This file format is modeled after awk but is nowhere near
+# awk compatible.
+#
+# This file is used to map OSM shapefiles by "Cloudmade" which are
+# named "*_natural.dbf".
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column
+# names in order. dbfinfo should match the dbf file that we say this
+# dbfawk file goes with.
+dbfinfo="NAME:TYPE";
+
+# dbffields is which of the above fields we actually want to look
+# at.  No point reading dbffields that are not looked at further.
+dbffields="NAME:TYPE:";
+}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple
+# fields. Use this rule to re-initialize variables between records.
+# use color 11 to highlight stuff that isn't properly mapped.
+BEGIN_RECORD {key=""; lanes=1; color=4; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0;}
+
+# per-field rules are applied to the dbffields that are read from
+# each record.
+
+# select the name given in the record
+/^NAME=(.+)$/ {name="$1";next}
+
+# TYPE:
+/^TYPE=water/ {lanes=1; color=9; display_level=64; label_level=16; font_size=1; next}
+/^TYPE=forest/ {lanes=1; color=10; fill-color=10; display_level=64; label_level=16; font_size=1; next}
+
+# key: set the search key to be the Tiger/Line ID.  Not currently
+# used.
+#/^TLID=(.*)$/ {key=$1; next}
+
+# just a demo of the END_RECORD and END rules:
+#END_RECORD {name="$name ($key)";}
+#END {}
