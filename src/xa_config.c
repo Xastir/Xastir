@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <locale.h>
 
 #include <Xm/XmAll.h>
 
@@ -74,6 +75,9 @@ void store_string(FILE * fout, char *option, char *value) {
 //    if (debug_level & 1)
 //        fprintf(stderr,"Store String Start\n");
 
+// TODO:  Replace with function which doesn't depend on locale.
+// We'd also need to replace any xastir_snprintf() functions
+// throughout.
     fprintf (fout, "%s:%s\n", option, value);
 
 //    if (debug_level & 1)
@@ -100,7 +104,7 @@ void store_char(FILE * fout, char *option, char value) {
 void store_int(FILE * fout, char *option, int value) {
     char value_o[MAX_VALUE];
 
-    sprintf (value_o, "%d", value);
+    xastir_snprintf (value_o, sizeof(value_o), "%d", value);
     store_string (fout, option, value_o);
 }
 
@@ -111,7 +115,18 @@ void store_int(FILE * fout, char *option, int value) {
 void store_long (FILE * fout, char *option, long value) {
     char value_o[MAX_VALUE];
 
-    sprintf (value_o, "%ld", value);
+    xastir_snprintf(value_o, sizeof(value_o), "%ld", value);
+    store_string (fout, option, value_o);
+}
+
+
+
+
+
+void store_float (FILE * fout, char *option, float value) {
+    char value_o[MAX_VALUE];
+
+    xastir_snprintf(value_o, sizeof(value_o), "%f", value);
     store_string (fout, option, value_o);
 }
 
@@ -143,9 +158,8 @@ void input_close(void)
 int get_string(char *option, char *value, int value_size) {
     char config_file[MAX_VALUE];
     char config_line[256];
-    char *option_in;
-    char *value_in;
     short option_found;
+    char *value_array[2];
 
     option_found = 0;
 
@@ -163,19 +177,58 @@ int get_string(char *option, char *value, int value_size) {
     }
 
     if (fin != NULL) {
+
+        // Always start looking at the beginning of file?  (slow).
+        // Instead perhaps check to the end of file and then repeat
+        // from the beginning (once) if not found the first time.
+        // As long as we keep the order of saves/restores to/from
+        // the file the same, this will mean exactly one fgets() per
+        // variable sought.
         (void)fseek(fin, 0, SEEK_SET);
+
+        // Read the file line-by-line.  fgets() also reads in the
+        // line-end characters so we'll have to remove those.
         while ((fgets (&config_line[0], 256, fin) != NULL) && !option_found) {
-            option_in = strtok (config_line, " \t:\r\n");
-            if (strcmp (option_in, option) == 0) {
+
+            // Find the line containing "option"
+            split_string(config_line, value_array, 2, ':');
+
+            if (strcmp (value_array[0], option) == 0) {
+                int len;
+
+                // Found the correct line
                 option_found = 1;
-                value_in = strtok (NULL, "\t\r\n");
-                if (value_in == NULL)
+
+                remove_leading_spaces(value_array[1]);
+
+                // Eliminate line-end chars.  Do this twice 'cuz
+                // some operating systems add two characters (\r\n)
+                len = strlen(value_array[1]);
+                if (len > 0) {
+                    if ( (value_array[1][len-1] == '\n')
+                            || (value_array[1][len-1] == '\r') ) {
+                        value_array[1][len-1] = '\0';
+                    }
+                }
+                len = strlen(value_array[1]);
+                if (len > 0) {
+                    if ( (value_array[1][len-1] == '\n')
+                            || (value_array[1][len-1] == '\r') ) {
+                        value_array[1][len-1] = '\0';
+                    }
+                }
+
+                remove_trailing_spaces(value_array[1]);
+                
+                if (value_array[1] == NULL)
                     value = "";
                 else
                     xastir_snprintf(value,
                         value_size,
                         "%s",
-                        value_in);
+                        value_array[1]);
+
+                //fprintf(stderr,"%s = %s\n", value_array[0], value);
             }
         }
     }
@@ -255,6 +308,36 @@ long get_long(char *option, long low, long high, long def) {
         "xastir.cnf: %s out-of-range: %ld, changing to default: %ld\n",
         option,
         atol(value_o),
+        def);
+    return(def);
+}
+
+
+
+
+
+// Snags a float value and checks whether it is within the correct
+// range.  If not, it assigns a default value.  Returns the value.
+float get_float(char *option, float low, float high, float def) {
+    char value_o[MAX_VALUE];
+    int ret;
+
+    ret = get_string (option, value_o, sizeof(value_o));
+    if (ret && (strtof(value_o, NULL) >= low) && (strtof(value_o, NULL) <= high ) ) {
+        return(strtof(value_o, NULL));
+    }
+
+    if (!ret) {
+//        fprintf(stderr,"xastir.cnf: %s not found, inserting default: %f\n",
+//            option,
+//            def);
+        return(def);
+    }
+
+    fprintf(stderr,
+        "xastir.cnf: %s out-of-range: %f, changing to default: %f\n",
+        option,
+        strtof(value_o, NULL),
         def);
     return(def);
 }
@@ -372,6 +455,12 @@ void save_data(void)  {
     struct stat file_status;
 
 
+    // Force the locale to a default so that we don't have
+    // conversion problems due to LANG/LC_ALL/LC_CTYPE/LC_NUMERIC
+    // environment variables.
+    (void)setlocale(LC_NUMERIC, "C");
+    (void)setlocale(LC_CTYPE, "C");
+
 //    if (debug_level & 1)
 //        fprintf(stderr,"Store String Start\n");
 
@@ -446,11 +535,9 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
 
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_MAGICK)
-        sprintf (name, "%f", imagemagick_gamma_adjust);
-        store_string(fout, "IMAGEMAGICK_GAMMA_ADJUST", name);
+        store_float (fout, "IMAGEMAGICK_GAMMA_ADJUST", imagemagick_gamma_adjust);
 #endif  // HAVE_MAGICK
-        sprintf (name, "%f", raster_map_intensity);
-        store_string(fout, "RASTER_MAP_INTENSITY", name);
+        store_float(fout, "RASTER_MAP_INTENSITY", raster_map_intensity);
 #endif  // NO_GRAPHICS
 
         store_string(fout, "PRINT_PROGRAM", printer_program);
@@ -599,7 +686,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
 
 
         for (i = 0; i < MAX_IFACE_DEVICES; i++) {
-            sprintf (name_temp, "DEVICE%0d_", i);
+            xastir_snprintf (name_temp, sizeof(name_temp), "DEVICE%0d_", i);
 
             xastir_snprintf(name,
                 sizeof(name),
@@ -985,7 +1072,7 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
 
         /* list attributes */
         for (i = 0; i < LST_NUM; i++) {
-            sprintf (name_temp, "LIST%0d_", i);
+            xastir_snprintf (name_temp, sizeof(name_temp), "LIST%0d_", i);
             xastir_snprintf(name,
                 sizeof(name),
                 "%s",
@@ -1217,6 +1304,13 @@ void load_data_or_default(void) {
     char name[50];
     long temp;
 
+
+    // Force the locale to a default so that we don't have
+    // conversion problems due to LANG/LC_ALL/LC_CTYPE/LC_NUMERIC
+    // environment variables.
+    (void)setlocale(LC_NUMERIC, "C");
+    (void)setlocale(LC_CTYPE, "C");
+
     /* language */
     if (!get_string ("LANGUAGE", lang_to_use, sizeof(lang_to_use))
             || lang_to_use[0] == '\0') {
@@ -1286,7 +1380,7 @@ void load_data_or_default(void) {
 
     if (!get_string ("STATION_COMMENTS", my_comment, sizeof(my_comment))
             || my_comment[0] == '\0') {
-        sprintf (my_comment, "XASTIR-%s", XASTIR_SYSTEM);
+        xastir_snprintf (my_comment, sizeof(my_comment), "XASTIR-%s", XASTIR_SYSTEM);
     }
     /* replacing defined MY_TRAIL_DIFF_COLOR from db.c, default 0 matches 
        default value of MY_TRAIL_DIFF_COLOR to show all mycall-ssids in 
@@ -1306,7 +1400,7 @@ void load_data_or_default(void) {
 
     // Empty string is ok here
     if (!get_string("RELAY_DIGIPEAT_CALLS", relay_digipeater_calls, sizeof(relay_digipeater_calls)))
-        sprintf (relay_digipeater_calls, "WIDE1-1");
+        xastir_snprintf (relay_digipeater_calls, sizeof(relay_digipeater_calls), "WIDE1-1");
     // Make them all upper-case.
     (void)to_upper(relay_digipeater_calls);
     // And take out all spaces
@@ -1324,25 +1418,9 @@ void load_data_or_default(void) {
 
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_MAGICK)
-    if (!get_string("IMAGEMAGICK_GAMMA_ADJUST", name, sizeof(name))
-            || name[0] == '\0') {
-        imagemagick_gamma_adjust = 0.0;
-    }
-    else {
-        if (1 != sscanf(name, "%f", &imagemagick_gamma_adjust)) {
-            fprintf(stderr,"load_data_or_default:sscanf parsing error\n");
-        }
-    }
+    imagemagick_gamma_adjust = get_float("IMAGEMAGICK_GAMMA_ADJUST", 0.0, 1.0, 0.0);
 #endif  // HAVE_MAGICK
-    if (!get_string("RASTER_MAP_INTENSITY", name, sizeof(name))
-            || name[0] == '\0') {
-        raster_map_intensity = 1.0;
-    }
-    else {
-        if (1 != sscanf(name, "%f", &raster_map_intensity)) {
-            fprintf(stderr,"load_data_or_default:sscanf parsing error\n");
-        }
-    }
+    raster_map_intensity = get_float("RASTER_MAP_INTENSITY", 0.0, 1.0, 1.0);
 #endif  // NO_GRAPHICS
 
     if (!get_string ("PRINT_PROGRAM", printer_program, sizeof(printer_program))
@@ -1682,7 +1760,7 @@ void load_data_or_default(void) {
 
 
     for (i = 0; i < MAX_IFACE_DEVICES; i++) {
-        sprintf (name_temp, "DEVICE%0d_", i);
+        xastir_snprintf (name_temp, sizeof(name_temp), "DEVICE%0d_", i);
         xastir_snprintf(name,
             sizeof(name),
             "%s",
@@ -2299,7 +2377,7 @@ void load_data_or_default(void) {
 
     /* list attributes */
     for (i = 0; i < LST_NUM; i++) {
-        sprintf (name_temp, "LIST%0d_", i);
+        xastir_snprintf (name_temp, sizeof(name_temp), "LIST%0d_", i);
         xastir_snprintf(name,
             sizeof(name),
             "%s",

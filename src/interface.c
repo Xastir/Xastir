@@ -553,7 +553,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 
 //fprintf(stderr,"path_string: %s\n", path_string);
 
-        split_string((char *)path_string, ViaCall, 10);
+        split_string((char *)path_string, ViaCall, 10, ',');
 
         // Write the type character into the frame
         output_string[4] = 'V'; // Unproto, via calls present

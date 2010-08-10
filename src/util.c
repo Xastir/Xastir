@@ -5093,54 +5093,14 @@ short checkHash(char *theCall, short theHash) {
 
 
 
-// Breaks up a string into substrings using comma as the delimiter.
-// Makes each entry in the array of char ptrs point to one
-// substring.  Modifies incoming string and cptr[] array.  Send a
-// character constant string to it and you'll get an instant
-// segfault (the function can't modify a char constant string).
+// Breaks up a string into substrings using an arbitrary character
+// as the delimiter.  Makes each entry in the array of char ptrs
+// point to one substring.  Modifies incoming string and cptr[]
+// array.  Send a character constant string to it and you'll get an
+// instant segfault (the function can't modify a char constant
+// string).  Use this function instead of strtok().
 //
-void split_string( char *data, char *cptr[], int max ) {
-  int ii;
-  char *temp;
-  char *current = data;
-
-
-  // NULL each char pointer
-  for (ii = 0; ii < max; ii++) {
-    cptr[ii] = NULL;
-  }
-
-  // Save the beginning substring address
-  cptr[0] = current;
-
-  for (ii = 1; ii < max; ii++) {
-    temp = strchr(current,',');  // Find next comma
-
-    if(!temp) { // No commas found 
-      return; // All done with string
-    }
-
-    // Store pointer to next substring in array
-    cptr[ii] = &temp[1];
-    current  = &temp[1];
-
-    // Overwrite comma with end-of-string char and bump pointer by
-    // one.
-    temp[0] = '\0';
-  }
-}
-
-
-
-
-
-// Breaks up a string into substrings using an arbitrary character as the delimiter.
-// Makes each entry in the array of char ptrs point to one
-// substring.  Modifies incoming string and cptr[] array.  Send a
-// character constant string to it and you'll get an instant
-// segfault (the function can't modify a char constant string).
-//
-void split_string_char( char *data, char *cptr[], int max, char search_char ) {
+void split_string( char *data, char *cptr[], int max, char search_char ) {
   int ii;
   char *temp;
   char *current = data;
@@ -5246,7 +5206,7 @@ int check_unproto_path ( char *data ) {
 #endif
     (void)to_upper(tmpdata);
     if ((tmp = strchr(tmpdata, '/'))) *tmp ='\0';// Only check VHF portion of path
-    split_string(tmpdata, ViaCalls, 10);
+    split_string(tmpdata, ViaCalls, 10, ',');
 
     for (ii = 0; ii < 10; ii++) {
         lastp = 0;

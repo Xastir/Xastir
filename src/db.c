@@ -11380,7 +11380,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path, int
         sizeof(temp_string),
         "%s",
         data);
-    split_string(temp_string, Substring, 12);
+    split_string(temp_string, Substring, 12, ',');
 
     // The Substring[] array contains pointers to each substring in
     // the original data string.
@@ -11563,7 +11563,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path, int *
         sizeof(temp_string),
         "%s",
         data);
-    split_string(temp_string, Substring, 15);
+    split_string(temp_string, Substring, 15, ',');
 
     // The Substring[] array contains pointers to each substring in
     // the original data string.
@@ -11744,7 +11744,7 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path, int *
         sizeof(temp_string),
         "%s",
         data);
-    split_string(temp_string, Substring, 7);
+    split_string(temp_string, Substring, 7, ',');
 
     // The Substring[] array contains pointers to each substring in
     // the original data string.
@@ -15811,7 +15811,7 @@ int tactical_data_add(char *call, char *message, char from) {
 
         // Split the message first on ';' characters to get the
         // callsign=tactical pairs separated from each other.
-        split_string_char( message, Substring, max, ';' );
+        split_string( message, Substring, max, ';' );
 
         // Check whether we found more than one pair.
         if (Substring[0] == NULL) { // No ';' chars were found.
@@ -15833,7 +15833,7 @@ int tactical_data_add(char *call, char *message, char from) {
             //   Call_Tac[0]    (Callsign)
             //   Call_Tac[1]    (Tactical Callsign)
             //
-            split_string_char( Substring[ii], Call_Tac, 2, '=' );
+            split_string( Substring[ii], Call_Tac, 2, '=' );
 
             if (Call_Tac[0] != NULL) { // Found '=' char.
 
@@ -18095,7 +18095,7 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
         sizeof(temp_string),
         "%s",
         path);
-    split_string(temp_string, Substring, MAX_RELAY_SUBSTRINGS);
+    split_string(temp_string, Substring, MAX_RELAY_SUBSTRINGS, ',');
     // Each element in the path is now pointed to by a char ptr in
     // the Substring array.  If a NULL is found in the array, that's
     // the end of the path.
@@ -18182,7 +18182,7 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
     // point where we read the string in from the config file
     // (xa_config.c), so spaces between the calls are ok (but not
     // tabs).
-    split_string(relay_digipeater_calls, Relay_Calls, MAX_RELAY_DIGIPEATER_CALLS);
+    split_string(relay_digipeater_calls, Relay_Calls, MAX_RELAY_DIGIPEATER_CALLS, ',');
 
     // Check for match against my_callsign in this digipeater slot
     done = 0;
@@ -18505,7 +18505,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                             sizeof(tmp_path),
                             "%s",
                             path);
-            split_string(tmp_path, ViaCalls, 10);
+            split_string(tmp_path, ViaCalls, 10, ',');
 
             if (       (strstr(backup,      "EMERGENCY"))    // Checks entire line
                        || (strcmp(ViaCalls[0], "ALARM") == 0)   // Checks to_field

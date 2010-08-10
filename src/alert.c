@@ -1696,7 +1696,8 @@ if (debug_level & 2)
             // an array with the various zone names.
             split_string(&uncompressed_wx[1],
                 title_ptr,
-                MAX_SUB_ALERTS);
+                MAX_SUB_ALERTS,
+                ',');
         }
         else {  // Handle non-compressed packet
             // We have up to five alerts to process.

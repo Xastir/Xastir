@@ -185,7 +185,8 @@
 // because it causes other problems.
 extern short checkHash(char *theCall, short theHash);
 extern void get_timestamp(char *timestring);
-extern void split_string( char *data, char *cptr[], int max );
+extern void split_string( char *data, char *cptr[], int max, char search_char );
+
 
 // From database.h
 extern char my_callsign[];
@@ -1320,7 +1321,7 @@ fprintf(stderr, "Received datagram: %s", buf);
 
         // Copy the entire buffer so that we can modify it
         xastir_snprintf(buf2, sizeof(buf2), "%s", buf);
-        split_string(buf2, cptr, 10);
+        split_string(buf2, cptr, 10, ',');
 
         if (cptr[0] == NULL || cptr[0][0] == '\0') {    // callsign
             send_udp_nack(sock, from, fromlen);
