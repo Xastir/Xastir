@@ -177,61 +177,72 @@ int get_string(char *option, char *value, int value_size) {
     }
 
     if (fin != NULL) {
+        int loop_counter = 0;
 
-        // Always start looking at the beginning of file?  (slow).
-        // Instead perhaps check to the end of file and then repeat
-        // from the beginning (once) if not found the first time.
-        // As long as we keep the order of saves/restores to/from
-        // the file the same, this will mean exactly one fgets() per
-        // variable sought.
-        (void)fseek(fin, 0, SEEK_SET);
-
-        // Read the file line-by-line.  fgets() also reads in the
-        // line-end characters so we'll have to remove those.
-        while ((fgets (&config_line[0], 256, fin) != NULL) && !option_found) {
-
-            // Find the line containing "option"
-            split_string(config_line, value_array, 2, ':');
-
-            if (strcmp (value_array[0], option) == 0) {
-                int len;
-
-                // Found the correct line
-                option_found = 1;
-
-                remove_leading_spaces(value_array[1]);
-
-                // Eliminate line-end chars.  Do this twice 'cuz
-                // some operating systems add two characters (\r\n)
-                len = strlen(value_array[1]);
-                if (len > 0) {
-                    if ( (value_array[1][len-1] == '\n')
-                            || (value_array[1][len-1] == '\r') ) {
-                        value_array[1][len-1] = '\0';
-                    }
-                }
-                len = strlen(value_array[1]);
-                if (len > 0) {
-                    if ( (value_array[1][len-1] == '\n')
-                            || (value_array[1][len-1] == '\r') ) {
-                        value_array[1][len-1] = '\0';
-                    }
-                }
-
-                remove_trailing_spaces(value_array[1]);
-                
-                if (value_array[1] == NULL)
-                    value = "";
-                else
-                    xastir_snprintf(value,
-                        value_size,
-                        "%s",
-                        value_array[1]);
-
-                //fprintf(stderr,"%s = %s\n", value_array[0], value);
+        while (!option_found && loop_counter < 2) {
+            // Search to the end of file and then repeat from the
+            // beginning (once) if not found the first time.  As
+            // long as we keep the order of saves/restores to/from
+            // the file the same, this will mean exactly one fgets()
+            // per variable sought.
+            if (loop_counter == 1) {
+                // We didn't find it the first time through, try
+                // once more from the start of file.
+                (void)fseek(fin, 0, SEEK_SET);
             }
-        }
-    }
+
+            // Read the file line-by-line.  fgets() also reads in
+            // the line-end characters so we'll have to remove
+            // those.
+            while (!option_found && (fgets (&config_line[0], 256, fin) != NULL)) {
+
+                // Find the line containing "option"
+                // Here we assume no leading/trailing white space
+                // for value_array[0].
+                split_string(config_line, value_array, 2, ':');
+
+                if (strcmp (value_array[0], option) == 0) {
+                    int len;
+
+                    // Found the correct line
+                    option_found = 1;
+
+                    remove_leading_spaces(value_array[1]);
+
+                    // Eliminate line-end chars.  Do this twice 'cuz
+                    // some operating systems add two characters
+                    // (\r\n)
+                    len = strlen(value_array[1]);
+                    if (len > 0) {
+                        if ( (value_array[1][len-1] == '\n')
+                                || (value_array[1][len-1] == '\r') ) {
+                        value_array[1][len-1] = '\0';
+                        }
+                    }
+                    len = strlen(value_array[1]);
+                    if (len > 0) {
+                        if ( (value_array[1][len-1] == '\n')
+                                || (value_array[1][len-1] == '\r') ) {
+                            value_array[1][len-1] = '\0';
+                        }
+                    }
+
+                    remove_trailing_spaces(value_array[1]);
+                
+                    if (value_array[1] == NULL)
+                        value = "";
+                    else
+                        xastir_snprintf(value,
+                            value_size,
+                            "%s",
+                            value_array[1]);
+
+                    //fprintf(stderr,"%s = %s\n", value_array[0], value);
+                }
+            }  // End of while (fgets)
+            loop_counter++;
+        } // End of while (!option_found)
+    } // End of if
     else
         fprintf(stderr,"Couldn't open file: %s\n", config_file);
 
