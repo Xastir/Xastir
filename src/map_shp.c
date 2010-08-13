@@ -768,7 +768,7 @@ void draw_shapefile_map (Widget w,
     // Define hash table for label pointers
     label_string *label_hash[256];
     // And the index into it
-    int hash_index = 0;
+    uint8_t hash_index = 0;
 
     label_string *ptr2 = NULL;
 
@@ -2909,12 +2909,12 @@ void draw_shapefile_map (Widget w,
                             // of first two chars but the result was
                             // slower than just using the first
                             // character.
-                            hash_index = temp[0];
+                            hash_index = (uint8_t)(temp[0]);
 
                             ptr2 = label_hash[hash_index];
                             while (ptr2 != NULL) {   // Step through the list
                                 // Check 2nd character (fast!)
-                                if (ptr2->label[1] == temp[1]) {
+                                if ( (uint8_t)(ptr2->label[1]) == (uint8_t)(temp[1]) ) {
                                     if (strcasecmp(ptr2->label,temp) == 0) {    // Found a match
                                         //fprintf(stderr,"Found a match!\t%s\n",temp);
                                         new_label = 0;
