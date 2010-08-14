@@ -192,6 +192,9 @@ Copyright (C) 2010  The Xastir Group
         http://cloudmade.com/about/api-terms-and-conditions
         http://cloudmade.com/terms_conditions
 
+    TopOSM tiles are a composite of CC-BY-SA and public domain data,
+    including MassGIS data. See
+    http://wiki.openstreetmap.org/wiki/TopOSM for more information.
 
   Changing the Displayed Attribution
   ----------------------------------

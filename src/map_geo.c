@@ -557,12 +557,14 @@ void draw_geo_image_map (Widget w,
     char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
     char tileCache[MAX_FILENAME+1]; // directory for the OSM tile cache, read from GEO file.
     char OSMstyle[MAX_OSMSTYLE];
+    char OSMtileExt[MAX_OSMEXT];
 
     // Start with an empty fileimg[] string so that we can
     // tell if a URL has been specified in the file. Same for OSMstyle.
     fileimg[0] = '\0';
     OSMstyle[0] = '\0';
     tileCache[0] = '\0';
+    OSMtileExt[0] = '\0';
 
     int width,height;
 #ifndef NO_XPM
@@ -653,6 +655,8 @@ void draw_geo_image_map (Widget w,
                                 // areas via terraserver
     int tigerserver_flag = 0;   // U.S. Street maps via census.gov
     int OSMserver_flag = 0;     // OpenStreetMaps server, 1 = static maps, 2 = tiled
+    unsigned tmp_zl = 0;
+
     int toporama_flag = 0;      // Canadian topo's from mm.aprs.net (originally from Toporama)
     int WMSserver_flag = 0;     // WMS server
     char map_it[MAX_FILENAME];
@@ -848,6 +852,47 @@ void draw_geo_image_map (Widget w,
                     if (strlen(line) > 9) {
                         if (1 != sscanf (line + 9, "%s", tileCache)) {
                         fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_DIR\n");
+                        }
+                    }
+                }
+
+                if (strncasecmp (line, "TILE_EXT", 8) == 0) {
+                    if (strlen(line) > 9) {
+                        if (1 != sscanf (line + 9, "%s", OSMtileExt)) {
+                        fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_EXT\n");
+                        }
+                    }
+                }
+
+                if (strncasecmp(line, "ZOOM_LEVEL_MIN", 14) == 0) {
+                    if (strlen(line) > 15) {
+                        if (1 != sscanf(line + 15, "%u", &tmp_zl)) {
+                            fprintf(stderr, "draw_geo_image_map:sscanf parsing error for ZOOM_LEVEL_MIN\n");
+                        } else {
+                            if (!(osm_zoom_level(scale_x) >= tmp_zl)) {
+                                // skip this map because the zoom level
+                                // is not supported.
+                                if (debug_level & 512) {
+                                    fprintf(stderr, "Skipping OSM map. zl = %u < %u\n", osm_zoom_level(scale_x), tmp_zl);
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+                if (strncasecmp(line, "ZOOM_LEVEL_MAX", 14) == 0) {
+                    if (strlen(line) > 15) {
+                        if (1 != sscanf(line + 15, "%u", &tmp_zl)) {
+                            fprintf(stderr, "draw_geo_image_map:sscanf parsing error for ZOOM_LEVEL_MAX\n");
+                        } else {
+                            if (!(tmp_zl >= osm_zoom_level(scale_x))) {
+                                // skip this map because the zoom level
+                                // is not supported.
+                                if (debug_level & 512) {
+                                    fprintf(stderr, "Skipping OSM map. zl = %u > %u\n", osm_zoom_level(scale_x), tmp_zl);
+                                }
+                                return;
+                            }
                         }
                     }
                 }
@@ -1048,7 +1093,7 @@ void draw_geo_image_map (Widget w,
 #ifdef HAVE_MAGICK
 
         // fileimg is the server URL, if specified.
-        draw_OSM_tiles(w, filenm, destination_pixmap, fileimg, tileCache, OSMstyle);
+        draw_OSM_tiles(w, filenm, destination_pixmap, fileimg, tileCache, OSMstyle, OSMtileExt);
 
 #endif  // HAVE_MAGICK
 

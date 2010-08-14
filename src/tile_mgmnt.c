@@ -157,7 +157,8 @@ int tilesMissing (unsigned long startx,
         unsigned long starty,
         unsigned long endy,
         int zoom,
-        char *cacheDir) {
+        char *cacheDir,
+        char *tileExt) {
     struct stat sb;
     char local_filename[1100];
     unsigned long x, y;
@@ -167,9 +168,9 @@ int tilesMissing (unsigned long startx,
         for (y = starty; y <= endy; y++) {
 
             xastir_snprintf(local_filename, sizeof(local_filename),
-                    "%s/%u/%lu/%lu.png", cacheDir, zoom, x, y);
+                    "%s/%u/%lu/%lu.%s", cacheDir, zoom, x, y, tileExt);
 
-            if (stat(local_filename, &sb) != 0) {
+            if (stat(local_filename, &sb) == -1) {
                 numMissing++;
             }
         }
@@ -202,7 +203,8 @@ int getOneTile (CURL *session,
         unsigned long x,
         unsigned long y,
         int zoom,
-        char *baseDir) {
+        char *baseDir,
+        char *tileExt) {
     CURLcode res;
     time_t cacheTimeout;
 #else
@@ -210,7 +212,8 @@ int getOneTile (char *baseURL,
         unsigned long x,
         unsigned long y,
         int zoom,
-        char *baseDir) {
+        char *baseDir,
+        char *tileExt) {
 #endif // HAVE_LIBCURL
     
     struct stat sb;
@@ -218,9 +221,10 @@ int getOneTile (char *baseURL,
     char local_filename[1100];
     int result = 0;
 
-    xastir_snprintf(url, sizeof(url), "%s/%u/%lu/%lu.png", baseURL, zoom, x, y);
+    xastir_snprintf(url, sizeof(url), "%s/%u/%lu/%lu.%s", baseURL, zoom,
+            x, y, tileExt);
     xastir_snprintf(local_filename, sizeof(local_filename),
-            "%s/%u/%lu/%lu.png", baseDir, zoom, x, y);
+            "%s/%u/%lu/%lu.%s", baseDir, zoom, x, y, tileExt);
 
 #ifdef HAVE_LIBCURL
     curl_easy_setopt(session, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);

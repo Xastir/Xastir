@@ -26,6 +26,12 @@
 # static maps it defaults to http://ojw.dev.openstreetmap.org/StaticMap/
 #URL tileURL
 
+# Tile extension defaults to png
+#TILE_EXT png
+
+#ZOOM_LEVEL_MIN 0
+#ZOOM_LEVEL_MAX 18
+
 # The tile cache can be changed from the default (~/.xastir/OSMtiles) by
 # setting the following variable. If path does not begin with a '/' then
 # it will be relative to ~/.xastir/.

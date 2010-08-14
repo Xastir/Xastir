@@ -29,6 +29,7 @@
 
 #define MAX_OSMSTYLE 1000  // max characters in the a OSM style argument
 #define MAX_OSM_URL  1000  // max characters for a OSM URL
+#define MAX_OSMEXT     10  // max characters for a tilename extension
 
 void adj_to_OSM_level(
         long *new_scale_x,
@@ -46,9 +47,10 @@ void draw_OSM_tiles(Widget w,
         int destination_pixmap,
         char *server_url,
         char *tileCacheDir,
-        char *mapName);
+        char *mapName,
+        char *tileExt);
 
-int osm_zoom_level(long scale_x);
+unsigned int osm_zoom_level(long scale_x);
 void init_OSM_values(void);
 int OSM_optimize_key(KeySym key);
 void set_OSM_optimize_key(KeySym key);

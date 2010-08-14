@@ -91,7 +91,7 @@ int main(void) {
             //"http://tiles.openpistemap.org/contours/", zoom, tilex, tiley);
 #ifdef HAVE_LIBCURL
             res = getOneTile(mySession, "http://tile.openstreetmap.org/mapnik",
-                             tilex, tiley, zoom, "/tmp/");
+                             tilex, tiley, zoom, "/tmp/", "png");
             if (res < 0) {
                fprintf(stderr, "Download error for %i/%li/%li.png\n",
                        zoom, tilex, tiley);
@@ -101,7 +101,7 @@ int main(void) {
 
 #else  // don't HAVE_LIBCURL
             getOneTile("http://tile.openstreetmap.org/mapnik",
-                        tilex, tiley, zoom, "/tmp/");
+                        tilex, tiley, zoom, "/tmp/", "png");
 #endif // HAVE_LIBCURL
         }
     }

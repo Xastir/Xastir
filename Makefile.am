@@ -50,7 +50,9 @@ online_DATA=terraserver.geo terraserver-topo.geo \
         OSM_cloudmade_1.geo OSM_cloudmade_2.geo \
         OSM_cloudmade_5.geo OSM_cloudmade_998.geo \
         OSM_cloudmade_999.geo OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
-        OSM_tiled_osmarender.geo OSM_tiled_skiing.geo
+        OSM_tiled_osmarender.geo OSM_tiled_skiing.geo \
+        OSM_tiled_topOSM_relief.geo \
+        OSM_tiled_topOSM_contour.geo  OSM_tiled_topOSM_features.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
@@ -70,7 +72,9 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS README.CYGWIN \
 # documentation is FHS compliant.
 
 install-exec-hook:
-	-rm -rf ${pkgdatadir}/doc && \
+	-rm -rf ${pkgdatadir}/doc
+
+install-data-hook:
 	cd $(mapdir) && \
 	rm -f CC_OpenStreetMap.png && \
 	$(LN_S) CC_OpenStreetMap_logo.png CC_OpenStreetMap.png
@@ -117,6 +121,31 @@ OSM_tiled_skiing.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://tiles.openpistemap.org/contours/!' \
 	    -e 's/-STYLE/-skiing/' \
+	    < $(top_srcdir)/OSM_template >$@
+
+OSM_tiled_topOSM_relief.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
+	    -e's!^#URL tileURL!URL http://tile1.toposm.com/usw/color-relief/!' \
+	    -e 's/-STYLE/-topOSMr/' \
+	    -e 's/#TILE_EXT png/TILE_EXT jpg/' \
+	    -e 's/#ZOOM_LEVEL_MIN 0/ZOOM_LEVEL_MIN 5/' \
+	    -e 's/#ZOOM_LEVEL_MAX 18/ZOOM_LEVEL_MAX 15/' \
+	    < $(top_srcdir)/OSM_template >$@
+
+OSM_tiled_topOSM_contour.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
+	    -e's!^#URL tileURL!URL http://tile1.toposm.com/usw/contours/!' \
+	    -e 's/-STYLE/-topOSMc/' \
+	    -e 's/#ZOOM_LEVEL_MIN 0/ZOOM_LEVEL_MIN 5/' \
+	    -e 's/#ZOOM_LEVEL_MAX 18/ZOOM_LEVEL_MAX 15/' \
+	    < $(top_srcdir)/OSM_template >$@
+
+OSM_tiled_topOSM_features.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
+	    -e's!^#URL tileURL!URL http://tile1.toposm.com/usw/features/!' \
+	    -e 's/-STYLE/-topOSMf/' \
+	    -e 's/#ZOOM_LEVEL_MIN 0/ZOOM_LEVEL_MIN 5/' \
+	    -e 's/#ZOOM_LEVEL_MAX 18/ZOOM_LEVEL_MAX 15/' \
 	    < $(top_srcdir)/OSM_template >$@
 
 ChangeLog::

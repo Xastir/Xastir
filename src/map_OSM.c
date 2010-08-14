@@ -140,6 +140,16 @@
 // Must be last include file
 #include "leak_detection.h"
 
+#define xastirColorsMatch(p,q) (((p).red == (q).red) && ((p).blue == (q).blue) \
+        && ((p).green == (q).green))
+
+// This matte color was chosen emphirically to work well with the
+// contours from topOSM.
+#define MATTE_RED   (0xa7)
+#define MATTE_GREEN (0xa7)
+#define MATTE_BLUE  (0xa7)
+#define MATTE_COLOR_STRING "xc:#a7a7a7"
+
 // osm_scale_x - map Xastir scale_x value to an OSM binned value
 // 
 // Note that the terms 'higher' and 'lower' are confusing because a
@@ -216,7 +226,7 @@ void adj_to_OSM_level( long *new_scale_x, long *new_scale_y) {
  * OSM tile scaling is based on the number of tiles needed to wrap the earth at the equator.
  * A tile is 256x256 pixels.
  */
-int osm_zoom_level(long scale_x) {
+unsigned int osm_zoom_level(long scale_x) {
     double circumference = 360.0*3600.0*100.0; // Xastir Units = 1/100 second.
     double zf;
     int z;
@@ -231,7 +241,7 @@ int osm_zoom_level(long scale_x) {
       z = 18;
     }
 
-    return(z);
+    return((unsigned int)z);
 
 } // osm_zoom_level()
 
@@ -458,8 +468,8 @@ static void draw_image(
     unsigned image_col;
     unsigned scr_x, scr_y;             // screen pixel plot positions
 
-    if (debug_level & 512)
-        fprintf(stderr,"Color depth is %i \n", (int)image->depth);
+    //if (debug_level & 512)
+    //    fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
     if (image->colorspace != RGBColorspace) {
         fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
@@ -506,9 +516,9 @@ static void draw_image(
             // Need to check how to do this for ANY image, as
             // ImageMagick can read in all sorts of image files
             temp_pack = image->colormap[l];
-            if (debug_level & 512)
-                fprintf(stderr,"Colormap color is %i  %i  %i \n",
-                       temp_pack.red, temp_pack.green, temp_pack.blue);
+            //if (debug_level & 512)
+            //    fprintf(stderr,"Colormap color is %i  %i  %i \n",
+            //           temp_pack.red, temp_pack.green, temp_pack.blue);
 
             // Here's a tricky bit:  PixelPacket entries are defined as
             // Quantum's.  Quantum is defined in
@@ -542,9 +552,9 @@ static void draw_image(
                                 &my_colors[l].pixel);
             }
 
-            if (debug_level & 512)
-                fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
-                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
+            //if (debug_level & 512)
+            //    fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
+            //           my_colors[l].red, my_colors[l].blue, my_colors[l].green);
         }
     }
 
@@ -575,10 +585,14 @@ static void draw_image(
             // now copy a pixel from the image to the screen
             l = image_col + (image_row * image->columns);
             if (image->storage_class == PseudoClass) {
+                // Make matte transparent
+                if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
+                    continue;
+                }
                 XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
             }
             else {
-                // skip transparent pixels
+                // Skip transparent pixels
                 if (pixel_pack[l].opacity == TransparentOpacity) {
                     continue;
                 }
@@ -644,8 +658,8 @@ static void draw_OSM_image(
     long scr_xp, scr_yp;            // previous screen plot positions
     int  scr_dx, scr_dy;            // increments in screen plot positions
 
-    if (debug_level & 512)
-        fprintf(stderr,"Color depth is %i \n", (int)image->depth);
+    //if (debug_level & 512)
+    //    fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
     if (image->colorspace != RGBColorspace) {
         fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
@@ -692,9 +706,9 @@ static void draw_OSM_image(
             // Need to check how to do this for ANY image, as
             // ImageMagick can read in all sorts of image files
             temp_pack = image->colormap[l];
-            if (debug_level & 512)
-                fprintf(stderr,"Colormap color is %i  %i  %i \n",
-                       temp_pack.red, temp_pack.green, temp_pack.blue);
+            //if (debug_level & 512)
+            //    fprintf(stderr,"Colormap color is %i  %i  %i \n",
+            //           temp_pack.red, temp_pack.green, temp_pack.blue);
 
             // Here's a tricky bit:  PixelPacket entries are defined as
             // Quantum's.  Quantum is defined in
@@ -704,15 +718,15 @@ static void draw_OSM_image(
             // which by looking at MaxRGB or QuantumDepth.
             //
             if (QuantumDepth == 16) {  // Defined in /usr/include/magick/image.h
-                if (debug_level & 512)
-                    fprintf(stderr,"Color quantum is [0..65535]\n");
+                //if (debug_level & 512)
+                //    fprintf(stderr,"Color quantum is [0..65535]\n");
                 my_colors[l].red   = temp_pack.red * raster_map_intensity;
                 my_colors[l].green = temp_pack.green * raster_map_intensity;
                 my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
             }
             else {  // QuantumDepth = 8
-                if (debug_level & 512)
-                    fprintf(stderr,"Color quantum is [0..255]\n");
+                //if (debug_level & 512)
+                //    fprintf(stderr,"Color quantum is [0..255]\n");
                 my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
                 my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
                 my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
@@ -728,9 +742,9 @@ static void draw_OSM_image(
                                 &my_colors[l].pixel);
             }
 
-            if (debug_level & 512)
-                fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
-                       my_colors[l].red, my_colors[l].blue, my_colors[l].green);
+            //if (debug_level & 512)
+            //    fprintf(stderr,"Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
+            //           my_colors[l].red, my_colors[l].blue, my_colors[l].green);
         }
     }
 
@@ -812,7 +826,7 @@ static void draw_OSM_image(
                                     - NW_corner_latitude) / scale_y;
 
         // image rows do not match 1:1 with screen rows due to Mercator
-        // scalling, so scr_dy will be passed to XFillRectangle to 
+        // scaling, so scr_dy will be passed to XFillRectangle to 
         // handle that issue.
         // scr_dy is in rows and must be a minimum of 1 row.
         scr_dy = ((  pixelLat2xastirLat(map_image_row + 1 + tpNW->y_lat, osm_zl)
@@ -847,9 +861,18 @@ static void draw_OSM_image(
                         // now copy a pixel from the map image to the screen
                         l = map_image_col + map_image_row * image->columns;
                         if (image->storage_class == PseudoClass) {
+                            // Make matte transparent
+                            if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
+                            continue;
+                            }
                             XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
                         }
                         else {
+                            // Skip transparent pixels
+                            if (pixel_pack[l].opacity == TransparentOpacity) {
+                                continue;
+                            }
+
                             // It is not safe to assume that the red/green/blue
                             // elements of pixel_pack of type Quantum are the
                             // same as the red/green/blue of an XColor!
@@ -899,7 +922,8 @@ void draw_OSM_tiles (Widget w,
         int destination_pixmap,
         char *server_url,      // if specified in xastir map file
         char *tileCacheDir,    // if specified in xastir map file
-        char *mapName) {       // if specified in xastir map file
+        char *mapName,         // if specified in xastir map file
+        char *tileExt) {       // if specified in xastir map file
 
     char serverURL[MAX_FILENAME];
     char tileRootDir[MAX_FILENAME];
@@ -916,12 +940,12 @@ void draw_OSM_tiles (Widget w,
     int interrupted = 0;
 
     ExceptionInfo exception;
-    Image *image = NULL;
-    Image *image_list = NULL;
-    Image *montage_image = NULL;
-    ImageInfo *image_info = NULL;
-    MontageInfo *mont_info = NULL;
+    Image *canvas = NULL;
+    Image *tile = NULL;
+    ImageInfo *canvas_info = NULL;
+    ImageInfo *tile_info = NULL;
     unsigned int row, col;
+    unsigned int offset_x, offset_y;
     char tmpString[MAX_TMPSTRING];
 
 #ifdef HAVE_LIBCURL
@@ -1039,7 +1063,8 @@ void draw_OSM_tiles (Widget w,
     // A simple calculation doesn't work well here because some
     // (possibly all) of the tiles may exist in the cache.
     numTiles = tilesMissing(tiles.startx, tiles.endx, tiles.starty,
-                            tiles.endy, osm_zl, tileRootDir);
+                            tiles.endy, osm_zl, tileRootDir,
+                            tileExt[0] != '\0' ? tileExt : "png");
 
 #ifdef HAVE_LIBCURL
     mySession = xastir_curl_init(errBuf);
@@ -1049,23 +1074,28 @@ void draw_OSM_tiles (Widget w,
     tileCnt = 1;
     for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
         for (tiley = tiles.starty; tiley <= tiles.endy; tiley++) {
-            xastir_snprintf(map_it, sizeof(map_it), langcode("BBARSTA051"),
-                    tileCnt, numTiles);  // Downloading tile %ls of %ls
-            statusline(map_it,0);
-            XmUpdateDisplay(text);
+            if (numTiles > 0) {
+                xastir_snprintf(map_it, sizeof(map_it), langcode("BBARSTA051"),
+                        tileCnt, numTiles);  // Downloading tile %ls of %ls
+                statusline(map_it,0);
+                XmUpdateDisplay(text);
+            }
 
 #ifdef HAVE_LIBCURL
-            curl_result = getOneTile(mySession, serverURL, tilex, tiley, osm_zl, tileRootDir);
+            curl_result = getOneTile(mySession, serverURL, tilex, tiley,
+                    osm_zl, tileRootDir, tileExt[0] != '\0' ? tileExt : "png");
             if (curl_result < 0) {
-               fprintf(stderr, "Download error for tile: %s/%i/%li/%li.png\n",
-                       serverURL, osm_zl, tilex, tiley);
+               fprintf(stderr, "Download error for tile: %s/%i/%li/%li.%s\n",
+                       serverURL, osm_zl, tilex, tiley,
+                       tileExt[0] != '\0' ? tileExt : "png");
                fprintf(stderr, "curl told us %d\n", -1 * curl_result);
                fprintf(stderr, "curlerr: %s\n", errBuf);
             } else {
                 tileCnt += curl_result;
             }
 #else
-            tileCnt += getOneTile(serverURL, tilex, tiley, osm_zl, tileRootDir);
+            tileCnt += getOneTile(serverURL, tilex, tiley,
+                    osm_zl, tileRootDir, tileExt[0] != '\0' ? tileExt : "png");
 #endif // HAVE_LIBCURL
 
             HandlePendingEvents(app_context);
@@ -1122,42 +1152,56 @@ void draw_OSM_tiles (Widget w,
         }
 
         /*
-         * Initialize the image info structure and read the list of files
-         * provided by the user as a image sequence
+         * Create a canvas upon which the tiles will be composited.
         */
-        image_info=CloneImageInfo((ImageInfo *)NULL);
-        mont_info=CloneMontageInfo(image_info, (MontageInfo *) NULL);
-        image_list=NewImageList();
-        montage_image=NewImageList();    /* q: why a new 'list'?
-                                          * a: all images are 'lists'
-                                          *   NewImageList() returns a NULL pointer.
-                                          */
+        canvas_info=CloneImageInfo((ImageInfo *)NULL);
 
-        // Set montage dimensions in tiles.
+        // Set canvas dimensions in pixels
         xastir_snprintf(tmpString, sizeof(tmpString), "%lix%li",
-                (tiles.endx + 1) - tiles.startx,
-                (tiles.endy + 1) - tiles.starty);
-        (void)CloneString(&mont_info->tile, tmpString);
+                ((tiles.endx + 1) - tiles.startx) * 256,
+                ((tiles.endy + 1) - tiles.starty) * 256);
+        (void)CloneString(&canvas_info->size, tmpString);
 
-        // OSM tiles are always 256 pixel squares
-        (void)CloneString(&mont_info->geometry, "256x256");
+        /*
+         * The matte color is the transparent color when the completed
+         * OSM map gets copied to the X display.
+         */
+        FormatString(canvas_info->filename, "%s", MATTE_COLOR_STRING);
+        canvas = ReadImage(canvas_info, &exception);
+        if (exception.severity != UndefinedException) {
+            CatchException(&exception);
+            fprintf(stderr, "Could not allocate canvas to hold tiles.\n");
+            if (canvas_info != NULL) {
+                DestroyImageInfo(canvas_info);
+            }
+            return;
+        }
 
         xastir_snprintf(map_it, sizeof(map_it), "%s",
                 langcode ("BBARSTA049")); // Reading tiles...
         statusline(map_it,0);
         XmUpdateDisplay(text);
 
-        for (col = tiles.starty; col <= tiles.endy; col++) {
-            for (row = tiles.startx; row <= tiles.endx; row++) {
-                xastir_snprintf(tmpString, sizeof(tmpString),
-                        "%s/%d/%d/%d.png", tileRootDir, osm_zl, row, col);
-                strncpy(image_info->filename, tmpString, MaxTextExtent);
+        tile_info = CloneImageInfo((ImageInfo *)NULL);
 
-                image=ReadImage(image_info,&exception);
+        // Read the tile and composite them onto the canvas
+        for (col = tiles.starty, offset_y = 0;
+             col <= tiles.endy;
+             col++, offset_y += 256) {
+            for (row = tiles.startx, offset_x = 0;
+                 row <= tiles.endx;
+                 row++, offset_x += 256) {
+                xastir_snprintf(tmpString, sizeof(tmpString),
+                        "%s/%d/%d/%d.%s", tileRootDir, osm_zl, row, col,
+                        tileExt[0] != '\0' ? tileExt : "png");
+                strncpy(tile_info->filename, tmpString, MaxTextExtent);
+
+                tile = ReadImage(tile_info,&exception);
                 if (exception.severity != UndefinedException) {
                     CatchException(&exception);
-                    xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.png",
-                            tileRootDir, osm_zl, row, col);
+                    xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
+                            tileRootDir, osm_zl, row, col,
+                            tileExt[0] != '\0' ? tileExt : "png");
                     if (debug_level & 512) {
                         fprintf(stderr, "%s NOT removed.\n", tmpString);
                     } else {
@@ -1166,44 +1210,45 @@ void draw_OSM_tiles (Widget w,
                     }
 
                     // replace the missing tile with a place holder
-                    (void)CloneString(&image_info->size, "256x256");
-                    (void)strcpy(image_info->filename, "xc:red");
-                    image = ReadImage(image_info, &exception);
+                    //(void)strcpy(tile_info->filename, "xc:red");
+                    //tile = ReadImage(tile_info, &exception);
                 }
-                if (image) {
-                    (void) AppendImageToList(&image_list,image);
+                if (tile) {
+                    (void)CompositeImage(canvas, OverCompositeOp,
+                            tile, offset_x, offset_y);
+                    DestroyImage(tile);
                 }
             }
         }
 
-        if (!image_list) {
-            fprintf(stderr, "Failed to read any tiles!\n");
-            xastir_snprintf(tmpString, sizeof(tmpString), "%lix%li",
-                    ((tiles.endx + 1) - tiles.startx) * 256,
-                    ((tiles.endy + 1) - tiles.starty) * 256);
-            (void)CloneString(&image_info->size, tmpString);
-            (void)strcpy(image_info->filename, "xc:red");
-            montage_image = ReadImage(image_info, &exception);
-        } else {
-            montage_image=MontageImages(image_list, mont_info, &exception);
-        }
+        // Force the canvas to PaletteType so that we can identify
+        // 'transparent' pixels (matte colored). The DirectColor types
+        // have an alpha channel, but Xt functions do not support alpha
+        // blending so the results look a little better this way.
+        SetImageType(canvas, PaletteType);
+        canvas->matte_color.red = MATTE_RED;
+        canvas->matte_color.green = MATTE_GREEN;
+        canvas->matte_color.blue = MATTE_BLUE;
 
         if (debug_level & 512) {
-            WriteImages(image_info,montage_image,"/tmp/xastirOSMTiledMap.png",&exception);
+            DescribeImage(canvas, stderr, 0);
+            WriteImages(canvas_info, canvas, "/tmp/xastirOSMTiledMap.png", &exception);
         }
 
-        draw_OSM_image(w, montage_image, &exception, &NWcorner, &SEcorner, osm_zl);
+        draw_OSM_image(w, canvas, &exception, &NWcorner, &SEcorner, osm_zl);
 
         // Display the OpenStreetMap attribution
+        // Just resuse the tile structure rather than creating another.
         xastir_snprintf(tmpString, sizeof(tmpString),
                 "%s/CC_OpenStreetMap.png", get_data_base_dir("maps"));
-        strncpy(image_info->filename, tmpString, MaxTextExtent);
+        strncpy(tile_info->filename, tmpString, MaxTextExtent);
 
-        image=ReadImage(image_info,&exception);
+        tile = ReadImage(tile_info,&exception);
         if (exception.severity != UndefinedException) {
             CatchException(&exception);
         } else {
-            draw_image(w, image, &exception, 4, 4);
+            draw_image(w, tile, &exception, 4, 4);
+            DestroyImage(tile);
         }
     } else {
         // map draw was interrupted
@@ -1223,14 +1268,12 @@ void draw_OSM_tiles (Widget w,
     /*
      * Release resources
     */
-    if (image_list != NULL)
-        DestroyImageList(image_list);
-    if (montage_image != NULL)
-        DestroyImageList(montage_image);
-    if (image_info != NULL)
-        DestroyImageInfo(image_info);
-    if (mont_info != NULL)
-        DestroyMontageInfo(mont_info);
+    if (tile_info != NULL)
+        DestroyImageInfo(tile_info);
+    if (canvas_info != NULL)
+        DestroyImageInfo(canvas_info);
+    if (canvas != NULL)
+        DestroyImage(canvas);
     DestroyExceptionInfo(&exception);
     return;
 
@@ -1546,13 +1589,14 @@ void draw_OSM_map (Widget w,
     } // debug_level & 512
 
     draw_OSM_image(w, image, &exception, &(tp[0]), &(tp[1]), osm_zl);
+    DestroyImage(image);
     
     // Display the OpenStreetMap attribution
     xastir_snprintf(OSMtmp, sizeof(OSMtmp),
             "%s/CC_OpenStreetMap.png", get_data_base_dir("maps"));
     strncpy(image_info->filename, OSMtmp, MaxTextExtent);
 
-    image=ReadImage(image_info,&exception);
+    image = ReadImage(image_info,&exception);
     if (exception.severity != UndefinedException) {
         CatchException(&exception);
     } else {
