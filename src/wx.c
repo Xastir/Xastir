@@ -1091,6 +1091,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     WeatherRow *weather;
     float tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15,tmp16,tmp17,tmp18,tmp19;
     int tmp7,tmp8;
+    int dallas_type = 19;
 
 
     last_speed=0.0;
@@ -1124,7 +1125,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 sizeof(weather->wx_station),
                 "OWW");
 
-            if (19 != sscanf((const char *)data,
+            if (19 == sscanf((const char *)data,
                     "%f %f %f %f %f %f %d %d %f %f %f %f %f %f %f %f %f %f %f",
                     &tmp1,
                     &tmp2,
@@ -1145,6 +1146,25 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     &tmp17,
                     &tmp18,
                     &tmp19)) {
+                dallas_type = 19;
+            }
+            else if (12 == sscanf((const char *)data,
+                    "%f %f %f %f %f %f %d %d %f %f %f %f",
+                    &tmp1,
+                    &tmp2,
+                    &tmp3,
+                    &tmp4,
+                    &tmp5,
+                    &tmp6,
+                    &tmp7,
+                    &tmp8,
+                    &tmp9,
+                    &tmp10,
+                    &tmp11,
+                    &tmp12)) {
+                dallas_type = 12;
+            }
+            else {
                 fprintf(stderr,"wx_fill_data:sscanf parsing error\n");
             }
 
@@ -1201,15 +1221,17 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 "%03d",
                 (int)(tmp4 + 0.5));
 
-            // Humidity.  This is received by percentage.
-            xastir_snprintf(weather->wx_hum,      
-                sizeof(weather->wx_hum),
-                "%2.1f", (double)(tmp13));
+            if (dallas_type == 19) {
+                // Humidity.  This is received by percentage.
+                xastir_snprintf(weather->wx_hum,      
+                    sizeof(weather->wx_hum),
+                    "%2.1f", (double)(tmp13));
                     
-            // Barometer. Sent in inHg
-            xastir_snprintf(weather->wx_baro,           
-                sizeof(weather->wx_baro),
-                "%4.4f", (float)(tmp16 * 33.864)); 
+                // Barometer. Sent in inHg
+                xastir_snprintf(weather->wx_baro,           
+                    sizeof(weather->wx_baro),
+                    "%4.4f", (float)(tmp16 * 33.864)); 
+            }
 
 
 // Rain:  I don't have a rain gauge, and I couldn't tell from the
@@ -3109,7 +3131,18 @@ void wx_decode(unsigned char *wx_line, int data_length, int port) {
 
                     // Found Dallas One-Wire Weather Station
                     if (debug_level & 1)
-                        fprintf(stderr,"Found OWW ARNE-mode one-wire weather station data\n");
+                        fprintf(stderr,"Found OWW ARNE-mode(19) one-wire weather station data\n");
+
+                    weather->wx_sec_time=sec_now();
+                    wx_fill_data(0,DALLAS_ONE_WIRE,wx_line,p_station);
+                    decoded=1;
+                }
+
+                else if (sscanf((const char *)wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f", &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12) == 12) {
+
+                    // Found Dallas One-Wire Weather Station
+                    if (debug_level & 1)
+                        fprintf(stderr,"Found OWW ARNE-mode(12) one-wire weather station data\n");
 
                     weather->wx_sec_time=sec_now();
                     wx_fill_data(0,DALLAS_ONE_WIRE,wx_line,p_station);
