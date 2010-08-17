@@ -27840,7 +27840,7 @@ int main(int argc, char *argv[], char *envp[]) {
             // errors during init!
             //
 //            (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
-//            (void)setlocale(LC_CTYPE, "C");         // K4INT: Make sure strings work OK.
+            (void)setlocale(LC_CTYPE, "C");         // K4INT: Make sure strings work OK.
 
 
             setup_visual_info(display, DefaultScreen(display));
