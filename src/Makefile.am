@@ -3,7 +3,7 @@
 # Copyright (C) 2000-2010  The Xastir Group
 #
 
-bin_PROGRAMS = xastir xastir_udp_client testdbfawk tile_test
+bin_PROGRAMS = xastir xastir_udp_client testdbfawk
 
 SUBDIRS = @SUBRTREE@ @SUBSHP@
 DIST_SUBDIRS = rtree shapelib
@@ -85,12 +85,6 @@ testdbfawk_SOURCES = \
     dbfawk.c \
     rpl_malloc.c rpl_malloc.h
 
-tile_test_SOURCES = \
-    tile_test.c \
-    tile_mgmnt.c tile_mgmnt.h \
-    snprintf.c \
-    fetch_remote.c fetch_remote.h
-    
 compiledate.c: $(XASTIR_SRC)
 	rm -f compiledate.c compiledate.o
 	echo 'char compiledate[] = "'"Compiled: `date`"'";' > compiledate.c
@@ -102,12 +96,8 @@ xastir_LDADD=@LIBRTREE@ @LIBSHP@
 
 testdbfawk_LDADD=@LIBSHP@
 
-tile_test_LDADD=@LIBSHP@
-
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 xastir_udp_client_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 testdbfawk_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-
-tile_test_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@

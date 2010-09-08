@@ -51,8 +51,8 @@ online_DATA=terraserver.geo terraserver-topo.geo \
         OSM_cloudmade_5.geo OSM_cloudmade_998.geo \
         OSM_cloudmade_999.geo OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
         OSM_tiled_osmarender.geo OSM_tiled_skiing.geo \
-        OSM_tiled_topOSM_relief.geo \
-        OSM_tiled_topOSM_contour.geo  OSM_tiled_topOSM_features.geo
+        OSM_tiled_topOSM_0_relief.geo \
+        OSM_tiled_topOSM_1_contour.geo  OSM_tiled_topOSM_2_features.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
@@ -123,7 +123,7 @@ OSM_tiled_skiing.geo: OSM_template
 	    -e 's/-STYLE/-skiing/' \
 	    < $(top_srcdir)/OSM_template >$@
 
-OSM_tiled_topOSM_relief.geo: OSM_template
+OSM_tiled_topOSM_0_relief.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://tile1.toposm.com/usw/color-relief/!' \
 	    -e 's/-STYLE/-topOSMr/' \
@@ -132,7 +132,7 @@ OSM_tiled_topOSM_relief.geo: OSM_template
 	    -e 's/#ZOOM_LEVEL_MAX 18/ZOOM_LEVEL_MAX 15/' \
 	    < $(top_srcdir)/OSM_template >$@
 
-OSM_tiled_topOSM_contour.geo: OSM_template
+OSM_tiled_topOSM_1_contour.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://tile1.toposm.com/usw/contours/!' \
 	    -e 's/-STYLE/-topOSMc/' \
@@ -140,7 +140,7 @@ OSM_tiled_topOSM_contour.geo: OSM_template
 	    -e 's/#ZOOM_LEVEL_MAX 18/ZOOM_LEVEL_MAX 15/' \
 	    < $(top_srcdir)/OSM_template >$@
 
-OSM_tiled_topOSM_features.geo: OSM_template
+OSM_tiled_topOSM_2_features.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://tile1.toposm.com/usw/features/!' \
 	    -e 's/-STYLE/-topOSMf/' \

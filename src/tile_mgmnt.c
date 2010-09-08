@@ -185,9 +185,8 @@ int tilesMissing (unsigned long startx,
  *
  * The tile is fetched if it does not exist and 1 is returned.
  *
- * If the tile exists in the cache and if the Curl library is used,
- * then the server will be queried to see if a newer version exists. If
- * so, the newer tile will be downloaded.
+ * If the tile exists in the cache and it is older than 7 days, then it
+ * will be refreshed from the server.
  *
  * Returns 1 if a tile did not exist and download was attempted.
  * Returns 0 if a tile exists in the cache (tile might be updated).
@@ -226,10 +225,6 @@ int getOneTile (char *baseURL,
     xastir_snprintf(local_filename, sizeof(local_filename),
             "%s/%u/%lu/%lu.%s", baseDir, zoom, x, y, tileExt);
 
-#ifdef HAVE_LIBCURL
-    curl_easy_setopt(session, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-#endif // HAVE_LIBCURL
-
     if (stat(local_filename, &sb) == -1) {
         if (debug_level & 512) {
             fprintf(stderr, "Fetching %s\n", url);
@@ -237,15 +232,11 @@ int getOneTile (char *baseURL,
         result = 1;  // only count files that do not exist
 
 #ifdef HAVE_LIBCURL
-        // Since the file does not exist locally,
-        // set the time to something very early so that the file
-        // will always be fetched
-        curl_easy_setopt(session, CURLOPT_TIMEVALUE, (long)1);
         res = fetch_remote_tile(session, url, local_filename);
 
     } else {
 
-        // Check for updated tiles, but only after 7 days, per
+        // Check for updated tiles after 7 days, per
         // OSM Tile Usage Policy,
         // http://wiki.openstreetmap.org/wiki/Tile_usage_policy,
         // 2010/07/29
@@ -254,9 +245,8 @@ int getOneTile (char *baseURL,
             // tile exists in the cache, but is older than 7 days, so
             // check the server for a newer version.
             if (debug_level & 512) {
-                fprintf(stderr, "Fetching %s if newer.\n", url);
+                fprintf(stderr, "Refreshing %s.\n", url);
             }
-            curl_easy_setopt(session, CURLOPT_TIMEVALUE, (long)sb.st_mtime);
             res = fetch_remote_tile(session, url, local_filename);
 
         } else {
