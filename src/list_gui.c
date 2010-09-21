@@ -387,46 +387,9 @@ void station_list_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
     begin_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
 
     for (i = 0; i < ROWS; i++) {
-        XtDestroyWidget(SL_list[type][i]);
-        XtDestroyWidget(SL_da[type][i]);
-        XtDestroyWidget(SL_call[type][i]);
         if (SL_callback[type][i]) {
             XtFree(SL_callback[type][i]);
             SL_callback[type][i] = NULL;
-        }
-        switch (type) {
-          case LST_ALL:   // station list
-          case LST_TNC:   // local station list
-          case LST_TIM:
-          case LST_OBJ:   // Objects/Items
-          case LST_MYOBJ: // My objects/items
-            XtDestroyWidget(SL_packets[type][i]);
-            XtDestroyWidget(SL_pos_time[type][i]);
-            XtDestroyWidget(SL_node_path[type][i]);
-            XtDestroyWidget(SL_power_gain[type][i]);
-            XtDestroyWidget(SL_comments[type][i]);
-            break;
-          case LST_MOB:
-            XtDestroyWidget(SL_packets[type][i]);
-            XtDestroyWidget(SL_course[type][i]);
-            XtDestroyWidget(SL_speed[type][i]);
-            XtDestroyWidget(SL_alt[type][i]);
-            XtDestroyWidget(SL_lat_long[type][i]);
-            XtDestroyWidget(SL_sats[type][i]);
-            XtDestroyWidget(SL_my_course[type][i]);
-            XtDestroyWidget(SL_my_distance[type][i]);
-            break;
-          case LST_WX:
-            XtDestroyWidget(SL_wx_wind_course[type][i]);
-            XtDestroyWidget(SL_wx_wind_speed[type][i]);
-            XtDestroyWidget(SL_wx_wind_gust[type][i]);
-            XtDestroyWidget(SL_wx_temp[type][i]);
-            XtDestroyWidget(SL_wx_hum[type][i]);
-            XtDestroyWidget(SL_wx_baro[type][i]);
-            XtDestroyWidget(SL_wx_rain_h[type][i]);
-            XtDestroyWidget(SL_wx_rain_00[type][i]);
-            XtDestroyWidget(SL_wx_rain_24[type][i]);
-            break;
         }
     }
 
