@@ -145,10 +145,25 @@
 
 // This matte color was chosen emphirically to work well with the
 // contours from topOSM.
+#if (QuantumDepth == 8)
 #define MATTE_RED   (0xa7)
 #define MATTE_GREEN (0xa7)
 #define MATTE_BLUE  (0xa7)
+#define MATTE_OPACITY (0x00)
 #define MATTE_COLOR_STRING "xc:#a7a7a7"
+//#define MATTE_COLOR_STRING "xc:#a7a7a700"
+//#define MATTE_OPACITY (0xff)
+//#define MATTE_COLOR_STRING "xc:#a7a7a7ff"
+#elif (QuantumDepth == 16)
+#define MATTE_RED   (0xa700)
+#define MATTE_GREEN (0xa700)
+#define MATTE_BLUE  (0xa700)
+#define MATTE_OPACITY (0x0000)
+#define MATTE_COLOR_STRING "xc:#a700a700a700"
+//#define MATTE_COLOR_STRING "xc:#a700a700a700ffff"
+#else
+#error "QuantumDepth != 16 or 8"
+#endif // QuantumDepth
 
 // osm_scale_x - map Xastir scale_x value to an OSM binned value
 // 
@@ -861,15 +876,17 @@ static void draw_OSM_image(
                         // now copy a pixel from the map image to the screen
                         l = map_image_col + map_image_row * image->columns;
                         if (image->storage_class == PseudoClass) {
-                            // Make matte transparent
+                            // Make matte transparent by skipping pixels
                             if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
-                            continue;
+                                continue;
                             }
                             XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
                         }
                         else {
-                            // Skip transparent pixels
-                            if (pixel_pack[l].opacity == TransparentOpacity) {
+                            // Skip transparent pixels and make matte
+                            // colored pixels transparent (by skipping)
+                            if ((pixel_pack[l].opacity == TransparentOpacity)
+                                || (xastirColorsMatch(pixel_pack[l], image->matte_color))){
                                 continue;
                             }
 
@@ -1163,8 +1180,10 @@ void draw_OSM_tiles (Widget w,
         (void)CloneString(&canvas_info->size, tmpString);
 
         /*
-         * The matte color is the transparent color when the completed
-         * OSM map gets copied to the X display.
+         * A file name based on a color creates an image filled
+         * with that color. The matte color will be treated as
+         * transparent when the completed OSM map gets copied to the X
+         * display.
          */
         FormatString(canvas_info->filename, "%s", MATTE_COLOR_STRING);
         canvas = ReadImage(canvas_info, &exception);
@@ -1176,6 +1195,18 @@ void draw_OSM_tiles (Widget w,
             }
             return;
         }
+        // Make sure that the canvas is an image type that uses the
+        // opacity channel for compositing.
+        SetImageType(canvas, PaletteMatteType);
+
+        // Fill the image with an opaque color. Ultimately pixels that
+        // are this color will be skipped when the image is written to
+        // the screen.
+        canvas->background_color.red = MATTE_RED;
+        canvas->background_color.green = MATTE_GREEN;
+        canvas->background_color.blue = MATTE_BLUE;
+        canvas->background_color.opacity = MATTE_OPACITY;
+        SetImage(canvas, MATTE_OPACITY);
 
         xastir_snprintf(map_it, sizeof(map_it), "%s",
                 langcode ("BBARSTA049")); // Reading tiles...
@@ -1221,11 +1252,7 @@ void draw_OSM_tiles (Widget w,
             }
         }
 
-        // Force the canvas to PaletteType so that we can identify
-        // 'transparent' pixels (matte colored). The DirectColor types
-        // have an alpha channel, but Xt functions do not support alpha
-        // blending so the results look a little better this way.
-        SetImageType(canvas, PaletteType);
+        // Set the matte color for use in transparentency testing
         canvas->matte_color.red = MATTE_RED;
         canvas->matte_color.green = MATTE_GREEN;
         canvas->matte_color.blue = MATTE_BLUE;
