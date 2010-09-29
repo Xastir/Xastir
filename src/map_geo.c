@@ -127,6 +127,14 @@
 #undef PACKAGE_VERSION
 #ifdef HAVE_GRAPHICSMAGICK
 /*#include <GraphicsMagick/magick/api.h>*/
+/* Define MAGICK_IMPLEMENTATION to access private interfaces
+ * such as DestroyImagePixels(). This may not be a good thing,
+ * but DestroyImagePixels() has been in this code for a long
+ * time. Defining MAGIC_IMPLEMENTATION eliminates the warning that is
+ * now (9/28/2010) being seen on some distros (Ubuntu 10.04 and
+ * OpenSuSE-11.3)
+ */
+#define MAGICK_IMPLEMENTATION
 #include <magick/api.h>
 #else   // HAVE_GRAPHICSMAGICK
 #include <magick/api.h>
