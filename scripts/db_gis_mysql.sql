@@ -1,55 +1,70 @@
 -- MYSQL SPATIAL (>4.1)
+-- Updated by Dan Zubey N7NMD dzubey@openincident.com 03Oct2010
+-- 
+-- See the last four lines to set permissions for a user
+-- to access this database.
 
-create database xastir;
--- set the password and uncomment
---grant select on xastir to user xastir_user@localhost identified by password '<password>';
+
+CREATE DATABASE IF NOT EXISTS xastir;
   
-use xastir;
+USE xastir;
 
-create table version (
-     version_number int,
-     compatable_series int
+CREATE TABLE version (
+     version_number INT,
+     compatable_series INT
 );
-grant select on version to xastir_user@localhost
 
-insert into version (version_number,compatable_series) values (1,1);
+INSERT INTO version (version_number,compatable_series) VALUES (1,1);
 
 -- MySQL spatial table using geometry POINT rather than lat/long
 -- 
 
-create table simpleStationSpatial (
-     simpleStationId int primary key not null auto_increment
-     station varchar(9) not null, 
-     symbol varchar(1),   
-     overlay varchar(1),   
-     aprstype varchar(1),   
-     transmit_time datetime not null default now(),
-     position POINT  
-     origin varchar(9) not null default '',
-     record_type varchar(1),
-     node_path varchar(56)
+CREATE TABLE simpleStationSpatial (
+     simpleStationId INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+     station VARCHAR(9) NOT NULL, 
+     symbol VARCHAR(1),   
+     overlay VARCHAR(1),   
+     aprstype VARCHAR(1),   
+     transmit_time DATETIME,
+     position POINT,
+     origin VARCHAR(9) NOT NULL DEFAULT '',
+     record_type VARCHAR(1),
+     node_path VARCHAR(56)
 );
 
-grant select, insert, update on simpleStationSpatial to xastir_user@localhost;
+-- Note: Use the asText() function to retrieve data from the position field.
+-- In a shell, the return values from the raw position field will often 
+-- change the character set in the shell, to avoid this, use asText(position).
+-- Example query returning the position in WKT format: 
+-- select station, asText(position), transmit_time from simpleStationSpatial; 
+
 
 -- MYSQL (default table)
 
-create table simpleStation (
-     simpleStationId int primary key not null auto_increment
-     station varchar(9) not null, 
-     symbol varchar(1),   
-     overlay varchar(1),   
-     aprstype varchar(1),   
-     transmit_time datetime not null default now(),
-     latitude float,
-     longitude float,
-     origin varchar(9) not null default '',
-     record_type varchar(1),
-     node_path varchar(56)
+CREATE TABLE simpleStation (
+     simpleStationId INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+     station VARCHAR(9) NOT NULL, 
+     symbol VARCHAR(1),   
+     overlay VARCHAR(1),   
+     aprstype VARCHAR(1),   
+     transmit_time DATETIME,
+     latitude FLOAT,
+     longitude FLOAT,
+     origin VARCHAR(9) NOT NULL DEFAULT '',
+     record_type VARCHAR(1),
+     node_path VARCHAR(56)
 );
 
-grant select, insert, update on simpleStation to xastir_user@localhost;
 
--- example query to retieve symbol as aprsworld icon filename
+-- Example query to retieve symbol as aprsworld icon filename.
 -- select count(*), concat(lpad(ascii(aprstype),3,'0'), '_', lpad(ascii(symbol),3,'0'), '.png') from simpleStationSpatial group by aprstype,symbol;
 
+-- *** Permissions ***
+-- Use the following grants to set up a user with minimal rights 
+-- to the database.
+-- 
+-- Change the password on the next line and uncomment the next four lines. 
+-- GRANT USAGE ON xastir.* to 'xastir_user'@'localhost' identified by 'set_this_password';
+-- GRANT SELECT ON xastir.version TO 'xastir_user'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE ON xastir.simpleStation to 'xastir_user'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE ON xastir.simpleStationSpatial TO 'xastir_user'@'localhost';
