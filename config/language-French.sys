@@ -39,7 +39,7 @@ PULDNFI012|Activer archivage IGate|I|
 PULDNFI013|Activer archivage météo|m|
 PULDNFI014|Activer copie d'écran PNG||
 PULDNFI015|Imprimer carte|p|
-PULDNFI016|KML Snapshots||
+PULDNFI016|Instantané KML||
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|
@@ -71,8 +71,8 @@ PULDNCF008|Sauvegarder la configuration maintenant !|a|
 PULDNMP001|Choix des cartes|C|
 PULDNMP012|Aller à|l|
 PULDNMP014|Localiser élément cartographique|F|
-PULDNMP016|Disable Fast Zoom/Pan/Home||
-PULDNMP013|Désactiver cartes|D|
+PULDNMP016|Désactiver Zoom/Pan/Accueil rapide||
+PULDNMP013|Désactiver toutes cartes|D|
 PULDNMP002|Activer cartographie automatique|A|
 PULDNMP003|Activer quadrillage|q|
 PULDNMP004|Activer niveaux de cartes|n|
@@ -86,13 +86,19 @@ PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|
 PULDNMP020|Configurer Tigermap||
 PULDNMP021|Cartographie automatique - désactiver cartes tramées||
+
+
+
 PULDNMP022|Indexer nouvelles cartes au démarrage||
 PULDNMP023|Index: Ajouter nouvelles cartes|R|
 PULDNMP024|Index: Re-indexer toutes cartes|A|
 PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
-PULDNMP027|Recharger les cartes (pas à partir du cache)||
+PULDNMP027|Re-télécharger les cartes (pas à partir du cache)||
 PULDNMP028|Vider le cache des cartes||
+
+
+
 PULDNMP029|Trouver l'adresse||
 PULDNMP030|Configurer USGS DRG||
 PULDNMP031|Activer bordure des cartes||
@@ -110,6 +116,9 @@ MPUPTGR009|Nom des autoroutes||
 MPUPTGR010|Nom des routes US||
 MPUPTGR011|Nom des routes d'états||
 MPUPTGR012|Choisir les articles à afficher:||
+
+
+
 MPUPTGR013|Rivières||
 MPUPTGR014|Lacs||
 MPUPTGR015|Aéroports, parcs, etc||
@@ -119,6 +128,9 @@ MPUPTGR018|Activer cartes Tiger||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Sélectionner ce qui doit être affiché :||
+
+
+
 MPUPDRG002|Colorer la carte sous-jaçante (XOR)||
 MPUPDRG003|Noir||
 MPUPDRG004|Blanc||
@@ -196,6 +208,8 @@ PULDNDP053|  - Stations météo CWOP||
 PULDNDP045|Objets/articles||
 PULDNDP026|- Objets/articles météo||
 PULDNDP039|- Objets/articles indicateurs d'eau||#'
+
+
 PULDNDP031|- Autres objets/articles||
 PULDNDP033|Filtrer affichage||
 PULDNDP010|Afficher indicatif|n|
@@ -207,18 +221,26 @@ PULDNDP004|Afficher vitesse|v|
 PULDNDP017|- Afficher vitesse abrégée||
 PULDNDP002|Afficher altitude|A|
 PULDNDP009|Afficher info météo|I|
-PULDNDP046|- Afficher texte||
+
+
+PULDNDP046|- Afficher texte météo||
 PULDNDP018|-- Seulement la température||
 PULDNDP047|- Indicateur de vent||
 PULDNDP054|Afficher cercle Aloha||
 PULDNDP013|Afficher ambiguïté de position|b|
+
+
+
 PULDNDP008|Afficher puissance/gain|g|
 PULDNDP021|- Activer puissance/gain défaut||
 PULDNDP020|- Activer puissance/gain mobile||
 PULDNDP023|Afficher attributs DF||
-PULDNDP123|Display DF Beamwidth||
-PULDNDP223|Display DF Bearing||
+PULDNDP123|Afficher largeur faiseau recherche auto (DF)||
+PULDNDP223|Afficher relevé recherche auto (DF)||
 PULDNDP035|Activer point estimé||
+
+
+
 PULDNDP036|- Afficher arc||
 PULDNDP037|- Afficher cap||
 PULDNDP038|- Afficher symbole||
@@ -231,32 +253,56 @@ PULDNDP048|Recharger histoire des objets/articles||
 PULDNDP049|Effacer indicatifs tactiques||
 PULDNDP050|Effacer historique des indicatifs tactiques||
 PULDNDP051|Choisir seulement les indicatifs tactiques||
+
+
+
+
+
+
 PULDNDP052|- Annoter les points de piste||
-PULDNDP055|Export all|E|
-PULDNDP056|Export to KML File||
+PULDNDP055|Exporter tout|E|
+PULDNDP056|Exporter vers fichier KML||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||
+
+
+
 PULDNUT002|Mètres||
 #
 # Menu "Messages"
-PULDNMG001|Composer un message|C|
-PULDNMG002|Messages de groupe|g|
+PULDNMG001|Composer un message à|C|
+PULDNMG002|Ouvrir les messages de groupe|g|
 PULDNMG003|Effacer tout message à expédier|E|
-PULDQUS001|Info toutes stations|I|
-PULDQUS002|Info stations IGate|n|
-PULDQUS003|Info stations météo|m|
-PULDNMG004|Configurer réponse automatique|o|
-PULDNMG005|Activer réponse automatique|R|
+
+
+
+PULDQUS001|Intérroger toutes les stations|I|
+PULDQUS002|Intérroger les stations IGate|n|
+PULDQUS003|Intérroger les stations météo|m|
+PULDNMG004|Configurer la réponse automatique|o|
+PULDNMG005|Activer la réponse automatique|R|
+
+
+
+
+
+
 PULDNMG006|Mode "Satellite Ack"|M|
-PULDNMG007|Show Pending Messages|P|
+PULDNMG007|Voir les messages en attente|V|
 #
 # Menu "Interfaces"
 PULDNTNT04|Contrôle de l'interface|C|
 PULDNTNT03|Désactiver transmission: Tout||
 PULDNTNT05|Désactiver transmission: Ma position||
+
+
+
 PULDNTNT06|Désactiver transmission: Objets/Articles||
-PULDNTNT11|Activer port serveur||
+PULDNTNT11|Activer serveur sur port 2023||
+
+
+
 PULDNTNT01|Transmettre maintenant !|T|
 PULDNTNT07|Extraire piste GPS|F|
 PULDNTNT08|Extraire routes GPS|R|
@@ -317,6 +363,9 @@ POPUPMA041|Relèvement||
 POPUPMA042|degrés||
 POPUPMA043|Modifier ambiguïté de position||
 POPUPMA044|Ambiguïté de position est active, votre nouvelle position pourra sauter.||
+
+
+
 POPUPMA045|Objets prédéfinis||
 POPUPMA046|Polygones CAD||
 POPUPMA047|Activer les objets CAD||
@@ -326,7 +375,7 @@ POPUPMA050|Activer la probabilité CAD||
 POPUPMA051|Activer la taille de la surface CAD||
 POPUPMA052|sq||
 POPUPMA053|ft||
-POPUPMA054|meters||
+POPUPMA054|mètres||
 POPUPMA055|mi|
 #
 #
@@ -337,6 +386,9 @@ BBARSTH001|%d/%d stations||
 BBARSTA000|%-9s Nouvel objet !||
 BBARSTA001|%-9s Nouvelle station !||
 BBARSTA002|%-9s||
+
+
+
 BBARSTA003|Chargement de cartes...||
 BBARSTA004|Cartes chargées||
 BBARSTA005|Quadrillage de carte Lat/Long activé||
@@ -346,12 +398,30 @@ BBARSTA008|Carte automatique désactivée||
 BBARSTA009|Niveau de cartes activé||
 BBARSTA010|Niveau de cartes désactivé||
 BBARSTA011|Réponse automatique désactivée||
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 BBARSTA012|Fichier terminé...||
 BBARSTA013|Ouverture du port GPS||
 BBARSTA014|Fermeture du port GPS||
 BBARSTA015|Réception de message GPS RMC||
 BBARSTA016|Réception de message GPS GGA||
-BBARSTA017|Connexion terminée||
+BBARSTA017|Réseau déconnecté de l'hôte||
+
+
+
 BBARSTA018|Connexion réseau dépassement de temps !||
 BBARSTA019|Recherche de l'hôte %s||#'
 BBARSTA020|Connecté à %s||
@@ -369,6 +439,8 @@ BBARSTA031|Recherche d'hôte %d||#'
 BBARSTA032|Données météo décodées||
 BBARSTA033|Écho de digipeater||
 BBARSTA034|Chargement de cartes alertes météo||
+
+
 BBARSTA035|Attente de donées du GPS par AUX||
 BBARSTA036|Fermeture port GPS réception donnée TNC..||
 BBARSTA037|GPS météo décodées||
@@ -383,9 +455,9 @@ BBARSTA045|Chargement de symboles...||
 BBARSTA046|Rechargement des symboles...||
 BBARSTA047|Initialisation de ma station...||
 BBARSTA048|Démarrer interfaces...||
-BBARSTA049|Reading tiles...||
-BBARSTA050|Downloading tiles...||
-BBARSTA051|Downloading tile %li of %li||
+BBARSTA049|Lit les dalles...||
+BBARSTA050|Télécharge les dalles...||
+BBARSTA051|Télécharge dalle %li de %li||
 #
 #
 # PopUp "View - Incoming Packet Data"
@@ -395,8 +467,8 @@ WPUPDPD003|Données du réseau seulement||
 WPUPDPD004|Données du TNC et du réseau||
 WPUPDPD005|TNC||
 WPUPDPD006|Réseau||
-WPUPDPD007|Station Capabilities||
-WPUPDPD008|Mine Only||
+WPUPDPD007|Capacité Station||
+WPUPDPD008|Seulement les miens||
 #
 # PopUp "View - Find Station"
 WPUPLSP001|Localiser une station||
@@ -405,11 +477,13 @@ WPUPLSP003|Casse exacte|C|
 WPUPLSP004|Correspondance exacte|E|
 WPUPLSP005|Localiser maintenant !|L|
 WPUPLSP006|Localiser détresse !||
-WPUPLSP007|Recherche FCC/RAC||
+WPUPLSP007|Recherche indicatif FCC/RAC||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configurer défauts||
 WPUPCFD002|Au bout de combien de temps une station sera-t-elle considérée âgée ?||
+
+
 WPUPCFD003|15 min|1|
 WPUPCFD004|30 min|3|
 WPUPCFD005|45 min|4|
@@ -417,6 +491,8 @@ WPUPCFD006|1 heure|h|
 WPUPCFD007|90 min|9|
 WPUPCFD008|2 heures|2|
 WPUPCFD009|Au bout de combien de temps une station ne sera-t-elle plus affichée ?||
+
+
 WPUPCFD010|6 heures|6|
 WPUPCFD011|12 heures|e|
 WPUPCFD012|1 jour|j|
@@ -429,16 +505,25 @@ WPUPCFD018|Station mobile + date/heure Zulu||
 WPUPCFD019|Station mobile + heure/secondes Zulu||
 WPUPCFD021|Position de station + météo||
 WPUPCFD022|Position de station + date/heure Zulu + météo||
-WPUPCFD023|Données météo non traitées ?||
-WPUPCFD024|Compresser données objet/article à la transmission ?||
+WPUPCFD023|Transmettre les données météo non traitées ?||
+WPUPCFD024|Transmettre les objets/articles sous forme compréssés ?||
+
+
+
+
 WPUPCFD025|Activer réseau alterne ?|A|
 WPUPCFD026|Transmettre position à quel intervalle ?||
 WPUPCFD027|Afficher bulletins nouveaux||
-WPUPCFD028|Alerter si il y a des clés modificatrices||
+WPUPCFD028|Alerter si clés modificatrices (Verr.Num.)||
+
 WPUPCFD029|Voir bulletins avec distance zéro||
 WPUPCFD030|Désactiver identif. de duplic. posit.||
 WPUPCFD031|Charger des objets prédéfinis à partir d'un fichier||
-WPUPCFD032|My trails in one color||
+
+
+
+
+WPUPCFD032|Mon parcour en une seule couleur||
 WPUPCFD033|ALTNET:||
 #
 # PopUp "Configure - Timing"
@@ -448,17 +533,20 @@ WPUPCFTM03|Délai d'affichage faible d'une station (min)||
 WPUPCFTM04|Intervalle maximum de transmission des objets/articles (min)||#'
 WPUPCFTM05|Délai de suppression d'affichage d'une station (heures)||
 WPUPCFTM06|Intervalle de lecture GPS (sec)||
-WPUPCFTM07|Délai de suppression d'une station (jours)||#'
+WPUPCFTM07|Délai de suppression d'une station (jours)||
+
 WPUPCFTM08|Expiration de point estimé (min)||
 WPUPCFTM09|Délai inter-char port série (ms)||
 WPUPCFTM10|Délai nouvelle piste (min)||
 WPUPCFTM11|Espace nouvelle piste (degrés)||
 WPUPCFTM12|RINO -> Intervalle d'objets (min), 0 = Désactivé||
-WPUPCFTM13|Snapshot Interval (min)||
+WPUPCFTM13|Intervalle de capture instantané (min)||
 #
 # PopUp "Configure Coordinate System"
-WPUPCFC001|Configurer système des coordonnées||
-WPUPCFC002|Choisir système des coordonnées||
+WPUPCFC001|Configurer système de coordonnées||
+
+
+WPUPCFC002|Choisir système de coordonnées||
 WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
@@ -648,6 +736,8 @@ WPUPCFI011|Reconnexion sur erreur réseau ?||
 WPUPCFI012|Fonction IGate ?||
 WPUPCFI013|Diffusion de messages par le TNC lorsqu'en IGate ?||#'
 WPUPCFI014|Archivage des transactions IGate ?|||
+
+
 WPUPCFI015|Paramètres du filtre||
 #
 # PopUp "Configure Database"
@@ -665,6 +755,8 @@ WPUPCFID11|Reconnexion sur erreur réseau ?||
 WPUPCFID12|Fonction IGate ?||
 WPUPCFID13|Diffusion de messages par le TNC lorsqu'en IGate ?||#'
 WPUPCFID14|Archivage des transactions IGate ?|||
+
+
 WPUPCFID15|Paramètres du filtre||
 #
 # PopUp "Configure AGWPE"
@@ -682,6 +774,8 @@ WPUPCFIA11|Reconnexion sur erreur réseau ?||
 WPUPCFIA12|Fonction IGate ?||
 WPUPCFIA13|Diffusion de messages par le TNC lorsqu'en IGate ?||#'
 WPUPCFIA14|Archivage des transactions IGate ?|||
+
+
 WPUPCFIA15|RadioPort de transmission||
 #
 # PopUp "Configure Audio Alarms"
@@ -732,17 +826,17 @@ WPUPMSB008|Message:||
 WPUPMSB009|Transmettre maintenant !||
 WPUPMSB010|Voie:||
 WPUPMSB011|Annuler messages en suspens||
-WPUPMSB012|Temporisateur d'éjection||
+WPUPMSB012|RAZ minuterie Temporisateur||
 WPUPMSB013|seq||
 WPUPMSB014|type||
 WPUPMSB015|Broadcast||
 WPUPMSB016|*EXPIRATION*||
 WPUPMSB017|*ANNULE*||
-WPUPMSB018|*REJECTED*||
-WPUPMSB019|Change Path||
-WPUPMSB020|Use Default Path(s)||
-WPUPMSB021|Direct (No path)||
-WPUPMSB022|Reverse Path (Hint):||
+WPUPMSB018|*REJETE*||
+WPUPMSB019|Changer chemin||
+WPUPMSB020|Utiliser chemin(s) par défaut||
+WPUPMSB021|Direct (pas de chemin)||
+WPUPMSB022|Chemin inverse (pour info):||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
@@ -816,7 +910,7 @@ WPUPSTI060|Temp combustible: %02.1f°C  ||
 WPUPSTI061|Temp combustible: %s°F   ||
 WPUPSTI062|Humidité combustible: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
-WPUPSTI064|Charger alerte NWS||
+WPUPSTI064|Chercher alerte NWS||
 WPUPSTI065|Indicatif tactique: %s||
 WPUPSTI066|Assigner un indicatif tactique||
 WPUPSTI067|Portée actuelle : %d milles||
@@ -831,20 +925,28 @@ WPUPSTI075|Portée DF||
 WPUPSTI076|Pas de signal détecté||
 WPUPSTI077|Signal détecté (peut-être))||
 WPUPSTI078|Signal détecté non décodable||
-WPUPSTI079|Siganl faible, parfois décodable||
+WPUPSTI079|Signal faible, parfois décodable||
+
+
+
+
+
+
 WPUPSTI080|Signal brouillé mais copiable||
 WPUPSTI081|Un peu de bruit, avec un signal facilement décodable||
 WPUPSTI082|Bon signal avec un peu de bruit||
 WPUPSTI083|Signal presque sans bruit||
 WPUPSTI084|Signal sans bruit||
 WPUPSTI085|Signal très fort sans bruit||
+
+
 WPUPSTI086|MAUVAIS RELEVEMENT||
 WPUPSTI087|MAUVAIS NRQ||
 WPUPSTI088|Largeur de faisceau DF||
 WPUPSTI089|Longueur DF||
 WPUPSTI090|Invalide||
 WPUPSTI091|Changer la couleur de la piste||
-WPUPSTI092|Clear DF Bearing||
+WPUPSTI092|Effacer relèvements DF||
 #
 #
 # PopUp "ALOHA Statistics"
@@ -874,6 +976,8 @@ STIFCC0011|12 mots/min ||
 #
 #
 # FCC-RAC Call Look up
+
+
 STIFCC0100|Index FCC ancien, restauration||
 STIFCC0101|Recherche d'indicatif||
 STIFCC0102|Indicatif non trouvé !||
@@ -913,25 +1017,27 @@ UNIOP00025|hPa||
 UNIOP00026|%||
 UNIOP00027|pouces Hg||
 UNIOP00028|mm Hg||
-UNIOP00029|Placez le temps de système du GPS||
-UNIOP00030|Digipeat ?||
+UNIOP00029|Régler l'horloge système sur celle du GPS ?||
+
+UNIOP00030|Répéteur digi ?||
 UNIOP00031|m||
 UNIOP00032|Appliquer|||
-UNIOP00033|Reset||
+UNIOP00033|Annuler||
 UNIOP00034|min||
 UNIOP00035|hr||
-UNIOP00036|day||
+UNIOP00036|jour||
 #
 # PopUp "Station Chooser"
 STCHO00001|Choix de station||
 #
 # DISPLAY WX ALERT
 WPUPWXA001|Alerte météo||
-WPUPWXA002|Liste d'alertes météo||#'
+WPUPWXA002|Liste d'alertes météo||
 #
 # PopUp "Configure - Interfaces"
 WPUPCIF001|Interfaces installées||
-WPUPCIF002|Choix du type d'interface||#'
+WPUPCIF002|Choix du type d'interface||
+
 #
 # PopUp "Configure AX.25 TNC"
 WPUPCAX001|Configurer TNC AX.25||
@@ -950,9 +1056,11 @@ IFDNL00008|Météo par réseau||
 IFDNL00009|TNC série + GPS sur câble AUX||
 IFDNL00010|TNC KISS série||
 IFDNL00011|Base de données par réseau (pas encore implémenté)||
+
+
 IFDNL00012|AGWPE par réseau||
 IFDNL00013|TNC Multi-Port KISS série||
-IFDNL00014|SQL Database (Experimental)||
+IFDNL00014|Base de données SQL (Experimental)||
 #
 # Interface device info
 IFDIN00000|%s %2d %s sur port série %s   %s||
@@ -996,6 +1104,8 @@ WXPUPSI011|Peet Bros ULTIMETER 2000 (mode acquisition de données)||
 WXPUPSI012|Peet Bros ULTIMETER II||
 WXPUPSI013|Peet Bros ULTIMETER 2000 (mode paquet)||
 WXPUPSI014|Précipitation horaire totale||
+
+
 WXPUPSI015|Total précipitation 24 hrs||
 WXPUPSI016|Qualimetrics Q-Net||
 WXPUPSI017|Peet Bros ULTIMETER 2000 (mode complet)||
@@ -1047,8 +1157,12 @@ LHPUPNI208|RN24||
 LHPUPNI209|Lat/Lon ou UTM||
 #
 # Maps WX Alert styles
-PULDNMAT01|Voir cartes alertes sur autres cartes||
-PULDNMAT02|Voir cartes alertes sous autres cartes||
+PULDNMAT01|Voir cartes alertes au dessus des autres cartes||
+PULDNMAT02|Voir cartes alertes en desous des autres cartes||
+
+
+
+
 #
 # Error/popup messages
 POPEM00001|Erreur localisation !||
@@ -1058,7 +1172,9 @@ POPEM00004|Erreur d'interface !||#'
 POPEM00005|Nom de port AX.25 invalide %s||
 POPEM00006|Nom de port AX.25 invalide %s||
 POPEM00007|Indicatif invalide %s||
-POPEM00008|Destination AX25 invalide||
+POPEM00008|Destination AX25 indicatif ou relais digi invalide||
+
+
 POPEM00009|Erreur ouverture socket AX.25, %s||
 POPEM00010|Erreur liaison socket AX.25, %s||
 POPEM00011|Pas de connection à l'indicatif AX.25 %s||#'
@@ -1075,8 +1191,12 @@ POPEM00021|Support AX.25 non compilé dans Xastir !||#'
 POPEM00022|Erreur d'entrée !||#'
 POPEM00023|Aucun nom de lieu spécifié !||
 POPEM00024|Le nom de lieu spécifié est en cours d'utilisation !||#'
+
+
 POPEM00025|Pas trouvé !||
 POPEM00026|Suivi commencera quand elle apparaîtra||
+
+
 POPEM00027|Mauvaise info.  Certains champs vides ?||
 POPEM00028|Ne peut ouvrir fichier||
 POPEM00029|Trouvé !||
@@ -1085,29 +1205,46 @@ POPEM00031|Changé en symbole météo '/_', autres possibilités:  '\_'  '/W'  et  '
 POPEM00032|Attention: utilise symbole du "National Weather Service" !||
 POPEM00033|Pas de données GPS !||
 POPEM00034|TX de ma position désactivé jusqu'a réception de bonnes données GPS !||#'
+
+
 POPEM00035|Avertissement||
 POPEM00036|Avis||
 POPEM00037|Interface HSP présente: temporisation GPS augmentée||
+
+
 POPEM00038|Conflit de nom avec un Objet/Item/Station déjà existant||
 POPEM00039|Caractère illégal, remplacé par un point||
 POPEM00040|Le chemin de sortie personnalisé a été perdu||
 POPEM00041|Traitement d'un autre fichier en cours. Attendez, puis réessayez||
 POPEM00042|L'object ne m'appartient pas ! Essayez d'adopter l'objet d'abord.||
+
+
+
+
+
+
+
+
 POPEM00043|Ce n'est pas un objet ou article !||
 POPEM00044|Récupération de piste Findu : Échec||
 POPEM00045|Récupération de piste Findu : Terminé||
 POPEM00046|La bibliothèque Berkeley DB ne correspond pas ! Désactivation du cache des cartes.||
-POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
-POPEM00048|Emergency Beacon Mode!||
-POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
-POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
-POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
-POPEM00052|Callsign is EMPTY!||
-POPEM00053|Message is EMPTY!||
-POPEM00054|We're trying to talk to ourselves!||
+POPEM00047|Toutes les transmissions sont DESACTIVEES. Les balises d'urgences ne seront PAS envoyées!||
+
+POPEM00048|Mode balise d'URGENCE!||
+POPEM00049|MODE BALISE D'URGENCE, transmission toutes les 60 secondes!||
+POPEM00050|Interfaces ou trans.position DESACTIVEES.  Les balises d'urgences ne seront PAS envoyées!||
+POPEM00051|Réseau alternatif (ALTNET) activé (Menu Fichier->Configurer->Defauts)||
+
+
+
+POPEM00052|Indicatif est VIDE!||
+POPEM00053|Message est VIDE!||
+POPEM00054|Vous essayez de communiquer avec vous même!||
+
 #
 # Jump Location
-JMLPO00001|Lieu de la carte||
+JMLPO00001|Afficher Cartes Favorites||
 JMLPO00002|Aller !||
 JMLPO00003|Nouveau nom de lieu:||
 #
@@ -1136,8 +1273,8 @@ SPCHSTR011|Reçu, D X, %s, à une distance de %.1f %s||
 #
 SPCHDIRN00|au nord de||
 SPCHDIRS00|au sud de||
-SPCHDIRE00|à l'est de||#'
-SPCHDIRW00|à l'ouest de||#'
+SPCHDIRE00|à l'est de||
+SPCHDIRW00|à l'ouest de||
 SPCHDIRNE0|au nord-est de||
 SPCHDIRNW0|au nord-ouest de||
 SPCHDIRSE0|au sud-est de||
@@ -1149,25 +1286,31 @@ SYMSEL0002|Table de symboles primaire||
 SYMSEL0003|Table de symboles secondaire||
 #
 # Print Properties Dialog
-PRINT0001|Propriétés d'impression||#'
+PRINT0001|Propriétés d'impression||
 PRINT0002|Taille du papier||
-PRINT0003|Rotation automatique d'image||#'
+PRINT0003|Rotation automatique d'image||
 PRINT0004|Tourner image 90° à gauche||
-PRINT0005|Proportion automatique d'image||#'
+PRINT0005|Proportion automatique d'image||
 PRINT0006|Échelle:||
 PRINT0007|Forcer le fond à être blanc||
 PRINT0008|Imprimer en noir et blanc||
+
+
+
+
 PRINT0016|Inverser couleurs||
 PRINT0009|Résolution Postscript:||
 PRINT0010|Prévisualiser||
 PRINT0011|Imprimer dans un fichier||
 PRINT0012|Sauvegarde de l'image dans un fichier...||
 PRINT0013|Conversion Postscript...||
-PRINT0014|Création du fichier d'impression finie||#'
-PRINT0015|Etat d'impression||#'
+PRINT0014|Création du fichier d'impression finie||
+
+
+PRINT0015|Etat d'impression||
 #
 # Print Properties Dialog
-PRINT1001|Direct to:||
+PRINT1001|Directement à:||
 PRINT1002|Via Previewer:||
 #
 # Locate Feature Dialog
@@ -1192,20 +1335,26 @@ COORD005|UTM||
 COORD006|Latitude ou||
 COORD007|Longitude ou||
 COORD008|Zone||
-COORD009|UTM vers l'est||#'
+COORD009|UTM vers l'est||
 COORD010|UTM vers le nord||
 COORD011|               Degrés décimaux:  ||
+
+
 COORD012|      Degrés/Minutes décimales:  ||
 COORD013|  Degrés/Minutes/secondes déc.:  ||
 COORD014| Universal Transverse Mercator:  ||
 COORD015|Syst. de réf. grille militaire:  ||
+
+
 COORD016|     Grille Locator Maidenhead:  ||
 COORD017| **         Désolé, entrée non reconnue !          **||
+
+
 COORD018| **   SVP utilisez l'un de ces formats d'entrée:   **||
 #
 #
 # Smart Beaconing Dialog
-SMARTB001|Balise intelligente||
+SMARTB001|Balise intelligente (Smart Beaconing)||
 SMARTB002|Intervalle maximal (secs):||
 SMARTB003|Vitesse haute (m/h):||
 SMARTB004|Vitesse haute (k/h):||
@@ -1221,22 +1370,23 @@ SMARTB011|Activer SmartBeaconing(tm)||
 #
 # Gamma Adjust Dialog
 GAMMA001|Ajuster correction de gamma||
+
 GAMMA002|Correction de gamma||
 #
 #
 # 
 # Map labels font Dialog
-MAPFONT001|Change Fonts||
-MAPFONT002|Fonts||
-MAPFONT003|Map Font Minusc||
-MAPFONT004|Map Font Petite||
-MAPFONT005|Map Font Moyenne||
-MAPFONT006|Map Font Large||
-MAPFONT007|Map Font Enorme||
-MAPFONT008|Map Font Border||
-MAPFONT009|Menu Font||
-MAPFONT010|Station Font||
-MAPFONT011|ATV ID Font||
+MAPFONT001|Changer police de caratères||
+MAPFONT002|Police de caratères||
+MAPFONT003|Police de caratère des cartes Minusc||
+MAPFONT004|Police de caratère des cartes Petite||
+MAPFONT005|Police de caratère des cartes Moyenne||
+MAPFONT006|Police de caratère des cartes Large||
+MAPFONT007|Police de caratère des cartes Enorme||
+MAPFONT008|Police de caratère des cartes Border||
+MAPFONT009|Police de caratère des menus||
+MAPFONT010|Police de caratère des Stations||
+MAPFONT011|Police de caratère de l'ID ATV||
 #
 #
 #
@@ -1310,8 +1460,8 @@ GPSS012|RTK||
 #
 #
 # Popup cad_dialog to obtain CAD object data
-CADPUD001|Area Object||
-CADPUD002|Area Label:||
+CADPUD001|Object surface||
+CADPUD002|Etiquette surface:||
 CADPUD003|Commentaire:||
 CADPUD004|Probabilité (%):||
 CADPUD005|OK||
@@ -1321,44 +1471,45 @@ CADPUD008|Annulerl||
 CADPUD009|Effacer les objets CAD ?||
 CADPUD010|Tout effacer||
 CADPUD011|Effacer la sélection||
-CADPUD012|Solid||
-CADPUD013|Dashed||
-CADPUD014|Double Dash||
+CADPUD012|Continue||
+CADPUD013|pointilliés||
+CADPUD014|Double pointilliés||
 #
 #
 # Format strings for map metadata in top border
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
-MDATA001|XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ||
-#
-#
-# Format strings for map metadata in top border
+MDATA001|Carte XASTIR de %s (haut gauche) à %s (bas droit).  UTM %d m grid, %s datum. ||
+
+
+
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
-MDATA002|XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum.||
-#
-#
-# Format strings for map metadata in top border
+MDATA002|carte XASTIR de %s (haut gauche) à %s %s (bas droit).  Lat/Long grid, %s datum.||
+
+
+
 #"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
-MDATA003|XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum.||
+MDATA003|Carte XASTIR Map de %s (haut gauche) à %s (bas droit).  UTM zones, %s datum.||
 #
 # Text interpretation of integer values of database type and schema type
 # used for sql database configuration in interface_gui.c
 # DB_MYSQL 
 XADBMST001|MySQL (lat/long)||
+# DB_POSTGIS 
 #
 # Text interpretation of integer values of database type and schema type
 # used for sql database configuration in interface_gui.c
 # DB_MYSQL 
-XADBMST002|Postgreql with Postgis||
+XADBMST002|Postgreql avec Postgis||
 #
 # Text interpretation of integer values of database type and schema type
 # used for sql database configuration in interface_gui.c
-# DB_MYSQL 
+# DB_MYSQL_SPACIAL 
 XADBMST003|MySQL (spatial)||
 # XASTIR_SCHEMA_SIMPLE]
-XASCHEMA01|Xastir Simple Schema||
+XASCHEMA01|Schéma simple Xastir||
 # XASTIR_SCHEMA_SIMPLE]
-XASCHEMA02|Xastir CAD Schema||
+XASCHEMA02|Schéma CAD Xastir||
 # XASTIR_SCHEMA_SIMPLE]
-XASCHEMA03|Xastir full Schema||
+XASCHEMA03|Schéma complet Xastir||
 # XASTIR_SCHEMA_SIMPLE]
-XASCHEMA04|APRSWorld Schema||
+XASCHEMA04|Schéma APRSWorld||
