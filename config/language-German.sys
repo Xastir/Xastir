@@ -239,8 +239,8 @@ PULDNDP049|Löschen aller taktischen Calls||
 PULDNDP050|Löschen Verlauf taktische Calls||
 PULDNDP051|Nur taktische Calls wählen||
 PULDNDP052|- Wegpunkte bezeichnen||
-PULDNDP055|Export all|E|
-PULDNDP056|Export to KML File||
+PULDNDP055|Exportieren|E|
+PULDNDP056|Export in KML-Datei||
 #
 # Maßeinheiten
 PULDNUT001|Englische Maße||
@@ -388,9 +388,9 @@ BBARSTA045|Lade Symbole...||
 BBARSTA046|Lade Symbole neu...||
 BBARSTA047|Initialisiere meine Station...||
 BBARSTA048|Starte Schnittstellen...||
-BBARSTA049|Reading tiles...||
-BBARSTA050|Downloading tiles...||
-BBARSTA051|Downloading tile %li of %li||
+BBARSTA049|Lesen der Kacheln...||
+BBARSTA050|Laden der Kacheln...||
+BBARSTA051|Laden Kachel %li von %li||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||
@@ -953,7 +953,7 @@ IFDNL00010|Serieller KISS TNC||
 IFDNL00011|Datenbank über Netz (Noch nicht implementiert)||
 IFDNL00012|AGWPE über Netz||
 IFDNL00013|Serieller Multi-Port KISS TNC||
-IFDNL00014|SQL Database (Experimental)||
+IFDNL00014|SQL Datenbank (experimentell)||
 #
 # Interface device info 
 IFDIN00000|%s %2d %s an ser. Schnittstelle %s   %s||
@@ -1297,12 +1297,12 @@ GPSS002|DGPS||
 GPSS003|gültig SPS||
 GPSS004|ungültig||
 GPSS005|Sats/Anzeige||
-GPSS006|Fest||
+GPSS006|Fix||
 GPSS007|!GPS-Daten sind älter als 30 Sekunden!||
 GPSS008|Simulation||
 GPSS009|Manuell||
-GPSS010|Voraussichtlich||
-GPSS011|Float RTK||
+GPSS010|Schätzung||
+GPSS011|FRTK||
 GPSS012|RTK||
 #
 #
