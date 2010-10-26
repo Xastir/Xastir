@@ -83,7 +83,7 @@
 #
 
 
-REV="1.9.8"
+REV="2.0.0"
 FILENAME=`date +xastir-lsb-$REV-%Y-%b-%d.tar.bz2`
 
 
