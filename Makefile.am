@@ -72,10 +72,10 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS README.CYGWIN \
 # documentation is FHS compliant.
 
 install-exec-hook:
-	-rm -rf ${pkgdatadir}/doc
+	-rm -rf $(DESTDIR)${pkgdatadir}/doc
 
 install-data-hook:
-	cd $(mapdir) && \
+	cd $(DESTDIR)$(mapdir) && \
 	rm -f CC_OpenStreetMap.png && \
 	$(LN_S) CC_OpenStreetMap_logo.png CC_OpenStreetMap.png
  
