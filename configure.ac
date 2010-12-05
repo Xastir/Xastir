@@ -342,6 +342,9 @@ force_internal_shapelib=no
 shapelib_desired=yes
 LIBSHP=""
 SUBSHP=""
+# This symbol will be blank if the proj library hasn't been found, and will
+# have the three programs that need proj if it has
+CONTSHP=""
 AC_ARG_WITH(internal-shapelib,[  --with-internal-shapelib  Force use of internal shapelib library.],force_internal_shapelib=$withval)
 AC_ARG_WITH(shapelib,[  --without-shapelib        Disable shapelib features.],shapelib_desired=$withval)
 if test "${shapelib_desired}" = "no"; then
@@ -378,8 +381,14 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
  AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
+
+ if  [ $use_proj = "yes" ]
+ then
+   CONTSHP="shpcentrd shpproj shpdata shpwkb"
+ fi
 fi
 AC_SUBST(SUBSHP)
+AC_SUBST(CONTSHP)
 AC_SUBST(LIBSHP)
 
 

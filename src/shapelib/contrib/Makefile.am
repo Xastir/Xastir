@@ -11,14 +11,11 @@ noinst_LIBRARIES=libshape.a
 noinst_PROGRAMS=dbfcat \
         dbfinfo \
         shpcat \
-        shpcentrd \
-        shpdata \
         shpdxf \
         shpfix \
-        shpinfo \
-        shpproj \
-        shpwkb
+        shpinfo @CONTSHP@
 
+EXTRA_PROGRAMS = shpcentrd shpproj shpdata shpwkb
 libshape_a_SOURCES=../shpopen.c \
         ../shptree.c \
         ../dbfopen.c \
