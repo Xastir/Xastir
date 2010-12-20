@@ -135,13 +135,6 @@
 #undef PACKAGE_VERSION
 #define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
 #undef XASTIR_PACKAGE_VERSION
-#endif // HAVE_MAGICK
-
-// Must be last include file
-#include "leak_detection.h"
-
-#define xastirColorsMatch(p,q) (((p).red == (q).red) && ((p).blue == (q).blue) \
-        && ((p).green == (q).green))
 
 // This matte color was chosen emphirically to work well with the
 // contours from topOSM.
@@ -164,6 +157,14 @@
 #else
 #error "QuantumDepth != 16 or 8"
 #endif // QuantumDepth
+
+#endif // HAVE_MAGICK
+
+// Must be last include file
+#include "leak_detection.h"
+
+#define xastirColorsMatch(p,q) (((p).red == (q).red) && ((p).blue == (q).blue) \
+        && ((p).green == (q).green))
 
 // osm_scale_x - map Xastir scale_x value to an OSM binned value
 // 
