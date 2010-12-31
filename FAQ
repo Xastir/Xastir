@@ -862,9 +862,32 @@ The Answers
 
     4.24 Can I run multiple copies of Xastir at once?
 
-    Yes.  But not as the same user.  Do this to allow more than one
-    user to access your X display and to create additional users,
-    each capable of running one Xastir session:
+    Yes, but you must keep the configuration directories separate for
+    each copy by using a command-line flag. Xastir will create the new
+    config directory and fill it with defaults if it doesn't already
+    exist. Here's the method. Substitute your user name where it says
+    "<user>":
+
+        xastir &    # starts up first Xastir copy against ".xastir" directory
+        xastir -c /home/<user>/.xastir2 &    # starts up 2nd Xastir copy against ".xastir2" directory
+        xastir -c /home/<user>/.xastir3 &    # starts up 3rd Xastir copy against ".xastir3" directory
+
+    To make the process easier if you use this method a lot, create
+    aliases by editing your .profile (This assumes you're running BASH
+    or Bourne shells):
+
+        alias xastir2='xastir -c /home/<user>/.xastir2 &'
+        alias xastir3='xastir -c /home/<user>/.xastir3 &'
+
+    After sourcing your new .profile (The command is ". .profile" from
+    your home directory) or logging out and back in again, you can type
+    "xastir2" or "xastir3" as a command to start up the additional
+    copies of Xastir.
+
+    Older methods, may still be useful at times: 
+
+    Do this to allow more than one user to access your X display and to
+    create additional users, each capable of running one Xastir session:
 
         xhost localhost
 
