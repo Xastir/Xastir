@@ -1643,13 +1643,15 @@ screens of other APRS(tm) users.
 Clear All Tactical Calls
 Clears all assigned tactical calls. This will take effect the next
 redraw. Note that this will NOT clear tactical calls on other
-people's screens if you've published them via a message to "TACTICAL".
+people's screens if you've published them via a message to
+"TACTICAL" (see the help text for "Send Message").
 
 Clear Tactical Call History
 This removes the tactical call history file, meaning that tactical calls
 assigned will not remain permanent between Xastir restarts.  Note
 that this will NOT clear tactical calls on other people's screens if
-you've published them via a message to "TACTICAL".
+you've published them via a message to "TACTICAL" (see the help text
+for "Send Message".
 
 Clear All Trails
 This will wipe all the line tracking data from the station database and
@@ -1716,16 +1718,18 @@ Each outgoing message remains highlighted until it is ack'ed by the remote
 station.  If it times out or if you cancel the pending messages, those
 messages will remain highlighted unless you clear the message history.
 
-To publish tactical calls to other Xastir and APRS+SA stations as
+To publish TACTICAL calls to other Xastir and APRS+SA stations as
 well as assign those tactical calls locally: Send a message to
-"TACTICAL" with the body of the message containing lines like:
+"TACTICAL" with the body of the message containing lines something
+like:
   
   callsign-1=TAC1;callsign-2=TAC2;callsign-3=TAC3
 
-To remove these tactical calls later from local and remote screens,
-make sure the original message(s) assigning them has timed-out or
+To remove these tactical calls later from local AND remote screens,
+assure that the original message(s) assigning them has timed-out or
 been cancelled, then send a message like this and let it retry until
-it times out:
+it times out (assigns blank tactical calls to the original
+callsigns, thereby removing the assignment):
 
     callsign-1=;callsign-2=;callsign-3=
 
@@ -1839,11 +1843,13 @@ Station Info will display any data decoded by Xastir.
 You can assign (local only) tactical calls to stations from here, by
 clicking the "Assign Tactical Call" button. This will cause the
 station on screen to display as the tactical call instead of its
-callsign. Assigning blank clears this feature, and it can also be
-cleared for all stations in the Stations menu.
+callsign. Assigning a blank tactical call clears this feature, and
+it can also be cleared for all stations in the Stations menu.  This
+feature assigns tactical calls to the local Xastir station only, but
+see below to publish them to others.
 
 To publish tactical calls across the air to other Xastir and APRS+SA
-stations as well as assign them locally, see the "Send Message" help
+stations (as well as assign them locally), see the "Send Message" help
 section.
 
 "Enable Automatic Updates" will cause the window to refresh frequently with the
