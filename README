@@ -356,6 +356,7 @@ README
         http://download.opensuse.org/repositories/hamradio/openSUSE_11.0/
         http://download.opensuse.org/repositories/hamradio/openSUSE_11.1/
         http://download.opensuse.org/repositories/hamradio/openSUSE_11.2/
+        http://download.opensuse.org/repositories/hamradio/openSUSE_11.3/
 
         Adding these sites will allow you to find and install the ax25
         libraries/devel headers, the OpenMotif development headers, and the
@@ -371,6 +372,22 @@ README
             http://sources.redhat.com/automake/automake.html#Extending-aclocal
 
         You may safely ignore this warning.
+
+        I've found that I need to do this when configuring for OpenSUSE in
+        order to pick up the libgeotiff include files:
+
+            ./configure CPPFLAGS="-I/usr/include/libgeotiff"
+
+        I just put it into a script called "configure.suse" so that I don't
+        have to remember it each time.  Here are the complete contents of
+        the script:
+
+            #!/bin/sh
+            ./configure CPPFLAGS="-I/usr/include/libgeotiff"
+
+        then do "chmod 755 configure.suse", and run it like this:
+
+            ./configure.suse
 
         You'll may also see these when compiling the code:
 
