@@ -32,18 +32,14 @@
 # <http://www.weather.gov/geodata/>
 
 
-FILE1="z_01de10"  # NWSM Libraries: Public Zone Boundaries
-FILE1="z_15nv10"  # NWSM Libraries: Public Zone Boundaries
-FILE1="z_15oc10"  # NWSM Libraries: Public Zone Boundaries
-FILE1="z_11my10"  # NWSM Libraries: Public Zone Boundaries
+# Please only have ONE of each variable listed here!
+FILE1="z_03my11"  # NWSM Libraries: Public Zone Boundaries
 FILE2="w_15jl09"  # NWSM Libraries: County Warning Area Boundaries
-FILE3="mz01jn10"  # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE3="mz05ap11"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE4="oz02jn09"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE5="hz30mr09"  # NWSM Libraries: Coastal and Offshore Marine Zones
-FILE6="fz01de10"  # NWSM Libraries: Fire Weather Zone Boundaries
-FILE6="fz15nv10"  # NWSM Libraries: Fire Weather Zone Boundaries
-FILE6="fz01my10"  # NWSM Libraries: Fire Weather Zone Boundaries
-FILE7="c_15jl09"  # County Libraries: AWIPS Counties
+FILE6="fz03my11"  # NWSM Libraries: Fire Weather Zone Boundaries
+FILE7="c_15jl09"  # AWIPS County Libraries (under States, Provinces & Counties)
 
 x=`dirname $0`
 . $x/values
