@@ -35,6 +35,7 @@ EXTRA_DIST = \
     nwsc_ddmmyy.dbfawk \
     nwsc_ddmmyy_09.dbfawk \
     nwsc_ddmmyy_09b.dbfawk \
+    nwsc_ddmmyy_10.dbfawk \
     nwsmzddmmyy.dbfawk \
     nwsmzddmmyy_09.dbfawk \
     nwsmzoddmmyy.dbfawk \
@@ -45,8 +46,10 @@ EXTRA_DIST = \
     nwsz_ddmmyy.dbfawk \
     nwsz_ddmmyy_09.dbfawk \
     nwsz_ddmmyy_10.dbfawk \
+    nwsz_ddmmyy_10b.dbfawk \
     nwsz1ddmmyy.dbfawk \
     nwszoddmmyy.dbfawk \
+    nwshzddmmyy.dbfawk \
     OSM_Cloudmade_administrative.dbfawk \
     OSM_Cloudmade_highway.dbfawk \
     OSM_Cloudmade_natural.dbfawk \
