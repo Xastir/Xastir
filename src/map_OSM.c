@@ -1092,7 +1092,7 @@ void draw_OSM_tiles (Widget w,
     tileCnt = 1;
     for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
         for (tiley = tiles.starty; tiley <= tiles.endy; tiley++) {
-            if (numTiles > 0) {
+            if ((numTiles > 0) & (tileCnt <= numTiles)) {
                 xastir_snprintf(map_it, sizeof(map_it), langcode("BBARSTA051"),
                         tileCnt, numTiles);  // Downloading tile %ls of %ls
                 statusline(map_it,0);
