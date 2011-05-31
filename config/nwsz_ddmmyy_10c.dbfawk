@@ -1,0 +1,42 @@
+# $Id$
+#
+# Copyright (C) 2003-2010  The Xastir Group
+#
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   pattern - line pattern for road, river, etc.
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+#
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map NWS state zone area polygon shapefiles
+# which are named z_ddmmyy.dbf.  These are used for WX alerts.
+# For the WX alert feature, the key is set to the STATE_ZONE code,
+# reformatted to match alert->title (e.g. KS033 is KS_Z033).
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+dbfinfo="STATE:CWA:TIME_ZONE:FE_AREA:ZONE:NAME:STATE_ZONE:LON:LAT:SHORTNAME";
+# dbffields is which of the above fields we actually want to look at.
+# Note that the order we list these is important since we are appending the
+# word County or Parish depending on what state the county is in.
+dbffields="STATE_ZONE:NAME";
+}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+BEGIN_RECORD {key="BOGUS"; lanes=2; fill_color=7; color=8; name=""; filled=0; fill_style=0; pattern=0; display_level=65536; label_level=512; label_color=20; font_size=2; symbol=""}
+
+/^STATE_ZONE=(..)(.*)$/ {key="$1_Z$2"; next}
+/^NAME=(.*)$/ {name="$1"; next}

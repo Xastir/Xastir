@@ -37,12 +37,12 @@
 # should START to be used.  Don't just blindly put the newest filename
 # here if that start-date hasn't arrived yet!
 #
-FILE1="z_01de10"  # NWSM Libraries: Public Zone Boundaries
+FILE1="z_31my11"  # NWSM Libraries: Public Zone Boundaries
 FILE2="w_01de10"  # NWSM Libraries: County Warning Area Boundaries
-FILE3="mz01jn10"  # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE3="mz05ap11"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE4="oz02jn09"  # NWSM Libraries: Coastal and Offshore Marine Zones
 FILE5="hz30mr09"  # NWSM Libraries: Coastal and Offshore Marine Zones
-FILE6="fz01de10"  # NWSM Libraries: Fire Weather Zone Boundaries
+FILE6="fz31my11"  # NWSM Libraries: Fire Weather Zone Boundaries
 FILE7="c_01de10"  # AWIPS County Libraries (under States, Provinces & Counties)
 
 

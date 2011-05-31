@@ -1,0 +1,59 @@
+# $Id$
+#
+# Copyright (C) 2003-2010  The Xastir Group
+#
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   label_color - color for label
+#   pattern - line pattern for road, river, etc.
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+#
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map NWS county polygon shapefiles
+# which are named c_ddmmyy.dbf.  These are used for WX alerts but can also
+# be used as a map of all US counties.  For the WX alert feature, the
+# key is set to the concatentation of the STATE and FIPS county code
+# in the same format as the alert->title (e.g. WI_C037).
+#
+# This DBFAWK file matches the set of county shapefiles that was published
+# by NOAA in 2009, and differs from the earlier format.  Shapefiles from 2008
+# are matched by the file "nwsc_ddmmyy.dbfawk" instead.
+#
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+dbfinfo="OBJECTID:ID:WFO:GL_WFO:SHAPE_LENG:SHAPE_AREA:MZ:AJOIN0:AJOIN1:STATE:CWA:COUNTYNAME:FIPS:TIME_ZONE:FE_AREA:LON:LAT";
+# dbffields is which of the above fields we actually want to look at.
+# Note that the order we list these is important since we are appending the
+# word County or Parish depending on what state the county is in.
+dbffields="STATE";
+}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+BEGIN_RECORD {key="BOGUS"; lanes=1; fill_color=7; color=8; name=""; filled=1; fill_style=0; pattern=0; display_level=65536; label_level=512; label_color=20; font_size=2; symbol=""}
+
+# name: name is just the county name.
+#/^COUNTYNAME=(.*)$/ {name="$1"; font_size=4; next}
+# also append "County" to the name except for Louisiana, use Parish
+# (is this the only state that calls them something other than county?):
+# XXX check this whole LA thing.  I think they call them parishes.
+#/^STATE=(LA)$/ {name="$name Parish"; key="$1"; next}
+#/^STATE=(..)$/ {name="$name County"; key="$1"; next}
+#/^FIPS=..(...)$/ {key="$(key)_C$1"; next}
+
+# don't need special end case handling...
+#END_RECORD {name="$name ($key)";}
+#END {}
