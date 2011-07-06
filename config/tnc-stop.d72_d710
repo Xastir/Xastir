@@ -1,0 +1,39 @@
+# $Id$
+#
+# Copyright (C) 2011  The Xastir Group
+#
+# TNC STOP FILE for Kenwood TM-D710 or TH-D72 radios.
+# Contributed by Kai Günter, LA3QMA.
+#
+# Undo any settings make in tnc-startup.sys
+# Edit this file for your tnc!
+#
+#
+UNPROTO CQ
+AUTOLF ON
+ECHO ON
+#Don't send CONTROL-C before this line
+##META <no-ctrl-c>
+TC 1
+##Pause for one second
+##META <delay>
+##META <delay>
+##META <delay>
+#Put the TNC in internal mode since this is where we want to end up
+# Change the 1 to 0 to go to normal radio mode
+##META <no-ctrl-c>
+TN 0,0
+# Pause for two seconds
+##META <delay>
+##META <delay>
+##META <delay>
+##META <delay>
+#Turn off Terminal Control
+##META <no-ctrl-c>
+TC 0
+# Pause for two seconds just in case
+##META <delay>
+##META <delay>
+##META <delay>
+##META <delay>
+#
