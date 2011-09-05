@@ -210,8 +210,8 @@ $outputTif =~ s/pdf/tif/i;
 # We will warp from whatever the coordinate system is into EPSG:4326, the
 # coordinate system that requires the least work and involves the fewest
 # approximations from Xastir.
-$theGdalWarp="gdalwarp -cutline $inputPDF.vrt -crop_to_cutline -t_srs EPSG:4326  -co \"COMPRESS=PACKBITS\" $inputPDF $outputTif";
-#$theGdalWarp="gdalwarp -cutline $inputPDF.vrt -crop_to_cutline -t_srs EPSG:4326  $inputPDF $outputTif";
+#$theGdalWarp="gdalwarp -cutline $inputPDF.vrt -crop_to_cutline -t_srs EPSG:4326  -co \"COMPRESS=PACKBITS\" $inputPDF $outputTif";
+$theGdalWarp="gdalwarp -cutline $inputPDF.vrt -crop_to_cutline -t_srs EPSG:4326  $inputPDF $outputTif";
 
 system ($theGdalWarp) == 0 or die "System $theGdalWarp failed: $?";
 
@@ -220,10 +220,11 @@ if ($#bandinfo>0)
 {
     print "This is a multi-band raster, dithering...\n";
     system ("mv $outputTif $$.tif");
-    $theRGB2PCT="rgb2pct.py $$.tif $$-2.tif";
+#    $theRGB2PCT="rgb2pct.py $$.tif $$-2.tif";
+    $theRGB2PCT="rgb2pct.py $$.tif $outputTif";
     system ($theRGB2PCT) == 0 or die "Could not run rgb2pct: $?";
-    system("gdal_translate -co \"COMPRESS=PACKBITS\" $$-2.tif $outputTif") == 0 or die "Could not gdal_translate: $?";
-    system("rm  $$.tif $$-2.tif");
+#    system("gdal_translate -co \"COMPRESS=PACKBITS\" $$-2.tif $outputTif") == 0 or die "Could not gdal_translate: $?";
+    system("rm -f $$.tif $$-2.tif");
 }
 
 # now clean up our mess:
