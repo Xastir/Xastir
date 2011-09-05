@@ -6,6 +6,7 @@
 pkglib_SCRIPTS = \
     Coordinate.pm \
     coord-convert.pl \
+    geopdf2gtiff.pl \
     get-fcc-rac.pl \
     get-gnis \
     get-pop \
