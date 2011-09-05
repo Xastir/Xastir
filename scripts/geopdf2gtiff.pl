@@ -21,6 +21,11 @@
 # Last Edited By: $Author$
 ###############################################################################
 
+use Getopt::Long;
+
+my $fudgeNeatline;
+$result=GetOptions("fixneatline|f"=>\$fudgeNeatline);
+
 # Input file is a geopdf:
 if ($#ARGV<0)
 {
@@ -40,6 +45,8 @@ my $readingCoordSys=0;
 my $coordSys="";
 my $readingMetadata=0;
 my $neatlinePoly="";
+my $minLat=360,$maxLat=-360,$minLon=360,$maxLon=-360,$templat,$templon;
+
 while (<GDALINFO>)
 {
   if (/^Driver: (.*)$/)
@@ -97,28 +104,97 @@ while (<GDALINFO>)
       $bandinfo[$#bandinfo+1]=$2;
       next;
   }
+  if (/^(Upper|Lower) (Left|Right)/)
+  {
+      s/(Upper|Lower) (Left|Right) *\([^)]*\) *//;
+      /\(([^,]*), *([^\)]*)\)/;
+      $templonstr=$1;
+      $templatstr=$2;
+      $templonstr =~ /([0-9]*)d( *[0-9]*)'( *[0-9.]*)"([EW])/;
+      $deg=$1; $min=$2; $sec=$3; $hem=$4;
+      $templon=$deg+$min/60+$sec/3600;
+      $templon *= -1 if ($hem eq "W");
+      $minLon=$templon if ($templon<$minLon);
+      $maxLon=$templon if ($templon>$maxLon);
+
+      $templatstr =~ /([0-9]*)d( *[0-9]*)'( *[0-9.]*)"([NS])/;
+      $deg=$1; $min=$2; $sec=$3; $hem=$4;
+      $templat=$deg+$min/60+$sec/3600;
+      $templat *= -1 if ($hem eq "S");
+      $minLat=$templat if ($templat<$minLat);
+      $maxLat=$templat if ($templat>$maxLat);
+
+  }
+    
 }
 close GDALINFO;
 
+if (! $fudgeNeatline)
+{
 # Create a CSV for the neatline.  OGR will recognize this geometry
-open CSVFILE, ">$inputPDF.csv";
-print CSVFILE "foo,WKT\n";
-print CSVFILE "bar,\"$neatlinePoly\"\n";
-close CSVFILE;
+    open CSVFILE, ">$inputPDF.csv";
+    print CSVFILE "foo,WKT\n";
+    print CSVFILE "bar,\"$neatlinePoly\"\n";
+    close CSVFILE;
+    
+# Unfortunately, there's no easy way to attach a spatial reference system
+# (SRS) to the csv file so that gdalwarp will recognize it.  So make a 
+# virtual layer out of the CSV with the reference system in it.
+    open VRTFILE, ">$inputPDF.vrt";
+    print VRTFILE "<OGRVRTDataSource>\n";
+    print VRTFILE " <OGRVRTLayer name=\"$inputPDF\">\n";
+    print VRTFILE "   <LayerSRS>$coordSys</LayerSRS>\n";
+    print VRTFILE "   <SrcDataSource>$inputPDF.csv</SrcDataSource>\n";
+    print VRTFILE "   <GeometryType>wkbPolygon</GeometryType>\n";
+    print VRTFILE "   <GeometryField>WKT</GeometryField>\n";
+    print VRTFILE " </OGRVRTLayer>\n";
+    print VRTFILE "</OGRVRTDataSource>\n";
+    close VRTFILE;
+}
+else
+{
+    print "User asked us to fudge the neatline, finding nearest 7.5 minute quad boundaries\n";
+
+
+    # Instead of using the neatline specified, round it to nearest 7.5' 
+    # quad boundary
+    $left=(int((abs($minLon)-int(abs($minLon)))/.125+.5)*.125+int(abs($minLon)))*($minLon/abs($minLon));
+    $right=(int((abs($maxLon)-int(abs($maxLon)))/.125+.5)*.125+int(abs($maxLon)))*($maxLon/abs($maxLon));
+    if ($maxLon<0)
+    {
+        $temp=$left;
+        $left=$right;
+        $right=$temp;
+    }
+    $bottom=(int((abs($minLat)-int(abs($minLat)))/.125+.5)*.125+int(abs($minLat)))*($minLat/abs($minLat));
+    $top=(int((abs($maxLat)-int(abs($maxLat)))/.125+.5)*.125+int(abs($maxLat)))*($maxLat/abs($maxLat));
+    if ($maxLat<0)
+    {
+        $temp=$top;
+        $top=$bottom;
+        $bottom=$temp;
+    }
+
+
+    open CSVFILE, ">$inputPDF.csv";
+    print CSVFILE "foo,WKT\n";
+    print CSVFILE "bar,\"POLYGON(($left $top,$right $top, $right $bottom, $left $bottom, $left $top))\"\n";
+    close CSVFILE;
 
 # Unfortunately, there's no easy way to attach a spatial reference system
 # (SRS) to the csv file so that gdalwarp will recognize it.  So make a 
 # virtual layer out of the CSV with the reference system in it.
-open VRTFILE, ">$inputPDF.vrt";
-print VRTFILE "<OGRVRTDataSource>\n";
-print VRTFILE " <OGRVRTLayer name=\"$inputPDF\">\n";
-print VRTFILE "   <LayerSRS>$coordSys</LayerSRS>\n";
-print VRTFILE "   <SrcDataSource>$inputPDF.csv</SrcDataSource>\n";
-print VRTFILE "   <GeometryType>wkbPolygon</GeometryType>\n";
-print VRTFILE "   <GeometryField>WKT</GeometryField>\n";
-print VRTFILE " </OGRVRTLayer>\n";
-print VRTFILE "</OGRVRTDataSource>\n";
-close VRTFILE;
+    open VRTFILE, ">$inputPDF.vrt";
+    print VRTFILE "<OGRVRTDataSource>\n";
+    print VRTFILE " <OGRVRTLayer name=\"$inputPDF\">\n";
+    print VRTFILE "   <LayerSRS>EPSG:4326</LayerSRS>\n";
+    print VRTFILE "   <SrcDataSource>$inputPDF.csv</SrcDataSource>\n";
+    print VRTFILE "   <GeometryType>wkbPolygon</GeometryType>\n";
+    print VRTFILE "   <GeometryField>WKT</GeometryField>\n";
+    print VRTFILE " </OGRVRTLayer>\n";
+    print VRTFILE "</OGRVRTDataSource>\n";
+    close VRTFILE;
+}
 
 # The VRT virtual source will now appear to gdal warp as a complete 
 # specification of the neatline, with both coordinates *AND* description of
