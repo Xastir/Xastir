@@ -51,6 +51,7 @@ EXTRA_DIST = \
     nwsz_ddmmyy_10.dbfawk \
     nwsz_ddmmyy_10b.dbfawk \
     nwsz_ddmmyy_10c.dbfawk \
+    nwsz_ddmmyy_11.dbfawk \
     nwsz1ddmmyy.dbfawk \
     nwszoddmmyy.dbfawk \
     nwshzddmmyy.dbfawk \
