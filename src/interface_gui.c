@@ -243,6 +243,7 @@ Widget TNC_active_on_startup;
 Widget TNC_transmit_data;
 Widget TNC_device_name_data;
 Widget TNC_radio_port_data; // Used only for Multi-Port TNC's
+Widget TNC_converse_string;
 Widget TNC_comment;
 Widget TNC_unproto1_data;
 Widget TNC_unproto2_data;
@@ -312,6 +313,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(devices[TNC_port].device_name);
+
+    temp_ptr = XmTextFieldGetString(TNC_converse_string);
+    xastir_snprintf(devices[TNC_port].device_converse_string,
+        sizeof(devices[TNC_port].device_converse_string),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    (void)remove_trailing_spaces(devices[TNC_port].device_converse_string);
 
     temp_ptr = XmTextFieldGetString(TNC_comment);
     xastir_snprintf(devices[TNC_port].comment,
@@ -577,7 +587,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
                 setup, setup1, setup2, setup3, setup4,
-                device, comment, speed, speed_box,
+                device, converse, comment, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400;
 #ifndef __LSB__
@@ -771,13 +781,49 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+//        converse = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+        converse = XtVaCreateManagedWidget("Converse CMD:",xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, TNC_active_on_startup,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, TNC_device_name_data,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
+                                      NULL);
+
+        TNC_converse_string = XtVaCreateManagedWidget("Config_TNC comment", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 15,
+                                      XmNwidth, ((15*7)+2),
+                                      XmNmaxLength, 49,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_active_on_startup,
+                                      XmNtopOffset, 2,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, converse,
+                                      XmNleftOffset, 12,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNfontList, fontlist1,
+                                      NULL);
+
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_active_on_startup,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_converse_string,
                                       XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
@@ -1540,6 +1586,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 
             XmTextFieldSetString(TNC_device_name_data,TNC_PORT);
 
+            XmTextFieldSetString(TNC_converse_string,"k");
+
             XmTextFieldSetString(TNC_comment,"");
 
             if (device_type == DEVICE_SERIAL_MKISS_TNC) {
@@ -1608,6 +1656,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
             XmTextFieldSetString(TNC_device_name_data,devices[TNC_port].device_name);
+
+            XmTextFieldSetString(TNC_converse_string,devices[TNC_port].device_converse_string);
 
             XmTextFieldSetString(TNC_comment,devices[TNC_port].comment);
 
@@ -8356,6 +8406,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                     devices[port].device_type=DEVICE_NONE;
                     devices[port].device_name[0] = '\0';
                     devices[port].radio_port[0] = '\0';
+                    devices[port].device_converse_string[0] = '\0';
                     devices[port].device_host_name[0] = '\0';
                     devices[port].device_host_pswd[0] = '\0';
                     devices[port].device_host_filter_string[0] = '\0';

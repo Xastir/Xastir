@@ -34,8 +34,8 @@
 // User configurable text for taking a TNC into converse mode.
 // Uncomment only one of the below two lines.
 //
-// Works for most TNC's, including tnc2-ui
-#define CONVERSE_MODE "k"
+// Works for most TNC's, including tnc2-ui (DEFAULT)
+//#define CONVERSE_MODE "k"
 //
 // Works for Kantronics KPC-2
 //#define CONVERSE_MODE "conv"
@@ -158,6 +158,7 @@ typedef struct {
     char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
     char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password also WX device data type  */
     char   device_host_filter_string[201];        /* host filter string                      */
+    char   device_converse_string[10+1];          /* string used to enter converse mode      */
     char   comment[50];                           /* Local comment or name for port          */
     char   unproto1[50];                          /* unproto path 1 for this port            */
     char   unproto2[50];                          /* unproto path 2 for this port            */

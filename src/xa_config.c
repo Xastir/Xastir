@@ -720,6 +720,14 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
             strncat (name, "RADIO_PORT", sizeof(name) - 1 - strlen(name));
             store_string (fout, name, devices[i].radio_port);
 
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "CONVERSE_CMD", sizeof(name) - 1 - strlen(name));
+            store_string (fout, name, devices[i].device_converse_string);
+
+
 #ifdef HAVE_DB
             
             xastir_snprintf(name,
@@ -1797,6 +1805,18 @@ void load_data_or_default(void) {
             xastir_snprintf(devices[i].radio_port,
                 sizeof(devices[i].radio_port),
                 "0");
+
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "CONVERSE_CMD", sizeof(name) - 1 - strlen(name));
+        if (!get_string (name, devices[i].device_converse_string, sizeof(devices[i].device_converse_string))
+                || (strlen(devices[i].device_converse_string) == 0))
+            xastir_snprintf(devices[i].device_converse_string,
+                sizeof(devices[i].device_converse_string),
+                "k");
+
 
 #ifdef HAVE_DB        
 

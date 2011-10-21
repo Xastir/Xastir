@@ -8740,7 +8740,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 // 
 //                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
 //                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "k");
-                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', CONVERSE_MODE);
+//                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', CONVERSE_MODE);
+                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', devices[port].device_converse_string);
 //fprintf(stderr,"%s\n", header_txt);
  
                 if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
@@ -9645,7 +9646,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     //
 //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
 //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "k");
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', CONVERSE_MODE);
+//                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', CONVERSE_MODE);
+                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', devices[port].device_converse_string);
 
 
 
