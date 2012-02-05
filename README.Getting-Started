@@ -93,9 +93,7 @@ the callsign to disk.
 *) Xastir includes "Shapefile" map capability by default.  Run the
 script:
 
-    "xastir/scripts/get-NWSdata"
-or
-    "/usr/local/lib/xastir/get-NWSdata"
+    "/usr/local/share/xastir/scripts/get-NWSdata"
 
 as root to download/install NOAA Shapefile maps using the "wget"
 utility.  You'll of course need wget installed in order to fetch the
@@ -405,9 +403,10 @@ local Shapefile maps, online street/topo/satellite-image maps,
 weather alerts, and audio alerts.  Optionally you can add
 synthesized speech to the mix.
 
-You'll need to run xastir/scripts/get-NWSdata as root after you do
-the install in order to get the NOAA data files you'll need for the
-weather alerts.  "get-NWSdata" requires "wget" in order to work.
+You'll need to run /usr/local/share/xastir/scripts/get-NWSdata as root
+after you do the install in order to get the NOAA data files you'll
+need for the weather alerts.  "get-NWSdata" requires "wget" in order
+to work.
 
 This is what you'd like to see at the end of the "./configure" run
 (minimum, there may be more "yes" answers):
@@ -577,12 +576,12 @@ at this point.  If you're in command-line Linux/Unix only, Xastir
 won't run.
 
 If you've configured in ShapeLib capability, you'll need to run
-xastir/scripts/get-NWSdata as the root user in order to get the NOAA
-data files you'll need for the weather alerts.  The script requires
-"wget" in order to work.  Run this script periodically (once every
-six months perhaps?) to keep your weather alert maps up-to-date.  If
-you're not in the U.S. or one of it's possessions then you can safely
-ignore this download.
+/usr/local/share/xastir/scripts/get-NWSdata as the root user in order
+to get the NOAA data files you'll need for the weather alerts.  The
+script requires "wget" in order to work.  Run this script periodically
+(once every six months perhaps?) to keep your weather alert maps
+up-to-date.  If you're not in the U.S. or one of it's possessions then
+you can safely ignore this download.
 
 
 Various ways to manipulate Xastir:
@@ -748,9 +747,7 @@ shapefile maps as specified in README.MAPS.  These files must be
 installed into the /usr/local/share/xastir/Counties/ directory.  You
 may use this script to download/install them for you:
     
-    "xastir/scripts/get-NWSdata"
-or
-    "/usr/local/lib/xastir/get-NWSdata"
+    "/usr/local/share/xastir/scripts/get-NWSdata"
 
 which must be run as the root user, and requires "wget" to work.
 
@@ -762,8 +759,9 @@ as regular Xastir maps as well.
 
 Enabling FCC/RAC Callsign Lookup:
 ---------------------------------
-Run the /usr/local/lib/xastir/get-fcc-rac.pl script as root, which will
-download and install the proper databases into the
+
+Run the /usr/local/share/xastir/scripts/get-fcc-rac.pl script as root,
+which will download and install the proper databases into the
 /usr/local/share/xastir/fcc/ directory.  At that point the callsign
 lookup features in the Station Info dialog and in the "Station->Find
 Station" menu option should be functional.
@@ -884,7 +882,7 @@ they do not exist when you start up.
 
 A few executables are installed in /usr/local/bin/.
 
-Scripts are installed in /usr/local/lib/xastir/.
+Scripts are installed in /usr/local/share/xastir/scripts.
 
 Maps are installed in /usr/local/share/xastir/maps/.  Lots of other
 directories are under /usr/local/share/xastir/.

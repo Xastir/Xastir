@@ -3,7 +3,8 @@
 # Copyright (C) 2000-2010  The Xastir Group
 #
 
-pkglib_SCRIPTS = \
+scriptsdir=${pkgdatadir}/scripts
+dist_scripts_DATA = \
     Coordinate.pm \
     coord-convert.pl \
     geopdf2gtiff.pl \
@@ -44,6 +45,4 @@ pkglib_SCRIPTS = \
     xastir-fixcfg.sh \
     xastir-migrate.sh \
     Xastir_tigerpoly.py
-
-EXTRA_DIST = $(pkglib_SCRIPTS)
 

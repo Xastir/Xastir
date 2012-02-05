@@ -681,9 +681,9 @@ and tested.  CVS well be updated once the scripts are proven to work again. ****
           Interface->Disable Transmit:Objects
        b) Put objects where you want.  Set the display symbol as you like it.
        c) run the "object2shp.pl" script in the scripts directory
-           (/usr/local/lib/xastir/object2shp.pl in most installations)
+           (/usr/local/share/xastir/scripts/object2shp.pl in most installations)
           to generate a shapefile:
-            /usr/local/lib/xastir/object2shp.pl ~/.xastir/object.log myshape
+            /usr/local/share/xastir/scripts/object2shp.pl ~/.xastir/object.log myshape
           This requires the four shapelib utilities "dbfcreate", "shpcreate",
           "shpadd" and "dbfadd" as described below.
        d) EXIT XASTIR
