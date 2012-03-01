@@ -93,6 +93,8 @@ The Questions
     4.31 Why don't the maps I installed show up in the Map Chooser?
     4.32 Dialogs are tiny bullet-shaped windows with no handles.  Why?
     4.33 Fedora 12 right-click menus don't work.
+    4.34 What about using Xastir with a TNC-X with built-in USB on a Mac?
+    4.35 Why do I get "Bitmap not found? /usr/share/xastir/symbols/2x2.xbm"
 
 5.  Features
 
@@ -1127,6 +1129,51 @@ The Answers
     It appears to be a bug in the X11 server and can affect OpenMotif
     and Lesstif apps.  I didn't read every comment though.  There were
     definitely many dead-ends as they went along discussing it.
+
+    4.34 What about using Xastir with a TNC-X with built-in USB on a Mac?
+
+    You will need the device drivers from FTDI, downloadable from their website at
+    http://www.ftdichip.com/Drivers/VCP.htm
+
+    Note: the TNC-X packet datarate is fixed at 1200 baud, however the serial
+    communication with the computer is configurable via internal jumpers. It's
+    been observed that setting the com port to 1200 baud results in a deaf TNC-X.
+    Setting the com port to 9600 baud works well, however. 
+
+    4.35 Why do I get "Bitmap not found? /usr/share/xastir/symbols/2x2.xbm"
+
+    The problem is that you probably have previously installed a binary version 
+    of Xastir from your system's repository --- and Linux packages are set up
+    to install files in /usr (e.g. binaries to /usr/bin, libraries to /usr/lib/,
+    and supporting files to /usr/share).  But CVS xastir, like almost all source
+    packages, installs to /usr/local (/usr/local/bin, /usr/local/lib, 
+    /usr/local/share).  When you de-installed your binary package and installed
+    the source version, it removed the /usr/ stuff and installed the files in
+    /usr/local/.
+
+    Your configuration files for Xastir still point to the old locations, and
+    Xastir is confused because files it's expecting aren't there.
+
+    You have two approaches to fix this:
+
+      1) If you have not used Xastir a lot and don't have a whole lot of 
+         custom configurations (map selections, interface properties, etc.) then
+         you can just move your ~/.xastir/config/xastir.cnf file and let Xastir
+         regenerate a default set-up.  Many people here recommend that approach
+         because it's just a matter of one command:  
+
+            mv  .xastir/config/xastir.cnf  .xastir/config/xastir.cnf_old
+
+         But this will blow away all your customizations, so it might not be the
+         best choice.  Note that you can still glean information from the old
+         copy of the config file to help set up the new.
+
+      2) Change all references to "/usr/" in your configuration files to "/usr/local".
+         Most of these will be in ~/.xastir/config/xastir.cnf so it's just a matter
+         of editing that one file and changing them all.  
+
+    It is always an issue when you switch from a pre-compiled linux package to
+    a source build.
 
 5.  Features
 
