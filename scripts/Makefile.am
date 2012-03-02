@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2000-2010  The Xastir Group
+# Copyright (C) 2000-2012  The Xastir Group
 #
 
 scriptsdir=${pkgdatadir}/scripts
@@ -8,6 +8,7 @@ dist_scripts_DATA = \
     Coordinate.pm \
     coord-convert.pl \
     geopdf2gtiff.pl \
+    get-BOMdata \
     get-fcc-rac.pl \
     get-gnis \
     get-pop \

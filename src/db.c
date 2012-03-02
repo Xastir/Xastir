@@ -3,7 +3,7 @@
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
- * Copyright (C) 2000-2010  The Xastir Group
+ * Copyright (C) 2000-2012  The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13196,6 +13196,13 @@ int data_add(int type,
                 sizeof(p_station->origin),
                 "%s",
                 origin);           // to keep them separated from calls
+
+        if (origin != NULL && strcmp(origin,"INET-BOM") == 0)  // special treatment for BOM (AU)
+            xastir_snprintf(p_station->origin,
+                sizeof(p_station->origin),
+                "%s",
+                origin);           // to keep them separated from calls
+
         if (origin == NULL || origin[0] == '\0')        // normal call
             p_station->origin[0] = '\0';                // undefine possible former object with same name
 
@@ -15890,6 +15897,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     // :BLNX     :____0-67____             Announcement
     // :NWS-xxxxx:____0-67____             NWS Service Bulletin
     // :NWS_xxxxx:____0-67____             NWS Service Bulletin
+    // :BOM-xxxxx:____0-67____             BOM Service Bulletin (AU Wx)
+    // :BOM_xxxxx:____0-67____             BOM Service Bulletin (AU Wx)
     // :xxxxxxxxx:ackn1-5n               + ack
     // :xxxxxxxxx:rejn1-5n               + rej
     // :xxxxxxxxx:____0-67____{n1-5n     + message
@@ -16517,7 +16526,9 @@ else {
     //--------------------------------------------------------------------------
     if (!done
             && ( (strncmp(addr,"NWS-",4) == 0)          // NWS weather alert
-              || (strncmp(addr,"NWS_",4) == 0) ) ) {    // NWS weather alert compressed
+              || (strncmp(addr,"NWS_",4) == 0)          // NWS weather alert compressed
+              || (strncmp(addr,"BOM-",4) == 0)          // BOM (AU) weather alert 
+              || (strncmp(addr,"BOM_",4) == 0) ) ) {    // BOM (AU) weather alert compressed
 
         // could have sort of line number
         //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);

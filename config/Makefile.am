@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2000-2010  The Xastir Group
+# Copyright (C) 2000-2012  The Xastir Group
 #
 
 configdir = ${pkgdatadir}/config
@@ -98,7 +98,13 @@ EXTRA_DIST = \
     cousub00.dbfawk \
     edge.dbfawk \
     featnames.dbfawk \
-    pointlm.dbfawk
+    pointlm.dbfawk \
+    gfe_public_weather.dbfawk \
+    gfe_metro_areas.dbfawk \
+    gfe_fire_weather.dbfawk \
+    gfe_coastal_waters_warnings.dbfawk \
+    gfe_coastal_waters.dbfawk
+
 
 config_DATA = ${EXTRA_DIST}
 

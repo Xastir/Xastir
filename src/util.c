@@ -3,7 +3,7 @@
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
- * Copyright (C) 2000-2010  The Xastir Group
+ * Copyright (C) 2000-2012  The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -4517,7 +4517,7 @@ int valid_call(char *call) {
  *  length and printable.
  */
 int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
-    int len, i, ok;
+    int len, i, ok, oknws, okbom;
     char *ptr;
     
     len = (int)strlen(name);
@@ -4538,24 +4538,43 @@ int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
     }
 
     // Modifies "origin" if a match found
-    //
-    if (len == 6) {                     // check for NWS
+    if (len == 6) {                     // check for NWS or BOM
         ok = 1;
+        oknws = 0;
+        okbom = 0;
         for (i=0;i<6;i++)
             if (name[i] <'A' || name[i] > 'Z')  // 6 uppercase characters
                 ok = 0;
         ok = ok && (info != NULL);      // check if we can test info
         if (ok) {
             ptr = strstr(info,":NWS-"); // "NWS-" in info field (non-compressed alert)
-            ok = (ptr != NULL);
+            oknws = (ptr != NULL);     
 
-            if (!ok) {
+            if (!oknws) {
                 ptr = strstr(info,":NWS_"); // "NWS_" in info field (compressed alert)
-                ok = (ptr != NULL);
+                oknws = (ptr != NULL);     
+            }
+      
+            // If we've got here, it's not an NWS message, let's see if its a BOM message
+            if (!oknws) {
+                ptr = strstr(info,":BOM-"); // "BOM-" in info field (compressed alert)
+                okbom = (ptr != NULL);
+            }
+
+            if (!okbom) {
+                ptr = strstr(info,":BOM_"); // "BOM_" in info field (compressed alert)
+                okbom = (ptr != NULL);
             }
         }
-        if (ok) {
+
+        // Depending on whether we had an NWS or BOM message, se the origin appropriately
+        if (oknws) {
             xastir_snprintf(origin, origin_size, "INET-NWS");
+            origin[8] = '\0';
+            return(1);                      // weather alerts
+        }
+        if (okbom) {
+            xastir_snprintf(origin, origin_size, "INET-BOM");
             origin[8] = '\0';
             return(1);                      // weather alerts
         }

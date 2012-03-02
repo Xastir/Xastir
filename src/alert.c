@@ -3,7 +3,7 @@
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
- * Copyright (C) 2000-2010  The Xastir Group
+ * Copyright (C) 2000-2012  The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1017,7 +1017,6 @@ int alert_on_screen(void) {
 // BGMWSW>APRS::NWS-ADVIS:180500z,WINTER_WEATHER,NY_Z015,NY_Z016,NY_Z017,NY_Z022,NY_Z023, {HKYAA
 // AMAWSW>APRS::NWS-WARN :180400z,WINTER_STORM,OK_Z001,OK_Z002,TX_Z001,TX_Z002,TX_Z003, {HLGBA
 //
-//
 // New compressed-mode weather alert packets:
 //
 // LZKNPW>APRS::NWS-ADVIS:221000z,WINTER_STORM,ARZ003>007-012>016-021>025-030>034-037>047-052>057-062>069{LLSAA
@@ -1041,6 +1040,22 @@ int alert_on_screen(void) {
 //
 // We'll create and fill in "entry", then copy various "titles" into
 // is such as "ID_C001", then insert that alert into the system.
+//
+//
+// VK2XJG - November 2011:
+// Here are some examples of strings from the new WXSVR-AU for the Aussie Bureau of Meteorology (BOM) alerts:
+//
+// NECMWW>APRS::BOM_WARN :141300z,WIND,TAS_MW002>003-005>007-009 {D55AG
+// YKPMWW>APRS::BOM_ADVIS:131330z,WIND,SA_MW005 {D5aAA
+// 
+// For the BOM alerts note that the STATE portion of the zone can be two or three characters - valid state
+// prefixes are "NSW,VIC,QLD,TAS,NT,WA,SA". The two characters following the underscore denote the shapefile to use
+// These will be one of "CW,MW,PW,FW or ME".
+//
+// WXSVR-AU also does NOT strip leading zeros from the zone strings, however the existing NWS code allows for this, so
+// it should be supported if WXSVR-AU strips the zeros in the future.
+//
+//
 //
 #define TITLE_SIZE 64
 void alert_build_list(Message *fill) {
@@ -1560,6 +1575,361 @@ if (debug_level & 2)
 // End of compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
 
+        // Australian Buerau of Meeorology alerts (BOM)
+        // Geoff VK2XJG
+
+        // Check for "BOM_" in the call_sign field.  
+        // WXSVR-AU delivers messages in this format, keeping the protocol as close to
+        // the NWS WXSVR as possible.
+        // Underline signifies compressed alert format.  Dash signifies
+        // non-compressed format, although this has not been implemented on the server.
+
+        if (       (strncmp(fill->call_sign,"BOM_",4) == 0)
+                || (strncmp(fill->call_sign,"BOM-",4) == 0) ) {
+
+            char compressed_wx[512];
+            char *ptr;
+
+/////////////////////////////////////////////////////////////////////
+// Compressed weather alert (BOM) special code
+/////////////////////////////////////////////////////////////////////
+
+            compressed_wx_packet++; // Set the flag
+
+//fprintf(stderr, "Found compressed alert packet via BOM_!\n");
+
+//fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
+//fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
+
+            // Create a new weather alert for each of these and then
+            // call this function on each one?  Seems like it might
+            // work fine if we watch out for global variables.
+            // Another method would be to create an incoming message
+            // for each one and add it to the message queue, or just
+            // a really long new message and add it to the queue,
+            // in which case we'd exit from this routine as soon as
+            // it was submitted.
+            ret = sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
+                entry.activity,
+                entry.alert_tag,
+                compressed_wx);     // Stick the long string in here
+
+            if (ret != 3) {
+                fprintf(stderr,"sscanf parsed %d/3 values in alert.c\n", ret);
+                compressed_wx[0] = '\0';  // Remove stale compressed alerts.
+                compressed_wx_packet = 0; //Clear flag in error condition.
+            }
+
+            compressed_wx[255] = '\0';
+
+//fprintf(stderr,"Line:%s\n",compressed_wx);
+
+            // Snag alpha characters (should be five) at the start
+            // of the string.  Use those until we hit more alpha
+            // characters.  First two/three characters of each 5-letter
+            // alpha group are the state, last two characters are the
+            // zone/county/marine-zone indicator.
+
+// Need to be very careful here to validate the letters/numbers, and
+// to not run off the end of the string.  Need more code here to do
+// this validation.
+
+
+            // Scan through entire string
+            ptr = compressed_wx;
+            while (ptr < (compressed_wx + strlen(compressed_wx))) {
+                char prefix[7];
+                char suffix[4];
+                char temp_suffix[4];
+                char ending[4];
+                int iterations = 0;
+
+
+                // Snag the ALPHA portion
+                xastir_snprintf(prefix,
+                    sizeof(prefix),
+                    "%s",
+                    ptr);
+                ptr += 3;
+                // Handle a 2 letter state abbreviation (SA/WA/NT)
+                if (prefix[2] == '_' ) {
+                    prefix[3] = ptr[0];
+                    prefix[5] = '\0';   // Terminate the string
+                    ptr += 3;
+                } 
+                // All other cases are 3 letter states (NSW/VIC/TAS/QLD)
+                else {
+                    prefix[3] = ptr[0];
+                    prefix[6] = '\0';   // Terminate the string
+                    ptr += 3;
+                }
+
+                // prefix should now contain something like "TAS_CW" or "SA_PW"
+
+                // Snag the NUMERIC portion.  Note that the field
+                // width can vary between 1 and 3.  The leading
+                // zeroes have been removed.
+                xastir_snprintf(temp_suffix,
+                    sizeof(temp_suffix),
+                    "%s",
+                    ptr);
+
+                temp_suffix[3] = '\0';   // Terminate the string
+                if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
+                    temp_suffix[1] = '\0';
+                    ptr += 1;
+                }
+                else if (temp_suffix[1] != '\0' && 
+                         (temp_suffix[2] == '-' || temp_suffix[2] == '>')) {
+                    temp_suffix[2] = '\0';
+                    ptr += 2;
+                }
+                else {
+                    ptr += 3;
+                }
+
+                // temp_suffix should now contain something like
+                // "039" or "45" or "2".  Add leading zeroes to give
+                // "suffix" a length of 3.
+                xastir_snprintf(suffix,
+                    sizeof(suffix),
+                    "000");
+                switch (strlen(temp_suffix)) {
+                    case 1: // Copy one char across
+                        suffix[2] = temp_suffix[0];
+                        break;
+                    case 2: // Copy two chars across
+                        suffix[1] = temp_suffix[0];
+                        suffix[2] = temp_suffix[1];
+                        break;
+                    case 3: // Copy all three chars across
+                        xastir_snprintf(suffix,
+                            sizeof(suffix),
+                            "%s",
+                            temp_suffix);
+                        break;
+                }
+                // Make sure suffix is terminated properly
+                suffix[3] = '\0';
+
+// We have our first zone (of this loop) extracted!
+if (debug_level & 2)
+    fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+
+                // Add it to our zone string.  In this case we know
+                // that the lengths of the strings we're working
+                // with are quite short.  Little danger of
+                // overrunning our destination string.
+                strncat(uncompressed_wx,
+                    ",",
+                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                strncat(uncompressed_wx,
+                    prefix,
+                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                strncat(uncompressed_wx,
+                    suffix,
+                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                // Terminate it every time
+                uncompressed_wx[9999] = '\0';
+
+if (debug_level & 2)
+    fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
+
+                // Here we keep looping until we hit another alpha
+                // portion.  We need to look at the field separator
+                // to determine whether we have another separate
+                // field coming up or a range to enumerate.
+                while ( (ptr < (compressed_wx + strlen(compressed_wx)))
+                        && ( is_num_chr(ptr[1]) ) ) {
+
+                    iterations++;
+
+                    // Break out of this loop if we don't find an
+                    // alpha character fairly quickly.  That way the
+                    // Xastir main thread can't hang in this loop
+                    // forever if the input string is malformed.
+                    if (iterations > 30)
+                        break;
+
+                    // Look for '>' or '-' character.  If former, we
+                    // have a numeric sequence to ennumerate.  If the
+                    // latter, we either have another zone number or
+                    // another prefix coming up.
+                    if (ptr[0] == '>' || ptr[0] == '<') { // Numeric zone sequence
+                        int start_number;
+                        int end_number;
+                        int kk;
+
+
+                        ptr++;  // Skip past the '>' or '<' characters
+
+                        // Snag the NUMERIC portion.  May be between
+                        // 1 and three digits long.
+                        xastir_snprintf(ending,
+                            sizeof(ending),
+                            "%s",
+                            ptr);
+
+                        // Terminate the string and advance the
+                        // pointer past it.
+                        if (!is_num_chr(ending[0])) {
+                            // We have a problem, 'cuz we didn't
+                            // find at least one number.  Packet is
+                            // badly formatted.
+                            return;
+                        }
+                        else if (!is_num_chr(ending[1])) {
+                            ending[1] = '\0';
+                            ptr++;
+                        }
+                        else if (!is_num_chr(ending[2])) {
+                            ending[2] = '\0';
+                            ptr+=2;
+                        }
+                        else {
+                            ending[3] = '\0';
+                            ptr+=3;
+                        }
+                        
+                        // ending should now contain something like
+                        // "046" or "35" or "2"
+if (debug_level & 2)
+    fprintf(stderr,"Ending:%s\n",ending);
+
+                        start_number = (int)atoi(suffix);
+                        end_number = (int)atoi(ending);
+                        for ( kk=start_number+1; kk<=end_number; kk++) {
+                            xastir_snprintf(suffix,4,"%03d",kk);
+
+if (debug_level & 2)
+    fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
+
+                            // And another zone... Ennumerate
+                            // through the sequence, adding each
+                            // new zone to our zone string.  In this
+                            // case we know that the lengths of the
+                            // strings we're working with are quite
+                            // short.  Little danger of overrunning
+                            // our destination string.
+                            strncat(uncompressed_wx,
+                                ",",
+                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                            strncat(uncompressed_wx,
+                                prefix,
+                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                            strncat(uncompressed_wx,
+                                suffix,
+                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                            // Terminate it every time
+                            uncompressed_wx[9999] = '\0';
+                        }
+                    }
+
+                    // Wasn't a '>' character, so check for a '-'
+                    else if (ptr[0] == '-') {
+                        // New zone number, not a numeric sequence.
+
+                        ptr++;  // Skip past the '-' character
+
+                        if ( is_num_chr(ptr[0]) ) {
+                            // Found another number.  Use the prefix
+                            // stored from last time.
+
+                            // Snag the NUMERIC portion.  Note that the field
+                            // width can vary between 1 and 3.  The leading
+                            // zeroes have been removed.
+                            xastir_snprintf(temp_suffix,
+                                sizeof(temp_suffix),
+                                "%s",
+                                ptr);
+
+                            // Terminate the string and advance the
+                            // pointer past it.
+                            if (!is_num_chr(temp_suffix[0])) {
+                                // We have a problem, 'cuz we didn't
+                                // find at least one number.  Packet is
+                                // badly formatted.
+                                return;
+                            }
+                            else if (!is_num_chr(temp_suffix[1])) {
+                                temp_suffix[1] = '\0';
+                                ptr++;
+                            }
+                            else if (!is_num_chr(temp_suffix[2])) {
+                                temp_suffix[2] = '\0';
+                                ptr+=2;
+                            }
+                            else {
+                                temp_suffix[3] = '\0';
+                                ptr+=3;
+                            }
+
+                            // temp_suffix should now contain something like
+                            // "039" or "45" or "2".  Add leading zeroes to give
+                            // "suffix" a length of 3.
+                            xastir_snprintf(suffix,
+                                sizeof(suffix),
+                                "000");
+                            switch (strlen(temp_suffix)) {
+                                case 1: // Copy one char across
+                                    suffix[2] = temp_suffix[0];
+                                    break;
+                                case 2: // Copy two chars across
+                                    suffix[1] = temp_suffix[0];
+                                    suffix[2] = temp_suffix[1];
+                                                break;
+                                case 3: // Copy all three chars across
+                                    xastir_snprintf(suffix,
+                                        sizeof(suffix),
+                                        "%s",
+                                        temp_suffix);
+                                    break;
+                            }
+
+if (debug_level & 2)
+    fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+
+                            // And another zone...
+                            // Add it to our zone string.  In this
+                            // case we know that the lengths of the
+                            // strings we're working with are quite
+                            // short.  Little danger of overrunning
+                            // our destination string.
+                            strncat(uncompressed_wx,
+                                ",",
+                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                            strncat(uncompressed_wx,
+                                prefix,
+                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                            strncat(uncompressed_wx,
+                                suffix,
+                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                            // Terminate it every time
+                            uncompressed_wx[9999] = '\0';
+                        }
+                        else {  // New prefix (not a number)
+                            // Start at the top of the outer loop again
+                        }
+                    }
+                }
+                // Skip past '-' character, if any, so that we can
+                // get to the next prefix
+                // RZG:Added the ptr check, so we don't read a byte off the end
+                if ( (ptr < (compressed_wx + strlen(compressed_wx))) && (ptr[0] == '-') ) {
+                    ptr++;
+                }
+            }
+
+            if (debug_level & 2)
+                fprintf(stderr,"Uncompressed: %s\n",
+                    uncompressed_wx);
+        }
+/////////////////////////////////////////////////////////////////////
+// End of compressed weather (BOM) alert special code
+/////////////////////////////////////////////////////////////////////
+
+
+
         if (debug_level & 2)
             fprintf(stderr,"3\n");
 
@@ -1813,6 +2183,7 @@ if (debug_level & 2)
                     entry.title[3] = 'F';
             }
             // Look for a similar alert
+
 
 // We need some improvements here.  We compare these fields:
 //

@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Script to retrieve BOM data files. 
+#
+# Originally written 2006/03/07 by Steven, WM5Z, and Curt, WE7U.
+# Modified from original get-NWSdata script by Geoff VK2XJG.
+#
+# Copyright (C) 2000-2012  The Xastir Group
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+# See README.MAPS for a bit more information on the program.
+#
+#
+# NOTE:  Run this script as root.
+#
+# MAINTAINERS:  Go here to find out what the latest versions are:
+# <ftp://ftp.bom.gov.au/anon/home/adfd/spatial/>
+
+
+FILE1="gfe_public_weather"           # BOM Spatial: Public Warning Zone Boundaries
+FILE2="gfe_metro_areas"              # BOM Spatial: Metropolitan Warning Area Boundaries
+FILE3="gfe_coastal_waters"           # BOM Spatial: Coastal Forecast Marine Zones
+FILE4="gfe_coastal_waters_warnings"  # BOM Spatial: Coastal Warning Zones
+FILE5="gfe_local_effects"            # BOM Spatial: Local Effects Areas
+FILE6="gfe_fire_weather"             # BOM Spatial: Fire Weather Zone Boundaries
+FILE7="LGA08aAust"                   # Local Government Area Boundaries
+
+x=`dirname $0`
+. $x/values
+cd ${prefix}/share/xastir/Counties
+
+
+# Remove any old zip files hanging around in this directory
+#
+rm -f *.zip 2>&1 >/dev/null
+
+
+# Fetch new copies, unzip into place, delete archive.
+#
+#
+DIR=wsom
+for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6; do
+if [ -e $d.shp ]
+  then
+    echo "Already have $d shapefile, skipping..."
+  else
+    # Remove possible older copies
+    cut=`echo $d|cut -c1-30 -`
+    rm -f $cut*.shx $cut*.shp $cut*.dbf $cut*.prj $cut*.zip 2>&1 >/dev/null
+    wget ftp://ftp.bom.gov.au/anon/home/adfd/spatial/$d.zip
+    unzip $d.zip
+    rm -f *.zip
+  
+    mv $d*.shx $d.shx 2>&1 >/dev/null
+    mv $d*.shp $d.shp 2>&1 >/dev/null
+    mv $d*.dbf $d.dbf 2>&1 >/dev/null
+    mv $d*.prj $d.prj 2>&1 >/dev/null
+    mv $d*.sbx $d.sbx 2>&1 >/dev/null
+    mv $d*.sbn $d.sbn 2>&1 >/dev/null
+
+fi
+done
+
+DIR=county
+for d in $FILE7; do
+if [ -e $d.shp ]
+  then
+    echo "Already have $d shapefile, skipping..."
+  else
+    # Remove possible older copies
+    cut=`echo $d|cut -c1-2 -`
+    rm -f $cut*.shx $cut*.shp $cut*.dbf $cut*.prj $cut*.zip 2>&1 >/dev/null
+    wget http://wxsvr.aprs.net.au/shapefiles/$d\_shape.zip
+    unzip $d\_shape.zip
+    rm -f *.zip
+fi
+done
+
+
