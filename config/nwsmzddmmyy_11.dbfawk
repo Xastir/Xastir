@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2003-2010  The Xastir Group
+# Copyright (C) 2003-2012  The Xastir Group
 #
 # This dbfawk file is used to map arbitrary dbf data that accompanies
 # a shapefile into Xastir canoncical values of:
@@ -26,7 +26,7 @@
 BEGIN {
 # dbfinfo is the "signature" of the dbf file listing the column names in order.
 # dbfinfo should match the dbf file that we say this dbfawk file goes with.
-dbfinfo="ID:WFO:GL_WFO:LON:LAT:NAME:AJOIN0:AJOIN1";
+dbfinfo="ID:WFO:GL_WFO:NAME:AJOIN0:AJOIN1:LON:LAT";
 # dbffields is which of the above fields we actually want to look at.
 # Note that the order we list these is important since we are appending the
 # word County or Parish depending on what state the county is in.
