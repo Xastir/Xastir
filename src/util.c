@@ -4686,6 +4686,19 @@ char *to_upper(char *data) {
 
 
 
+char *to_lower(char *data) {
+    int i;
+
+    for(i=strlen(data)-1;i>=0;i--)
+        if(isupper((int)data[i]))
+            data[i]=tolower((int)data[i]);
+
+    return(data);
+}
+
+
+
+
 
 int is_num_chr(char ch) {
     return((int)isdigit(ch));

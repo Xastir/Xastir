@@ -135,6 +135,7 @@ extern char echo_digis[6][9+1];
 extern void upd_echo(char *path);
 
 extern char *to_upper(char *data);
+extern char *to_lower(char *data);
 extern int  is_num_chr(char ch);
 extern int  is_num_or_sp(char ch);
 extern int  is_xnum_or_dash(char *data, int max);

@@ -1640,6 +1640,9 @@ void draw_shapefile_map (Widget w,
         unsigned int _w, _h;
         int _xh, _yh;
         int ret_val;
+        FILE *alert_fp = NULL;
+        char xbm_filename[MAX_FILENAME];
+        
 
         // This GC is used for weather alerts (writing to the
         // pixmap: pixmap_alerts) and _was_ used for beam_heading
@@ -1668,23 +1671,52 @@ void draw_shapefile_map (Widget w,
             GXset           1                       (Don't use)
         */
 
-        if (strncasecmp(alert->alert_tag, "FLOOD", 5) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "flood.xbm");
-        else if (strncasecmp(alert->alert_tag, "SNOW", 4) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "snow.xbm");
-        else if (strncasecmp(alert->alert_tag, "TORNDO", 6) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "tornado.xbm");
-        else if (strncasecmp(alert->alert_tag, "WIND", 4) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "wind.xbm");
-        else if (strncasecmp(alert->alert_tag, "WINTER_STORM", 12) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "wntr_strm.xbm");
-        else if (strncasecmp(alert->alert_tag, "WINTER_WEATHER", 14) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "winter_wx.xbm");
-        else if (strncasecmp(alert->alert_tag, "RED_FLAG", 8) == 0)
-            xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "red_flag.xbm");
-        else
+    
+        // Note that we can define more alert files for other countries.  They just need to match
+        // the alert text that comes along in the NWS packet.
+        // Current alert files we have defined:
+        //      winter_storm.xbm *
+        //      snow.xbm
+        //      winter_weather.xbm *
+        //      flood.xbm
+        //      torndo.xbm *
+        //      red_flag.xbm
+        //      wind.xbm
+        //      alert.xbm (Used if no match to another filename)
+
+        // Alert texts we receive:
+        //      FLOOD
+        //      SNOW
+        //      TORNDO
+        //      WIND
+        //      WINTER_STORM
+        //      WINTER_WEATHER
+        //      RED_FLAG
+        //      SVRTSM (no file defined for this yet)
+        //      Many others.
+
+        // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
+        // to detect whether we have a matching filename for our alert text.
+        xastir_snprintf(xbm_filename, sizeof(xbm_filename), "%s", alert->alert_tag);
+
+        // Convert the filename to lower-case
+        to_lower(xbm_filename);
+
+        // Construct the complete path/filename
+        xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s.xbm", SYMBOLS_DIR, xbm_filename);
+
+        // Try opening the file
+        alert_fp = fopen(xbm_path, "rb");
+        if (alert_fp == NULL) {
+            // Failed to find a matching file:  Instead use the "alert.xbm" file
             xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
+        } else {
+            // Success:  Close the file pointer
+            fclose(alert_fp);
+        }
+
         /* XXX - need to add SVRTSM */
+
 
         (void)XSetLineAttributes(XtDisplay(w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
         XFreePixmap(XtDisplay(w), pixmap_wx_stipple);
