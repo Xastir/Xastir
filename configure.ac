@@ -382,7 +382,7 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
  AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
 
- if  [ $use_proj = "yes" ]
+ if  test  $use_proj = "yes" 
  then
    CONTSHP="shpcentrd shpproj shpdata shpwkb"
  fi
