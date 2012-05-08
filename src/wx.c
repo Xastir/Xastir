@@ -2939,10 +2939,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
               
               
               if (debug_level & 1)
-                fprintf(stdout,"Davis APRS DataLogger Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rt-%s,h-%s,ap-%s,station-%s\n",
+                fprintf(stdout,"Davis APRS DataLogger Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rp-%s,rP-%s,rt-%s,h-%s,ap-%s,station-%s\n",
                         
                         weather->wx_course,weather->wx_speed,weather->wx_gust,
-                        weather->wx_temp, weather->wx_rain,
+                        weather->wx_temp, weather->wx_rain,weather->wx_prec_24,
+                        weather->wx_prec_00,
                         weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
                         weather->wx_station);
             }
