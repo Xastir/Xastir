@@ -6087,31 +6087,31 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                     // Note - Need to cater for both 2 and 3 character state designators
                     // Shapefile filenames are static - there is no datestamp in the filename.
                     if ((strncasecmp(&alert->title[4],"MW",2) == 0) || (strncasecmp(&alert->title[3],"MW",2) == 0)) {
-                        fprintf(stderr,"%c:BOM Coastal Waters file\n",alert->title[4]);
+                        //fprintf(stderr,"%c:BOM Coastal Waters file\n",alert->title[4]);
                         xastir_snprintf(alert->filename,
                             sizeof(alert->filename),
                             "gfe_coastal_waters.shp");
                     }
                     else if ((strncasecmp(&alert->title[4],"CW",2) == 0) || (strncasecmp(&alert->title[3],"CW",2) == 0)) {
-                        fprintf(stderr,"%c:BOM Coastal waters warning file\n",alert->title[3]);
+                        //fprintf(stderr,"%c:BOM Coastal waters warning file\n",alert->title[3]);
                         xastir_snprintf(alert->filename,
                             sizeof(alert->filename),
                             "gfe_coastal_waters_warnings.shp");
                     }
                     else if ((strncasecmp(&alert->title[4],"PW",2) == 0) || (strncasecmp(&alert->title[3],"PW",2) == 0)) {
-                        fprintf(stderr,"%c:BOM Public Weather file\n",alert->title[3]);
+                        //fprintf(stderr,"%c:BOM Public Weather file\n",alert->title[3]);
                          xastir_snprintf(alert->filename,
                             sizeof(alert->filename),
                             "gfe_public_weather.shp");
                     }
                     else if ((strncasecmp(&alert->title[4],"FW",2) == 0) || (strncasecmp(&alert->title[3],"FW",2) == 0)) {
-                        fprintf(stderr,"%c:BOM Fire Weather file\n",alert->title[3]);
+                        //fprintf(stderr,"%c:BOM Fire Weather file\n",alert->title[3]);
                          xastir_snprintf(alert->filename,
                             sizeof(alert->filename),
                             "gfe_fire_weather.shp");
                     }
                     else if ((strncasecmp(&alert->title[4],"ME",2) == 0) || (strncasecmp(&alert->title[3],"ME",2) == 0)) {
-                        fprintf(stderr,"%c:BOM Metro Areas file\n",alert->title[3]);
+                        //fprintf(stderr,"%c:BOM Metro Areas file\n",alert->title[3]);
                          xastir_snprintf(alert->filename,
                             sizeof(alert->filename),
                             "gfe_metro_areas.shp");

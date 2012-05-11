@@ -7373,7 +7373,7 @@ static void extract_multipoints(DataRow *p_station,
         p_station->type = *(p+3);
 
         // The fourth character indicates the scale of the coordinates that
-        // follow. It may range from '!' to 'z'. The value represents the
+        // follow. It may range from '!' to '|' (124). The value represents the
         // unit of measure (1, 0.1, 0.001, etc., in degrees) used in the offsets.
         //
         // Use the following formula to convert the char to the value:
@@ -7386,7 +7386,7 @@ static void extract_multipoints(DataRow *p_station,
 
         p = p + 4;
 
-        if (*p < '!' || *p > 'z') {
+        if (*p < '!' || *p > '|') {
             fprintf(stderr,"extract_multipoints: invalid scale character %d\n", *p);
             ok = 0; // Failure
         }
