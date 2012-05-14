@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
       if (sigs) {
 	si = dbfawk_find_sig(sigs,sig,dfile);
 	if (!si)
-	  die("No mathing dbfawk signature found");
+	  die("No matching dbfawk signature found");
 	rs = si->prog;
       }
       if (awk_compile_program(symtbl,rs) < 0) {
