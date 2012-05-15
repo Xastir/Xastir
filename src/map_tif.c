@@ -93,7 +93,7 @@ extern int mag;
 
 // Needed for GTIFProj4FromLatLong() replacement below
 #ifdef HAVE_LIBGDAL
-#  include "projects.h"
+#  include "proj_api.h"
 #endif  // HAVE_LIBGDAL
 
 
@@ -378,7 +378,7 @@ int my_GTIFProj4FromLatLong( GTIFDefn * psDefn,
                              double *padfY ) {
 
     char    *pszProjection;
-    PJ      *psPJ;
+    projPJ      psPJ;
     int     i;
 
 // --------------------------------------------------------------------
