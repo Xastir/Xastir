@@ -2815,14 +2815,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_station,0,MAX_WXSTATION);
 			
             if (sscanf((char *)data,
-                       "%*27s%3s/%3sg%3st%3sr%3sp%3sP%3sh%2sb%5s.DsVP",
+                       "%*27s%3s/%3sg%3st%3sr%3sp%3sP%*3sh%2sb%5s.DsVP",
                        weather->wx_course,
                        weather->wx_speed,
                        weather->wx_gust,
                        weather->wx_temp,
                        weather->wx_rain,
-                       weather->wx_prec_24,
-                       weather->wx_prec_00,
+                       weather->wx_rain_total,
                        weather->wx_hum,
                        weather->wx_baro) == 9){
               // then we got all the data out of the packet... now process
@@ -2832,8 +2831,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
               weather->wx_gust[3]='\0';
               weather->wx_temp[3]='\0';
               weather->wx_rain[3]='\0';
-              weather->wx_prec_24[3]='\0';
-              weather->wx_prec_00[3]='\0';
+              weather->wx_rain_total[3]='\0';
               weather->wx_hum[2]='\0';
               weather->wx_baro[6]='\0';
 
@@ -2939,11 +2937,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
               
               
               if (debug_level & 1)
-                fprintf(stdout,"Davis APRS DataLogger Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rp-%s,rP-%s,rt-%s,h-%s,ap-%s,station-%s\n",
+                fprintf(stdout,"Davis APRS DataLogger Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rt-%s,h-%s,ap-%s,station-%s\n",
                         
                         weather->wx_course,weather->wx_speed,weather->wx_gust,
-                        weather->wx_temp, weather->wx_rain,weather->wx_prec_24,
-                        weather->wx_prec_00,
+                        weather->wx_temp, weather->wx_rain,
                         weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
                         weather->wx_station);
             }
