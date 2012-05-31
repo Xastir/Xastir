@@ -2823,7 +2823,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                        weather->wx_rain,
                        weather->wx_rain_total,
                        weather->wx_hum,
-                       weather->wx_baro) == 9){
+                       weather->wx_baro) == 8){
               // then we got all the data out of the packet... now process
               // First null-terminate all the strings:
               weather->wx_course[3]='\0';
