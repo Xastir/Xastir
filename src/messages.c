@@ -302,8 +302,8 @@ int check_popup_window(char *from_call_sign, int group) {
 
 //fprintf(stderr,"\tcheck_popup_window()\n");
 
-    ret =- 1;
-    found =- 1;
+    ret = -1;
+    found = -1;
 
 begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window" );
 
@@ -345,7 +345,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window" 
 
 begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2" );
 
-        i=-1;
+        i= -1;
         for (j=0; j<MAX_MESSAGE_WINDOWS; j++) {
             if (!mw[j].send_message_dialog) {
                 i=j;
@@ -355,7 +355,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window
 
 end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2" );
 
-        if (i!=-1) {
+        if (i!= -1) {
 
             if (group == 1) {
                 temp1[0] = '*';
@@ -1369,7 +1369,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
     //lowest=100000;
     // Highest Base-90 2-char string
     xastir_snprintf(lowest,sizeof(lowest),"zz");
-    found=-1;
+    found= -1;
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
 
@@ -1414,7 +1414,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
                             }
                         }
                         // Release the next message in the queue for transmission
-                        if (found!=-1) {
+                        if (found!= -1) {
                             message_pool[found].wait_on_first_ack=0;
                         }
                         else {

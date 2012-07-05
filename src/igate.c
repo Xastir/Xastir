@@ -1196,7 +1196,7 @@ int check_NWS_stations(char *call) {
             if (strncasecmp(call, NWS_station_data[i].call, length)==0) {
 
                 ok=1; // match found 
-                if (debug_level && 1024) {
+                if (debug_level & 1024) {
                     fprintf(stderr,"NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
                 }
             }
