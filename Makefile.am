@@ -101,7 +101,7 @@ OSM_cloudmade_999.geo: OSM_template
 # Use tiles for these maps
 OSM_tiled_cycle.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
-	    -e's!^#URL tileURL!URL http://andy.sandbox.cloudmade.com/tiles/cycle/!' \
+	    -e's!^#URL tileURL!URL http://tile.opencyclemap.org/cycle/!' \
 	    -e 's/-STYLE/-cycle/' \
 	    < $(top_srcdir)/OSM_template >$@
 
