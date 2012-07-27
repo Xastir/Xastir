@@ -8736,11 +8736,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 // doesn't accept "conv" but does accept the 'k'
                 // command.  A Kantronics KPC-2 v2.71 TNC accepts
                 // the "conv" command but not the 'k' command.
-                // Figures!
+                // Figures!  The  choice of whether to send "k" or "conv"
+                // is made by the user in the Serial TNC interface properties
+                // dialog.  Older versions of Xastir had this hardcoded here.
                 // 
-//                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
-//                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "k");
-//                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', CONVERSE_MODE);
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', devices[port].device_converse_string);
 //fprintf(stderr,"%s\n", header_txt);
  
