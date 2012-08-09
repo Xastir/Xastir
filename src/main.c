@@ -11867,7 +11867,7 @@ fprintf(stderr,"main, initializing connections");
             if ( my_position_valid
                     && (   transmit_now
                         || (emergency_beacon && (current_time > (posit_last_time + 60) ) )
-                        || (current_time > posit_next_time) ) ) {
+                        || (current_time > posit_next_time && POSIT_rate) ) ) {
 
                 //fprintf(stderr,"Transmitting posit\n");
 
@@ -12799,6 +12799,12 @@ void usr1sig(int sig) {
 
     last_snapshot = 0;
     (void)Snapshot();
+}
+void usr2sig(int sig) {
+    if (debug_level & 512)
+        fprintf(stderr, "Caught Signal USR2, Transmitting now! Signal No %d\n", sig);
+
+    transmit_now = 1;
 }
 #endif  // OLD_PTHREADS
 
@@ -23213,7 +23219,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
-                XmNminimum, 5,          // 0.5 = Thirty seconds
+                XmNminimum, 0,          // Zero minutes (disables the function)
                 XmNmaximum, 60*10,      // 60 minutes
                 XmNdecimalPoints, 1,    // Move decimal point over one
 	        XmNscaleMultiple, 5,	// Move 30 seconds per left mouse
@@ -27705,6 +27711,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 #ifndef OLD_PTHREADS
     (void) signal(SIGUSR1,usr1sig);     // take a snapshot on demand
+    (void) signal(SIGUSR2,usr2sig);     // transmit now on demand
 #else   // OLD_PTHREADS
 #   warning ***** Old kernel detected: Disabling SIGUSR1 handler (snapshot on demand) *****
 #endif  // OLD_PTHREADS

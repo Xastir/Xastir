@@ -2211,7 +2211,7 @@ void load_data_or_default(void) {
     gps_time = (time_t) get_long ("GPS_TIME", 1l, 86400l, 60l);
 
     /* POSIT RATE */
-    POSIT_rate = (time_t) get_long ("POSIT_RATE", 1l, 86400l, 30*60l);
+    POSIT_rate = (time_t) get_long ("POSIT_RATE", 0l, 86400l, 30*60l);
 
     /* OBJECT RATE */
     OBJECT_rate = (time_t) get_long ("OBJECT_RATE", 1l, 86400l, 30*60l);
