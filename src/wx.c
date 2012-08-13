@@ -397,23 +397,33 @@ void cycle_weather(void) {
             // Cycle the rain queues, feed in the last rain total we had
             (void)compute_rain((float)atof(weather->wx_rain_total));
 
-            // Hourly rain total
-            xastir_snprintf(weather->wx_rain,
-                sizeof(weather->wx_rain),
-                "%0.2f",
-                rain_minute_total);
 
-            // Last 24 hour rain
-            xastir_snprintf(weather->wx_prec_24,
-                sizeof(weather->wx_prec_24),
-                "%0.2f",
-                rain_24);
+            // Note:  Some weather stations provide the per-hour, 24-hour,
+            // and since-midnight rain rates already.  Further, some stations 
+            // don't even provide total rain (Davis APRS DataLogger and the 
+            // db2APRS program), so anything we compute here is actually wrong.
+            // Do NOT clobber these if so.  This flag is set in fill_wx_data
+            // when the station provides its data.
 
-            // Rain since midnight
-            xastir_snprintf(weather->wx_prec_00,
-                sizeof(weather->wx_prec_00),
-                "%0.2f",
-                rain_00);
+            if (weather->wx_compute_rain_rates) {
+              // Hourly rain total
+              xastir_snprintf(weather->wx_rain,
+                              sizeof(weather->wx_rain),
+                              "%0.2f",
+                              rain_minute_total);
+              
+              // Last 24 hour rain
+              xastir_snprintf(weather->wx_prec_24,
+                              sizeof(weather->wx_prec_24),
+                              "%0.2f",
+                              rain_24);
+              
+              // Rain since midnight
+              xastir_snprintf(weather->wx_prec_00,
+                              sizeof(weather->wx_prec_00),
+                              "%0.2f",
+                              rain_00);
+            }
 
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0) {
@@ -1366,6 +1376,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
                     /* local station */
                     compute_rain((float)atof(weather->wx_rain_total));
+                    weather->wx_compute_rain_rates=1;
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain,
                         sizeof(weather->wx_rain),
@@ -1514,6 +1525,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
                     /* local station */
                     compute_rain((float)atof(weather->wx_rain_total));
+                    weather->wx_compute_rain_rates=1;
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain,
                         sizeof(weather->wx_rain),
@@ -1724,6 +1736,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
                     /* local station */
                     compute_rain((float)atof(weather->wx_rain_total));
+                    weather->wx_compute_rain_rates=1;
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain,
                         sizeof(weather->wx_rain),
@@ -2135,6 +2148,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
                     /* Since local station only */
                     compute_rain((float)atof(weather->wx_rain_total));
+                    weather->wx_compute_rain_rates=1;
 
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain,
@@ -2476,7 +2490,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                             /* Since local station only */
                             compute_rain((float)atof(weather->wx_rain_total));
-
+                            weather->wx_compute_rain_rates=1;
+                    
                             /* Last hour rain */
                             xastir_snprintf(weather->wx_rain,
                                 sizeof(weather->wx_rain),
@@ -2629,6 +2644,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_gust,0,4);
             memset(weather->wx_temp,0,5);
             memset(weather->wx_rain,0,10);
+            memset(weather->wx_prec_00,0,10);
+            memset(weather->wx_prec_24,0,10);
             memset(weather->wx_rain_total,0,10);
             memset(weather->wx_hum,0,5);
             memset(weather->wx_baro,0,10);
@@ -2715,12 +2732,26 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             if ((temp_conv=strchr((char *)data,'p'))) { // Rain per 24 hrs/total
-                xastir_snprintf(weather->wx_rain_total,
-                    sizeof(weather->wx_rain_total),
+                xastir_snprintf(weather->wx_prec_24,
+                    sizeof(weather->wx_prec_24),
                     "%s",
                     temp_conv+1);
-                    weather->wx_rain_total[3] = '\0';
+                    weather->wx_prec_24[3] = '\0';
             }
+
+            if ((temp_conv=strchr((char *)data,'P'))) { // Rain since midnight
+                xastir_snprintf(weather->wx_prec_00,
+                    sizeof(weather->wx_prec_00),
+                    "%s",
+                    temp_conv+1);
+                    weather->wx_prec_00[3] = '\0';
+            }
+
+            // NOTE:  Davis Meteo code does NOT give us total rain!
+            // we have already zeroed this anyway.  Compute_rain will be
+            // producing wrong numbers.
+            // Now flag so we never clobber our good data
+            weather->wx_compute_rain_rates=0;
 
             if ((temp_conv=strchr((char *)data,'h'))) { // Humidity %
 
@@ -2792,10 +2823,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // conflicts with wind speed (both are lower case 's')
 
             if (debug_level & 1)
-                fprintf(stdout,"Davis Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rt-%s,h-%s,ap-%s,station-%s\n",
+                fprintf(stdout,"Davis Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,r00-%s,r24-%s,h-%s,ap-%s,station-%s\n",
 
             weather->wx_course,weather->wx_speed,weather->wx_gust,weather->wx_temp,
-            weather->wx_rain,weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
+                        weather->wx_rain,weather->wx_prec_00,weather->wx_prec_24,weather->wx_hum,weather->wx_baro,
             weather->wx_station);
             break;
          // This is the output of the Davis APRS Data Logger.  The format
@@ -2809,21 +2840,24 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_gust,0,4);
             memset(weather->wx_temp,0,5);
             memset(weather->wx_rain,0,10);
+            memset(weather->wx_prec_00,0,10);
+            memset(weather->wx_prec_24,0,10);
             memset(weather->wx_rain_total,0,10);
             memset(weather->wx_hum,0,5);
             memset(weather->wx_baro,0,10);
             memset(weather->wx_station,0,MAX_WXSTATION);
 			
             if (sscanf((char *)data,
-                       "%*27s%3s/%3sg%3st%3sr%3sp%3sP%*3sh%2sb%5s.DsVP",
+                       "%*27s%3s/%3sg%3st%3sr%3sp%3sP%3sh%2sb%5s.DsVP",
                        weather->wx_course,
                        weather->wx_speed,
                        weather->wx_gust,
                        weather->wx_temp,
                        weather->wx_rain,
-                       weather->wx_rain_total,
+                       weather->wx_prec_24,
+                       weather->wx_prec_00,
                        weather->wx_hum,
-                       weather->wx_baro) == 8){
+                       weather->wx_baro) == 9){
               // then we got all the data out of the packet... now process
               // First null-terminate all the strings:
               weather->wx_course[3]='\0';
@@ -2831,9 +2865,17 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
               weather->wx_gust[3]='\0';
               weather->wx_temp[3]='\0';
               weather->wx_rain[3]='\0';
-              weather->wx_rain_total[3]='\0';
+              weather->wx_prec_24[3]='\0';
+              weather->wx_prec_00[3]='\0';
               weather->wx_hum[2]='\0';
               weather->wx_baro[6]='\0';
+
+
+              // NOTE:  Davis APRS Data Logger does NOT provide total rain,
+              // and so data from compute_rain (which needs total rain) will
+              // be wrong.  Set this flag to stop that from clobbering our
+              // good rain rate data.
+              weather->wx_compute_rain_rates=0;
 
               // Check for course = 0.  Change to 360.
               if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -2937,11 +2979,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
               
               
               if (debug_level & 1)
-                fprintf(stdout,"Davis APRS DataLogger Decode $Revision$: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rt-%s,h-%s,ap-%s,station-%s\n",
+                fprintf(stdout,"Davis APRS DataLogger Decode $Revision$: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,r24-%s,r00-%s,h-%s,ap-%s,station-%s\n",
                         
                         weather->wx_course,weather->wx_speed,weather->wx_gust,
                         weather->wx_temp, weather->wx_rain,
-                        weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
+                        weather->wx_prec_24, weather->wx_prec_00,weather->wx_hum,weather->wx_baro,
                         weather->wx_station);
             }
             break;

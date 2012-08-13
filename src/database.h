@@ -282,6 +282,11 @@ typedef struct {                //                      strlen
     char    wx_fuel_moisture[5];// in %                     2
     char    wx_type;
     char    wx_station[MAX_WXSTATION];
+    int     wx_compute_rain_rates;  //  Some stations provide rain rates
+                                  // directly, others require Xastir to
+                                  // compute from total rain.  Flag this,
+                                  // so we don't clobber useful info from
+                                  // a station.
 } WeatherRow;
 
 
