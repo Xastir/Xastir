@@ -171,7 +171,7 @@ Fixed some compile errors that are seen on FC4 and OSX Tiger.
 Added new terraserver .geo file options.
 Changed Map Properties "fill" option to allow NO/YES/AUTO.
 Auto uses dbfawk if present, no/yes force fill to that state.
-Fixed some #ifdef's here and there so that compiles will work if
+Fixed some #ifdefs here and there so that compiles will work if
 some libraries aren't present.
 Added map caching for nearly all internet maps, plus two new toggles
 on the map menu for clearing out current-view maps or all maps from
@@ -862,7 +862,7 @@ detail onto maps. This will be done with the following entries:
 
 Always delete your objects and items when you are done with them!
 Don't just allow them to expire from your cache, as they may hang
-around on other people's screens for an extended period.
+around on other peoples' screens for an extended period.
 
 
 Description of weather watch boxes:
@@ -1299,9 +1299,9 @@ These are percents, 100,100,100 is the default.
 
 REFRESH <seconds>
 eg: REFRESH 900
-This tag is used for dynamic URL's such as weather radar, where you
+This tag is used for dynamic URLs such as weather radar, where you
 wish Xastir to auto-redraw the map at a specified interval.  By
-adding this tag to weather radar .geo's, you can watch the weather
+adding this tag to weather radar .geos, you can watch the weather
 move across your screen.  Xastir contains only one interval counter,
 so the smallest REFRESH interval loaded takes effect for all selected
 maps.
@@ -1309,7 +1309,7 @@ maps.
 TRANSPARENT 
 Color to remove from the background (make it transparent).  Use a
 number, 0=black.  Color-mapped images use the map value, so white is
-usually 0xffffffff (32-bits of 1's).  Values must be in hexadecimal,
+usually 0xffffffff (32-bits of 1s).  Values must be in hexadecimal,
 and are preceeded by "0x".  The value can be obtained by using debug
 level 16.  The first of the four numbers after "Color allocated is"
 is the colormap index.
@@ -1382,7 +1382,7 @@ lines like this (but may contain many other lines):
 1.5.1.3   NORTH BOUNDING COORDINATE:  48.000000
 1.5.1.4   SOUTH BOUNDING COORDINATE:  47.000000
 
-Xastir uses only those four lines in it's calculations to determine the corner
+Xastir uses only those four lines in its calculations to determine the corner
 points of a map, to see whether the map fits in the current viewport (so it
 can decide whether to skip it).  If your map data are USGS topographic maps,
 the .fgd file should be readily available to you. If it is not, the mapfgd.pl
@@ -1643,20 +1643,20 @@ screens of other APRS(tm) users.
 Clear All Tactical Calls
 Clears all assigned tactical calls. This will take effect the next
 redraw. Note that this will NOT clear tactical calls on other
-people's screens if you've published them via a message to
+peoples' screens if you've published them via a message to
 "TACTICAL" (see the help text for "Send Message").
 
 Clear Tactical Call History
 This removes the tactical call history file, meaning that tactical calls
 assigned will not remain permanent between Xastir restarts.  Note
-that this will NOT clear tactical calls on other people's screens if
+that this will NOT clear tactical calls on other peoples' screens if
 you've published them via a message to "TACTICAL" (see the help text
 for "Send Message".
 
 Clear All Trails
 This will wipe all the line tracking data from the station database and
 refresh the screen.  This option is perhaps useful if you're low on memory
-or just want an uncluttered screen.  You may also clear individual station's
+or just want an uncluttered screen.  You may also clear individual stations'
 trails from the Station Info dialog.
 
 Clear All Stations
@@ -2130,7 +2130,7 @@ for further details.
 split_gnis.bash
 This will take a GNIS data-point file (typically for a whole state, 8+MB), break
 it down into smaller chunks (typically for a county, 30-200k) it will also
-throw away the trailing spaces and <CR>'s at EOL.
+throw away the trailing spaces and <CR>s at EOL.
 
 split_gnis.pl
 This is a Perl version of the above script.
@@ -2209,7 +2209,7 @@ HELP-INDEX>Configure Serial TNC Devices
 
                           Configure Serial TNC Devices 
 
-This section covers adding or modifying Serial TNC's or Serial TNC's with a
+This section covers adding or modifying Serial TNCs or Serial TNCs with a
 GPS on a HSP cable.
 
 If you have a HSP cable, which allows you to share the TNC port with a GPS
@@ -2264,18 +2264,37 @@ HELP-INDEX>Configure Serial TNC w/GPS on HSP cable or AUX port
 
                 Configure Serial TNC w/GPS on HSP cable or AUX port
 
-These hybrid interface types implement the options of both serial TNC's and
-GPS's. Please consult the configuration help for both serial TNC's and serial
+These hybrid interface types implement the options of both serial TNCs and
+GPSs. Please consult the configuration help for both serial TNCs and serial
 Gpsd for further information on the configuration of these devices.
+
+"Send Control-E to get GPS Data?"
+
+This checkbox controls whether Xastir sends a Control-E to the TNC every time
+it needs GPS data.
+
+Some TNCs that support a GPS on an auxilliary port require that Xastir
+send a Control-E to the TNC in order to get the GPS data each time it
+is needed.  Devices in this class include the Kantronics KPC-3+.
+
+Some devices, like Kenwood APRS radios (D700, etc.) do NOT require
+this, and in fact the Control-E interferes with correct operation of
+these devices.
+
+Because Control-E was required by the most common TNCs that had an aux
+port for GPS at the time that this interface type was written, this is
+the default behavior of Xastir.  If you have a Kenwood radio that you are 
+using in this mode, you must DESELECT the "Send Control-E to get GPS data?"
+checkbox in the configuration dialog for this interface type.  
 
 HELP-INDEX>Configure Serial KISS TNC
 
                      Configure Serial KISS TNC
 
-This section covers adding or modifying Serial KISS TNC's. KISS mode can be done
-by most standard TNC's too, and it eliminates the necessity to set the options
+This section covers adding or modifying Serial KISS TNCs. KISS mode can be done
+by most standard TNCs too, and it eliminates the necessity to set the options
 specially in the startup files, at the expense of slightly higher processor
-usage. And of course this enables the use of purely KISS TNC's, such as the one
+usage. And of course this enables the use of purely KISS TNCs, such as the one
 described in the November 2000 issue of QST, without a separate program or
 kernel module.
 
@@ -2845,8 +2864,8 @@ The latest Xastir release adds numerous new capabilities, keeping Xastir a
 benchmark for APRS(tm) programs on any operating system.
 
 Xastir's hardware support has been enhanced, with
-* Support for Serial KISS TNC's
-* Support for Serial TNC's with GPS on the AUX port
+* Support for Serial KISS TNCs
+* Support for Serial TNCs with GPS on the AUX port
 * Support for using AGWPE as a TNC
 * Support for Dallas One-Wire weather station
   (see http://melhuish.info/simon/projects/oww/)
@@ -2892,7 +2911,7 @@ Other smaller interface changes include:
   coordinate calculator.
 * There is a check-box "Track me" to enable easily tracking your own station
 * The length of trails downloaded from findu.com can now be specified.
-* Xastir can now ID via voice ID's or Screen ID's, by editing the configuration
+* Xastir can now ID via voice IDs or Screen IDs, by editing the configuration
   file. This is intended for configurations when the Xastir screen is seen
   remotely via fast-scan TV. 
 * Timestamps are written to log files every 30 seconds of operation, to keep a
