@@ -922,6 +922,7 @@ UNIOP00033|Reset||
 UNIOP00034|min||
 UNIOP00035|hr||
 UNIOP00036|Tag||
+UNIOP00037|Send Control-E to get GPS data?||
 #
 # popUp "Stationsauswahl"
 STCHO00001|Stationsauswahl||

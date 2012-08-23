@@ -1762,17 +1762,6 @@ static void data_out_ax25(int port, unsigned char *string) {
     // Check for commands (start with Control-C)
     if (string[0] == (unsigned char)3) { // Yes, process TNC type commands
 
-        // NOTE added 20 Sep:
-        // The following processing tacitly assumes that there is no leading
-        // white space before the commands.  This assumption was violated 
-        // briefly when a carriage return was added prior to MYCALL (as a
-        // cheesy work-around intended to clear garbage from D700 input 
-        // buffers).  That change broke AX25 ports because of this.
-        // TODO:
-        // don't assume that the command starts at string[1].  Step through
-        // and remove leading white space to *find* where the command starts.
-        // We know there must be one, because string[0] was control-c.
-       
         // Look for MYCALL command
         if (strncmp((char *)&string[1],"MYCALL", 6) == 0) {
 
@@ -8667,19 +8656,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 output_net[0] = '\0';
 
                 /* Set my call sign */
-                // The leading \r is sent to normal serial TNCs.  The only
-                // reason for it is that some folks' D700s are getting 
-                // garbage in the input buffer, and the result is the mycall
-                // line is rejected.  The \r at the beginning clears out the 
-                // junk and lets it go through.  But data_out_ax25 tries to 
-                // parse the MYCALL line, and the presence of a leading \r 
-                // breaks it.
                 xastir_snprintf(header_txt,
                     sizeof(header_txt),
                     "%c%s %s\r",
                     '\3',
-                    ((port_data[port].device_type !=DEVICE_AX25_TNC)?
-                                "\rMYCALL":"MYCALL"),
+                    "MYCALL",
                     my_callsign);
 
                 // Send the callsign out to the TNC only if the interface is up and tx is enabled???

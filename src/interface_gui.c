@@ -258,6 +258,7 @@ Widget TNC_txtail;
 Widget TNC_init_kiss;   // Used to initialize KISS-Mode
 Widget TNC_fullduplex;
 Widget TNC_GPS_set_time;
+Widget TNC_AUX_GPS_Retrieve_Needed;
 Widget TNC_relay_digipeat;
 
 
@@ -396,6 +397,14 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
                 devices[TNC_port].set_time=1;
             else
                 devices[TNC_port].set_time=0;
+
+            if (type == DEVICE_SERIAL_TNC_AUX_GPS) {
+              if (XmToggleButtonGetState(TNC_AUX_GPS_Retrieve_Needed))
+                devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
+              else
+                devices[TNC_port].gps_retrieve=0;
+            }
+
             break;
 
         case DEVICE_SERIAL_TNC:
@@ -633,11 +642,6 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
                 tmp=langcode("WPUPCFT028");
-                if (debug_level & 128) {
-                    fprintf(stderr,"Storing %d to gps_retrieve for %d\n",
-                    DEFAULT_GPS_RETR, port);
-                }
-                devices[port].gps_retrieve=DEFAULT_GPS_RETR;
                 break;
 
             default:
@@ -715,6 +719,26 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 #ifdef __CYGWIN__
                 XtSetSensitive(TNC_GPS_set_time,FALSE);
 #endif  // __CYGWIN__
+
+                // Let the user turn off the Control-E thing
+                // that only SOME "tnc-with-gps" devices actually 
+                // require, and that confuse the heck out of others.
+                // D700 is among the confused, by the way.  TVR -- 14 Aug 2012
+                if (device_type == DEVICE_SERIAL_TNC_AUX_GPS) {
+                  TNC_AUX_GPS_Retrieve_Needed  = XtVaCreateManagedWidget(langcode("UNIOP00037"), xmToggleButtonWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_GPS_set_time,
+                                      XmNleftOffset ,35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
+                                      NULL);
+                }
 
                 break;
             case DEVICE_SERIAL_KISS_TNC:
@@ -1602,6 +1626,9 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
+                    if (device_type == DEVICE_SERIAL_TNC_AUX_GPS) 
+                      XmToggleButtonSetState(TNC_AUX_GPS_Retrieve_Needed, 
+                                             TRUE, FALSE);
                     break;
                 case DEVICE_SERIAL_KISS_TNC:
                 case DEVICE_SERIAL_MKISS_TNC:
@@ -1684,6 +1711,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                         XmToggleButtonSetState(TNC_GPS_set_time, TRUE, FALSE);
                     else
                         XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
+
+                    if (device_type == DEVICE_SERIAL_TNC_AUX_GPS) {
+                      if (devices[TNC_port].gps_retrieve != 0)
+                        XmToggleButtonSetState(TNC_AUX_GPS_Retrieve_Needed, 
+                                               TRUE, FALSE);
+                      else
+                        XmToggleButtonSetState(TNC_AUX_GPS_Retrieve_Needed, 
+                                               FALSE, FALSE);
+                    }
+
                     break;
 
                 case  DEVICE_SERIAL_KISS_TNC:
