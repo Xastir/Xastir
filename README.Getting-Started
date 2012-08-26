@@ -833,7 +833,9 @@ Install GPSMan and gpsmanshp.  Configure/compile support for it in
 Xastir.  Start up GPSMan separately and configure it for your GPS
 and serial port.  You'll see download options for each type on the
 Interface menu.
-TBD
+
+Note that Xastir requires a version of gpsman at least as recent as 6.1.  Older
+versions of gpsman may not work.
 
 
 Enabling Garmin RINO Support:
