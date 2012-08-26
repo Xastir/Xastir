@@ -15783,7 +15783,7 @@ static void* gps_transfer_thread(void *arg) {
     // Set up the postfix string.  The files will be created in the
     // "~/.xastir/gps/" directory.
     xastir_snprintf(postfix, sizeof(postfix),
-        "Shapefile_2D %s/",
+        "Shapefile dim=2 %s/",
         get_user_base_dir("gps"));
 
     input_param = atoi((char *)arg);
@@ -15796,7 +15796,7 @@ static void* gps_transfer_thread(void *arg) {
     switch (input_param) {
 
         case 1: // Fetch track from GPS
-            // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
+            // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile dim=2 track.date
 
 //            fprintf(stderr,"Fetch track from GPS\n");
 
@@ -15829,7 +15829,7 @@ static void* gps_transfer_thread(void *arg) {
             break;
 
         case 2: // Fetch route from GPS
-            // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
+            // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile dim=2 routes.date
 
 //            fprintf(stderr,"Fetch routes from GPS\n");
 
@@ -15861,7 +15861,7 @@ static void* gps_transfer_thread(void *arg) {
             break;
 
         case 3: // Fetch waypoints from GPS
-            // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
+            // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile dim=2 waypoints.date
  
 //            fprintf(stderr,"Fetch waypoints from GPS\n");
 
@@ -15893,7 +15893,7 @@ static void* gps_transfer_thread(void *arg) {
             break;
 
         case 4: // Send track to GPS
-            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D track.date TR 
+            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile dim=2 track.date TR 
 
             fprintf(stderr,"Send track to GPS\n");
             fprintf(stderr,"Not implemented yet\n");
@@ -15902,7 +15902,7 @@ static void* gps_transfer_thread(void *arg) {
             break;
 
         case 5: // Send route to GPS
-            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D routes.date RT 
+            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile dim=2 routes.date RT 
 
             fprintf(stderr,"Send route to GPS\n");
             fprintf(stderr,"Not implemented yet\n");
@@ -15911,7 +15911,7 @@ static void* gps_transfer_thread(void *arg) {
             break;
 
         case 6: // Send waypoints to GPS
-            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D waypoints.date WP 
+            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile dim=2 waypoints.date WP 
 
             fprintf(stderr,"Send waypoints to GPS\n");
             fprintf(stderr,"Not implemented yet\n");
