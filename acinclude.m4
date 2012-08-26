@@ -406,7 +406,7 @@ if test "${with_mysql+set}" = set; then
     fi
     AC_MSG_RESULT($mysql_has_spatial)
     # if mysql version < 4.1, mysql present but no spatial support 
-    if test "$mysql_has_spatial" == "yes"; then
+    if test "$mysql_has_spatial" = "yes"; then
        # mysql with spatial support
        use_mysql_spatial=yes
        use_spatial_db=yes
