@@ -424,6 +424,22 @@ void cycle_weather(void) {
                               "%0.2f",
                               rain_00);
             }
+            else
+            {
+              // LaCrosse stations don't provide the since-midnight 
+              // numbers and so this will be blank.  
+              // So if we have blanks here, fill it in.
+              if ( weather->wx_prec_00[0] == '\0' && 
+                   weather->wx_rain_total[0] != '\0') {
+              
+                // Rain since midnight
+                xastir_snprintf(weather->wx_prec_00,
+                                sizeof(weather->wx_prec_00),
+                                "%0.2f",
+                                rain_00);
+              }
+            }
+                
 
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0) {
@@ -2747,10 +2763,38 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_prec_00[3] = '\0';
             }
 
-            // NOTE:  Davis Meteo code does NOT give us total rain!
-            // we have already zeroed this anyway.  Compute_rain will be
-            // producing wrong numbers.
-            // Now flag so we never clobber our good data
+            if ((temp_conv=strchr((char *)data,'T'))) { // Total Rain since
+                                                        // wx station reset
+                xastir_snprintf(weather->wx_rain_total,
+                    sizeof(weather->wx_rain_total),
+                    "%s",
+                    temp_conv+1);
+                    weather->wx_rain_total[4] = '\0';
+            }
+
+            // Ok, here's the deal --- if we got total rain AND we didn't get
+            // rain-since-midnight, fix it up.
+            // This is a problem with LaCrosse --- no rain-since-midnight
+            // provided.  Don't do anything at all if we didn't get total rain
+            // from the station.  compute_rain *depends* on "total rain" being
+            // a strictly increasing number that is never reset to zero during
+            // Xastir's run.  
+            if (strlen(weather->wx_rain_total) >0 ) {
+              compute_rain((float)atof(weather->wx_rain_total));
+              if (weather->wx_prec_00[0] == '\0') {
+                /* rain since midnight */
+                xastir_snprintf(weather->wx_prec_00,
+                                sizeof(weather->wx_prec_00),
+                                "%0.2f",
+                                rain_00);
+              }
+            } 
+
+            // we are should be getting total rain from the station, but
+            // we are also getting the rates.
+            // Davis gives 24-hour, since-midnight, and 1-hour rates.
+            // LaCrosse gives 24 and 1 hour.
+            // Don't recompute what the station already gave us.
             weather->wx_compute_rain_rates=0;
 
             if ((temp_conv=strchr((char *)data,'h'))) { // Humidity %
@@ -2823,11 +2867,12 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // conflicts with wind speed (both are lower case 's')
 
             if (debug_level & 1)
-                fprintf(stdout,"Davis Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,r00-%s,r24-%s,h-%s,ap-%s,station-%s\n",
+                fprintf(stdout,"Davis Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,r00-%s,r24-%s,rt-%s,h-%s,ap-%s,station-%s\n",
 
-            weather->wx_course,weather->wx_speed,weather->wx_gust,weather->wx_temp,
-                        weather->wx_rain,weather->wx_prec_00,weather->wx_prec_24,weather->wx_hum,weather->wx_baro,
-            weather->wx_station);
+                        weather->wx_course,weather->wx_speed,weather->wx_gust,
+                        weather->wx_temp,weather->wx_rain,weather->wx_prec_00,
+                        weather->wx_prec_24,weather->wx_rain_total,
+                        weather->wx_hum,weather->wx_baro,weather->wx_station);
             break;
          // This is the output of the Davis APRS Data Logger.  The format
          // is in fact exactly the same as a regular APRS weather packet,

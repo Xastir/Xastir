@@ -66,6 +66,7 @@
 #define VALID_RAIN24H   0x20
 #define VALID_HUMIDITY  0x40
 #define VALID_AIRPRESS  0x80
+#define VALID_RAINTOT   0x100
 
 #define MTPS2MPH        2.2369
 #define DEGC2DEGF       1.8
@@ -174,6 +175,7 @@ int APRS_str(char *APRS_buf,
             double temp,
             double rain1hr,
             double rain24h,
+            double raintot,
             double humidity,
             double airpressure,
             unsigned int valid_data_flgs,
@@ -362,6 +364,7 @@ int APRS_str(char *APRS_buf,
     }
     strcat(APRS_buf,pbuf);
 
+
     if(valid_data_flgs & VALID_HUMIDITY) {
         intval = (humidity + 0.5); // rounding to whole percent
         if (intval > 100) { // Unlike the space shuttle engines, 100 % is max
@@ -416,6 +419,43 @@ int APRS_str(char *APRS_buf,
 
     }
     strcat(APRS_buf,pbuf);
+
+    // NOW THIS MAKES THE STRING NO LONGER A VALID APRS WX REPORT, but
+    // we don't care:  Xastir does NOT just transmit this string, it parses it
+    // and re-recreates the correct string to transmit.  We do this because
+    // APRS doesn't have a "total rain" string in its weather report, but
+    // Xastir likes to have that value around.
+    if(valid_data_flgs & VALID_RAINTOT) {
+        if (Metric_Data)
+            intval = ((raintot)*MM2IN100TH + 0.5); // converting & rounding to whole 1/100 inch
+        else
+            intval = (raintot*100.0 + 0.5); // rounding to whole 1/100 inch
+
+        // Can't handle greater than 99.99 inches of total rain 
+        if (intval > 9999) { 
+            if (debug_level & 1)
+                fprintf(stderr,"err: total Rainfall  > 99.99 inch - reporting 9.99 inches\n");
+            sprintf(pbuf, "T9999");
+
+        } 
+        else if (intval < -99) {
+            if (debug_level & 1)
+                fprintf(stderr,"err: total Rainfall negative\n");
+            sprintf(pbuf, "\0\0\0\0\0");
+
+        } 
+        else {
+            sprintf(pbuf, "T%0.4d", intval);
+        }
+    } 
+    else {
+        if (debug_level & 1)
+            fprintf(stderr,"info: total Rainfall flagged as invalid\n");
+        sprintf(pbuf, "\0\0\0\0\0");
+
+    }
+    strcat(APRS_buf,pbuf);
+
     strcat(APRS_buf,"xDvs\n");  // add X aprs and LaCrosse WX station ID's and <lf>
 
     if (debug_level & 1)
@@ -439,6 +479,7 @@ int Get_Latest_WX( double *winddir,
                 double *temp,
                 double *rain1hr,
                 double *rain24h,
+                double *raintot,
                 double *humidity,
                 double *airpressure,
                 unsigned int *valid_data_flgs,
@@ -502,7 +543,7 @@ int Get_Latest_WX( double *winddir,
     // release query buffer
     mysql_free_result(result);
 
-    sprintf(query_buffer,"SELECT wind_angle, windspeed, temp_out, rain_1h, rain_24h, rel_hum_out, rel_pressure FROM weather WHERE timestamp = %s", last_timestamp);
+    sprintf(query_buffer,"SELECT wind_angle, windspeed, temp_out, rain_1h, rain_24h, rel_hum_out, rel_pressure, rain_total FROM weather WHERE timestamp = %s", last_timestamp);
 
     if (mysql_query(&mysql, query_buffer)) {
         if (debug_level & 1)
@@ -582,6 +623,12 @@ int Get_Latest_WX( double *winddir,
     item_count++;
     if(debug_level & 1)
          fprintf(stderr,"air pressure %f\n ",*airpressure);
+    //case  RAIN_TOTAL
+    *raintot = strtod(row[7],NULL);
+    *valid_data_flgs |= VALID_RAINTOT;  
+    item_count++;
+    if(debug_level & 1)
+         fprintf(stderr,"rainfall since reset %f\n ",*raintot);
 
     *Metric_Data = 0;  // My station reports F, knots and inHG
     // release query buffer	& close connection
@@ -654,6 +701,7 @@ int main(int argc, char **argv)
     double temp;
     double rain1hr;
     double rain24h;
+    double raintot;
     double humidity;
     double airpressure;
     unsigned int valid_data_flgs;
@@ -814,12 +862,14 @@ int main(int argc, char **argv)
         if(!(dly_cnt--)) {	 
             dly_cnt = 25;		// Every 'dly_cnt' passes check for WX data update
             if((dsts = Get_Latest_WX(&winddir,&windspeed,&windgust,
-                &temp,&rain1hr,&rain24h,&humidity,&airpressure,
-                &valid_data_flgs,&Metric_Data)) !=0 ) {
+                                     &temp,&rain1hr,&rain24h,&raintot,
+                                     &humidity,&airpressure,
+                                     &valid_data_flgs,&Metric_Data)) !=0 ) {
                 if ( dsts > 0 ) {
                     data_len = APRS_str(WX_APRS, winddir,windspeed,windgust,
-                        temp, rain1hr, rain24h, humidity, airpressure,
-                        valid_data_flgs, Metric_Data);
+                                        temp, rain1hr, rain24h, raintot, 
+                                        humidity, airpressure,
+                                        valid_data_flgs, Metric_Data);
 
                     if (!data_len) {
                         if (debug_level & 1)
