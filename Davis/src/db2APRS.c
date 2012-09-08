@@ -69,7 +69,6 @@
 #define VALID_HUMIDITY  0x040
 #define VALID_AIRPRESS  0x080
 #define VALID_RAINDAY	0x100
-#define VALID_RAINTOT	0x200
 
 #define MTPS2MPH        2.2369
 #define DEGC2DEGF       1.8
@@ -97,7 +96,7 @@
 #define UV                  41
 #define RAIN                50
     // note: "51" is really rain total
-#define RAIN_TOTAL          51
+#define RAIN_PER_DAY        51
 #define RAIN_PER_HOUR       52
 #define WIND_SPEED          60
 #define WIND_DIRECTION      61
@@ -185,7 +184,6 @@ int APRS_str(char *APRS_buf,
             double rain1hr,
             double rain24hr,
             double rainday,
-            double raintotal,
             double humidity,
             double airpressure,
             unsigned int valid_data_flgs,
@@ -450,41 +448,6 @@ int APRS_str(char *APRS_buf,
 
     }
     strcat(APRS_buf,pbuf);
-
-    //  NOTE:  This block of code turns our output into something 
-    // that is not actually a valid APRS WX report.  But Xastir does not,
-    // in fact, use what we report as the thing it transmits --- it parses
-    // our report and stores all the data internally, then re-generates
-    // the valid report.  Xastir likes to have total rain around for display
-    // in the "Own Weather Data" dialog, and some users like it.  We would
-    // be unable to provide this if we tried to keep our output completely
-    // compatible with APRS WX reports.
-    if(valid_data_flgs & VALID_RAINTOT) {
-        if (Metric_Data)
-            intval = ((raintotal)*MM2IN100TH + 0.5); // converting & rounding to whole 1/100 inch
-        else
-            intval = (raintotal*100.0 + 0.5); // rounding to whole 1/100 inch
-        if (intval > 9999) { // Can't handle greater than 99.99 inches of total rain
-            if (debug_level & 1)
-                fprintf(stderr,"err: total Rainfall > 99.99 inch - reporting 99.99 inches\n");
-            sprintf(pbuf, "T9999");
-        }
-        else if (intval < -99) {
-            if (debug_level & 1)
-                fprintf(stderr,"err: Rainfall/day negative\n");
-            sprintf(pbuf, "\0\0\0\0\0");
-        }
-        else {
-            sprintf(pbuf, "T%0.4d", intval);
-        }
-    }
-    else {
-        if (debug_level & 1)
-            fprintf(stderr,"info: total Rainfall flagged as invalid\n");
-        sprintf(pbuf, "\0\0\0\0\0");
-    }
-    strcat(APRS_buf,pbuf);
-
     strcat(APRS_buf,"xDvs\n");  // add X aprs and Davis WX station ID's and <lf>
 
     if (debug_level & 1)
@@ -509,7 +472,6 @@ int Get_Latest_WX( double *winddir,
                 double *rain1hr,
                 double *rain24hr,
                 double *rainday,
-                double *raintotal,
                 double *humidity,
                 double *airpressure,
                 unsigned int *valid_data_flgs)
@@ -666,12 +628,9 @@ int Get_Latest_WX( double *winddir,
                     if(debug_level & 1)
                         fprintf(stderr,"air pressure %f\n ",*airpressure);
                     break;
-                case RAIN_TOTAL :
-                    *raintotal = strtod(row[0],NULL);
-                    *valid_data_flgs |= VALID_RAINTOT;
-                    item_count++;
+                case RAIN_PER_DAY :
                     if(debug_level & 1)
-                      fprintf(stderr,"rain total %f\n ", *raintotal);
+                        fprintf(stderr,"rain-per-day total (not used), now calculated...\n ");
                     break;
                 case WIND_X :
                    if(debug_level & 1)
@@ -941,7 +900,6 @@ int main(int argc, char **argv)
     double rain1hr;
     double rain24hr;
     double rainday;
-    double raintotal;
     double humidity;
     double airpressure;
     unsigned int valid_data_flgs;
@@ -1116,15 +1074,13 @@ int main(int argc, char **argv)
 #if defined(SIGPWR) /* SIGPWR is linux centric */
     signal( SIGPWR, term_handler ); /* power failure */
 #endif
-
     if (debug_level & 1) fprintf(stdout,"Main Loop...\n");
     dly_cnt = 2; // initial delay
     do {
         if(!(dly_cnt--)) {
             dly_cnt = poll_interval;    // Every 'dly_cnt' passes check for WX data update
             dsts = Get_Latest_WX(&winddir,&windspeed,&windgust,
-                                 &temp,&rain1hr,&rain24hr,&rainday,&raintotal,
-                                 &humidity,&airpressure, &valid_data_flgs);
+                &temp,&rain1hr,&rain24hr,&rainday,&humidity,&airpressure, &valid_data_flgs);
             if ( dsts < 0 ) {
                 if (debug_level & 1) fprintf(stderr, "err: Get_Latest returned %d\n",dsts);
                 syslog(LOG_ERR,death_msg);
@@ -1133,9 +1089,8 @@ int main(int argc, char **argv)
             // If no new data, make no new string either...
             if(dsts)
             {
-                data_len = APRS_str(WX_APRS, last_datetime, winddir,windspeed,
-                                    windgust, temp, rain1hr, rain24hr, rainday,
-                                    raintotal, humidity, airpressure, 
+                data_len = APRS_str(WX_APRS, last_datetime, winddir,windspeed,windgust,
+                    temp, rain1hr, rain24hr, rainday, humidity, airpressure, 
                     valid_data_flgs,Metric_Dat);
 
                 if (!data_len) {
