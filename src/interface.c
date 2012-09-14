@@ -8732,7 +8732,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         && !posit_tx_disable) {
                     port_write_string(port,header_txt);
                 }
-                /*sleep(1);*/
+                usleep(50000); // sleep 50 ms.  This is necessary for
+                               // KAM tncs, which will fail to go into
+                               // converse mode if there is no delay here.
+                               // This delay is small enough that few 
+                               // will notice it, so I'm (TVR) not going to
+                               // waste time making it user-configurable.
                 break;
 
             default: /* port has unknown device_type */

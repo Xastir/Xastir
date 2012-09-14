@@ -10,12 +10,14 @@
 #myalias WIDE1-1
 #
 INTF TERM
-txu on
+#One KAM user reports this command does not exist on his KAM
+#txu on
 xflow off
 MONITOR ON
 MSTAMP OFF
 HEADERLN OFF
-SCREENLN 0
+#One KAM user reports this command does not exist on his KAM
+#SCREENLN 0
 AUTOLF OFF
 LFADD OFF
 CD SOFT
