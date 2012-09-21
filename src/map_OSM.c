@@ -1240,6 +1240,8 @@ void draw_OSM_tiles (Widget w,
                         fprintf(stderr, "Removing %s\n", tmpString);
                         unlink(tmpString);
                     }
+                    // clear exception so next iteration doesn't fail
+                    GetExceptionInfo(&exception);
 
                     // replace the missing tile with a place holder
                     //(void)strcpy(tile_info->filename, "xc:red");
