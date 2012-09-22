@@ -9030,11 +9030,18 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             "create_appshell Menu Popup",
             al,
             ac);
+#ifdef XASTIR_XORG_SERVER_175_BUG
+    // This hack is to deal with a bug that was introduced in Xorg server 
+    // version 1.7.5 and promptly fixed right after several distros adopted
+    // that version as their long-term supported version.  This server version
+    // was common in 2010, but should no longer be in the wild much.
+    
 #if XmVersion >= 2000
     XtVaSetValues(right_menu_popup, XmNpopupEnabled, XmPOPUP_DISABLED, NULL);
     XtUngrabButton(da, AnyButton, AnyModifier);
 #else
     XtVaSetValues(right_menu_popup, XmNpopupEnabled, False, NULL);
+#endif
 #endif
     //XtVaSetValues(right_menu_popup, XmNwhichButton, 3, NULL);
 
