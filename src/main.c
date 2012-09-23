@@ -1918,10 +1918,7 @@ void Flush_Entire_Map_Queue(Widget w, XtPointer clientData, XtPointer callData) 
     struct stat nfile;
 
 
-    xastir_snprintf(dir,
-        sizeof(dir),
-        "%s",
-        get_user_base_dir("map_cache"));
+    get_user_base_dir("map_cache", dir, sizeof(dir));
 
     dm = opendir(dir);
     if (!dm) {  // Couldn't open directory
@@ -3908,11 +3905,10 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
     // Get rid of the tactical callsign hash here
     destroy_tactical_hash();
 
-    ptr = get_user_base_dir("config/tactical_calls.log");
-    xastir_snprintf(file,sizeof(file),"%s",ptr);
+    get_user_base_dir("config/tactical_calls.log", file, sizeof(file));
 
-    ptr = get_user_base_dir("config/tactical_calls-temp.log");
-    xastir_snprintf(file_temp,sizeof(file_temp),"%s",ptr);
+    get_user_base_dir("config/tactical_calls-temp.log", file_temp, 
+                            sizeof(file_temp));
 
     // Our own internal function from util.c
     ret = copy_file(file, file_temp);
@@ -3961,9 +3957,8 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
  *  Clear out tactical callsign log file
  */
 void Tactical_Callsign_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    char *file;
+    char file[MAX_VALUE];
     FILE *f;
-
 
     // Loop through all station records and clear out the
     // tactical_call_sign fields in each.
@@ -3973,7 +3968,7 @@ void Tactical_Callsign_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPoin
     destroy_tactical_hash();
 
     // Wipe out the log file.
-    file = get_user_base_dir("config/tactical_calls.log");
+    get_user_base_dir("config/tactical_calls.log", file, sizeof(file));
 
     f=fopen(file,"w");
     if (f!=NULL) {
@@ -11284,6 +11279,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     int got_conn;   // holds result from openConnection() 
 #endif // HAVE_DB
 
+    char temp_file_name[MAX_VALUE];
+
     do_time = 0;
 
     // Start UpdateTime again 10 milliseconds after we've completed.
@@ -12051,7 +12048,9 @@ fprintf(stderr,"main, initializing connections");
                         line[n-1] = '\0';
 
                         if (log_net_data)
-                            log_data( get_user_base_dir(LOGFILE_NET),
+                            log_data( get_user_base_dir(LOGFILE_NET, 
+                                                        temp_file_name,
+                                                        sizeof(temp_file_name)),
                                 (char *)line);
 
 //fprintf(stderr,"TCP server data:%d: %s\n", n, line);
@@ -12192,7 +12191,9 @@ fprintf(stderr,"main, initializing connections");
                         }
 
                         if (log_net_data)
-                            log_data( get_user_base_dir(LOGFILE_NET),
+                            log_data( get_user_base_dir(LOGFILE_NET, 
+                                                        temp_file_name,
+                                                        sizeof(temp_file_name)),
                                 (char *)(line + line_offset));
 
 //fprintf(stderr,"UDP server data:  %s\n", line);
@@ -12247,8 +12248,10 @@ if (!skip_decode) {
                         case DEVICE_NET_STREAM:
 
                             if (log_net_data)
-                                log_data( get_user_base_dir(LOGFILE_NET),
-                                    (char *)data_string);
+                              log_data(get_user_base_dir(LOGFILE_NET,
+                                                         temp_file_name,
+                                                         sizeof(temp_file_name)),
+                                       (char *)data_string);
 
                             packet_data_add(langcode("WPUPDPD006"),
                                 (char *)data_string,
@@ -12315,7 +12318,9 @@ if (!skip_decode) {
                         case DEVICE_AX25_TNC:
                         case DEVICE_NET_AGWPE:
                             if (log_tnc_data)
-                                log_data( get_user_base_dir(LOGFILE_TNC),
+                                log_data( get_user_base_dir(LOGFILE_TNC,
+                                                            temp_file_name,
+                                                            sizeof(temp_file_name)),
                                     (char *)data_string);
 
                             packet_data_add(langcode("WPUPDPD005"),
@@ -12366,7 +12371,9 @@ if (!skip_decode) {
                             else {
                                 // get TNC data
                                 if (log_tnc_data)
-                                    log_data( get_user_base_dir(LOGFILE_TNC),
+                                    log_data( get_user_base_dir(LOGFILE_TNC,
+                                                                temp_file_name,
+                                                                sizeof(temp_file_name)),
                                         (char *)data_string);
 
                                 packet_data_add(langcode("WPUPDPD005"),
@@ -12420,7 +12427,9 @@ if (!skip_decode) {
                             }
                             else {          // APRS Data
                                 if (log_tnc_data)
-                                    log_data( get_user_base_dir(LOGFILE_TNC),
+                                    log_data( get_user_base_dir(LOGFILE_TNC,
+                                                                temp_file_name,
+                                                                sizeof(temp_file_name)),
                                         (char *)data_string);
 
                                 packet_data_add(langcode("WPUPDPD005"),
@@ -12482,7 +12491,9 @@ if (!skip_decode) {
 // TODO:  Probably only logs to the first 0x00 byte...  Need another
 // logging function that accepts a size, perhaps converting it to
 // 0x00 or similar as it writes to file.
-                                log_data( get_user_base_dir(LOGFILE_WX),
+                                log_data( get_user_base_dir(LOGFILE_WX,
+                                                            temp_file_name,
+                                                            sizeof(temp_file_name)),
                                     (char *)data_string);
 
                             wx_decode(data_string, data_length, data_port);
@@ -12621,6 +12632,8 @@ void shut_down_server(void) {
 //
 static void restart(int sig) {
 
+    char temp_file_name[MAX_VALUE];
+
 //    if (debug_level & 1)
         fprintf(stderr,"Shutting down Xastir...\n");
 
@@ -12633,7 +12646,8 @@ static void restart(int sig) {
 
 #ifdef USE_PID_FILE_CHECK 
     // remove the PID file
-    unlink(get_user_base_dir("xastir.pid")); 
+    unlink(get_user_base_dir("xastir.pid", temp_file_name, 
+                             sizeof(temp_file_name))); 
 #endif
 
 #ifdef HAVE_LIBCURL
@@ -12659,6 +12673,8 @@ static void restart(int sig) {
 
 static void quit(int sig) {
 
+    char temp_file_name[MAX_VALUE];
+
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
 
@@ -12672,7 +12688,8 @@ static void quit(int sig) {
 
 #ifdef USE_PID_FILE_CHECK 
     // remove the PID file
-    unlink(get_user_base_dir("xastir.pid")); 
+    unlink(get_user_base_dir("xastir.pid",temp_file_name, 
+                             sizeof(temp_file_name))); 
 #endif
 
     if (debug_level & 1)
@@ -12702,6 +12719,7 @@ static int pid_file_check(int hold){
     int other_pid=0;
     char temp[32] ; 
     FILE * PIDFILE ; 
+    char temp_file_name[MAX_VALUE];
 
     /* Save our PID */
     
@@ -12709,7 +12727,8 @@ static int pid_file_check(int hold){
 
     xastir_snprintf(pidfile_name, sizeof(pidfile_name),
         "%s",
-        get_user_base_dir("xastir.pid")); 
+        get_user_base_dir("xastir.pid", temp_file_name, 
+                          sizeof(temp_file_name))); 
 
     if (filethere(pidfile_name)){
         fprintf(stderr,"Found pid file: %s\n",pidfile_name);
@@ -14696,6 +14715,8 @@ void process_RINO_waypoints(void) {
     char temp[MAX_FILENAME * 2];
     char line[301];
     float UTC_Offset;
+    char temp_file_name[MAX_VALUE];
+
 //    char datum[50];
 
 
@@ -14706,7 +14727,7 @@ void process_RINO_waypoints(void) {
     xastir_snprintf(temp,
         sizeof(temp),
         "%s/RINO.gpstrans",
-        get_user_base_dir("gps"));
+        get_user_base_dir("gps", temp_file_name, sizeof(temp_file_name)));
 
     f=fopen(temp,"r"); // Open for reading
 
@@ -15613,8 +15634,10 @@ void check_for_new_gps_map(int curr_sec) {
             && !gps_operation_pending) {
         FILE *f;
         char temp[MAX_FILENAME * 2];
+        char gps_base_dir[MAX_VALUE];
+        char temp_file_name[MAX_VALUE];
 
-
+        get_user_base_dir("gps",gps_base_dir, sizeof(gps_base_dir));
 //fprintf(stderr,"check_for_new_gps_map()\n");
 
 
@@ -15639,9 +15662,9 @@ void check_for_new_gps_map(int curr_sec) {
                 sizeof(temp),
                 "%s %s/%s %s/%s",
                 MV_PATH,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_temp_map_filename,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_map_filename);
 
             if ( system(temp) ) {
@@ -15657,9 +15680,9 @@ void check_for_new_gps_map(int curr_sec) {
                 sizeof(temp),
                 "%s %s/%s.shx %s/%s.shx",
                 MV_PATH,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_temp_map_filename_base,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_map_filename_base);
 
             if ( system(temp) ) {
@@ -15673,9 +15696,9 @@ void check_for_new_gps_map(int curr_sec) {
                 sizeof(temp),
                 "%s %s/%s.dbf %s/%s.dbf",
                 MV_PATH,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_temp_map_filename_base,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_map_filename_base);
 
             if ( system(temp) ) {
@@ -15692,7 +15715,7 @@ void check_for_new_gps_map(int curr_sec) {
             xastir_snprintf(temp,
                             sizeof(temp),
                             "%s/%s.prj",
-                            get_user_base_dir("gps"),
+                            gps_base_dir,
                             gps_map_filename_base);
             xastirWriteWKT(temp);
 
@@ -15709,7 +15732,7 @@ void check_for_new_gps_map(int curr_sec) {
                 xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%s/%s.dbfawk",
-                                get_user_base_dir("gps"),
+                                gps_base_dir,
                                 gps_map_filename_base);
                 f=fopen(temp,"w"); // open for write
                 if (f != NULL) {
@@ -15719,7 +15742,8 @@ void check_for_new_gps_map(int curr_sec) {
                 }
             }
             // Add the new gps map to the list of selected maps
-            f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "a" ); // Open for appending
+            f=fopen( get_user_base_dir(SELECTED_MAP_DATA, temp_file_name,
+                                       sizeof(temp_file_name)), "a" ); // Open for appending
             if (f!=NULL) {
 
 //WE7U:  Change this:
@@ -15751,7 +15775,7 @@ void check_for_new_gps_map(int curr_sec) {
 //                }
             }
             else {
-                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
+                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA, temp_file_name, sizeof(temp_file_name)) );
             }
         }
         else {
@@ -15779,7 +15803,9 @@ static void* gps_transfer_thread(void *arg) {
     char temp[500];
     char prefix[100];
     char postfix[100];
- 
+    char gps_base_dir[MAX_VALUE];
+
+    get_user_base_dir("gps", gps_base_dir, sizeof(gps_base_dir));
 
     // Set up the prefix string.  Note that we depend on the correct
     // setup of serial ports and such in GPSMan's configs.
@@ -15791,7 +15817,7 @@ static void* gps_transfer_thread(void *arg) {
     // "~/.xastir/gps/" directory.
     xastir_snprintf(postfix, sizeof(postfix),
         "Shapefile dim=2 %s/",
-        get_user_base_dir("gps"));
+        gps_base_dir);
 
     input_param = atoi((char *)arg);
 
@@ -15950,7 +15976,7 @@ static void* gps_transfer_thread(void *arg) {
                 sizeof(temp),
                 "(%s getwrite WP GPStrans %s/%s 2>&1) >/dev/null",
                 prefix,
-                get_user_base_dir("gps"),
+                gps_base_dir,
                 gps_temp_map_filename);
 
 // Execute the command
@@ -17871,6 +17897,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     int data_on,pos;
     int found;
     Atom delw;
+    char help_file_path[MAX_VALUE];
 
     data_on=0;
     pos=0;
@@ -17947,7 +17974,9 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                     args,
                     n);
 
-            f=fopen( get_user_base_dir(HELP_FILE), "r" );
+            get_user_base_dir(HELP_FILE, help_file_path, sizeof(help_file_path));
+
+            f=fopen( help_file_path , "r" );
             if (f!=NULL) {
                 while(!feof(f)) {
                     (void)get_line(f,temp2,200);
@@ -17968,7 +17997,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                 (void)fclose(f);
             }
             else
-                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(HELP_FILE) );
+                fprintf(stderr,"Couldn't open file: %s\n", help_file_path);
 
             button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                     xmPushButtonGadgetClass, 
@@ -18022,6 +18051,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     unsigned int ac = 0;           /* Arg Count */
     Atom delw;
     XmString str_ptr;
+    char help_file_path[MAX_VALUE];
 
     if(!help_index_dialog) {
         help_index_dialog = XtVaCreatePopupShell(langcode("WPUPHPI001"),
@@ -18075,7 +18105,10 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
                 ac);
 
         n=1;
-        f=fopen( get_user_base_dir(HELP_FILE), "r" );
+
+        get_user_base_dir(HELP_FILE, help_file_path, sizeof(help_file_path));
+
+        f=fopen( help_file_path, "r" );
         if (f!=NULL) {
             while (!feof(f)) {
                 (void)get_line(f,temp,600);
@@ -18087,7 +18120,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
             (void)fclose(f);
         }
         else
-            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(HELP_FILE) );
+            fprintf(stderr,"Couldn't open file: %s\n", help_file_path );
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPHPI002"),
                 xmPushButtonGadgetClass, 
@@ -19818,6 +19851,10 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     XmString *list;
     FILE *f;
     map_index_record *ptr = map_index_head;
+    char selected_map_path[MAX_VALUE];
+
+    get_user_base_dir(SELECTED_MAP_DATA, selected_map_path, 
+                      sizeof(selected_map_path));
 
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
@@ -19869,8 +19906,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     // whatever was there before.
 
     ptr = map_index_head;
-
-    f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "w+" );
+    f=fopen( selected_map_path , "w+" );
     if (f!=NULL) {
 
         while (ptr != NULL) {
@@ -19884,7 +19920,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
         (void)fclose(f);
     }
     else
-        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
+        fprintf(stderr,"Couldn't open file: %s\n", selected_map_path );
 
     map_chooser_destroy_shell(widget,clientData,callData);
 
@@ -19912,6 +19948,10 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
     XmString *list;
     FILE *f;
     map_index_record *ptr = map_index_head;
+    char selected_map_path[MAX_VALUE];
+
+    get_user_base_dir(SELECTED_MAP_DATA, selected_map_path, 
+                      sizeof(selected_map_path));
 
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
@@ -19964,7 +20004,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
 
     ptr = map_index_head;
 
-    f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "w+" );
+    f=fopen( selected_map_path, "w+" );
     if (f!=NULL) {
 
         while (ptr != NULL) {
@@ -19978,7 +20018,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
         (void)fclose(f);
     }
     else
-        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
+        fprintf(stderr,"Couldn't open file: %s\n", selected_map_path );
 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 
@@ -20319,6 +20359,10 @@ void map_chooser_init (void) {
     FILE *f;
     char temp[600];
     map_index_record *current;
+    char selected_map_path[MAX_VALUE];
+
+    get_user_base_dir(SELECTED_MAP_DATA, selected_map_path, 
+                      sizeof(selected_map_path));
 
 
     busy_cursor(appshell);
@@ -20331,9 +20375,9 @@ void map_chooser_init (void) {
         current = current->next;
     }
 
-    (void)filecreate( get_user_base_dir(SELECTED_MAP_DATA) );   // Create empty file if it doesn't exist
+    (void)filecreate( selected_map_path );   // Create empty file if it doesn't exist
 
-    f=fopen( get_user_base_dir(SELECTED_MAP_DATA), "r" );
+    f=fopen( selected_map_path, "r" );
     if (f!=NULL) {
         while(!feof(f)) {
             int done;
@@ -20357,7 +20401,7 @@ void map_chooser_init (void) {
         (void)fclose(f);
     }
     else {
-        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
+        fprintf(stderr,"Couldn't open file: %s\n", selected_map_path );
     }
 }
 
@@ -22038,7 +22082,7 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
     register unsigned int ac = 0;           /* Arg Count */
     Widget fs;
     Widget child;
-
+    char temp_base_dir[MAX_VALUE];
 
     if (read_selection_dialog!=NULL)
         read_file_selection_destroy_shell(read_selection_dialog, read_selection_dialog, NULL);
@@ -22047,7 +22091,7 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
 
         // This is necessary because the resources for setting the
         // directory in the FileSelectionDialog aren't working in Lesstif.
-        chdir( get_user_base_dir("logs") );
+        chdir( get_user_base_dir("logs", temp_base_dir, sizeof(temp_base_dir)) );
 
         /*set args for color */
         ac=0;
@@ -22066,7 +22110,7 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
                 ac);
 
         // Change back to the base directory 
-        chdir( get_user_base_dir("") );
+        chdir( get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir)) );
 
         fs=XmFileSelectionBoxGetChild(read_selection_dialog,(unsigned char)XmDIALOG_TEXT);
         XtVaSetValues(fs,XmNbackground, colors[0x0f],NULL);
@@ -22423,6 +22467,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     Widget lpomff_widget;
     int i;
     XmString cb_items[4];
+    char temp_base_dir[MAX_VALUE];
 
                                                                                                                         
 
@@ -22699,7 +22744,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                         "%s %s",
                         langcode("WPUPCFD031"),
 #ifdef OBJECT_DEF_FILE_USER_BASE
-                        get_user_base_dir("config"));
+                        get_user_base_dir("config", temp_base_dir, sizeof(temp_base_dir)));
 #else   // OBJECT_DEF_FILE_USER_BASE
                         get_data_base_dir("config"));
 #endif  // OBJECT_DEF_FILE_USER_BASE
@@ -27114,6 +27159,7 @@ int main(int argc, char *argv[], char *envp[]) {
     char temp[100];
     static char *Geometry = NULL;
     static int xt = 0;
+    char temp_base_dir[MAX_VALUE];
 
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
@@ -27568,11 +27614,11 @@ int main(int argc, char *argv[], char *envp[]) {
     */
 
     /* check user directories */
-    if (filethere(get_user_base_dir("")) != 1) {
+    if (filethere(get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user dir\n");
-        if (mkdir(get_user_base_dir(""),S_IRWXU) !=0){
+        if (mkdir(get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0){
                 fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                    get_user_base_dir(""), strerror(errno) );
+                        get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
 
                	// Creature to feep later? 
                	// needs <libgen.h> 
@@ -27584,65 +27630,65 @@ int main(int argc, char *argv[], char *envp[]) {
        
     }
 
-    if (filethere(get_user_base_dir("config")) != 1) {
+    if (filethere(get_user_base_dir("config", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user config dir\n");
-        if (mkdir(get_user_base_dir("config"),S_IRWXU) !=0){
+        if (mkdir(get_user_base_dir("config", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("config"), strerror(errno) );
+                get_user_base_dir("config", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }        	
     }
 
-    if (filethere(get_user_base_dir("data")) != 1) {
+    if (filethere(get_user_base_dir("data", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user data dir\n");
-        if (mkdir(get_user_base_dir("data"),S_IRWXU) !=0){
+        if (mkdir(get_user_base_dir("data", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("data"), strerror(errno) );
+                    get_user_base_dir("data", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }
     }
 
-    if (filethere(get_user_base_dir("logs")) != 1) {
+    if (filethere(get_user_base_dir("logs", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user log dir\n");
-        if (mkdir(get_user_base_dir("logs"),S_IRWXU) !=0 ){
+        if (mkdir(get_user_base_dir("logs", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0 ){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("logs"), strerror(errno) );
+                get_user_base_dir("logs", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }
     }
 
-    if (filethere(get_user_base_dir("tracklogs")) != 1) {
+    if (filethere(get_user_base_dir("tracklogs", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user tracklogs dir\n");
-        if (mkdir(get_user_base_dir("tracklogs"),S_IRWXU) !=0 ){
+        if (mkdir(get_user_base_dir("tracklogs", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0 ){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("tracklogs"), strerror(errno) );
+                get_user_base_dir("tracklogs", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }        	
     }
 
-    if (filethere(get_user_base_dir("tmp")) != 1) {
+    if (filethere(get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user tmp dir\n");
-        if (mkdir(get_user_base_dir("tmp"),S_IRWXU) !=0 ){
+        if (mkdir(get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0 ){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("tmp"), strerror(errno) );
+                get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }        	
     }
 
-    if (filethere(get_user_base_dir("gps")) != 1) {
+    if (filethere(get_user_base_dir("gps", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making user gps dir\n");
-        if ( mkdir(get_user_base_dir("gps"),S_IRWXU) !=0 ){
+        if ( mkdir(get_user_base_dir("gps", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0 ){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("gps"), strerror(errno) );
+                get_user_base_dir("gps", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }
     }
 
-    if (filethere(get_user_base_dir("map_cache")) != 1) {
+    if (filethere(get_user_base_dir("map_cache", temp_base_dir, sizeof(temp_base_dir))) != 1) {
         fprintf(stderr,"Making map_cache dir\n");
-        if (mkdir(get_user_base_dir("map_cache"),S_IRWXU) !=0 ){
+        if (mkdir(get_user_base_dir("map_cache", temp_base_dir, sizeof(temp_base_dir)),S_IRWXU) !=0 ){
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
-                get_user_base_dir("map_cache"), strerror(errno) );
+                get_user_base_dir("map_cache", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
         }
     }
@@ -27752,7 +27798,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 
     if (deselect_maps_on_startup) {
-        unlink( get_user_base_dir(SELECTED_MAP_DATA) );  // Remove the selected_maps.sys file
+        unlink( get_user_base_dir(SELECTED_MAP_DATA, temp_base_dir, sizeof(temp_base_dir)) );  // Remove the selected_maps.sys file
     }
 
     update_units(); // set up conversion factors and strings
@@ -27765,29 +27811,29 @@ int main(int argc, char *argv[], char *envp[]) {
             lang_to_use_or);
 
     xastir_snprintf(temp, sizeof(temp), "help/help-%s.dat", lang_to_use);
-    (void)unlink(get_user_base_dir("config/help.dat"));
+    (void)unlink(get_user_base_dir("config/help.dat", temp_base_dir, sizeof(temp_base_dir)));
 
     // Note that this symlink will probably not fail.  It's easy to
     // create a symlink that points to nowhere.
-    if (symlink(get_data_base_dir(temp),get_user_base_dir("config/help.dat")) == -1) {
+    if (symlink(get_data_base_dir(temp),get_user_base_dir("config/help.dat", temp_base_dir, sizeof(temp_base_dir))) == -1) {
         fprintf(stderr,"Error creating database link for help.dat\n");
         fprintf(stderr,
             "Couldn't create symlink: %s -> %s\n",
-            get_user_base_dir("config/help.dat"),
+            get_user_base_dir("config/help.dat", temp_base_dir, sizeof(temp_base_dir)),
             get_data_base_dir(temp));
         exit(0);  // Exiting 'cuz online help won't work.
     }
 
     xastir_snprintf(temp, sizeof(temp), "config/language-%s.sys", lang_to_use);
-    (void)unlink(get_user_base_dir("config/language.sys"));
+    (void)unlink(get_user_base_dir("config/language.sys", temp_base_dir, sizeof(temp_base_dir)));
 
     // Note that this symlink will probably not fail.  It's easy to
     // create a symlink that points to nowhere.
-    if (symlink(get_data_base_dir(temp),get_user_base_dir("config/language.sys")) == -1) {
+    if (symlink(get_data_base_dir(temp),get_user_base_dir("config/language.sys", temp_base_dir, sizeof(temp_base_dir))) == -1) {
         fprintf(stderr,"Error creating database link for language.sys\n");
         fprintf(stderr,
             "Couldn't create symlink: %s -> %s\n",
-            get_user_base_dir("config/language.sys"),
+            get_user_base_dir("config/language.sys", temp_base_dir, sizeof(temp_base_dir)),
             get_data_base_dir(temp));
         exit(0);    // We can't set our language, so exit.
     }
@@ -27812,7 +27858,7 @@ int main(int argc, char *argv[], char *envp[]) {
     Populate_predefined_objects(predefinedObjects); 
 
     if (load_color_file()) {
-        if (load_language_file(get_user_base_dir("config/language.sys"))) {
+        if (load_language_file(get_user_base_dir("config/language.sys", temp_base_dir, sizeof(temp_base_dir)))) {
             init_device_names();                // set interface names
             clear_message_windows();
             clear_popup_message_windows();
@@ -27930,7 +27976,7 @@ int main(int argc, char *argv[], char *envp[]) {
                 first_time_run = 1;
  
                 // Write the default map into the selected map file
-                ff = fopen( get_user_base_dir(SELECTED_MAP_DATA), "a");
+                ff = fopen( get_user_base_dir(SELECTED_MAP_DATA, temp_base_dir, sizeof(temp_base_dir)), "a");
                 if (ff != NULL) {
                     fprintf(ff,"worldhi.map\n");
                     (void)fclose(ff);

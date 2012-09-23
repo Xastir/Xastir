@@ -343,7 +343,7 @@ void create_map_from_trail(char *call_sign) {
         double *x;
         double *y;
         double *z;
-
+        char temp_base_dir[MAX_VALUE];
 
         count = 0;
         ptr = p_station->oldest_trackpoint;
@@ -410,7 +410,7 @@ void create_map_from_trail(char *call_sign) {
         //
         xastir_snprintf(temp, sizeof(temp),
             "%s/",
-            get_user_base_dir("tracklogs"));
+            get_user_base_dir("tracklogs", temp_base_dir, sizeof(temp_base_dir)));
 
         // Create filename
         xastir_snprintf(temp2, sizeof(temp2),

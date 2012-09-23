@@ -8496,6 +8496,7 @@ void output_my_aprs_data(void) {
     int port;
     char my_comment_tx[MAX_COMMENT+1];
     int interfaces_ok_for_transmit = 0;
+    char logfile_tmp_path[MAX_VALUE];
 
     // Check whether transmits are disabled globally
     if (transmit_disable) {
@@ -9309,7 +9310,9 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     if (log_net_data) {
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
                 VERSIONFRM, data_txt_save);
-        log_data( get_user_base_dir(LOGFILE_NET), (char *)data_txt );
+        log_data( get_user_base_dir(LOGFILE_NET, logfile_tmp_path, 
+                                    sizeof(logfile_tmp_path)), 
+                  (char *)data_txt );
     }
 
 
@@ -9343,7 +9346,9 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     if (log_tnc_data) {
         if (header_txt_save[0] != '\0') {
             xastir_snprintf(data_txt, sizeof(data_txt), "%s%s", header_txt_save, data_txt_save);
-            log_data( get_user_base_dir(LOGFILE_TNC), (char *)data_txt );
+            log_data( get_user_base_dir(LOGFILE_TNC, logfile_tmp_path, 
+                                        sizeof(logfile_tmp_path)), 
+                      (char *)data_txt );
         }
     }
 
@@ -9384,6 +9389,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     char output_net[256];
     int ok, start, finish, port;
     int done;
+    char logfile_tmp_path[MAX_VALUE];
 
     // Check whether transmits are disabled globally
     if (transmit_disable && !loopback_only) {
@@ -9867,7 +9873,9 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
         fprintf(stderr,"output_my_data: Transmitting and decoding: %s\n", data_txt);
 
     if (log_net_data)
-        log_data( get_user_base_dir(LOGFILE_NET), (char *)data_txt );
+      log_data( get_user_base_dir(LOGFILE_NET, logfile_tmp_path, 
+                                  sizeof(logfile_tmp_path)), 
+                (char *)data_txt );
 
 
     // Note that this will only log one TNC line per transmission now matter
@@ -9877,7 +9885,9 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     if (data_txt_save[0] != '\0') {
         xastir_snprintf(data_txt, sizeof(data_txt), "%s%s", data_txt_save, message);
         if (log_tnc_data)
-            log_data( get_user_base_dir(LOGFILE_TNC), (char *)data_txt );
+            log_data( get_user_base_dir(LOGFILE_TNC, logfile_tmp_path, 
+                                  sizeof(logfile_tmp_path)), 
+                      (char *)data_txt );
     }
 
 

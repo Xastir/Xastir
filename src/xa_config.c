@@ -165,10 +165,7 @@ int get_string(char *option, char *value, int value_size) {
 
     if (fin == NULL) {
 
-        xastir_snprintf(config_file,
-            sizeof(config_file),
-            "%s",
-            get_user_base_dir(CONFIG_FILE));
+        get_user_base_dir(CONFIG_FILE, config_file, sizeof(config_file));
 
         // filecreate() refuses to create a new file if it already
         // exists.
@@ -356,9 +353,29 @@ float get_float(char *option, float low, float high, float def) {
 
 
 
-
-char *get_user_base_dir(char *dir) {
-    static char base[MAX_VALUE];
+// Note on get_user_base_dir
+//
+// The original implementation of this function used a static char array
+// to do all the path construction, and returned a pointer to that array.
+// 
+// This function was changed in Sept 2012 to remove its original use
+// of a single static char array.  That version was highly unsafe in a 
+// threaded environment, and was used routinely in multiple threads.
+// Even inserting mutexes to prevent simultaneous writes by multiple threads
+// wasn't good enough, because once the mutex was released there was no
+// guarantee that one thread would not write into the static array while
+// another thread was reading it.  The result was that it was sometimes 
+// possible for paths to get corrupted, especially if multiple logging
+// options and png snapshots were simultaneously selected.
+//
+// Prior to the change, one called this as:
+// ptr = get_user_base_dir("pathfragment");
+// and ptr was always a pointer to the static char array.  Now 
+// the caller is responsible for passing in the array into which we'll 
+// write.  This way, threads should never be clobbering each other's paths
+// returned from this routine.
+// 
+char *get_user_base_dir(char *dir, char * base, size_t base_size) {
     char *env_ptr;
 
    // fprintf(stderr,"base: %s \nxa_config_dir: %s\n", base, xa_config_dir);
@@ -366,35 +383,35 @@ char *get_user_base_dir(char *dir) {
     switch (xa_config_dir[0]) {
     case '/':
 	//have some path
-        xastir_snprintf(base, sizeof(base), "%s",xa_config_dir);
+        xastir_snprintf(base, base_size, "%s",xa_config_dir);
         break; 
 
     case '\0' : 
         // build from scratch
         xastir_snprintf(base,
-            sizeof(base),
+            base_size,
             "%s",
             ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
 
         if (base[strlen (base) - 1] != '/')
-            strncat (base, "/", sizeof(base) - 1 - strlen(base));
+            strncat (base, "/", base_size - 1 - strlen(base));
 
-        strncat (base, ".xastir/", sizeof(base) - 1 - strlen(base));
+        strncat (base, ".xastir/", base_size - 1 - strlen(base));
         break ;
 
     default: 
         // Unqualified path
-        xastir_snprintf(base, sizeof(base), "%s",
+        xastir_snprintf(base, base_size, "%s",
             ((env_ptr = getenv ("PWD")) != NULL) ? env_ptr : user_dir);
 
        	if (base[strlen (base) - 1] != '/')
-            strncat (base, "/", sizeof(base) - 1 - strlen(base));
+            strncat (base, "/", base_size - 1 - strlen(base));
 
-        strncat (base, xa_config_dir, sizeof(base) - 1 - strlen(base));
+        strncat (base, xa_config_dir, base_size - 1 - strlen(base));
     }
     
     if (base[strlen (base) - 1] != '/')
-        strncat (base, "/", sizeof(base) - 1 - strlen(base));
+        strncat (base, "/", base_size - 1 - strlen(base));
 
     // Save base so we monkey around less later. 
     
@@ -402,7 +419,7 @@ char *get_user_base_dir(char *dir) {
 
     // Append dir and return 
     
-    return strncat(base, dir, sizeof(base) - 1 - strlen(base));
+    return strncat(base, dir, base_size - 1 - strlen(base));
 
 }
 
@@ -429,7 +446,8 @@ char *get_data_base_dir(char *dir) {
     if (base[strlen (base) - 1] != '/')
         strncat(base, "/", sizeof(base) - 1 - strlen(base));
 
-    return strncat(base, dir, sizeof(base) - 1 - strlen(base));
+    strncat(base, dir, sizeof(base) - 1 - strlen(base));
+    return base;
 }
 
 
@@ -476,10 +494,8 @@ void save_data(void)  {
 //        fprintf(stderr,"Store String Start\n");
 
     // The new file we'll create
-    xastir_snprintf(config_file_tmp,
-        sizeof(config_file_tmp),
-        "%s",
-        get_user_base_dir(CONFIG_FILE_TMP));
+    get_user_base_dir(CONFIG_FILE_TMP, config_file_tmp, 
+                      sizeof(config_file_tmp));
 
     // Save to the new config file
     fout = fopen (config_file_tmp, "a");
@@ -1125,30 +1141,19 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         (void)fclose (fout);
 
 
-        xastir_snprintf(config_file,
-            sizeof(config_file),
-            "%s",
-            get_user_base_dir(CONFIG_FILE));
+        get_user_base_dir(CONFIG_FILE, config_file, sizeof(config_file));
 
-        xastir_snprintf(config_file_bak1,
-            sizeof(config_file_bak1),
-            "%s",
-            get_user_base_dir(CONFIG_FILE_BAK1));
+        get_user_base_dir(CONFIG_FILE_BAK1, config_file_bak1, 
+                          sizeof(config_file_bak1));
 
-        xastir_snprintf(config_file_bak2,
-            sizeof(config_file_bak2),
-            "%s",
-            get_user_base_dir(CONFIG_FILE_BAK2));
+        get_user_base_dir(CONFIG_FILE_BAK2, config_file_bak2, 
+                          sizeof(config_file_bak2));
 
-        xastir_snprintf(config_file_bak3,
-            sizeof(config_file_bak3),
-            "%s",
-            get_user_base_dir(CONFIG_FILE_BAK3));
+        get_user_base_dir(CONFIG_FILE_BAK3, config_file_bak3, 
+                          sizeof(config_file_bak3));
  
-        xastir_snprintf(config_file_bak4,
-            sizeof(config_file_bak4),
-            "%s",
-            get_user_base_dir(CONFIG_FILE_BAK4));
+        get_user_base_dir(CONFIG_FILE_BAK4,config_file_bak4, 
+                          sizeof(config_file_bak4));
 
 
         //
@@ -1322,14 +1327,14 @@ void load_data_or_default(void) {
     char name_temp[20];
     char name[50];
     long temp;
-
+    char user_base_dir[MAX_VALUE];
 
     // Force the locale to a default so that we don't have
     // conversion problems due to LANG/LC_ALL/LC_CTYPE/LC_NUMERIC
     // environment variables.
     (void)setlocale(LC_NUMERIC, "C");
     (void)setlocale(LC_CTYPE, "C");
-
+    
     /* language */
     if (!get_string ("LANGUAGE", lang_to_use, sizeof(lang_to_use))
             || lang_to_use[0] == '\0') {
@@ -1449,11 +1454,12 @@ void load_data_or_default(void) {
             "%s",
 #ifdef LPR_PATH
             // Path to LPR if defined
-            LPR_PATH);
+            LPR_PATH
 #else // LPR_PATH
             // Empty path
-            "");
+            ""
 #endif // LPR_PATH
+            );
     }
     if (!get_string ("PREVIEWER_PROGRAM", previewer_program, sizeof(previewer_program))
             || previewer_program[0] == '\0') {
@@ -1462,11 +1468,12 @@ void load_data_or_default(void) {
             "%s",
 #ifdef GV_PATH
             // Path to GV if defined
-            GV_PATH);
+            GV_PATH
 #else // GV_PATH
             // Empty path
-            "");
+            ""
 #endif // GV_PATH
+            );
     }
 
     letter_style = get_int ("MAP_LETTERSTYLE", 0, 2, 1);
@@ -1516,9 +1523,14 @@ void load_data_or_default(void) {
             "%s",
             "config/selected_maps.sys");
     }
+    
+    // get the base path for the user base directory, so we can use it over
+    // and over without having to call get_user_base_dir a godzillion times.
+    get_user_base_dir("",user_base_dir, sizeof(user_base_dir));
+
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), SELECTED_MAP_DATA, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, SELECTED_MAP_DATA, strlen(user_base_dir)) == 0)
          xastir_snprintf(SELECTED_MAP_DATA,
             sizeof(SELECTED_MAP_DATA),
             "%s",
@@ -1533,7 +1545,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), MAP_INDEX_DATA, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, MAP_INDEX_DATA, strlen(user_base_dir)) == 0)
         xastir_snprintf(MAP_INDEX_DATA,
             sizeof(MAP_INDEX_DATA),
             "%s",
@@ -1564,7 +1576,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), group_data_file, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, group_data_file, strlen(user_base_dir)) == 0)
         xastir_snprintf(group_data_file,
              sizeof(group_data_file),
             "%s",
@@ -2103,7 +2115,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), LOGFILE_TNC, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, LOGFILE_TNC, strlen(user_base_dir)) == 0)
          xastir_snprintf(LOGFILE_TNC,
             sizeof(LOGFILE_TNC),
             "%s",
@@ -2132,7 +2144,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), LOGFILE_IGATE, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, LOGFILE_IGATE, strlen(user_base_dir)) == 0)
          xastir_snprintf(LOGFILE_IGATE,
             sizeof(LOGFILE_IGATE),
             "%s",
@@ -2147,7 +2159,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), LOGFILE_NET, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, LOGFILE_NET, strlen(user_base_dir)) == 0)
         xastir_snprintf(LOGFILE_NET,
             sizeof(LOGFILE_NET),
             "%s",
@@ -2162,7 +2174,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), LOGFILE_WX, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, LOGFILE_WX, strlen(user_base_dir)) == 0)
         xastir_snprintf(LOGFILE_WX,
             sizeof(LOGFILE_WX),
             "%s",
@@ -2177,7 +2189,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), LOGFILE_MESSAGE, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, LOGFILE_MESSAGE, strlen(user_base_dir)) == 0)
         xastir_snprintf(LOGFILE_MESSAGE,
             sizeof(LOGFILE_MESSAGE),
             "%s",
@@ -2192,7 +2204,7 @@ void load_data_or_default(void) {
     }
     // Check for old complete path, change to new short path if a
     // match
-    if (strncmp( get_user_base_dir(""), LOGFILE_WX_ALERT, strlen(get_user_base_dir(""))) == 0)
+    if (strncmp( user_base_dir, LOGFILE_WX_ALERT, strlen(user_base_dir)) == 0)
         xastir_snprintf(LOGFILE_WX_ALERT,
             sizeof(LOGFILE_WX_ALERT),
             "%s",

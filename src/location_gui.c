@@ -109,6 +109,7 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     char s_lat[20];
     char s_long[20];
     char s_sz[10];
+    char location_file_path[MAX_VALUE];
 
     found=0;
     XtVaGetValues(location_list,XmNitemCount,&i,XmNitems,&list,NULL);
@@ -120,9 +121,10 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 x=i+1;
         }
     }
-
+    get_user_base_dir("config/locations.sys", location_file_path, 
+                      sizeof(location_file_path));
     if (found) {
-        f=fopen(get_user_base_dir("config/locations.sys"),"r");
+        f=fopen(location_file_path,"r");
         if (f!=NULL) {
             done=0;
             while (!feof(f) & !done) {
@@ -152,7 +154,7 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
             (void)fclose(f);
         }
         else {
-            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+            fprintf(stderr,"Couldn't open file: %s\n", location_file_path );
         }
         XtFree(location);
     }
@@ -170,8 +172,14 @@ void jump_sort(void) {
     char name[100];
     char *temp_ptr;
     FILE *f;
+    char location_file_path[MAX_VALUE];
+    char location_db_file_path[MAX_VALUE];
 
-    f=fopen(get_user_base_dir("config/locations.sys"),"r");
+    get_user_base_dir("config/locations.sys", location_file_path, 
+                      sizeof(location_file_path));
+    get_user_base_dir("data/locations_db.dat", location_db_file_path, 
+                      sizeof(location_db_file_path));
+    f=fopen(location_file_path,"r");
     if (f!=NULL) {
         while (!feof(f)) {
             (void)get_line(f,temp,200);
@@ -182,14 +190,14 @@ void jump_sort(void) {
                         sizeof(name),
                         "%s",
                         temp);
-                    (void)sort_input_database(get_user_base_dir("data/locations_db.dat"),name,200);
+                    (void)sort_input_database(location_db_file_path,name,200);
                 }
             }
         }
         (void)fclose(f);
     }
     else
-        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+        fprintf(stderr,"Couldn't open file: %s\n", location_file_path );
 }
 
 
@@ -211,6 +219,13 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     char *temp_ptr;
     char filen[400];
     char filen_bak[400];
+    char location_file_path[MAX_VALUE];
+    char location_sys_path[MAX_VALUE];
+
+    get_user_base_dir("config/locations.sys", location_file_path, 
+                      sizeof(location_file_path));
+    get_user_base_dir("config/locations.sys-tmp", location_sys_path, 
+                      sizeof(location_sys_path));
 
     found=0;
     ok=0;
@@ -226,9 +241,9 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         }
     }
     if(found) {
-        f=fopen(get_user_base_dir("config/locations.sys"),"r");
+        f=fopen(location_file_path,"r");
         if (f!=NULL) {
-            fout=fopen(get_user_base_dir("config/locations.sys-tmp"),"a");
+            fout=fopen(location_sys_path,"a");
             if (fout!=NULL) {
                 while (!feof(f)) {
                     (void)get_line(f,temp,200);
@@ -254,12 +269,12 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
                 ok=1;
             }
             else
-                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys-tmp") );
+              fprintf(stderr,"Couldn't open file: %s\n", location_sys_path );
 
             (void)fclose(f);
         }
         else {
-            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+            fprintf(stderr,"Couldn't open file: %s\n", location_file_path );
         }
         XtFree(location);
     }
@@ -269,12 +284,12 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         xastir_snprintf(filen,
             sizeof(filen),
             "%s",
-            get_user_base_dir("config/locations.sys"));
+            location_file_path);
 
         xastir_snprintf(filen_bak,
             sizeof(filen_bak),
             "%s",
-            get_user_base_dir("config/locations.sys-tmp"));
+            location_sys_path);
 
         (void)unlink(filen);
         (void)rename(filen_bak,filen);
@@ -298,6 +313,14 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
     char *temp_ptr;
     Widget my_text = (Widget) clientData;
     int len,n,found;
+    char location_file_path[MAX_VALUE];
+    char location_db_path[MAX_VALUE];
+
+    get_user_base_dir("config/locations.sys", location_file_path, 
+                      sizeof(location_file_path));
+
+    get_user_base_dir("data/locations_db.dat", location_db_path, 
+                      sizeof(location_db_path));
 
 
     temp_ptr = XmTextFieldGetString(my_text);
@@ -311,7 +334,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
     XmTextFieldSetString(my_text,"");
     /* should check for name used already */
     found=0;
-    f=fopen(get_user_base_dir("config/locations.sys"),"r");
+    f=fopen(location_file_path,"r");
     if (f!=NULL) {
         while (!feof(f) && !found) {
             (void)get_line(f,temp,200);
@@ -326,14 +349,14 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
         (void)fclose(f);
     }
     else
-        fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+        fprintf(stderr,"Couldn't open file: %s\n", location_file_path );
 
     if (!found) {
         /* delete entire list available */
         XmListDeleteAllItems(location_list);
         len = (int)strlen(name);
         if (len>0 && len<100){
-            fout = fopen(get_user_base_dir("config/locations.sys"),"a");
+            fout = fopen(location_file_path,"a");
             if (fout!=NULL) {
                 convert_lat_l2s(center_latitude, s_lat, sizeof(s_lat), CONVERT_HP_NOSP);
                 convert_lon_l2s(center_longitude, s_long, sizeof(s_long), CONVERT_HP_NOSP);
@@ -341,15 +364,15 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
                 (void)fclose(fout);
             }
             else
-                fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
+                fprintf(stderr,"Couldn't open file: %s\n", location_file_path );
         } else
             popup_message_always(langcode("POPEM00022"),langcode("POPEM00023"));
 
         /* resort the list and put it back up */
         n=1;
-        clear_sort_file(get_user_base_dir("data/locations_db.dat"));
+        clear_sort_file(location_db_path);
         jump_sort();
-        sort_list(get_user_base_dir("data/locations_db.dat"),200,location_list,&n);
+        sort_list(location_db_path,200,location_list,&n);
     } else
         popup_message_always(langcode("POPEM00022"),langcode("POPEM00024")); /* dupe name */
 }
@@ -367,6 +390,10 @@ void Jump_location(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     Arg al[50];           /* Arg List */
     unsigned int ac = 0;           /* Arg Count */
     Atom delw;
+    char location_db_path[MAX_VALUE];
+
+    get_user_base_dir("data/locations_db.dat", location_db_path, 
+                      sizeof(location_db_path));
 
     if(!location_dialog) {
 
@@ -423,9 +450,9 @@ begin_critical_section(&location_dialog_lock, "location_gui.c:Jump_location" );
                 ac);
 
         n=1;
-        clear_sort_file(get_user_base_dir("data/locations_db.dat"));
+        clear_sort_file(location_db_path);
         jump_sort();
-        sort_list(get_user_base_dir("data/locations_db.dat"),200,location_list,&n);
+        sort_list(location_db_path,200,location_list,&n);
 
         locdata = XtVaCreateManagedWidget(langcode("JMLPO00003"),
                 xmLabelWidgetClass, 

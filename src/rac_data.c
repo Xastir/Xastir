@@ -102,13 +102,16 @@ int build_rac_index(void) {
     unsigned long call_offset = 0;
     unsigned long x = 0;
     char racdata[RAC_DATA_LEN+8];
+    char amacall_path[MAX_VALUE];
+
+    get_user_base_dir("data/AMACALL.ndx", amacall_path, sizeof(amacall_path));
 
     /* ====================================================================    */
     /*    If the index file is there, exit                */
     /*                                    */
-    if (filethere(get_user_base_dir("data/AMACALL.ndx"))) {
+    if (filethere(amacall_path)) {
         /* if file is there make sure the index date is newer */
-        if(file_time(get_data_base_dir("fcc/AMACALL.LST"))<=file_time(get_user_base_dir("data/AMACALL.ndx"))) {
+      if(file_time(amacall_path)<=file_time(amacall_path)) {
             return(1);
         } else {
 
@@ -130,9 +133,9 @@ int build_rac_index(void) {
         return(0);
     }
 
-    fndx=fopen(get_user_base_dir("data/AMACALL.ndx"),"w");
+    fndx=fopen(amacall_path,"w");
     if (fndx==NULL) {
-        fprintf(stderr,"Build:Could not open/create RAC data base index: %s\n", get_user_base_dir("data/AMACALL.ndx") );
+        fprintf(stderr,"Build:Could not open/create RAC data base index: %s\n", amacall_path );
         (void)fclose(fdb);
         return(0);
     }
@@ -211,6 +214,9 @@ int search_rac_data(char *callsign, rac_record *data) {
     int found = 0;
     rac_record racdata;
     /*char        filler[8];*/
+    char amacall_path[MAX_VALUE];
+
+    get_user_base_dir("data/AMACALL.ndx", amacall_path, sizeof(amacall_path));
 
 
     xastir_snprintf(index, sizeof(index)," ");
@@ -220,7 +226,7 @@ int search_rac_data(char *callsign, rac_record *data) {
     /*    Search thru the index, get the RBA                */
     /*                                    */
 
-    fndx = fopen(get_user_base_dir("data/AMACALL.ndx"), "r");
+    fndx = fopen(amacall_path, "r");
     if(fndx != NULL) {
         rc = fgets(index, (int)sizeof(index), fndx);
         xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
@@ -231,7 +237,7 @@ int search_rac_data(char *callsign, rac_record *data) {
     } else {
         fprintf(stderr,
             "Search:Could not open RAC data base index: %s\n",
-            get_user_base_dir("data/AMACALL.ndx") );
+            amacall_path );
 
         return (0);
     }

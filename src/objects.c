@@ -346,8 +346,9 @@ int valid_item(char *name) {
 void Object_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char *file;
     FILE *f;
+    char temp_file_path[MAX_VALUE];
 
-    file = get_user_base_dir("config/object.log");
+    file = get_user_base_dir("config/object.log", temp_file_path, sizeof(temp_file_path));
 
     f=fopen(file,"w");
     if (f!=NULL) {
@@ -2988,12 +2989,12 @@ void Save_CAD_Objects_to_file(void) {
     FILE *f;
     char *file;
     CADRow *object_ptr = CAD_list_head;
-
+    char temp_file_path[MAX_VALUE];
 
     fprintf(stderr,"Saving CAD objects to file\n");
 
     // Save in ~/.xastir/config/CAD_object.log
-    file = get_user_base_dir("config/CAD_object.log");
+    file = get_user_base_dir("config/CAD_object.log", temp_file_path, sizeof(temp_file_path));
     f = fopen(file,"w+");
 
     if (f == NULL) {
@@ -3048,13 +3049,13 @@ void Restore_CAD_Objects_from_file(void) {
     FILE *f;
     char *file;
     char line[MAX_FILENAME];
-
+    char temp_file_path[MAX_VALUE];
 #ifdef CAD_DEBUG
     fprintf(stderr,"Restoring CAD objects from file\n");
 #endif
 
     // Restore from ~/.xastir/config/CAD_object.log
-    file = get_user_base_dir("config/CAD_object.log");
+    file = get_user_base_dir("config/CAD_object.log", temp_file_path, sizeof(temp_file_path));
     f = fopen(file,"r");
 
     if (f == NULL) {
@@ -6837,9 +6838,15 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     FILE *fp_file;
     int j = 0;
     char error_correct_location[256];
+    char predef_obj_path[MAX_VALUE];
+    char temp_file_path[MAX_VALUE];
+
 
     xastir_snprintf(line,sizeof(line),"%s","\0");
     xastir_snprintf(predefined_object_definition_file,sizeof(predefined_object_definition_file),"config/%s",predefined_object_definition_filename);
+
+    get_user_base_dir(predefined_object_definition_file, predef_obj_path, 
+                      sizeof(predef_obj_path));
 
     number_of_predefined_objects = 0;
 
@@ -6849,8 +6856,8 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
         // if this fails, use the hardcoded SAR default instead.
 //        fprintf(stderr,"Checking for predefined objects menu file\n");
 #ifdef OBJECT_DEF_FILE_USER_BASE
-        if (filethere(get_user_base_dir(predefined_object_definition_file))) {
-            fp_file = fopen(get_user_base_dir(predefined_object_definition_file),"r");
+        if (filethere(predef_obj_path)) {
+            fp_file = fopen(predef_obj_path,"r");
 #else   // OBJECT_DEF_FILE_USER_BASE
         if (filethere(get_data_base_dir(predefined_object_definition_file))) {
             fp_file = fopen(get_data_base_dir(predefined_object_definition_file),"r");
@@ -6860,7 +6867,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                 sizeof(error_correct_location),
                 "Loading from %s/%s \n",
 #ifdef OBJECT_DEF_FILE_USER_BASE
-                get_user_base_dir("config"),
+                get_user_base_dir("config", temp_file_path, sizeof(temp_file_path)),
 #else   // OBJECT_DEF_FILE_USER_BASE
                 get_data_base_dir("config"),
 #endif  // OBJECT_DEF_FILE_USER_BASE
@@ -6958,7 +6965,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
                 sizeof(error_correct_location),
                 "File should be in %s\n",
 #ifdef OBJECT_DEF_FILE_USER_BASE
-                get_user_base_dir("config"));
+                get_user_base_dir("config", temp_file_path, sizeof(temp_file_path)));
 #else   // OBJECT_DEF_FILE_USER_BASE
                 get_data_base_dir("config"));
 #endif  // OBJECT_DEF_FILE_USER_BASE
@@ -10841,19 +10848,9 @@ void disown_object_item(char *call_sign, char *new_owner) {
             call_sign, new_owner);
     }
 
-    ptr =  get_user_base_dir("config/object.log");
+    get_user_base_dir("config/object.log", file, sizeof(file));
 
-    xastir_snprintf(file,
-        sizeof(file),
-        "%s",
-        ptr);
-
-    ptr =  get_user_base_dir("config/object-temp.log");
-
-    xastir_snprintf(file_temp,
-        sizeof(file_temp),
-        "%s",
-        ptr);
+    get_user_base_dir("config/object-temp.log", file_temp, sizeof(file_temp));
 
     //fprintf(stderr,"%s\t%s\n",file,file_temp);
 
@@ -10987,10 +10984,10 @@ void disown_object_item(char *call_sign, char *new_owner) {
 // transmitted again after a restart).  See disown_object_item().
 //
 void log_object_item(char *line, int disable_object, char *object_name) {
-    char *file;
+    char file[MAX_VALUE];
     FILE *f;
 
-    file = get_user_base_dir("config/object.log");
+    get_user_base_dir("config/object.log", file, sizeof(file));
 
     f=fopen(file,"a");
     if (f!=NULL) {
@@ -11030,14 +11027,14 @@ void log_object_item(char *line, int disable_object, char *object_name) {
 // out, then mark them with a '#' in the log file at that point.
 //
 void reload_object_item(void) {
-    char *file;
+    char file[MAX_VALUE];
     FILE *f;
     char line[300+1];
     char line2[300+1];
     int save_state;
 
 
-    file = get_user_base_dir("config/object.log");
+    get_user_base_dir("config/object.log", file, sizeof(file));
 
     f=fopen(file,"r");
     if (f!=NULL) {

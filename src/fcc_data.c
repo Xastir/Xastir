@@ -94,6 +94,7 @@ int build_fcc_index(int type){
     char fccdata[FCC_DATA_LEN+8];
     char database_name[100];
     int found,i,num;
+    char appl_file_path[MAX_VALUE];
 
     if (type==1)
         xastir_snprintf(database_name, sizeof(database_name), "fcc/appl.dat");
@@ -103,9 +104,11 @@ int build_fcc_index(int type){
     /* ====================================================================    */
     /*    If the index file is there, exit                */
     /*                                    */
-    if (filethere(get_user_base_dir("data/appl.ndx"))) {
+    get_user_base_dir("data/appl.ndx", appl_file_path, 
+                      sizeof(appl_file_path));
+    if (filethere(appl_file_path)) {
         /* if file is there make sure the index date is newer */
-        if (file_time(get_data_base_dir(database_name))<=file_time(get_user_base_dir("data/appl.ndx")))
+        if (file_time(get_data_base_dir(database_name))<=file_time(appl_file_path))
             return(1);
         else {
             // FCC index old, rebuilding
@@ -127,9 +130,9 @@ int build_fcc_index(int type){
         return(0);
     }
 
-    fndx=fopen(get_user_base_dir("data/appl.ndx"),"w");
+    fndx=fopen(appl_file_path,"w");
     if (fndx==NULL){
-        fprintf(stderr,"Build:Could not open/create FCC data base index: %s\n", get_user_base_dir("data/appl.ndx") );
+        fprintf(stderr,"Build:Could not open/create FCC data base index: %s\n", appl_file_path );
         (void)fclose(fdb);
         return(0);
     }
@@ -244,6 +247,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     long call_offset = 0;
     char char_offset[16];
     char index[32];
+    char appl_file_path[MAX_VALUE];
 
     data->id_file_num[0] = '\0';
     data->type_purpose[0] = '\0';
@@ -286,7 +290,8 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     // This gives us a jumping-off point to start looking in the right
     // neighborhood for the callsign of interest.
     //
-    fndx=fopen(get_user_base_dir("data/appl.ndx"),"r");
+    get_user_base_dir("data/appl.ndx", appl_file_path, sizeof(appl_file_path));
+    fndx=fopen(appl_file_path,"r");
     if (fndx!=NULL){
         (void)fgets(index,(int)sizeof(index),fndx);
         xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
@@ -299,7 +304,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
             (void)fgets(index,(int)sizeof(index),fndx);
         }
     } else {
-        fprintf(stderr,"Search:Could not open FCC data base index: %s\n", get_user_base_dir("data/appl.ndx") );
+        fprintf(stderr,"Search:Could not open FCC data base index: %s\n", appl_file_path );
         return (0);
     }
     call_offset = atol(char_offset);

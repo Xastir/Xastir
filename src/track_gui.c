@@ -633,6 +633,9 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     pthread_t download_trail_thread;
     static XtPointer download_client_data = NULL;
 
+    char tmp_base_dir[MAX_VALUE];
+
+    get_user_base_dir("tmp",tmp_base_dir, sizeof(tmp_base_dir));
 
     // If we're already fetching a trail, we shouldn't be calling
     // this callback function.  Get out.
@@ -662,7 +665,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     xastir_snprintf(log_filename,
         sizeof(log_filename),
         "%s/map.log",
-        get_user_base_dir("tmp"));
+        tmp_base_dir);
 
     // Erase any previously existing local file by the same name.
     // This avoids the problem of having an old tracklog here and

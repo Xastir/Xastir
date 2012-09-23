@@ -490,6 +490,7 @@ void output_igate_net(char *line, int port, int third_party) {
     char *message;
     int len,i,x,first;
     int igate_options;
+    char log_file_path[MAX_VALUE];
 
     call_sign = NULL;
     path      = NULL;
@@ -528,6 +529,7 @@ void output_igate_net(char *line, int port, int third_party) {
     if (path == NULL)
         return;
 
+    get_user_base_dir(LOGFILE_IGATE,log_file_path, sizeof(log_file_path));
     // Check for "TCPIP" or "TCPXX" in the path.  If found, don't
     // gate this into the internet again, it's already been gated to
     // RF, which means it's already been on the 'net.  No looping
@@ -553,12 +555,12 @@ void output_igate_net(char *line, int port, int third_party) {
                     "IGATE RF->NET(%c):%s\n",
                     third_party ? 'T':'N',
                     line);
-                log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                log_data( log_file_path, temp );
 
                 xastir_snprintf(temp,
                     sizeof(temp),
                     "REJECT: Packet was gated before or shouldn't be gated!\n");
-                log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                log_data( log_file_path, temp );
 
                 fprintf(stderr, "%s", temp);
         }
@@ -582,12 +584,12 @@ void output_igate_net(char *line, int port, int third_party) {
                 "IGATE RF->NET(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: Third party traffic!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             fprintf(stderr, "%s", temp);
         }
@@ -611,12 +613,12 @@ void output_igate_net(char *line, int port, int third_party) {
                 "IGATE RF->NET(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: General Query!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             fprintf(stderr, "%s", temp);
         }
@@ -643,12 +645,12 @@ void output_igate_net(char *line, int port, int third_party) {
                 "IGATE RF->NET(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: From my call!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             fprintf(stderr, "%s", temp);
         }
@@ -696,13 +698,13 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                 "IGATE RF->NET(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: No RF->NET from input port [%d]!\n",
                 port);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             fprintf(stderr, "%s", temp);
         }
@@ -739,7 +741,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                         "IGATE RF->NET(%c):%s\n",
                         third_party ? 'T':'N',
                         line);
-                    log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                    log_data( log_file_path, temp );
 
                     first = 0;
                 }
@@ -753,7 +755,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
                 // log output
                 if (log_igate)
-                    log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                    log_data( log_file_path, temp );
 
                 if (debug_level & 1024)
                     fprintf(stderr,"%s\n",temp);
@@ -786,6 +788,8 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     int x;
     int first = 1;
     int found_in_nws_file = 0;
+    char log_file_path[MAX_VALUE];
+    char nws_file_path[MAX_VALUE];
 
 
     if ( (from == NULL) || (call == NULL) || (path == NULL) || (line == NULL) )
@@ -797,6 +801,9 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     // Should we Igate from NET->RF?
     if (operate_as_an_igate <= 1)
         return;
+
+
+    get_user_base_dir(LOGFILE_IGATE,log_file_path, sizeof(log_file_path));
 
     // Don't gate anything with NOGATE in it, in either direction.
     // Same for OpenTrac packets.
@@ -810,12 +817,12 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                 "IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: NOGATE found in path or shouldn't be gated!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return;
@@ -836,12 +843,12 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                 "IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: General Query!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return;
@@ -849,9 +856,11 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
 
 
      // check to see if the nws-stations file is newer than last read
-    if (last_nws_stations_file_time < file_time(get_user_base_dir("data/nws-stations.txt"))) {
-        last_nws_stations_file_time = file_time(get_user_base_dir("data/nws-stations.txt"));
-        load_NWS_stations(get_user_base_dir("data/nws-stations.txt"));
+    get_user_base_dir("data/nws-stations.txt",nws_file_path, 
+                      sizeof(nws_file_path));
+    if (last_nws_stations_file_time < file_time(nws_file_path)) {
+        last_nws_stations_file_time = file_time(nws_file_path);
+        load_NWS_stations(nws_file_path);
         //fprintf(stderr,"NWS Station file time is old\n");
     }
 
@@ -905,12 +914,12 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                     "IGATE NET->RF(%c):%s\n",
                     third_party ? 'T':'N',
                     line);
-                log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                log_data( log_file_path, temp );
     
                 xastir_snprintf(temp,
                     sizeof(temp),
                     "REJECT: Unregistered net user!\n");
-                log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                log_data( log_file_path, temp );
                 fprintf(stderr, "%s", temp);
             }
             return;
@@ -944,7 +953,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
                 "IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
         //  heard(call),  heard(from) : RF-to-RF talk
         // !heard(call),  heard(from) : Destination not heard on TNC
@@ -959,7 +968,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: RF->RF talk!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return;
@@ -1012,7 +1021,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                 "IGATE NET->RF(%c):%s\n",
                                 third_party ? 'T':'N',
                                 line);
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
                             first = 0;
                         }
 
@@ -1023,7 +1032,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 
                         // log output
                         if (log_igate)
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
 
                         if (debug_level & 1024)
                             fprintf(stderr, "%s", temp);
@@ -1049,13 +1058,13 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                 "IGATE NET->RF(%c):%s\n",
                                 third_party ? 'T':'N',
                                 line);
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
 
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "REJECT: NET->RF on port [%d]!\n",
                                 x);
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
                             fprintf(stderr, "%s", temp);
                         }
                     }
@@ -1223,6 +1232,8 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
     char temp[MAX_LINE_SIZE+20];
     int x;
     int first = 1;
+    char log_file_path[MAX_VALUE];
+    char nws_file_path[MAX_VALUE];
 
 
     if ( (from == NULL) || (path == NULL) || (line == NULL) )
@@ -1234,6 +1245,10 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
     // Should we Igate from NET->RF?
     if (operate_as_an_igate <= 1)
         return;
+
+    get_user_base_dir(LOGFILE_IGATE,log_file_path, sizeof(log_file_path));
+    get_user_base_dir("data/nws-stations.txt",nws_file_path, 
+                      sizeof(nws_file_path));
 
     // Check for TCPXX in string!  If found, we have an
     // unregistered net user.
@@ -1247,12 +1262,12 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 "NWS IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: Unregistered net user!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return;
@@ -1269,40 +1284,40 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 "NWS IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: NOGATE found in path!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return;
     }
  
     // see if we can gate NWS messages
-    if (!filethere(get_user_base_dir("data/nws-stations.txt"))) {
+    if (!filethere(nws_file_path)) {
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
                 sizeof(temp),
                 "NWS IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: No nws-stations.txt file!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return;
     }
 
     // check to see if the nws-stations file is newer than last read
-    if (last_nws_stations_file_time < file_time(get_user_base_dir("data/nws-stations.txt"))) {
-        last_nws_stations_file_time = file_time(get_user_base_dir("data/nws-stations.txt"));
-        load_NWS_stations(get_user_base_dir("data/nws-stations.txt"));
+    if (last_nws_stations_file_time < file_time(nws_file_path)) {
+        last_nws_stations_file_time = file_time(nws_file_path);
+        load_NWS_stations(nws_file_path);
         //fprintf(stderr,"NWS Station file time is old\n");
     }
 
@@ -1315,12 +1330,12 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 "NWS IGATE NET->RF(%c):%s\n",
                 third_party ? 'T':'N',
                 line);
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
 
             xastir_snprintf(temp,
                 sizeof(temp),
                 "REJECT: No matching station in nws-stations.txt file!\n");
-            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+            log_data( log_file_path, temp );
             fprintf(stderr, "%s", temp);
         }
         return; // Match for station not found in file
@@ -1368,7 +1383,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                 "NWS IGATE NET->RF(%c):%s\n",
                                 third_party ? 'T':'N',
                                 line);
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
                             first = 0;
                         }
 
@@ -1379,7 +1394,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
 
                         // log output
                         if (log_igate)
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
 
                         if (debug_level & 1024)
                             fprintf(stderr, "%s", temp);
@@ -1403,13 +1418,13 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                 "NWS IGATE NET->RF(%c):%s\n",
                                 third_party ? 'T':'N',
                                 line);
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
 
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "REJECT: NET->RF on port [%d]!\n",
                                 x);
-                            log_data( get_user_base_dir(LOGFILE_IGATE), temp );
+                            log_data( log_file_path, temp );
                             fprintf(stderr, "%s", temp);
                         }
                     }

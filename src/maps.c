@@ -3976,17 +3976,19 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     char command[MAX_FILENAME*2];
     char temp[MAX_FILENAME];
     int xpmretval;
+    char temp_base_dir[MAX_VALUE];
 
+    get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir));
 
     xastir_snprintf(xpm_filename,
         sizeof(xpm_filename),
         "%s/print.xpm",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     xastir_snprintf(ps_filename,
         sizeof(ps_filename),
         "%s/print.ps",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
 
@@ -3999,7 +4001,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0012") );
     statusline(temp,1);       // Dumping image to file...
 
-    chdir(get_user_base_dir("tmp"));
+    chdir(temp_base_dir);
     xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),// Display *display
             "print.xpm",                                 // char *filename
             pixmap_final,                                // Pixmap pixmap
@@ -4135,17 +4137,20 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     char temp[MAX_FILENAME];
     char format[100] = " ";
     int xpmretval;
+    char temp_base_dir[MAX_VALUE];
+
+    get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir));
 
 
     xastir_snprintf(xpm_filename,
         sizeof(xpm_filename),
         "%s/print.xpm",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     xastir_snprintf(ps_filename,
         sizeof(ps_filename),
         "%s/print.ps",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
 
@@ -4158,7 +4163,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0012") );
     statusline(temp,1);       // Dumping image to file...
 
-    chdir(get_user_base_dir("tmp"));
+    chdir(temp_base_dir);
     xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),// Display *display
             "print.xpm",                                 // char *filename
             pixmap_final,                                // Pixmap pixmap
@@ -5130,6 +5135,9 @@ static void* snapshot_thread(void *arg) {
 #ifdef HAVE_CONVERT
     char command[MAX_FILENAME*2];
 #endif  // HAVE_CONVERT
+    char temp_base_dir[MAX_VALUE];
+
+    get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir));
 
 
     // The pthread_detach() call means we don't care about the
@@ -5140,24 +5148,24 @@ static void* snapshot_thread(void *arg) {
     xastir_snprintf(xpm_filename,
         sizeof(xpm_filename),
         "%s/snapshot.xpm",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     xastir_snprintf(png_filename,
         sizeof(png_filename),
         "%s/snapshot.png",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     // Same for the .geo filename
     xastir_snprintf(geo_filename,
         sizeof(geo_filename),
         "%s/snapshot.geo",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
     // Same for the .kml filename
     xastir_snprintf(kml_filename,
         sizeof(kml_filename),
         "%s/snapshot.kml",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
 
     // Create a .geo file to match the new png image
@@ -5345,6 +5353,9 @@ void Snapshot(void) {
     char xpm_filename[MAX_FILENAME];
     int xpmretval;
 #endif  // NO_XPM
+    char temp_base_dir[MAX_VALUE];
+
+    get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir));
 
 
     // Check whether we're already doing a snapshot
@@ -5371,14 +5382,14 @@ void Snapshot(void) {
     xastir_snprintf(xpm_filename,
         sizeof(xpm_filename),
         "%s/snapshot.xpm",
-        get_user_base_dir("tmp"));
+        temp_base_dir);
 
 
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
     // Create an XPM file from pixmap_final.
-    chdir(get_user_base_dir("tmp"));
+    chdir(temp_base_dir);
     xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),   // Display *display
             "snapshot.xpm",                             // char *filename
             pixmap_final,                               // Pixmap pixmap
@@ -7409,15 +7420,18 @@ void index_save_to_file(void) {
     map_index_record *current;
     map_index_record *last;
     char out_string[MAX_FILENAME*2];
+    char map_index_path[MAX_VALUE];
+
+    get_user_base_dir(MAP_INDEX_DATA, map_index_path, sizeof(map_index_path));
 
 
 //fprintf(stderr,"Saving map index to file\n");
 
-    f = fopen( get_user_base_dir(MAP_INDEX_DATA), "w" );
+    f = fopen( map_index_path, "w" );
 
     if (f == NULL) {
         fprintf(stderr,"Couldn't create/update map index file: %s\n",
-            get_user_base_dir(MAP_INDEX_DATA) );
+            map_index_path );
         return;
     }
 
@@ -7468,7 +7482,7 @@ void index_save_to_file(void) {
             if (fprintf(f,"%s",out_string) < (int)strlen(out_string)) {
                 // Failed to write
                 fprintf(stderr,"Couldn't write objects to map index file: %s\n",
-                    get_user_base_dir(MAP_INDEX_DATA) );
+                    map_index_path );
                 current = NULL; // All done
             }
             // Set up pointers for next loop iteration
@@ -7769,6 +7783,9 @@ void index_restore_from_file(void) {
     map_index_record *last_record;
     char in_string[MAX_FILENAME*2];
     int doing_migration = 0;
+    char map_index_path[MAX_VALUE];
+
+    get_user_base_dir(MAP_INDEX_DATA, map_index_path, sizeof(map_index_path));
 
 
 //fprintf(stderr,"\nRestoring map index from file\n");
@@ -7780,7 +7797,7 @@ void index_restore_from_file(void) {
     map_index_head = NULL;  // Starting with empty list
     last_record = NULL;
 
-    f = fopen( get_user_base_dir(MAP_INDEX_DATA), "r" );
+    f = fopen( map_index_path, "r" );
     if (f == NULL)  // No map_index file yet
         return;
 
@@ -8130,6 +8147,9 @@ void map_indexer(int parameter) {
     FILE *f;
     map_index_record *current;
     map_index_record *backup_list_head = NULL;
+    char map_index_path[MAX_VALUE];
+
+    get_user_base_dir(MAP_INDEX_DATA, map_index_path, sizeof(map_index_path));
 
 
     if (debug_level & 16)
@@ -8146,15 +8166,15 @@ void map_indexer(int parameter) {
 
     // Find the timestamp on the index file first.  Save it away so
     // that the timestamp for each map file can be compared to it.
-    if (stat ( get_user_base_dir(MAP_INDEX_DATA), &nfile) != 0) {
+    if (stat ( map_index_path, &nfile) != 0) {
 
         // File doesn't exist yet.  Create it.
-        f = fopen( get_user_base_dir(MAP_INDEX_DATA), "w" );
+        f = fopen( map_index_path, "w" );
         if (f != NULL)
             (void)fclose(f);
         else
             fprintf(stderr,"Couldn't create map index file: %s\n",
-                get_user_base_dir(MAP_INDEX_DATA) );
+                map_index_path );
         
         check_times = 0; // Don't check the timestamps.  Do them all. 
     }
@@ -8795,6 +8815,9 @@ void load_maps (Widget w) {
     char selected_dir[MAX_FILENAME];
     map_index_record *current;
     map_draw_flags mdf;
+    char selected_map_path[MAX_VALUE];
+
+    get_user_base_dir(SELECTED_MAP_DATA, selected_map_path, sizeof(selected_map_path));
 
 //    int dummy;
 
@@ -8830,9 +8853,9 @@ void load_maps (Widget w) {
         selected_dir[0] = '\0';
 
         // Create empty file if it doesn't exist
-        (void)filecreate( get_user_base_dir(SELECTED_MAP_DATA) );
+        (void)filecreate( selected_map_path );
 
-        f = fopen ( get_user_base_dir(SELECTED_MAP_DATA), "r" );
+        f = fopen ( selected_map_path, "r" );
         if (f != NULL) {
             if (debug_level & 16)
                 fprintf(stderr,"Load maps Open map file\n");
@@ -8948,7 +8971,7 @@ void load_maps (Widget w) {
             statusline(" ",1);      // delete status line
         }
         else
-            fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir(SELECTED_MAP_DATA) );
+            fprintf(stderr,"Couldn't open file: %s\n", selected_map_path );
 
         // All done sorting until something is changed in the Map
         // Chooser.

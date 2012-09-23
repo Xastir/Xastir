@@ -212,10 +212,11 @@ void draw_WMS_map (Widget w,
     time_t query_start_time, query_end_time; 
 
 #ifdef USE_MAP_CACHE 
-	int map_cache_return;
-        char * cache_file_id;
+    int map_cache_return;
+    char * cache_file_id;
 #endif  // USE_MAP_CACHE
 
+    char temp_file_path[MAX_VALUE];
 
     if (debug_level & 512) {
         if (nocache)
@@ -521,7 +522,7 @@ void draw_WMS_map (Widget w,
             xastir_snprintf(local_filename,
                 sizeof(local_filename),
                 "%s/map.%s",
-                 get_user_base_dir("tmp"),
+                 get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)),
                 "png");
         }
         else {
@@ -529,7 +530,7 @@ void draw_WMS_map (Widget w,
             xastir_snprintf(local_filename,
                 sizeof(local_filename),
                 "%s/map_%s.%s",
-                get_user_base_dir("map_cache"),
+                get_user_base_dir("map_cache", temp_file_path, sizeof(temp_file_path)),
                 cache_file_id,
                 "png");
             free(cache_file_id);
@@ -540,7 +541,7 @@ void draw_WMS_map (Widget w,
     xastir_snprintf(local_filename,
         sizeof(local_filename),
         "%s/map.%s",
-         get_user_base_dir("tmp"),
+         get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)),
         "png");
 
 #endif  // USE_MAP_CACHE

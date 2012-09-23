@@ -151,7 +151,7 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     DB *dbp; 
     struct stat file_status;
     char mc_buf[128];
-
+    char temp_file_path[MAX_VALUE];
 
     if (map_cache_disabled) {
         return(1);
@@ -162,7 +162,7 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     xastir_snprintf(mc_database_filename,
     sizeof(mc_database_filename),
     "%s/map_cache.db", 
-    get_user_base_dir("map_cache"));
+    get_user_base_dir("map_cache", temp_file_path, sizeof(temp_file_path)));
 
     // check for reasonable filename
     // expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
@@ -424,7 +424,7 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
     int mc_ret, mc_t_ret, mc_file_stat ;
     char mc_database_filename[MAX_FILENAME]; 
     struct stat file_status;
-
+    char temp_file_path[MAX_VALUE];
 
     if (map_cache_disabled) {
         return(1);
@@ -434,7 +434,7 @@ set_dangerous("map_cache_get: xastir_snprintf 1");
     xastir_snprintf(mc_database_filename,
         sizeof(mc_database_filename),   // change to max_filename?
         "%s/map_cache.db",
-        get_user_base_dir("map_cache"));
+        get_user_base_dir("map_cache", temp_file_path, sizeof(temp_file_path)));
 clear_dangerous();
  
 set_dangerous("map_cache_get: db_create");
@@ -671,7 +671,7 @@ int map_cache_del( char * map_cache_url ){
     char mc_delete_file[MAX_FILENAME]; 
     struct stat file_status;
     char mc_buf[128];
-
+    char temp_file_path[MAX_VALUE];
 
     if (map_cache_disabled) {
         return(1);
@@ -682,7 +682,7 @@ int map_cache_del( char * map_cache_url ){
     xastir_snprintf(mc_database_filename,
         MAX_FILENAME,
         "%s/map_cache.db",
-        get_user_base_dir("map_cache"));
+        get_user_base_dir("map_cache", temp_file_path, sizeof(temp_file_path)));
 
     if ((mc_ret = db_create(&dbp, NULL, 0)) != 0) {
         fprintf(stderr, "map_cache_del db_create:%s\n", db_strerror(mc_ret)); 

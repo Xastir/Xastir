@@ -1388,7 +1388,7 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
         char *seq, char type, char from) {
     Message m_fill;
     char time_data[MAX_TIME];
-
+    char user_base_dir[MAX_VALUE];
 
     if (debug_level & 2)
         fprintf(stderr,"alert_data_add start\n");
@@ -1406,7 +1406,9 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
             call_sign,
             data,
             seq);
-        log_data( get_user_base_dir(LOGFILE_WX_ALERT), temp_msg);
+        log_data( get_user_base_dir(LOGFILE_WX_ALERT, user_base_dir, 
+                                    sizeof(user_base_dir)), 
+                  temp_msg);
 //        fprintf(stderr, "%s\n", temp_msg);
     }
 
@@ -8501,6 +8503,7 @@ void export_trail(DataRow *p_station) {
     time_t sec;
     struct tm *time;
     int storeall;
+    char user_base_dir[MAX_VALUE];
 
     sec = sec_now();
     time  = gmtime(&sec);
@@ -8514,7 +8517,8 @@ void export_trail(DataRow *p_station) {
         // define filename for storing all station
         xastir_snprintf(file, sizeof(file),
             "%s/%04d%02d%02d-%02d%02d%02d.trk",
-            get_user_base_dir("tracklogs"),
+            get_user_base_dir("tracklogs", user_base_dir, 
+                              sizeof(user_base_dir)),
             time->tm_year+1900,
             time->tm_mon+1,
             time->tm_mday,
@@ -8524,7 +8528,10 @@ void export_trail(DataRow *p_station) {
     }
     else {
         // define filename for current station
-        xastir_snprintf(file, sizeof(file), "%s/%s.trk", get_user_base_dir("tracklogs"), p_station->call_sign);
+        xastir_snprintf(file, sizeof(file), "%s/%s.trk", 
+                        get_user_base_dir("tracklogs", user_base_dir, 
+                                          sizeof(user_base_dir)), 
+                        p_station->call_sign);
     }
 
     // create or open file
@@ -8578,6 +8585,7 @@ void export_trail_as_kml(DataRow *p_station) {
     time_t sec;
     struct tm *time;
     int storeall;
+    char user_base_dir[MAX_VALUE];
 
     sec = sec_now();
     time  = gmtime(&sec);
@@ -8591,7 +8599,8 @@ void export_trail_as_kml(DataRow *p_station) {
         // define filename for storing all station
         xastir_snprintf(file, sizeof(file),
             "%s/%04d%02d%02d-%02d%02d%02d.kml",
-            get_user_base_dir("tracklogs"),
+            get_user_base_dir("tracklogs", user_base_dir, 
+                              sizeof(user_base_dir)),
             time->tm_year+1900,
             time->tm_mon+1,
             time->tm_mday,
@@ -8603,7 +8612,8 @@ void export_trail_as_kml(DataRow *p_station) {
         // define filename for current station, call + current time.
         xastir_snprintf(file, sizeof(file), 
             "%s/%s_%04d%02d%02d-%02d%02d%02d.kml",
-            get_user_base_dir("tracklogs"),
+            get_user_base_dir("tracklogs", user_base_dir, 
+                              sizeof(user_base_dir)),
             p_station->call_sign,
             time->tm_year+1900,
             time->tm_mon+1,
@@ -17034,6 +17044,7 @@ void decode_info_field(char *call,
     char data_id;
     int station_is_mine = 0;
     int object_is_mine = 0;
+    char user_base_dir[MAX_VALUE];
 
     /* remember fixed format starts with ! and can be up to 24 chars in the message */ // ???
     if (debug_level & 1)
@@ -17281,7 +17292,9 @@ void decode_info_field(char *call,
                         call,
                         path,
                         orig_message);
-                    log_data( get_user_base_dir(LOGFILE_MESSAGE), temp_msg );
+                    log_data( get_user_base_dir(LOGFILE_MESSAGE, user_base_dir, 
+                                                sizeof(user_base_dir)), 
+                              temp_msg );
                 }
 
 //fprintf(stderr,"Calling decode_message\n");

@@ -969,7 +969,7 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
     int d700;
     int d7;
     int hamhud;
-
+    char temp_file_path[MAX_VALUE];
 
     ii=atoi((char *)clientData);
 
@@ -1141,7 +1141,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
                     temp1,                  // From
                     path,                   // Path
                     temp2);                 // Message
-                log_data( get_user_base_dir(LOGFILE_MESSAGE), temp_msg );
+                log_data( get_user_base_dir(LOGFILE_MESSAGE, temp_file_path, 
+                                            sizeof(temp_file_path)), 
+                          temp_msg );
             }
         }
         else {

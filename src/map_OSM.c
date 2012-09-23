@@ -298,6 +298,7 @@ static void get_OSM_local_file(char * local_filename, char * fileimg){
     char *cache_file_id;
 #endif  // USE_MAP_CACHE
 
+    char temp_file_path[MAX_VALUE];
 
     if (debug_level & 512) {
         query_start_time=time(&query_start_time); 
@@ -335,7 +336,7 @@ set_dangerous("map_OSM: map_cache_fileid");
         xastir_snprintf(local_filename,
             MAX_FILENAME,           // hardcoded to avoid sizeof()
             "%s/map_%s.%s",
-            get_user_base_dir("map_cache"),
+            get_user_base_dir("map_cache", temp_file_path, sizeof(temp_file_path)),
             cache_file_id,
             "png");
         free(cache_file_id);
@@ -346,7 +347,7 @@ clear_dangerous();
     xastir_snprintf(local_filename,
         MAX_FILENAME,               // hardcoded to avoid sizeof()
         "%s/map.%s",
-         get_user_base_dir("tmp"),
+         get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)),
         "png");
 
 #endif  // USE_MAP_CACHE
@@ -971,6 +972,7 @@ void draw_OSM_tiles (Widget w,
     char errBuf[CURL_ERROR_SIZE];
     int curl_result;
 #endif // HAVE_LIBCURL
+    char temp_file_path[MAX_VALUE];
 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -1002,11 +1004,11 @@ void draw_OSM_tiles (Widget w,
                     "%s", tileCacheDir);
         } else {
             xastir_snprintf(tileRootDir, sizeof(tileRootDir),
-                    "%s", get_user_base_dir(tileCacheDir));
+                    "%s", get_user_base_dir(tileCacheDir, temp_file_path, sizeof(temp_file_path)));
         }
     } else {
         xastir_snprintf(tileRootDir, sizeof(tileRootDir),
-                "%s", get_user_base_dir("OSMtiles"));
+                "%s", get_user_base_dir("OSMtiles", temp_file_path, sizeof(temp_file_path)));
     }
     
     if (mapName[0] != '\0') {

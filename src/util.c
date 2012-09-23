@@ -3808,7 +3808,9 @@ restart_sync:
 void load_wx_alerts_from_log(void) {
     time_t time_now;
     char filename[MAX_FILENAME];
+    char logfile_path[MAX_VALUE];
 
+    get_user_base_dir(LOGFILE_WX_ALERT,logfile_path, sizeof(logfile_path));
 
     time_now = sec_now();
 
@@ -3818,28 +3820,28 @@ void load_wx_alerts_from_log(void) {
     xastir_snprintf(filename,
         sizeof(filename),
         "%s.3",
-        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+        logfile_path ); 
     load_wx_alerts_from_log_working_sub(time_now, filename);
 
     // wx_alert.log.2
     xastir_snprintf(filename,
         sizeof(filename),
         "%s.2",
-        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+        logfile_path ); 
     load_wx_alerts_from_log_working_sub(time_now, filename);
 
     // wx_alert.log.1
     xastir_snprintf(filename,
         sizeof(filename),
         "%s.1",
-        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+        logfile_path ); 
     load_wx_alerts_from_log_working_sub(time_now, filename);
 
     // wx_alert.log
     xastir_snprintf(filename,
         sizeof(filename),
         "%s",
-        get_user_base_dir(LOGFILE_WX_ALERT) ); 
+        logfile_path ); 
     load_wx_alerts_from_log_working_sub(time_now, filename);
 
     fill_in_new_alert_entries();
@@ -3969,7 +3971,7 @@ void log_data(char *file, char *line) {
 // can just check for an empty string instead.
 //
 void log_tactical_call(char *call_sign, char *tactical_call_sign) {
-    char *file;
+    char file[MAX_VALUE];
     FILE *f;
 
 
@@ -3978,7 +3980,7 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
     add_tactical_to_hash(call_sign, tactical_call_sign);
 
  
-    file = get_user_base_dir("config/tactical_calls.log");
+    get_user_base_dir("config/tactical_calls.log", file, sizeof(file));
 
     f=fopen(file,"a");
     if (f!=NULL) {
@@ -4022,12 +4024,12 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
 // which is currently set to 4096.
 //
 void reload_tactical_calls(void) {
-    char *file;
+    char file[MAX_VALUE];
     FILE *f;
     char line[300+1];
 
 
-    file = get_user_base_dir("config/tactical_calls.log");
+    get_user_base_dir("config/tactical_calls.log", file, sizeof(file));
 
     f=fopen(file,"r");
     if (f!=NULL) {

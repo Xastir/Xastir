@@ -334,7 +334,7 @@ void draw_toporama_map (Widget w,
     double left, right, top, bottom;
     int my_screen_width, my_screen_height;
     float my_zoom = 1.0;
-
+    char temp_file_path[MAX_VALUE];
 
     // Create a shorter filename for display (one that fits the
     // status line more closely).  Subtract the length of the
@@ -461,7 +461,7 @@ void draw_toporama_map (Widget w,
     xastir_snprintf(local_filename,
         sizeof(local_filename),
         "%s/map.geo",
-        get_user_base_dir("tmp"));
+        get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)));
 
     // Erase any previously existing local file by the same
     // name.  This avoids the problem of having an old map image
@@ -523,7 +523,7 @@ void draw_toporama_map (Widget w,
     // passing it most of the parameters that we were originally
     // passed in order to effect the map draw.
     draw_geo_image_map (w,
-        get_user_base_dir("tmp"),
+        get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)),
         "map.geo",
         alert,
         alert_color,
@@ -693,7 +693,8 @@ void draw_geo_image_map (Widget w,
     char *cache_file_id;
   #endif  // USE_MAP_CACHE
 #endif  // HAVE_MAGICK
-    
+
+    char temp_file_path[MAX_VALUE];
     KeySym OSM_key = 0;
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
@@ -1715,14 +1716,14 @@ fprintf(stderr,"1 ");
                 xastir_snprintf(local_filename,
                     sizeof(local_filename),
                     "%s/map.%s",
-                    get_user_base_dir("tmp"),ext);
+                    get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)),ext);
             }
             else {
                 cache_file_id = map_cache_fileid();
                 xastir_snprintf(local_filename,
                     sizeof(local_filename),
                     "%s/map_%s.%s",
-                    get_user_base_dir("map_cache"),
+                    get_user_base_dir("map_cache", temp_file_path, sizeof(temp_file_path)),
                     cache_file_id,
                     ext);
                 free(cache_file_id);
@@ -1733,7 +1734,7 @@ fprintf(stderr,"1 ");
         xastir_snprintf(local_filename,
             sizeof(local_filename),
             "%s/map.%s",
-            get_user_base_dir("tmp"),ext);
+            get_user_base_dir("tmp", temp_file_path, sizeof(temp_file_path)),ext);
 
 #endif  // USE_MAP_CACHE
 
