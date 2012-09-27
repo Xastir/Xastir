@@ -995,8 +995,8 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 	BDB_SAVE_LDFLAGS=$LDFLAGS
 
 	if test -d $with_bdb_lib; then
-	    XASTIR_ADD_LIBPATH_TO($with_bdb_lib, LDFLAGS)
-	    XASTIR_ADD_LIBPATH_TO($with_bdb_lib, BDB_LIBADD)
+	    LDFLAGS="-L$with_bdb_lib $LDFLAGS"
+	    BDB_LIBADD="-L$with_bdb_lib $BDB_LIBADD"
 	else
 	    BDB_LIBADD=""
 	fi
@@ -1103,42 +1103,4 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
  
 ])
 
-dnl add -L(arg), and possibly (runpath switch)(arg), to LDFLAGS
-dnl (so the runpath for shared libraries is set).
-AC_DEFUN([XASTIR_ADD_LIBPATH], [
-  AC_REQUIRE([XASTIR_GUESS_RUNPATH_SWITCH])
-  # this is XASTIR ADD LIBPATH
-  if test "$xastir_cv_runpath_switch" = "none" ; then
-        LDFLAGS="-L$1 ${LDFLAGS}"
-  else
-        LDFLAGS="-L$1 $xastir_cv_runpath_switch$1 ${LDFLAGS}"
-  fi
-])
-
-dnl add -L(1st arg), and possibly (runpath switch)(1st arg), to (2nd arg)
-dnl (so the runpath for shared libraries is set).
-AC_DEFUN([XASTIR_ADD_LIBPATH_TO], [
-  AC_REQUIRE([XASTIR_GUESS_RUNPATH_SWITCH])
-  # this is XASTIR ADD LIBPATH TO
-  if test "$xastir_cv_runpath_switch" = "none" ; then
-        $2="-L$1 ${$2}"
-  else
-        $2="-L$1 ${$2} $xastir_cv_runpath_switch$1"
-  fi
-])
-
-dnl runpath initialization
-AC_DEFUN([XASTIR_GUESS_RUNPATH_SWITCH], [
-   # XASTIR GUESS RUNPATH SWITCH
-  AC_CACHE_CHECK([for runpath switch], [xastir_cv_runpath_switch], [
-    # first, try -R
-    SAVE_LDFLAGS="${LDFLAGS}"
-    LDFLAGS="-R /usr/lib"
-    AC_TRY_LINK([],[],[xastir_cv_runpath_switch="-R"], [
-        LDFLAGS="-Wl,-rpath,/usr/lib"
-    AC_TRY_LINK([],[],[xastir_cv_runpath_switch="-Wl,-rpath,"],
-    [xastir_cv_runpath_switch="none"])
-    ])
-  LDFLAGS="${SAVE_LDFLAGS}"
-  ])])
 

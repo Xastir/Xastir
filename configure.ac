@@ -15,8 +15,8 @@
 # It should look something like this:  (xastir, 2.0.1)
 # The revision number must contain at least one '.' and two digits.
 #
-AC_INIT(xastir, 2.0.1, xastir@xastir.org)
-AM_INIT_AUTOMAKE(xastir, 2.0.1)
+AC_INIT([xastir], [2.0.1], [xastir@xastir.org])
+AM_INIT_AUTOMAKE
 #########################################################################
 
 
