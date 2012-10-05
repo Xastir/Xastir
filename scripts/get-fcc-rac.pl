@@ -50,6 +50,7 @@ print STDERR "*********************************\n";
 print STDERR "*** Fetching the RAC database ***\n";
 print STDERR "*********************************\n";
 `wget -c http://205.236.99.41/%7Eindicatif/download/$file`;
+`wget -c http://apc-cap.ic.gc.ca/datafiles/$file`;
 
 
 if (-e $file && -r $file && -f $file) {
