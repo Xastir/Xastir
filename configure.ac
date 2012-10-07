@@ -342,6 +342,17 @@ AC_CHECK_FUNCS([roundf])
 # 
 AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}") 
 
+# Check for libproj (need to do this before test for shapelib, because
+# the shapelib test asks about "use_proj"
+use_proj=yes
+AC_ARG_WITH(libproj,[  --without-libproj         Disable libproj features.],use_proj=$withval)
+if test "${use_proj}" = "yes"; then
+  use_proj=no
+  AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
+    AC_DEFINE(HAVE_PROJ, , Define to 1 if you have the `libproj' library (-lproj). )
+  )
+fi
+
 
 # Check for Shapelib
 use_shapelib=yes
@@ -422,17 +433,6 @@ else
 fi
  
  
-# Check for libproj
-use_proj=yes
-AC_ARG_WITH(libproj,[  --without-libproj         Disable libproj features.],use_proj=$withval)
-if test "${use_proj}" = "yes"; then
-  use_proj=no
-  AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
-    AC_DEFINE(HAVE_PROJ, , Define to 1 if you have the `libproj' library (-lproj). )
-  )
-fi
-
-
 #check for libtiff, libgeotiff
 # libjpeg.a and libz.a need to be compiled under LSB
 
