@@ -65,6 +65,60 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
+HELP-INDEX>What's new in Xastir 2.0.1
+(Changes between 1.7 and 2.0.0 were never recorded here,this block
+describes a few of the changes from 1.9.8 to 2.0.0 that occured right
+before release of 2.0.0, but otherwise documents only changes from 2.0.0 
+to 2.0.1)
+
+Added tiling for OpenStreetMaps (2.0.0).
+Added "setlocale()" calls to assure we aren't confused by user 
+LANG variable settings.
+Improved speed of config file processing.
+Fixes for new One-Wire-Daemon protocol, allowing both old and 
+new to work with Xastir.
+Fixed segfaults that could happen when closing list dialogs.
+Fix OSM code to support 16-bit quanta in Graphics/ImageMagick.
+Fixed broken makefile that was ignoring DESTDIR.
+Fixed broken build so internal shapelib builds correctly when
+proj.4 is not installed.
+Add dbfawk files for several generations of new NWS shapefiles.
+Update get-NWSdata to pull current NWS shapefiles.
+Add start/stop files for Kenwood D72 and D710 radios.
+Added a script to convert GeoPDF files to usable GeoTIFF files.
+Make the command to set a TNC into CONVERSE mode a run-time
+configurable option in the TNC Interface Properties dialog.
+Add support for Australian Bureau of Metrology weather alerts.
+Fixes for Davis APRS Data Logger, Davis Meteo and LaCrosse 
+support so it gets rain totals correct.
+Allow "posit interval" in File->Configure->Timing to go all the
+way to zero, meaning "never send posits on a schedule."
+Add signal support so that Xastir will emit a posit when it 
+receives SIGUSR2.  Combined with zero "posit interval," this
+allows Xastir to emit a posit only when told to by an external
+script.
+Fixed error in logic for band-opening alerts (speech and audio
+alarms) so it does not incorrectly report third party traffic
+as a band opening.
+Add "Send Control-E to get GPS data?" to TNC interface 
+properties for the "Serial TNC w/ GPS on AUX port" interface
+type.  Defaults to enabled, which is correct for KPC-3+ TNCs,
+but should be turned off for any TNC that automatically
+streams GPS NMEA strings, such as Kenwood APRS radios.
+Update GPSMAN support to reflect changes in the gpsman command 
+line.
+Add a small delay between sending the converse-mode command
+and sending data for transmission, because KAM TNCs don't
+work if you send the data immediately.
+Fix a bug in the OSM tile download loop that could prevent
+further downloading of tiles if any one tile download fails.
+Fixed a thread-unsafeness bug that could cause Xastir to start
+using corrupted file names when multiple logging options
+(TNC, NET, WX, IGATE, etc.) selected simultaneously.
+Fixed get-fcc-rac.pl script to reflect changes in RAC download
+site.
+
+
 
 
 HELP-INDEX>What's new in Xastir 1.7
