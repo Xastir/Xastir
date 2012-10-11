@@ -43,13 +43,14 @@ chdir "/var/tmp";
 #
 
 $file  = "amateur.zip";
-$file2 = "amateur.rpt";
+#$file2 = "amateur.rpt";
+$file2 = "amateur.txt";
 
 
 print STDERR "*********************************\n";
 print STDERR "*** Fetching the RAC database ***\n";
 print STDERR "*********************************\n";
-`wget -c http://205.236.99.41/%7Eindicatif/download/$file`;
+#`wget -c http://205.236.99.41/%7Eindicatif/download/$file`;
 `wget -c http://apc-cap.ic.gc.ca/datafiles/$file`;
 
 
