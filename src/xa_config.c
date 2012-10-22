@@ -2115,7 +2115,7 @@ void load_data_or_default(void) {
             "%s",
             name_temp);
         strncat (name, "TNCEXTRADELAY", sizeof(name) - 1 - strlen(name));
-        devices[i].tnc_extra_delay = get_int (name, 0,1,0);
+        devices[i].tnc_extra_delay = get_int (name, 0,9999999,0);
     }
 
     /* TNC */
