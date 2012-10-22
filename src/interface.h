@@ -164,6 +164,7 @@ typedef struct {
     int    reconnect;                             /* reconnect on net failure                */
     int    connect_on_startup;                    /* connect to this device on startup       */
     int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
+    int    tnc_extra_delay;                       /* Introduces fixed delay when talking to TNC in command-mode */
     int    set_time;                              /* Set System Time from GPS on this port   */
     char   txdelay[4];                            /* KISS parameter */
     char   persistence[4];                        /* KISS parameter */

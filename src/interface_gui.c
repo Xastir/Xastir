@@ -257,6 +257,7 @@ Widget TNC_slottime;
 Widget TNC_txtail;
 Widget TNC_init_kiss;   // Used to initialize KISS-Mode
 Widget TNC_fullduplex;
+Widget TNC_extra_delay;
 Widget TNC_GPS_set_time;
 Widget TNC_AUX_GPS_Retrieve_Needed;
 Widget TNC_relay_digipeat;
@@ -387,6 +388,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
             devices[TNC_port].relay_digipeat=1;
         else
             devices[TNC_port].relay_digipeat=0;
+    }
+
+    switch(type) {
+
+        case DEVICE_SERIAL_TNC:
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+        case DEVICE_SERIAL_TNC_AUX_GPS:
+            if (XmToggleButtonGetState(TNC_extra_delay))
+                devices[TNC_port].tnc_extra_delay=1;
+            else
+                devices[TNC_port].tnc_extra_delay=0;
+            break;
+        default:
+            break;
     }
 
     switch(type) {
@@ -696,6 +711,25 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         switch(device_type) {
+            case DEVICE_SERIAL_TNC:
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+            case DEVICE_SERIAL_TNC_AUX_GPS:
+                TNC_extra_delay = XtVaCreateManagedWidget(langcode("UNIOP00038"), xmToggleButtonWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_transmit_data,
+                                      XmNleftOffset ,35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      XmNfontList, fontlist1,
+                                      NULL);
+        }
+ 
+        switch(device_type) {
             case DEVICE_SERIAL_TNC_HSP_GPS:
             case DEVICE_SERIAL_TNC_AUX_GPS:
                 TNC_GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
@@ -705,7 +739,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, TNC_transmit_data,
+                                      XmNleftWidget, TNC_extra_delay,
                                       XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
@@ -1623,6 +1657,16 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
             XmToggleButtonSetState(TNC_transmit_data,TRUE,FALSE);
 
             switch(device_type) {
+                case DEVICE_SERIAL_TNC:
+                case DEVICE_SERIAL_TNC_HSP_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                    XmToggleButtonSetState(TNC_extra_delay, FALSE, FALSE);
+                    break;
+                default:
+                    break;
+            }
+
+            switch(device_type) {
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
@@ -1702,6 +1746,19 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                 XmToggleButtonSetState(TNC_transmit_data,TRUE,FALSE);
             else
                 XmToggleButtonSetState(TNC_transmit_data,FALSE,FALSE);
+
+            switch(device_type) {
+                case DEVICE_SERIAL_TNC:
+                case DEVICE_SERIAL_TNC_HSP_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                    if (devices[TNC_port].tnc_extra_delay)
+                        XmToggleButtonSetState(TNC_extra_delay, TRUE, FALSE);
+                    else
+                        XmToggleButtonSetState(TNC_extra_delay, FALSE, FALSE);
+                    break;
+                default:
+                    break;
+            }
 
             switch(device_type) {
 

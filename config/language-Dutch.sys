@@ -928,6 +928,7 @@ UNIOP00034|min||
 UNIOP00035|hr||
 UNIOP00036|day||
 UNIOP00037|Send Control-E to get GPS data?||
+UNIOP00038|Add Delay||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Kiezer||
