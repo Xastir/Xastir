@@ -1,6 +1,6 @@
 // Modification for Xastir CVS purposes
 //
-// Portions Copyright (C) 2000-2010  The Xastir Group
+// Portions Copyright (C) 2000-2012  The Xastir Group
 //
 // $Id$
 //

@@ -3,7 +3,7 @@
 ###############################################################################
 # $Id$
 #
-# Portions Copyright (C) 2004-2011  The Xastir Group
+# Portions Copyright (C) 2004-2012  The Xastir Group
 #
 # Script to convert a GeoPDF file with included neatline into a collar-stripped
 # geotiff in EPSG:4326 projection (WGS84 equidistant cylindrical) in 8-bit

@@ -2,7 +2,7 @@
 # $Id$
 #
 # Copyright (C) 2004 Bruce Bennett <bruts@adelphia.net>
-# Portions Copyright (C) 2004-2010  The Xastir Group
+# Portions Copyright (C) 2004-2012  The Xastir Group
 # (Modified for the Xastir project under GPL license)
 #
 #

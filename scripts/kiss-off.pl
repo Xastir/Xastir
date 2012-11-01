@@ -2,7 +2,7 @@
 
 # $Id$
 
-# Copyright (C) 2004-2010  Curt Mills, WE7U
+# Copyright (C) 2004-2012  Curt Mills, WE7U
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

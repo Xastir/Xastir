@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # $Id$
-# Copyright (C) 2006-2010  The Xastir Group
+# Copyright (C) 2006-2012  The Xastir Group
 # <http://www.ece.uvic.ca/~mdadams/jasper/>
 
 # Compile jasper-1.701.0 under Linux Standard Base 3.0.  Install

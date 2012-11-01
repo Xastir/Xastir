@@ -10,7 +10,7 @@
 # 4) Formatting coordinates into decimal degrees, degrees/minutes,
 #    and degrees/minutes/seconds.
 #
-# Copyright (C) 2000-2010  Curt Mills, WE7U
+# Copyright (C) 2000-2012  Curt Mills, WE7U
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

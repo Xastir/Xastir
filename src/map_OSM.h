@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2010 The Xastir Group
+ * Copyright (C) 2012 The Xastir Group
  *
  * This file was contributed by Jerry Dunmire, KA6HLD.
  *

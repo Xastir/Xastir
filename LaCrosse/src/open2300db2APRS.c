@@ -3,7 +3,7 @@
  * $Id$
  *
  * Copyright (C) 2005 Jim Chandler <jim@n0vh.org>
- * Portions Copyright (C) 2004-2010 The Xastir Group
+ * Portions Copyright (C) 2004-2012 The Xastir Group
  *
  * Portions copied from Bruce Bennett's excellent Davis WX work
  *

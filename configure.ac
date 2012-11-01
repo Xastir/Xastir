@@ -2,20 +2,32 @@
 
 # $Id$
 #
-# Copyright (C) 2000-2010  The Xastir Group
+# Copyright (C) 2000-2012  The Xastir Group
 
 
 #########################################################################
 # SET VERSION HERE!
 #
+# Note that the most standard OSS method of doing numbering is:
+#       Major.Minor.PatchLevel
+#
+# If we are only doing patches, change the PATCHLEVEL number.
+# If we add new features, change the MINOR number.
+# If we feel we've added enough new features or rewritten enough
+#   code to warrant it, change the MAJOR number.
+#
+# Also:  We adopted the convention of using odd numbers for development
+#   or development releases, even numbers for STABLE releases.
+#
+#
 # AC_INIT():
-# It should look something like this:  (xastir, 2.0.1, xastir@xastir.org)
+# It should look something like this:  (xastir, 2.0.2, xastir@xastir.org)
 # The revision number must contain at least one '.' and two digits.
 # AM_INIT_AUTOMAKE():
-# It should look something like this:  (xastir, 2.0.1)
+# It should look something like this:  (xastir, 2.0.2)
 # The revision number must contain at least one '.' and two digits.
 #
-AC_INIT([xastir], [2.0.1], [xastir@xastir.org])
+AC_INIT([xastir], [2.0.2], [xastir@xastir.org])
 AM_INIT_AUTOMAKE
 #########################################################################
 

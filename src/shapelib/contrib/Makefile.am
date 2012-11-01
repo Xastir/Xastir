@@ -1,6 +1,6 @@
 
 # $Id$
-# Copyright (C) 2004-2010  The Xastir Group
+# C2pyright (C) 2004-2012  The Xastir Group
 
 EXTRA_DIST=Makefile_orig ShapeFileII.pas dbfcat.c dbfinfo.c makefile.vc \
 	my_nan.h shpcat.c shpcentrd.c shpdata.c shpdxf.c shpfix.c \

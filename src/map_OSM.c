@@ -24,7 +24,7 @@
  *
  * This file derived from map_tiger.c which has the following copyrights:
  *    Copyright (C) 1999,2000  Frank Giannandrea
- *    Copyright (C) 2000-2010  The Xastir Group
+ *    Copyright (C) 2000-2012  The Xastir Group
  */
 
 

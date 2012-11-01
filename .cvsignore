@@ -24,16 +24,3 @@ stamp-h1
 xastir.spec
 xastir-min.spec
 xastir-lsb.spec
-OSM_cloudmade_1.geo
-OSM_cloudmade_2.geo
-OSM_cloudmade_5.geo
-OSM_cloudmade_998.geo
-OSM_cloudmade_999.geo
-OSM_cycle.geo
-OSM_mapnik.geo
-OSM_osmarender.geo
-OSM_skiing.geo
-OSM_tiled_cycle.geo
-OSM_tiled_mapnik.geo
-OSM_tiled_osmarender.geo
-OSM_tiled_skiing.geo

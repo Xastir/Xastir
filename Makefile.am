@@ -1,7 +1,7 @@
 
 # $Id$
 #
-# Copyright (C) 2000-2010  The Xastir Group
+# Copyright (C) 2000-2012  The Xastir Group
 #
 
 AUTOMAKE_OPTIONS = gnu dist-bzip2

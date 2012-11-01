@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # $Id$
-# Copyright (C) 2006-2010  The Xastir Group
+# Copyright (C) 2006-2012  The Xastir Group
 
 # TODO:
 # Check for a link at /opt/Xastir/share/xastir.  If found, remove it
@@ -83,7 +83,7 @@
 #
 
 
-REV="2.0.0"
+REV="2.0.2"
 FILENAME=`date +xastir-lsb-$REV-%Y-%b-%d.tar.bz2`
 
 

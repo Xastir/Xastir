@@ -1,5 +1,5 @@
 /*
-   Portions Copyright (C) 2002-2010  The Xastir Group
+   Portions Copyright (C) 2002-2012  The Xastir Group
 
    The datum conversion code here and in datum.c is from MacGPS 45.
 
