@@ -77,7 +77,8 @@ printf("\n*** Uploading $filename to SourceForge\n");
 # Newest method which sends it to a per-project area.  We then use
 # the SourceForge web pages to create a release sub-directory and
 # move the file into it using cut/paste:
-`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/`;
+#`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/`;
+`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/xastir-development/xastir-2.0.3/`;
 
 
 printf("\n*** Tagging repository using $file_prefix tag\n");
