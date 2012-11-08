@@ -150,10 +150,29 @@ CVS Instructions:
 
          cvs update main.c
 
+
+    Checking out a branch (anonymous users):
+    ----------------------------------------
+
+        Go to a new directory structure (not CVS controlled) and type this:
+
+            export CVS_RSH=ssh
+            mkdir <branchname>
+            cd <branchname>
+            cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
+
+        Press the <ENTER> key when it asks for your password, then:
+
+            cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r <branchname> xastir
+
+        The above command will create a directory "xastir" in the <branchname>
+        directory, containing the latest sources from that branch.
+
+ 
      There are many more CVS commands and options.  Many of them are more
-     of use to the developers than the users.  The above should be enough
-     for most people to keep their copies in sync with the latest CVS
-     development sources.
+     of use to the developers than the users, some of those are listed below.
+     The above should be enough for most people to keep their copies in sync
+     with the latest CVS development sources.
 
 
 SUDO Instructions:
@@ -234,6 +253,123 @@ SUDO Instructions:
       "I now consider it a good idea to add the "gifted" users to the 'wheel'
       group and then solely enable wheel in /etc/sudoers; I've seen a recent
       article also supporting this."
+
+
+Developer's CVS Instructions:
+-----------------------------
+
+    Read this doc first.  Why did they have to put spaces in the URL???:
+
+        http://sourceforge.net/apps/trac/sourceforge/wiki/CVS%20client%20instructions
+
+    For branching/merging, read these as well:
+
+        http://ioctl.org/unix/cvs/branches/
+        http://www.astro.princeton.edu/~rhl/cvs-branches.html
+        http://users.csc.calpoly.edu/~jdalbey/205/Resources/cvsBranchMerge.html
+
+
+    Checking out the trunk (main branch, also known as "HEAD"):
+    -----------------------------------------------------------
+
+        export CVS_RSH=ssh
+        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
+
+    The above command will create a directory "xastir" in your current directory which
+    contains the latest Xastir sources.  Replace "<devel>" with your Sourceforge
+    developer's login name.
+
+
+    Creating a branch:
+    ------------------
+
+    NOTE:  This is a special operation.  Do not attempt unless you are familiar with
+    CVS tagging, branches, and merging.
+
+    In a checked-out CVS copy of Xastir, first make sure your working copy is
+    up-to-date ("cvs -nq update"), then:
+
+        cvs tag -c branchname_0                 # Creates a tag called "branchname_0"
+        cvs tag -r branchname_0 -b branchname   # Creates branch "branchname" starting at the tag "branchname_0"
+
+    Replace "branchname_0" with a tag of your choosing, and "branchname" with a
+    branch name of your choosing.  For instance I may use a tag of:
+
+        B_xastir_qt_0
+
+    and a branch name of:
+
+        B_xastir_qt
+
+NOTE:  Use "B_" as a prefix on all of our branches and branch-tags so that we can
+    recognize them easily when presented with a full list of tags.
+
+    Follow the "Checking out a branch" section below to create a NEW directory area to
+    work on the branch.
+
+    A suggested organization (directory names), to keep everything separate:
+
+        /home/<user>/src/xastir/head/           # Trunk (or HEAD), mainline development
+        /home/<user>/src/xastir/branchname1/    # branchname1 development
+        /home/<user>/src/xastir/branchname2/    # branchname2 development
+
+    Then perform these commands to check out the trunk into your new clean
+    directory, then update it to the branch:
+
+        cd xastir/branchname
+        cvs co xastir                       # Fetch the trunk/HEAD code
+        cvs update -r branchname xastir     # Update it to the branch
+
+    After you do the "update" command, the "-r" option is sticky on all the
+    files in the tree, so any cvs commits there will commit to the new branch
+    instead of the trunk.
+
+    It is recommended to immediately create another tag after the above steps are
+    complete and before any files/directories get changed.  This helps with merging
+    between the branch and the trunk later:
+
+        cvs tag -c branchname_start # Creates a tag called "branchname_start"
+
+NOTE:  Use "T_START_" as a prefix for this start tag of a new branch to make them
+    easily recognizable.  For instance:
+
+        T_START_xastir_qt
+
+
+    Checking out a branch:
+    ----------------------
+
+    To check out a branch to a fresh directory:
+
+        mkdir <branchname>  # I choose /home/<user>/src/xastir/branchname/ for a directory
+        cd <branchname>
+        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r <branchname> xastir
+
+    The above command will create a directory "xastir" under the <branchname> directory,
+    containing the sources from the branch you specified.  The selected branch will remain
+    "sticky" in your checked-out working directory unless/until you override it
+    via additional CVS commands.
+
+    Replace "<devel>" above with your Sourceforge developer's login name and
+    "<branchname>" with the name of the branch you're trying to check out.
+
+    One you've created a branch, pay attention to whether you're working on a checked-out
+    copy of a branch or a checked-out copy of the trunk, and commit responsibly.  Anything
+    you commit to a branch will not appear on the trunk, and vice-versa, unless a merge
+    between the two is done at a later date (in either direction).  The trunk has version
+    numbers like "dd.dd", while branches have version numbers like "dd.dd.dd.dd".
+
+    You should also be able to run the "cvs status <filename>" command and look at
+    the "Sticky Tag" near the top of the listing to see which branch you're working with:
+
+        cvs status README.CVS | head -15
+
+
+    Listing the tags on a file:
+    ---------------------------
+    
+    cvs log -t README.CVS
+
 
 
   ------------------------------------------------------------------------
