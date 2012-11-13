@@ -151,8 +151,8 @@ CVS Instructions:
          cvs update main.c
 
 
-    Checking out a branch (anonymous users):
-    ----------------------------------------
+    Checking out a branch (for anonymous-CVS users):
+    ------------------------------------------------
 
         Go to a new directory structure (not CVS controlled) and type this:
 
@@ -166,7 +166,10 @@ CVS Instructions:
             cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r <branchname> xastir
 
         The above command will create a directory "xastir" in the <branchname>
-        directory, containing the latest sources from that branch.
+        directory containing the latest sources from that branch.  For example:
+
+            /home/<user>/src/<branchname>/xastir/
+
 
  
      There are many more CVS commands and options.  Many of them are more
@@ -264,6 +267,7 @@ Developer's CVS Instructions:
 
     For branching/merging, read these as well:
 
+        http://www.drdobbs.com/programmers-toolchest/184404280  # Recommended by Tom Russo
         http://ioctl.org/unix/cvs/branches/
         http://www.astro.princeton.edu/~rhl/cvs-branches.html
         http://users.csc.calpoly.edu/~jdalbey/205/Resources/cvsBranchMerge.html
@@ -285,7 +289,11 @@ Developer's CVS Instructions:
     ------------------
 
     NOTE:  This is a special operation.  Do not attempt unless you are familiar with
-    CVS tagging, branches, and merging.
+    CVS tagging, branches, and merging.  We plan to do development on the trunk for
+    the mainline code, and use branches only for a few special development bits:
+    Experimental code that we're not sure will make it to production, or porting to
+    a new widget set for instance...  Something that might be a dead-end or something
+    that might not see the light of day for some time.
 
     In a checked-out CVS copy of Xastir, first make sure your working copy is
     up-to-date ("cvs -nq update"), then:
@@ -315,15 +323,16 @@ NOTE:  Use "B_" as a prefix on all of our branches and branch-tags so that we ca
         /home/<user>/src/xastir/branchname2/    # branchname2 development
 
     Then perform these commands to check out the trunk into your new clean
-    directory, then update it to the branch:
+    directory:
 
         cd xastir/branchname
-        cvs co xastir                       # Fetch the trunk/HEAD code
-        cvs update -r branchname xastir     # Update it to the branch
+        cvs co -r branchname xastir     # Fetch trunk/HEAD code & update to the branch
 
     After you do the "update" command, the "-r" option is sticky on all the
     files in the tree, so any cvs commits there will commit to the new branch
-    instead of the trunk.
+    instead of the trunk.  Pay attention to your directory structure from that
+    point on:  It's important to know whether you're making changes on a branch
+    or on the trunk, and where commits will be made to.
 
     It is recommended to immediately create another tag after the above steps are
     complete and before any files/directories get changed.  This helps with merging
@@ -370,6 +379,17 @@ NOTE:  Use "T_START_" as a prefix for this start tag of a new branch to make the
     ---------------------------
     
     cvs log -t README.CVS
+
+
+    Merging between trunk and a branch:
+    -----------------------------------
+    TBD.
+
+    A note from Tom regarding merges:  Use the "-kk" option on all merges, otherwise every
+    file that has "$Revision$" or "$Date$" in it will get flagged as a chnage -- possibly
+    even a conflict -- even if that's the only difference between branch and head.  "-kk"
+    on a cvs update doesn't do substitution on those tags, and so only files with real
+    changes will get updated.
 
 
 
