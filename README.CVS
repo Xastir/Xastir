@@ -322,13 +322,13 @@ NOTE:  Use "B_" as a prefix on all of our branches and branch-tags so that we ca
         /home/<user>/src/xastir/branchname1/    # branchname1 development
         /home/<user>/src/xastir/branchname2/    # branchname2 development
 
-    Then perform these commands to check out the trunk into your new clean
+    Then perform these commands to check out the branch into your new clean
     directory:
 
         cd xastir/branchname
-        cvs co -r branchname xastir     # Fetch trunk/HEAD code & update to the branch
+        cvs co -r branchname xastir     # Fetch the branch code
 
-    After you do the "update" command, the "-r" option is sticky on all the
+    After you do the "co" command, the "-r" option is sticky on all the
     files in the tree, so any cvs commits there will commit to the new branch
     instead of the trunk.  Pay attention to your directory structure from that
     point on:  It's important to know whether you're making changes on a branch
