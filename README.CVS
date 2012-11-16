@@ -163,19 +163,30 @@ CVS Instructions:
 
         Press the <ENTER> key when it asks for your password, then:
 
-            cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r <branchname> xastir
+            cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r BRANCH_<branchname> xastir
 
         The above command will create a directory "xastir" in the <branchname>
-        directory containing the latest sources from that branch.  For example:
+        directory containing the latest sources from that branch.
 
-            /home/<user>/src/<branchname>/xastir/
+        A complete example (Using an imaginary branch "xastir99"):
+
+            export CVS_RSH=ssh
+            cd ~/src
+            mkdir xastir99
+            cd xastir99
+            cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
+            Hit <ENTER> when asked for passwd.
+            cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r BRANCH_xastir99 xastir
+
+        will fetch the BRANCH_xastir99 code branch and deposit it into:
+
+            /home/<user>/src/xastir99/xastir/
 
 
- 
-     There are many more CVS commands and options.  Many of them are more
-     of use to the developers than the users, some of those are listed below.
-     The above should be enough for most people to keep their copies in sync
-     with the latest CVS development sources.
+    There are many more CVS commands and options.  Many of them are more of
+    use to the developers.  Some of those are listed below.  The above should
+    be enough for most people to keep their copies in sync with the latest CVS
+    development sources.
 
 
 SUDO Instructions:
@@ -271,79 +282,31 @@ Developer's CVS Instructions:
         http://ioctl.org/unix/cvs/branches/
         http://www.astro.princeton.edu/~rhl/cvs-branches.html
         http://users.csc.calpoly.edu/~jdalbey/205/Resources/cvsBranchMerge.html
-        http://www.drdobbs.com/programmers-toolchest/184404280
 
 
-    Checking out the trunk (main branch, also known as "HEAD"):
-    -----------------------------------------------------------
-
-        export CVS_RSH=ssh
-        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
-
-    The above command will create a directory "xastir" in your current directory which
-    contains the latest Xastir sources.  Replace "<devel>" with your Sourceforge
-    developer's login name.
-
-
-    Creating a branch:
-    ------------------
-
-    NOTE:  This is a special operation.  Do not attempt unless you are familiar with
-    CVS tagging, branches, and merging.  We plan to do development on the trunk for
-    the mainline code, and use branches only for a few special development bits:
-    Experimental code that we're not sure will make it to production, or porting to
-    a new widget set for instance...  Something that might be a dead-end or something
-    that might not see the light of day for some time.
-
-    In a checked-out CVS copy of Xastir, first make sure your working copy is
-    up-to-date ("cvs -nq update"), then:
-
-        cvs tag -c branchname_0                 # Creates a tag called "branchname_0"
-        cvs tag -r branchname_0 -b branchname   # Creates branch "branchname" starting at the tag "branchname_0"
-
-    Replace "branchname_0" with a tag of your choosing, and "branchname" with a
-    branch name of your choosing.  For instance I may use a tag of:
-
-        B_xastir_qt_0
-
-    and a branch name of:
-
-        B_xastir_qt
-
-NOTE:  Use "B_" as a prefix on all of our branches and branch-tags so that we can
-    recognize them easily when presented with a full list of tags.
-
-    Follow the "Checking out a branch" section below to create a NEW directory area to
-    work on the branch.
-
-    A suggested organization (directory names), to keep everything separate:
+    A suggested organization (directory names), to keep branches separate from trunk:
 
         /home/<user>/src/xastir/head/           # Trunk (or HEAD), mainline development
         /home/<user>/src/xastir/branchname1/    # branchname1 development
         /home/<user>/src/xastir/branchname2/    # branchname2 development
 
-    Then perform these commands to check out the branch into your new clean
-    directory:
 
-        cd xastir/branchname
-        cvs co -r branchname xastir     # Fetch the branch code
+    Checking out HEAD (Also known as "trunk", default, or main branch):
+    -------------------------------------------------------------------
 
-    After you do the "co" command, the "-r" option is sticky on all the
-    files in the tree, so any cvs commits there will commit to the new branch
-    instead of the trunk.  Pay attention to your directory structure from that
-    point on:  It's important to know whether you're making changes on a branch
-    or on the trunk, and where commits will be made to.
+    These commands will create a directory "xastir" in your current directory which
+    contains the latest Xastir sources from the "trunk" branch.  Replace "<devel>"
+    with your Sourceforge developer's login name.  To keep the trunk code from
+    getting confused with any branches, consider putting it into a subdirectory
+    labeled "trunk" or "head", something like "/home/<user>/src/xastir/head/".
+    These commands will create just such a directory and populate it with the
+    latest development sources (HEAD branch):
 
-    It is recommended to immediately create another tag after the above steps are
-    complete and before any files/directories get changed.  This helps with merging
-    between the branch and the trunk later:
-
-        cvs tag -c branchname_start # Creates a tag called "branchname_start"
-
-NOTE:  Use "T_START_" as a prefix for this start tag of a new branch to make them
-    easily recognizable.  For instance:
-
-        T_START_xastir_qt
+        export CVS_RSH=ssh
+        cd ~src/xastir
+        mkdir head
+        cd head
+        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
 
 
     Checking out a branch:
@@ -351,34 +314,86 @@ NOTE:  Use "T_START_" as a prefix for this start tag of a new branch to make the
 
     To check out a branch to a fresh directory:
 
-        mkdir <branchname>  # I choose /home/<user>/src/xastir/branchname/ for a directory
-        cd <branchname>
-        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r <branchname> xastir
+        cd ~/src/xastir
+        mkdir <my_branchdir>  # /home/<user>/src/xastir/<my_branchdir>/
+        cd <my_branchdir>
+        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r BRANCH_<branchname> xastir
 
-    The above command will create a directory "xastir" under the <branchname> directory,
-    containing the sources from the branch you specified.  The selected branch will remain
-    "sticky" in your checked-out working directory unless/until you override it
-    via additional CVS commands.
+    Replace "<devel>" above with your Sourceforge developer's login name, and
+    "<branchname>" with the name of the branch you wish to check out.  "my_branchdir" can
+    be any directory name you like, but naming it the same as <branchname> may be less
+    confusing.
 
-    Replace "<devel>" above with your Sourceforge developer's login name and
-    "<branchname>" with the name of the branch you're trying to check out.
+    The above command will create a directory "xastir" under <my_branchdir> containing
+    the sources from the branch you specified.  The selected branch will remain "sticky"
+    in your checked-out working directory unless/until you override it via additional CVS
+    commands.  Any cvs commits done there will commit to the new branch instead of the
+    trunk.  Commits done to a working copy of "trunk" won't appear on your new branch.
+    Pay attention to your directory structure from that point on, whether you're working
+    on a checked-out copy of a branch or a checked-out copy of the trunk, and commit
+    responsibly.
 
-    One you've created a branch, pay attention to whether you're working on a checked-out
-    copy of a branch or a checked-out copy of the trunk, and commit responsibly.  Anything
-    you commit to a branch will not appear on the trunk, and vice-versa, unless a merge
-    between the two is done at a later date (in either direction).  The trunk has version
-    numbers like "dd.dd", while branches have version numbers like "dd.dd.dd.dd".
+    With the fictitional "xastir99" branch we used before, example commands would be:
 
-    You should also be able to run the "cvs status <filename>" command and look at
-    the "Sticky Tag" near the top of the listing to see which branch you're working with:
+        cd ~/src/xastir
+        mkdir xastir99  # /home/<user>/src/xastir/xastir99/
+        cd xastir99
+        cvs -z3 -d:ext:<devel>@xastir.cvs.sourceforge.net:/cvsroot/xastir co -r BRANCH_xastir99 xastir
+
+    NOTE:  The trunk has version numbers like "dd.dd", while branches have version numbers
+    like "dd.dd.dd.dd".
+
+    You can run the "cvs status <filename>" command and look at the "Sticky Tag" near the
+    top of the listing to see which branch you're working with:
 
         cvs status README.CVS | head -15
+
+
+    Creating a branch:
+    ------------------
+
+    NOTE:  This is a special operation.  Do _not_ attempt unless you are familiar with
+    CVS tagging, branches, and merging.  We plan to do development on the trunk for
+    the mainline (trunk) code and use branches only for a few special development bits:
+    Experimental code that we're not sure will make it to production, or porting to
+    a new widget set for instance...  Something that might lead to a dead-end, a major
+    refactor, or any code that might not see the light of day for some time.
+
+    NOTE:  We've adopted the convention that all branch tags begin with
+    "TAG_BRANCH_" and all branches begin with "BRANCH_".  This makes it easy
+    to see where branches diverge or merge back with "trunk" and to determine
+    which tags are related to branching/merging.
+
+    In a checked-out CVS copy of Xastir, make sure your working copy is up-to-date
+    ("cvs -nq update") if you wish all current development changes to this point to
+    make it to the new branch you're creating:
+    
+        cvs update
+
+    Then:
+
+        # Create a tag called "TAG_BRANCH_<branchname>"
+        cvs rtag TAG_BRANCH_<branchname> xastir
+
+        # Create branch "BRANCH_<branchname>" starting at the tag you created above
+        cvs rtag -b -r TAG_BRANCH_<branchname> BRANCH_<branchname> xastir
+
+    Replace "branchname" with a name of your choosing.  For instance to create
+    a branch called "xastir99":
+
+        cvs rtag TAG_BRANCH_xastir99 xastir
+        cvs rtag -b -r TAG_BRANCH_xastir99 BRANCH_xastir99 xastir
+
+    Follow the "Checking out a branch" section above to create a NEW directory area to
+    work on the new branch.  It's important to keep your directories separate, because
+    commits made on a branch will apply only to that branch;  Commits made to trunk
+    will apply only to the trunk.
 
 
     Listing the tags on a file:
     ---------------------------
     
-    cvs log -t README.CVS
+        cvs log -t README.CVS
 
 
     Merging between trunk and a branch:
@@ -386,10 +401,10 @@ NOTE:  Use "T_START_" as a prefix for this start tag of a new branch to make the
     TBD.
 
     A note from Tom regarding merges:  Use the "-kk" option on all merges, otherwise every
-    file that has "$Revision$" or "$Date$" in it will get flagged as a chnage -- possibly
-    even a conflict -- even if that's the only difference between branch and head.  "-kk"
-    on a cvs update doesn't do substitution on those tags, and so only files with real
-    changes will get updated.
+    file that has "$Revision$" or "$Date$" in it will get
+    flagged as a change -- possibly even a conflict -- even if that's the only difference
+    between branch and head.  "-kk" on a cvs update doesn't do substitution on those tags,
+    and so only files with real changes will get updated.
 
 
 
