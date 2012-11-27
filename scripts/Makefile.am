@@ -47,3 +47,6 @@ dist_scripts_DATA = \
     xastir-migrate.sh \
     Xastir_tigerpoly.py
 
+install-data-hook:
+	cd $(DESTDIR)$(scriptsdir) && \
+	chmod a+x *.sh *.pl *.py get-* gpx2* *.bash
