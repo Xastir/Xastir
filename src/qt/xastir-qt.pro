@@ -14,7 +14,6 @@ SOURCES += main.cpp\
         mainwindow.cpp
 
 HEADERS  += \
-    xastir.h\
-    ui_mainwindow.h
+    xastir.h
 
 FORMS    += mainwindow.ui
