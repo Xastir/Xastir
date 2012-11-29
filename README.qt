@@ -28,6 +28,13 @@ qmake
 make
 
 
+Once the project branch has been checked-out, these steps issued
+from the command-line should compile it:
+
+*) qmake xastir-qt.pro
+*) make
+
+
 SPECIFIC NOTES:
 ---------------
 
