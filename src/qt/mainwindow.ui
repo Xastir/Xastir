@@ -1,0 +1,1848 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>726</width>
+    <height>526</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabPosition">
+       <enum>QTabWidget::West</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Triangular</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="Map1">
+       <attribute name="title">
+        <string>Map1</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Call:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="Callsign">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maxLength">
+             <number>9</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Pass:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="Passcode">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maxLength">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Host:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="InternetHost">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>localhost</string>
+            </property>
+            <property name="maxLength">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Port</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="InternetPort">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>2023</string>
+            </property>
+            <property name="maxLength">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Filter</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="Filter">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maxLength">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QPushButton" name="connectServerButton">
+            <property name="text">
+             <string>Connect</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="disconnectServerButton">
+            <property name="text">
+             <string>Disconnect</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="incomingPackets">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Packets go here...</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::PlainText</enum>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Map2">
+       <attribute name="title">
+        <string>Map2</string>
+       </attribute>
+       <widget class="QToolButton" name="toolButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>25</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="Map3">
+       <attribute name="title">
+        <string>Map3</string>
+       </attribute>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>120</y>
+          <width>79</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>CheckBox</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="Map4">
+       <attribute name="title">
+        <string>Map4</string>
+       </attribute>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>170</y>
+          <width>160</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>726</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="menu_Configure">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>&amp;Configure</string>
+     </property>
+     <addaction name="action_Station"/>
+     <addaction name="action_Defaults"/>
+     <addaction name="action_Timing"/>
+     <addaction name="actionC_oordinate_System"/>
+     <addaction name="action_Audio_Alarms"/>
+     <addaction name="actionS_peech"/>
+     <addaction name="actionSmart_Beaconing"/>
+     <addaction name="actionFonts"/>
+     <addaction name="actionTest"/>
+     <addaction name="actionChange_Debug_Level"/>
+     <addaction name="actionEnable_English_Units"/>
+     <addaction name="actionDist_Bearing_Status"/>
+     <addaction name="separator"/>
+     <addaction name="actionSave_Config_Now"/>
+    </widget>
+    <addaction name="actionPrint"/>
+    <addaction name="menu_Configure"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_Log_File"/>
+    <addaction name="actionTNC_Logging"/>
+    <addaction name="actionNet_Logging"/>
+    <addaction name="actionIGate_Logging"/>
+    <addaction name="actionMessage_Logging"/>
+    <addaction name="actionWX_Logging"/>
+    <addaction name="actionWX_Alert_Logging"/>
+    <addaction name="actionPNG_Snapshots"/>
+    <addaction name="actionKML_Snapshots"/>
+    <addaction name="separator"/>
+    <addaction name="actionE_xit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="action_Incoming_Data"/>
+    <addaction name="actionMessage_Traffic"/>
+    <addaction name="action_Bulletins"/>
+    <addaction name="separator"/>
+    <addaction name="action_Mobile_Stations"/>
+    <addaction name="action_All_Stations"/>
+    <addaction name="actionLocal_Stations"/>
+    <addaction name="action_Last_Stations"/>
+    <addaction name="separator"/>
+    <addaction name="actionObjects_Items"/>
+    <addaction name="actionOwn_Objects_Items"/>
+    <addaction name="actionCAD_Polygons"/>
+    <addaction name="separator"/>
+    <addaction name="action_Weather_Stations"/>
+    <addaction name="actionOwn_Weather_Data"/>
+    <addaction name="actionW_eather_Alerts"/>
+    <addaction name="separator"/>
+    <addaction name="actionGPS_Status"/>
+    <addaction name="action_Uptime"/>
+    <addaction name="actionALOHA_Statistics"/>
+   </widget>
+   <widget class="QMenu" name="menuMap">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Map</string>
+    </property>
+    <widget class="QMenu" name="menuDraw_CAD_Objects">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Draw CAD Objects</string>
+     </property>
+     <addaction name="actionClose_Polygon"/>
+     <addaction name="actionErase_CAD_Polygons"/>
+     <addaction name="actionCAD_Polygons_2"/>
+     <addaction name="actionEnable_CAD_objects"/>
+     <addaction name="actionEnable_CAD_labels"/>
+     <addaction name="actionEnable_CAD_probability"/>
+     <addaction name="actionEnable_CAD_comments"/>
+     <addaction name="actionEnable_CAD_area_size"/>
+    </widget>
+    <widget class="QMenu" name="menuConfigure">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Configure</string>
+     </property>
+     <widget class="QMenu" name="menuBackground_Color">
+      <property name="tearOffEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>Background &amp;Color</string>
+      </property>
+      <addaction name="actionWhite"/>
+      <addaction name="actionBlack"/>
+      <addaction name="actionGray"/>
+      <addaction name="actionMisty_Rose"/>
+      <addaction name="actionNavy_Blue"/>
+      <addaction name="actionSteel_Blue"/>
+      <addaction name="actionMed_Sea_Green"/>
+      <addaction name="actionPale_Green"/>
+      <addaction name="actionPale_Goldenrod"/>
+      <addaction name="actionGoldenrod_Yellow"/>
+      <addaction name="actionRosy_Brown"/>
+      <addaction name="actionFirebrick_Red"/>
+     </widget>
+     <widget class="QMenu" name="menuMap_Intensity">
+      <property name="tearOffEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>Map &amp;Intensity</string>
+      </property>
+      <addaction name="action0"/>
+      <addaction name="action10"/>
+      <addaction name="action20"/>
+      <addaction name="action30"/>
+      <addaction name="action40"/>
+      <addaction name="action50"/>
+      <addaction name="action60"/>
+      <addaction name="action70"/>
+      <addaction name="action80"/>
+      <addaction name="action90"/>
+      <addaction name="action100"/>
+     </widget>
+     <widget class="QMenu" name="menuStation_Text_Style">
+      <property name="tearOffEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>Station &amp;Text Style</string>
+      </property>
+      <addaction name="action_Black_Border"/>
+      <addaction name="actionBlack_Shadow"/>
+      <addaction name="action_Text_on_Black"/>
+     </widget>
+     <widget class="QMenu" name="menuIcon_Outline_Style">
+      <property name="tearOffEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>Icon &amp;Outline Style</string>
+      </property>
+      <addaction name="action_No_Outline"/>
+      <addaction name="action_Black_Outline"/>
+      <addaction name="action_Grey_Outline"/>
+      <addaction name="action_White_Outline"/>
+     </widget>
+     <addaction name="menuBackground_Color"/>
+     <addaction name="menuMap_Intensity"/>
+     <addaction name="actionAdjust_Gamma_Correction"/>
+     <addaction name="menuStation_Text_Style"/>
+     <addaction name="menuIcon_Outline_Style"/>
+     <addaction name="actionConfigure_Tigermap"/>
+     <addaction name="actionConfigure_USGS_DRG"/>
+     <addaction name="separator"/>
+     <addaction name="actionRe_download_Maps_Not_from_cache"/>
+     <addaction name="actionFlush_Entire_Map_Cache"/>
+     <addaction name="actionIndex_New_Maps_on_Startup"/>
+     <addaction name="actionIndex_Add_New_Maps"/>
+     <addaction name="actionIndex_Reindex_ALL_Maps"/>
+    </widget>
+    <addaction name="action_Map_Chooser"/>
+    <addaction name="actionMap_Display_Bookmarks"/>
+    <addaction name="actionLocate_Map_Feature"/>
+    <addaction name="actionFind_Address"/>
+    <addaction name="actionCoordinate_Calculator"/>
+    <addaction name="actionCenter_Zoom"/>
+    <addaction name="menuDraw_CAD_Objects"/>
+    <addaction name="separator"/>
+    <addaction name="actionDisable_Fast_Zoom_Pan_Home"/>
+    <addaction name="actionDisable_All_Maps"/>
+    <addaction name="actionEnable_Auto_Maps"/>
+    <addaction name="actionAuto_Map_Disable_Raster_Maps"/>
+    <addaction name="actionEnable_Map_Grid"/>
+    <addaction name="actionEnable_Map_Border"/>
+    <addaction name="actionEnable_Map_Levels"/>
+    <addaction name="actionEnable_Map_Labels"/>
+    <addaction name="actionEnable_Area_Color_Fills"/>
+    <addaction name="actionEnable_Weather_Alerts"/>
+    <addaction name="separator"/>
+    <addaction name="menuConfigure"/>
+    <addaction name="separator"/>
+    <addaction name="actionMouse_Pointer_Menu"/>
+   </widget>
+   <widget class="QMenu" name="menuStation">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Station</string>
+    </property>
+    <widget class="QMenu" name="menu_Export_All">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>E&amp;xport All</string>
+     </property>
+     <addaction name="actionExport_to_KML_File"/>
+    </widget>
+    <widget class="QMenu" name="menuFilter_Data">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Filter Data</string>
+     </property>
+     <addaction name="actionSelect_None"/>
+     <addaction name="actionSelect_Mine"/>
+     <addaction name="actionSelect_TNC"/>
+     <addaction name="action_Select_Direct"/>
+     <addaction name="action_Select_Via_Digi"/>
+     <addaction name="actionSelect_Net"/>
+     <addaction name="actionSelect_Tactical_Calls_Only"/>
+     <addaction name="actionInclude_Expired_Data"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelect_Stations"/>
+     <addaction name="action_Select_Fixed_Stations"/>
+     <addaction name="action_Select_Moving_Stations"/>
+     <addaction name="action_Select_WX_Stations"/>
+     <addaction name="action_Select_CWOP_WX_Stations"/>
+     <addaction name="actionSelect_Objects_Items"/>
+     <addaction name="action_Select_WX_Objects_Items"/>
+     <addaction name="action_Select_Water_Gauge_Objects_Items"/>
+     <addaction name="action_Select_Other_Objects_Items"/>
+    </widget>
+    <widget class="QMenu" name="menuFilter_Display">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Filter Display</string>
+     </property>
+     <addaction name="actionDisplay_Callsign"/>
+     <addaction name="action_Label_Trailpoints"/>
+     <addaction name="actionDisplay_Symbol"/>
+     <addaction name="action_Rotate_Symbol"/>
+     <addaction name="actionDisplay_Trail"/>
+     <addaction name="separator"/>
+     <addaction name="actionDisplay_Course"/>
+     <addaction name="actionDisplay_Speed"/>
+     <addaction name="action_Display_Short_Speed"/>
+     <addaction name="actionDisplay_Altitude"/>
+     <addaction name="separator"/>
+     <addaction name="actionDisplay_Weather_Info"/>
+     <addaction name="action_Display_Weather_Text"/>
+     <addaction name="action_Temperature_Only"/>
+     <addaction name="action_Display_Wind_Barb"/>
+     <addaction name="separator"/>
+     <addaction name="actionDisplay_Aloha_Circle"/>
+     <addaction name="actionDisplay_Position_Ambiguity"/>
+     <addaction name="actionDisplay_Power_Gain"/>
+     <addaction name="action_Use_Default_Power_Gain"/>
+     <addaction name="action_Display_Mobile_Power_Gain"/>
+     <addaction name="separator"/>
+     <addaction name="actionDisplay_DF_Attributes"/>
+     <addaction name="actionDisplay_DF_Beamwidth"/>
+     <addaction name="actionDisplay_DF_Bearing"/>
+     <addaction name="separator"/>
+     <addaction name="actionEnable_Dead_Reckoning"/>
+     <addaction name="action_Display_Arc"/>
+     <addaction name="action_Display_Course"/>
+     <addaction name="action_Display_Symbol"/>
+     <addaction name="separator"/>
+     <addaction name="actionDIsplay_Dist_Bearing"/>
+     <addaction name="actionDisplay_Last_Report_Age"/>
+    </widget>
+    <widget class="QMenu" name="menuConfigure_2">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>&amp;Configure</string>
+     </property>
+     <addaction name="actionReload_Object_Item_History"/>
+     <addaction name="actionClear_Object_Item_History"/>
+     <addaction name="actionClear_All_Tactical_Calls"/>
+     <addaction name="actionClear_Tactical_Call_History"/>
+     <addaction name="action_Clear_All_Trails"/>
+     <addaction name="actionClear_All_Stations"/>
+    </widget>
+    <addaction name="action_Find_Stations"/>
+    <addaction name="action_Track_Station"/>
+    <addaction name="actionFetch_Find_u_Trail"/>
+    <addaction name="menu_Export_All"/>
+    <addaction name="separator"/>
+    <addaction name="menuFilter_Data"/>
+    <addaction name="menuFilter_Display"/>
+    <addaction name="separator"/>
+    <addaction name="menuConfigure_2"/>
+   </widget>
+   <widget class="QMenu" name="menuMessage">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>M&amp;essage</string>
+    </property>
+    <addaction name="action_Send_Message_To"/>
+    <addaction name="actionShow_Pending_Messages"/>
+    <addaction name="action_Open_Group_Messages"/>
+    <addaction name="action_Clear_All_Outgoing_Messages"/>
+    <addaction name="separator"/>
+    <addaction name="action_General_Stations_Query"/>
+    <addaction name="action_IGate_Stations_Query"/>
+    <addaction name="action_WX_Stations_Query"/>
+    <addaction name="separator"/>
+    <addaction name="actionModify_Auto_Reply_Message"/>
+    <addaction name="actionEnable_Auto_Reply_Message"/>
+    <addaction name="separator"/>
+    <addaction name="actionSatellite_Ack_Mode"/>
+   </widget>
+   <widget class="QMenu" name="menuInterface">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Interface</string>
+    </property>
+    <addaction name="actionInterface_Control"/>
+    <addaction name="separator"/>
+    <addaction name="actionDisable_Transmit_ALL"/>
+    <addaction name="actionDisable_Transmit_My_Position"/>
+    <addaction name="actionDisable_Transmit_Objects_Items"/>
+    <addaction name="actionEnable_Server_Ports"/>
+    <addaction name="separator"/>
+    <addaction name="action_Transmit_Now"/>
+    <addaction name="action_Fetch_GPS_Track"/>
+    <addaction name="actionFetch_GPS_Routes"/>
+    <addaction name="actionFetch_GPS_Waypoints"/>
+    <addaction name="actionFetch_Garmin_RINO_Waypoints"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <widget class="QMenu" name="menu_EMERGENCY_BEACON_MODE_ENABLE">
+     <property name="title">
+      <string>&amp;EMERGENCY BEACON MODE ENABLE</string>
+     </property>
+     <addaction name="action_EMERGENCY_BEACON_MODE"/>
+    </widget>
+    <addaction name="action_About"/>
+    <addaction name="actionHelp_Index"/>
+    <addaction name="separator"/>
+    <addaction name="menu_EMERGENCY_BEACON_MODE_ENABLE"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuMap"/>
+   <addaction name="menuStation"/>
+   <addaction name="menuMessage"/>
+   <addaction name="menuInterface"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionPrint">
+   <property name="text">
+    <string>&amp;Print</string>
+   </property>
+  </action>
+  <action name="actionOpen_Log_File">
+   <property name="text">
+    <string>&amp;Open Log File</string>
+   </property>
+  </action>
+  <action name="actionTNC_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;TNC Logging</string>
+   </property>
+  </action>
+  <action name="actionNet_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Net Logging</string>
+   </property>
+  </action>
+  <action name="actionIGate_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;IGate Logging</string>
+   </property>
+  </action>
+  <action name="actionMessage_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Message Logging</string>
+   </property>
+  </action>
+  <action name="actionWX_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;WX Logging</string>
+   </property>
+  </action>
+  <action name="actionWX_Alert_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>WX &amp;Alert Logging</string>
+   </property>
+  </action>
+  <action name="actionPNG_Snapshots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PNG &amp;Snapshots</string>
+   </property>
+  </action>
+  <action name="actionKML_Snapshots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;KML Snapshots</string>
+   </property>
+  </action>
+  <action name="actionE_xit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="action_Incoming_Data">
+   <property name="text">
+    <string>&amp;Incoming Data</string>
+   </property>
+  </action>
+  <action name="actionMessage_Traffic">
+   <property name="text">
+    <string>Message &amp;Traffic</string>
+   </property>
+  </action>
+  <action name="action_Bulletins">
+   <property name="text">
+    <string>&amp;Bulletins</string>
+   </property>
+  </action>
+  <action name="action_Mobile_Stations">
+   <property name="text">
+    <string>&amp;Mobile Stations</string>
+   </property>
+  </action>
+  <action name="action_All_Stations">
+   <property name="text">
+    <string>&amp;All Stations</string>
+   </property>
+  </action>
+  <action name="actionLocal_Stations">
+   <property name="text">
+    <string>Local &amp;Stations</string>
+   </property>
+  </action>
+  <action name="action_Last_Stations">
+   <property name="text">
+    <string>&amp;Last Stations</string>
+   </property>
+  </action>
+  <action name="actionObjects_Items">
+   <property name="text">
+    <string>Objects &amp;&amp; Items</string>
+   </property>
+  </action>
+  <action name="actionOwn_Objects_Items">
+   <property name="text">
+    <string>Own Objects &amp;&amp; Items</string>
+   </property>
+  </action>
+  <action name="actionCAD_Polygons">
+   <property name="text">
+    <string>CAD Polygons</string>
+   </property>
+  </action>
+  <action name="action_Weather_Stations">
+   <property name="text">
+    <string>&amp;Weather Stations</string>
+   </property>
+  </action>
+  <action name="actionOwn_Weather_Data">
+   <property name="text">
+    <string>Own Weather &amp;Data</string>
+   </property>
+  </action>
+  <action name="actionW_eather_Alerts">
+   <property name="text">
+    <string>W&amp;eather Alerts</string>
+   </property>
+  </action>
+  <action name="actionGPS_Status">
+   <property name="text">
+    <string>GPS Status</string>
+   </property>
+  </action>
+  <action name="action_Uptime">
+   <property name="text">
+    <string>&amp;Uptime</string>
+   </property>
+  </action>
+  <action name="actionALOHA_Statistics">
+   <property name="text">
+    <string>ALOHA Statistics</string>
+   </property>
+  </action>
+  <action name="action_Map_Chooser">
+   <property name="text">
+    <string>&amp;Map Chooser</string>
+   </property>
+  </action>
+  <action name="actionMap_Display_Bookmarks">
+   <property name="text">
+    <string>Map Display &amp;Bookmarks</string>
+   </property>
+  </action>
+  <action name="actionLocate_Map_Feature">
+   <property name="text">
+    <string>Locate Map &amp;Feature</string>
+   </property>
+  </action>
+  <action name="actionFind_Address">
+   <property name="text">
+    <string>Find Address</string>
+   </property>
+  </action>
+  <action name="actionCoordinate_Calculator">
+   <property name="text">
+    <string>Coordinate Calculator</string>
+   </property>
+  </action>
+  <action name="actionCenter_Zoom">
+   <property name="text">
+    <string>Center &amp;&amp; Zoom</string>
+   </property>
+  </action>
+  <action name="actionDisable_Fast_Zoom_Pan_Home">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable Fast Zoom/Pan/Home</string>
+   </property>
+  </action>
+  <action name="actionDisable_All_Maps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable All Maps</string>
+   </property>
+  </action>
+  <action name="actionEnable_Auto_Maps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Auto Maps</string>
+   </property>
+  </action>
+  <action name="actionAuto_Map_Disable_Raster_Maps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Disable Raster Maps</string>
+   </property>
+  </action>
+  <action name="actionEnable_Map_Grid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Map Grid</string>
+   </property>
+  </action>
+  <action name="actionEnable_Map_Border">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Map Border</string>
+   </property>
+  </action>
+  <action name="actionEnable_Map_Levels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Map Levels</string>
+   </property>
+  </action>
+  <action name="actionEnable_Map_Labels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Map Labels</string>
+   </property>
+  </action>
+  <action name="actionEnable_Area_Color_Fills">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Area Color Fills</string>
+   </property>
+  </action>
+  <action name="actionEnable_Weather_Alerts">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Weather Alerts</string>
+   </property>
+  </action>
+  <action name="actionMouse_Pointer_Menu">
+   <property name="text">
+    <string>Mouse Pointer Menu</string>
+   </property>
+  </action>
+  <action name="action_Find_Stations">
+   <property name="text">
+    <string>&amp;Find Station</string>
+   </property>
+  </action>
+  <action name="action_Track_Station">
+   <property name="text">
+    <string>&amp;Track Station</string>
+   </property>
+  </action>
+  <action name="actionFetch_Find_u_Trail">
+   <property name="text">
+    <string>Fetch Find&amp;u Trail</string>
+   </property>
+  </action>
+  <action name="action_Send_Message_To">
+   <property name="text">
+    <string>&amp;Send Message To</string>
+   </property>
+  </action>
+  <action name="actionShow_Pending_Messages">
+   <property name="text">
+    <string>Show &amp;Pending Messages</string>
+   </property>
+  </action>
+  <action name="action_Open_Group_Messages">
+   <property name="text">
+    <string>&amp;Open Group Messages</string>
+   </property>
+  </action>
+  <action name="action_Clear_All_Outgoing_Messages">
+   <property name="text">
+    <string>&amp;Clear All Outgoing Messages</string>
+   </property>
+  </action>
+  <action name="action_General_Stations_Query">
+   <property name="text">
+    <string>&amp;General Stations Query</string>
+   </property>
+  </action>
+  <action name="action_IGate_Stations_Query">
+   <property name="text">
+    <string>&amp;IGate Stations Query</string>
+   </property>
+  </action>
+  <action name="action_WX_Stations_Query">
+   <property name="text">
+    <string>&amp;WX Stations Query</string>
+   </property>
+  </action>
+  <action name="actionModify_Auto_Reply_Message">
+   <property name="text">
+    <string>Modify &amp;Auto Reply Message</string>
+   </property>
+  </action>
+  <action name="actionEnable_Auto_Reply_Message">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Auto Reply Message</string>
+   </property>
+  </action>
+  <action name="actionSatellite_Ack_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Satellite Ack Mode</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionHelp_Index">
+   <property name="text">
+    <string>Help &amp;Index</string>
+   </property>
+  </action>
+  <action name="actionInterface_Control">
+   <property name="text">
+    <string>Interface Control</string>
+   </property>
+  </action>
+  <action name="actionDisable_Transmit_ALL">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable Transmit: ALL</string>
+   </property>
+  </action>
+  <action name="actionDisable_Transmit_My_Position">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable Transmit: My Position</string>
+   </property>
+  </action>
+  <action name="actionDisable_Transmit_Objects_Items">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable Transmit: Objects/Items</string>
+   </property>
+  </action>
+  <action name="actionEnable_Server_Ports">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Server Ports</string>
+   </property>
+  </action>
+  <action name="action_Transmit_Now">
+   <property name="text">
+    <string>&amp;Transmit Now!</string>
+   </property>
+  </action>
+  <action name="action_Fetch_GPS_Track">
+   <property name="text">
+    <string>&amp;Fetch GPS Track</string>
+   </property>
+  </action>
+  <action name="actionFetch_GPS_Routes">
+   <property name="text">
+    <string>Fetch GPS &amp;Routes</string>
+   </property>
+  </action>
+  <action name="actionFetch_GPS_Waypoints">
+   <property name="text">
+    <string>Fetch GPS &amp;Waypoints</string>
+   </property>
+  </action>
+  <action name="actionFetch_Garmin_RINO_Waypoints">
+   <property name="text">
+    <string>Fetch &amp;Garmin RINO Waypoints</string>
+   </property>
+  </action>
+  <action name="action_EMERGENCY_BEACON_MODE">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>!!! EMERGENCY BEACON MODE !!!</string>
+   </property>
+  </action>
+  <action name="action_Station">
+   <property name="text">
+    <string>&amp;Station</string>
+   </property>
+  </action>
+  <action name="action_Defaults">
+   <property name="text">
+    <string>&amp;Defaults</string>
+   </property>
+  </action>
+  <action name="action_Timing">
+   <property name="text">
+    <string>&amp;Timing</string>
+   </property>
+  </action>
+  <action name="actionC_oordinate_System">
+   <property name="text">
+    <string>C&amp;oordinate System</string>
+   </property>
+  </action>
+  <action name="action_Audio_Alarms">
+   <property name="text">
+    <string>&amp;Audio Alarms</string>
+   </property>
+  </action>
+  <action name="actionS_peech">
+   <property name="text">
+    <string>S&amp;peech</string>
+   </property>
+  </action>
+  <action name="actionSmart_Beaconing">
+   <property name="text">
+    <string>Smart Beaconing</string>
+   </property>
+  </action>
+  <action name="actionFonts">
+   <property name="text">
+    <string>Fonts</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>&amp;Test</string>
+   </property>
+  </action>
+  <action name="actionChange_Debug_Level">
+   <property name="text">
+    <string>Change &amp;Debug Level</string>
+   </property>
+  </action>
+  <action name="actionEnable_English_Units">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable English Units</string>
+   </property>
+  </action>
+  <action name="actionDist_Bearing_Status">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dist/Bearing Status</string>
+   </property>
+  </action>
+  <action name="actionSave_Config_Now">
+   <property name="text">
+    <string>Save &amp;Config Now!</string>
+   </property>
+  </action>
+  <action name="actionClose_Polygon">
+   <property name="text">
+    <string>Close Polygon</string>
+   </property>
+  </action>
+  <action name="actionErase_CAD_Polygons">
+   <property name="text">
+    <string>Erase CAD Polygons</string>
+   </property>
+  </action>
+  <action name="actionCAD_Polygons_2">
+   <property name="text">
+    <string>CAD Polygons</string>
+   </property>
+  </action>
+  <action name="actionEnable_CAD_objects">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable CAD Objects</string>
+   </property>
+  </action>
+  <action name="actionEnable_CAD_labels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable CAD Labels</string>
+   </property>
+  </action>
+  <action name="actionEnable_CAD_probability">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable CAD Probability</string>
+   </property>
+  </action>
+  <action name="actionEnable_CAD_comments">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable CAD Comments</string>
+   </property>
+  </action>
+  <action name="actionEnable_CAD_area_size">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable CAD Area Size</string>
+   </property>
+  </action>
+  <action name="actionAdjust_Gamma_Correction">
+   <property name="text">
+    <string>Adjust Gamma Correction</string>
+   </property>
+  </action>
+  <action name="actionConfigure_Tigermap">
+   <property name="text">
+    <string>Configure Tigermap</string>
+   </property>
+  </action>
+  <action name="actionConfigure_USGS_DRG">
+   <property name="text">
+    <string>Configure USGS DRG</string>
+   </property>
+  </action>
+  <action name="actionRe_download_Maps_Not_from_cache">
+   <property name="text">
+    <string>Re-download Maps (Not from cache)</string>
+   </property>
+  </action>
+  <action name="actionFlush_Entire_Map_Cache">
+   <property name="text">
+    <string>Flush Entire Map Cache!</string>
+   </property>
+  </action>
+  <action name="actionIndex_New_Maps_on_Startup">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Index New Maps on Startup</string>
+   </property>
+  </action>
+  <action name="actionIndex_Add_New_Maps">
+   <property name="text">
+    <string>Index: Add &amp;New Maps</string>
+   </property>
+  </action>
+  <action name="actionIndex_Reindex_ALL_Maps">
+   <property name="text">
+    <string>Index: &amp;Reindex ALL Maps!</string>
+   </property>
+  </action>
+  <action name="actionWhite">
+   <property name="text">
+    <string>White</string>
+   </property>
+  </action>
+  <action name="actionBlack">
+   <property name="text">
+    <string>Black</string>
+   </property>
+  </action>
+  <action name="actionGray">
+   <property name="text">
+    <string>Gray</string>
+   </property>
+  </action>
+  <action name="actionMisty_Rose">
+   <property name="text">
+    <string>Misty Rose</string>
+   </property>
+  </action>
+  <action name="actionNavy_Blue">
+   <property name="text">
+    <string>Navy Blue</string>
+   </property>
+  </action>
+  <action name="actionSteel_Blue">
+   <property name="text">
+    <string>Steel Blue</string>
+   </property>
+  </action>
+  <action name="actionMed_Sea_Green">
+   <property name="text">
+    <string>Medium Sea Green</string>
+   </property>
+  </action>
+  <action name="actionPale_Green">
+   <property name="text">
+    <string>Pale Green</string>
+   </property>
+  </action>
+  <action name="actionPale_Goldenrod">
+   <property name="text">
+    <string>Pale Goldenrod</string>
+   </property>
+  </action>
+  <action name="actionGoldenrod_Yellow">
+   <property name="text">
+    <string>Goldenrod Yellow</string>
+   </property>
+  </action>
+  <action name="actionRosy_Brown">
+   <property name="text">
+    <string>Rosy Brown</string>
+   </property>
+  </action>
+  <action name="actionFirebrick_Red">
+   <property name="text">
+    <string>Firebrick Red</string>
+   </property>
+  </action>
+  <action name="action0">
+   <property name="text">
+    <string>0%</string>
+   </property>
+  </action>
+  <action name="action10">
+   <property name="text">
+    <string>10%</string>
+   </property>
+  </action>
+  <action name="action20">
+   <property name="text">
+    <string>20%</string>
+   </property>
+  </action>
+  <action name="action30">
+   <property name="text">
+    <string>30%</string>
+   </property>
+  </action>
+  <action name="action40">
+   <property name="text">
+    <string>40%</string>
+   </property>
+  </action>
+  <action name="action50">
+   <property name="text">
+    <string>50%</string>
+   </property>
+  </action>
+  <action name="action60">
+   <property name="text">
+    <string>60%</string>
+   </property>
+  </action>
+  <action name="action70">
+   <property name="text">
+    <string>70%</string>
+   </property>
+  </action>
+  <action name="action80">
+   <property name="text">
+    <string>80%</string>
+   </property>
+  </action>
+  <action name="action90">
+   <property name="text">
+    <string>90%</string>
+   </property>
+  </action>
+  <action name="action100">
+   <property name="text">
+    <string>100%</string>
+   </property>
+  </action>
+  <action name="action_Black_Border">
+   <property name="text">
+    <string>&amp;Black Border</string>
+   </property>
+  </action>
+  <action name="actionBlack_Shadow">
+   <property name="text">
+    <string>Black &amp;Shadow</string>
+   </property>
+  </action>
+  <action name="action_Text_on_Black">
+   <property name="text">
+    <string>&amp;Text on Black</string>
+   </property>
+  </action>
+  <action name="action_No_Outline">
+   <property name="text">
+    <string>&amp;No Outline</string>
+   </property>
+  </action>
+  <action name="action_Black_Outline">
+   <property name="text">
+    <string>&amp;Black Outline</string>
+   </property>
+  </action>
+  <action name="action_Grey_Outline">
+   <property name="text">
+    <string>&amp;Grey Outline</string>
+   </property>
+  </action>
+  <action name="action_White_Outline">
+   <property name="text">
+    <string>&amp;White Outline</string>
+   </property>
+  </action>
+  <action name="actionExport_to_KML_File">
+   <property name="text">
+    <string>Export to KML File</string>
+   </property>
+  </action>
+  <action name="actionSelect_None">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select None</string>
+   </property>
+  </action>
+  <action name="actionSelect_Mine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Mine</string>
+   </property>
+  </action>
+  <action name="actionSelect_TNC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select TNC</string>
+   </property>
+  </action>
+  <action name="action_Select_Direct">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select Direct</string>
+   </property>
+  </action>
+  <action name="action_Select_Via_Digi">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select Via Digi</string>
+   </property>
+  </action>
+  <action name="actionSelect_Net">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Net</string>
+   </property>
+  </action>
+  <action name="actionSelect_Tactical_Calls_Only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Tactical Calls Only</string>
+   </property>
+  </action>
+  <action name="actionInclude_Expired_Data">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Include Expired Data</string>
+   </property>
+  </action>
+  <action name="actionSelect_Stations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Stations</string>
+   </property>
+  </action>
+  <action name="action_Select_Fixed_Stations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select Fixed Stations</string>
+   </property>
+  </action>
+  <action name="action_Select_Moving_Stations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select Moving Stations</string>
+   </property>
+  </action>
+  <action name="action_Select_WX_Stations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select WX Stations</string>
+   </property>
+  </action>
+  <action name="action_Select_CWOP_WX_Stations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>   - Select CWOP WX Stations</string>
+   </property>
+  </action>
+  <action name="actionSelect_Objects_Items">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Objects/Items</string>
+   </property>
+  </action>
+  <action name="action_Select_WX_Objects_Items">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select WX Objects/Items</string>
+   </property>
+  </action>
+  <action name="action_Select_Water_Gauge_Objects_Items">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select Water Gauge Objects/Items</string>
+   </property>
+  </action>
+  <action name="action_Select_Other_Objects_Items">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Select Other Objects/Items</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Callsign">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Callsign</string>
+   </property>
+  </action>
+  <action name="action_Label_Trailpoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Label Trailpoints</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Symbol">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Symbol</string>
+   </property>
+  </action>
+  <action name="action_Rotate_Symbol">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Rotate Symbol</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Trail">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Trail</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Course">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Course</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Speed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Speed</string>
+   </property>
+  </action>
+  <action name="action_Display_Short_Speed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Short Speed</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Altitude">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Altitude</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Weather_Info">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Weather Info</string>
+   </property>
+  </action>
+  <action name="action_Display_Weather_Text">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Weather Text</string>
+   </property>
+  </action>
+  <action name="action_Temperature_Only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>   - Temperature Only</string>
+   </property>
+  </action>
+  <action name="action_Display_Wind_Barb">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Wind Barb</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Aloha_Circle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Aloha Circle</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Position_Ambiguity">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Position Ambiguity</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Power_Gain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Power/Gain</string>
+   </property>
+  </action>
+  <action name="action_Use_Default_Power_Gain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Use Default Power/Gain</string>
+   </property>
+  </action>
+  <action name="action_Display_Mobile_Power_Gain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Mobile Power/Gain</string>
+   </property>
+  </action>
+  <action name="actionDisplay_DF_Attributes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display DF Attributes</string>
+   </property>
+  </action>
+  <action name="actionDisplay_DF_Beamwidth">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display DF Beamwidth</string>
+   </property>
+  </action>
+  <action name="actionDisplay_DF_Bearing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display DF Bearing</string>
+   </property>
+  </action>
+  <action name="actionEnable_Dead_Reckoning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Dead-Reckoning</string>
+   </property>
+  </action>
+  <action name="action_Display_Arc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Arc</string>
+   </property>
+  </action>
+  <action name="action_Display_Course">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Course</string>
+   </property>
+  </action>
+  <action name="action_Display_Symbol">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>- Display Symbol</string>
+   </property>
+  </action>
+  <action name="actionDIsplay_Dist_Bearing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>DIsplay Dist/Bearing</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Last_Report_Age">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Last Report Age</string>
+   </property>
+  </action>
+  <action name="actionReload_Object_Item_History">
+   <property name="text">
+    <string>Reload Object/Item History</string>
+   </property>
+  </action>
+  <action name="actionClear_Object_Item_History">
+   <property name="text">
+    <string>Clear Object/Item History</string>
+   </property>
+  </action>
+  <action name="actionClear_All_Tactical_Calls">
+   <property name="text">
+    <string>Clear All Tactical Calls</string>
+   </property>
+  </action>
+  <action name="actionClear_Tactical_Call_History">
+   <property name="text">
+    <string>Clear Tactical Call History</string>
+   </property>
+  </action>
+  <action name="action_Clear_All_Trails">
+   <property name="text">
+    <string>&amp;Clear All Trails!!!</string>
+   </property>
+  </action>
+  <action name="actionClear_All_Stations">
+   <property name="text">
+    <string>Clear &amp;All Stations!!!</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionE_xit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

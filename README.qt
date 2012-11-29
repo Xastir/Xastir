@@ -1,0 +1,72 @@
+
+GENERAL NOTES:
+--------------
+*) Use QT 4 Designer to create the graphical elements.  Each
+   dialog/window gets written out to a separate *.ui file.
+
+*) Manual method:  Use the "uic" compiler to compile these .ui files
+   to .h files:  Note:  The "qmake" command below does this
+   automatically!
+
+    uic -o *.h *.ui
+
+*) moc -o mydialog.moc mydialog.h
+
+*) Use "qmake -project" to create the initial .pro file for the
+   os-independent build system.
+
+*) Include the .h files in the .cpp files for your C++ program.
+
+*) Use "qmake" to build the project.
+
+*) "make"
+
+uic -o ui_mydialog.h mydialog.ui
+moc -o mydialog.moc mydialog.h
+qmake -project
+qmake
+make
+
+
+SPECIFIC NOTES:
+---------------
+
+Here's what Qt Creator does when you do a Build->Clean All:
+-----------------------------------------------------------
+Starting: /usr/bin/make clean -w 
+make: Entering directory `/home/src/we7u/xastir/xastir-qt'
+rm -f moc_xastir.cpp
+rm -f ui_mainwindow.h
+rm -f main.o mainwindow.o moc_xastir.o
+rm -f *~ core *.core
+make: Leaving directory `/home/src/we7u/xastir/xastir-qt'
+Exited with code 0.
+
+Here's a Build->Build All command:
+----------------------------------
+Configuration unchanged, skipping QMake step.
+Starting: /usr/bin/make -w 
+make: Entering directory `/home/src/we7u/xastir/xastir-qt'
+/usr/bin/uic mainwindow.ui -o ui_mainwindow.h
+g++ -c -m64 -pipe -g -Wall -W -D_REENTRANT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/QtCore -I/usr/include/QtNetwork -I/usr/include/QtGui -I/usr/include -I. -I. -o main.o main.cpp
+g++ -c -m64 -pipe -g -Wall -W -D_REENTRANT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/QtCore -I/usr/include/QtNetwork -I/usr/include/QtGui -I/usr/include -I. -I. -o mainwindow.o mainwindow.cpp
+/usr/bin/moc -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/QtCore -I/usr/include/QtNetwork -I/usr/include/QtGui -I/usr/include -I. -I. xastir.h -o moc_xastir.cpp
+g++ -c -m64 -pipe -g -Wall -W -D_REENTRANT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/QtCore -I/usr/include/QtNetwork -I/usr/include/QtGui -I/usr/include -I. -I. -o moc_xastir.o moc_xastir.cpp
+g++ -m64 -o xastir-qt main.o mainwindow.o moc_xastir.o -L/usr/lib64 -lQtGui -L/usr/lib64 -L/usr/X11R6/lib64 -lQtNetwork -lQtCore -lpthread
+make: Leaving directory `/home/src/we7u/xastir/xastir-qt'
+Exited with code 0.
+
+Here's a Build->Run qmake (I must have something misconfigured in my project):
+--------------------------
+Starting: /usr/bin/qmake /home/src/we7u/xastir/xastir-qt/xastir-qt.pro -spec linux-g++-64 -r CONFIG+=debug QMLJSDEBUGGER_PATH=/usr/share/qtcreator/qml/qmljsdebugger 
+WARNING: Failure to find: ui_mainwindow.h
+Exited with code 0.
+
+
+LINUX:
+------
+For Linux:  Had to run "qmake;make" on a 32-bit system because all the files were created on a 64-bit system.
+On a 64-bit system just run "make".
+
+
+
